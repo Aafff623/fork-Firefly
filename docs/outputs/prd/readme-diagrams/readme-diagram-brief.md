@@ -50,5 +50,6 @@
 
 - [x] README 居中 Header + fork 说明 + Showcase 三列表
 - [x] 参照仓链接写入文档节
-- [ ] banner / showcase 真图落盘
-- [ ] 本地 `8090` 预览壳 OK → push → 核 GitHub README 渲染
+- [x] Showcase Playwright 截图落盘并写入 README
+- [ ] banner / features / architecture 说明图
+- [x] 本地 `8090` 预览壳 OK → push → 核 GitHub README 渲染
