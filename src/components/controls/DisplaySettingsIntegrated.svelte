@@ -92,7 +92,7 @@ let bannerTitleEnabled = $state(true);
 const defaultBannerTitleEnabled = getDefaultBannerTitleEnabled();
 let bannerCarouselEnabled = $state(true);
 const defaultBannerCarouselEnabled = getDefaultBannerCarouselEnabled();
-let sakuraEnabled = $state(true);
+let sakuraEnabled = $state(false);
 const defaultSakuraEnabled = getDefaultSakuraEnabled();
 let overlayOpacity = $state(getDefaultOverlayOpacity());
 const defaultOverlayOpacity = getDefaultOverlayOpacity();
@@ -492,8 +492,15 @@ onMount(() => {
 	// 从localStorage读取横幅轮播状态
 	bannerCarouselEnabled = getStoredBannerCarouselEnabled();
 
-	// 从localStorage读取樱花特效状态
-	sakuraEnabled = getStoredSakuraEnabled();
+	// 从localStorage读取樱花特效状态（钉住或 Intro 进行中）
+	sakuraEnabled =
+		getStoredSakuraEnabled() ||
+		document.documentElement.getAttribute("data-sakura-enabled") === "true";
+
+	const handleSakuraIntroEnded = () => {
+		sakuraEnabled = false;
+	};
+	window.addEventListener("sakuraIntroEnded", handleSakuraIntroEnded);
 
 	// 从localStorage读取卡片样式状态
 	cardBorderEnabled = getStoredCardBorderEnabled();
@@ -518,6 +525,7 @@ onMount(() => {
 
 	return () => {
 		window.removeEventListener("resize", checkScreenSize);
+		window.removeEventListener("sakuraIntroEnded", handleSakuraIntroEnded);
 	};
 });
 

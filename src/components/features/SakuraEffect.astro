@@ -543,21 +543,56 @@
 		}
 		window.sakuraInitialized = true;
 
-		// 读取用户设置(localStorage 优先,缺省回退到配置默认值)
-		const storedEnabled = localStorage.getItem("sakuraEnabled");
-		const isEnabled =
-			storedEnabled !== null ? storedEnabled === "true" : sakuraConfig.enable;
-		const cfg: SakuraConfig = Object.assign({}, sakuraConfig, {
-			enable: isEnabled,
-		});
-		initSakura(cfg);
+		let introTimer: ReturnType<typeof setTimeout> | null = null;
 
-		// 监听设置面板的樱花特效切换事件(放在守卫内,避免重复注册)
+		function clearIntroTimer() {
+			if (introTimer !== null) {
+				clearTimeout(introTimer);
+				introTimer = null;
+			}
+		}
+
+		const pinned = localStorage.getItem("sakuraPinned") === "true";
+		const cfg: SakuraConfig = Object.assign({}, sakuraConfig, {
+			enable: true,
+		});
+
+		if (pinned) {
+			initSakura(cfg);
+			document.documentElement.setAttribute("data-sakura-enabled", "true");
+		} else {
+			// 非钉住：整页加载播放 Intro，数秒后自动关闭（不写入常驻偏好）
+			initSakura(cfg);
+			document.documentElement.setAttribute("data-sakura-enabled", "true");
+			introTimer = setTimeout(() => {
+				introTimer = null;
+				const mgr = window.sakuraManager;
+				if (mgr?.getIsRunning()) {
+					mgr.stop();
+				}
+				document.documentElement.setAttribute(
+					"data-sakura-enabled",
+					"false",
+				);
+				window.dispatchEvent(
+					new CustomEvent("sakuraIntroEnded", {
+						detail: { enabled: false },
+					}),
+				);
+			}, 5000);
+		}
+
 		window.addEventListener("sakuraToggle", (e: Event) => {
 			const detail = (e as CustomEvent<{ enabled: boolean }>).detail;
 			if (!detail) return;
+			clearIntroTimer();
 			const mgr = window.sakuraManager;
-			if (!mgr) return;
+			if (!mgr) {
+				initSakura(
+					Object.assign({}, sakuraConfig, { enable: detail.enabled }),
+				);
+				return;
+			}
 			if (detail.enabled && !mgr.getIsRunning()) {
 				mgr.config.enable = true;
 				void mgr.init();

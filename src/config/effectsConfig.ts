@@ -3,8 +3,8 @@ import type { SakuraConfig } from "../types/effectsConfig";
 // 特效配置 - 集中管理所有动画特效
 
 export const sakuraConfig: SakuraConfig = {
-	// 是否启用樱花特效
-	enable: false,
+	// 是否启用樱花特效管线（实际常驻由 sakuraPinned / Intro 逻辑决定）
+	enable: true,
 
 	// 樱花数量
 	sakuraNum: 21,

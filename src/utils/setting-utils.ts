@@ -14,7 +14,6 @@ import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	expressiveCodeConfig,
-	sakuraConfig,
 	siteConfig,
 } from "../config";
 import { isHomePage as checkIsHomePage } from "./layout-utils";
@@ -1150,34 +1149,64 @@ export function applyGradientEnabledToDocument(enabled: boolean): void {
 }
 
 // Sakura effect functions
+const SAKURA_PINNED_KEY = "sakuraPinned";
+const SAKURA_ENABLED_KEY = "sakuraEnabled";
+const SAKURA_INTRO_MS = 5000;
+
 export function getDefaultSakuraEnabled(): boolean {
-	return sakuraConfig?.enable ?? false;
+	// 默认不是「常驻开启」；未钉住时走整页 Intro（播数秒后关）
+	return false;
+}
+
+export function getSakuraPinned(): boolean {
+	if (typeof localStorage === "undefined") {
+		return false;
+	}
+	return localStorage.getItem(SAKURA_PINNED_KEY) === "true";
 }
 
 export function getStoredSakuraEnabled(): boolean {
 	if (typeof localStorage === "undefined") {
 		return getDefaultSakuraEnabled();
 	}
-	const stored = localStorage.getItem("sakuraEnabled");
+	if (getSakuraPinned()) {
+		return true;
+	}
+	const stored = localStorage.getItem(SAKURA_ENABLED_KEY);
 	if (stored === null) {
 		return getDefaultSakuraEnabled();
 	}
 	return stored === "true";
 }
 
-export function setSakuraEnabled(enabled: boolean): void {
+export function setSakuraEnabled(
+	enabled: boolean,
+	options?: { persist?: boolean },
+): void {
 	if (
 		typeof localStorage === "undefined" ||
 		typeof localStorage.setItem !== "function"
 	) {
 		return;
 	}
-	localStorage.setItem("sakuraEnabled", String(enabled));
+	const persist = options?.persist !== false;
+	if (persist) {
+		if (enabled) {
+			localStorage.setItem(SAKURA_PINNED_KEY, "true");
+			localStorage.setItem(SAKURA_ENABLED_KEY, "true");
+		} else {
+			localStorage.removeItem(SAKURA_PINNED_KEY);
+			localStorage.setItem(SAKURA_ENABLED_KEY, "false");
+		}
+	}
 	document.documentElement.setAttribute("data-sakura-enabled", String(enabled));
-	// 实时切换樱花特效
 	window.dispatchEvent(
 		new CustomEvent("sakuraToggle", { detail: { enabled } }),
 	);
+}
+
+export function getSakuraIntroDurationMs(): number {
+	return SAKURA_INTRO_MS;
 }
 
 // Banner title functions
