@@ -21,6 +21,8 @@ CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。�
 - 配置优先于改布局；大文件（`Layout.astro` 等）非必要不拆。
 - 中文沟通；代码与提交 Conventional Commits。
 - project-init 与上游文档冲突时：**覆盖式更新**本仓治理文件，并在对话里声明冲突点。
+- **README 本地预览壳**：根目录 `preview-readme.html`，端口 **8090**（`python -m http.server 8090`）。
+- **交付闭环**：本地预览 → 校验 → push → 核线上（见 `docs/agents/workflow.md`）。
 
 ## Agent skills
 
