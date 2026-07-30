@@ -1,84 +1,157 @@
 # threetwoa's blog
 
-> *code less, architect more*
+<p align="center">
+  <em>code less, architect more</em>
+</p>
 
-基于 [Firefly](https://github.com/CuteLeaf/Firefly)（Astro 静态博客主题）的个人二次开发。少写一点代码，多留一点架构的余白——把 AI 锻成可复用工作流，把记录写进博客与数字花园。
+<p align="center">
+  Forked by <a href="https://github.com/Aafff623/fork-Firefly">threetwoa</a>
+  from <a href="https://github.com/CuteLeaf/Firefly">CuteLeaf/Firefly</a>
+  · 二次开发，不是官方镜像。
+</p>
 
-<!-- banner: 落盘后取消注释
-![banner](assets/images/readme/banner.png)
+<p align="center">
+  基于 Firefly（Astro 静态博客主题）的个人站：少写一点代码，多留一点架构的余白。<br>
+  把 AI 锻成可复用工作流，把记录写进博客与数字花园。
+</p>
+
+<p align="center">
+  <a href="https://fork-firefly.vercel.app">🌐 线上博客</a>
+  ·
+  <a href="https://threetwoa-digital-garden.vercel.app">🌿 数字花园</a>
+  ·
+  <a href="#快速开始">⚡ 快速开始</a>
+  ·
+  <a href="#showcase--演示">🖼 Showcase</a>
+  ·
+  <a href="#文档">📚 文档</a>
+</p>
+
+<p align="center">
+  <a href="https://fork-firefly.vercel.app"><img src="https://img.shields.io/badge/Demo-Live-059669?style=for-the-badge&labelColor=0f172a" alt="Live"></a>
+  <img src="https://img.shields.io/badge/Astro-7.1-FF5D01?style=for-the-badge&labelColor=0f172a&logo=astro&logoColor=white" alt="Astro">
+  <img src="https://img.shields.io/badge/Svelte-5-FF3E00?style=for-the-badge&labelColor=0f172a&logo=svelte&logoColor=white" alt="Svelte">
+  <img src="https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&labelColor=0f172a&logo=vercel" alt="Vercel">
+  <img src="https://img.shields.io/badge/Node-%3E%3D22-339933?style=for-the-badge&labelColor=0f172a&logo=node.js&logoColor=white" alt="Node">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&labelColor=0f172a" alt="License">
+</p>
+
+<!-- 出图后取消下一行注释：assets/images/readme/banner.png -->
+<!--
+<p align="center">
+  <img src="assets/images/readme/banner.png" alt="threetwoa's blog banner" width="100%">
+</p>
 -->
 
-[![Astro](https://img.shields.io/badge/Astro-7.1-orange?style=for-the-badge&logo=astro)](https://astro.build)
-[![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)](https://svelte.dev)
-[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?style=for-the-badge&logo=vercel)](https://fork-firefly.vercel.app)
-[![Node](https://img.shields.io/badge/Node-%3E%3D22-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
-
-**线上** · https://fork-firefly.vercel.app  
-**作者** · [Aafff623](https://github.com/Aafff623) / threetwoa  
-**数字花园** · https://threetwoa-digital-garden.vercel.app  
-**仓库** · [Aafff623/fork-Firefly](https://github.com/Aafff623/fork-Firefly)
-
-[为什么](#为什么) · [功能](#功能) · [Preview](#preview) · [Showcase](#showcase--演示) · [快速开始](#快速开始) · [架构](#架构) · [主链路](#主链路) · [目录](#目录结构) · [路线图](#路线图) · [文档](#文档)
+<p align="center">
+  <a href="#为什么">为什么</a>
+  · <a href="#功能">功能</a>
+  · <a href="#preview">Preview</a>
+  · <a href="#showcase--演示">演示</a>
+  · <a href="#快速开始">快速开始</a>
+  · <a href="#架构">架构</a>
+  · <a href="#主链路">主链路</a>
+  · <a href="#目录结构">目录</a>
+  · <a href="#路线图">路线图</a>
+  · <a href="#文档">文档</a>
+</p>
 
 ---
 
 ## 为什么
 
-| 痛点 | 本仓做法 |
-|------|----------|
-| 主题配置散、文档在脑外 | 配置集中在 `src/config/`，旁路 `Firefly_docs/` 可查 |
-| Agent 改站易漂 | `CONTEXT` / `AGENTS` / Karpathy MDC + 交付闭环 |
-| 部署与本地脱节 | **本地预览 → 校验 → push → 核线上**（强制） |
+个人博客 fork 主题时常见问题：
+
+- 配置散落，不知道该改哪、不该碰哪
+- Agent 一改就漂：顺手重构布局、OG 指错域名
+- 本地看着行，push 后线上才发现挂
+
+**本仓边界：**
+
+| 层 | 职责 |
+|---|---|
+| `src/config` / `src/content` | 日常换皮、写文、开关页面 |
+| `Firefly_docs`（工作区旁路） | 官方配置语义单一查阅源 |
+| `CONTEXT` / `AGENTS` / MDC | Agent 硬约束与术语 |
+| 布局 / plugins / `astro.config` | 非必要不改（上帝文件） |
+| Vercel `fork-firefly` | 静态托管；默认 **不** 开 `CF_WORKERS` |
+
+```text
+config + content → pnpm dev 验收 → push → Vercel Ready → 核线上
+```
 
 ---
 
 ## 功能
 
-<!-- ![features](assets/images/readme/features.png) -->
-
-| 能力 | 说明 | 边界 |
+| 功能 | 说明 | 边界 |
 |------|------|------|
-| 配置驱动 | 站点 / 侧栏 / 壁纸 / 评论等 TypeScript 配置 | 不改布局内核也能换皮 |
-| Astro SSG | 静态 `dist`，SEO 友好 | 默认非 SSR（勿乱开 `CF_WORKERS`） |
-| Svelte 岛屿 | 搜索、设置、分页等交互 | 仅必要客户端 |
-| Pagefind | 全文搜索 | 构建期索引 |
-| 布局系统 | 单/双侧栏 · 列表/网格 · 多壁纸模式 | 见主题指南文 |
-| Markdown 扩展 | 提醒框、Mermaid、PlantUML、Wiki Link… | 插件在 `src/plugins` |
-| 动态 / 相册等 | 主题内置页面 | 可用 `siteConfig.pages` 关闭 |
+| **配置驱动** | 站点 / 侧栏 / 壁纸 / 字体 / 评论等均在 `src/config/*.ts` | 不改布局也能换品牌 |
+| **Astro SSG** | 构建为静态 `dist` | 默认非 SSR |
+| **Svelte 岛屿** | 搜索、设置、分页等交互 | 仅必要客户端 |
+| **Pagefind** | 全文搜索 | 构建期索引 |
+| **布局系统** | 单/双侧栏 · 列表/网格 · 多壁纸模式 | 见主题布局指南 |
+| **Markdown 扩展** | 提醒框、Mermaid、PlantUML、Wiki Link… | `src/plugins` |
+| **动态 / 相册等** | 主题内置扩展页 | `siteConfig.pages.*` 可关 |
+
+<!-- ![features](assets/images/readme/features.png) -->
 
 ---
 
 ## Preview
 
-**本仓无独立资产 Preview 站**（单产品博客，不以 Gallery 浏览组件包）。产品面用下方 Showcase。
+**本仓无独立资产 Preview 站**（单产品博客，不是组件 Gallery）。产品界面见下方 Showcase。
 
 ### README 本地预览壳
 
-边写 README 边看排版（须 HTTP，勿 `file://`）：
+边写边看排版（必须 HTTP，禁止 `file://`）：
 
 ```bash
-cd Firefly
+cd Firefly   # 或 fork-Firefly 根目录
 python -m http.server 8090
-# 打开 http://127.0.0.1:8090/preview-readme.html
 ```
+
+打开：http://127.0.0.1:8090/preview-readme.html
+
+风格对齐：[agent-cfo](https://github.com/San-Y108/agent-cfo) / [fork-zhouli-translator](https://github.com/Aafff623/fork-zhouli-translator) 的 `preview-readme.*` 约定。
 
 ---
 
 ## Showcase · 演示
 
-推荐路径：
+推荐路径：首页 → 文章 →（可选）动态 / 归档。
 
-1. 打开 [线上首页](https://fork-firefly.vercel.app/)  
-2. 点进一篇文章（demo 文或你的新文）  
-3. （可选）动态 / 归档  
+线上：https://fork-firefly.vercel.app
 
-| 槽位 | 文件 | 状态 |
-|------|------|------|
-| 首页 | `assets/images/readme/showcase-home.png` | 待截图 |
-| 文章页 | `assets/images/readme/showcase-post.png` | 待截图 |
+### Showcase — Blog
 
-> 真机截图规范：`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`（`method: screenshot`）。
+> 截图落盘 `assets/images/readme/showcase-*.png` 后，取消表格内注释或替换占位说明。规范见 `docs/outputs/prd/readme-diagrams/readme-image-prompts.md`（`method: screenshot`）。
+
+<table>
+  <tr>
+    <td width="33%" valign="top" align="center">
+      <!-- <a href="assets/images/readme/showcase-home.png"><img alt="首页" src="assets/images/readme/showcase-home.png" width="100%"></a> -->
+      <strong>首页</strong><br>
+      <sub>品牌标题 · 列表/网格 · 双侧栏 · 壁纸横幅</sub><br>
+      <a href="https://fork-firefly.vercel.app/">打开首页</a>
+      <br><sub>🖼 待截图 → <code>showcase-home.png</code></sub>
+    </td>
+    <td width="33%" valign="top" align="center">
+      <strong>文章页</strong><br>
+      <sub>封面 / TOC / Markdown 扩展 / 上下篇</sub><br>
+      <a href="https://fork-firefly.vercel.app/posts/guide/firefly-layout-system/">打开示例文</a>
+      <br><sub>🖼 待截图 → <code>showcase-post.png</code></sub>
+    </td>
+    <td width="33%" valign="top" align="center">
+      <strong>动态</strong><br>
+      <sub>碎碎念时间线（可接 Memos）</sub><br>
+      <a href="https://fork-firefly.vercel.app/dynamic/">打开动态</a>
+      <br><sub>🖼 待截图 → <code>showcase-dynamic.png</code></sub>
+    </td>
+  </tr>
+</table>
+
+版式参考：[合乎周礼 Showcase](https://github.com/Aafff623/fork-zhouli-translator#showcase--landing-page-) · [AgentCFO 演示](https://github.com/San-Y108/agent-cfo#%E6%BC%94%E7%A4%BA)
 
 ---
 
@@ -87,43 +160,46 @@ python -m http.server 8090
 ```bash
 git clone https://github.com/Aafff623/fork-Firefly.git
 cd fork-Firefly
-pnpm install   # 若镜像 404：加 --registry https://registry.npmjs.org
+pnpm install   # 若镜像 404：pnpm install --registry https://registry.npmjs.org
 pnpm dev       # http://localhost:4321
 ```
 
 | 要求 | 版本 |
 |------|------|
 | Node | ≥ 22 |
-| pnpm | ≥ 9（`packageManager` 锁 9.14.4） |
+| pnpm | ≥ 9（锁 `9.14.4`） |
 
-常用：`pnpm build` · `pnpm check` · `pnpm new-post <slug>` · `pnpm new-d <内容>`
+```bash
+pnpm build
+pnpm check
+pnpm new-post <slug>
+pnpm new-d <一句话动态>
+```
 
-配置入口：`src/config/siteConfig.ts` · `profileConfig.ts`。  
-部署：push `master` → Vercel 项目 `fork-firefly` 自动构建。
+配置入口：`src/config/siteConfig.ts` · `profileConfig.ts`  
+部署：push `master` → Vercel 项目 **fork-firefly** 自动构建。
 
 ---
 
 ## 架构
 
-<!-- ![architecture](assets/images/readme/architecture.png) -->
-
 | 层 | 内容 |
 |----|------|
-| Authoring | `src/config` · `src/content` · 旁路 `Firefly_docs` |
-| Build | Astro 7 SSG · plugins · LQIP · font subset · Pagefind |
-| Runtime | `dist` 静态资源 · Vercel CDN · Browser（Swup / Svelte islands） |
+| **Authoring** | `src/config` · `src/content` · 旁路 `Firefly_docs` |
+| **Build** | Astro 7 SSG · remark/rehype · LQIP · font subset · Pagefind |
+| **Runtime** | `dist` · Vercel CDN · Browser（Swup / Svelte islands） |
 
-<!-- ![tech-stack](assets/images/readme/tech-stack.png) -->
+```text
+Authoring → Astro build → static dist → Vercel → Browser
+```
 
-**栈**：Astro 7 · Svelte 5 · Tailwind 4 · TypeScript · pnpm · Biome · Pagefind · Swup · Vercel  
+**栈：** Astro 7 · Svelte 5 · Tailwind 4 · TypeScript · pnpm · Biome · Pagefind · Swup · Vercel  
 
-出图 Prompt：`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`
+出图 Prompt（可选）：[`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`](./docs/outputs/prd/readme-diagrams/readme-image-prompts.md)
 
 ---
 
 ## 主链路
-
-<!-- ![workflow](assets/images/readme/workflow.png) -->
 
 ```text
 改 config / content
@@ -131,10 +207,10 @@ pnpm dev       # http://localhost:4321
   → 本地校验（目视 + pnpm check）
   → git push
   → Vercel Ready
-  → 打开 https://fork-firefly.vercel.app 再核
+  → https://fork-firefly.vercel.app 再核
 ```
 
-细则：`docs/agents/workflow.md` · `AGENTS.md`
+细则：[`docs/agents/workflow.md`](./docs/agents/workflow.md) · [`AGENTS.md`](./AGENTS.md)
 
 ---
 
@@ -146,19 +222,19 @@ pnpm dev       # http://localhost:4321
 ```text
 Firefly/
 ├── src/
-│   ├── config/          # 站点开关与文案
-│   ├── content/         # posts · dynamic · spec
-│   ├── components/      # UI
-│   ├── layouts/         # Layout · MainGridLayout
-│   ├── pages/           # 路由
-│   ├── plugins/         # remark/rehype
+│   ├── config/           # 站点开关与文案
+│   ├── content/          # posts · dynamic · spec
+│   ├── components/
+│   ├── layouts/
+│   ├── pages/
+│   ├── plugins/
 │   └── utils/
 ├── public/
 ├── scripts/
-├── docs/                # agents · adr · glossary · knowledge · outputs
-├── assets/images/readme # README 配图（契约名）
+├── docs/                 # agents · adr · glossary · knowledge · outputs
+├── assets/images/readme  # README 契约配图
 ├── AGENTS.md · CONTEXT.md · LANGUAGES.md · CLAUDE.md
-├── preview-readme.html  # README 本地预览壳
+├── preview-readme.html   # README 本地预览壳 · 端口 8090
 └── vercel.json
 ```
 
@@ -169,12 +245,13 @@ Firefly/
 ## 路线图
 
 | 项 | 状态 |
-|----|------|
-| Phase A 治理 + 品牌 + Vercel | 完成 |
-| Phase B README 结构 / Prompt / 预览壳 | 进行中 |
-| README 契约配图落盘 | 待你出图 |
-| Showcase 真机截图 | 待补 |
-| 替换 demo 文 / 头像 / 关无用页面 | 待办 |
+|----|:----:|
+| Phase A 治理 + 品牌 + Vercel | ✅ |
+| Phase B README 结构 / Prompt / 预览壳 | ✅ |
+| README 对齐 zhouli / agent-cfo 版式 | ✅ |
+| `banner.png` / features / architecture 出图 | ⏳ |
+| Showcase 真机截图落盘 | ⏳ |
+| 替换 demo 文 / 头像（其他 plan） | — |
 
 ---
 
@@ -188,13 +265,18 @@ Firefly/
 | [`docs/knowledge/firefly-ops.md`](./docs/knowledge/firefly-ops.md) | Day-2 运维 |
 | [`docs/glossary/frontend-ui.md`](./docs/glossary/frontend-ui.md) | UI 术语 |
 | [`docs/outputs/prd/readme-diagrams/`](./docs/outputs/prd/readme-diagrams/) | README 配图 brief / prompts |
-| 旁路 `../Firefly_docs/` | 官方配置指南（工作区） |
+| 旁路 `../Firefly_docs/` | Firefly 官方配置指南 |
 | [`README.en.md`](./README.en.md) | 上游英文说明（保留） |
+
+风格参照：
+
+- [Aafff623/fork-zhouli-translator](https://github.com/Aafff623/fork-zhouli-translator) — fork 叙事 · Showcase 三列表 · 居中导航  
+- [San-Y108/agent-cfo](https://github.com/San-Y108/agent-cfo) — 边界表 · for-the-badge · 演示分层  
 
 ---
 
 ## 致谢与许可
 
 - 主题：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly) · 源自 [fuwari](https://github.com/saicaca/fuwari)  
-- 行为准则灵感：[andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)  
+- 行为准则：[andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)  
 - License：MIT（见 `LICENSE`）。二次开发请保留上游版权声明。
