@@ -53,6 +53,13 @@ html {
     scroll-behavior: smooth;
 }
 
+/* 桌面端约 85% 视觉密度：缩小 rem 基准，配合内容区 78vw */
+@media (min-width: 1280px) {
+    html {
+        font-size: 85%;
+    }
+}
+
 /* 页面顶部渐变高光效果 */
 .top-gradient-highlight {
     position: fixed;
