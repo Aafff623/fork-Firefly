@@ -25,12 +25,16 @@
 
 | 章节 | 配图节点 | 状态 |
 |---|---|---|
-| Header | `banner.png` | 版式已对齐；图待出 |
+| Header | `banner.png` | ✅ 已挂载 |
 | 为什么 | — | 边界表已写 |
-| 功能 | `features.png` | 表已写；图待出 |
+| 功能 | `features.png` | 表已写；图待出（Prompt §二.1） |
 | Preview | README 壳 8090 | 声明无 Gallery |
-| Showcase | `showcase-home/post/dynamic/archive.png` | ✅ Playwright 已截（本地 4321） |
-| 快速开始 / 架构 / 主链路 / 目录 / 路线图 / 文档 | — | 已维护 |
+| Showcase | `showcase-*.png`（6 张：home/post/dynamic/archive/about/gallery） | ✅ Playwright 已截满两行三列，勿生图 |
+| 架构 | `architecture.png` | 图待出（Prompt §二.2；tech-stack 并入此图） |
+| 主链路 | `workflow.png` | 图待出（Prompt §三） |
+| 快速开始 / 目录 / 路线图 / 文档 | — | 已维护 |
+
+**生图唯一入口**：[`readme-image-prompts.md`](./readme-image-prompts.md)（复制 Prompt → GPT）
 
 ## 色板（4–6 色）
 
@@ -51,5 +55,6 @@
 - [x] README 居中 Header + fork 说明 + Showcase 三列表
 - [x] 参照仓链接写入文档节
 - [x] Showcase Playwright 截图落盘并写入 README
-- [ ] banner / features / architecture 说明图
+- [x] banner.png 已挂 README Header
+- [ ] features / architecture / workflow 说明图
 - [x] 本地 `8090` 预览壳 OK → push → 核 GitHub README 渲染

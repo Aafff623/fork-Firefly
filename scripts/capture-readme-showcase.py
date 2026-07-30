@@ -12,6 +12,8 @@ SHOTS = [
     ("showcase-post.png", "/posts/guide/firefly-layout-system/"),
     ("showcase-dynamic.png", "/dynamic/"),
     ("showcase-archive.png", "/archive/"),
+    ("showcase-about.png", "/about/"),
+    ("showcase-gallery.png", "/gallery/"),
 ]
 
 

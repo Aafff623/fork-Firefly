@@ -36,12 +36,9 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&labelColor=0f172a" alt="License">
 </p>
 
-<!-- 出图后取消下一行注释：assets/images/readme/banner.png -->
-<!--
 <p align="center">
   <img src="assets/images/readme/banner.png" alt="threetwoa's blog banner" width="100%">
 </p>
--->
 
 <p align="center">
   <a href="#为什么">为什么</a>
@@ -119,7 +116,7 @@ python -m http.server 8090
 
 ## Showcase · 演示
 
-推荐路径：首页 → 文章 →（可选）动态 / 归档。
+推荐路径：首页 → 文章 → 动态 → 归档 / 关于 / 图库。
 
 线上：https://fork-firefly.vercel.app
 
@@ -153,8 +150,18 @@ python -m http.server 8090
       <sub>按年折叠 · 分类导航</sub><br>
       <a href="https://fork-firefly.vercel.app/archive/">打开归档</a>
     </td>
-    <td></td>
-    <td></td>
+    <td width="33%" valign="top" align="center">
+      <a href="assets/images/readme/showcase-about.png"><img alt="关于" src="assets/images/readme/showcase-about.png" width="100%"></a>
+      <br><strong>关于</strong><br>
+      <sub>个人页 · 品牌与介绍</sub><br>
+      <a href="https://fork-firefly.vercel.app/about/">打开关于</a>
+    </td>
+    <td width="33%" valign="top" align="center">
+      <a href="assets/images/readme/showcase-gallery.png"><img alt="图库" src="assets/images/readme/showcase-gallery.png" width="100%"></a>
+      <br><strong>图库</strong><br>
+      <sub>相册网格 · 视觉内容</sub><br>
+      <a href="https://fork-firefly.vercel.app/gallery/">打开图库</a>
+    </td>
   </tr>
 </table>
 
@@ -203,7 +210,7 @@ Authoring → Astro build → static dist → Vercel → Browser
 
 **栈：** Astro 7 · Svelte 5 · Tailwind 4 · TypeScript · pnpm · Biome · Pagefind · Swup · Vercel  
 
-出图 Prompt（可选）：[`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`](./docs/outputs/prd/readme-diagrams/readme-image-prompts.md)
+生图 Prompt（唯一入口，复制即用）：[`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`](./docs/outputs/prd/readme-diagrams/readme-image-prompts.md)
 
 ---
 
@@ -258,7 +265,8 @@ Firefly/
 | Phase B README 结构 / Prompt / 预览壳 | ✅ |
 | README 对齐 zhouli / agent-cfo 版式 | ✅ |
 | Showcase Playwright 截图落盘 | ✅ |
-| `banner.png` / features / architecture 出图 | ⏳ |
+| `banner.png` | ✅ |
+| `features.png` / `architecture.png` / `workflow.png` 出图 | ⏳ |
 | 替换 demo 文 / 头像（其他 plan） | — |
 
 ---
@@ -272,7 +280,7 @@ Firefly/
 | [`LANGUAGES.md`](./LANGUAGES.md) | 共享用词 |
 | [`docs/knowledge/firefly-ops.md`](./docs/knowledge/firefly-ops.md) | Day-2 运维 |
 | [`docs/glossary/frontend-ui.md`](./docs/glossary/frontend-ui.md) | UI 术语 |
-| [`docs/outputs/prd/readme-diagrams/`](./docs/outputs/prd/readme-diagrams/) | README 配图 brief / prompts |
+| [`docs/outputs/prd/readme-diagrams/readme-image-prompts.md`](./docs/outputs/prd/readme-diagrams/readme-image-prompts.md) | README 生图 Prompt（按三模块） |
 | 旁路 `../Firefly_docs/` | Firefly 官方配置指南 |
 | [`README.en.md`](./README.en.md) | 上游英文说明（保留） |
 
