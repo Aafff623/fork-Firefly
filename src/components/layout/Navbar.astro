@@ -305,19 +305,9 @@ function loadButtonScript() {
         }
     }
 
-    let themeSwitchBtn = document.getElementById("scheme-switch");
-    if (themeSwitchBtn) {
-        themeSwitchBtn.onclick = function () {
-            let themePanel = document.getElementById("theme-mode-panel");
-            if (themePanel) {
-                themePanel.classList.toggle("float-panel-closed");
-            }
-        };
-    }
-
     document.addEventListener("click", function(event) {
-        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel", "theme-mode-panel"];
-        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch", "scheme-switch"];
+        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel"];
+        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch"];
 
         panels.forEach((id, index) => {
             const panel = document.getElementById(id);
