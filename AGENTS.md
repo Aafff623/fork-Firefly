@@ -1,34 +1,73 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
+> **Output Style**: `humanizer-output-style` skill — 统一语气与去 AI 味。路径：`~/.claude/skills/humanizer-output-style/SKILL.md`  
+> **Windows Rules**: `.cursor/rules/windows-path-discipline.mdc` · `windows-shell-discipline.mdc`  
+> **Answer Format**: `.cursor/rules/answer-format.mdc`  
+> **Commit History**: `.cursor/rules/commit-history.mdc`  
+> **Karpathy**: `.cursor/rules/karpathy-guidelines.mdc`
 
-Firefly is an Astro 7 site with Svelte islands and TypeScript configuration. Main source code lives in `src/`: routes in `src/pages`, layouts in `src/layouts`, reusable UI in `src/components`, styles in `src/styles`, content in `src/content`, helpers in `src/utils`, and Markdown/HTML plugins in `src/plugins`. Site configuration is split across `src/config` with matching type definitions in `src/types`; prefer imports from `@/config` when available. Static files served directly belong in `public`, source-managed images in `src/assets`, docs in `docs` and `Firefly-Docs`, and automation in `scripts`.
+跨工具 Agent 硬约束与任务流摘要。人读运行说明见 `README.md`；领域事实见 `CONTEXT.md`；用词见 `LANGUAGES.md`。
 
-## Build, Test, and Development Commands
+## 单一事实源
 
-Use `pnpm`; the `preinstall` script enforces it.
+| 类型 | 入口 |
+|---|---|
+| 领域 / 硬约束 | `CONTEXT.md` |
+| 共享用词 | `LANGUAGES.md` |
+| 任务流细节 | `docs/agents/workflow.md` |
 
-- `pnpm dev` or `pnpm start`: run the local Astro dev server.
-- `pnpm check`: run Astro diagnostics.
-- `pnpm type-check`: run TypeScript with `--noEmit`.
-- `pnpm format`: format `src` with Biome.
-- `pnpm lint`: run Biome checks and safe fixes on `src`.
-- `pnpm build`: generate icons, LQIPs, the Astro build, font subsets, and Pagefind search output in `dist`.
-- `pnpm preview`: preview the production build locally.
-- `pnpm new-post`: scaffold a new content post.
+禁止再维护 `docs/agents/language.md` / `docs/agents/context.md`。
 
-## Coding Style & Naming Conventions
+## 路径表
 
-Biome is the formatter and linter. It uses tabs for indentation and double quotes for JavaScript/TypeScript strings. Keep Astro and Svelte components in `PascalCase` (`PostCard.astro`, `Search.svelte`), config modules in `camelCase` ending with `Config.ts`, and utilities in descriptive kebab case such as `date-utils.ts`. Keep `src/types` aligned with `src/config`. Avoid unrelated formatting churn.
+| 用途 | 路径 |
+|---|---|
+| 产品代码 | `src/` |
+| 站点配置 | `src/config/` |
+| 文章 | `src/content/posts/` |
+| 官方配置文档（旁路） | `../Firefly_docs/` |
+| Issue（本地） | `.scratch/<feature>/` |
+| PRD / handoff / commit-history | `docs/outputs/{prd,handoff,commit-history}/`（有产物再建） |
+| 上游 AGENTS 备份 | `.scratch/project-init-backup/` |
 
-## Testing Guidelines
+## 硬约束
 
-There is no dedicated unit-test framework configured. Before submitting changes, run `pnpm check`, `pnpm type-check`, and `pnpm build` for rendering, content, or generated asset work. For visual or interactive changes, verify with `pnpm dev` or `pnpm preview` and include screenshots in the PR. Name future tests near the feature they cover, using the local file name as the stem.
+1. **KISS / YAGNI / 外科手术式修改**：只改任务所需行；不顺手重构。
+2. **PRD 门禁**：未批准的业务 theme 不写大规模功能代码。
+3. **交付闭环**：本地 `pnpm dev` 预览 → 本地校验 → 你确认后 `push` → 等 Vercel → **再核线上**。未本地验收不得 push；未看线上不得宣称部署完成。细则见 `docs/agents/workflow.md`。
+4. **密钥**：不入库。
+5. **覆盖冲突**：本仓治理文件与上游主题说明冲突时，以本仓 `AGENTS.md` / `CONTEXT.md` 为准；上游原文已备份。
+6. **资产禁止空壳**：`CONTEXT` / `LANGUAGES` / `docs/agents/*` / `docs/glossary/*` / `docs/knowledge/*` 必须有可消费正文；缺内容时先调研再写盘，禁止只建空目录或一句话占位。
 
-## Commit & Pull Request Guidelines
+## 日常命令
 
-Use Conventional Commits, matching the current history: `feat: ...`, `fix: ...`, and `chore: ...`. Keep commits and PRs focused on one concern. PRs should include a concise summary, linked issues when relevant, validation commands run, and screenshots for UI changes. Discuss major features or design changes in an issue or discussion before implementation.
+```bash
+pnpm install   # 若 npmmirror 404：加 --registry https://registry.npmjs.org
+pnpm dev
+pnpm check && pnpm type-check
+pnpm build
+pnpm new-post <slug>
+pnpm new-d <content>
+```
 
-## Security & Configuration Tips
+## Agent skills
 
-Do not commit secrets, tokens, or service keys in config files. Keep deployment-specific settings in the target platform environment, and review generated files such as `dist`, `src/constants/lqips.json`, and `src/constants/icons.ts` before committing them.
+### Issue tracker
+
+本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+五种 canonical 标签（同名映射）。见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+单上下文：`CONTEXT.md` + `docs/adr/`。见 `docs/agents/domain.md`。
+
+## 任务流摘要
+
+```text
+Issue → (可选 report) → PRD(draft) → 你批准 → handoff → 实施 → Review → commit-history → archive
+```
+
+细则：`docs/agents/workflow.md` · 交付：`deliver.md` · 归档：`archive.md`

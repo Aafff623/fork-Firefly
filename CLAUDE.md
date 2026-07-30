@@ -1,84 +1,54 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **Output Style**: `humanizer-output-style` — `~/.claude/skills/humanizer-output-style/SKILL.md`  
+> **Windows / Answer / Commit / Karpathy rules**: `.cursor/rules/*.mdc`（alwaysApply）
 
-## Project Overview
+本文件是维护协议与加载顺序；硬约束以 `AGENTS.md` 为准，领域以 `CONTEXT.md` 为准。
 
-Firefly is a feature-rich static blog theme built on **Astro 7** with **Svelte 5** for interactive components. It's a fork of [Fuwari](https://github.com/saicaca/fuwari) extended with extensive features. Primary language is Chinese (Simplified) with i18n for en, zh_TW, ja, ko, ru.
+## 三层加载
 
-## Commands
+1. **Rules**：`.cursor/rules/`（Windows、回答格式、commit-history、Karpathy）
+2. **仓级**：`AGENTS.md` → `CONTEXT.md` → `LANGUAGES.md`
+3. **主题文档**：工作区 `../Firefly_docs/`（配置怎么改）；上游主题行为以代码为准
+
+## 本仓是什么
+
+CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。线上：https://fork-firefly.vercel.app
+
+## 偏好归档
+
+- 部署首选 **Vercel**；Cloudflare 存储能力非默认依赖。
+- 配置优先于改布局；大文件（`Layout.astro` 等）非必要不拆。
+- 中文沟通；代码与提交 Conventional Commits。
+- project-init 与上游文档冲突时：**覆盖式更新**本仓治理文件，并在对话里声明冲突点。
+
+## Agent skills
+
+### Issue tracker
+
+本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+五种 canonical 标签。见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+单上下文。见 `docs/agents/domain.md`。
+
+## 常用命令
 
 | Command | Purpose |
 |---|---|
-| `pnpm dev` | Dev server at `localhost:4321` |
-| `pnpm build` | Production build (LQIPs → Astro build → font subsetting → Pagefind indexing) |
-| `pnpm preview` | Preview production build |
-| `pnpm check` | `astro check` for type/error checking |
-| `pnpm type-check` | `tsc --noEmit --isolatedDeclarations` |
-| `pnpm lint` | Biome lint + auto-fix |
-| `pnpm format` | Biome format |
-| `pnpm new-post <filename>` | Scaffold a new blog post |
-| `pnpm new-dynamic` (`new-d`) | Scaffold a new dynamic (microblog) entry |
-| `pnpm lqips` | Regenerate LQIP data into `src/constants/lqips.json` |
+| `pnpm dev` | 本地开发 |
+| `pnpm build` | 生产构建 |
+| `pnpm check` / `pnpm type-check` | 诊断 |
+| `pnpm new-post` / `pnpm new-d` | 新文章 / 动态 |
 
-Package manager is **pnpm** (enforced). Node.js >= 22 required.
+## 架构速记
 
-## Architecture
+- Astro 静态 + Svelte islands + Swup
+- 配置：`src/config`；内容：`posts` / `dynamic` / `spec`
+- 布局：`Layout.astro` 壳 + `MainGridLayout.astro` 网格
 
-### Astro + Svelte Hybrid
-
-- `.astro` components for static content and layouts
-- `.svelte` components for interactive UI (search, settings, pagination, archive) — mounted with `client:load` or `client:visible`
-- Swup.js handles SPA-like page transitions with multiple container targets
-
-### Configuration-Driven
-
-All features are toggled/configured via TypeScript files in `src/config/`, exported through the barrel at `src/config/index.ts`. Key configs:
-
-- `siteConfig.ts` — core site settings, theme, pagination
-- `sidebarConfig.ts` — sidebar layout (left/right/both, widget ordering)
-- `commentConfig.ts`, `analyticsConfig.ts`, `fontConfig.ts`, etc.
-
-### Layout System
-
-- `Layout.astro` — base HTML shell (head, body, theme init, analytics, Swup hooks)
-- `MainGridLayout.astro` — full page grid with sidebar(s), navbar, wallpaper, footer
-
-### Content Collections
-
-Defined in `src/content.config.ts`:
-- `posts` — blog posts (`.md`/`.mdx`) with frontmatter: title, published, tags, category, draft, pinned, password, comment, etc.
-- `spec` — special pages (about, guestbook)
-- `dynamic` — microblog entries (`.md`) with frontmatter: published, pinned, location
-
-### Key Directories
-
-- `src/components/` — organized by domain: `analytics/`, `comment/`, `common/`, `controls/`, `features/`, `layout/`, `misc/`, `pages/`, `widget/`
-- `src/plugins/` — 15 custom remark/rehype plugins (Mermaid, PlantUML, KaTeX, GitHub cards, reading time, wiki links, etc.)
-- `src/i18n/` — translation keys in `i18nKey.ts`, language files in `languages/*.ts`, lookup via `translation.ts`
-- `src/utils/` — content sorting, crypto (encrypted posts), date formatting, image processing/LQIP, TOC generation
-- `src/pages/` — Astro file-based routing
-- `scripts/` — build-time utilities (`generate-lqips.ts`, `subset-fonts.ts`, `new-post.js`, `new-dynamic.js`)
-
-### Path Aliases (tsconfig.json)
-
-`@components/*`, `@assets/*`, `@constants/*`, `@utils/*`, `@i18n/*`, `@layouts/*` → `./src/<dir>/*`; `@/*` → `./src/*`
-
-## Code Style
-
-- **Biome** enforces: tab indentation, double quotes, recommended lint rules
-- Relaxed rules for `.svelte`/`.astro`/`.vue` files (`useConst`, `useImportType`, `noUnusedVariables`, `noUnusedImports` off)
-- Commit convention: **Conventional Commits** (`feat:`, `fix:`, `chore:`, etc.)
-
-## Build Pipeline
-
-Multi-step: `scripts/generate-lqips.ts` → `astro build` → `scripts/subset-fonts.ts` → `pagefind --site dist`
-
-LQIP data is generated into `src/constants/lqips.json` and committed — regenerate with `pnpm lqips`. Icon data lives in `src/constants/icons-data.json` (committed, Biome-ignored, consumed by `src/components/common/Icon.svelte`) but has no generator script in the current build.
-
-## Deployment
-
-- **Vercel** (default, `vercel.json`)
-- **Cloudflare Workers** (`wrangler.jsonc`, set `CF_WORKERS` env var)
-- Static output to `dist/`
-
+上游贡献者指南原文备份：`.scratch/project-init-backup/`。

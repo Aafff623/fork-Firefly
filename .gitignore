@@ -41,3 +41,8 @@ package/
 .codex*
 .claude
 .mimocode
+.vercel
+
+# local agent scratch
+.scratch/
+

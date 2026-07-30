@@ -1,0 +1,40 @@
+---
+description: Windows 路径强制规范，防止 ENOENT 和路径转义错误
+alwaysApply: true
+---
+
+# Windows Path Discipline
+
+在 Windows 环境下，所有文件操作（Read / Write / Edit / 任何涉及 file_path 的工具）必须严格遵守以下规则：
+
+## 强制规则
+- **永远使用反斜杠 `\`**，禁止正斜杠 `/`
+- 正确示例：`D:\repos\project\src\file.tsx`
+- 错误示例：`D:/repos/project/src/file.tsx` 或 `/d/repos/project/src/file.tsx`
+
+## MINGW / Git Bash 路径转换（必须主动做）
+遇到 `/c/`、`/d/`、`/s/` 这类路径时，立即转换：
+
+| Git Bash 格式       | Windows 原生格式          |
+|---------------------|---------------------------|
+| `/c/Users/name/`    | `C:\Users\name\`          |
+| `/d/repos/project/` | `D:\repos\project\`       |
+| `/s/work/code/`     | `S:\work\code\`           |
+| `/mnt/c/Windows/`   | `C:\Windows\`             |
+
+转换步骤：
+1. 取第一个字母并大写 + 加冒号
+2. 剩余所有 `/` 换成 `\`
+
+## 其他要求
+- 优先使用绝对路径
+- 相对路径先用 `pwd -W`（Git Bash）拿到 Windows 格式再拼接
+- UNC 路径用 `\\server\share\...`
+- 路径里有空格直接写，不要手动加引号（工具会处理）
+- 禁止把 `$HOME`、`%USERPROFILE%` 直接塞进 file_path
+
+## 报错时处理流程
+一旦出现 “no such file or directory” / ENOENT：
+1. 检查是否用了正斜杠或 MINGW 格式
+2. 转换后重试
+3. 必要时让用户执行 `pwd -W` 确认当前目录

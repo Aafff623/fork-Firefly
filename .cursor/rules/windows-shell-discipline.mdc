@@ -1,0 +1,25 @@
+---
+description: Windows 下 Shell 命令路径 quoting 和重定向规范
+alwaysApply: true
+---
+
+# Windows Shell Discipline
+
+在 Windows 上执行任何 Shell 命令时，必须遵守：
+
+## 路径 quoting
+- 带空格或反斜杠的路径**必须加双引号**
+- 正确：`cd "C:\Users\xxx\My Project" && git status`
+- 错误：`cd C:\Users\xxx\My Project && git status`（会被拆掉）
+
+## 重定向
+- 禁止使用 `/dev/null`
+- 一律改用 `nul`
+- 正确：`npm install >nul 2>&1`
+- 错误：`npm install >/dev/null 2>&1`
+
+## 其他注意点
+- `cd` 之后尽量不要直接接复杂 pipe（容易出 FINDSTR 类错误）
+- 常规工具（git、npm、node、docker）优先用 Bash 风格
+- 涉及注册表、.NET、系统服务时改用 PowerShell
+- 路径里有空格或特殊字符时，宁可多加引号也不要省
