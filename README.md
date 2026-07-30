@@ -125,32 +125,40 @@ python -m http.server 8090
 
 ### Showcase — Blog
 
-> 截图落盘 `assets/images/readme/showcase-*.png` 后，取消表格内注释或替换占位说明。规范见 `docs/outputs/prd/readme-diagrams/readme-image-prompts.md`（`method: screenshot`）。
-
 <table>
   <tr>
     <td width="33%" valign="top" align="center">
-      <!-- <a href="assets/images/readme/showcase-home.png"><img alt="首页" src="assets/images/readme/showcase-home.png" width="100%"></a> -->
-      <strong>首页</strong><br>
+      <a href="assets/images/readme/showcase-home.png"><img alt="首页" src="assets/images/readme/showcase-home.png" width="100%"></a>
+      <br><strong>首页</strong><br>
       <sub>品牌标题 · 列表/网格 · 双侧栏 · 壁纸横幅</sub><br>
       <a href="https://fork-firefly.vercel.app/">打开首页</a>
-      <br><sub>🖼 待截图 → <code>showcase-home.png</code></sub>
     </td>
     <td width="33%" valign="top" align="center">
-      <strong>文章页</strong><br>
+      <a href="assets/images/readme/showcase-post.png"><img alt="文章页" src="assets/images/readme/showcase-post.png" width="100%"></a>
+      <br><strong>文章页</strong><br>
       <sub>封面 / TOC / Markdown 扩展 / 上下篇</sub><br>
       <a href="https://fork-firefly.vercel.app/posts/guide/firefly-layout-system/">打开示例文</a>
-      <br><sub>🖼 待截图 → <code>showcase-post.png</code></sub>
     </td>
     <td width="33%" valign="top" align="center">
-      <strong>动态</strong><br>
+      <a href="assets/images/readme/showcase-dynamic.png"><img alt="动态" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
+      <br><strong>动态</strong><br>
       <sub>碎碎念时间线（可接 Memos）</sub><br>
       <a href="https://fork-firefly.vercel.app/dynamic/">打开动态</a>
-      <br><sub>🖼 待截图 → <code>showcase-dynamic.png</code></sub>
     </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top" align="center">
+      <a href="assets/images/readme/showcase-archive.png"><img alt="归档" src="assets/images/readme/showcase-archive.png" width="100%"></a>
+      <br><strong>归档</strong><br>
+      <sub>按年折叠 · 分类导航</sub><br>
+      <a href="https://fork-firefly.vercel.app/archive/">打开归档</a>
+    </td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 
+截图：本地 `http://127.0.0.1:4321` · Playwright · `scripts/capture-readme-showcase.py`  
 版式参考：[合乎周礼 Showcase](https://github.com/Aafff623/fork-zhouli-translator#showcase--landing-page-) · [AgentCFO 演示](https://github.com/San-Y108/agent-cfo#%E6%BC%94%E7%A4%BA)
 
 ---
@@ -249,8 +257,8 @@ Firefly/
 | Phase A 治理 + 品牌 + Vercel | ✅ |
 | Phase B README 结构 / Prompt / 预览壳 | ✅ |
 | README 对齐 zhouli / agent-cfo 版式 | ✅ |
+| Showcase Playwright 截图落盘 | ✅ |
 | `banner.png` / features / architecture 出图 | ⏳ |
-| Showcase 真机截图落盘 | ⏳ |
 | 替换 demo 文 / 头像（其他 plan） | — |
 
 ---

@@ -29,7 +29,7 @@
 | 为什么 | — | 边界表已写 |
 | 功能 | `features.png` | 表已写；图待出 |
 | Preview | README 壳 8090 | 声明无 Gallery |
-| Showcase | `showcase-home/post/dynamic.png` | 三列表+线上链接；截图待补 |
+| Showcase | `showcase-home/post/dynamic/archive.png` | ✅ Playwright 已截（本地 4321） |
 | 快速开始 / 架构 / 主链路 / 目录 / 路线图 / 文档 | — | 已维护 |
 
 ## 色板（4–6 色）
