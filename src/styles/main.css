@@ -274,6 +274,11 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
         background-color: var(--card-bg-transparent) !important;
     }
 
+    /* full 透明模式下去掉导航栏底条（同层更高优先级覆盖上一条） */
+    .wallpaper-transparent #navbar[data-transparent-mode="full"] > div {
+        background-color: transparent !important;
+    }
+
     /* Overlay 模式下，滚动后提高导航栏背景模糊度，增强与正文区分 */
     .wallpaper-transparent #navbar.navbar-sticky-shadow > div {
         backdrop-filter: blur(20px) !important;

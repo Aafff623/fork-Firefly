@@ -6,6 +6,7 @@ import UmamiAnalytics from "@components/analytics/UmamiAnalytics.astro";
 import CodeGroupManager from "@components/features/CodeGroupManager.astro";
 import FancyboxManager from "@components/features/FancyboxManager.astro";
 import FontSetup from "@components/features/FontSetup.astro";
+import RepelText from "@components/features/RepelText.astro";
 import MusicManager from "@components/features/MusicManager.astro";
 import SakuraEffect from "@components/features/SakuraEffect.astro";
 import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
@@ -557,6 +558,8 @@ const siteLang = lang.replace("_", "-");
 
     <!-- Font Setup (Astro Font API) -->
     <FontSetup />
+    <!-- 文字斥力效果（agent-cfo DecodeHeadline 复刻），增强 .repel-text 元素 -->
+    <RepelText />
   </head>
   <body
     class="min-h-screen"

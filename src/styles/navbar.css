@@ -318,3 +318,8 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
         display: none !important;
     }
 }
+
+/* full 透明模式下不显示滚动阴影（底层无背景，阴影会变成悬空色带） */
+#navbar[data-transparent-mode="full"].navbar-sticky-shadow>div {
+    box-shadow: none !important;
+}

@@ -1,0 +1,211 @@
+---
+/**
+ * RepelText — agent-cfo landing DecodeHeadline 的 vanilla 复刻
+ *
+ * 效果（对照 decode-headline.tsx + use-pointer-repel.ts）：
+ *   ① 逐词上浮淡入（opacity 0→1, y 14px→0, 词间 stagger）
+ *   ② 鼠标 110px 半径内字符被推开，离开后弹簧回位
+ *
+ * 用法：给目标元素加 class "repel-text"，本组件自动增强。
+ * Swup 换页后自动重新扫描；尊重 prefers-reduced-motion。
+ */
+---
+
+<style is:global>
+	.repel-text {
+		cursor: crosshair;
+	}
+
+	.repel-word {
+		display: inline-block;
+		white-space: nowrap;
+		opacity: 0;
+		transform: translateY(14px);
+		animation: repel-word-in 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+	}
+
+	.repel-char {
+		display: inline-block;
+		will-change: transform;
+	}
+
+	@keyframes repel-word-in {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.repel-word {
+			opacity: 1;
+			transform: none;
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	const REPEL_RADIUS = 110;
+	const REPEL_STRENGTH = 2.8;
+	const SPRING = 0.11;
+	const DAMPING = 0.78;
+	const WORD_STAGGER_MS = 55;
+
+	interface RepelState {
+		x: number;
+		y: number;
+		vx: number;
+		vy: number;
+		centerX: number;
+		centerY: number;
+	}
+
+	// 按「词」切分：连续拉丁/数字算一个词，CJK 逐字成词（中文没有空格分词）
+	function splitWords(text: string): string[] {
+		const words = [];
+		let buf = "";
+		const flush = () => {
+			if (buf) {
+				words.push(buf);
+				buf = "";
+			}
+		};
+		for (const ch of Array.from(text)) {
+			if (/\s/.test(ch)) {
+				flush();
+				continue;
+			}
+			if (/[㐀-鿿豈-﫿　-〿＀-￯]/.test(ch)) {
+				flush();
+				words.push(ch);
+			} else {
+				buf += ch;
+			}
+		}
+		flush();
+		return words;
+	}
+
+	function enhance(el: HTMLElement) {
+		if (el.dataset.repelDone) return;
+		const text = el.textContent || "";
+		if (!text.trim()) return;
+		el.dataset.repelDone = "1";
+
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const words = splitWords(text.trim());
+		el.textContent = "";
+
+		words.forEach((word, i) => {
+			const w = document.createElement("span");
+			w.className = "repel-word";
+			w.style.animationDelay = `${i * WORD_STAGGER_MS}ms`;
+			for (const ch of Array.from(word)) {
+				const c = document.createElement("span");
+				c.className = "repel-char";
+				c.textContent = ch;
+				w.appendChild(c);
+			}
+			el.appendChild(w);
+			if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+		});
+
+		if (reduced) return;
+
+		// ---- 指针斥力（use-pointer-repel.ts 移植）----
+		let elements: HTMLElement[] = [];
+		let states: RepelState[] = [];
+		let frame = 0;
+		const pointer = { x: -9999, y: -9999, active: false };
+
+		const measure = () => {
+			elements = Array.from(el.querySelectorAll(".repel-char"));
+			states = elements.map((element, index) => {
+				const rect = element.getBoundingClientRect();
+				const prev = states[index];
+				return {
+					x: prev?.x ?? 0,
+					y: prev?.y ?? 0,
+					vx: prev?.vx ?? 0,
+					vy: prev?.vy ?? 0,
+					centerX: rect.left + rect.width / 2 - (prev?.x ?? 0),
+					centerY: rect.top + rect.height / 2 - (prev?.y ?? 0),
+				};
+			});
+		};
+
+		const tick = () => {
+			let moving = false;
+			elements.forEach((element, index) => {
+				const s = states[index];
+				if (!s) return;
+				if (pointer.active) {
+					const dx = s.centerX + s.x - pointer.x;
+					const dy = s.centerY + s.y - pointer.y;
+					const dist = Math.hypot(dx, dy);
+					if (dist < REPEL_RADIUS && dist > 1) {
+						const force = (1 - dist / REPEL_RADIUS) * REPEL_STRENGTH;
+						s.vx += (dx / dist) * force;
+						s.vy += (dy / dist) * force;
+					}
+				}
+				s.vx += -s.x * SPRING;
+				s.vy += -s.y * SPRING;
+				s.vx *= DAMPING;
+				s.vy *= DAMPING;
+				s.x += s.vx;
+				s.y += s.vy;
+
+				const active =
+					Math.abs(s.vx) > 0.03 ||
+					Math.abs(s.vy) > 0.03 ||
+					(!pointer.active && (Math.abs(s.x) > 0.08 || Math.abs(s.y) > 0.08));
+				if (!pointer.active && !active) {
+					s.x = 0;
+					s.y = 0;
+					s.vx = 0;
+					s.vy = 0;
+				}
+				element.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0)`;
+				moving = moving || active;
+			});
+			frame = moving ? requestAnimationFrame(tick) : 0;
+		};
+
+		const start = () => {
+			if (!frame) frame = requestAnimationFrame(tick);
+		};
+
+		el.addEventListener("pointerenter", measure);
+		el.addEventListener("pointermove", (e: PointerEvent) => {
+			pointer.x = e.clientX;
+			pointer.y = e.clientY;
+			pointer.active = true;
+			start();
+		});
+		el.addEventListener("pointerleave", () => {
+			pointer.active = false;
+			start();
+		});
+
+		if (typeof ResizeObserver !== "undefined") {
+			new ResizeObserver(measure).observe(el);
+		}
+		measure();
+	}
+
+	function initRepelText() {
+		document.querySelectorAll(".repel-text").forEach((el) => enhance(el as HTMLElement));
+	}
+
+	initRepelText();
+
+	if (window.swup?.hooks) {
+		window.swup.hooks.on("content:replace", initRepelText);
+	} else {
+		document.addEventListener("swup:enable", () => {
+			window.swup.hooks.on("content:replace", initRepelText);
+		});
+	}
+</script>
