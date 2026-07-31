@@ -82,6 +82,41 @@
 	text-wrap: balance;
 }
 
+/* mkdirs 荧光笔：套在标题文字上的 inline span，background-size 0 → 100% 划过 */
+.post-card-title-hl {
+	background-image: linear-gradient(
+		to right,
+		oklch(0.88 0.08 var(--hue) / 0.8),
+		oklch(0.94 0.05 var(--hue) / 0.8)
+	);
+	background-size: 0 10px;
+	background-position: left bottom;
+	background-repeat: no-repeat;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+	transition: background-size 0.5s var(--ease-decelerate);
+}
+
+:root.dark .post-card-title-hl {
+	background-image: linear-gradient(
+		to right,
+		oklch(0.45 0.1 var(--hue) / 0.6),
+		oklch(0.38 0.08 var(--hue) / 0.6)
+	);
+}
+
+@media (hover: hover) {
+	/* 悬浮卡片：荧光笔整行划过 */
+	.post-card-wrapper:hover .post-card-title-hl {
+		background-size: 100% 10px;
+	}
+
+	/* 直接悬浮标题：收成 3px 细线（mkdirs 原版行为） */
+	.post-card-wrapper .post-card-title:hover .post-card-title-hl {
+		background-size: 100% 3px;
+	}
+}
+
 /* ---------- 元数据行：藏起图标盒子，改成编辑部小字行 ---------- */
 .post-card-wrapper .card-header-meta .meta-icon {
 	display: none;
@@ -214,6 +249,8 @@
 @media (prefers-reduced-motion: reduce) {
 	.post-card-wrapper,
 	.post-card-wrapper:hover,
+	.post-card-wrapper .post-card-title-hl,
+	.post-card-wrapper:hover .post-card-title-hl,
 	.post-card-wrapper .post-card-image img,
 	.post-card-wrapper:hover .post-card-image img,
 	.post-card-wrapper .post-card-enter-btn {
