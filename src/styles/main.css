@@ -53,11 +53,17 @@ html {
     scroll-behavior: smooth;
 }
 
-/* 桌面端约 85% 视觉密度：缩小 rem 基准，配合内容区 78vw */
+/* 桌面端略收内容密度：根字号与栏宽略小于 100%，但比 85%/78vw 更宽松 */
 @media (min-width: 1280px) {
     html {
-        font-size: 85%;
+        font-size: 90%;
     }
+}
+
+/* 横幅布局下套用透明参数：壁纸图受 opacity/blur，卡片走 .wallpaper-transparent */
+body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overlay):not(.wallpaper-fullscreen) img {
+    opacity: var(--overlay-opacity, 0.5);
+    filter: blur(var(--overlay-blur, 0px));
 }
 
 /* 页面顶部渐变高光效果 */

@@ -376,8 +376,11 @@ const siteLang = lang.replace("_", "-");
             }
           }
 
-          // 全屏透明模式
-          if (wallpaperMode === WALLPAPER_OVERLAY) {
+          // 全屏透明模式，或横幅模式套卡片透明
+          if (
+            wallpaperMode === WALLPAPER_OVERLAY ||
+            wallpaperMode === WALLPAPER_BANNER
+          ) {
             if (document.body) {
               document.body.classList.add("wallpaper-transparent");
             }

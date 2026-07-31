@@ -187,7 +187,7 @@ const hasAppearanceTab = $derived(
 );
 const hasWallpaperTab = $derived(
 	isWallpaperSwitchable ||
-		(wallpaperMode === WALLPAPER_OVERLAY && hasOverlaySettings) ||
+		hasOverlaySettings ||
 		((wallpaperMode === WALLPAPER_BANNER ||
 			wallpaperMode === WALLPAPER_FULLSCREEN) &&
 			hasBannerSettings),
@@ -804,8 +804,8 @@ $effect(() => {
 		</div>
 		{/if}
 
-		<!-- Overlay Settings Section -->
-		{#if wallpaperMode === WALLPAPER_OVERLAY && hasOverlaySettings}
+		<!-- Overlay Settings Section（横幅默认也保留透明参数调节） -->
+		{#if (wallpaperMode === WALLPAPER_OVERLAY || wallpaperMode === WALLPAPER_BANNER) && hasOverlaySettings}
 		<div class="">
 			<div class="section-title">
 				{i18n(I18nKey.overlaySettings)}

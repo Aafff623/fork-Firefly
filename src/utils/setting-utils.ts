@@ -325,9 +325,10 @@ export function applyWallpaperModeToDocument(
 		// 根据模式添加相应的CSS类
 		switch (mode) {
 			case WALLPAPER_BANNER:
-				body.classList.add("enable-banner");
-				showBannerMode(true);
-				break;
+			body.classList.add("enable-banner");
+			body.classList.add("wallpaper-transparent");
+			showBannerMode(true);
+			break;
 			case WALLPAPER_FULLSCREEN:
 				body.classList.add("no-banner-layout");
 				showFullscreenMode(animate);
@@ -372,6 +373,7 @@ function ensureWallpaperState(mode: WALLPAPER_MODE) {
 	switch (mode) {
 		case WALLPAPER_BANNER:
 			body.classList.add("enable-banner");
+			body.classList.add("wallpaper-transparent");
 			showBannerMode();
 			break;
 		case WALLPAPER_FULLSCREEN:
@@ -465,8 +467,8 @@ function showBannerMode(animate = false) {
 		}
 	}
 
-	// 移除透明效果（横幅模式不使用半透明）
-	adjustMainContentTransparency(false);
+	// 横幅为主，同时保留卡片玻璃透明
+	adjustMainContentTransparency(true);
 
 	// 调整导航栏透明度
 	const navbar = document.getElementById("navbar");
