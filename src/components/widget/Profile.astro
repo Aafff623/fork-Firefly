@@ -51,13 +51,14 @@ const className = Astro.props.class;
     <div class="text-center text-neutral-400 mb-2.5 transition">
       {profileConfig.bio}
     </div>
-        <div class="flex flex-wrap gap-2 justify-center mb-1">
+        <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-1">
             {profileConfig.links.length > 1 && profileConfig.links.map(item =>
                     {
                     const showName = item.showName;
-                    const className = showName 
-                        ? "btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95" 
-                        : "btn-regular rounded-lg h-10 w-10 active:scale-90";
+                    // Spotlight 风格：无底座图标行，灰色 → hover 主题色
+                    const className = showName
+                        ? "flex items-center gap-1.5 text-(--content-meta) transition hover:text-(--primary)"
+                        : "flex items-center text-(--content-meta) transition hover:text-(--primary)";
 
                     if (item.url.startsWith("mailto:")) {
                         const encodedEmail = Buffer.from(item.url.replace("mailto:", "")).toString("base64");
@@ -74,18 +75,19 @@ const className = Astro.props.class;
                                         `.replace(/\s+/g, " ").trim()
                                     },
                                     class={className}>
-                            <Icon is:inline name={item.icon} class="text-[1.5rem]"></Icon>
-                            {showName && item.name}
+                            <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
+                            {showName && <span class="text-sm">{item.name}</span>}
                         </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank" class={className}>
-                            <Icon is:inline name={item.icon} class="text-[1.5rem]"></Icon>
-                            {showName && item.name}
+                            <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
+                            {showName && <span class="text-sm">{item.name}</span>}
                         </a>
                     }
                     }
             )}
             {profileConfig.links.length == 1 && (function(item){
+                const singleClass = "flex items-center gap-1.5 text-(--content-meta) transition hover:text-(--primary)";
                 if (item.url.startsWith("mailto:")) {
                         const encodedEmail = Buffer.from(item.url.replace("mailto:", "")).toString("base64");
                         return <a rel="me" aria-label={item.name} href="#" data-encoded-email={encodedEmail} onclick={`
@@ -100,15 +102,15 @@ const className = Astro.props.class;
                                             }).call(this);
                                         `.replace(/\s+/g, " ").trim()
                                     },
-                                    class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
-                            <Icon is:inline name={item.icon} class="text-[1.5rem]"></Icon>
-                            {item.name}
+                                    class={singleClass}>
+                            <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
+                            <span class="text-sm">{item.name}</span>
                         </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank"
-                                            class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
-                                <Icon is:inline name={item.icon} class="text-[1.5rem]"></Icon>
-                                {item.name}
+                                            class={singleClass}>
+                                <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
+                                <span class="text-sm">{item.name}</span>
                             </a>
                     }
             })(profileConfig.links[0])}

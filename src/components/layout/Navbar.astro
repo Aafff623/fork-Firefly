@@ -85,6 +85,18 @@ let links: NavBarLink[] = navBarConfig.links
 	.map(filterLinks)
 	.filter((link): link is NavBarLink => link !== null);
 
+// Spotlight 风格导航：当前页面高亮（精确匹配首页，其余前缀匹配；子链接任一命中即高亮）
+const currentPath = Astro.url.pathname;
+function isLinkActive(l: NavBarLink): boolean {
+	if (l.external) return false;
+	if (l.children && l.children.length > 0) {
+		return l.children.some((c) => !c.external && isLinkActive(c));
+	}
+	const href = url(l.url);
+	if (href === url("/")) return currentPath === href;
+	return currentPath.startsWith(href);
+}
+
 // 处理导航栏 Logo 图片，image / url 类型支持亮暗色分别设置
 const logoConfig = siteConfig.navbar.logo;
 const logoAlt = logoConfig?.alt || siteConfig.title;
@@ -176,13 +188,13 @@ const logoVariants = await Promise.all(
                 </div>
             </a>
             <div class:list={[
-                "hidden lg:flex items-center space-x-1 col-start-2",
+                "hidden lg:flex items-center col-start-2 h-11 px-3 rounded-full bg-(--card-bg)/90 shadow-lg ring-1 ring-black/5 backdrop-blur-md dark:ring-white/10",
                 isNavbarMenuCentered
                     ? "justify-center"
                     : "justify-start pl-2"
             ]}>
                 {links.map((l) => {
-                    return <DropdownMenu link={l} />;
+                    return <DropdownMenu link={l} isActive={isLinkActive(l)} />;
                 })}
             </div>
             <div class="flex col-start-3 justify-self-end">
