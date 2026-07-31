@@ -10,6 +10,7 @@
 @import './tags.css';
 @import './display-settings.css';
 @import './categories.css';
+@import './post-card.css';
 
 @plugin '@tailwindcss/typography';
 

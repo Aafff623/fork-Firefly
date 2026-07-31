@@ -1,0 +1,223 @@
+/* ===== 文章卡片质感升级（feat/card-craft） =====
+ * 只作用于 .post-card-wrapper 及其内部，不影响 card-base 的其他使用者。
+ * 兼容：list-mode / grid-mode / masonry、wallpaper-transparent、dark、enable-card-border。
+ */
+
+/* ---------- 卡片本体：分层阴影 + 顶部内高光 + hover 上浮 ---------- */
+.post-card-wrapper {
+	transition:
+		transform 0.35s var(--ease-decelerate),
+		box-shadow 0.35s var(--ease-decelerate),
+		border-color 0.3s ease,
+		background-color 0.15s ease;
+	/* 1px 边缘细线 + 低扩散投影，轮廓干净不发灰 */
+	box-shadow:
+		0 0 0 1px oklch(0.3 0.03 var(--hue) / 0.05),
+		0 1px 2px oklch(0.3 0.04 var(--hue) / 0.05);
+}
+
+/* PostPage 的 #post-list-container > * 过渡规则会覆盖上面的 transition（ID 优先级），
+ * 这里用同等优先级补回，并保留它布局切换用的 opacity 过渡 */
+#post-list-container > .post-card-wrapper {
+	transition:
+		opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+		transform 0.35s var(--ease-decelerate),
+		box-shadow 0.35s var(--ease-decelerate),
+		border-color 0.3s ease,
+		background-color 0.15s ease;
+}
+
+:root.dark .post-card-wrapper {
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.06),
+		0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+@media (hover: hover) {
+	.post-card-wrapper:hover {
+		transform: translateY(-3px);
+		box-shadow:
+			0 0 0 1px oklch(0.55 0.08 var(--hue) / 0.14),
+			0 1px 2px oklch(0.3 0.06 var(--hue) / 0.06),
+			0 12px 32px -12px oklch(0.4 0.09 var(--hue) / 0.22);
+	}
+
+	:root.dark .post-card-wrapper:hover {
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.09),
+			0 2px 4px rgba(0, 0, 0, 0.3),
+			0 16px 40px -16px rgba(0, 0, 0, 0.55);
+	}
+
+	/* 开启卡片边框时，hover 让边框染上主题色 */
+	.enable-card-border .post-card-wrapper:hover {
+		border-color: oklch(0.7 0.1 var(--hue) / 0.35);
+	}
+}
+
+.post-card-wrapper:active {
+	transform: translateY(-1px) scale(0.997);
+}
+
+/* 极淡噪点，去掉纯数字平面感；盖在整卡（含封面）上统一质感 */
+.post-card-wrapper::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	pointer-events: none;
+	border-radius: inherit;
+	opacity: 0.03;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	background-size: 128px 128px;
+}
+
+:root.dark .post-card-wrapper::after {
+	opacity: 0.05;
+}
+
+/* ---------- 标题：去模板竖条后的排版微调 ---------- */
+.post-card-wrapper .post-card-title {
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+}
+
+/* ---------- 元数据行：藏起图标盒子，改成编辑部小字行 ---------- */
+.post-card-wrapper .card-header-meta .meta-icon {
+	display: none;
+}
+
+.post-card-wrapper .card-header-meta {
+	gap: 0.375rem 0.875rem;
+}
+
+.post-card-wrapper .card-header-meta > div {
+	position: relative;
+}
+
+/* 项目之间的「·」分隔 */
+.post-card-wrapper .card-header-meta > div + div:not(:first-child)::before {
+	content: "·";
+	margin-right: 0.875rem;
+	color: var(--meta-divider);
+	font-weight: 400;
+}
+
+.post-card-wrapper .card-header-meta .text-50,
+.post-card-wrapper .card-header-meta span {
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}
+
+/* 置顶徽标：紫色按钮块 → 安静的描边小签 */
+.post-card-wrapper .pinned-btn {
+	background: transparent !important;
+	border: 1px solid oklch(0.7 0.1 var(--hue) / 0.45);
+	color: var(--primary) !important;
+	padding: 0.05rem 0.5rem !important;
+	border-radius: 0.375rem;
+	font-weight: 600 !important;
+}
+
+.post-card-wrapper .pinned-btn .text-xl {
+	font-size: 0.875rem !important;
+}
+
+.post-card-wrapper .pinned-btn .text-sm {
+	font-size: 0.75rem !important;
+}
+
+/* ---------- 底部标签：胶囊 → 安静的 # 文本 ---------- */
+.post-card-wrapper .post-card-bottom-tags a {
+	background: transparent !important;
+	padding: 0.125rem 0.125rem !important;
+	border-radius: 0.25rem;
+	font-size: 0.75rem;
+	letter-spacing: 0.05em;
+	color: color-mix(in oklch, var(--content-meta) 72%, transparent) !important;
+	text-decoration: underline transparent 1px;
+	text-underline-offset: 3px;
+	transition:
+		color 0.2s ease,
+		text-decoration-color 0.2s ease;
+}
+
+.post-card-wrapper .post-card-bottom-tags a:hover {
+	color: var(--primary) !important;
+	text-decoration-color: oklch(0.7 0.12 var(--hue) / 0.5);
+}
+
+/* ---------- 封面图：去黑遮罩，改克制的显影动效 + 内描边 ---------- */
+.post-card-wrapper .post-card-image img {
+	transition:
+		transform 0.6s var(--ease-decelerate),
+		filter 0.6s var(--ease-decelerate);
+	filter: saturate(0.92);
+}
+
+@media (hover: hover) {
+	.post-card-wrapper:hover .post-card-image img {
+		transform: scale(1.035);
+		filter: saturate(1.05);
+	}
+}
+
+/* 图片内侧 1px 描边，压住图片与卡片的生硬接缝 */
+.post-card-image-ring {
+	position: absolute;
+	inset: 0;
+	z-index: 10;
+	pointer-events: none;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+:root.dark .post-card-image-ring {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- 无封面卡的进入按钮：大胶囊 → 右上角浮现的箭头 ---------- */
+.post-card-wrapper .post-card-enter-btn {
+	position: absolute;
+	top: 0.875rem;
+	right: 0.875rem;
+	bottom: auto;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 9999px;
+	background: transparent;
+	color: var(--primary);
+	opacity: 0.45;
+	transition:
+		opacity 0.25s ease,
+		background-color 0.25s ease,
+		transform 0.3s var(--ease-decelerate);
+}
+
+.post-card-wrapper .post-card-enter-btn:hover {
+	background: var(--btn-regular-bg);
+}
+
+.post-card-wrapper .post-card-enter-btn svg {
+	font-size: 1.375rem;
+	margin: auto;
+}
+
+@media (hover: hover) {
+	.post-card-wrapper:hover .post-card-enter-btn {
+		opacity: 1;
+		transform: translate(2px, -2px);
+	}
+}
+
+/* ---------- 降级：减少动态偏好 ---------- */
+@media (prefers-reduced-motion: reduce) {
+	.post-card-wrapper,
+	.post-card-wrapper:hover,
+	.post-card-wrapper .post-card-image img,
+	.post-card-wrapper:hover .post-card-image img,
+	.post-card-wrapper .post-card-enter-btn {
+		transition: none;
+		transform: none;
+	}
+}
