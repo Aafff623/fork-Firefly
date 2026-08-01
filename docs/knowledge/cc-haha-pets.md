@@ -32,8 +32,19 @@
 ## 交互
 
 - 悬停：视线跟随指针（`lookFollow`）
-- 单击：挥手（`clickWave`）
-- 拖拽：改位置，写入 `localStorage`（`firefly-sprite-pet-pos`）
+- 点头部：打招呼（`waving` / `review`）
+- 点身体：思考/等待（`review` / `waiting`）
+- 点脚部：跳跃/小跑（`jumping` / `running`）
+- 双击：开心跳（`jumping`）
+- 拖拽：按瞬时方向跑步，松手小跳；位置写入 `localStorage`（`firefly-sprite-pet-pos`）
+- 入场：自动挥手一次
+- 场景联动（`reactToSiteUi`）：
+  - 打开文章 → `review`；404 / 搜索无结果 / 表单校验失败 → `failed`
+  - 读文持续滚动 → `waiting`；空闲约 45s → `waiting`
+  - 主题切换 → `review` → `waving`；Swup 切页离开 → `running`
+  - 抵达页脚 → `waving`；背景播放开始 → `jumping`
+  - 搜索/设置/回顶/导航/复制/GitHub/点赞类按钮见 `SpritePet.svelte`
+- 自定义场景可派发：`window.dispatchEvent(new CustomEvent('firefly:pet-scenario', { detail: { scenario: 'search-empty' } }))`
 - `prefers-reduced-motion`：停动画，保留静帧
 - 移动端：默认隐藏
 

@@ -90,10 +90,24 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 
 			result = searchResults;
 			setPanelVisibility(true, isDesktop);
+			if (keyword && searchResults.length === 0) {
+				window.dispatchEvent(
+					new CustomEvent("firefly:pet-scenario", {
+						detail: { scenario: "search-empty" },
+					}),
+				);
+			}
 		} catch (error) {
 			console.error("Search error:", error);
 			result = [];
 			setPanelVisibility(false, isDesktop);
+			if (keyword) {
+				window.dispatchEvent(
+					new CustomEvent("firefly:pet-scenario", {
+						detail: { scenario: "search-empty" },
+					}),
+				);
+			}
 		} finally {
 			isSearching = false;
 		}
