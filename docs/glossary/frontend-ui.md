@@ -35,7 +35,7 @@ avBarConfig.ts | 导航链接与搜索 |
 one） |
 | dynamicConfig.ts | 动态页 / Memos |
 | riendsConfig.ts / galleryConfig.ts / sponsorConfig.ts | 友链 / 相册 / 打赏 |
-| ontConfig.ts / musicConfig.ts / effectsConfig.ts / pioConfig.ts | 字体 / 音乐 / 特效 / 看板娘 |
+| fontConfig.ts / musicConfig.ts / effectsConfig.ts / pioConfig.ts / petConfig.ts | 字体 / 音乐 / 特效 / 看板娘 / 站内桌宠 |
 
 详解见 docs/official/ 对应章节与 src/config/README.md。
 

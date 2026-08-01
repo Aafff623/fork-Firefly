@@ -78,6 +78,7 @@ Content Collections（`src/content.config.ts`）：
 | Firefly | 上游主题名；本仓是其 fork 二次开发 |
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
+| 站内桌宠 | cc-haha spritesheet 悬浮宠（`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
 | Digital Garden | 作者另一站点：https://threetwoa-digital-garden.vercel.app |

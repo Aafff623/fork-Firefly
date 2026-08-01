@@ -25,6 +25,7 @@ export type {
 	SidebarLayoutConfig,
 	SiteConfig,
 	SponsorConfig,
+	SpritePetConfig,
 	SponsorItem,
 	SponsorMethod,
 	WidgetComponentConfig,
@@ -57,6 +58,7 @@ export { licenseConfig } from "./licenseConfig"; // 许可证配置
 export { mermaidConfig } from "./mermaidConfig"; // Mermaid 图表配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置
 export { navBarConfig, navBarSearchConfig } from "./navBarConfig"; // 导航栏配置与搜索配置
+export { spritePetConfig } from "./petConfig"; // 站内桌宠配置（cc-haha spritesheet）
 export { live2dWidgetConfig, spineModelConfig } from "./pioConfig"; // 看板娘配置
 export { plantumlConfig } from "./plantumlConfig"; // PlantUML 图表配置
 export { profileConfig } from "./profileConfig"; // 用户资料配置

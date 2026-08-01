@@ -2,6 +2,7 @@
 import Live2DWidget from "@components/features/Live2DWidget.astro";
 
 import SpineModel from "@components/features/SpineModel.astro";
+import SpritePet from "@components/features/SpritePet.svelte";
 import Footer from "@components/layout/Footer.astro";
 import Navbar from "@components/layout/Navbar.astro";
 import SideBar from "@components/layout/SideBar.astro";
@@ -19,6 +20,8 @@ import {
 	live2dWidgetConfig,
 	sidebarLayoutConfig,
 	siteConfig,
+	spineModelConfig,
+	spritePetConfig,
 } from "@/config";
 import {
 	BANNER_HEIGHT,
@@ -937,9 +940,30 @@ const hasMultipleImages =
             </div>
         </div>
 
+        {/* 看板娘 / 桌宠互斥：优先 sprite pet → Spine → Live2D */}
         <div class="pointer-events-auto">
-            <SpineModel></SpineModel>
-            {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
+            {spritePetConfig.enable ? (
+                <SpritePet
+                    client:load
+                    petId={spritePetConfig.petId}
+                    position={spritePetConfig.position}
+                    offsetX={spritePetConfig.offset.x}
+                    offsetY={spritePetConfig.offset.y}
+                    size={spritePetConfig.size}
+                    motionEnabled={spritePetConfig.motionEnabled}
+                    draggable={spritePetConfig.draggable}
+                    clickWave={spritePetConfig.clickWave}
+                    lookFollow={spritePetConfig.lookFollow}
+                    hideOnMobile={spritePetConfig.responsive.hideOnMobile}
+                    mobileBreakpoint={spritePetConfig.responsive.mobileBreakpoint}
+                    zIndex={spritePetConfig.zIndex}
+                />
+            ) : (
+                <>
+                    {spineModelConfig.enable && <SpineModel></SpineModel>}
+                    {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
+                </>
+            )}
         </div>
     </div>
 </div>

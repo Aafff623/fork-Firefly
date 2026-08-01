@@ -1,5 +1,7 @@
 import type { Live2DWidgetConfig, SpineModelConfig } from "../types/pioConfig";
 
+// 与站内桌宠（spritePetConfig）互斥：三者最多开一个。桌宠开启时本配置不生效。
+
 // Spine 看板娘配置
 export const spineModelConfig: SpineModelConfig = {
 	// Spine 看板娘开关
