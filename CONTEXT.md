@@ -5,7 +5,7 @@
 ## 项目定位
 
 - **产品名（对外）**：threetwoa's blog
-- **仓库**：[Aafff623/fork-Firefly](https://github.com/Aafff623/fork-Firefly)（fork 自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)）
+- **仓库**：[Aafff623/fork-Firefly](https://github.com/Aafff623/fork-Firefly)（源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork 网络，standalone）
 - **定位**：基于 Firefly（Astro 静态博客主题）的个人博客二次开发
 - **线上**：https://fork-firefly.vercel.app
 - **作者**：Aafff623 / threetwoa（中北大学软件工程；关注 Agent Engineering、Java/Python 业务系统）
@@ -75,7 +75,7 @@ Content Collections（`src/content.config.ts`）：
 | 视觉体系 | **壳层中性灰** + **彩仅点缀**（紫系邻近：indigo / violet / cool / rose / berry） |
 | 默认主题色锚点 | Kraken 主紫（hue 290）作链接主色；粉玫等作模块创意点缀 |
 | 标题荧光笔 | 卡片轮换高亮，并穿插 `--hl-rose` |
-| Firefly | 上游主题名；本仓是其 fork 二次开发 |
+| Firefly | 上游主题名；本仓为其独立二次开发站（非 fork） |
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
 | 站内桌宠 | cc-haha spritesheet 悬浮宠（`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |

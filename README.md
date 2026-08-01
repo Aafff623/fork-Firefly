@@ -17,7 +17,7 @@
 
 <p align="center">
   基于 <a href="https://github.com/CuteLeaf/Firefly">Firefly</a>（Astro 静态博客主题）的个人站二次开发<br>
-  <sub>Forked by <a href="https://github.com/Aafff623/fork-Firefly">threetwoa</a> · 不是官方镜像</sub>
+  <sub>Standalone by <a href="https://github.com/Aafff623/fork-Firefly">threetwoa</a> · 已脱离上游 fork 网络 · 不是官方镜像</sub>
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@
 ---
 
 > [!TIP]
-> 本仓是 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly) 的个人二次开发 fork：保留主题能力，叠加上 threetwoa 的品牌、治理与部署约定。
+> 本仓源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已 **Leave fork network** 成为独立仓库：本地开发 / 独立演进，不跟随上游进度；保留主题能力，叠加上 threetwoa 的品牌、治理与部署约定。
 
 ---
 
@@ -134,12 +134,7 @@ git clone https://github.com/Aafff623/fork-Firefly.git
 cd fork-Firefly
 ```
 
-**建议先 Fork 到自己的账号再克隆。** 上游主题仓库：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)。
-
-```bash
-git clone https://github.com/<your-github-name>/fork-Firefly.git
-cd fork-Firefly
-```
+主题灵感来自上游：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)（本仓不再是其 fork）。
 
 2. **Install dependencies**
 
