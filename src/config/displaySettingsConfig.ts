@@ -8,22 +8,22 @@ import type { DisplaySettingsConfig } from "../types/displaySettingsConfig";
 export const displaySettingsConfig: DisplaySettingsConfig = {
 	// ── 外观 (Appearance) ──────────────────────────────────
 
-	// 主题色选择器开关
-	themeColorSwitchable: true,
+	// 主题色选择器开关（站点固定主题色，不开放调色）
+	themeColorSwitchable: false,
 
-	// 文章列表布局切换开关
-	layoutSwitchable: true,
+	// 文章列表布局切换开关（固定网格，不开放切换）
+	layoutSwitchable: false,
 
-	// 卡片边框和阴影开关
-	cardBorderSwitchable: true,
+	// 卡片边框和阴影开关（默认常开，不在面板暴露）
+	cardBorderSwitchable: false,
 
-	// 卡片风格跟随主题色开关
-	cardFollowThemeSwitchable: true,
+	// 卡片风格跟随主题色开关（不需要此能力）
+	cardFollowThemeSwitchable: false,
 
 	// ── 壁纸 (Wallpaper) ──────────────────────────────────
 
-	// 壁纸模式切换开关
-	wallpaperModeSwitchable: false,
+	// 壁纸模式切换开关（导航栏入口改为壁纸面板）
+	wallpaperModeSwitchable: true,
 
 	// 水波纹动画开关
 	wavesSwitchable: true,

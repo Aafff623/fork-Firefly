@@ -71,7 +71,7 @@ const SITE_UI_REACTIONS: ReadonlyArray<{
 		state: "waiting",
 	},
 	{
-		selector: "#display-setting, [aria-label='Display Settings']",
+		selector: "#display-setting, #display-settings-switch",
 		state: "review",
 	},
 	{

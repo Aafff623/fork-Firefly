@@ -12,6 +12,7 @@
 @import './categories.css';
 @import './post-card.css';
 @import './text-voice.css';
+@import './announcement-press.css';
 
 @plugin '@tailwindcss/typography';
 

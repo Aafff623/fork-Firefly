@@ -1,4 +1,12 @@
 ---
+/**
+ * 侧栏公告：主题卡壳 + 编辑/报纸家具（folio · 双线 · 衬线标题 · drop cap）
+ * 样式见 src/styles/announcement-press.css
+ *
+ * 调研取舍（Newsprint / Broadsheet / Guardian / Hallmark editorial）：
+ * - 保留 card-base 圆角与主题色，不另起奶油纸直角卡
+ * - 报纸感靠排版家具，不靠换底色
+ */
 import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import { announcementConfig } from "@/config/announcementConfig";
@@ -13,178 +21,65 @@ interface Props {
 	style?: string;
 	widgetConfig?: WidgetComponentConfig;
 }
-const { class: className, style, widgetConfig } = Astro.props;
+const { class: className, style } = Astro.props;
 
-const showTitle = widgetConfig?.showTitle !== false;
-const accent =
-	config.type === "warning"
-		? "warning"
-		: config.type === "success"
-			? "success"
-			: config.type === "error"
-				? "error"
-				: "info";
+const issueDate = new Date().toISOString().slice(0, 10);
+const title = config.title || i18n(I18nKey.announcement);
 ---
 
+{/* showTitle=false：自绘 masthead，避免与紫条标题重复，仍套 card-base */}
 <WidgetLayout
-  name={config.title || i18n(I18nKey.announcement)}
-  showTitle={showTitle}
   id="announcement"
+  showTitle={false}
   class={className}
   style={style}
 >
-  <Fragment slot="title-icon">
-    {config.icon && (
-      <Icon is:inline name={config.icon} class="announcement-title-icon text-[1.15rem] opacity-90" />
-    )}
-  </Fragment>
+  <article class="announcement-press" data-widget-type="announcement">
+    <header class="announcement-press__mast">
+      <div class="announcement-press__folio">
+        <span class="announcement-press__vol">Vol. II</span>
+        <span class="announcement-press__folio-sep" aria-hidden="true">·</span>
+        <time datetime={issueDate}>{issueDate}</time>
+        <span class="announcement-press__folio-grow"></span>
+        {
+          config.closable && (
+            <button
+              type="button"
+              class="announcement-press__close"
+              onclick="this.closest('widget-layout')?.remove()"
+              aria-label={i18n(I18nKey.announcementClose)}
+            >
+              <Icon is:inline name="fa7-solid:xmark" class="text-[0.7rem]" />
+            </button>
+          )
+        }
+      </div>
 
-  <div class:list={["announcement-panel", `announcement-${accent}`]}>
-    <div class="announcement-eyebrow">
-      <span class="announcement-pulse" aria-hidden="true"></span>
-      <span>在研 · Agent 工作流</span>
-    </div>
+      <h2 class="announcement-press__nameplate">{title}</h2>
+      <div class="announcement-press__double-rule" aria-hidden="true"></div>
+      <p class="announcement-press__kicker">Notice · 在研 · Agent 工作流</p>
+    </header>
 
-    <p class="announcement-body text-voice">
-      {config.content}
-    </p>
+    <p class="announcement-press__lede">{config.content}</p>
 
-    <div class="announcement-actions">
-      {
-        config.link && config.link.enable !== false && (
+    {
+      config.link && config.link.enable !== false && (
+        <footer class="announcement-press__colophon">
           <a
             href={config.link.url}
             target={config.link.external ? "_blank" : "_self"}
             rel={config.link.external ? "noopener noreferrer" : undefined}
-            class="announcement-cta"
+            class="announcement-press__cta"
           >
             <span>{config.link.text}</span>
             <Icon
               is:inline
               name={config.link.external ? "fa7-solid:arrow-up-right-from-square" : "material-symbols:arrow-forward-rounded"}
-              class="text-[0.85rem] opacity-80"
+              class="text-[0.75rem]"
             />
           </a>
-        )
-      }
-
-      {
-        config.closable && (
-          <button
-            type="button"
-            class="announcement-dismiss"
-            onclick="this.closest('widget-layout').style.display='none'"
-            aria-label={i18n(I18nKey.announcementClose)}
-          >
-            <Icon is:inline name="fa7-solid:xmark" class="text-sm" />
-          </button>
-        )
-      }
-    </div>
-  </div>
+        </footer>
+      )
+    }
+  </article>
 </WidgetLayout>
-
-<style>
-  .announcement-title-icon {
-    margin-right: 0.75rem;
-    color: var(--content-meta);
-  }
-
-  /* 低调内嵌块：跟站点信息等卡片同一套中性灰，不抢色 */
-  .announcement-panel {
-    position: relative;
-    border-radius: 0.75rem;
-    padding: 0.85rem 0.9rem;
-    background: var(--muted);
-    border: 1px solid var(--line-divider);
-  }
-
-  .announcement-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.55rem;
-    padding: 0.1rem 0.5rem 0.1rem 0.35rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--content-meta);
-    background: color-mix(in oklch, var(--btn-content) 8%, transparent);
-  }
-
-  .announcement-pulse {
-    width: 0.35rem;
-    height: 0.35rem;
-    border-radius: 999px;
-    background: var(--btn-content);
-    opacity: 0.45;
-  }
-
-  .announcement-body {
-    margin: 0 0 0.85rem;
-    font-size: 0.9rem;
-    line-height: 1.65;
-  }
-
-  .announcement-body.text-voice {
-    --voice-base: color-mix(in oklch, #404040 88%, transparent);
-  }
-
-  :global(.dark) .announcement-body.text-voice {
-    --voice-base: color-mix(in oklch, white 78%, transparent);
-  }
-
-  .announcement-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.65rem;
-  }
-
-  .announcement-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.85rem;
-    border-radius: 0.5rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--btn-content);
-    background: var(--btn-regular-bg);
-    transition:
-      transform 0.15s ease,
-      background-color 0.15s ease,
-      color 0.15s ease;
-  }
-
-  .announcement-cta:hover {
-    background: var(--btn-regular-bg-hover);
-    color: var(--primary);
-  }
-
-  .announcement-cta:active {
-    transform: scale(0.96);
-  }
-
-  .announcement-dismiss {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 999px;
-    border: 0;
-    background: transparent;
-    color: var(--content-meta);
-    cursor: pointer;
-    transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
-  }
-
-  .announcement-dismiss:hover {
-    background: var(--btn-plain-bg-hover);
-    color: var(--btn-content);
-  }
-</style>

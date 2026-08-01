@@ -76,19 +76,15 @@
 }
 
 /* 荧光笔：仅 grid hover 展开（原语 C）；list-row 禁用 */
+/* --card-hl 由 JS 在 pointerenter 时随机写入，避免同卡连刷撞色 */
 .post-card-title-hl {
-	background-image: var(--hl-primary);
+	background-image: var(--card-hl, var(--hl-primary));
 	background-size: 0 10px;
 	background-position: left bottom;
 	background-repeat: no-repeat;
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
 	transition: background-size 0.45s var(--ease-decelerate);
-}
-
-/* 点缀预算：grid 荧光笔统一主色，不再四色轮换 */
-#post-list-container.grid-mode > .post-card-wrapper .post-card-title-hl {
-	background-image: var(--hl-primary);
 }
 
 @media (hover: hover) {

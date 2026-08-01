@@ -1,33 +1,73 @@
 /**
  * text-voice：整段文字的轻量「墨光」效果
  * - 不拆词、不斥力、不改排版结构（区别于 .repel-text）
+ * - 扫光带沿彩虹色相流转（边扫边变色）
  * - 用于侧栏简介 / 公告正文等语气文本
  */
+
+@property --voice-sheen-hue {
+	syntax: "<number>";
+	inherits: true;
+	initial-value: 280;
+}
+
 .text-voice {
 	--voice-base: #a3a3a3; /* ≈ neutral-400 */
-	--voice-glow: color-mix(in oklch, var(--primary) 55%, white);
+	--voice-sheen-hue: 280;
+	/* 扫光带：同色相簇内微渐变，色相整体随时间转 */
+	--voice-glow-a: oklch(0.78 0.16 calc(var(--voice-sheen-hue) + 0));
+	--voice-glow-b: oklch(0.82 0.18 calc(var(--voice-sheen-hue) + 28));
+	--voice-glow-c: oklch(0.76 0.15 calc(var(--voice-sheen-hue) + 56));
 
 	background-image: linear-gradient(
 		105deg,
 		var(--voice-base) 0%,
-		var(--voice-base) 40%,
-		var(--voice-glow) 50%,
-		var(--voice-base) 60%,
+		var(--voice-base) 36%,
+		var(--voice-glow-a) 44%,
+		var(--voice-glow-b) 50%,
+		var(--voice-glow-c) 56%,
+		var(--voice-base) 64%,
 		var(--voice-base) 100%
 	);
-	background-size: 220% 100%;
+	background-size: 240% 100%;
 	background-position: 100% 50%;
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
 	animation:
 		text-voice-enter 0.65s ease-out both,
-		text-voice-sheen 7.5s ease-in-out 0.65s infinite;
+		text-voice-sheen 7.5s ease-in-out 0.65s infinite,
+		text-voice-hue 3.5s linear 0.65s infinite;
 }
 
 :root.dark .text-voice {
 	--voice-base: color-mix(in oklch, white 72%, transparent);
-	--voice-glow: color-mix(in oklch, var(--primary) 70%, white);
+	--voice-glow-a: oklch(0.72 0.17 calc(var(--voice-sheen-hue) + 0));
+	--voice-glow-b: oklch(0.78 0.19 calc(var(--voice-sheen-hue) + 28));
+	--voice-glow-c: oklch(0.7 0.16 calc(var(--voice-sheen-hue) + 56));
+}
+
+/* 简介外壳：液态玻璃（与文字剪辑分离，避免 background-clip 冲突） */
+.text-voice-shell {
+	padding: 0.65rem 0.75rem;
+	border-radius: 0.85rem;
+	background: color-mix(in oklch, white 42%, transparent);
+	-webkit-backdrop-filter: blur(22px) saturate(175%);
+	backdrop-filter: blur(22px) saturate(175%);
+	border: 1px solid color-mix(in oklch, white 55%, transparent);
+	box-shadow:
+		0 6px 20px rgba(0, 0, 0, 0.06),
+		inset 0 1px 0 rgba(255, 255, 255, 0.7),
+		inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+:root.dark .text-voice-shell {
+	background: color-mix(in oklch, white 12%, transparent);
+	border: 1px solid color-mix(in oklch, white 18%, transparent);
+	box-shadow:
+		0 8px 24px rgba(0, 0, 0, 0.28),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
 @keyframes text-voice-enter {
@@ -51,6 +91,16 @@
 	}
 }
 
+/* 与贪吃蛇同节奏：约 3.5s 转一圈色相 */
+@keyframes text-voice-hue {
+	0% {
+		--voice-sheen-hue: 0;
+	}
+	100% {
+		--voice-sheen-hue: 360;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.text-voice {
 		animation: none;
@@ -60,5 +110,10 @@
 		color: var(--voice-base);
 		filter: none;
 		opacity: 1;
+	}
+
+	.text-voice-shell {
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
 	}
 }

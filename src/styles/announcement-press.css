@@ -1,0 +1,171 @@
+/**
+ * 侧栏公告 · 主题卡壳内的编辑/报纸家具
+ *
+ * 平衡点（调研）：
+ * - Newsprint / Broadsheet / Broadside：报纸 = 衬线 + folio + 双线 + drop cap，不是换整卡配色
+ * - Guardian：section 用主题色细线标识，卡面仍是白底
+ * - Hallmark / katagami：主表面跟主题；纸感只作极轻内衬；强调色 < 5%
+ *
+ * 因此：外壳走 card-base；内文加 masthead 家具；accent 只用 --primary。
+ */
+
+.announcement-press {
+	/* 极轻纸感内衬：不换卡，只让正文区略暖一点 */
+	--ap-paper-tint: color-mix(in oklch, var(--card-bg) 94%, oklch(0.92 0.02 85));
+	--ap-ink: rgb(0 0 0 / 0.82);
+	--ap-mute: rgb(0 0 0 / 0.45);
+	--ap-rule: var(--line-divider);
+	--ap-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", "Noto Serif SC", Georgia,
+		"Times New Roman", serif;
+}
+
+:root.dark .announcement-press {
+	--ap-paper-tint: color-mix(in oklch, var(--card-bg) 92%, oklch(0.35 0.02 80));
+	--ap-ink: rgb(255 255 255 / 0.88);
+	--ap-mute: rgb(255 255 255 / 0.45);
+}
+
+/* —— Masthead —— */
+.announcement-press__mast {
+	margin-bottom: 0.7rem;
+}
+
+.announcement-press__folio {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin-bottom: 0.55rem;
+	font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.62rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ap-mute);
+}
+
+.announcement-press__vol {
+	color: var(--primary);
+	font-weight: 700;
+}
+
+.announcement-press__folio-sep {
+	opacity: 0.7;
+}
+
+.announcement-press__folio-grow {
+	flex: 1;
+}
+
+.announcement-press__close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.4rem;
+	height: 1.4rem;
+	padding: 0;
+	border: none;
+	border-radius: 0.4rem;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	transition:
+		color 0.15s ease,
+		background-color 0.15s ease;
+}
+
+.announcement-press__close:hover {
+	color: var(--primary);
+	background: color-mix(in oklch, var(--primary) 12%, transparent);
+}
+
+/* 名称牌：衬线大标题 + 与侧栏一致的主题色竖条 */
+.announcement-press__nameplate {
+	position: relative;
+	margin: 0;
+	padding-left: 0.85rem;
+	font-family: var(--ap-serif);
+	font-size: 1.45rem;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.015em;
+	color: var(--ap-ink);
+	text-wrap: balance;
+}
+
+.announcement-press__nameplate::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.28em;
+	width: 0.22rem;
+	height: 0.9em;
+	border-radius: 0.25rem;
+	background: var(--primary);
+}
+
+/* 双线（broadsheet masthead 标志家具） */
+.announcement-press__double-rule {
+	margin: 0.5rem 0 0.45rem;
+	height: 4px;
+	border-top: 1.5px solid color-mix(in oklch, var(--ap-ink) 55%, transparent);
+	border-bottom: 1px solid color-mix(in oklch, var(--ap-ink) 28%, transparent);
+}
+
+.announcement-press__kicker {
+	margin: 0;
+	font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ap-mute);
+}
+
+/* —— Lede：纸感内衬 + drop cap —— */
+.announcement-press__lede {
+	margin: 0;
+	padding: 0.65rem 0.7rem 0.7rem;
+	border-radius: calc(var(--radius-large, 1rem) * 0.45);
+	background: var(--ap-paper-tint);
+	border-left: 2px solid color-mix(in oklch, var(--primary) 55%, transparent);
+	font-size: 0.9rem;
+	line-height: 1.7;
+	color: var(--ap-ink);
+}
+
+.announcement-press__lede::first-letter {
+	float: left;
+	margin: 0.08em 0.28em 0 0;
+	font-family: var(--ap-serif);
+	font-size: 2.35em;
+	font-weight: 700;
+	line-height: 0.85;
+	color: var(--primary);
+}
+
+/* —— Colophon / CTA —— */
+.announcement-press__colophon {
+	margin-top: 0.75rem;
+	padding-top: 0.6rem;
+	border-top: 1px solid var(--ap-rule);
+}
+
+.announcement-press__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--primary);
+	text-decoration: none;
+	border-bottom: 1px solid color-mix(in oklch, var(--primary) 40%, transparent);
+	transition:
+		opacity 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.announcement-press__cta:hover {
+	opacity: 0.85;
+	border-bottom-color: var(--primary);
+}

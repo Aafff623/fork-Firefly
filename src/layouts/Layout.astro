@@ -575,19 +575,27 @@ const siteLang = lang.replace("_", "-");
 
     <div id="progress-bar"></div>
 
-    {/* 卡片样式：根据 localStorage 覆盖默认配置 */}
+    {/* 卡片样式：面板未开放时强制站点默认，开放时才读 localStorage */}
     <script is:inline define:vars={{
       defaultBorder: siteConfig.card?.border ?? false,
       defaultFollowTheme: siteConfig.card?.followTheme ?? false,
+      cardBorderSwitchable: displaySettingsConfig.cardBorderSwitchable,
+      cardFollowThemeSwitchable: displaySettingsConfig.cardFollowThemeSwitchable,
     }}>
       (function() {
-        var stored = localStorage.getItem("cardBorderEnabled");
-        var border = stored !== null ? stored === "true" : defaultBorder;
+        var border = defaultBorder;
+        if (cardBorderSwitchable) {
+          var storedBorder = localStorage.getItem("cardBorderEnabled");
+          if (storedBorder !== null) border = storedBorder === "true";
+        }
         if (border) document.documentElement.classList.add("enable-card-border");
         else document.documentElement.classList.remove("enable-card-border");
 
-        stored = localStorage.getItem("cardFollowThemeEnabled");
-        var follow = stored !== null ? stored === "true" : defaultFollowTheme;
+        var follow = false;
+        if (cardFollowThemeSwitchable) {
+          var storedFollow = localStorage.getItem("cardFollowThemeEnabled");
+          follow = storedFollow !== null ? storedFollow === "true" : defaultFollowTheme;
+        }
         if (follow) document.body.classList.add("card-follow-theme-hue");
         else document.body.classList.remove("card-follow-theme-hue");
       })();

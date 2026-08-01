@@ -48,8 +48,10 @@ const className = Astro.props.class;
       class="accent-bar-grad h-1 w-5 mx-auto rounded-full mb-2 transition"
     >
     </div>
-    <div class="text-voice text-center mb-2.5 italic text-sm leading-relaxed">
-      {profileConfig.bio}
+    <div class="text-voice-shell mb-2.5">
+      <div class="text-voice text-center italic text-sm leading-relaxed">
+        {profileConfig.bio}
+      </div>
     </div>
         <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-1">
             {profileConfig.links.length > 1 && profileConfig.links.map(item =>

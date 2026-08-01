@@ -1321,6 +1321,10 @@ export function getDefaultCardBorderEnabled(): boolean {
 }
 
 export function getStoredCardBorderEnabled(): boolean {
+	// 面板未开放时始终走站点默认，忽略历史 localStorage
+	if (!displaySettingsConfig.cardBorderSwitchable) {
+		return getDefaultCardBorderEnabled();
+	}
 	if (typeof localStorage === "undefined") {
 		return getDefaultCardBorderEnabled();
 	}
@@ -1352,6 +1356,10 @@ export function getDefaultCardFollowThemeEnabled(): boolean {
 }
 
 export function getStoredCardFollowThemeEnabled(): boolean {
+	// 面板未开放时始终关闭跟随主题色
+	if (!displaySettingsConfig.cardFollowThemeSwitchable) {
+		return false;
+	}
 	if (typeof localStorage === "undefined") {
 		return getDefaultCardFollowThemeEnabled();
 	}

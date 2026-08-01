@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
 import PostCard from "@/components/layout/PostCard.astro";
-import { siteConfig } from "@/config";
+import { displaySettingsConfig, siteConfig } from "@/config";
 
 const { page } = Astro.props;
 
@@ -19,6 +19,7 @@ const columnWidth = siteConfig.postListLayout.grid.columnWidth || 280;
 const defaultLayout = siteConfig.postListLayout.defaultMode || "list";
 const mobileDefaultLayout =
 	siteConfig.postListLayout.mobileDefaultMode || defaultLayout;
+const layoutSwitchable = displaySettingsConfig.layoutSwitchable;
 const initialLayoutClass =
 	defaultLayout === "grid"
 		? "post-grid-auto grid-mode"
@@ -30,6 +31,7 @@ const initialLayoutClass =
   class={`transition-all duration-500 ease-in-out mb-4 ${initialLayoutClass}`}
   data-default-layout={defaultLayout}
   data-mobile-default-layout={mobileDefaultLayout}
+  data-layout-switchable={layoutSwitchable}
   data-masonry-enabled={masonryEnabled}
   data-column-width={columnWidth}
   style={`--post-card-min-width: ${columnWidth}px;`}
@@ -59,9 +61,10 @@ const initialLayoutClass =
 </div>
 
 <!-- 立即执行脚本：防止刷新时的布局闪烁 -->
-<script is:inline define:vars={{ defaultLayout, mobileDefaultLayout, columnWidth }}>
+<script is:inline define:vars={{ defaultLayout, mobileDefaultLayout, columnWidth, layoutSwitchable }}>
   (function() {
-    const savedLayout = localStorage.getItem('postListLayout');
+    // 未开放布局切换时忽略历史偏好，始终用站点默认
+    const savedLayout = layoutSwitchable ? localStorage.getItem('postListLayout') : null;
     // 根据视口宽度确定有效的默认布局
     const effectiveDefault = window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
     // 低于380px强制网格模式
@@ -97,8 +100,12 @@ const initialLayoutClass =
     const postListContainer = document.getElementById("post-list-container");
     if (!postListContainer) return;
 
-    // 从localStorage读取用户偏好
-    const savedLayout = localStorage.getItem("postListLayout");
+    // 从 localStorage 读取用户偏好（未开放切换时忽略）
+    const layoutSwitchable =
+      postListContainer.getAttribute("data-layout-switchable") === "true";
+    const savedLayout = layoutSwitchable
+      ? localStorage.getItem("postListLayout")
+      : null;
     const defaultLayout =
       postListContainer.getAttribute("data-default-layout") || "list";
     const mobileDefaultLayout =
@@ -321,6 +328,54 @@ const initialLayoutClass =
 
   // 立即执行一次（处理页面刷新）
   setTimeout(initLayout, 0);
+
+  /**
+   * grid 卡片标题荧光笔：每次鼠标进入卡片时随机抽色。
+   * 排除上一次颜色，连刷同一张也大概率变色。
+   */
+  const CARD_HL_PALETTE = [
+    "--hl-amber",
+    "--hl-cool",
+    "--hl-rose",
+    "--hl-teal",
+    "--hl-primary",
+    "--hl-gold",
+    "--hl-indigo",
+    "--hl-coral",
+    "--hl-green",
+    "--hl-violet",
+    "--hl-mint",
+    "--hl-berry",
+    "--hl-sky",
+  ] as const;
+
+  function pickRandomCardHl(card: HTMLElement) {
+    const last = card.dataset.hlLast || "";
+    const pool = CARD_HL_PALETTE.filter((v) => v !== last);
+    const next = pool[Math.floor(Math.random() * pool.length)] || CARD_HL_PALETTE[0];
+    card.dataset.hlLast = next;
+    card.style.setProperty("--card-hl", `var(${next})`);
+  }
+
+  function onPostCardHlMouseOver(event: Event) {
+    const e = event as MouseEvent;
+    const container = document.getElementById("post-list-container");
+    if (!container?.classList.contains("grid-mode")) return;
+    const target = e.target as Element | null;
+    const card = target?.closest?.(".post-card-wrapper") as HTMLElement | null;
+    if (!card || !container.contains(card)) return;
+    const related = e.relatedTarget as Node | null;
+    if (related && card.contains(related)) return; // 仍在同一张卡内移动
+    pickRandomCardHl(card);
+  }
+
+  // 挂 document 一次即可，兼容 Swup / astro 换页
+  // @ts-ignore
+  if (!window.__postCardHlRandomBound) {
+    // @ts-ignore
+    window.__postCardHlRandomBound = true;
+    document.addEventListener("mouseover", onPostCardHlMouseOver, true);
+  }
 </script>
 
 <style is:global>

@@ -218,7 +218,12 @@ let visibleTabs = $derived.by(() => {
 });
 
 let showTabBar = $derived(visibleTabs.length > 1);
-let activeTab = $state<TabKey>("appearance");
+// 外观关闭后默认打开壁纸页（导航栏入口已改为壁纸按钮）
+let activeTab = $state<TabKey>(
+	showThemeColor || allowLayoutSwitch || isCardBorderSwitchable || isCardFollowThemeSwitchable
+		? "appearance"
+		: "wallpaper",
+);
 
 // Auto-switch active tab if it becomes invisible
 $effect(() => {
