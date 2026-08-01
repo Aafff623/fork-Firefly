@@ -6,7 +6,7 @@ pinned: false
 description: 在Firefly中使用表达性代码的代码块在 Markdown 中的外观。
 tags: [Firefly, Markdown, 代码块]
 category: 写作
-image: ./images/firefly3.avif
+image: ./images/minimax/v2-code.jpg
 slug: code-examples
 ---
 

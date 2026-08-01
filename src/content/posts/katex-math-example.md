@@ -5,7 +5,7 @@ published: 2026-08-01
 description: 展示 Firefly 主题对 KaTeX 数学公式的支持，包括行内公式、块级公式和复杂数学符号。
 tags: [Firefly, Markdown, KaTeX]
 category: 写作
-image: api
+image: ./images/minimax/v2-katex.jpg
 slug: katex-math-example
 ---
 

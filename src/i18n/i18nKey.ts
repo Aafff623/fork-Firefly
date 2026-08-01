@@ -306,6 +306,7 @@ enum I18nKey {
 	postListLayout = "postListLayout",
 	postListLayoutList = "postListLayoutList",
 	postListLayoutGrid = "postListLayoutGrid",
+	postListLayoutWaterfall = "postListLayoutWaterfall",
 
 	// 打赏页面
 	sponsor = "sponsor",

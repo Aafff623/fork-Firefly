@@ -11,8 +11,8 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 	// 主题色选择器开关（站点固定主题色，不开放调色）
 	themeColorSwitchable: false,
 
-	// 文章列表布局切换开关（固定网格，不开放切换）
-	layoutSwitchable: false,
+	// 文章列表布局切换开关（列表 / 卡片网格 / 瀑布流）
+	layoutSwitchable: true,
 
 	// 卡片边框和阴影开关（默认常开，不在面板暴露）
 	cardBorderSwitchable: false,

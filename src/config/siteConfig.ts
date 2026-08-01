@@ -126,9 +126,9 @@ export const siteConfig: SiteConfig = {
 
 	// 文章列表布局配置
 	postListLayout: {
-		// 默认布局模式："list" 列表模式（单列布局），"grid" 网格模式（多列布局）
+		// 默认布局："list" 列表 · "grid" 卡片网格 · "waterfall" 瀑布流
 		defaultMode: "grid",
-		// 移动端默认布局模式，不设置则跟随 defaultMode
+		// 移动端默认布局，不设置则跟随 defaultMode
 		mobileDefaultMode: "grid",
 		// 文章简介显示行数，设为 0 则不截断
 		descriptionLines: 2,
@@ -163,9 +163,9 @@ export const siteConfig: SiteConfig = {
 			// 是否显示阅读时间
 			showReadingTime: true,
 		},
-		// 网格布局配置，仅在 defaultMode 为 "grid" 或允许切换布局时生效
+		// 网格布局配置（仅作用于 grid 模式）
 		grid: {
-			// 是否开启瀑布流布局，同时有封面图和无封面图的混合文章推荐开启
+			// grid 模式下的 JS 最短列瀑布；与独立布局模式 waterfall 无关
 			masonry: false,
 			// 网格模式卡片最小宽度(px)，浏览器根据容器宽度自动计算列数
 			columnWidth: 320,

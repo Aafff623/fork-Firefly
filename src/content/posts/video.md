@@ -5,6 +5,7 @@ published: 2026-08-01
 description: 这篇文章演示如何在博客文章中嵌入视频。
 tags: [Firefly, Markdown, 视频]
 category: 写作
+image: ./images/minimax/v2-video.jpg
 slug: video
 ---
 

@@ -313,7 +313,8 @@ export const en: Translation = {
 	// Post List Layout
 	[Key.postListLayout]: "Post List Layout",
 	[Key.postListLayoutList]: "List",
-	[Key.postListLayoutGrid]: "Grid",
+	[Key.postListLayoutGrid]: "Cards",
+	[Key.postListLayoutWaterfall]: "Waterfall",
 
 	// Sponsor Page
 	[Key.sponsor]: "Sponsor",

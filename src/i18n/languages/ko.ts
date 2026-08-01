@@ -312,7 +312,8 @@ export const ko: Translation = {
 	// Post List Layout
 	[Key.postListLayout]: "게시글 목록 레이아웃",
 	[Key.postListLayoutList]: "목록형",
-	[Key.postListLayoutGrid]: "격자형",
+	[Key.postListLayoutGrid]: "카드형",
+	[Key.postListLayoutWaterfall]: "폭포형",
 
 	// Sponsor Page
 	[Key.sponsor]: "후원",

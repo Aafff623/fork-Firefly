@@ -7,6 +7,7 @@ tags: [Firefly, 加密]
 category: 功能
 password: "123456"
 passwordHint: "示例文章密码123456"
+image: ./images/minimax/v2-encrypt.jpg
 slug: encrypted-demo
 ---
 

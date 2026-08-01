@@ -8,8 +8,8 @@ category: 写作
 licenseName: "未授权"
 author: threetwoa
 sourceLink: "https://github.com/emn178/markdown"
+image: ./images/minimax/v2-md-tutorial.jpg
 slug: markdown-tutorial
-
 ---
 
 这是一个展示如何编写 Markdown 文件的示例。本文档汇总了核心语法与常见扩展（GFM）。

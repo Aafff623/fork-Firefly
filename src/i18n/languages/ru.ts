@@ -315,7 +315,8 @@ export const ru: Translation = {
 	// Макет списка сообщений
 	[Key.postListLayout]: "Макет списка сообщений",
 	[Key.postListLayoutList]: "Список",
-	[Key.postListLayoutGrid]: "Сетка",
+	[Key.postListLayoutGrid]: "Карточки",
+	[Key.postListLayoutWaterfall]: "Водопад",
 
 	// Страница спонсоров
 	[Key.sponsor]: "Спонсор",

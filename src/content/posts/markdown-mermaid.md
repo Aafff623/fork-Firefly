@@ -6,6 +6,7 @@ pinned: false
 description: 一个包含 Mermaid 的 Markdown 博客文章简单示例。
 tags: [Firefly, Markdown, Mermaid]
 category: 写作
+image: ./images/minimax/v2-mermaid.jpg
 slug: markdown-mermaid
 ---
 ## Markdown 中 Mermaid 图表完整指南

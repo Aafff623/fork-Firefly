@@ -1,0 +1,74 @@
+/* ===== 瀑布流布局（Tailwind Plus 10-subtle-grid 思路）=====
+ * CSS multi-column + break-inside: avoid；卡片壳复用 Firefly grid 卡样式。
+ */
+
+#post-list-container.waterfall-mode {
+	display: block;
+	column-count: 1;
+	column-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+	#post-list-container.waterfall-mode {
+		column-count: 2;
+	}
+}
+
+@media (min-width: 1024px) {
+	#post-list-container.waterfall-mode {
+		column-count: 3;
+	}
+}
+
+#post-list-container.waterfall-mode > .post-card-item {
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	page-break-inside: avoid;
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 1rem;
+	vertical-align: top;
+}
+
+#post-list-container.waterfall-mode .post-card-wrapper {
+	height: auto !important;
+}
+
+/* 封面：用明确 aspect-ratio 撑开高度（避免 h-full + height:auto 互相塌缩） */
+#post-list-container.waterfall-mode .post-card-image {
+	display: block !important;
+	position: relative !important;
+	width: 100% !important;
+	height: auto !important;
+	max-height: none !important;
+	overflow: hidden !important;
+	/* 默认中等比例；下方 nth-child 再拉开错落 */
+	aspect-ratio: 4 / 3 !important;
+}
+
+#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 1) .post-card-image {
+	aspect-ratio: 16 / 9 !important;
+}
+
+#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 2) .post-card-image {
+	aspect-ratio: 1 / 1 !important;
+}
+
+#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 3) .post-card-image {
+	aspect-ratio: 3 / 4 !important;
+}
+
+#post-list-container.waterfall-mode .post-card-image .cover-image-container {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	min-height: 0 !important;
+}
+
+#post-list-container.waterfall-mode .post-card-image img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	opacity: 1 !important;
+}

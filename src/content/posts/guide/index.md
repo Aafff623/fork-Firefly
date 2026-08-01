@@ -4,7 +4,7 @@ author: threetwoa
 published: 2026-08-01
 pinned: true
 description: "如何使用 Firefly 博客模板。"
-image: "./cover.avif"
+image: ../images/minimax/v2-guide.jpg
 tags: [Firefly, Markdown]
 category: 指南
 ---

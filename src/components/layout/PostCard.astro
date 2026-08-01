@@ -298,21 +298,28 @@ const minutes = remarkPluginFrontmatter.minutes;
     }
   }
 
-  /* === Grid Mode Styles === */
-  /* 网格模式：封面在顶部（移动端和桌面端一致） */
-  :global(.grid-mode) .post-card-wrapper {
+  /* === Grid / Waterfall Mode Styles === */
+  /* 封面在顶部（网格与瀑布共用卡片壳） */
+  :global(:is(.grid-mode, .waterfall-mode)) .post-card-wrapper {
     flex-direction: column-reverse !important;
-    height: 100% !important;
     justify-content: flex-end !important;
   }
 
-  :global(.grid-mode) .post-card-content {
+  :global(.grid-mode) .post-card-wrapper {
+    height: 100% !important;
+  }
+
+  :global(.waterfall-mode) .post-card-wrapper {
+    height: auto !important;
+  }
+
+  :global(:is(.grid-mode, .waterfall-mode)) .post-card-content {
     width: 100% !important;
     height: auto !important;
     flex-grow: 1 !important;
   }
 
-  :global(.grid-mode) .post-card-image {
+  :global(:is(.grid-mode, .waterfall-mode)) .post-card-image {
     position: relative !important;
     top: auto !important;
     bottom: auto !important;
@@ -324,23 +331,23 @@ const minutes = remarkPluginFrontmatter.minutes;
     aspect-ratio: 2/1 !important;
   }
 
-  :global(.grid-mode) .description {
+  :global(:is(.grid-mode, .waterfall-mode)) .description {
     flex-grow: 0 !important;
   }
 
-  :global(.grid-mode) .stats {
+  :global(:is(.grid-mode, .waterfall-mode)) .stats {
     margin-top: auto !important;
   }
 
-  :global(.grid-mode) .has-cover .post-card-content {
+  :global(:is(.grid-mode, .waterfall-mode)) .has-cover .post-card-content {
     padding-top: 0.8rem !important;
   }
 
-  :global(.grid-mode) .no-cover .post-card-content {
+  :global(:is(.grid-mode, .waterfall-mode)) .no-cover .post-card-content {
     width: calc(100% - 52px - 12px) !important;
   }
 
-  :global(.grid-mode) .post-card-enter-btn {
+  :global(:is(.grid-mode, .waterfall-mode)) .post-card-enter-btn {
     display: flex !important;
   }
 </style>

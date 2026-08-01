@@ -4,7 +4,7 @@ author: threetwoa
 published: 2026-08-01
 updated: 2026-08-01
 description: "了解 Firefly 中的 Markdown 功能"
-image: ""
+image: ./images/minimax/v2-markdown.jpg
 tags: [Firefly, Markdown]
 category: 写作
 slug: markdown-extended

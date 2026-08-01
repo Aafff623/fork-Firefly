@@ -72,7 +72,8 @@ let hue = $state(getHue());
 const defaultHue = getDefaultHue();
 let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
 const defaultWallpaperMode = backgroundWallpaper.mode;
-let currentLayout: "list" | "grid" = $state("list");
+type PostListLayoutMode = "list" | "grid" | "waterfall";
+let currentLayout: PostListLayoutMode = $state("list");
 const defaultLayout = siteConfig.postListLayout.defaultMode;
 const mobileDefaultLayout =
 	siteConfig.postListLayout.mobileDefaultMode || defaultLayout;
@@ -425,13 +426,9 @@ function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 function checkScreenSize() {
 	isSmallScreen = window.innerWidth < 1200;
 	isMobileWidth = window.innerWidth < 780;
-	// 低于380px强制网格模式
+	// 低于380px强制卡片网格（列表过窄）
 	if (window.innerWidth < 380 && currentLayout === "list") {
-		currentLayout = "grid";
-		const event = new CustomEvent("layoutChange", {
-			detail: { layout: "grid" },
-		});
-		window.dispatchEvent(event);
+		setLayout("grid");
 	}
 }
 
@@ -459,20 +456,19 @@ function refreshAllRangeProgress() {
 	});
 }
 
-function switchLayout() {
-	if (!mounted || isSwitching) return;
+function setLayout(layout: PostListLayoutMode) {
+	if (!mounted || isSwitching || currentLayout === layout) return;
 
 	isSwitching = true;
-	currentLayout = currentLayout === "list" ? "grid" : "list";
+	currentLayout = layout;
 	localStorage.setItem("postListLayout", currentLayout);
 
-	// 触发自定义事件，通知页面布局已改变
-	const event = new CustomEvent("layoutChange", {
-		detail: { layout: currentLayout },
-	});
-	window.dispatchEvent(event);
+	window.dispatchEvent(
+		new CustomEvent("layoutChange", {
+			detail: { layout: currentLayout },
+		}),
+	);
 
-	// 动画完成后重置状态
 	setTimeout(() => {
 		isSwitching = false;
 	}, 500);
@@ -480,6 +476,20 @@ function switchLayout() {
 
 onMount(() => {
 	mounted = true;
+
+	// 先恢复布局偏好，再跑视口校正（避免 <380 强制网格冲掉已存选择）
+	const savedLayout = localStorage.getItem("postListLayout");
+	if (
+		savedLayout === "list" ||
+		savedLayout === "grid" ||
+		savedLayout === "waterfall"
+	) {
+		currentLayout = savedLayout;
+	} else {
+		currentLayout =
+			window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
+	}
+
 	checkScreenSize();
 
 	// 从localStorage读取保存的壁纸模式
@@ -516,15 +526,6 @@ onMount(() => {
 	overlayBlur = getStoredOverlayBlur();
 	overlayCardOpacity = getStoredOverlayCardOpacity();
 
-	// 从localStorage读取用户偏好布局
-	const savedLayout = localStorage.getItem("postListLayout");
-	if (savedLayout && (savedLayout === "list" || savedLayout === "grid")) {
-		currentLayout = savedLayout;
-	} else {
-		currentLayout =
-			window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
-	}
-
 	// 监听窗口大小变化
 	window.addEventListener("resize", checkScreenSize);
 
@@ -537,7 +538,7 @@ onMount(() => {
 // 监听布局变化事件
 onMount(() => {
 	const handleCustomEvent = (event: Event) => {
-		const customEvent = event as CustomEvent<{ layout: "list" | "grid" }>;
+		const customEvent = event as CustomEvent<{ layout: PostListLayoutMode }>;
 		currentLayout = customEvent.detail.layout;
 	};
 
@@ -669,34 +670,48 @@ $effect(() => {
 					</div>
 				</button>
 			</div>
-			<div class="flex gap-2">
+			<div class="flex gap-1.5">
 				<button
 					aria-label={i18n(I18nKey.postListLayoutList)}
-					class="flex-1 btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={currentLayout !== 'list'}
 					class:bg-(--btn-regular-bg-hover)={currentLayout === 'list'}
 					disabled={isSwitching}
-					onclick={switchLayout}
+					onclick={() => setLayout('list')}
 					title={i18n(I18nKey.postListLayoutList)}
 				>
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+					<svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
 						<path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
 					</svg>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutList)}</span>
 				</button>
 				<button
 					aria-label={i18n(I18nKey.postListLayoutGrid)}
-					class="flex-1 btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={currentLayout !== 'grid'}
 					class:bg-(--btn-regular-bg-hover)={currentLayout === 'grid'}
 					disabled={isSwitching}
-					onclick={switchLayout}
+					onclick={() => setLayout('grid')}
 					title={i18n(I18nKey.postListLayoutGrid)}
 				>
-					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+					<svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
 						<path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/>
 					</svg>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutGrid)}</span>
+				</button>
+				<button
+					aria-label={i18n(I18nKey.postListLayoutWaterfall)}
+					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
+					class:opacity-60={currentLayout !== 'waterfall'}
+					class:bg-(--btn-regular-bg-hover)={currentLayout === 'waterfall'}
+					disabled={isSwitching}
+					onclick={() => setLayout('waterfall')}
+					title={i18n(I18nKey.postListLayoutWaterfall)}
+				>
+					<svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+						<path d="M4 4h5v7H4V4zm0 9h5v7H4v-7zm7-9h5v4h-5V4zm0 6h5v10h-5V10zm7-6h5v10h-5V4zm0 12h5v5h-5v-5z"/>
+					</svg>
+					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutWaterfall)}</span>
 				</button>
 			</div>
 		</div>
