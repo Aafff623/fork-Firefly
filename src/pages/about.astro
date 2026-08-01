@@ -15,11 +15,82 @@ if (!aboutPost) {
 const { Content } = await render(aboutPost);
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
-    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
-            <Markdown class="mt-2">
+    <div class="about-shell flex w-full overflow-hidden relative min-h-32">
+        <div class="about-panel z-10 relative w-full">
+            <Markdown class="about-md mt-1">
                 <Content />
             </Markdown>
         </div>
     </div>
 </MainGridLayout>
+
+<style>
+  .about-shell {
+    border-radius: 0.35rem;
+  }
+
+  .about-panel {
+    background: var(--card-bg);
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    border-radius: 0.35rem;
+    padding: 1.35rem 1.5rem 1.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .about-panel {
+      padding: 1.75rem 2.25rem 2.25rem;
+    }
+  }
+
+  :global(.about-md .about-mast) {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--content-meta) 80%, transparent);
+  }
+
+  :global(.about-md .about-pull) {
+    margin: 0 0 1.5rem;
+    padding: 0 0 1.1rem;
+    border: 0;
+    border-bottom: 3px solid var(--primary);
+    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--deep-text);
+    quotes: none;
+  }
+
+  :global(.about-md .about-pull p) {
+    margin: 0;
+  }
+
+  :global(.about-md .about-strike) {
+    text-decoration: line-through;
+    color: color-mix(in oklab, var(--content-meta) 70%, transparent);
+    font-weight: 500;
+  }
+
+  :global(.about-md h2) {
+    font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+    margin-top: 1.75rem;
+    margin-bottom: 0.65rem;
+    border: 0;
+    padding: 0;
+  }
+
+  :global(.about-md h2:first-of-type) {
+    margin-top: 0.25rem;
+  }
+</style>

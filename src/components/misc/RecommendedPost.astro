@@ -38,13 +38,13 @@ const noRandomPostsText = i18n(I18nKey.noRandomPosts);
         <a
           href={getPostUrlBySlug(post.id)}
           class:list={[
-            "group flex items-center gap-3 px-3 py-3 -mx-1 rounded-lg",
-            "transition-all hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]",
-            idx < relatedPosts.length - 1 && "border-b border-dashed border-(--line-divider)",
+            "group recommend-row flex items-center gap-3 px-1 py-3 -mx-1",
+            "transition-[padding,color] duration-150 hover:pl-2 active:scale-[0.99]",
+            idx < relatedPosts.length - 1 && "border-b border-(--line-divider)",
           ]}
         >
-          <div class="shrink-0 w-6 h-6 rounded-md bg-(--enter-btn-bg) text-(--primary) flex items-center justify-center text-sm font-bold transition">
-            {idx + 1}
+          <div class="recommend-num shrink-0 text-(--primary) text-xs font-medium tabular-nums tracking-wide">
+            {String(idx + 1).padStart(2, "0")}
           </div>
           <div class="flex-1 min-w-0">
             <div class="font-bold text-sm text-black/75 dark:text-white/75 truncate transition group-hover:text-(--primary)">
@@ -151,12 +151,12 @@ function renderRandomPosts() {
 
       var a = document.createElement('a');
       a.href = href;
-      a.className = 'group flex items-center gap-3 px-3 py-3 -mx-1 rounded-lg transition-all hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]'
-        + (idx < picked.length - 1 ? ' border-b border-dashed border-(--line-divider)' : '');
+      a.className = 'group recommend-row flex items-center gap-3 px-1 py-3 -mx-1 transition-[padding,color] duration-150 hover:pl-2 active:scale-[0.99]'
+        + (idx < picked.length - 1 ? ' border-b border-(--line-divider)' : '');
 
       var num = document.createElement('div');
-      num.className = 'shrink-0 w-6 h-6 rounded-md bg-(--enter-btn-bg) text-(--primary) flex items-center justify-center text-sm font-bold transition';
-      num.textContent = String(idx + 1);
+      num.className = 'recommend-num shrink-0 text-(--primary) text-xs font-medium tabular-nums tracking-wide';
+      num.textContent = String(idx + 1).padStart(2, '0');
 
       var content = document.createElement('div');
       content.className = 'flex-1 min-w-0';

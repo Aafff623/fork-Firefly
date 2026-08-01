@@ -25,6 +25,8 @@ interface Props {
 	password?: boolean;
 	style: string;
 	loading?: "lazy" | "eager";
+	/** list 模式变体：featured=首篇 · row=细线行；grid 下由 CSS 重置为普通卡 */
+	listVariant?: "featured" | "row";
 }
 const {
 	entry,
@@ -39,6 +41,7 @@ const {
 	password,
 	style,
 	loading = "lazy",
+	listVariant,
 } = Astro.props;
 const className = Astro.props.class;
 
@@ -93,6 +96,8 @@ const minutes = remarkPluginFrontmatter.minutes;
     "post-card-wrapper",
     hasCover ? "has-cover" : "no-cover",
     pinned ? "pinned" : "",
+    listVariant === "featured" && "post-card-wrapper--featured",
+    listVariant === "row" && "post-card-wrapper--row",
     "card-base flex flex-col-reverse w-full rounded-(--radius-large) overflow-hidden relative",
     className,
   ]}
@@ -165,9 +170,9 @@ const minutes = remarkPluginFrontmatter.minutes;
           <a
             href={getTagUrl(tag)}
             aria-label={`View all posts with the ${tag.trim()} tag`}
-            class="transition text-xs font-medium px-2.5 py-1 rounded-full
+            class="post-card-tag transition text-xs font-medium px-2.5 py-1 rounded-full
               bg-black/5 dark:bg-white/10 text-neutral-500 dark:text-neutral-400
-              hover:bg-(--btn-regular-bg) hover:text-(--btn-content)"
+              hover:bg-(--btn-regular-bg) hover:text-(--primary)"
           >
             #{tag.trim()}
           </a>
@@ -243,93 +248,53 @@ const minutes = remarkPluginFrontmatter.minutes;
     line-clamp: var(--descriptionClampLines);
   }
 
-  /* === List Mode Mobile Styles === */
-  /* 移动端列表模式：封面在右侧，内容缩小 */
-  :global(.list-mode) .post-card-wrapper {
+  /* === List Featured：封面侧栏（row 变体由 post-card.css 处理） === */
+  :global(.list-mode) .post-card-wrapper--featured {
     flex-direction: row !important;
   }
 
-  :global(.list-mode) .has-cover .post-card-content {
+  :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-content {
     width: calc(100% - 9rem - 0.75rem) !important;
-    padding: 0.75rem 0.5rem 0.75rem 0.75rem !important;
+    padding: 0.85rem 0.65rem 0.85rem 0.9rem !important;
   }
 
-  :global(.list-mode) .has-cover .post-card-image {
+  :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-image {
     position: absolute !important;
     top: 0.5rem !important;
     bottom: 0.5rem !important;
     right: 0.5rem !important;
     width: 9rem !important;
     aspect-ratio: auto !important;
-    border-radius: 0.75rem !important;
+    border-radius: 0.5rem !important;
   }
 
-  :global(.list-mode) .post-card-title {
-    font-size: 1.125rem !important;
-    line-height: 1.75rem !important;
-    margin-bottom: 0.5rem !important;
+  :global(.list-mode) .post-card-wrapper--featured .post-card-title {
+    font-size: 1.2rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 0.45rem !important;
   }
 
-  :global(.list-mode) .stats {
-    gap: 0.25rem !important;
+  :global(.list-mode) .post-card-wrapper--featured.no-cover .post-card-content {
+    width: 100% !important;
   }
 
-  :global(.list-mode) .no-cover .post-card-content {
-    width: calc(100% - 52px - 12px) !important;
-  }
-
-  :global(.list-mode) .post-card-enter-btn {
-    display: flex !important;
-  }
-
-  /* 移动端列表模式 - 隐藏tags，只在有空间时显示 */
-  :global(.list-mode) .stats a {
-    font-size: 0.65rem !important;
-    padding: 0.125rem 0.375rem !important;
-    height: 1.25rem !important;
-  }
-
-  /* === Desktop List Mode overrides === */
   @media (min-width: 768px) {
-    :global(.list-mode) .post-card-wrapper {
-      flex-direction: row !important;
-    }
-
-    :global(.list-mode) .has-cover .post-card-content {
+    :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-content {
       width: calc(100% - var(--coverWidth) - 1.5rem) !important;
-      padding: 1.75rem 0.5rem 1.75rem 2.25rem !important;
+      padding: 1.35rem 0.5rem 1.35rem 1.5rem !important;
     }
 
-    :global(.list-mode) .has-cover .post-card-image {
+    :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-image {
       top: 1rem !important;
       bottom: 1rem !important;
       right: 1rem !important;
       width: var(--coverWidth) !important;
-      border-radius: 0.75rem !important;
+      border-radius: 0.5rem !important;
     }
 
-    :global(.list-mode) .post-card-title {
-      font-size: 1.5rem !important;
-      line-height: 2rem !important;
-      margin-bottom: 0.75rem !important;
-    }
-
-    :global(.list-mode) .description {
-      font-size: inherit !important;
-    }
-
-    :global(.list-mode) .stats a {
-      font-size: 0.75rem !important;
-      padding: 0.25rem 0.5rem !important;
-      height: 1.5rem !important;
-    }
-
-    :global(.list-mode) .no-cover .post-card-content {
-      width: calc(100% - 52px - 12px) !important;
-    }
-
-    :global(.list-mode) .post-card-enter-btn {
-      display: flex !important;
+    :global(.list-mode) .post-card-wrapper--featured .post-card-title {
+      font-size: 1.45rem !important;
+      line-height: 1.35 !important;
     }
   }
 
