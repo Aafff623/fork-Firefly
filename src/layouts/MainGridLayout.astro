@@ -944,7 +944,7 @@ const hasMultipleImages =
         <div class="pointer-events-auto">
             {spritePetConfig.enable ? (
                 <SpritePet
-                    client:load
+                    client:only="svelte"
                     petId={spritePetConfig.petId}
                     position={spritePetConfig.position}
                     offsetX={spritePetConfig.offset.x}
@@ -952,8 +952,9 @@ const hasMultipleImages =
                     size={spritePetConfig.size}
                     motionEnabled={spritePetConfig.motionEnabled}
                     draggable={spritePetConfig.draggable}
-                    clickWave={spritePetConfig.clickWave}
+                    clickInteract={spritePetConfig.clickInteract}
                     lookFollow={spritePetConfig.lookFollow}
+                    reactToSiteUi={spritePetConfig.reactToSiteUi}
                     hideOnMobile={spritePetConfig.responsive.hideOnMobile}
                     mobileBreakpoint={spritePetConfig.responsive.mobileBreakpoint}
                     zIndex={spritePetConfig.zIndex}

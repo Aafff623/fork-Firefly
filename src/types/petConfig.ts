@@ -15,10 +15,12 @@ export type SpritePetConfig = {
 	motionEnabled: boolean;
 	/** 是否允许拖拽并记忆位置 */
 	draggable: boolean;
-	/** 点击时是否播放挥手 */
-	clickWave: boolean;
+	/** 点击宠物本体时播放交互动作（分部位：头/身/脚） */
+	clickInteract: boolean;
 	/** 悬停是否视线跟随指针 */
 	lookFollow: boolean;
+	/** 点击站点常用控件时，桌宠联动反应 */
+	reactToSiteUi: boolean;
 	responsive: {
 		hideOnMobile: boolean;
 		mobileBreakpoint: number;

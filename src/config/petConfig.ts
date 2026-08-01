@@ -8,10 +8,10 @@ import type { SpritePetConfig } from "../types/petConfig";
  * 若多个 enable=true，运行时优先桌宠 → Spine → Live2D。
  */
 export const spritePetConfig: SpritePetConfig = {
-	// 桌宠开关（默认关闭，打开后与看板娘互斥）
+	// 桌宠开关
 	enable: true,
 
-	// 内置角色：dada-code | huhu-plan | bubu-fix | huihui-build
+	// 搭搭：帧偏移微调更完整，动作观感更稳
 	petId: "dada-code",
 
 	position: "bottom-left",
@@ -22,8 +22,10 @@ export const spritePetConfig: SpritePetConfig = {
 
 	motionEnabled: true,
 	draggable: true,
-	clickWave: true,
+	clickInteract: true,
 	lookFollow: true,
+	// 点主题切换 / 搜索 / 回顶等控件时，桌宠跟着做对应动作
+	reactToSiteUi: true,
 
 	responsive: {
 		hideOnMobile: true,
