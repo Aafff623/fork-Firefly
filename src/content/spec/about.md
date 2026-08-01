@@ -1,29 +1,31 @@
-# 关于我 / About Me
+# 关于我
 
-你好！我是 **夏叶** ，一个在数字世界中默默无闻的一片叶子。
+你好，我是 **threetwoa**（GitHub: [Aafff623](https://github.com/Aafff623)）。
 
-## 🛠️ 关于本站
+中北大学软件工程二年级。接下来想找一份能深入 Java / Python 业务生态的实习，同时继续做 Agent Engineering。
 
-这个网站使用 **Astro** 框架构建，采用了 [Firefly](https://github.com/CuteLeaf/Firefly) 模板，Firefly 是基于 [Fuwari](https://github.com/saicaca/fuwari) 的二次开发。
+路径大概是这样：先学会真实团队怎么把业务软件做出来、养得住；把 Agent Engineering 练扎实；用 Harness Engineering 的方式，让 AI 协作可复现、可测试、可审查；再把这套判断力带到独立产品里。长期目标说起来简单、做起来难——成为能从想法一路做到部署的独立开发者。
 
-**Firefly** 是一款基于 Astro 框架和 Fuwari 模板开发的清新美观且现代化个人博客主题模板，专为技术爱好者和内容创作者设计。该主题融合了现代 Web 技术栈，提供了丰富的功能模块和高度可定制的界面，让您能够轻松打造出专业且美观的个人博客网站。
+代码之外，我会写博客、打理数字花园、追番，以及把不想被时间带走的念头记下来。
 
+## 在做什么
 
-**🖥️在线预览： [Firefly - Demo site](https://firefly.cuteleaf.cn/)**
+- **Agent Engineering**：把 AI 工具锻成可复用、可上线的工作流；scoped task、仓库规则、可复现命令、测试与 diff review，最后对自己合并的每一行负责。
+- **Java / Python 业务系统**：服务边界、持久化、缓存、部署与维护。
+- **系统与推理**：vLLM、调度与吞吐；也曾参与领跑杯 Hygon DCU 相关优化。
 
-**🏠我的博客： [https://blog.cuteleaf.cn](https://blog.cuteleaf.cn/)**
+## 链接
 
-**📝Firefly使用文档： [https://docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/)**
+- [GitHub](https://github.com/Aafff623)
+- [Digital Garden](https://threetwoa-digital-garden.vercel.app/)
+- [Email](mailto:laiyif68@gmail.com)
 
-**⭐Firefly开源地址：[https://github.com/CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)** 
+## 关于本站
 
-**⭐Fuwari开源地址：[https://github.com/saicaca/fuwari](https://github.com/saicaca/fuwari)**
+本站基于 [Firefly](https://github.com/CuteLeaf/Firefly)（Astro 静态博客主题）二次开发，部署于 Vercel。
 
-::github{repo="CuteLeaf/Firefly"}
-
-::github{repo="saicaca/fuwari"}
+::github{repo="Aafff623/fork-Firefly"}
 
 ---
 
-*感谢你的来访！希望在这里能找到对你有用的内容！*
-
+*Last aligned with GitHub profile · July 2026*

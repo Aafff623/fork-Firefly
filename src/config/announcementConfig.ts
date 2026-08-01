@@ -1,23 +1,20 @@
 import type { AnnouncementConfig } from "../types/announcementConfig";
 
 export const announcementConfig: AnnouncementConfig = {
-	// 公告标题
-	title: "公告",
+	// 侧栏近况条：状态入口，不是欢迎语
+	title: "此刻",
 
-	// 公告内容
-	content: "欢迎来到我的博客！这是一则示例公告。",
+	content:
+		"正在把 AI 工具锻成可复用、能上线的工作流；少写一点代码，多留一点架构的余白。新笔记会陆续放进博客与数字花园。",
 
-	// 是否允许用户关闭公告
+	icon: "material-symbols:flare-rounded",
+	type: "info",
 	closable: true,
 
 	link: {
-		// 启用链接
 		enable: true,
-		// 链接文本
-		text: "了解更多",
-		// 链接 URL
-		url: "/about/",
-		// 内部链接
-		external: false,
+		text: "走进数字花园",
+		url: "https://threetwoa-digital-garden.vercel.app",
+		external: true,
 	},
 };
