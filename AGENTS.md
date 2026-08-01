@@ -2,7 +2,6 @@
 
 > **Output Style**: `humanizer-output-style` skill — 统一语气与去 AI 味。路径：`~/.claude/skills/humanizer-output-style/SKILL.md`  
 > **Windows Rules**: `.cursor/rules/windows-path-discipline.mdc` · `windows-shell-discipline.mdc`  
-> **Answer Format**: `.cursor/rules/answer-format.mdc`  
 > **Commit History**: `.cursor/rules/commit-history.mdc`  
 > **Karpathy**: `.cursor/rules/karpathy-guidelines.mdc`
 

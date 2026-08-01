@@ -10,7 +10,7 @@
 
 ## 回答格式
 
-优先遵循 `.cursor/rules/answer-format.mdc`：先简述结论，再用表格 / 列表；长文才分段。
+先结论后依据；能表不叙。不强制「简述 / Summary / Full」固定章节名。
 
 ## 禁止
 
