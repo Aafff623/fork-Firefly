@@ -1,4 +1,4 @@
-# Commit 记录 · master · 2026-08-01 · Sprite Pet 交互与场景
+﻿# Commit 记录 · master · 2026-08-01 · Sprite Pet 交互与场景
 
 > 状态：**executed**  
 > 前置：`0444b972 feat(pets): 接入 SpritePet 桌宠并与看板娘互斥`
@@ -6,7 +6,7 @@
 ## 已执行提交
 
 1. `23a6f45b` — `feat(pets): 丰富桌宠点击拖拽交互并修复朝向与捕获`
-2. （本文件随第二提交入库）— `feat(pets): 接入文章/404/Swup/页脚等场景联动`
+2. `'@ + $h2 + @'` — `feat(pets): 接入文章/404/Swup/页脚等场景联动`
 
 ## 纳入文件（第二提交）
 
