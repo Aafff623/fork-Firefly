@@ -145,74 +145,170 @@ export class TOCManager {
 	}
 
 	/**
-	 * 获取可见的标题ID
+	 * 按「离视口焦点带距离」给目录项打分。
+	 * 越靠近屏幕中部（略偏上的阅读焦点）focus 越高 → 目录高亮越深；往上下两侧衰减。
 	 */
-	private getVisibleHeadingIds(): string[] {
-		const headings = this.getAllHeadings();
-		const visibleHeadingIds: string[] = [];
+	private scoreTocFocus(): { item: HTMLElement; focus: number }[] {
+		const headings = this.getAllHeadings().filter((h) => h.id);
+		if (headings.length === 0) return [];
 
-		headings.forEach((heading) => {
-			if (heading.id) {
-				const rect = heading.getBoundingClientRect();
-				const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+		const vh = window.innerHeight || 1;
+		// 阅读焦点：略高于几何中心
+		const focusY = vh * 0.42;
+		// 中间高原：约 ±0.22 屏高内保持满高亮（跨度大）
+		const plateau = vh * 0.22;
+		// 高原之外陡降：再约 0.18 屏高基本熄灭
+		const falloff = vh * 0.18;
+		const margin = vh * 0.15;
 
-				if (isVisible) {
-					visibleHeadingIds.push(heading.id);
-				}
-			}
-		});
-
-		// 如果没有可见标题，选择最接近屏幕顶部的标题
-		if (visibleHeadingIds.length === 0 && headings.length > 0) {
-			let closestHeading: string | null = null;
-			let minDistance = Number.POSITIVE_INFINITY;
-
-			headings.forEach((heading) => {
-				if (heading.id) {
-					const rect = heading.getBoundingClientRect();
-					const distance = Math.abs(rect.top);
-
-					if (distance < minDistance) {
-						minDistance = distance;
-						closestHeading = heading.id;
-					}
-				}
-			});
-
-			if (closestHeading) {
-				visibleHeadingIds.push(closestHeading);
-			}
+		const byId = new Map<string, HTMLElement>();
+		for (const item of this.tocItems) {
+			const id = item.dataset.headingId;
+			if (id) byId.set(id, item);
 		}
 
-		return visibleHeadingIds;
+		const scored: { item: HTMLElement; focus: number; dist: number }[] = [];
+
+		for (const heading of headings) {
+			const tocItem = byId.get(heading.id);
+			if (!tocItem) continue;
+
+			const rect = heading.getBoundingClientRect();
+			// 允许略超出视口仍参与衰减，避免边界闪断
+			if (rect.bottom < -margin || rect.top > vh + margin) continue;
+
+			const mid = (rect.top + rect.bottom) / 2;
+			const dist = Math.abs(mid - focusY);
+			// 高原内 = 1；之外用立方陡降，两侧很快变淡
+			let focus: number;
+			if (dist <= plateau) {
+				focus = 1;
+			} else {
+				const t = Math.min(1, (dist - plateau) / falloff);
+				focus = (1 - t) ** 3;
+			}
+			scored.push({ item: tocItem, focus, dist });
+		}
+
+		// 全部在屏外时：取离焦点带最近的一个标题
+		if (scored.length === 0) {
+			let best: { item: HTMLElement; dist: number } | null = null;
+			for (const heading of headings) {
+				const tocItem = byId.get(heading.id);
+				if (!tocItem) continue;
+				const rect = heading.getBoundingClientRect();
+				const mid = (rect.top + rect.bottom) / 2;
+				const dist = Math.abs(mid - focusY);
+				if (!best || dist < best.dist) best = { item: tocItem, dist };
+			}
+			if (best) {
+				return [{ item: best.item, focus: 1 }];
+			}
+			return [];
+		}
+
+		return scored.map(({ item, focus }) => ({ item, focus }));
+	}
+
+	/** 清掉正文标题上一次的焦点高亮 */
+	private clearHeadingFocus(): void {
+		const container = this.getContentContainer();
+		if (!container) return;
+		for (const el of container.querySelectorAll<HTMLElement>(
+			":is(h1,h2,h3,h4,h5,h6).heading-focus",
+		)) {
+			el.classList.remove("heading-focus", "heading-focus-primary");
+			el.style.removeProperty("--heading-focus");
+		}
+	}
+
+	/** 运行时剥离标题旁残留的锚点井号节点（防缓存/旧 HTML） */
+	private stripHeadingAnchors(): void {
+		const container = this.getContentContainer();
+		if (!container) return;
+		for (const a of container.querySelectorAll(
+			":is(h1,h2,h3,h4,h5,h6) a.anchor, :is(h1,h2,h3,h4,h5,h6) .anchor",
+		)) {
+			a.remove();
+		}
 	}
 
 	/**
-	 * 更新活动状态
+	 * 更新活动状态（中心深、两侧淡）+ 同步正文标题暖黄高亮
 	 */
 	public updateActiveState(): void {
 		if (!this.tocItems || this.tocItems.length === 0) return;
 
-		// 移除所有活动状态
-		this.tocItems.forEach((item) => {
-			item.classList.remove("visible");
-		});
+		this.stripHeadingAnchors();
 
-		const visibleHeadingIds = this.getVisibleHeadingIds();
+		for (const item of this.tocItems) {
+			item.classList.remove("visible", "toc-focus-primary", "toc-focus-band");
+			item.style.removeProperty("--toc-focus");
+		}
+		this.clearHeadingFocus();
 
-		// 找到对应的TOC项并添加活动状态
-		const activeItems = this.tocItems.filter((item) => {
-			const headingId = item.dataset.headingId;
-			return headingId && visibleHeadingIds.includes(headingId);
-		});
+		const scored = this.scoreTocFocus();
+		if (scored.length === 0) {
+			this.updateActiveIndicator([]);
+			return;
+		}
 
-		// 添加活动状态
-		activeItems.forEach((item) => {
+		const FOCUS_SHOW = 0.08;
+		const PRIMARY_BAND = 0.85;
+		const activeItems: HTMLElement[] = [];
+		let primary: HTMLElement | null = null;
+		let primaryFocus = -1;
+
+		for (const { item, focus } of scored) {
+			if (focus < FOCUS_SHOW) continue;
+			const clamped = Math.min(1, Math.max(0, focus));
 			item.classList.add("visible");
-		});
+			item.style.setProperty("--toc-focus", clamped.toFixed(3));
+			activeItems.push(item);
 
-		// 更新活动指示器
-		this.updateActiveIndicator(activeItems);
+			const headingId = item.dataset.headingId;
+			if (headingId) {
+				const heading = document.getElementById(headingId);
+				if (heading) {
+					heading.classList.add("heading-focus");
+					heading.style.setProperty("--heading-focus", clamped.toFixed(3));
+				}
+			}
+
+			if (clamped > primaryFocus) {
+				primaryFocus = clamped;
+				primary = item;
+			}
+		}
+
+		// 高原内都可带 primary 气质；取最高分者为 toc-focus-primary
+		if (primary && primaryFocus >= PRIMARY_BAND) {
+			primary.classList.add("toc-focus-primary");
+			const primaryId = primary.dataset.headingId;
+			if (primaryId) {
+				document
+					.getElementById(primaryId)
+					?.classList.add("heading-focus-primary");
+			}
+			// 同带内其它高分项也拉满，强化「中间一大块」
+			for (const { item, focus } of scored) {
+				if (item === primary) continue;
+				if (focus >= PRIMARY_BAND) {
+					item.classList.add("toc-focus-band");
+					item.style.setProperty("--toc-focus", "1");
+					const id = item.dataset.headingId;
+					if (id) {
+						const h = document.getElementById(id);
+						if (h) {
+							h.classList.add("heading-focus", "heading-focus-primary");
+							h.style.setProperty("--heading-focus", "1");
+						}
+					}
+				}
+			}
+		}
+
+		this.updateActiveIndicator(primary ? [primary] : activeItems);
 	}
 
 	/**

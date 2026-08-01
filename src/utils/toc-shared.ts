@@ -24,8 +24,15 @@ export interface TocItem {
 	badgeKind: "index" | "dot" | "dot-sm";
 	/** badgeKind 为 index 时的编号（从 1 递增） */
 	badgeIndex?: number;
+	/** badgeKind 为 index 时的两位展示（01、02…） */
+	badgeLabel?: string;
 	text: string;
 	labelPrimary: boolean;
+}
+
+/** Index-First：编号两位补零 */
+export function formatTocBadgeLabel(index: number): string {
+	return String(Math.max(0, Math.trunc(index))).padStart(2, "0");
 }
 
 /**
@@ -60,9 +67,11 @@ export function computeTocItems(
 
 		let badgeKind: "index" | "dot" | "dot-sm";
 		let badgeIndex: number | undefined;
+		let badgeLabel: string | undefined;
 		if (depth === minDepth) {
 			badgeKind = "index";
 			badgeIndex = indexCount;
+			badgeLabel = formatTocBadgeLabel(indexCount);
 			indexCount++;
 		} else if (depth === minDepth + 1) {
 			badgeKind = "dot";
@@ -79,6 +88,7 @@ export function computeTocItems(
 			depthLevel,
 			badgeKind,
 			badgeIndex,
+			badgeLabel,
 			text,
 			labelPrimary: depth <= minDepth + 1,
 		});
@@ -103,7 +113,12 @@ export function escapeHtmlAttr(value: string): string {
  * 徽章内部 HTML（客户端字符串拼接用）
  */
 export function renderBadgeInnerHTML(item: TocItem): string {
-	if (item.badgeKind === "index") return String(item.badgeIndex ?? "");
+	if (item.badgeKind === "index") {
+		return (
+			item.badgeLabel ??
+			formatTocBadgeLabel(item.badgeIndex ?? 0)
+		);
+	}
 	if (item.badgeKind === "dot") return '<span class="toc-badge-dot"></span>';
 	return '<span class="toc-badge-dot toc-badge-dot-sm"></span>';
 }
