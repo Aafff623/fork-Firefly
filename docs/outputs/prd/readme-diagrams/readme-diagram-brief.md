@@ -29,7 +29,7 @@
 | 为什么 | — | 边界表已写 |
 | 功能 | `features.png` | 表已写；图待出（Prompt §二.1） |
 | Preview | README 壳 8090 | 声明无 Gallery |
-| Showcase | `showcase-*.png`（6 张：home/post/dynamic/archive/about/gallery） | ✅ Playwright 已截满两行三列，勿生图 |
+| Showcase | `showcase-*.png`（6 张：home/post/dynamic/archive/about/gallery） | ✅ 2026-08-01 按 reading-ui 重截（`scripts/capture-readme-showcase.py`） |
 | 架构 | `architecture.png` | 图待出（Prompt §二.2；tech-stack 并入此图） |
 | 主链路 | `workflow.png` | 图待出（Prompt §三） |
 | 快速开始 / 目录 / 路线图 / 文档 | — | 已维护 |
@@ -55,6 +55,7 @@
 - [x] README 居中 Header + fork 说明 + Showcase 三列表
 - [x] 参照仓链接写入文档节
 - [x] Showcase Playwright 截图落盘并写入 README
+- [x] 2026-08-01：reading-ui 后重截 6 张 + README 文案同步
 - [x] banner.png 已挂 README Header
 - [ ] features / architecture / workflow 说明图
 - [x] 本地 `8090` 预览壳 OK → push → 核 GitHub README 渲染

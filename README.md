@@ -55,17 +55,21 @@
 
 - **Config-driven** — 站点 / 导航 / 侧栏 / 壁纸 / 字体 / 评论集中在 `src/config/*.ts`
 - **Layout system** — 单/双侧栏 · 列表/网格 · 横幅 + 透明壁纸
+- **Reading UI** — Index-First TOC（中心焦点渐变）· list Featured+行 · About Quote-Led · 分类/标签单色点缀
 - **Theme controls** — 色相、亮暗切换、显示设置面板
 - **Markdown extensions** — 提醒框、Mermaid、PlantUML、Wiki Link 等（`src/plugins`）
 - **Extended pages** — 动态、相册、友链、留言等，可用 `siteConfig.pages.*` 关闭
+- **Sidebar extras** — 日历贡献热力图 + 空闲贪吃蛇 · 可选桌宠（SpritePet）
 
 ---
 
 ## Showcase
 
-推荐浏览路径：首页 → 文章 → 动态 → 归档 / 关于 / 图库。
+推荐浏览路径：首页（list）→ 文章（TOC）→ 动态 → 归档 / 关于 / 图库。
 
 线上站点：https://fork-firefly.vercel.app
+
+> 画册图由 Playwright 真机截取（`scripts/capture-readme-showcase.py`）。UI 大改后：先 `pnpm dev`，再跑该脚本覆盖 `assets/images/readme/showcase-*.png`。
 
 ### Blog surfaces
 
@@ -74,13 +78,13 @@
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-home.png"><img alt="Home" src="assets/images/readme/showcase-home.png" width="100%"></a>
       <br><strong>Home</strong><br>
-      <sub>品牌标题 · 列表/网格 · 双侧栏 · 壁纸横幅</sub><br>
+      <sub>list Featured+行 · 双侧栏 · 壁纸横幅</sub><br>
       <a href="https://fork-firefly.vercel.app/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-post.png"><img alt="Post" src="assets/images/readme/showcase-post.png" width="100%"></a>
       <br><strong>Post</strong><br>
-      <sub>封面 / TOC / Markdown 扩展 / 上下篇</sub><br>
+      <sub>Index-First TOC · 暖黄标题焦点 · Markdown 扩展</sub><br>
       <a href="https://fork-firefly.vercel.app/posts/guide/firefly-layout-system/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
@@ -94,13 +98,13 @@
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-archive.png"><img alt="Archive" src="assets/images/readme/showcase-archive.png" width="100%"></a>
       <br><strong>Archive</strong><br>
-      <sub>按年折叠 · 分类导航</sub><br>
+      <sub>按年折叠 · 克制行列表</sub><br>
       <a href="https://fork-firefly.vercel.app/archive/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-about.png"><img alt="About" src="assets/images/readme/showcase-about.png" width="100%"></a>
       <br><strong>About</strong><br>
-      <sub>个人页 · 品牌与介绍</sub><br>
+      <sub>Quote-Led · Now / Practice / Reach</sub><br>
       <a href="https://fork-firefly.vercel.app/about/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
@@ -172,6 +176,7 @@ pnpm dev
 | `pnpm format` | Biome 格式化 |
 | `pnpm new-post <slug>` | 新建文章 |
 | `pnpm new-d <一句话>` | 新建动态 |
+| `python scripts/capture-readme-showcase.py` | 重截 README Showcase（需 `pnpm dev`） |
 
 ### Deploy
 
