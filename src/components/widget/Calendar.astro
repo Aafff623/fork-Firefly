@@ -92,12 +92,23 @@ const postUrlPrefix = url("/posts/");
       </div>
     </div>
 
-    <!-- 年度文章热力图 -->
+    <!-- 年度文章热力图：贴合卡片宽度的 12×4，贡献用 GitHub 绿阶 -->
     {showHeatmap && (
-    <div id="heatmap-container" class="mb-2" style="display: none;">
+    <div id="heatmap-container" class="heatmap-wrap mt-2 mb-1" style="display: none;">
       <div class="heatmap-months grid gap-0.5 mb-1" id="heatmap-months" style="grid-template-columns: repeat(12, 1fr);"></div>
-      <div class="heatmap-grid grid" id="heatmap-grid" style="grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(4, 1fr); row-gap: 0.125rem;"></div>
-      {/* <div class="border-b border-neutral-200 dark:border-neutral-700 mt-2"></div> */}
+      <div class="heatmap-grid-wrap relative">
+        <div class="heatmap-grid grid" id="heatmap-grid" style="grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(4, 1fr);"></div>
+        <canvas id="heatmap-snake" class="heatmap-snake" aria-hidden="true"></canvas>
+      </div>
+      <div class="heatmap-legend" aria-hidden="true">
+        <span>Less</span>
+        <i class="heatmap-cell level-0"></i>
+        <i class="heatmap-cell level-1"></i>
+        <i class="heatmap-cell level-2"></i>
+        <i class="heatmap-cell level-3"></i>
+        <i class="heatmap-cell level-4"></i>
+        <span>More</span>
+      </div>
     </div>
     )}
 
@@ -162,6 +173,340 @@ const postUrlPrefix = url("/posts/");
     }
   }
 
+  let snakeRaf = 0;
+  let snakeTimer = 0;
+  let snakePaused = false;
+  let snakeOnResize = null;
+
+  function stopHeatmapSnake() {
+    if (snakeRaf) cancelAnimationFrame(snakeRaf);
+    snakeRaf = 0;
+    if (snakeTimer) clearTimeout(snakeTimer);
+    snakeTimer = 0;
+    if (snakeOnResize) {
+      window.removeEventListener('resize', snakeOnResize);
+      snakeOnResize = null;
+    }
+    const canvas = document.getElementById('heatmap-snake');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.opacity = '0';
+    }
+  }
+
+  /**
+   * 空闲贪吃蛇：视觉对齐 Platane/snk（自实现，不拷源码）
+   * - 蛇：purple 圆角方块，头大尾小
+   * - 步进：drawSnakeLerp 式错位插值，整条贴格滑动
+   * - 点阵配色：github-light / github-dark palette
+   */
+  function startHeatmapSnake(gridEl) {
+    stopHeatmapSnake();
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const canvas = document.getElementById('heatmap-snake');
+    const wrap = gridEl?.parentElement;
+    if (!canvas || !wrap || !gridEl) return;
+
+    const cells = [...gridEl.querySelectorAll('.heatmap-cell')];
+    if (!cells.length) return;
+
+    // snk basePalettes.github-light / github-dark
+    const isDark = () => document.documentElement.classList.contains('dark');
+    // 头→尾紫色阶（大小 + 色阶/透明度双重区分，仍属 snk purple 系）
+    const SNAKE_TONES = [
+      { r: 88, g: 28, b: 135, a: 1 },      // 头：最深最实
+      { r: 107, g: 33, b: 168, a: 0.92 },
+      { r: 147, g: 51, b: 234, a: 0.72 },
+      { r: 192, g: 132, b: 252, a: 0.48 }, // 尾：最浅最透
+    ];
+    const DOT_EATEN_LIGHT = '#9be9a8';
+    const DOT_EATEN_DARK = '#0f6d31';
+
+    const COLS = 12;
+    const ROWS = 4;
+    const SNAKE_LEN = 4; // snk 演示常见短蛇
+    const STEP_MS = 280; // 一格时长（略慢于 snk 默认观感，侧栏更从容）
+
+    let dpr = 1;
+    let rects = [];
+    let emptySet = new Set();
+
+    const measure = () => {
+      const r = wrap.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = Math.max(1, Math.round(r.width * dpr));
+      const h = Math.max(1, Math.round(r.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        canvas.style.width = r.width + 'px';
+        canvas.style.height = r.height + 'px';
+      }
+      const wrapRect = wrap.getBoundingClientRect();
+      rects = cells.map((cell) => {
+        const cr = cell.getBoundingClientRect();
+        return {
+          x: (cr.left - wrapRect.left) * dpr,
+          y: (cr.top - wrapRect.top) * dpr,
+          w: Math.max(1, cr.width * dpr),
+          h: Math.max(1, cr.height * dpr),
+          empty: cell.getAttribute('data-level') === '0',
+        };
+      });
+      emptySet = new Set(rects.map((p, i) => (p.empty ? i : -1)).filter((i) => i >= 0));
+    };
+
+    measure();
+    if (emptySet.size < 6) return;
+
+    snakeOnResize = () => measure();
+    window.addEventListener('resize', snakeOnResize, { passive: true });
+
+    const idxOf = (c, r) => r * COLS + c;
+    const cellOf = (i) => ({ c: i % COLS, r: Math.floor(i / COLS) });
+
+    const neighbors = (idx, avoid) => {
+      const { c, r } = cellOf(idx);
+      const out = [];
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dc, dr]) => {
+        const nc = c + dc;
+        const nr = r + dr;
+        if (nc < 0 || nc >= COLS || nr < 0 || nr >= ROWS) return;
+        const ni = idxOf(nc, nr);
+        if (!emptySet.has(ni)) return;
+        if (avoid?.has(ni)) return;
+        out.push(ni);
+      });
+      return out;
+    };
+
+    const pickNextWander = (head, dir, bodySet, recent, stepsStraight, turnAfter) => {
+      const opts = neighbors(head, bodySet);
+      if (!opts.length) return null;
+      const { c, r } = cellOf(head);
+      const forceTurn = stepsStraight >= turnAfter;
+      const scored = opts.map((ni) => {
+        const n = cellOf(ni);
+        const dc = n.c - c;
+        const dr = n.r - r;
+        const isStraight = dc === dir.dc && dr === dir.dr;
+        const isReverse = dc === -dir.dc && dr === -dir.dr;
+        let score = Math.random();
+        if (isStraight) score += forceTurn ? -1.4 : 0.45;
+        else score += forceTurn ? 1.1 : 0.55;
+        if (isReverse) score -= 2.5;
+        score -= (recent.get(ni) || 0) * 0.85;
+        score += neighbors(ni, bodySet).filter((x) => x !== head).length * 0.35;
+        return { ni, score, dc, dr };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      const top = scored.slice(0, Math.min(3, scored.length));
+      const weights = top.map((item, i) => Math.max(0.05, item.score + 2) * (1.2 - i * 0.25));
+      let sum = weights.reduce((a, b) => a + b, 0);
+      let rpick = Math.random() * sum;
+      for (let i = 0; i < top.length; i++) {
+        rpick -= weights[i];
+        if (rpick <= 0) return top[i];
+      }
+      return top[0];
+    };
+
+    const roundRect = (ctx, x, y, w, h, rad) => {
+      const rr = Math.min(rad, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    };
+
+    const lerp = (k, a, b) => (1 - k) * a + k * b;
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+    /** snk drawSnakeLerp：各节错位插值；尾→头绘制，色阶+尺寸双渐变 */
+    const drawSnakeLerp = (ctx, snake0, snake1, k) => {
+      const n = snake0.length;
+      const m = 0.8; // snk 同款窗口
+      // 先画尾再画头，避免浅色盖住深色
+      for (let i = n - 1; i >= 0; i--) {
+        const a = (1 - m) * (i / Math.max(n - 1, 1));
+        const ki = clamp((k - a) / m, 0, 1);
+        const i0 = snake0[i];
+        const i1 = snake1[i] ?? snake1[snake1.length - 1];
+        const r0 = rects[i0];
+        const r1 = rects[i1];
+        if (!r0 || !r1) continue;
+
+        const x = lerp(ki, r0.x, r1.x);
+        const y = lerp(ki, r0.y, r1.y);
+        const w = lerp(ki, r0.w, r1.w);
+        const h = lerp(ki, r0.h, r1.h);
+
+        // snk：头接近 cell，尾略缩（u 随节序增大）
+        const u = (i + 1) * 0.6 * (Math.min(w, h) / 16);
+        const pad = Math.min(u, w * 0.22);
+        const sw = w - pad * 2;
+        const sh = h - pad * 2;
+        const rad = Math.min(sw, sh) * 0.25;
+
+        // 节序 → 紫色阶连续插值（深实 → 浅透）
+        const t = n <= 1 ? 0 : i / (n - 1);
+        const tExact = t * (SNAKE_TONES.length - 1);
+        const iLo = Math.floor(tExact);
+        const iHi = Math.min(SNAKE_TONES.length - 1, iLo + 1);
+        const f = tExact - iLo;
+        const c0 = SNAKE_TONES[iLo];
+        const c1 = SNAKE_TONES[iHi];
+        const cr = Math.round(lerp(f, c0.r, c1.r));
+        const cg = Math.round(lerp(f, c0.g, c1.g));
+        const cb = Math.round(lerp(f, c0.b, c1.b));
+        const ca = lerp(f, c0.a, c1.a);
+
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${ca})`;
+        roundRect(ctx, x + pad, y + pad, sw, sh, rad);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    snakeTimer = window.setTimeout(() => {
+      if (snakePaused) return;
+      measure();
+      if (emptySet.size < 6) return;
+      canvas.style.opacity = '1';
+
+      let head = [...emptySet][Math.floor(Math.random() * emptySet.size)];
+      let body = [head]; // 头在 [0]
+      let dir = { dc: 1, dr: 0 };
+      let growing = true;
+      let stepsStraight = 0;
+      let turnAfter = 2 + Math.floor(Math.random() * 3);
+      const recent = new Map();
+      /** 被吃掉后短暂显示的绿点（canvas 层，不改 DOM level） */
+      const eaten = new Map();
+      let snake0 = [head];
+      let snake1 = [head];
+      let stepStart = performance.now();
+      let lastTs = stepStart;
+
+      const bodyAvoid = () => {
+        const set = new Set(body);
+        if (!growing && body.length >= SNAKE_LEN) set.delete(body[body.length - 1]);
+        return set;
+      };
+
+      const restart = () => {
+        const cold = [...emptySet].sort((a, b) => (recent.get(a) || 0) - (recent.get(b) || 0));
+        head = cold[Math.floor(Math.random() * Math.min(8, cold.length))];
+        body = [head];
+        snake0 = [head];
+        snake1 = [head];
+        growing = true;
+        stepsStraight = 0;
+        turnAfter = 2 + Math.floor(Math.random() * 3);
+        dir = [{ dc: 1, dr: 0 }, { dc: -1, dr: 0 }, { dc: 0, dr: 1 }, { dc: 0, dr: -1 }][Math.floor(Math.random() * 4)];
+      };
+
+      const advance = () => {
+        const pick = pickNextWander(head, dir, bodyAvoid(), recent, stepsStraight, turnAfter);
+        if (!pick) {
+          restart();
+          return;
+        }
+        const wasStraight = pick.dc === dir.dc && pick.dr === dir.dr;
+        stepsStraight = wasStraight ? stepsStraight + 1 : 0;
+        if (!wasStraight) turnAfter = 2 + Math.floor(Math.random() * 3);
+        dir = { dc: pick.dc, dr: pick.dr };
+
+        snake0 = body.slice();
+        head = pick.ni;
+        body = [head, ...body];
+        if (!(growing && body.length < SNAKE_LEN)) {
+          growing = false;
+          if (body.length > SNAKE_LEN) body.pop();
+        }
+        snake1 = body.slice();
+
+        eaten.set(head, 1);
+        recent.set(head, Math.min(3, (recent.get(head) || 0) + 1.2));
+      };
+
+      // 先走一步，避免静止
+      advance();
+
+      const tick = (now) => {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const dt = Math.min(0.05, (now - lastTs) / 1000);
+        lastTs = now;
+
+        if (!snakePaused) {
+          let k = (now - stepStart) / STEP_MS;
+          while (k >= 1) {
+            stepStart += STEP_MS;
+            advance();
+            k = (now - stepStart) / STEP_MS;
+            if (k > 8) {
+              stepStart = now;
+              k = 0;
+              break;
+            }
+          }
+
+          for (const [key, v] of [...recent.entries()]) {
+            const nv = v - dt * 0.35;
+            if (nv <= 0.05) recent.delete(key);
+            else recent.set(key, nv);
+          }
+          for (const [key, v] of [...eaten.entries()]) {
+            const nv = v - dt * 0.55;
+            if (nv <= 0 || body.includes(key)) eaten.delete(key);
+            else eaten.set(key, nv);
+          }
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 吃过的格：盖一层 snk 浅绿点（与格子同形）
+        const dark = isDark();
+        const eatenFill = dark ? DOT_EATEN_DARK : DOT_EATEN_LIGHT;
+        for (const [idx, life] of eaten) {
+          if (body.includes(idx) || snake1.includes(idx)) continue;
+          const rc = rects[idx];
+          if (!rc) continue;
+          const inset = Math.min(rc.w, rc.h) * 0.08;
+          ctx.globalAlpha = 0.35 + life * 0.55;
+          ctx.fillStyle = eatenFill;
+          roundRect(ctx, rc.x + inset, rc.y + inset, rc.w - inset * 2, rc.h - inset * 2, Math.min(rc.w, rc.h) * 0.22);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        const k = snakePaused ? clamp((now - stepStart) / STEP_MS, 0, 1) : clamp((now - stepStart) / STEP_MS, 0, 1);
+        // 对齐长度：短的一侧 pad 尾
+        const a = snake0.slice();
+        const b = snake1.slice();
+        while (a.length < b.length) a.push(a[a.length - 1]);
+        while (b.length < a.length) b.push(b[b.length - 1]);
+        while (a.length < SNAKE_LEN) {
+          a.push(a[a.length - 1]);
+          b.push(b[b.length - 1]);
+        }
+
+        drawSnakeLerp(ctx, a, b, k);
+
+        snakeRaf = requestAnimationFrame(tick);
+      };
+
+      snakeRaf = requestAnimationFrame(tick);
+    }, 600);
+  }
+
   function renderHeatmap() {
     const container = document.getElementById('heatmap-container');
     const monthsEl = document.getElementById('heatmap-months');
@@ -170,15 +515,19 @@ const postUrlPrefix = url("/posts/");
 
     // Show heatmap only in day view
     container.style.display = currentView === 'day' ? 'block' : 'none';
-    if (currentView !== 'day') return;
+    if (currentView !== 'day') {
+      stopHeatmapSnake();
+      return;
+    }
 
     // Render month labels (numbers 1-12)
     monthsEl.innerHTML = Array.from({length: 12}, (_, i) =>
-      `<span class="text-[10px] text-neutral-400 dark:text-neutral-500 text-center">${i + 1}</span>`
+      `<span class="heatmap-month-label">${i + 1}</span>`
     ).join('');
 
-    // Build weekly post counts: heatmapData[month][week] = count
+    // 按「月 × 月内周桶」聚合：当天发文 +1 贡献（贴合卡片 12×4，非整年 53 周）
     const heatmapData = Array.from({ length: 12 }, () => [0, 0, 0, 0]);
+    let yearTotal = 0;
     allPostsData.forEach(post => {
       const date = new Date(post.published);
       if (date.getFullYear() !== displayYear) return;
@@ -186,26 +535,19 @@ const postUrlPrefix = url("/posts/");
       const day = date.getDate();
       const week = Math.min(Math.floor((day - 1) / 7), 3); // 0-3
       heatmapData[month][week]++;
+      yearTotal++;
     });
 
-    // Find max for scaling
-    // Render grid cells: 12 columns × 4 rows, row-major order
-    // Use discrete opacity levels so low counts are still clearly visible
-    const opacityLevels = [0, 0.45, 0.65, 0.85, 1];
     let cellsHtml = '';
     for (let week = 0; week < 4; week++) {
       for (let month = 0; month < 12; month++) {
         const count = heatmapData[month][week];
-        const level = Math.min(count, 4);
-        const bgStyle = count === 0
-          ? 'background-color: var(--btn-plain-bg-hover)'
-          : `background-color: var(--primary); opacity: ${opacityLevels[level]}`;
-        // Generate tooltip text using i18n template
+        const level = Math.min(count, 4); // 0–4 绿阶
         const tooltip = heatmapWeekTemplate
           .replace('{month}', month + 1)
           .replace('{week}', week + 1)
           .replace('{count}', count);
-        cellsHtml += `<div class="heatmap-cell rounded-sm" style="${bgStyle}" data-tooltip="${tooltip}" data-month="${month}"></div>`;
+        cellsHtml += `<div class="heatmap-cell level-${level}" data-level="${level}" data-tooltip="${tooltip}" data-month="${month}" data-count="${count}"></div>`;
       }
     }
     gridEl.innerHTML = cellsHtml;
@@ -244,6 +586,7 @@ const postUrlPrefix = url("/posts/");
     }
     gridEl.querySelectorAll('.heatmap-cell[data-tooltip]').forEach(cell => {
       cell.addEventListener('mouseenter', () => {
+        snakePaused = true;
         tooltipEl.textContent = cell.getAttribute('data-tooltip');
         tooltipEl.style.opacity = '1';
         const rect = cell.getBoundingClientRect();
@@ -251,9 +594,17 @@ const postUrlPrefix = url("/posts/");
         tooltipEl.style.top = rect.top - tooltipEl.offsetHeight - 6 + 'px';
       });
       cell.addEventListener('mouseleave', () => {
+        snakePaused = false;
         tooltipEl.style.opacity = '0';
       });
     });
+
+    // 无贡献或很少时播放空闲蛇；有绿标时停掉
+    if (yearTotal === 0) {
+      startHeatmapSnake(gridEl);
+    } else {
+      stopHeatmapSnake();
+    }
   }
 
   // 客户端动态渲染日历
@@ -376,8 +727,8 @@ const postUrlPrefix = url("/posts/");
           data-has-post="${hasPost}"
         >
           ${day || ''}
-          ${hasPost ? '<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-(--primary)"></span>' : ''}
-          ${hasPost && count > 1 ? `<span class="absolute top-0 right-0 text-[10px] text-(--primary) font-bold">${count}</span>` : ''}
+          ${hasPost ? '<span class="calendar-contrib-dot" title="'+count+' posts"></span>' : ''}
+          ${hasPost && count > 1 ? `<span class="calendar-contrib-count">${count}</span>` : ''}
         </div>
       `;
     }).join('');
@@ -420,7 +771,7 @@ const postUrlPrefix = url("/posts/");
         classes.push("text-neutral-700 dark:text-neutral-300");
       }
       
-      const dotHtml = hasPost ? '<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-(--primary)"></span>' : '';
+      const dotHtml = hasPost ? '<span class="calendar-contrib-dot calendar-contrib-dot--month"></span>' : '';
       
       return `<div class="${classes.join(' ')}" data-month="${index}">${name}${dotHtml}</div>`;
     }).join('');
@@ -629,16 +980,156 @@ const postUrlPrefix = url("/posts/");
     border-radius: 0.25rem;
   }
 
-  /* 热力图单元格 */
+  /* —— 贡献绿标（GitHub 热力色阶）+ 贴合卡片的 12×4 —— */
+  :global(.heatmap-wrap) {
+    width: 100%;
+  }
+
+  :global(.heatmap-month-label) {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1;
+    color: rgb(163 163 163);
+  }
+
+  :global(.dark .heatmap-month-label) {
+    color: rgb(115 115 115);
+  }
+
+  :global(.heatmap-grid-wrap) {
+    position: relative;
+    width: 100%;
+  }
+
+  :global(.heatmap-grid) {
+    width: 100%;
+    gap: 3px;
+    row-gap: 3px;
+  }
+
   :global(.heatmap-cell) {
+    display: block;
     cursor: pointer;
     min-width: 0;
-    width: 85%;
+    width: 100%;
     aspect-ratio: 1;
-    margin: auto;
-    transition: box-shadow 0.15s ease;
+    border-radius: 3px;
+    transition: outline-color 0.15s ease, transform 0.12s ease;
   }
+
   :global(.heatmap-cell:hover) {
-    box-shadow: 0 0 1px 1.5px var(--primary, oklch(0.55 0.15 250));
+    outline: 1.5px solid rgb(57 211 83 / 0.85);
+    outline-offset: 1px;
+    transform: scale(1.06);
+    z-index: 1;
+  }
+
+  :global(.heatmap-cell.level-0) {
+    background: #ebedf0; /* snk github-light */
+  }
+  :global(.heatmap-cell.level-1) {
+    background: #9be9a8;
+  }
+  :global(.heatmap-cell.level-2) {
+    background: #40c463;
+  }
+  :global(.heatmap-cell.level-3) {
+    background: #30a14e;
+  }
+  :global(.heatmap-cell.level-4) {
+    background: #216e39;
+  }
+
+  :global(.dark .heatmap-cell.level-0) {
+    background: #161b22; /* snk github-dark */
+  }
+  :global(.dark .heatmap-cell.level-1) {
+    background: #01311f;
+  }
+  :global(.dark .heatmap-cell.level-2) {
+    background: #034525;
+  }
+  :global(.dark .heatmap-cell.level-3) {
+    background: #0f6d31;
+  }
+  :global(.dark .heatmap-cell.level-4) {
+    background: #00c647;
+  }
+
+  :global(.heatmap-legend) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    margin-top: 0.4rem;
+    font-size: 10px;
+    color: rgb(163 163 163);
+  }
+
+  :global(.heatmap-legend .heatmap-cell) {
+    width: 10px;
+    height: 10px;
+    aspect-ratio: auto;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  :global(.heatmap-legend .heatmap-cell:hover) {
+    outline: none;
+    transform: none;
+  }
+
+  :global(.heatmap-snake) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* 月历：当天有发文 → 绿色贡献点 */
+  :global(.calendar-contrib-dot) {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: #40c463;
+    box-shadow: 0 0 0 1px rgb(64 196 99 / 0.25);
+  }
+
+  :global(.dark .calendar-contrib-dot) {
+    background: #39d353;
+  }
+
+  :global(.calendar-contrib-dot--month) {
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+  }
+
+  :global(.calendar-contrib-count) {
+    position: absolute;
+    top: 0;
+    right: 1px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    color: #216e39;
+  }
+
+  :global(.dark .calendar-contrib-count) {
+    color: #39d353;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.heatmap-snake) {
+      display: none !important;
+    }
   }
 </style>
