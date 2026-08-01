@@ -17,8 +17,7 @@ export const dynamicConfig: DynamicConfig = {
 	itemsPerPage: 20,
 
 	// 动态数据 json 地址，本地默认 "/api/dynamic.json"
-	// 可改为第三方接口地址，如 "https://firefly.cuteleaf.cn/api/dynamic.json"
-	// 数据结构可打开上方链接地址参考
+	// 可改为第三方接口地址；数据结构可打开该地址参考
 	// 当 memos.enable 为 true 时，此配置会被忽略
 	apiUrl: "/api/dynamic.json",
 
@@ -33,6 +32,6 @@ export const dynamicConfig: DynamicConfig = {
 		apiUrl: "https://memos.example.com",
 
 		// Memos 用户标识，如 "users/你的memos用户名"，用于过滤指定用户的动态
-		parent: "users/xiaye",
+		parent: "users/threetwoa",
 	},
 };

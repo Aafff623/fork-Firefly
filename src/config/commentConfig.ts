@@ -53,14 +53,14 @@ export const commentConfig: CommentConfig = {
 
 	//giscus评论系统配置
 	giscus: {
-		// 设置 Giscus 评论系统仓库
-		repo: "CuteLeaf/Firefly",
+		// 设置 Giscus 评论系统仓库（启用前请到 giscus.app 填写真实 repoId / categoryId）
+		repo: "Aafff623/fork-Firefly",
 		// 设置 Giscus 评论系统仓库ID
-		repoId: "R_kgD2gfdFGd",
+		repoId: "",
 		// 设置 Giscus 评论系统分类
 		category: "General",
 		// 获取 Giscus 评论系统分类ID
-		categoryId: "DIC_kwDOKy9HOc4CegmW",
+		categoryId: "",
 		// 获取 Giscus 评论系统映射方式
 		mapping: "title",
 		// 获取 Giscus 评论系统严格模式
@@ -80,6 +80,6 @@ export const commentConfig: CommentConfig = {
 	//disqus评论系统配置
 	disqus: {
 		// 获取 Disqus 评论系统
-		shortname: "firefly",
+		shortname: "",
 	},
 };
