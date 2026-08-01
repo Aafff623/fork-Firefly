@@ -197,9 +197,9 @@ const postUrlPrefix = url("/posts/");
 
   /**
    * 空闲贪吃蛇：视觉对齐 Platane/snk（自实现，不拷源码）
-   * - 蛇：purple 圆角方块，头大尾小
+   * - 蛇：头大尾小；同一时刻整条同色相（赤橙黄绿青蓝紫轮换）
+   * - 每 3.5s 进下一色；第 3s 起从尾→头错开过渡
    * - 步进：drawSnakeLerp 式错位插值，整条贴格滑动
-   * - 点阵配色：github-light / github-dark palette
    */
   function startHeatmapSnake(gridEl) {
     stopHeatmapSnake();
@@ -214,13 +214,6 @@ const postUrlPrefix = url("/posts/");
 
     // snk basePalettes.github-light / github-dark
     const isDark = () => document.documentElement.classList.contains('dark');
-    // 头→尾紫色阶（大小 + 色阶/透明度双重区分，仍属 snk purple 系）
-    const SNAKE_TONES = [
-      { r: 88, g: 28, b: 135, a: 1 },      // 头：最深最实
-      { r: 107, g: 33, b: 168, a: 0.92 },
-      { r: 147, g: 51, b: 234, a: 0.72 },
-      { r: 192, g: 132, b: 252, a: 0.48 }, // 尾：最浅最透
-    ];
     const DOT_EATEN_LIGHT = '#9be9a8';
     const DOT_EATEN_DARK = '#0f6d31';
 
@@ -228,6 +221,10 @@ const postUrlPrefix = url("/posts/");
     const ROWS = 4;
     const SNAKE_LEN = 4; // snk 演示常见短蛇
     const STEP_MS = 280; // 一格时长（略慢于 snk 默认观感，侧栏更从容）
+    // 赤橙黄绿青蓝紫；稳色至 3s，3→3.5s 尾→头错开过渡
+    const RAINBOW_HUES = [0, 30, 55, 130, 185, 220, 280];
+    const COLOR_CYCLE_MS = 3500;
+    const TRANSITION_MS = 500; // 从第 3s 起过渡（3500 - 500）
 
     let dpr = 1;
     let rects = [];
@@ -327,10 +324,51 @@ const postUrlPrefix = url("/posts/");
     const lerp = (k, a, b) => (1 - k) * a + k * b;
     const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-    /** snk drawSnakeLerp：各节错位插值；尾→头绘制，色阶+尺寸双渐变 */
-    const drawSnakeLerp = (ctx, snake0, snake1, k) => {
+    /** hsl(0–360,0–1,0–1) → {r,g,b} 0–255 */
+    const hslToRgb = (h, s, l) => {
+      const hue = ((h % 360) + 360) % 360;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+      const m = l - c / 2;
+      let rp = 0, gp = 0, bp = 0;
+      if (hue < 60) [rp, gp, bp] = [c, x, 0];
+      else if (hue < 120) [rp, gp, bp] = [x, c, 0];
+      else if (hue < 180) [rp, gp, bp] = [0, c, x];
+      else if (hue < 240) [rp, gp, bp] = [0, x, c];
+      else if (hue < 300) [rp, gp, bp] = [x, 0, c];
+      else [rp, gp, bp] = [c, 0, x];
+      return {
+        r: Math.round((rp + m) * 255),
+        g: Math.round((gp + m) * 255),
+        b: Math.round((bp + m) * 255),
+      };
+    };
+
+    /** 当前节的色相：稳色期内整条同色；过渡期尾先、头后错开混到下一色 */
+    const hueForSegment = (segT, nowMs) => {
+      const cycle = ((nowMs % COLOR_CYCLE_MS) + COLOR_CYCLE_MS) % COLOR_CYCLE_MS;
+      const idx = Math.floor(nowMs / COLOR_CYCLE_MS) % RAINBOW_HUES.length;
+      const next = (idx + 1) % RAINBOW_HUES.length;
+      const h0 = RAINBOW_HUES[idx];
+      const h1 = RAINBOW_HUES[next];
+      const transStart = COLOR_CYCLE_MS - TRANSITION_MS;
+      if (cycle < transStart) return h0;
+      // p: 0→1 覆盖最后 1s；尾(segT=1)先混，头(segT=0)后混
+      const p = (cycle - transStart) / TRANSITION_MS;
+      const mix = clamp((p - (1 - segT) * 0.72) / 0.28, 0, 1);
+      // 最短弧插值，避免跨 0° 时绕远
+      let d = ((h1 - h0 + 540) % 360) - 180;
+      return (h0 + d * mix + 360) % 360;
+    };
+
+    /** snk drawSnakeLerp：各节错位插值；尾→头绘制；同色相深浅区分头尾 */
+    const drawSnakeLerp = (ctx, snake0, snake1, k, nowMs) => {
       const n = snake0.length;
       const m = 0.8; // snk 同款窗口
+      const dark = isDark();
+      const sat = dark ? 0.8 : 0.74;
+      const litHead = dark ? 0.58 : 0.46;
+      const litTail = dark ? 0.7 : 0.6;
       // 先画尾再画头，避免浅色盖住深色
       for (let i = n - 1; i >= 0; i--) {
         const a = (1 - m) * (i / Math.max(n - 1, 1));
@@ -353,18 +391,11 @@ const postUrlPrefix = url("/posts/");
         const sh = h - pad * 2;
         const rad = Math.min(sw, sh) * 0.25;
 
-        // 节序 → 紫色阶连续插值（深实 → 浅透）
-        const t = n <= 1 ? 0 : i / (n - 1);
-        const tExact = t * (SNAKE_TONES.length - 1);
-        const iLo = Math.floor(tExact);
-        const iHi = Math.min(SNAKE_TONES.length - 1, iLo + 1);
-        const f = tExact - iLo;
-        const c0 = SNAKE_TONES[iLo];
-        const c1 = SNAKE_TONES[iHi];
-        const cr = Math.round(lerp(f, c0.r, c1.r));
-        const cg = Math.round(lerp(f, c0.g, c1.g));
-        const cb = Math.round(lerp(f, c0.b, c1.b));
-        const ca = lerp(f, c0.a, c1.a);
+        const t = n <= 1 ? 0 : i / (n - 1); // 0=头 … 1=尾
+        const hue = hueForSegment(t, nowMs);
+        const lit = lerp(t, litHead, litTail);
+        const { r: cr, g: cg, b: cb } = hslToRgb(hue, sat, lit);
+        const ca = lerp(t, 1, 0.52);
 
         ctx.globalAlpha = 1;
         ctx.fillStyle = `rgba(${cr},${cg},${cb},${ca})`;
@@ -498,7 +529,7 @@ const postUrlPrefix = url("/posts/");
           b.push(b[b.length - 1]);
         }
 
-        drawSnakeLerp(ctx, a, b, k);
+        drawSnakeLerp(ctx, a, b, k, now);
 
         snakeRaf = requestAnimationFrame(tick);
       };
