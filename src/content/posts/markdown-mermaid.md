@@ -1,10 +1,11 @@
 ---
 title: Markdown Mermaid 图表
-published: 1970-01-01
+author: threetwoa
+published: 2026-08-01
 pinned: false
 description: 一个包含 Mermaid 的 Markdown 博客文章简单示例。
-tags: [Markdown, 博客, Mermaid, Firefly]
-category: 文章示例
+tags: [Firefly, Markdown, Mermaid]
+category: 写作
 slug: markdown-mermaid
 ---
 ## Markdown 中 Mermaid 图表完整指南
