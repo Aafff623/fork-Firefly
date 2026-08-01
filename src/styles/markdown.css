@@ -13,25 +13,72 @@
     @apply text-3xl;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    .anchor {
-      @apply transition! -m-0.5! ml-[0.2ch]! p-0.5! select-none! opacity-0! no-underline!;
-
-      .anchor-icon {
-        @apply mx-[0.45ch]!;
-      }
+  /* 彻底移除标题锚点井号（rehype-autolink 残留 / 缓存） */
+  :is(h1, h2, h3, h4, h5, h6) {
+    .anchor,
+    .anchor-icon,
+    a.anchor {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      font-size: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      visibility: hidden !important;
     }
+  }
 
-    &:hover {
-      .anchor {
-        @apply opacity-100!;
-      }
-    }
+  /*
+   * 与侧栏 TOC 同步的正文标题焦点高亮：
+   * - 只包文字（fit-content），不拉满整列
+   * - 浓度跟 --heading-focus（同 TOC 中心深、两侧淡）；用 focus² 拉开对比
+   */
+  :is(h1, h2, h3, h4, h5, h6).heading-focus {
+    --heading-focus: 0;
+    width: fit-content;
+    max-width: 100%;
+    padding-inline: 0.12em;
+    margin-inline: -0.12em;
+    background-image: linear-gradient(
+      to right,
+      oklch(
+        0.94 0.08 95 /
+          calc(0.12 + var(--heading-focus) * var(--heading-focus) * 0.8)
+      ),
+      oklch(
+        0.92 0.1 85 /
+          calc(0.06 + var(--heading-focus) * var(--heading-focus) * 0.5)
+      )
+    );
+    background-repeat: no-repeat;
+    background-position: left 0.72em;
+    background-size: 100% 0.55em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 0.1em;
+  }
+
+  :is(h1, h2, h3, h4, h5, h6).heading-focus-primary {
+    --heading-focus: 1;
+    background-size: 100% 0.58em;
+  }
+
+  :root.dark & :is(h1, h2, h3, h4, h5, h6).heading-focus {
+    background-image: linear-gradient(
+      to right,
+      oklch(
+        0.55 0.1 90 /
+          calc(0.1 + var(--heading-focus) * var(--heading-focus) * 0.5)
+      ),
+      oklch(
+        0.48 0.08 85 /
+          calc(0.06 + var(--heading-focus) * var(--heading-focus) * 0.3)
+      )
+    );
   }
 
   a:not(.no-styling) {
