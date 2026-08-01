@@ -158,7 +158,7 @@ const logoVariants = await Promise.all(
         "overflow-visible! h-18 px-4"
     ]}>
         <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
-            <a href={url('/')} class="btn-plain scale-animation rounded-lg h-13 px-3 md:px-5 font-bold active:scale-95">
+            <a href={url('/')} class="btn-plain scale-animation rounded-full h-13 px-3 md:px-5 font-bold active:scale-95">
                 <div class:list={[
                     "flex flex-row items-center text-md",
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
@@ -188,7 +188,7 @@ const logoVariants = await Promise.all(
                 </div>
             </a>
             <div class:list={[
-                "hidden lg:flex items-center col-start-2 h-11 px-3 rounded-full bg-(--card-bg)/90 shadow-lg ring-1 ring-black/5 backdrop-blur-md dark:ring-white/10",
+                "navbar-liquid-glass hidden lg:flex items-center col-start-2 h-11 px-3 rounded-full",
                 isNavbarMenuCentered
                     ? "justify-center"
                     : "justify-start pl-2"
@@ -197,20 +197,20 @@ const logoVariants = await Promise.all(
                     return <DropdownMenu link={l} isActive={isLinkActive(l)} />;
                 })}
             </div>
-            <div class="flex col-start-3 justify-self-end">
+            <div class="flex col-start-3 justify-self-end items-center gap-1.5 pl-2 lg:pl-4">
                 <!--<SearchPanel client:load>-->
                 <Search
                     client:load
                 />
                 {musicPlayerConfig.showInNavbar && (
-                    <button aria-label={i18n(I18nKey.music)} class="btn-plain scale-animation rounded-lg h-9 w-9 md:h-11 md:w-11 active:scale-90" id="music-player-switch">
+                    <button aria-label={i18n(I18nKey.music)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="music-player-switch">
                         <Icon is:inline name="material-symbols:music-note-rounded" class="text-[1.25rem]"></Icon>
                     </button>
                 )}
                 {backgroundWallpaper.playerEnable && backgroundWallpaper.mode !== "none" && (
                     <button
                         aria-label={i18n(I18nKey.videoPlay)}
-                        class="btn-plain scale-animation rounded-lg h-9 w-9 md:h-11 md:w-11 active:scale-90"
+                        class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90"
                         id="bg-player-toggle"
                         data-i18n-play={i18n(I18nKey.videoPlay)}
                         data-i18n-pause={i18n(I18nKey.videoPause)}
@@ -220,13 +220,13 @@ const logoVariants = await Promise.all(
                     </button>
                 )}
                 {hasDisplaySettings && (
-                        <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-9 w-9 md:h-11 md:w-11 active:scale-90" id="display-settings-switch">
+                        <button aria-label="Display Settings" class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="display-settings-switch">
                             <Icon is:inline name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
                         </button>
                 )}
                 {/* @ts-ignore */}
                 <LightDarkSwitch client:load></LightDarkSwitch>
-                <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-9 h-9 md:w-11 md:h-11 active:scale-90 lg:hidden!" id="nav-menu-switch">
+                <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90 lg:hidden!" id="nav-menu-switch">
                     <Icon is:inline name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
                 </button>
             </div>

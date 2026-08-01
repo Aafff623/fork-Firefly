@@ -311,6 +311,35 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 }
 
 /* ============================================
+ * Navigator 液态玻璃（Apple frosted / liquid glass）
+ * 半透明底 + 强模糊 + 饱和度提升 + 内沿高光
+ * ============================================ */
+.navbar-liquid-glass {
+    background: color-mix(in oklch, white 48%, transparent);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid color-mix(in oklch, white 58%, transparent);
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.14);
+    transition:
+        background-color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.2s ease;
+}
+
+:root.dark .navbar-liquid-glass {
+    background: color-mix(in oklch, white 14%, transparent);
+    border: 1px solid color-mix(in oklch, white 20%, transparent);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* ============================================
  * 小于1280px时隐藏导航栏菜单图标
  * ============================================ */
 @media (max-width: 1279px) {

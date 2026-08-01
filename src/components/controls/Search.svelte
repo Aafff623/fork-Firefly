@@ -136,23 +136,22 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 }
 </script>
 
-<!-- search bar for desktop view -->
-<div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
-      bg-black/4 hover:bg-black/6 focus-within:bg-black/6
-      dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
+<!-- search bar for desktop view：圆角对齐导航胶囊，液态玻璃与 Navigator 一致 -->
+<div id="search-bar" class="navbar-liquid-glass relative hidden lg:flex transition-all items-center h-11 ml-5 mr-3 rounded-full
+      hover:brightness-110 focus-within:brightness-110
 ">
     <Icon icon="material-symbols:search"
           class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
     <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop}
            on:focus={() => search(keywordDesktop, true)}
-           class="transition-all pl-10 text-sm bg-transparent outline-0
+           class="transition-all pl-10 pr-4 text-sm bg-transparent outline-0 rounded-full
          h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
     >
 </div>
 
 <!-- toggle btn for phone/tablet view -->
 <button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
-        class="btn-plain scale-animation lg:hidden! rounded-lg w-9 h-9 md:w-11 md:h-11 active:scale-90">
+        class="btn-plain scale-animation lg:hidden! rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 

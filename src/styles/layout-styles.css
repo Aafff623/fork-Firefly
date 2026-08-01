@@ -28,6 +28,12 @@ html.is-page-transitioning .banner-home-text-overlay {
     word-break: break-word;
 }
 
+/* 与侧栏 Profile 一致：交给 .repel-word 入场，避免父级 fade 抢走动画 */
+.banner-title.repel-text,
+.banner-post-title.repel-text {
+    animation: none;
+}
+
 .banner-subtitle {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
     animation: banner-fadeInUp 0.3s ease-out 0.3s both;
