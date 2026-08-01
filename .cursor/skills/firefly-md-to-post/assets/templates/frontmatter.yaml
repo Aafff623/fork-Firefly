@@ -1,0 +1,20 @@
+---
+title: 文章标题
+published: 2026-08-01
+description: 一两句摘要，出现在首页卡片与 OG
+image: ./cover.webp
+tags: [标签A, 标签B]
+category: 分类名
+draft: true
+lang: ''
+slug: my-post-slug
+pinned: false
+comment: true
+# password: ''
+# passwordHint: ''
+# author: ''
+# sourceLink: ''
+# licenseName: ''
+# licenseUrl: ''
+# updated: 2026-08-01
+---
