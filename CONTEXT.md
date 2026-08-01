@@ -1,4 +1,4 @@
-﻿# CONTEXT.md
+# CONTEXT.md
 
 > 本仓领域事实单一来源。术语与硬约束以本文为准。主题使用文档见 `docs/official/`（gitignore，不提交）；路由索引见 `docs/knowledge/official-docs.tree.json`。
 
@@ -72,6 +72,9 @@ Content Collections（`src/content.config.ts`）：
 
 | 术语 | 含义 |
 |---|---|
+| 视觉体系 | **壳层中性灰** + **彩仅点缀**（紫系邻近：indigo / violet / cool / rose / berry） |
+| 默认主题色锚点 | Kraken 主紫（hue 290）作链接主色；粉玫等作模块创意点缀 |
+| 标题荧光笔 | 卡片轮换高亮，并穿插 `--hl-rose` |
 | Firefly | 上游主题名；本仓是其 fork 二次开发 |
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
@@ -81,11 +84,10 @@ Content Collections（`src/content.config.ts`）：
 
 ## 已知缺口（非阻塞）
 
-- 头像仍为主题 demo 图，待替换
 - demo 文章 / 原作者 Bangumi·追番 ID 仍在配置中，后续可关页面或改 ID
 - 评论系统 `type: "none"`
 - 本地 pnpm 若走 npmmirror，部分包可能 404；安装可用官方 registry
-- README 配图 / Preview / Showcase 属 Phase B，`assets/images/readme/` 暂无图文件（有意，非空壳文档）
+- 主题氛围：页面/卡片/按钮底为中性灰；紫与邻近色只出现在链接、高亮、图标、竖条等点缀位
 
 ## 交付闭环（与 workflow 一致）
 

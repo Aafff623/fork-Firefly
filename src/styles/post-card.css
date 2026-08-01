@@ -10,10 +10,10 @@
 		box-shadow 0.35s var(--ease-decelerate),
 		border-color 0.3s ease,
 		background-color 0.15s ease;
-	/* 1px 边缘细线 + 低扩散投影，轮廓干净不发灰 */
+	/* 中性灰轮廓，不跟主题紫走 */
 	box-shadow:
-		0 0 0 1px oklch(0.3 0.03 var(--hue) / 0.05),
-		0 1px 2px oklch(0.3 0.04 var(--hue) / 0.05);
+		0 0 0 1px oklch(0.3 0.01 260 / 0.06),
+		0 1px 2px oklch(0.3 0.01 260 / 0.06);
 }
 
 /* PostPage 的 #post-list-container > * 过渡规则会覆盖上面的 transition（ID 优先级），
@@ -37,9 +37,9 @@
 	.post-card-wrapper:hover {
 		transform: translateY(-3px);
 		box-shadow:
-			0 0 0 1px oklch(0.55 0.08 var(--hue) / 0.14),
-			0 1px 2px oklch(0.3 0.06 var(--hue) / 0.06),
-			0 12px 32px -12px oklch(0.4 0.09 var(--hue) / 0.22);
+			0 0 0 1px oklch(0.45 0.01 260 / 0.12),
+			0 1px 2px oklch(0.3 0.01 260 / 0.07),
+			0 12px 32px -12px oklch(0.35 0.01 260 / 0.18);
 	}
 
 	:root.dark .post-card-wrapper:hover {
@@ -82,13 +82,9 @@
 	text-wrap: balance;
 }
 
-/* mkdirs 荧光笔：套在标题文字上的 inline span，background-size 0 → 100% 划过 */
+/* mkdirs 荧光笔：按卡片轮换邻近色（indigo / 主紫 / violet / cool） */
 .post-card-title-hl {
-	background-image: linear-gradient(
-		to right,
-		oklch(0.88 0.08 var(--hue) / 0.8),
-		oklch(0.94 0.05 var(--hue) / 0.8)
-	);
+	background-image: var(--hl-primary);
 	background-size: 0 10px;
 	background-position: left bottom;
 	background-repeat: no-repeat;
@@ -97,12 +93,21 @@
 	transition: background-size 0.5s var(--ease-decelerate);
 }
 
-:root.dark .post-card-title-hl {
-	background-image: linear-gradient(
-		to right,
-		oklch(0.45 0.1 var(--hue) / 0.6),
-		oklch(0.38 0.08 var(--hue) / 0.6)
-	);
+#post-list-container > .post-card-wrapper:nth-child(4n + 1) .post-card-title-hl {
+	background-image: var(--hl-indigo);
+}
+#post-list-container > .post-card-wrapper:nth-child(4n + 2) .post-card-title-hl {
+	background-image: var(--hl-primary);
+}
+#post-list-container > .post-card-wrapper:nth-child(4n + 3) .post-card-title-hl {
+	background-image: var(--hl-violet);
+}
+#post-list-container > .post-card-wrapper:nth-child(4n + 4) .post-card-title-hl {
+	background-image: var(--hl-cool);
+}
+/* 每第 5 张穿插玫粉高亮，打破纯紫节奏 */
+#post-list-container > .post-card-wrapper:nth-child(5n) .post-card-title-hl {
+	background-image: var(--hl-rose);
 }
 
 @media (hover: hover) {
@@ -144,11 +149,15 @@
 	letter-spacing: 0.04em;
 }
 
-/* 置顶徽标：紫色按钮块 → 安静的描边小签 */
+/* 置顶徽标：玫粉→浆果渐变底 + 邻近粉色字（不裁切图标） */
 .post-card-wrapper .pinned-btn {
-	background: transparent !important;
-	border: 1px solid oklch(0.7 0.1 var(--hue) / 0.45);
-	color: var(--primary) !important;
+	background: linear-gradient(
+		135deg,
+		color-mix(in oklch, var(--accent-rose) 16%, transparent),
+		color-mix(in oklch, var(--accent-berry) 12%, transparent)
+	) !important;
+	border: 1px solid color-mix(in oklch, var(--accent-berry) 38%, transparent) !important;
+	color: var(--accent-berry) !important;
 	padding: 0.05rem 0.5rem !important;
 	border-radius: 0.375rem;
 	font-weight: 600 !important;

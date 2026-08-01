@@ -20,8 +20,24 @@
 }
 .category-pill:hover {
   color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 15%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+  background: color-mix(in oklch, var(--primary) 15%, transparent);
+  border-color: color-mix(in oklch, var(--primary) 25%, transparent);
+}
+/* 邻近色 soft：第 1/3/4 类 pill 用辅色 hover，主紫仍占多数 */
+.category-pill:nth-child(4n + 1):hover {
+  color: var(--accent-indigo);
+  background: color-mix(in oklch, var(--accent-indigo) 14%, transparent);
+  border-color: color-mix(in oklch, var(--accent-indigo) 28%, transparent);
+}
+.category-pill:nth-child(4n + 3):hover {
+  color: color-mix(in oklch, var(--accent-violet) 85%, var(--btn-content));
+  background: color-mix(in oklch, var(--accent-violet) 16%, transparent);
+  border-color: color-mix(in oklch, var(--accent-violet) 28%, transparent);
+}
+.category-pill:nth-child(4n + 4):hover {
+  color: var(--accent-cool);
+  background: color-mix(in oklch, var(--accent-cool) 14%, transparent);
+  border-color: color-mix(in oklch, var(--accent-cool) 28%, transparent);
 }
 .category-pill[data-active] {
   background: var(--primary);

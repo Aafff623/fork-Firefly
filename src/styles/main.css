@@ -11,6 +11,7 @@
 @import './display-settings.css';
 @import './categories.css';
 @import './post-card.css';
+@import './text-voice.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -49,9 +50,14 @@
   }
 }
 
-/* 确保平滑滚动 */
+/* 确保平滑滚动；Kraken 氛围 mesh 叠在 page-bg 上（fixed，随视口） */
 html {
     scroll-behavior: smooth;
+    background-color: var(--page-bg);
+    background-image: var(--theme-mesh);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 /* 桌面端略收内容密度：根字号与栏宽略小于 100%，但比 85%/78vw 更宽松 */
@@ -67,22 +73,53 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     filter: blur(var(--overlay-blur, 0px));
 }
 
-/* 页面顶部渐变高光效果 */
+/* 顶栏高光：中性为主，极淡品牌点缀 */
 .top-gradient-highlight {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 180px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.15) 60%, rgba(255, 255, 255, 0.05) 80%, transparent 100%);
+    height: 200px;
+    background:
+        radial-gradient(ellipse 50% 70% at 50% -30%, oklch(0.60 0.12 var(--hue) / 0.06), transparent 65%),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, transparent 75%);
     pointer-events: none;
     z-index: 20;
     transition: all var(--duration-medium) var(--ease-standard);
 }
 
-/* 暗色主题下的渐变高光效果 */
 :root.dark .top-gradient-highlight {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.15) 60%, rgba(0, 0, 0, 0.05) 80%, transparent 100%);
+    background:
+        radial-gradient(ellipse 50% 70% at 50% -30%, oklch(0.60 0.12 var(--hue) / 0.10), transparent 65%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 75%);
+}
+
+/* 侧栏标题竖条：用真渐变，不要一块纯色 */
+.widget-title::before {
+    background-image: var(--primary-gradient) !important;
+    background-color: transparent !important;
+}
+
+/* 创意点缀工具：渐变文字 / 渐变条（小面积用） */
+.accent-text-grad {
+    background-image: var(--grad-aurora);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.accent-text-grad-rose {
+    background-image: var(--grad-rose);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.accent-bar-grad {
+    background-image: var(--grad-rose);
+    background-color: transparent;
+}
+.accent-bar-grad-berry {
+    background-image: var(--grad-berry);
+    background-color: transparent;
 }
 
 @layer components {

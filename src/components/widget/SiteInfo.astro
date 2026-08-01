@@ -95,17 +95,20 @@ const licenseName = licenseConfig.enable ? licenseConfig.name : "None";
 const mainItems = [
 	{
 		icon: "material-symbols:cloud-outline",
+		iconClass: "text-(--accent-cool)",
 		label: i18n(I18nKey.siteInfoBuildPlatform),
 		value: buildPlatform,
 	},
 	{
 		icon: "mdi:clover",
+		iconClass: "text-(--accent-violet)",
 		label: i18n(I18nKey.siteInfoBlogVersion),
 		value: `Firefly v${blogVersion}`,
 		href: "https://github.com/CuteLeaf/Firefly",
 	},
 	{
 		icon: "material-symbols:copyright-outline",
+		iconClass: "text-(--accent-rose)",
 		label: i18n(I18nKey.siteInfoLicense),
 		value: licenseName,
 	},
@@ -115,44 +118,52 @@ const mainItems = [
 // fullWidth: true 表示独占一行
 const detailItems: {
 	icon: string;
+	iconClass: string;
 	label: string;
 	value: string;
 	fullWidth?: boolean;
 }[] = [
 	{
 		icon: "material-symbols:language",
+		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteInfoDomain),
 		value: siteDomain,
 		fullWidth: true,
 	},
 	{
 		icon: "mdi:clover",
+		iconClass: "text-(--accent-violet)",
 		label: "Firefly",
 		value: `v${blogVersion}`,
 	},
 	{
 		icon: "material-symbols:rocket-launch-outline",
+		iconClass: "text-(--accent-rose)",
 		label: i18n(I18nKey.siteInfoAstroVersion),
 		value: `v${astroVersion}`,
 	},
 	{
 		icon: "fa7-brands:node-js",
+		iconClass: "text-(--accent-cool)",
 		label: i18n(I18nKey.siteInfoNodeVersion),
 		value: nodeVersion,
 	},
 	{
 		icon: "simple-icons:pnpm",
+		iconClass: "text-(--accent-berry)",
 		label: i18n(I18nKey.siteInfoPnpmVersion),
 		value: pnpmVersion,
 	},
 	{
 		icon: "material-symbols:build-outline",
+		iconClass: "text-(--primary)",
 		label: i18n(I18nKey.siteInfoBuildTime),
 		value: buildTime,
 		fullWidth: true,
 	},
 	{
 		icon: "material-symbols:computer-outline",
+		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteInfoSystem),
 		value: systemInfo,
 		fullWidth: true,
@@ -171,10 +182,10 @@ const detailItems: {
     {/* 始终显示的项目（列表卡片） */}
     <div class="flex flex-col gap-2">
       {
-        mainItems.map((item: { icon: string; label: string; value: string; href?: string }) => (
+        mainItems.map((item) => (
           <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-neutral-100/60 dark:bg-neutral-800/50">
             <div class="flex items-center gap-2.5">
-              <div class="text-(--primary) text-lg">
+              <div class:list={["text-lg", item.iconClass]}>
                 <Icon is:inline name={item.icon} />
               </div>
               <span class="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
@@ -212,13 +223,12 @@ const detailItems: {
       <div class="site-info-detail overflow-hidden collapsed">
         <div class="grid grid-cols-2 gap-2">
           {
-            detailItems.map(
-              (item: { icon: string; label: string; value: string; fullWidth?: boolean }) => (
+            detailItems.map((item) => (
                 <div class:list={[
                   "flex flex-col items-center gap-1 py-2 px-1 rounded-lg bg-neutral-100/60 dark:bg-neutral-800/50",
                   { "col-span-2": item.fullWidth }
                 ]}>
-                  <div class="text-(--primary) text-lg">
+                  <div class:list={["text-lg", item.iconClass]}>
                     <Icon is:inline name={item.icon} />
                   </div>
                   <span class="text-xs text-neutral-500 dark:text-neutral-400">
@@ -240,7 +250,7 @@ const detailItems: {
         </div>
       </div>
       <button
-        class="site-info-toggle-btn btn-plain rounded-lg w-full h-8 flex items-center justify-center gap-1.5 mt-1 text-(--primary) text-sm cursor-pointer"
+        class="site-info-toggle-btn btn-plain rounded-lg w-full h-8 flex items-center justify-center gap-1.5 mt-1 accent-text-grad text-sm font-semibold cursor-pointer"
       >
         <Icon
           name="material-symbols:keyboard-arrow-down-rounded" is:inline

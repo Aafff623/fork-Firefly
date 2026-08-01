@@ -14,9 +14,9 @@ export const siteConfig: SiteConfig = {
 	// 站点 URL
 	site_url: "https://fork-firefly.vercel.app",
 
-	// 站点描述
+	// 站点描述（对齐 GitHub bio / profile）
 	description:
-		"threetwoa 的个人博客：少写一点代码，多留一点架构的余白。记录 Agent Engineering、工程实践，以及那些不想被时间带走的念头。",
+		"threetwoa 的个人博客：Code less, Architect more. Turning AI tools into reusable, production-ready workflows. 中北大学软件工程 · Java & Python · Agent Engineering。",
 
 	// 站点关键词
 	keywords: [
@@ -32,8 +32,8 @@ export const siteConfig: SiteConfig = {
 
 	// 主题色
 	themeColor: {
-		// 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
-		hue: 300,
+		// 默认色相（oklch hue）。Kraken 微调锚点 ≈ oklch(0.54 0.255 288)，取 290 对齐滑块 step=5
+		hue: 290,
 		// 默认模式："light" 亮色，"dark" 暗色，"system" 跟随系统
 		defaultMode: "system",
 	},
@@ -218,8 +218,8 @@ export const siteConfig: SiteConfig = {
 	anime: {
 		// Bilibili 配置
 		bilibili: {
-			// 你的 Bilibili 用户 UID
-			uid: "38932988",
+			// 你的 Bilibili 用户 UID（对齐 GitHub README Contact）
+			uid: "549916339",
 		},
 		// TMDB 配置（可选，需要翻墙）
 		// tmdb: {

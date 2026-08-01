@@ -133,8 +133,8 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 				// 移动端是否启用渐变过渡
 				mobile: true,
 			},
-			// 渐变高度
-			height: "10%",
+			// 渐变高度：多色 fade 收短，避免抢内容
+			height: "22%",
 		},
 		// 壁纸轮播配置，横幅壁纸和全屏壁纸共享，仅在配置多张图片时生效
 		carousel: {

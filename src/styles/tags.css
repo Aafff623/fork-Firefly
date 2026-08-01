@@ -1,19 +1,51 @@
-/* 标签按钮基础样式 - MD3 Filter Chip 风格（中性灰底描边） */
+/* 标签按钮：中性底 + 邻近色 soft hover（按序轮换，不五彩乱涂） */
 .tag-item {
     background: rgba(0, 0, 0, 0.05);
     color: rgb(115, 115, 115);
 }
 .tag-item:hover {
-    background: var(--btn-regular-bg);
     color: var(--btn-content);
 }
+.tag-item:nth-child(4n + 1):hover {
+    background: color-mix(in oklch, var(--accent-indigo) 14%, transparent);
+    color: var(--accent-indigo);
+}
+.tag-item:nth-child(4n + 2):hover {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+}
+.tag-item:nth-child(4n + 3):hover {
+    background: color-mix(in oklch, var(--accent-violet) 16%, transparent);
+    color: color-mix(in oklch, var(--accent-violet) 80%, var(--btn-content));
+}
+.tag-item:nth-child(4n + 4):hover {
+    background: color-mix(in oklch, var(--accent-cool) 14%, transparent);
+    color: var(--accent-cool);
+}
+:root.dark .tag-item,
 :global(.dark) .tag-item {
     background: rgba(255, 255, 255, 0.1);
     color: rgb(163, 163, 163);
 }
-:global(.dark) .tag-item:hover {
-    background: var(--btn-regular-bg);
-    color: var(--btn-content);
+:root.dark .tag-item:nth-child(4n + 1):hover,
+:global(.dark) .tag-item:nth-child(4n + 1):hover {
+    background: color-mix(in oklch, var(--accent-indigo) 22%, transparent);
+    color: var(--accent-indigo);
+}
+:root.dark .tag-item:nth-child(4n + 2):hover,
+:global(.dark) .tag-item:nth-child(4n + 2):hover {
+    background: color-mix(in oklch, var(--primary) 22%, transparent);
+    color: var(--primary);
+}
+:root.dark .tag-item:nth-child(4n + 3):hover,
+:global(.dark) .tag-item:nth-child(4n + 3):hover {
+    background: color-mix(in oklch, var(--accent-violet) 24%, transparent);
+    color: var(--accent-violet);
+}
+:root.dark .tag-item:nth-child(4n + 4):hover,
+:global(.dark) .tag-item:nth-child(4n + 4):hover {
+    background: color-mix(in oklch, var(--accent-cool) 22%, transparent);
+    color: var(--accent-cool);
 }
 .tag-item .tag-count-badge {
     background: rgba(0, 0, 0, 0.08);

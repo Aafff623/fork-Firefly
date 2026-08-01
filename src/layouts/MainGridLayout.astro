@@ -625,7 +625,7 @@ const hasMultipleImages =
             <div class="w-4/5 lg:w-3/4 text-center mb-0">
                 <div class="flex flex-col">
                     {backgroundWallpaper.common?.homeText?.title && (
-                        <div class="banner-title repel-text font-bold text-white mb-2 lg:mb-4 leading-tight" style={{ '--banner-title-size': backgroundWallpaper.common.homeText.titleSize || "3rem" }}>
+                        <div class="banner-title repel-text pointer-events-auto font-bold text-white mb-2 lg:mb-4 leading-tight" style={{ '--banner-title-size': backgroundWallpaper.common.homeText.titleSize || "3rem" }}>
                             {backgroundWallpaper.common.homeText.title}
                         </div>
                     )}
@@ -818,7 +818,7 @@ const hasMultipleImages =
     <div class={`wallpaper-gradient absolute bottom-0 left-0 w-full pointer-events-none
         ${!gradientEnabledOnMobile ? 'hidden' : ''} ${!gradientEnabledOnDesktop ? 'md:hidden' : ''} ${gradientEnabledOnDesktop ? 'md:block' : ''}`}
         id="wallpaper-gradient"
-        style={`height: ${gradientHeight}; background: linear-gradient(to bottom, transparent, var(--page-bg));`}>
+        style={`height: ${gradientHeight}; background: var(--wallpaper-fade);`}>
     </div>
     ) : null}
 </div>
@@ -834,10 +834,10 @@ const hasMultipleImages =
 
 <!-- Main content -->
 <div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${!(isBannerMode && isBackgroundEnabled) ? 'no-banner-layout' : ''}`} style={isFullscreenMode ? 'top: 0;' : `top: ${finalMainPanelTop}`}>
-    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-auto">
+    <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给 .banner-title.repel-text；可点区域由 [&>*]:pointer-events-auto 收回 -->
+    <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-none">
         <div id="main-grid"
-          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
+          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
           data-sidebar-enable={sidebarLayoutConfig.enable ? "true" : "false"}
           data-grid-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
           data-sidebar-position={sidebarLayoutConfig.position}
@@ -937,8 +937,10 @@ const hasMultipleImages =
             </div>
         </div>
 
-        <SpineModel></SpineModel>
-        {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
+        <div class="pointer-events-auto">
+            <SpineModel></SpineModel>
+            {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
+        </div>
     </div>
 </div>
 

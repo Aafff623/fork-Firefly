@@ -206,12 +206,13 @@ export async function GET({
 		iconPath,
 	);
 
-	const hue = siteConfig.themeColor.hue;
-	const primaryColor = `hsl(${hue}, 90%, 65%)`;
+	// OG 走 HSL；Kraken #7132f5 ≈ hsl(259 91% 58%)。siteConfig.hue 是 oklch 色相，不可直接代入。
+	const brandHslHue = 259;
+	const primaryColor = "hsl(259, 91%, 58%)";
 	const textColor = "hsl(0, 0%, 95%)";
 
-	const subtleTextColor = `hsl(${hue}, 10%, 75%)`;
-	const backgroundColor = `hsl(${hue}, 15%, 12%)`;
+	const subtleTextColor = `hsl(${brandHslHue}, 12%, 75%)`;
+	const backgroundColor = `hsl(${brandHslHue}, 18%, 12%)`;
 
 	const pubDate = post.data.published.toLocaleDateString("en-US", {
 		year: "numeric",

@@ -73,27 +73,32 @@ const todayText = i18n(I18nKey.today);
 const stats = [
 	{
 		icon: "material-symbols:article-outline",
+		iconClass: "text-(--primary)",
 		label: i18n(I18nKey.siteStatsPostCount),
 		value: posts.length,
 	},
 	{
 		icon: "material-symbols:folder-outline",
+		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteStatsCategoryCount),
 		value: categories.length,
 	},
 	{
 		icon: "material-symbols:label-outline",
+		iconClass: "text-(--accent-violet)",
 		label: i18n(I18nKey.siteStatsTagCount),
 		value: tags.length,
 	},
 	{
 		icon: "material-symbols:text-ad-outline-rounded",
+		iconClass: "text-(--accent-cool)",
 		label: i18n(I18nKey.siteStatsTotalWords),
 		value: totalWords,
 		formatted: true,
 	},
 	{
 		icon: "material-symbols:calendar-clock-outline",
+		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteStatsRunningDays),
 		value: 0, // 将由客户端更新
 		suffix: i18n(I18nKey.siteStatsDays).replace("{days}", ""),
@@ -102,6 +107,7 @@ const stats = [
 	},
 	{
 		icon: "mingcute:heartbeat-line",
+		iconClass: "text-(--accent-berry)",
 		label: i18n(I18nKey.siteStatsLastUpdate),
 		value: 0, // 将由客户端更新
 		suffix: i18n(I18nKey.siteStatsDaysAgo).replace("{days}", ""),
@@ -116,7 +122,7 @@ const stats = [
     {stats.map((stat) => (
       <div class="flex items-center justify-between px-3 py-1.5">
         <div class="flex items-center gap-2.5">
-          <div class="text-(--primary) text-xl">
+          <div class:list={["text-xl", stat.iconClass]}>
             <Icon is:inline name={stat.icon} />
           </div>
           <span class="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
