@@ -527,7 +527,6 @@ const postUrlPrefix = url("/posts/");
 
     // 按「月 × 月内周桶」聚合：当天发文 +1 贡献（贴合卡片 12×4，非整年 53 周）
     const heatmapData = Array.from({ length: 12 }, () => [0, 0, 0, 0]);
-    let yearTotal = 0;
     allPostsData.forEach(post => {
       const date = new Date(post.published);
       if (date.getFullYear() !== displayYear) return;
@@ -535,7 +534,6 @@ const postUrlPrefix = url("/posts/");
       const day = date.getDate();
       const week = Math.min(Math.floor((day - 1) / 7), 3); // 0-3
       heatmapData[month][week]++;
-      yearTotal++;
     });
 
     let cellsHtml = '';
@@ -599,12 +597,8 @@ const postUrlPrefix = url("/posts/");
       });
     });
 
-    // 无贡献或很少时播放空闲蛇；有绿标时停掉
-    if (yearTotal === 0) {
-      startHeatmapSnake(gridEl);
-    } else {
-      stopHeatmapSnake();
-    }
+    // 空闲紫蛇：在空格上爬（有绿贡献也播；空格太少时 start 内自行 return）
+    startHeatmapSnake(gridEl);
   }
 
   // 客户端动态渲染日历
