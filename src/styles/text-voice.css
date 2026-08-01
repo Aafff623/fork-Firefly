@@ -1,0 +1,64 @@
+/**
+ * text-voice：整段文字的轻量「墨光」效果
+ * - 不拆词、不斥力、不改排版结构（区别于 .repel-text）
+ * - 用于侧栏简介 / 公告正文等语气文本
+ */
+.text-voice {
+	--voice-base: #a3a3a3; /* ≈ neutral-400 */
+	--voice-glow: color-mix(in oklch, var(--primary) 55%, white);
+
+	background-image: linear-gradient(
+		105deg,
+		var(--voice-base) 0%,
+		var(--voice-base) 40%,
+		var(--voice-glow) 50%,
+		var(--voice-base) 60%,
+		var(--voice-base) 100%
+	);
+	background-size: 220% 100%;
+	background-position: 100% 50%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	animation:
+		text-voice-enter 0.65s ease-out both,
+		text-voice-sheen 7.5s ease-in-out 0.65s infinite;
+}
+
+:root.dark .text-voice {
+	--voice-base: color-mix(in oklch, white 72%, transparent);
+	--voice-glow: color-mix(in oklch, var(--primary) 70%, white);
+}
+
+@keyframes text-voice-enter {
+	from {
+		opacity: 0.25;
+		filter: blur(0.6px);
+	}
+	to {
+		opacity: 1;
+		filter: blur(0);
+	}
+}
+
+@keyframes text-voice-sheen {
+	0%,
+	100% {
+		background-position: 100% 50%;
+	}
+	50% {
+		background-position: 0% 50%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.text-voice {
+		animation: none;
+		background-image: none;
+		background-clip: border-box;
+		-webkit-background-clip: border-box;
+		color: var(--voice-base);
+		filter: none;
+		opacity: 1;
+	}
+}
