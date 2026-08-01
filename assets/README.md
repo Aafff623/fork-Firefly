@@ -11,4 +11,4 @@
 
 禁止新建 `docs/images/` 作为新图库（上游主题已有 `docs/images/` 历史资源，保留不迁）。
 
-官方配置文档在工作区 `../Firefly_docs/`，不整包拷入 `backup/`。
+官方配置文档在 `docs/official/`（gitignore），不整包拷入 `backup/`。

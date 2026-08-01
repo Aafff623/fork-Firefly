@@ -25,7 +25,8 @@
 | 产品代码 | `src/` |
 | 站点配置 | `src/config/` |
 | 文章 | `src/content/posts/` |
-| 官方配置文档（旁路） | `../Firefly_docs/` |
+| 官方配置文档（本地，gitignore） | `docs/official/` |
+| 官方文档路由模型 | `docs/knowledge/official-docs.tree.json` |
 | Issue（本地） | `.scratch/<feature>/` |
 | PRD / handoff / commit-history | `docs/outputs/{prd,handoff,commit-history}/`（有产物再建） |
 | 上游 AGENTS 备份 | `.scratch/project-init-backup/` |

@@ -1,6 +1,6 @@
-# CONTEXT.md
+﻿# CONTEXT.md
 
-> 本仓领域事实单一来源。术语与硬约束以本文为准。主题使用文档见工作区旁路 `../Firefly_docs/`（不入库拷贝）。
+> 本仓领域事实单一来源。术语与硬约束以本文为准。主题使用文档见 `docs/official/`（gitignore，不提交）；路由索引见 `docs/knowledge/official-docs.tree.json`。
 
 ## 项目定位
 
@@ -37,7 +37,8 @@
 | `scripts/` | LQIP、字体子集、new-post / new-dynamic |
 | `docs/` | 上游主题多语言 README 图 + **本仓 Agent 流程资产**（`docs/agents` 等） |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
-| `../Firefly_docs/` | 官方中文配置文档（工作区旁路，知识源） |
+| `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
+| `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
 
 ## 配置驱动模型
 
@@ -92,6 +93,6 @@ Content Collections（`src/content.config.ts`）：
 
 ## 参考
 
-- 配置详解：`../Firefly_docs/`
+- 配置详解：`docs/official/`（路由：`docs/knowledge/official-docs.tree.json`）
 - 上游主题：https://github.com/CuteLeaf/Firefly
 - 作者主页：https://github.com/Aafff623

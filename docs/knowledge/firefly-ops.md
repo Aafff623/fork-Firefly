@@ -1,6 +1,6 @@
 # Firefly 运维备忘（fork-Firefly / threetwoa's blog）
 
-> 主题配置语义以旁路 ../Firefly_docs/ 为准；领域事实以 CONTEXT.md 为准。  
+> 主题配置语义以 docs/official/ 为准（路由：docs/knowledge/official-docs.tree.json）；领域事实以 CONTEXT.md 为准。  
 > 线上：https://fork-firefly.vercel.app · 仓库：https://github.com/Aafff623/fork-Firefly
 
 ## 1. Day-2 日常
@@ -9,14 +9,14 @@
 编辑 src/config/siteConfig.ts（	itle / subtitle / 
 avbar.title / site_url / description / keywords）。  
 个人资料：src/config/profileConfig.ts。  
-文档：../Firefly_docs/02-基础配置/站点配置.md · 个人资料.md
+文档：docs/official/02-基础配置/站点配置.md · 个人资料.md
 
 ### 写文章
 \\\ash
 pnpm new-post <slug>
 pnpm dev
 \\\
-Frontmatter 必填 	itle、published。详解：../Firefly_docs/01-入门/编写文章.md
+Frontmatter 必填 title、published。详解：docs/official/01-入门/编写文章.md
 
 ### 关闭页面
 siteConfig.pages.* = false → 路由 404 + 导航自动隐藏。不必先改 
@@ -32,17 +32,17 @@ avBarConfig。
 
 **交付闭环**：本地 pnpm dev → 校验 → 你确认 → push → 等 Vercel → **再核线上**。未本地验收不得 push。
 
-## 2. Firefly_docs 索引
+## 2. docs/official 索引
 
 | 区块 | 路径 |
 |---|---|
-| 入门 | ../Firefly_docs/01-入门/（快速开始·编写文章·部署·更新主题） |
-| 基础配置 | ../Firefly_docs/02-基础配置/ |
-| 功能配置 | ../Firefly_docs/03-功能配置/ |
-| 页面配置 | ../Firefly_docs/04-页面配置/ |
-| 扩展 | ../Firefly_docs/05-扩展功能/ |
+| 入门 | docs/official/01-入门/（快速开始·编写文章·部署·更新主题） |
+| 基础配置 | docs/official/02-基础配置/ |
+| 功能配置 | docs/official/03-功能配置/ |
+| 页面配置 | docs/official/04-页面配置/ |
+| 扩展 | docs/official/05-扩展功能/ |
 
-总览：../Firefly_docs/README.md
+总览：docs/official/README.md · 路由模型：docs/knowledge/official-docs.tree.json
 
 ## 3. 已知坑
 

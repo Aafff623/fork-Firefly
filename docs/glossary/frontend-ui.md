@@ -1,6 +1,6 @@
 # 前端 UI / 布局术语表
 
-> 依据：src/layouts、src/config、src/content.config.ts、CONTEXT.md、旁路 ../Firefly_docs/。不确定处标【待确认】。
+> 依据：src/layouts、src/config、src/content.config.ts、CONTEXT.md、docs/official/。不确定处标【待确认】。
 
 ## 1. 布局术语
 
@@ -37,7 +37,7 @@ one） |
 | riendsConfig.ts / galleryConfig.ts / sponsorConfig.ts | 友链 / 相册 / 打赏 |
 | ontConfig.ts / musicConfig.ts / effectsConfig.ts / pioConfig.ts | 字体 / 音乐 / 特效 / 看板娘 |
 
-详解见 ../Firefly_docs/ 对应章节与 src/config/README.md。
+详解见 docs/official/ 对应章节与 src/config/README.md。
 
 ## 3. 内容集合
 

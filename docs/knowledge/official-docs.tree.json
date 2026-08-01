@@ -1,0 +1,75 @@
+{
+  "id": "official-docs",
+  "root": "docs/official",
+  "version": 1,
+  "description": "Firefly 官方中文配置文档的 file-tree 路由模型。实体在 docs/official/（gitignore）；本文件入库供 Agent 定位。",
+  "routes": [
+    {
+      "slug": "getting-started",
+      "title": "入门",
+      "path": "01-入门",
+      "children": [
+        { "slug": "quick-start", "title": "快速开始", "path": "01-入门/快速开始.md" },
+        { "slug": "write-post", "title": "编写文章", "path": "01-入门/编写文章.md" },
+        { "slug": "deploy", "title": "部署指南", "path": "01-入门/部署指南.md" },
+        { "slug": "update-theme", "title": "更新主题", "path": "01-入门/更新主题.md" }
+      ]
+    },
+    {
+      "slug": "basic-config",
+      "title": "基础配置",
+      "path": "02-基础配置",
+      "children": [
+        { "slug": "site", "title": "站点配置", "path": "02-基础配置/站点配置.md" },
+        { "slug": "settings-panel", "title": "设置面板", "path": "02-基础配置/设置面板.md" },
+        { "slug": "profile", "title": "个人资料", "path": "02-基础配置/个人资料.md" },
+        { "slug": "wallpaper", "title": "背景壁纸", "path": "02-基础配置/背景壁纸.md" },
+        { "slug": "navbar", "title": "导航栏", "path": "02-基础配置/导航栏.md" },
+        { "slug": "sidebar", "title": "侧边栏", "path": "02-基础配置/侧边栏.md" },
+        { "slug": "sidebar-widgets", "title": "侧边栏小组件", "path": "02-基础配置/侧边栏小组件.md" }
+      ]
+    },
+    {
+      "slug": "feature-config",
+      "title": "功能配置",
+      "path": "03-功能配置",
+      "children": [
+        { "slug": "fonts", "title": "字体", "path": "03-功能配置/字体.md" },
+        { "slug": "code-blocks", "title": "代码块", "path": "03-功能配置/代码块.md" },
+        { "slug": "comments", "title": "评论系统", "path": "03-功能配置/评论系统.md" },
+        { "slug": "cover-image", "title": "封面图片", "path": "03-功能配置/封面图片.md" },
+        { "slug": "post-encrypt", "title": "文章加密", "path": "03-功能配置/文章加密.md" },
+        { "slug": "music-player", "title": "音乐播放器", "path": "03-功能配置/音乐播放器.md" },
+        { "slug": "mermaid", "title": "Mermaid图表", "path": "03-功能配置/Mermaid图表.md" },
+        { "slug": "plantuml", "title": "PlantUML图表", "path": "03-功能配置/PlantUML图表.md" }
+      ]
+    },
+    {
+      "slug": "page-config",
+      "title": "页面配置",
+      "path": "04-页面配置",
+      "children": [
+        { "slug": "dynamic", "title": "动态", "path": "04-页面配置/动态.md" },
+        { "slug": "friends", "title": "友链", "path": "04-页面配置/友链.md" },
+        { "slug": "gallery", "title": "相册", "path": "04-页面配置/相册.md" },
+        { "slug": "anime", "title": "追番", "path": "04-页面配置/追番.md" },
+        { "slug": "sponsor", "title": "打赏", "path": "04-页面配置/打赏.md" },
+        { "slug": "bangumi", "title": "番组计划", "path": "04-页面配置/番组计划.md" }
+      ]
+    },
+    {
+      "slug": "extensions",
+      "title": "扩展功能",
+      "path": "05-扩展功能",
+      "children": [
+        { "slug": "effects", "title": "特效设置", "path": "05-扩展功能/特效设置.md" },
+        { "slug": "announcement", "title": "公告", "path": "05-扩展功能/公告.md" },
+        { "slug": "footer", "title": "页脚", "path": "05-扩展功能/页脚.md" },
+        { "slug": "ads", "title": "广告", "path": "05-扩展功能/广告.md" },
+        { "slug": "license", "title": "许可证", "path": "05-扩展功能/许可证.md" },
+        { "slug": "live2d-spine", "title": "Live2D-Spine模型", "path": "05-扩展功能/Live2D-Spine模型.md" }
+      ]
+    }
+  ],
+  "index": "README.md"
+}

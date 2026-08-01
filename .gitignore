@@ -30,8 +30,8 @@ yarn.lock
 .idea
 *.iml
 
-# docs
-Firefly-docs/
+# official theme docs (local knowledge source; do not commit)
+docs/official/
 
 cache/
 package/

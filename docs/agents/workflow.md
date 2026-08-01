@@ -36,4 +36,4 @@ Issue(.scratch/<feature>/)
 
 - 改 `src/config` / 内容 / 样式：走 Issue → 小 handoff 即可。
 - 改布局内核 / 插件管线：建议先 report 再 PRD。
-- 配置含义查阅 `../Firefly_docs/`，勿臆造开关语义。
+- 配置含义查阅 `docs/official/`（路由：`docs/knowledge/official-docs.tree.json`），勿臆造开关语义。

@@ -9,7 +9,7 @@
 
 1. **Rules**：`.cursor/rules/`（Windows、回答格式、commit-history、Karpathy）
 2. **仓级**：`AGENTS.md` → `CONTEXT.md` → `LANGUAGES.md`
-3. **主题文档**：工作区 `../Firefly_docs/`（配置怎么改）；上游主题行为以代码为准
+3. **主题文档**：`docs/official/`（配置怎么改；gitignore）；路由见 `docs/knowledge/official-docs.tree.json`；上游主题行为以代码为准
 
 ## 本仓是什么
 
