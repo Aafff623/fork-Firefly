@@ -23,6 +23,8 @@ export interface Props {
 	showNoTags?: boolean;
 	customPath?: string;
 	pinned?: boolean;
+	/** sticky=常驻 · auto=默认动态置顶；优先于布尔 pinned 展示 */
+	pinKind?: "sticky" | "auto" | null;
 	password?: boolean;
 	words?: number;
 	minutes?: number;
@@ -48,6 +50,7 @@ const {
 	showNoTags = true,
 	customPath,
 	pinned,
+	pinKind = null,
 	words,
 	minutes,
 	showWords = false,
@@ -72,10 +75,18 @@ const visibleTags =
   ]}
 >
   {
-    pinned && (
-      <div class="pinned-btn flex items-center gap-1 bg-(--btn-regular-bg) text-(--btn-content) rounded-md px-2 py-1.5 font-bold">
-        <Icon is:inline name="material-symbols:pinboard" class="text-xl" />
-        <span class="text-sm">{i18n(I18nKey.pinned)}</span>
+    (pinKind === "sticky" || (!pinKind && pinned)) && (
+      <div class="pinned-btn pinned-btn--sticky flex items-center gap-1 rounded-md px-2 py-1.5 font-bold">
+        <Icon is:inline name="material-symbols:keep" class="text-xl" />
+        <span class="text-sm">{i18n(I18nKey.pinnedSticky)}</span>
+      </div>
+    )
+  }
+  {
+    pinKind === "auto" && (
+      <div class="pinned-btn pinned-btn--auto flex items-center gap-1 rounded-md px-2 py-1.5 font-bold">
+        <Icon is:inline name="material-symbols:push-pin-outline" class="text-xl" />
+        <span class="text-sm">{i18n(I18nKey.pinnedAuto)}</span>
       </div>
     )
   }
@@ -297,6 +308,31 @@ const visibleTags =
 </div>
 
 <style>
+  .pinned-btn--sticky {
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 0.45rem;
+    color: var(--primary);
+    border: 1px solid color-mix(in srgb, var(--primary) 38%, var(--line-color));
+    background: color-mix(in srgb, var(--primary) 10%, var(--btn-regular-bg));
+  }
+
+  .pinned-btn--auto {
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 0.45rem;
+    color: var(--content-meta);
+    background: transparent;
+    border: 1px dashed color-mix(in srgb, var(--primary) 42%, var(--line-color));
+  }
+
+  .post-meta-cover .pinned-btn--sticky,
+  .post-meta-cover .pinned-btn--auto {
+    color: white;
+    border-color: rgb(255 255 255 / 0.45);
+    background: rgb(255 255 255 / 0.14);
+  }
+
   .post-meta-cover .text-50,
   .post-meta-cover .meta-divider {
     color: rgb(255 255 255 / 0.9) !important;
