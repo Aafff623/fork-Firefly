@@ -1,15 +1,9 @@
-<p class="about-mast"><span>THREETWOA</span><span>ABOUT · 2026</span></p>
-
-<blockquote class="about-pull">
-Code less, architect more.<br />
-<span class="about-strike">把工具当玩具</span> · 把 AI 锻成可复用、可上线的工作流。
-</blockquote>
-
 <img
   class="about-hero-img"
-  src="https://raw.githubusercontent.com/Aafff623/Aafff623/main/assets/hero-knight.webp"
+  src="/assets/images/about/hero-knight.webp"
   alt="threetwoa hero"
   loading="lazy"
+  decoding="async"
 />
 
 我是 **threetwoa**（GitHub: [Aafff623](https://github.com/Aafff623)）。中北大学软件工程**即将升入三年级**。
@@ -130,13 +124,3 @@ Code less, architect more.<br />
     loading="lazy"
   />
 </p>
-
----
-
-## 关于本站
-
-本站基于 [Firefly](https://github.com/CuteLeaf/Firefly)（Astro 静态博客主题）二次开发，部署于 Vercel。内容真源之一是 Obsidian vault；发文走 ob2blog → site-cascade。
-
-::github{repo="Aafff623/fork-Firefly"}
-
-*Last aligned with [GitHub profile](https://github.com/Aafff623) · August 2026*

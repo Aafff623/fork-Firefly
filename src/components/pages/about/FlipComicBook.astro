@@ -1,0 +1,171 @@
+---
+/**
+ * 3D 翻页漫画 — 改编自 bilibili-goat `categories/effects/3D翻页漫画`
+ */
+const pages = [
+	{ cls: "b", i: 2, s: undefined as number | undefined, src: "/assets/images/about/flip-comic/1.gif" },
+	{ cls: "c", i: 4, s: 1, src: "/assets/images/about/flip-comic/2.gif" },
+	{ cls: "d", i: 3, s: 2, src: "/assets/images/about/flip-comic/3.gif" },
+	{ cls: "e", i: 2, s: 3, src: "/assets/images/about/flip-comic/4.gif" },
+	{ cls: "f", i: 1, s: 4, src: "/assets/images/about/flip-comic/5.gif" },
+];
+---
+
+<div class="about-flip" data-about-flip id="about-flip-root">
+  <div class="about-flip__stage" aria-label="3D 翻页漫画，悬停翻页">
+    <div class="about-flip__book">
+      {
+        pages.map((p) => (
+          <div
+            class:list={["about-flip__page", `about-flip__page--${p.cls}`]}
+            style={`--i:${p.i};${p.s !== undefined ? `--s:${p.s};` : ""}background-image:url(${p.src})`}
+          />
+        ))
+      }
+    </div>
+  </div>
+  <p class="about-flip__hint">悬停翻页</p>
+</div>
+
+<style is:global>
+  .about-flip {
+    margin: 1.25rem 0 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .about-flip__stage {
+    width: 100%;
+    max-width: 28rem;
+    min-height: 22rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem 2.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background:
+      radial-gradient(
+        circle at 30% 20%,
+        color-mix(in oklab, var(--primary) 14%, transparent),
+        transparent 55%
+      ),
+      color-mix(in oklab, #9980fa 22%, var(--card-bg));
+    overflow: visible;
+  }
+
+  :root.dark .about-flip__stage {
+    background:
+      radial-gradient(
+        circle at 30% 20%,
+        color-mix(in oklab, var(--primary) 20%, transparent),
+        transparent 55%
+      ),
+      color-mix(in oklab, #9980fa 18%, #1a1528);
+  }
+
+  .about-flip__book {
+    --book-w: min(15rem, 58vw);
+    --book-h: calc(var(--book-w) * 1.48);
+    width: var(--book-w);
+    height: var(--book-h);
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: transform 0.8s ease;
+    margin-right: 2.5rem;
+  }
+
+  .about-flip__page {
+    width: var(--book-w);
+    height: calc(var(--book-h) - 1.1rem);
+    position: absolute;
+    transform-origin: left center;
+    background-size: cover;
+    background-position: center;
+    transition: transform calc(var(--i) * 0.3s), z-index 0s;
+    z-index: calc(var(--i) * 99);
+    box-shadow: 0 6px 18px color-mix(in oklab, black 18%, transparent);
+  }
+
+  .about-flip__page--b,
+  .about-flip__page--c {
+    border: solid 14px #576574;
+    border-left: none;
+    top: -12px;
+    border-radius: 0 14px 14px 0;
+    height: var(--book-h);
+  }
+
+  .about-flip__book:hover .about-flip__page--b,
+  .about-flip__book.is-open .about-flip__page--b {
+    border-left: 14px solid #576574;
+  }
+
+  .about-flip__book:hover .about-flip__page--c,
+  .about-flip__book:hover .about-flip__page--d,
+  .about-flip__book:hover .about-flip__page--e,
+  .about-flip__book:hover .about-flip__page--f,
+  .about-flip__book.is-open .about-flip__page--c,
+  .about-flip__book.is-open .about-flip__page--d,
+  .about-flip__book.is-open .about-flip__page--e,
+  .about-flip__book.is-open .about-flip__page--f {
+    transform: rotateY(-180deg);
+    transition: transform calc(var(--s) * 0.4s);
+    z-index: calc(var(--s) * -99);
+  }
+
+  .about-flip__book:hover,
+  .about-flip__book.is-open {
+    transform: translateX(3.25rem);
+  }
+
+  .about-flip__hint {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--content-meta) 75%, transparent);
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (max-width: 640px) {
+    .about-flip__stage {
+      min-height: 18rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .about-flip__book {
+      margin-right: 1rem;
+    }
+
+    .about-flip__book:hover,
+    .about-flip__book.is-open {
+      transform: translateX(1.75rem);
+    }
+  }
+</style>
+
+<script>
+  function bindTouch(root) {
+    if (!(root instanceof HTMLElement) || root.dataset.bound === "1") return;
+    root.dataset.bound = "1";
+    const book = root.querySelector(".about-flip__book");
+    if (!(book instanceof HTMLElement)) return;
+    if (!window.matchMedia("(hover: none)").matches) return;
+    book.addEventListener("click", () => book.classList.toggle("is-open"));
+  }
+
+  function init() {
+    document.querySelectorAll("[data-about-flip]").forEach(bindTouch);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+  document.addEventListener("swup:contentReplaced", () => setTimeout(init, 40));
+</script>

@@ -1,0 +1,489 @@
+---
+/**
+ * 旋转弹出名片 — 改编自 bilibili-goat `categories/cards/旋转弹出名片`
+ * 接入 profileConfig 头像与外链；尺寸缩小以贴合 about 页 slogan 区。
+ */
+import { Icon } from "astro-icon/components";
+import ImageWrapper from "@/components/common/ImageWrapper.astro";
+import { profileConfig } from "@/config/profileConfig";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+
+/** 扇形展开最多 5 个，优先这些品牌链 */
+const preferred = ["GitHub", "Bilibili", "X", "Email", "Telegram"] as const;
+const linkMap = new Map(profileConfig.links.map((l) => [l.name, l]));
+const fanLinks = preferred
+	.map((name) => linkMap.get(name))
+	.filter((l): l is (typeof profileConfig.links)[number] => Boolean(l))
+	.slice(0, 5);
+
+const title = "Business card";
+const subtitle = profileConfig.name;
+/** 名片专用：GitHub 头像（侧栏仍用 profileConfig.avatar） */
+const githubAvatar = "https://github.com/Aafff623.png?size=160";
+---
+
+<div
+  class:list={["about-pop-card", className]}
+  data-about-pop-card
+>
+  <div class="about-pop-card__shell">
+    <div class="about-pop-card__photo">
+      <ImageWrapper
+        src={githubAvatar}
+        alt={`GitHub avatar of ${profileConfig.name}`}
+        class="about-pop-card__avatar"
+        loading="eager"
+        widths={[160]}
+        sizes="80px"
+        fadeIn={false}
+        showLqip={false}
+        showOverlay={false}
+      />
+    </div>
+
+    <div class="about-pop-card__content">
+      <div class="about-pop-card__text">
+        <p class="about-pop-card__title">{title}</p>
+        <p class="about-pop-card__sub">{subtitle}</p>
+      </div>
+      <button
+        type="button"
+        class="about-pop-card__btn"
+        aria-expanded="false"
+        aria-controls="about-pop-card-fan"
+        aria-label="展开社交链接"
+        data-about-pop-toggle
+      >
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div
+      id="about-pop-card-fan"
+      class="about-pop-card__box"
+      data-about-pop-fan
+      aria-hidden="true"
+    >
+      {
+        fanLinks.map((item) => {
+          const isMail = item.url.startsWith("mailto:");
+          if (isMail) {
+            const encodedEmail = Buffer.from(
+              item.url.replace("mailto:", ""),
+            ).toString("base64");
+            return (
+              <a
+                class="about-pop-card__link"
+                href="#"
+                rel="me"
+                aria-label={item.name}
+                data-encoded-email={encodedEmail}
+                data-about-pop-mail
+              >
+                <Icon is:inline name={item.icon} />
+              </a>
+            );
+          }
+          return (
+            <a
+              class="about-pop-card__link"
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer me"
+              aria-label={item.name}
+            >
+              <Icon is:inline name={item.icon} />
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  function bindAboutPopCard(root) {
+    if (!(root instanceof HTMLElement) || root.dataset.bound === "1") return;
+    root.dataset.bound = "1";
+
+    const btn = root.querySelector("[data-about-pop-toggle]");
+    const fan = root.querySelector("[data-about-pop-fan]");
+    if (!(btn instanceof HTMLElement) || !(fan instanceof HTMLElement)) return;
+
+    btn.addEventListener("click", () => {
+      const open = !fan.classList.contains("is-open");
+      fan.classList.toggle("is-open", open);
+      btn.classList.toggle("is-active", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      fan.setAttribute("aria-hidden", open ? "false" : "true");
+    });
+
+    root.querySelectorAll("[data-about-pop-mail]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (!(el instanceof HTMLAnchorElement)) return;
+        const encoded = el.getAttribute("data-encoded-email");
+        if (!encoded) return;
+        e.preventDefault();
+        el.href = `mailto:${atob(encoded)}`;
+        el.removeAttribute("data-encoded-email");
+        el.click();
+      });
+    });
+  }
+
+  function init() {
+    document.querySelectorAll("[data-about-pop-card]").forEach(bindAboutPopCard);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+  document.addEventListener("swup:contentReplaced", () => {
+    setTimeout(init, 30);
+  });
+</script>
+
+<style>
+  .about-pop-card {
+    --apc-shell-w: 17.5rem;
+    --apc-shell-h: 5.25rem;
+    --apc-photo: 5.25rem;
+    --apc-accent: color-mix(in oklab, var(--primary) 82%, #6866ee);
+    --apc-accent-soft: color-mix(in oklab, var(--primary) 35%, #fbc8d4);
+    --apc-surface: color-mix(in oklab, var(--card-bg) 92%, white);
+    --apc-ink: var(--deep-text);
+    --apc-muted: color-mix(in oklab, var(--content-meta) 88%, transparent);
+    --apc-shadow: color-mix(in oklab, var(--deep-text) 14%, transparent);
+    --apc-scale: 0.92;
+
+    position: relative;
+    width: calc(var(--apc-shell-w) + 7.5rem);
+    max-width: 100%;
+    min-height: calc(var(--apc-shell-h) + 1.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.75rem 0.25rem 0.75rem 2.4rem;
+    flex-shrink: 0;
+    color: var(--apc-ink);
+  }
+
+  :global(:root.dark) .about-pop-card {
+    --apc-surface: color-mix(in oklab, var(--card-bg) 88%, #1a1a1a);
+    --apc-shadow: color-mix(in oklab, black 45%, transparent);
+    --apc-accent-soft: color-mix(in oklab, var(--primary) 40%, #3a2a35);
+  }
+
+  .about-pop-card__shell {
+    position: relative;
+    width: var(--apc-shell-w);
+    height: var(--apc-shell-h);
+    border-radius: 0.4rem;
+    background: var(--apc-surface);
+    box-shadow: 0 0 1.35rem var(--apc-shadow);
+    transform: scale(var(--apc-scale));
+    transform-origin: left center;
+    animation: about-pop-show-shell 0.5s forwards ease-in-out;
+  }
+
+  @keyframes about-pop-show-shell {
+    0% {
+      width: 0;
+    }
+  }
+
+  .about-pop-card__photo,
+  .about-pop-card__content {
+    box-sizing: border-box;
+  }
+
+  .about-pop-card__photo {
+    width: var(--apc-photo);
+    height: var(--apc-photo);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--apc-surface);
+    background: var(--apc-surface);
+    margin-left: calc(var(--apc-photo) / -2);
+    box-shadow: 0 0 0.45rem var(--apc-shadow);
+    animation: about-pop-rotate-photo 0.5s forwards ease-in-out;
+  }
+
+  @keyframes about-pop-rotate-photo {
+    100% {
+      transform: rotate(-360deg);
+    }
+  }
+
+  .about-pop-card__photo :global(img),
+  .about-pop-card__avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-pop-card__content {
+    padding: 0.55rem;
+    overflow: hidden;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .about-pop-card__content::before {
+    content: "";
+    position: absolute;
+    width: 12.5rem;
+    height: 8rem;
+    left: 0;
+    top: -1.1rem;
+    z-index: -1;
+    transform: rotate(-8deg);
+    background-image: linear-gradient(
+      to top,
+      var(--apc-accent) 0%,
+      var(--apc-accent-soft) 100%
+    );
+  }
+
+  .about-pop-card__text {
+    margin-top: 0.85rem;
+    margin-left: 2.55rem;
+    margin-right: 3.2rem;
+  }
+
+  .about-pop-card__title,
+  .about-pop-card__sub {
+    margin: 0.12rem 0;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .about-pop-card__title {
+    font-size: 0.92rem;
+    color: #fff;
+    text-shadow: 0 1px 1px color-mix(in oklab, black 25%, transparent);
+  }
+
+  .about-pop-card__sub {
+    font-size: 0.72rem;
+    color: color-mix(in oklab, white 88%, transparent);
+  }
+
+  .about-pop-card__btn {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background-color: var(--apc-accent);
+    width: 2.55rem;
+    height: 2.55rem;
+    position: absolute;
+    right: 1.1rem;
+    top: 1.35rem;
+    border-radius: 50%;
+    z-index: 2;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    animation: about-pop-btn 0.3s both ease-in-out 0.5s;
+  }
+
+  @keyframes about-pop-btn {
+    0% {
+      transform: scale(0);
+    }
+    80% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .about-pop-card__btn:hover {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--apc-accent) 28%, transparent);
+  }
+
+  .about-pop-card__btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  .about-pop-card__btn span {
+    width: 58%;
+    height: 2px;
+    position: absolute;
+    background-color: white;
+    top: 50%;
+    left: 21%;
+    transform: translateY(-50%);
+    animation: about-pop-to-hamburger 0.3s forwards ease-in-out;
+  }
+
+  .about-pop-card__btn span::before,
+  .about-pop-card__btn span::after {
+    content: "";
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    background-color: white;
+    transition-duration: 0.3s;
+    transform: rotate(0deg);
+    right: 0;
+  }
+
+  .about-pop-card__btn span::before {
+    margin-top: -6px;
+  }
+
+  .about-pop-card__btn span::after {
+    margin-top: 6px;
+  }
+
+  .about-pop-card__btn.is-active span {
+    animation: about-pop-to-arrow 0.3s forwards ease-in-out;
+  }
+
+  .about-pop-card__btn.is-active span::before,
+  .about-pop-card__btn.is-active span::after {
+    width: 60%;
+    right: -1px;
+  }
+
+  .about-pop-card__btn.is-active span::before {
+    transform: rotate(45deg);
+  }
+
+  .about-pop-card__btn.is-active span::after {
+    transform: rotate(-45deg);
+  }
+
+  @keyframes about-pop-to-hamburger {
+    from {
+      transform: translateY(-50%) rotate(-180deg);
+    }
+  }
+
+  @keyframes about-pop-to-arrow {
+    from {
+      transform: translateY(-50%) rotate(0deg);
+    }
+    to {
+      transform: translateY(-50%) rotate(180deg);
+    }
+  }
+
+  .about-pop-card__box {
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    background-color: color-mix(in oklab, var(--apc-surface) 70%, transparent);
+    position: absolute;
+    top: 50%;
+    right: -28%;
+    transform: translate(-50%, -50%);
+    transition-duration: 0.3s;
+    box-shadow: 0 0 10px color-mix(in oklab, white 55%, transparent);
+    border: 4px solid color-mix(in oklab, white 80%, transparent);
+    z-index: 1;
+  }
+
+  .about-pop-card__box::after {
+    content: "";
+    display: block;
+    width: 5.75rem;
+    height: 5.75rem;
+    background-image: url("/assets/images/about/pop-orbit.gif");
+    background-size: cover;
+    opacity: 0.7;
+    border-radius: 50%;
+  }
+
+  .about-pop-card__link {
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 50%;
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0.85rem;
+    top: calc(2.85rem - 1.35rem);
+    box-shadow: 0 0 8px color-mix(in oklab, white 50%, transparent);
+    color: var(--apc-accent);
+    background-color: var(--apc-surface);
+    transition-duration: 0.3s;
+    text-decoration: none;
+    opacity: 0;
+  }
+
+  .about-pop-card__link:hover {
+    transition-delay: 0s !important;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--apc-accent) 35%, transparent);
+    background-color: var(--apc-accent);
+    color: #fff;
+  }
+
+  .about-pop-card__box.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .about-pop-card__box.is-open .about-pop-card__link {
+    left: 0.95rem;
+    opacity: 1;
+  }
+
+  .about-pop-card__box.is-open .about-pop-card__link:nth-of-type(1) {
+    transform: rotate(-90deg) translateX(5.4rem) rotate(90deg);
+    transition-delay: 0s;
+  }
+  .about-pop-card__box.is-open .about-pop-card__link:nth-of-type(2) {
+    transform: rotate(-45deg) translateX(5.4rem) rotate(45deg);
+    transition-delay: 0.1s;
+  }
+  .about-pop-card__box.is-open .about-pop-card__link:nth-of-type(3) {
+    transform: rotate(0deg) translateX(5.85rem) rotate(0deg);
+    transition-delay: 0.2s;
+  }
+  .about-pop-card__box.is-open .about-pop-card__link:nth-of-type(4) {
+    transform: rotate(45deg) translateX(5.4rem) rotate(-45deg);
+    transition-delay: 0.3s;
+  }
+  .about-pop-card__box.is-open .about-pop-card__link:nth-of-type(5) {
+    transform: rotate(90deg) translateX(5rem) rotate(-90deg);
+    transition-delay: 0.4s;
+  }
+
+  @media (max-width: 720px) {
+    .about-pop-card {
+      --apc-scale: 0.86;
+      width: 100%;
+      justify-content: center;
+      padding-left: 2rem;
+      padding-right: 5.5rem;
+      min-height: 8.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-pop-card__shell,
+    .about-pop-card__photo,
+    .about-pop-card__btn {
+      animation: none;
+    }
+  }
+</style>

@@ -1,25 +1,56 @@
 ---
-
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/common/Markdown.astro";
+import AboutWaves from "@/components/pages/about/AboutWaves.astro";
+import FlipComicBook from "@/components/pages/about/FlipComicBook.astro";
+import RotatingPopCard from "@/components/pages/about/RotatingPopCard.astro";
+import VisualPrism from "@/components/pages/about/VisualPrism.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
 const aboutPost = await getEntry("spec", "about");
+const aboutSitePost = await getEntry("spec", "about-site");
 
 if (!aboutPost) {
 	throw new Error("About page content not found");
 }
 
 const { Content } = await render(aboutPost);
+const siteRendered = aboutSitePost ? await render(aboutSitePost) : null;
+const SiteContent = siteRendered?.Content;
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
-    <div class="about-shell flex w-full overflow-hidden relative min-h-32">
+    <div class="about-shell flex w-full relative min-h-32">
         <div class="about-panel z-10 relative w-full">
+            <p class="about-mast"><span>THREETWOA</span><span>ABOUT · 2026</span></p>
+
+            <div class="about-intro">
+              <AboutWaves />
+              <div class="about-intro-body">
+                <blockquote class="about-pull">
+                  Code less, architect more.<br />
+                  <span class="about-strike">把工具当玩具</span> · 把 AI 锻成可复用、可上线的工作流。
+                </blockquote>
+                <div class="about-intro-row">
+                  <RotatingPopCard />
+                  <VisualPrism />
+                </div>
+              </div>
+            </div>
+
             <Markdown class="about-md mt-1">
                 <Content />
             </Markdown>
+
+            <!-- GitHub Stats 正下方：3D 翻页漫画 -->
+            <FlipComicBook />
+
+            {SiteContent && (
+              <Markdown class="about-md mt-2">
+                <SiteContent />
+              </Markdown>
+            )}
         </div>
     </div>
 </MainGridLayout>
@@ -27,6 +58,7 @@ const { Content } = await render(aboutPost);
 <style>
   .about-shell {
     border-radius: 0.35rem;
+    overflow: visible;
   }
 
   .about-panel {
@@ -34,6 +66,7 @@ const { Content } = await render(aboutPost);
     border: 1px solid color-mix(in oklab, var(--line-color), transparent);
     border-radius: 0.35rem;
     padding: 1.35rem 1.5rem 1.75rem;
+    overflow: visible;
   }
 
   @media (min-width: 768px) {
@@ -42,7 +75,7 @@ const { Content } = await render(aboutPost);
     }
   }
 
-  :global(.about-md .about-mast) {
+  .about-mast {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
@@ -56,24 +89,66 @@ const { Content } = await render(aboutPost);
     color: color-mix(in oklab, var(--content-meta) 80%, transparent);
   }
 
-  :global(.about-md .about-pull) {
-    margin: 0 0 1.5rem;
-    padding: 0 0 1.1rem;
-    border: 0;
+  .about-intro {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin: 0 0 1.35rem;
+    padding: 1rem 1rem 1.15rem;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--primary) 18%, var(--line-color));
     border-bottom: 3px solid var(--primary);
-    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .about-intro-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .about-intro-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.65rem 0.75rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* 名片少占一点宽，把右侧留白让给 130 行特效 */
+  .about-intro-row :global(.about-pop-card) {
+    flex: 0 1 auto;
+    width: min(100%, 17.5rem);
+    max-width: 17.5rem;
+    padding-right: 0.25rem;
+    min-width: 0;
+  }
+
+  .about-pull {
+    flex: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.7rem);
     line-height: 1.25;
     letter-spacing: -0.02em;
     font-weight: 600;
     color: var(--deep-text);
     quotes: none;
+    text-shadow: 0 1px 12px color-mix(in oklab, var(--card-bg) 88%, transparent);
   }
 
-  :global(.about-md .about-pull p) {
+  .about-pull :global(p) {
     margin: 0;
   }
 
-  :global(.about-md .about-strike) {
+  .about-strike {
     text-decoration: line-through;
     color: color-mix(in oklab, var(--content-meta) 70%, transparent);
     font-weight: 500;
@@ -101,24 +176,45 @@ const { Content } = await render(aboutPost);
     color: var(--deep-text);
   }
 
+  /* 文字环绕图片 — bilibili-goat effects/文字环绕图片（shape-outside）
+     原 demo 用透明 PNG 轮廓；英雄图为实底，用椭圆轮廓实现同样环绕感 */
   :global(.about-md .about-hero-img) {
     float: right;
-    width: min(42%, 15.5rem);
-    max-width: 15.5rem;
-    margin: 0 0 0.85rem 1.1rem;
-    border-radius: 0.65rem;
+    width: min(46%, 16.5rem);
+    max-width: 16.5rem;
+    height: auto;
+    margin: 0.15rem 0 1rem 1.25rem;
+    border-radius: 0.75rem;
     border: 1px solid color-mix(in oklab, var(--line-color), transparent);
     box-shadow: 0 10px 28px color-mix(in oklab, var(--deep-text) 8%, transparent);
     object-fit: cover;
+    shape-outside: ellipse(48% 50% at 50% 50%);
+    shape-margin: 1.05rem;
+  }
+
+  :global(.about-md .about-hero-img ~ p:not(.about-reach)) {
+    text-align: justify;
+    text-justify: inter-ideograph;
+    line-height: 1.75;
   }
 
   @media (max-width: 640px) {
+    .about-intro-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
     :global(.about-md .about-hero-img) {
       float: none;
       display: block;
       width: min(100%, 16rem);
       max-width: 16rem;
       margin: 0 auto 1rem;
+      shape-outside: none;
+    }
+
+    :global(.about-md .about-hero-img ~ p:not(.about-reach)) {
+      text-align: start;
     }
   }
 
