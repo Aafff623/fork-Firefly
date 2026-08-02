@@ -1420,6 +1420,11 @@ function disableAnimation() {
     right: { topClass: "top-0", hasVisibleTop: false },
   };
 
+  // 必须在 scrollFunction() 首次调用前定义，否则 const TDZ 会中断后续壁纸淡入
+  const isCurrentPagePost = () =>
+    window.location.pathname.includes("/posts/") ||
+    window.location.pathname.includes("/post/");
+
   // 优化的滚动处理函数
   function scrollFunction() {
     if (document.documentElement.classList.contains("is-page-transitioning")) {
@@ -1526,10 +1531,6 @@ function disableAnimation() {
     showBanner();
     scheduleContentOverflowEnhancements();
   }
-
-  // 检查当前页面是否为文章详情页
-  const isCurrentPagePost = () =>
-    window.location.pathname.includes("/posts/") || window.location.pathname.includes("/post/");
 
   // Grid 列类常量
   const GRID_COL_CLASSES = [
