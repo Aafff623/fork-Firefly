@@ -60,8 +60,9 @@ pnpm new-d <content>
 | `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian→本仓帖 + 双边一致性（`prep_convert` / `sync_check` / manifest）；旧名 `firefly-md-to-post` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
+| `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画；源：[greensock/gsap-skills](https://github.com/greensock/gsap-skills)；`skills-lock.json` 可 `npx skills update` |
 
-分工：Obsidian/MD 发文走 `ob2blog` → 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
+分工：Obsidian/MD 发文走 `ob2blog` → 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
 
 ### Obsidian → 博客（默认 workflow）
 
