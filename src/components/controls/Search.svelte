@@ -161,6 +161,22 @@ onMount(() => {
 			});
 		}
 	}
+
+	/** 点搜索框外：焦点已离开 → 自动合拢 */
+	const onPointerDownOutside = (event: PointerEvent) => {
+		if (!desktopExpanded) return;
+		const target = event.target as Node | null;
+		if (!target) return;
+		const bar = document.getElementById("search-bar");
+		const panel = document.getElementById("search-panel");
+		if (bar?.contains(target) || panel?.contains(target)) return;
+		collapseDesktopSearch();
+	};
+	document.addEventListener("pointerdown", onPointerDownOutside, true);
+
+	return () => {
+		document.removeEventListener("pointerdown", onPointerDownOutside, true);
+	};
 });
 
 // --- Reactive Statements ---
@@ -178,6 +194,16 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 	class="practical-search relative hidden lg:flex items-center"
 	class:is-open={desktopExpanded}
 	class:has-query={keywordDesktop.length > 0}
+	on:focusout={(e) => {
+		if (!desktopExpanded) return;
+		const next = e.relatedTarget as Node | null;
+		// 点到不可聚焦区域时 relatedTarget 为空，交给 document pointerdown
+		if (!next) return;
+		const bar = document.getElementById("search-bar");
+		const panel = document.getElementById("search-panel");
+		if (bar?.contains(next) || panel?.contains(next)) return;
+		collapseDesktopSearch();
+	}}
 >
 	<input
 		type="checkbox"

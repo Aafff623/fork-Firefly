@@ -51,13 +51,42 @@ function initialActive(categoryName: string): {
   <div class="category-bar-inner flex gap-2">
     <a
       href={homeUrl}
-      class="category-pill text-sm px-3 py-1.5 rounded-full shrink-0
+      class="category-pill category-pill--home text-sm shrink-0
              transition-colors duration-150 ease-out flex items-center justify-center"
       data-category-name=""
       data-active={initialActive("").active ? "" : undefined}
       aria-label={i18n(I18nKey.home)}
     >
-      <Icon is:inline name="lucide:house" class="text-lg" />
+      <svg
+        class="category-home-glyph"
+        viewBox="0 0 16 16"
+        width="14"
+        height="14"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M2.75 7.1 L8 2.6 L13.25 7.1"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M4.35 6.85 V12.4 H11.65 V6.85"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M6.85 12.4 V9.35 H9.15 V12.4"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
     </a>
     <a
       href={archiveUrl}

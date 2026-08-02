@@ -354,15 +354,17 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     /* 固定蓝色波浪（不跟主题 hue / 紫色走） */
     --brand-ripple: rgb(59 130 246 / 0.55);
     --brand-ripple-strong: rgb(37 99 235 / 0.9);
+    --brand-ripple-rise: 2.45s;
+    --brand-ripple-ease: cubic-bezier(0.33, 0.02, 0.18, 1);
     position: relative;
     z-index: 1;
     overflow: hidden;
     isolation: isolate;
     border: 1.5px solid rgb(59 130 246 / 0.4);
     transition:
-        color 0.9s ease,
-        border-color 0.9s ease,
-        transform 0.15s ease;
+        color var(--brand-ripple-rise) var(--brand-ripple-ease),
+        border-color var(--brand-ripple-rise) var(--brand-ripple-ease),
+        transform 0.2s ease;
 }
 
 #navbar a.navbar-brand-ripple::before,
@@ -375,9 +377,12 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     aspect-ratio: 1;
     border-radius: 42%;
     background-color: var(--brand-ripple);
-    transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 1.05s ease;
+    /* 悬停涨涌 / 离开回落：同慢速过渡，更像水位缓缓上涨 */
+    transition:
+        transform var(--brand-ripple-rise) var(--brand-ripple-ease),
+        background-color var(--brand-ripple-rise) var(--brand-ripple-ease);
     pointer-events: none;
+    will-change: transform;
 }
 
 #navbar a.navbar-brand-ripple::before {
@@ -399,6 +404,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar a.navbar-brand-ripple:hover > div,
 #navbar a.navbar-brand-ripple:focus-visible > div {
     color: white !important;
+    transition: color var(--brand-ripple-rise) var(--brand-ripple-ease);
 }
 
 #navbar a.navbar-brand-ripple:hover::before,
