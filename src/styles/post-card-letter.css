@@ -437,8 +437,8 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	line-height: 1.35 !important;
 }
 
-/* waterfall / brick：窄列禁止左右挤压 → 封面在上、正文在下（契合瀑布/砖石形态） */
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter {
+/* waterfall：窄列禁止左右挤压 → 封面在上、正文在下（契合瀑布形态） */
+:is(.waterfall-mode) .post-card-wrapper--letter {
 	display: grid !important;
 	flex-direction: unset !important;
 	height: auto !important;
@@ -446,7 +446,7 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	grid-template-rows: auto auto !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter > .letter-cover {
+:is(.waterfall-mode) .post-card-wrapper--letter > .letter-cover {
 	grid-column: 1 !important;
 	grid-row: 1 !important;
 	position: relative !important;
@@ -461,7 +461,7 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	max-height: none !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter > .post-card-content {
+:is(.waterfall-mode) .post-card-wrapper--letter > .post-card-content {
 	grid-column: 1 !important;
 	grid-row: 2 !important;
 	width: 100% !important;
@@ -469,24 +469,24 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	padding: 0.85rem 0.9rem 0.7rem !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter .post-card-title {
+:is(.waterfall-mode) .post-card-wrapper--letter .post-card-title {
 	font-size: 1.05rem !important;
 	line-height: 1.35 !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter .description {
+:is(.waterfall-mode) .post-card-wrapper--letter .description {
 	-webkit-line-clamp: 2 !important;
 	line-clamp: 2 !important;
 	font-size: 0.84rem !important;
 	max-width: none !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter .card-rail {
+:is(.waterfall-mode) .post-card-wrapper--letter .card-rail {
 	grid-template-columns: minmax(0, 1fr) !important;
 	gap: 0.2rem !important;
 }
 
-:is(.waterfall-mode, .brick-mode) .post-card-wrapper--letter .card-rail .tags {
+:is(.waterfall-mode) .post-card-wrapper--letter .card-rail .tags {
 	white-space: normal !important;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;

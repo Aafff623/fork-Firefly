@@ -103,7 +103,7 @@ const initialLayoutClass =
         container.style.transition = 'none';
 
         // 移除所有布局类
-        container.classList.remove('list-mode', 'grid-mode', 'waterfall-mode', '', 'post-grid-auto', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
+        container.classList.remove('list-mode', 'grid-mode', 'waterfall-mode', 'brick-mode', 'post-grid-auto', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
 
         if (effectiveLayout === 'grid') {
           container.classList.add('grid-mode', 'post-grid-auto');
@@ -176,7 +176,7 @@ const initialLayoutClass =
           "list-mode",
           "grid-mode",
           "waterfall-mode",
-          "",
+          "brick-mode",
           "post-grid-auto",
           "flex",
           "flex-col",
