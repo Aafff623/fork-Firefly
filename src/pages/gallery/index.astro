@@ -1,11 +1,26 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import { Icon } from "astro-icon/components";
 import AlbumCard from "@/components/pages/gallery/AlbumCard.astro";
+import GalleryExplorer from "@/components/pages/gallery/GalleryExplorer.svelte";
 import { galleryConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getAlbumCover, scanAlbumPhotos } from "@/utils/gallery-utils";
+import { url } from "@/utils/url-utils";
+
+/** 无限画布专用：同源 demo 画库（避免外链 CORS 导致 WebGL 只剩 1 张图） */
+function scanDemoArtworks(): string[] {
+	const dir = path.join(process.cwd(), "public", "gallery", "_demo", "artworks");
+	if (!fs.existsSync(dir)) return [];
+	return fs
+		.readdirSync(dir)
+		.filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
+		.sort()
+		.map((f) => url(`/gallery/_demo/artworks/${f}`));
+}
 
 // 检查页面是否启用
 if (!siteConfig.pages.gallery) {
@@ -19,8 +34,60 @@ const description = i18n(I18nKey.galleryDescription);
 const albums = galleryConfig.albums.map((album) => {
 	const photos = scanAlbumPhotos(album.id);
 	const cover = getAlbumCover(album, photos);
-	return { ...album, cover, photoCount: photos.length };
+	return { ...album, cover, photoCount: photos.length, photos };
 });
+
+const allPhotos = albums.flatMap((a) => a.photos);
+const demoPlaceholders = Array.from({ length: 7 }, (_, i) =>
+	url(`/gallery/_demo/placeholders/ph-0${i + 1}.svg`),
+);
+
+const DEMO_WORK_META = [
+	{ title: "日常切片", description: "把灵感收成可复用的视觉模块。" },
+	{ title: "光影节奏", description: "用缓动与比例讲清楚一张图的叙事。" },
+	{ title: "柔光留白", description: "柔光蒙版与层次，留给日常留白。" },
+	{ title: "漫游取景", description: "滚动与目光同向，让浏览像散步。" },
+	{ title: "画布游戏", description: "画布里的自由漫游与取景。" },
+	{ title: "结构巧思", description: "少一点装饰，多一点结构节奏。" },
+	{ title: "静时片刻", description: "把时间感写进色块与留白。" },
+] as const;
+
+function buildWorks() {
+	// 多相册：手风琴面板 = 相册
+	if (albums.length >= 2) {
+		return albums.slice(0, 7).map((album) => ({
+			id: album.id,
+			title: album.name,
+			description: album.description || album.location || album.date || "",
+			image: album.cover || demoPlaceholders[0],
+			href: url(`/gallery/${album.id}/`),
+		}));
+	}
+
+	// 单相册或仅有照片：手风琴面板 = 作品图
+	const photoPool = allPhotos.length > 0 ? allPhotos : demoPlaceholders;
+	return photoPool.slice(0, 7).map((image, index) => {
+		const meta = DEMO_WORK_META[index % DEMO_WORK_META.length];
+		const album = albums[0];
+		return {
+			id: `work-${index}`,
+			title: meta.title,
+			description: album?.description || meta.description,
+			image,
+			href: album ? url(`/gallery/${album.id}/`) : undefined,
+		};
+	});
+}
+
+const works = buildWorks();
+const localAlbumPhotos = allPhotos.filter((p) => !/^https?:\/\//i.test(p));
+const demoArtworks = scanDemoArtworks();
+// 画布优先：本地相册图 + 原版风格 demo 画库（密度/多样性）；外链不进 WebGL
+const explorerPhotos =
+	localAlbumPhotos.length + demoArtworks.length > 0
+		? [...localAlbumPhotos, ...demoArtworks]
+		: demoPlaceholders;
+const defaultViewMode = galleryConfig.defaultViewMode || "portfolio";
 
 // 收集所有标签用于筛选
 const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
@@ -50,9 +117,25 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         )}
       </div>
 
+      <!-- 作品集 / 普通相册 双模式舞台（等比例适配卡片） -->
+      <GalleryExplorer
+        client:load
+        works={works}
+        photos={explorerPhotos}
+        defaultMode={defaultViewMode}
+        labels={{
+          portfolio: i18n(I18nKey.galleryModePortfolio),
+          normal: i18n(I18nKey.galleryModeNormal),
+          viewWork: i18n(I18nKey.galleryViewWork),
+          dragHint: i18n(I18nKey.galleryDragHint),
+          demoHint: i18n(I18nKey.galleryDemoHint),
+          empty: i18n(I18nKey.galleryNoAlbums),
+        }}
+      />
+
       <!-- 搜索框 + 标签筛选 -->
       {albums.length > 0 && (
-        <gallery-filter class="mb-6">
+        <gallery-filter class="mb-6 mt-6 block">
           <div class="relative mb-3">
             <Icon is:inline
               name="material-symbols:search"
@@ -87,7 +170,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         </gallery-filter>
       )}
 
-      <!-- 相册卡片网格 -->
+      <!-- 相册卡片网格（传统入口，作为双模式舞台的补充索引） -->
       {albums.length > 0 ? (
         <>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
@@ -111,12 +194,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
             <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
           </div>
         </>
-      ) : (
-        <div class="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-500">
-          <Icon is:inline name="material-symbols:photo-library" class="text-6xl mb-4 opacity-50" />
-          <p class="text-lg">{i18n(I18nKey.galleryNoAlbums)}</p>
-        </div>
-      )}
+      ) : null}
     </div>
   </div>
 

@@ -399,6 +399,11 @@ enum I18nKey {
 	galleryNoAlbums = "galleryNoAlbums",
 	galleryBackToAlbums = "galleryBackToAlbums",
 	searchAlbums = "searchAlbums",
+	galleryModePortfolio = "galleryModePortfolio",
+	galleryModeNormal = "galleryModeNormal",
+	galleryViewWork = "galleryViewWork",
+	galleryDragHint = "galleryDragHint",
+	galleryDemoHint = "galleryDemoHint",
 
 	// 密码保护
 	passwordProtected = "passwordProtected",

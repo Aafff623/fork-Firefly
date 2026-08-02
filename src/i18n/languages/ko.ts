@@ -408,6 +408,11 @@ export const ko: Translation = {
 	[Key.galleryNoAlbums]: "아직 앨범이 없습니다",
 	[Key.galleryBackToAlbums]: "앨범으로 돌아가기",
 	[Key.searchAlbums]: "앨범 검색...",
+	[Key.galleryModePortfolio]: "포트폴리오 모드",
+	[Key.galleryModeNormal]: "무한 스크롤",
+	[Key.galleryViewWork]: "앨범 보기",
+	[Key.galleryDragHint]: "클릭 포커스 · 드래그 · 스크롤 · WASD / QE",
+	[Key.galleryDemoHint]: "데모 루프 · 프레임 클릭 또는 Esc",
 
 	// Password Protection
 	[Key.passwordProtected]: "비밀번호로 보호됨",

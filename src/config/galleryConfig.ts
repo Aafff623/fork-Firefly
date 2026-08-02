@@ -15,9 +15,19 @@ export const galleryConfig: GalleryConfig = {
 		// password: 访问密码，设置后需要输入密码才能查看相册内容（可选）
 		// passwordHint: 密码提示，设置后在输入密码错误时显示（可选，需配合password使用）
 		// 每添加一个数组项就相当于添加了一个相册，记得在 public/gallery/ 目录下创建对应的子目录并放入图片
+		{
+			id: "firefly-2026",
+			name: "Firefly 2026",
+			description: "生活碎片与灵感记录",
+			date: "2026-05-13",
+			tags: ["日常", "灵感"],
+		},
 	],
 
 	// 瀑布流最小列宽(px)，浏览器根据容器宽度自动计算列数，默认 240
 	// 值越小列数越多，值越大列数越少
 	columnWidth: 240,
+
+	// 首页默认浏览模式：portfolio=作品集，normal=无限滚动模式
+	defaultViewMode: "portfolio",
 };

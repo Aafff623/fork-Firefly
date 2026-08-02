@@ -409,6 +409,11 @@ export const ja: Translation = {
 	[Key.galleryNoAlbums]: "アルバムがありません",
 	[Key.galleryBackToAlbums]: "アルバム一覧に戻る",
 	[Key.searchAlbums]: "アルバムを検索...",
+	[Key.galleryModePortfolio]: "作品集モード",
+	[Key.galleryModeNormal]: "無限スクロール",
+	[Key.galleryViewWork]: "アルバムを見る",
+	[Key.galleryDragHint]: "クリックで寄る · ドラッグ · ホイール · WASD / QE",
+	[Key.galleryDemoHint]: "デモループ中 · 画をクリックまたは Esc",
 
 	// パスワード保護
 	[Key.passwordProtected]: "パスワード保護",

@@ -11,8 +11,13 @@ export type GalleryAlbum = {
 	passwordHint?: string; // 密码提示
 };
 
+/** 相册首页浏览模式：作品集手风琴 / 普通无限画布 */
+export type GalleryViewMode = "portfolio" | "normal";
+
 // 相册配置
 export type GalleryConfig = {
 	albums: GalleryAlbum[];
 	columnWidth?: number; // 瀑布流最小列宽(px)，默认 240，浏览器根据容器宽度自动计算列数
+	/** 首页默认模式（每次进入固定用此值，不持久化用户切换） */
+	defaultViewMode?: GalleryViewMode;
 };

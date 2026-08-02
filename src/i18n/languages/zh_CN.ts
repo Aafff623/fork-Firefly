@@ -401,6 +401,11 @@ export const zh_CN: Translation = {
 	[Key.galleryNoAlbums]: "暂无相册",
 	[Key.galleryBackToAlbums]: "返回相册列表",
 	[Key.searchAlbums]: "搜索相簿...",
+	[Key.galleryModePortfolio]: "作品集模式",
+	[Key.galleryModeNormal]: "无限滚动模式",
+	[Key.galleryViewWork]: "查看相册",
+	[Key.galleryDragHint]: "点击聚焦 · 拖拽平移 · 滚轮缩放 · WASD / QE",
+	[Key.galleryDemoHint]: "演示循环中 · 点击画幅或按 Esc 接管",
 
 	// 密码保护
 	[Key.passwordProtected]: "密码保护",

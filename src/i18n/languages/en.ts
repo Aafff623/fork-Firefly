@@ -410,6 +410,11 @@ export const en: Translation = {
 	[Key.galleryNoAlbums]: "No albums yet",
 	[Key.galleryBackToAlbums]: "Back to albums",
 	[Key.searchAlbums]: "Search albums...",
+	[Key.galleryModePortfolio]: "Portfolio",
+	[Key.galleryModeNormal]: "Infinite scroll",
+	[Key.galleryViewWork]: "Open album",
+	[Key.galleryDragHint]: "Click to focus · drag · scroll · WASD / QE",
+	[Key.galleryDemoHint]: "Demo loop · click a frame or Esc",
 
 	// Password Protection
 	[Key.passwordProtected]: "Password Protected",

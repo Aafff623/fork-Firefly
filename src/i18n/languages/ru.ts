@@ -412,6 +412,11 @@ export const ru: Translation = {
 	[Key.galleryNoAlbums]: "Пока нет альбомов",
 	[Key.galleryBackToAlbums]: "Вернуться к альбомам",
 	[Key.searchAlbums]: "Поиск альбомов...",
+	[Key.galleryModePortfolio]: "Портфолио",
+	[Key.galleryModeNormal]: "Бесконечный скролл",
+	[Key.galleryViewWork]: "Открыть альбом",
+	[Key.galleryDragHint]: "Клик — фокус · перетаскивание · колесо · WASD / QE",
+	[Key.galleryDemoHint]: "Демо · клик по кадру или Esc",
 
 	// Защита паролем
 	[Key.passwordProtected]: "Защищено паролем",

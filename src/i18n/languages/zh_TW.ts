@@ -403,6 +403,11 @@ export const zh_TW: Translation = {
 	[Key.galleryNoAlbums]: "暫無相簿",
 	[Key.galleryBackToAlbums]: "返回相簿列表",
 	[Key.searchAlbums]: "搜尋相簿...",
+	[Key.galleryModePortfolio]: "作品集模式",
+	[Key.galleryModeNormal]: "無限滾動模式",
+	[Key.galleryViewWork]: "查看相簿",
+	[Key.galleryDragHint]: "點擊聚焦 · 拖曳平移 · 滾輪縮放 · WASD / QE",
+	[Key.galleryDemoHint]: "示範循環中 · 點擊畫幅或按 Esc 接管",
 
 	// 密碼保護
 	[Key.passwordProtected]: "密碼保護",
