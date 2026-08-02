@@ -1,29 +1,73 @@
 ---
 import { commentConfig } from "@/config";
+import { url as siteUrl } from "@/utils/url-utils";
 
 interface Props {
 	path: string;
 }
+
+const uploadApi = siteUrl("/api/comment-image/");
 
 const config = {
 	...commentConfig.waline,
 	el: "#waline",
 	path: Astro.props.path,
 	dark: "html.dark",
-	wordLimit: ["2", "300"],
+	// 默认开启表情搜索（Giphy）；勿设 search: false
 	...(commentConfig.waline?.visitorCount ? { pageview: true } : {}),
 };
 ---
 <!-- Waline -->
-<div class="relative w-full">
+<div class="relative w-full waline-shell">
+  <p class="waline-hint">
+    编辑态里表情会显示为 <code>:名字:</code>，点工具栏预览（或提交后）才会显示图片；插图请 ≤5MB（jpeg/png/gif/webp）。
+  </p>
   <div id="waline"></div>
   <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-  <script type="module" is:inline define:vars={{ config }}>
+  <script type="module" is:inline define:vars={{ config, uploadApi }}>
     import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+    const MAX_BYTES = 5 * 1024 * 1024;
+
+    /** 绕过 Waline 默认 Base64 128KB 硬限制：走本站代理上传，返回外链 */
+    async function imageUploader(file) {
+      if (!(file instanceof File)) {
+        throw new Error("无效的图片文件");
+      }
+      if (file.size > MAX_BYTES) {
+        throw new Error("图片不能超过 5MB");
+      }
+      const form = new FormData();
+      form.append("image", file, file.name || "image.png");
+      const res = await fetch(uploadApi, {
+        method: "POST",
+        body: form,
+        headers: { Origin: window.location.origin },
+      });
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        /* ignore */
+      }
+      if (!res.ok || !data.url) {
+        const msg =
+          data.error ||
+          (res.status === 503
+            ? "未配置腾讯云 COS（COS_SECRET_ID 等），无法上传大图"
+            : "图片上传失败");
+        throw new Error(msg);
+      }
+      return data.url;
+    }
+
     const requestedPath = new URLSearchParams(window.location.search).get("path");
-    const effectiveConfig = requestedPath
-      ? { ...config, path: requestedPath }
-      : config;
+    const effectiveConfig = {
+      ...config,
+      ...(requestedPath ? { path: requestedPath } : {}),
+      imageUploader,
+    };
+
     try {
       init(effectiveConfig);
     } catch (error) {
@@ -31,3 +75,23 @@ const config = {
     }
   </script>
 </div>
+
+<style>
+  .waline-hint {
+    margin: 0 0 0.65rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 0.45rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--content-meta, #888);
+    background: color-mix(in oklch, var(--primary) 8%, transparent);
+    border: 1px dashed color-mix(in oklch, var(--primary) 22%, transparent);
+  }
+
+  .waline-hint code {
+    font-size: 0.72rem;
+    padding: 0.05rem 0.25rem;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--card-bg, #fff) 70%, transparent);
+  }
+</style>

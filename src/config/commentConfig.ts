@@ -1,8 +1,9 @@
 import type { CommentConfig } from "../types/commentConfig";
 
 export const commentConfig: CommentConfig = {
-	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk，默认为none，即不启用评论系统
-	type: "giscus",
+	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk
+	// 现行：Waline（表情 + 默认 Giphy）。决策见 docs/adr/0001-waline-over-giscus.md
+	type: "waline",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -22,12 +23,14 @@ export const commentConfig: CommentConfig = {
 
 	//waline评论系统配置
 	waline: {
-		// waline 后端服务地址
-		serverURL: "https://waline.vercel.app",
+		// 自建服务端（Vercel + Neon）。优先用 Production 域名；部署预览 URL 会变且可能需登录
+		serverURL:
+			"https://threetwoa-waline-fjzbuq3on-laiyif68-5443s-projects.vercel.app",
 		// 设置 Waline 评论系统语言
 		lang: "zh-CN",
-		// 设置 Waline 评论系统表情地址
+		// 表情预设（CDN；含静图/可带动图包）。搜索 GIF：客户端默认启用 Giphy，无需额外配置
 		emoji: [
+			"https://unpkg.com/@waline/emojis@1.4.0/qq",
 			"https://unpkg.com/@waline/emojis@1.4.0/weibo",
 			"https://unpkg.com/@waline/emojis@1.4.0/bilibili",
 			"https://unpkg.com/@waline/emojis@1.4.0/bmoji",
@@ -49,25 +52,6 @@ export const commentConfig: CommentConfig = {
 		locale: "zh-CN",
 		// 是否启用文章访问量统计功能
 		visitorCount: true,
-	},
-
-	//giscus评论系统配置
-	giscus: {
-		repo: "Aafff623/fork-Firefly",
-		repoId: "R_kgDOToSNAw",
-		category: "Announcements",
-		categoryId: "DIC_kwDOToSNA84DCe8K",
-		mapping: "pathname",
-		strict: "0",
-		reactionsEnabled: "1",
-		// 向父页 postMessage 同步 viewer（导航栏头像）；需该页已有 Discussion
-		emitMetadata: "1",
-		inputPosition: "bottom",
-		lang: "zh-CN",
-		// 不用 lazy：侧栏 sticky / overflow / Swup 下 IntersectionObserver 偶发不触发，会出现「只有外壳、无输入框」
-		loading: "",
-		// 评论区 / 导航栏「园主」身份标记（GitHub login）
-		adminLogins: ["Aafff623"],
 	},
 
 	//disqus评论系统配置

@@ -1,7 +1,7 @@
 # master · 2026-08-02
 
 ## Status
-shipped
+shipped（评论架构已被 ADR-0001 取代：现行 Waline；本文仅作切换前合入摘要）
 
 ## Commits
 

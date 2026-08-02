@@ -132,9 +132,9 @@ Firefly 项目中所有可复用组件的集中管理。组件按照功能和职
 - `index.astro` - 评论主组件
 - `Artalk.astro` - Artalk 评论集成
 - `Disqus.astro` - Disqus 评论集成
-- `Giscus.astro` - Giscus 评论集成（GitHub 讨论）
+- `Giscus.astro` - Giscus 挂载（主题保留；本站已停用，见 ADR-0001）
 - `Twikoo.astro` - Twikoo 评论集成
-- `Waline.astro` - Waline 评论集成
+- `Waline.astro` - Waline 评论（现行）
 
 ### 📊 analytics/ - 数据统计组件
 

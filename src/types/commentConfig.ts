@@ -44,6 +44,7 @@ export type CommentConfig = {
 		// 是否统计访问量，true 启用访问量，false 关闭
 		visitorCount?: boolean;
 	};
+	/** 可选后端槽位；本站已停用（见 ADR-0001），保留类型以兼容主题多评论系统 */
 	giscus?: {
 		repo: string;
 		repoId: string;
@@ -56,8 +57,6 @@ export type CommentConfig = {
 		inputPosition: string;
 		lang: string;
 		loading: string;
-		/** GitHub login 列表：评论区 / 导航栏「园主」身份标记 */
-		adminLogins?: string[];
 	};
 	disqus?: {
 		shortname: string;
