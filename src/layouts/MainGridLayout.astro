@@ -271,37 +271,35 @@ const rightSidebarClass =
 const mainContentClass = generateMainContentClasses(updatedGridConfig);
 const staticBarClass = mainContentClass.replace("transition-main", "").trim();
 
-const footerClass = ["footer", "col-span-1", "onload-animation"];
+const footerClass = [
+	"footer",
+	"col-span-1",
+	"onload-animation",
+	// 始终落在第 3 行：侧栏占 1–2 行，footer 在整页底部
+	"md:row-start-3",
+];
 
 if (
 	updatedGridConfig.isBothSidebars &&
 	updatedGridConfig.hasLeftComponents &&
 	updatedGridConfig.hasRightComponents
 ) {
-	// 双侧栏：Footer 在平板与桌面都跟随内容列
-	if (updatedGridConfig.tabletSidebar === "right") {
-		footerClass.push(
-			"md:col-start-1 md:col-span-1 xl:col-start-2 xl:col-span-1",
-		);
-	} else {
-		footerClass.push(
-			"md:col-start-2 md:col-span-1 xl:col-start-2 xl:col-span-1",
-		);
-	}
+	// 双侧栏：footer 横跨全部列（平板 2 列 / 桌面 3 列）
+	footerClass.push("md:col-start-1", "md:col-span-2", "xl:col-span-3");
 } else if (
 	updatedGridConfig.hasLeftComponents &&
 	!updatedGridConfig.hasRightComponents
 ) {
-	// 仅左侧栏：内容列在第2列
-	footerClass.push("md:col-start-2 md:col-span-1 xl:col-start-2 xl:col-span-1");
+	// 仅左侧栏：横跨左+内容
+	footerClass.push("md:col-start-1", "md:col-span-2");
 } else if (
 	!updatedGridConfig.hasLeftComponents &&
 	updatedGridConfig.hasRightComponents
 ) {
-	// 仅右侧栏：内容列在第1列
-	footerClass.push("md:col-start-1 md:col-span-1 xl:col-start-1 xl:col-span-1");
+	// 仅右侧栏：横跨内容+右
+	footerClass.push("md:col-start-1", "md:col-span-2");
 } else {
-	footerClass.push("md:col-start-1 md:col-span-1 xl:col-start-1 xl:col-span-1");
+	footerClass.push("md:col-start-1", "md:col-span-1");
 }
 
 const footerClassName = footerClass.join(" ");
@@ -865,7 +863,7 @@ const hasMultipleImages =
     <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给 .banner-title.repel-text；可点区域由 [&>*]:pointer-events-auto 收回 -->
     <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-none">
         <div id="main-grid"
-          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
+          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
           data-sidebar-enable={sidebarLayoutConfig.enable ? "true" : "false"}
           data-grid-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
           data-sidebar-position={sidebarLayoutConfig.position}

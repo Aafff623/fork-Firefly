@@ -1545,7 +1545,8 @@ function disableAnimation() {
     "md:col-start-1", "md:col-start-2",
     "xl:col-start-1", "xl:col-start-2", "xl:col-start-3",
     "xl:col-end-3",
-    "md:col-span-1", "xl:col-span-1",
+    "md:col-span-1", "md:col-span-2",
+    "xl:col-span-1", "xl:col-span-3",
   ];
 
   // 清除元素上的多列定位类
@@ -1608,19 +1609,19 @@ function disableAnimation() {
       const footer = mainGrid.querySelector('.footer');
 
       if (shouldBothSidebars) {
-        // 文章页临时双侧栏：主内容移到第2列，右侧栏移到第3列，页脚居中
+        // 文章页临时双侧栏：主内容第2列，右侧栏第3列；footer 通栏垫底
         clearColPositioning(swupContainer, swupWrapper, footer);
         swupContainer?.classList.add("md:col-start-2", "xl:col-start-2", "xl:col-end-3");
         swupWrapper?.classList.add("md:col-start-2");
         rightSidebar?.classList.add("xl:col-start-3");
-        footer?.classList.add("md:col-start-2", "xl:col-start-2");
+        footer?.classList.add("md:col-start-1", "md:col-span-2", "xl:col-span-3", "md:row-start-3");
       } else {
-        // 非文章页：恢复2列布局定位（右侧栏保持 md:col-start-2 不变）
+        // 非文章页：恢复2列布局定位；footer 仍通栏垫底
         clearColPositioning(swupContainer, swupWrapper, footer);
         rightSidebar?.classList.remove("xl:col-start-3");
         swupContainer?.classList.add("md:col-start-1");
         swupWrapper?.classList.add("md:col-start-1");
-        footer?.classList.add("md:col-start-1", "xl:col-start-1");
+        footer?.classList.add("md:col-start-1", "md:col-span-2", "md:row-start-3");
       }
     }
   }
