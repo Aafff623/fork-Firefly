@@ -5,7 +5,7 @@ Usage (from Firefly/):
   python .cursor/skills/ob2blog/scripts/prep_convert.py ^
     --note "D:/.../邪修 AI Coding 省钱.md" ^
     --slug ai-coding-save-money ^
-    [--apply] [--draft true]
+    [--apply] [--draft false]
 
 Default writes under .ob2blog/staging/<slug>/ then optionally --apply into src/content/posts/.
 Emits report.json for agent review (embeds, missing assets, warnings).
@@ -56,7 +56,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="write into src/content/posts/<slug>/ (else only staging)",
     )
-    p.add_argument("--draft", default="true", choices=("true", "false"))
+    p.add_argument("--draft", default="false", choices=("true", "false"))
     p.add_argument("--category", default="")
     p.add_argument("--tags", default="", help="comma-separated")
     p.add_argument("--title", default="", help="override title (default: filename)")

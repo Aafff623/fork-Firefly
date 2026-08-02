@@ -37,7 +37,7 @@ compatibility: Requires the Firefly project root (package.json with pnpm new-pos
 1. 在 `Firefly/` 根目录落盘；UTF-8；正文从 `##` 起，不造卡片/TOC HTML。  
 2. 默认 `.md`；要 Icon/JSX 才 `.mdx`。Callout 只出 github 五类。  
 3. **重建** frontmatter；禁 `prev*`/`next*`；禁 `image: api`。  
-4. 导入未声明时 `draft: true`。勿改站点壁纸嵌视频。  
+4. 导入未声明时默认 `draft: false`（直接发布）；仅当用户明确要求草稿、或安全规则触发（如口令帖）才设 `draft: true`。勿改站点壁纸嵌视频。  
 5. **必须解析 Obsidian 附件**；`![[…]]` 不得留在正文。  
 6. **一致性：** 已映射文章每次动手前跑 `sync_check.py`；漂移先处理再改。  
 7. **加速：** 新文/重转优先 `prep_convert.py`，Agent 只审 `report.json` 警告项，勿从零手搓拷图。  

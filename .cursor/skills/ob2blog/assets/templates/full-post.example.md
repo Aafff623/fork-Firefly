@@ -5,7 +5,7 @@ description: Obsidian→博客模板示例（draft）。复制结构到 src/cont
 image: ../placeholders/cover-placeholder.svg
 tags: [Firefly, Obsidian]
 category: 指南
-draft: true
+draft: false
 slug: skill-full-post-example
 pinned: false
 comment: true

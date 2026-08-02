@@ -49,7 +49,7 @@ Firefly 校验：正文残留 `![[…]]` → **FAIL**（见 `validate_post.py`�
 
 | 源 | 动作 |
 |----|------|
-| 无 YAML | `title` = 文件名去 `.md`；`published` = 今天或文件 mtime 日；`draft: true` |
+| 无 YAML | `title` = 文件名去 `.md`；`published` = 今天或文件 mtime 日；`draft: false`（默认发布） |
 | 有 Obsidian YAML | 映射已知键；未知键丢弃（可当线索） |
 | 文内重复标题 | 不写 H1 |
 

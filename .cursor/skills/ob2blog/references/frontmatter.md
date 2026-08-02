@@ -8,7 +8,7 @@
 |------|------|
 | `title` `published` | 必填；日期 `YYYY-MM-DD` |
 | `description` `image` `tags` `category` `slug` | 建议；`image` 用 `./cover.*`，**禁** `api` |
-| `draft` | 导入未声明 → `true` |
+| `draft` | 导入未声明 → `false`（默认发布）；用户点名草稿 / 安全规则触发 → `true` |
 | `password` / `passwordHint` | 见下方启发式 |
 | `prev*` / `next*` | 禁止 |
 
@@ -19,7 +19,7 @@
 | 源 | 动作 |
 |----|------|
 | 半截/多块 yaml | 全丢，按 [frontmatter.yaml](../assets/templates/frontmatter.yaml) 重建 |
-| 非法日期 / `draft: maybe` | ISO 日期；draft→`true` |
+| 非法日期 / `draft: maybe` | ISO 日期；无法判定的 draft 字面量 → `false`（默认发布） |
 | `image` 失效或 `api` | 旁路找 `cover*`/首图，否则 `''` 或占位 SVG |
 | 非标准键 | 忽略（可当线索） |
 
