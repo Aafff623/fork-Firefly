@@ -6,6 +6,7 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { StandardizedAnime } from "@/types/anime";
 import TabNav from "../bangumi/TabNav.svelte";
+import AnimeBlinds from "./AnimeBlinds.svelte";
 import AnimeCard from "./AnimeCard.svelte";
 import AnimeDetailModal from "./AnimeDetailModal.svelte";
 
@@ -16,6 +17,41 @@ interface Props {
 }
 
 let { items, bilibiliAverageRating, itemsPerPage = 24 }: Props = $props();
+
+const DEMO_BLIND_TITLES = [
+	"切片光影",
+	"柔光留白",
+	"漫游取景",
+	"结构节奏",
+	"静时片刻",
+	"色块叙事",
+	"日常模块",
+] as const;
+
+/** 百叶窗精选：真实海报优先；不足时回退 demo gif（原百叶窗素材） */
+let featuredItems = $derived.by(() => {
+	const real = [...items]
+		.filter((item) => Boolean(item.poster))
+		.sort((a, b) => b.rating - a.rating)
+		.slice(0, 7)
+		.map((item) => ({
+			id: item.id,
+			title: item.title,
+			poster: item.poster,
+			rating: item.rating,
+			overview: item.overview,
+			source: item,
+		}));
+
+	if (real.length >= 3) return real;
+
+	return Array.from({ length: 7 }, (_, index) => ({
+		id: `demo-blind-${index + 1}`,
+		title: DEMO_BLIND_TITLES[index % DEMO_BLIND_TITLES.length],
+		poster: `/anime/_demo/blinds/${index + 1}.gif`,
+		overview: "百叶窗演示 · 追番列表公开后将替换为真实海报",
+	}));
+});
 
 // 状态
 let searchQuery = $state("");
@@ -140,6 +176,21 @@ function closeDetail() {
 </script>
 
 <div class="anime-grid">
+	{#if featuredItems.length >= 3}
+		<div class="mb-1">
+			<div class="mb-2 text-xs font-medium tracking-wide text-neutral-500 dark:text-neutral-400 uppercase">
+				{i18n(I18nKey.animeRatingDesc)}
+			</div>
+			<AnimeBlinds
+				items={featuredItems}
+				viewLabel={i18n(I18nKey.animeViewDetails)}
+				onselect={(item) => {
+					if (item.source) openDetail(item.source as StandardizedAnime);
+				}}
+			/>
+		</div>
+	{/if}
+
 	<!-- 工具栏 -->
 	<div class="mb-6 flex flex-col gap-3">
 		<!-- 搜索和排序 -->
