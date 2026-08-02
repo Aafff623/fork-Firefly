@@ -1,7 +1,11 @@
 ---
-import { Icon } from "astro-icon/components";
+/**
+ * 站点概览：统计 + 精简站点信息合并为一张高密度卡，给下方日历腾位。
+ * 信息侧只保留版本 / 许可两核；去掉「最后活动」。
+ */
+import { readFileSync } from "node:fs";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
-import { siteConfig } from "@/config";
+import { licenseConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
@@ -18,177 +22,258 @@ interface Props {
 }
 
 const { class: className, style, widgetConfig } = Astro.props;
-
 const showTitle = widgetConfig?.showTitle !== false;
+const siteStartDate = siteConfig.siteStartDate || "2026-08-01";
 
-// 从配置中获取站点开始日期
-const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
-
-// 获取所有文章
 const posts = await getSortedPosts();
 const categories = await getCategoryList();
 const tags = await getTagList();
 
-// 计算总字数
 let totalWords = 0;
 for (const post of posts) {
-	if (post.body) {
-		// 移除代码块和内联代码后计算字数
-		let text = post.body
-			.replace(/```[\s\S]*?```/g, "") // 移除代码块
-			.replace(/`[^`]*`/g, "") // 移除内联代码
-			.replace(/\s+/g, " ") // 合并空白
-			.trim();
-
-		// 分别计算中文字符和英文字符
-		const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
-		const englishChars = text.match(/[a-zA-Z]/g) || [];
-
-		totalWords += chineseChars.length + englishChars.length;
-	}
+	if (!post.body) continue;
+	const text = post.body
+		.replace(/```[\s\S]*?```/g, "")
+		.replace(/`[^`]*`/g, "")
+		.replace(/\s+/g, " ")
+		.trim();
+	const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
+	const englishChars = text.match(/[a-zA-Z]/g) || [];
+	totalWords += chineseChars.length + englishChars.length;
 }
 
-// 格式化数字（添加千位分隔符）
-function formatNumber(num: number): string {
-	return num.toLocaleString();
+function formatCompact(num: number): string {
+	if (num >= 10000) return `${(num / 10000).toFixed(1).replace(/\.0$/, "")}万`;
+	if (num >= 1000) return `${(num / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+	return String(num);
 }
 
-// 获取「最后活动」时间：取每篇文章 published 与 updated 中较新的那个，再从全站所有文章里取最大值。这样新发文章和修改老文章都会刷新该字段。
-const getActivityDate = (post: (typeof posts)[number]): Date => {
-	const { published, updated } = post.data;
-	if (updated && updated > published) return updated;
-	return published;
-};
+let blogVersion = "unknown";
+try {
+	const pkg = JSON.parse(
+		readFileSync(new URL("../../../package.json", import.meta.url), "utf-8"),
+	);
+	blogVersion = pkg.version || "unknown";
+} catch {}
 
-const lastActivityDate = posts.reduce<Date | null>((latest, post) => {
-	const current = getActivityDate(post);
-	if (!latest || current > latest) return current;
-	return latest;
-}, null);
+const licenseName = licenseConfig.enable ? licenseConfig.name : "";
+const daysLabel = i18n(I18nKey.siteStatsDays).replace("{days}", "").trim();
 
-const lastPostDate = lastActivityDate ? lastActivityDate.toISOString() : null;
-
-const todayText = i18n(I18nKey.today);
-
-const stats = [
+const metrics = [
 	{
-		icon: "material-symbols:article-outline",
-		iconClass: "text-(--primary)",
 		label: i18n(I18nKey.siteStatsPostCount),
-		value: posts.length,
+		value: String(posts.length),
 	},
 	{
-		icon: "material-symbols:folder-outline",
-		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteStatsCategoryCount),
-		value: categories.length,
+		value: String(categories.length),
 	},
 	{
-		icon: "material-symbols:label-outline",
-		iconClass: "text-(--accent-violet)",
 		label: i18n(I18nKey.siteStatsTagCount),
-		value: tags.length,
+		value: String(tags.length),
 	},
 	{
-		icon: "material-symbols:text-ad-outline-rounded",
-		iconClass: "text-(--accent-cool)",
 		label: i18n(I18nKey.siteStatsTotalWords),
-		value: totalWords,
-		formatted: true,
-	},
-	{
-		icon: "material-symbols:calendar-clock-outline",
-		iconClass: "text-(--accent-indigo)",
-		label: i18n(I18nKey.siteStatsRunningDays),
-		value: 0, // 将由客户端更新
-		suffix: i18n(I18nKey.siteStatsDays).replace("{days}", ""),
-		dynamic: true,
-		id: "running-days",
-	},
-	{
-		icon: "mingcute:heartbeat-line",
-		iconClass: "text-(--accent-berry)",
-		label: i18n(I18nKey.siteStatsLastUpdate),
-		value: 0, // 将由客户端更新
-		suffix: i18n(I18nKey.siteStatsDaysAgo).replace("{days}", ""),
-		dynamic: true,
-		id: "last-update",
+		value: formatCompact(totalWords),
 	},
 ];
 ---
 
-<WidgetLayout name={i18n(I18nKey.siteStats)} showTitle={showTitle} id="site-stats" class={className} style={style}>
-  <div class="flex flex-col gap-2">
-    {stats.map((stat) => (
-      <div class="flex items-center justify-between px-3 py-1.5">
-        <div class="flex items-center gap-2.5">
-          <div class:list={["text-xl", stat.iconClass]}>
-            <Icon is:inline name={stat.icon} />
+<WidgetLayout
+  name={i18n(I18nKey.siteStats)}
+  showTitle={showTitle}
+  id="site-stats"
+  class:list={["site-overview-widget", className]}
+  style={style}
+>
+  <div
+    class="site-overview"
+    data-site-start={siteStartDate}
+    data-days-label={daysLabel}
+  >
+    <div class="site-overview__grid" role="list">
+      {
+        metrics.map((m) => (
+          <div class="site-overview__cell" role="listitem">
+            <b class="site-overview__num">{m.value}</b>
+            <span class="site-overview__label">{m.label}</span>
           </div>
-          <span class="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
-            {stat.label}
-          </span>
-        </div>
-        <div class="flex items-center">
-          <span
-            class="text-base font-bold text-neutral-900 dark:text-neutral-100"
-            data-stat-id={stat.id}
-          >
-            {stat.formatted ? formatNumber(stat.value) : stat.value}
-          </span>
-          {stat.suffix && (
-            <span class="ml-1 text-sm text-neutral-500 dark:text-neutral-400">
-              {stat.suffix}
+        ))
+      }
+    </div>
+
+    <div class="site-overview__rail">
+      <span class="site-overview__run">
+        {i18n(I18nKey.siteStatsRunningDays)}
+        <b data-stat-id="running-days">—</b>
+        <span data-days-suffix>{daysLabel}</span>
+      </span>
+      <span class="site-overview__dot" aria-hidden="true">·</span>
+      <a
+        class="site-overview__link"
+        href="https://github.com/CuteLeaf/Firefly"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={i18n(I18nKey.siteInfoBlogVersion)}
+      >
+        Firefly v{blogVersion}
+      </a>
+      {
+        licenseName && (
+          <>
+            <span class="site-overview__dot" aria-hidden="true">
+              ·
             </span>
-          )}
-        </div>
-      </div>
-    ))}
+            <span
+              class="site-overview__meta"
+              title={i18n(I18nKey.siteInfoLicense)}
+            >
+              {licenseName}
+            </span>
+          </>
+        )
+      }
+    </div>
   </div>
 </WidgetLayout>
 
-<script is:inline define:vars={{ siteStartDate, lastPostDate, todayText }}>
-  function updateDynamicStats() {
-    const today = new Date();
-
-    // 更新运行天数
-    const startDate = new Date(siteStartDate);
-    const diffTime = Math.abs(today.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    const runningDaysElements = document.querySelectorAll('[data-stat-id="running-days"]');
-    runningDaysElements.forEach((element) => {
-      element.textContent = diffDays.toString();
-    });
-
-    // 更新最后活动时间
-    if (lastPostDate) {
-      const lastPost = new Date(lastPostDate);
-      const timeSinceLastPost = Math.abs(today.getTime() - lastPost.getTime());
-      const daysSinceLastUpdate = Math.floor(timeSinceLastPost / (1000 * 60 * 60 * 24));
-
-      const lastUpdateElements = document.querySelectorAll('[data-stat-id="last-update"]');
-      lastUpdateElements.forEach((element) => {
-        if (daysSinceLastUpdate === 0) {
-          element.textContent = todayText;
-          if (element.nextElementSibling) {
-            element.nextElementSibling.style.display = 'none';
-          }
-        } else {
-          element.textContent = daysSinceLastUpdate.toString();
-          if (element.nextElementSibling) {
-            element.nextElementSibling.style.display = '';
-          }
-        }
-      });
-    }
+<style is:global>
+  .site-overview-widget.card-base {
+    padding-bottom: 0.65rem !important;
   }
 
-  // 页面加载时更新
-  updateDynamicStats();
+  .site-overview {
+    --so-ink: oklch(22% 0.02 var(--hue));
+    --so-muted: oklch(48% 0.02 var(--hue));
+    --so-rule: oklch(88% 0.012 var(--hue));
+    --so-accent: oklch(48% 0.18 var(--hue));
+    --so-soft: oklch(96% 0.01 var(--hue));
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+  }
 
-  // 页面切换时重新更新
-  document.addEventListener("swup:contentReplaced", () => {
-    setTimeout(updateDynamicStats, 100);
-  });
+  :root.dark .site-overview {
+    --so-ink: oklch(95% 0.01 var(--hue));
+    --so-muted: oklch(72% 0.02 var(--hue));
+    --so-rule: oklch(30% 0.02 var(--hue));
+    --so-accent: oklch(78% 0.12 55);
+    --so-soft: oklch(22% 0.02 var(--hue));
+  }
+
+  .site-overview__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .site-overview__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12rem;
+    min-width: 0;
+    padding: 0.45rem 0.2rem;
+    border-radius: 0.45rem;
+    background: var(--so-soft);
+  }
+
+  .site-overview__num {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--so-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .site-overview__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--so-muted);
+    white-space: nowrap;
+  }
+
+  .site-overview__rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.4rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--so-rule);
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.03em;
+    color: var(--so-muted);
+    line-height: 1.35;
+  }
+
+  .site-overview__run b {
+    color: var(--so-ink);
+    font-weight: 700;
+    margin: 0 0.15rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .site-overview__dot {
+    opacity: 0.55;
+  }
+
+  .site-overview__link {
+    color: var(--so-accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .site-overview__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .site-overview__meta {
+    color: var(--so-muted);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function calcRunningDays(startStr) {
+      if (!startStr) return 0;
+      var parts = String(startStr).split("-").map(Number);
+      if (parts.length < 3 || parts.some(function (n) { return !n && n !== 0; })) {
+        return 0;
+      }
+      var start = Date.UTC(parts[0], parts[1] - 1, parts[2]);
+      var now = new Date();
+      var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      var days = Math.floor((today - start) / 86400000);
+      return days < 0 ? 0 : days;
+    }
+
+    function updateRunningDays() {
+      document.querySelectorAll(".site-overview[data-site-start]").forEach(function (root) {
+        var start = root.getAttribute("data-site-start") || "";
+        var days = calcRunningDays(start);
+        root.querySelectorAll('[data-stat-id="running-days"]').forEach(function (el) {
+          el.textContent = String(days);
+        });
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", updateRunningDays);
+    } else {
+      updateRunningDays();
+    }
+    document.addEventListener("swup:contentReplaced", function () {
+      setTimeout(updateRunningDays, 50);
+    });
+  })();
 </script>
