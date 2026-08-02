@@ -80,6 +80,9 @@
 /* 名称牌：衬线大标题 + 与侧栏一致的主题色竖条 */
 .announcement-press__nameplate {
 	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 	margin: 0;
 	padding-left: 0.85rem;
 	font-family: var(--ap-serif);
@@ -89,6 +92,13 @@
 	letter-spacing: -0.015em;
 	color: var(--ap-ink);
 	text-wrap: balance;
+}
+
+.announcement-press__title-icon {
+	width: 0.95em;
+	height: 0.95em;
+	flex-shrink: 0;
+	color: var(--primary);
 }
 
 .announcement-press__nameplate::before {

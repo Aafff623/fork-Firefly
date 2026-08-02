@@ -6,6 +6,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { onMount } from "svelte";
+import Icon from "@/components/common/Icon.svelte";
 import { formatDynamicDate } from "@/utils/date-utils";
 import { fetchWithDedup } from "@/utils/fetch-dedup";
 import { fetchMemos } from "@/utils/memos-adapter";
@@ -92,10 +93,7 @@ function formatDate(timestamp: number): string {
 <div class="flex flex-col gap-1.5">
 	{#if loading}
 		<div class="flex justify-center p-3">
-			<svg class="size-5 animate-spin text-(--primary)" viewBox="0 0 24 24" fill="none">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
-				<path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-			</svg>
+			<Icon icon="lucide:loader-circle" class="size-5 animate-spin text-(--primary)" />
 		</div>
 	{:else if error || entries.length === 0}
 		<p class="m-0 p-3 text-center text-sm text-neutral-500">
@@ -115,15 +113,13 @@ function formatDate(timestamp: number): string {
 			>
 				<div class="min-w-0 flex-1">
 					<div class="mb-1 flex items-center gap-1 text-xs leading-4 text-(--primary)">
-						<svg class="size-4 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-							<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-						</svg>
+						<Icon icon="lucide:clock" class="size-4 shrink-0" />
 						<time datetime={new Date(entry.published).toISOString()}>
 							{formatDate(entry.published)}
 						</time>
 						{#if entry.pinned}
 							<span class="ml-auto inline-flex items-center gap-0.5 text-[10px] px-1 py-0.5 rounded bg-(--primary)/10 text-(--primary) font-medium">
-								<svg class="size-3" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2z"/></svg>
+								<Icon icon="lucide:pin" class="size-3" />
 								{i18n(I18nKey.pinned)}
 							</span>
 						{/if}
