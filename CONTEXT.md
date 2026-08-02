@@ -54,6 +54,18 @@ Content Collections（`src/content.config.ts`）：
 - `dynamic` — 动态/碎碎念（可接 Memos）
 - `spec` — 特殊页面 Markdown
 
+## Obsidian 写作源（固定）
+
+| 项 | 值 |
+|---|---|
+| Vault 根 | `D:\OneDrive\Desktop\Notes\threetwoa_ob` |
+| 附件目录 | `Assets/picture`（见 vault `.obsidian/app.json` → `attachmentFolderPath`） |
+| 映射表 | `Firefly/.ob2blog/manifest.json`（笔记路径 ↔ 博客 slug） |
+
+一般不变更；变更时先改 `CONTEXT.md` 与 manifest 的 `vaultRoot`，再改 skill 文档。
+
+发文流水线：`/ob2blog`（笔记→帖）→ **`site-cascade`**（动态/统计/分类标签/热力图）。细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。
+
 ## 部署事实
 
 - 默认 **static**；仅当 `CF_WORKERS` 时启用 Cloudflare Astro adapter

@@ -30,7 +30,8 @@ CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。�
 
 | Skill | 用途 |
 |---|---|
-| `firefly-md-to-post` | MD → 本仓帖（结构 / FM / 常规媒体） |
+| `ob2blog` | Obsidian/MD → 本仓帖（vault 附件、结构 / FM / 媒体） |
+| `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |
 | `firefly-minimax-media` | MiniMax 出图·配音·音乐·短视频（额度门禁 + 落盘脚本） |
 
 出封面/语音/BGM/短片前读 `firefly-minimax-media/SKILL.md`；先跑 `scripts/check_quota.py`。

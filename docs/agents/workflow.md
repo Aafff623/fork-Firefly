@@ -37,3 +37,18 @@ Issue(.scratch/<feature>/)
 - 改 `src/config` / 内容 / 样式：走 Issue → 小 handoff 即可。
 - 改布局内核 / 插件管线：建议先 report 再 PRD。
 - 配置含义查阅 `docs/official/`（路由：`docs/knowledge/official-docs.tree.json`），勿臆造开关语义。
+
+## Obsidian 发文（内容向，轻量）
+
+与功能 PRD 流并行的一条**内容流水线**（可不建 PRD）：
+
+```text
+Obsidian 笔记（固定 vault，见 CONTEXT.md）
+  → /ob2blog（图文→ src/content/posts/<slug>）
+  → site-cascade（动态 / 统计 / 分类标签 / 热力图）
+  → 本地预览 →（你确认后）commit / push → 核线上
+```
+
+- Skill 正文：`.cursor/skills/ob2blog/`、`.cursor/skills/site-cascade/`
+- 笔记↔帖映射：`.ob2blog/manifest.json`
+- 工作区根若为 `blog/`：skills/rules 经 junction 暴露到 `blog/.cursor/`（见 `AGENTS.md`）

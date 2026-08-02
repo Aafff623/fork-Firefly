@@ -52,14 +52,29 @@ pnpm new-d <content>
 
 ## Agent skills
 
-项目级 Skill 在 `.cursor/skills/`（勿装到工作区根 `blog/.cursor/skills/`）。
+项目级 Skill **正文**在 `Firefly/.cursor/skills/`。若 Cursor 工作区根是上一级 `blog/`，须在 `blog/.cursor/skills/<name>` 建 **目录联接（junction）** 指向 Firefly 内同名 skill，斜杠命令/`/` 技能列表才能发现；不要在工作区根再复制一份正文。
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
-| `firefly-md-to-post` | `.cursor/skills/firefly-md-to-post/` | 导入/撰写 MD→本仓帖；frontmatter、媒体路径、校验 |
+| `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian→本仓帖 + 双边一致性（`prep_convert` / `sync_check` / manifest）；旧名 `firefly-md-to-post` |
+| `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
 
-二者分工：写文结构走 `firefly-md-to-post`；生成与额度门禁走 `firefly-minimax-media`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
+分工：Obsidian/MD 发文走 `ob2blog` → 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
+
+### Obsidian → 博客（默认 workflow）
+
+固定 vault（见 `CONTEXT.md`）：`D:\OneDrive\Desktop\Notes\threetwoa_ob`。
+
+```text
+用户：/ob2blog + 粘贴本地笔记绝对路径
+  → 读文/图（attachmentFolderPath）→ prep/落盘 posts/<slug>
+  → sync_check / validate
+  → 收尾调用 site-cascade（最新动态含「新笔记」、统计、分类标签、热力图）
+  → 本地预览刷新（pnpm dev）
+```
+
+Agent 不得假定其它 vault 根路径；用户显式给出新路径时再更新 `CONTEXT.md` + `.ob2blog/manifest.json`。
 
 ### Issue tracker
 
