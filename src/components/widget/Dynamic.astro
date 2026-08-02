@@ -1,4 +1,9 @@
 ---
+/**
+ * 最新动态侧栏：可关闭；关闭后记住当时最新条目时间戳，
+ * 园主发布更新的动态后自动再弹出（通知式）。
+ */
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import DynamicSidebar from "@/components/widget/DynamicSidebar.svelte";
@@ -6,6 +11,7 @@ import { dynamicConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
+import { sortDynamics } from "@/utils/dynamic-utils";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -23,6 +29,18 @@ const apiUrl = dynamicConfig.apiUrl?.startsWith("http")
 	? dynamicConfig.apiUrl
 	: url(dynamicConfig.apiUrl || "/api/dynamic.json");
 const memos = dynamicConfig.memos;
+const closeLabel = i18n(I18nKey.announcementClose);
+const storageKey = "firefly.dynamics.dismissedStamp";
+
+/** 本地动态：SSR 出最新 published，供关闭态首屏同步判断（免闪） */
+let ssrLatestStamp = 0;
+if (!memos?.enable) {
+	const dynamics = sortDynamics(await getCollection("dynamic"));
+	for (const entry of dynamics) {
+		const t = entry.data.published.getTime();
+		if (t > ssrLatestStamp) ssrLatestStamp = t;
+	}
+}
 ---
 
 {
@@ -31,24 +49,221 @@ const memos = dynamicConfig.memos;
 			name={i18n(I18nKey.latestDynamics)}
 			showTitle={showTitle}
 			id="latest-dynamics"
-			class={className}
+			class:list={["dynamics-widget", "dynamics-widget--pending", className]}
 			style={style}
 		>
-			<DynamicSidebar client:load apiUrl={apiUrl} limit={limit} {memos} />
-			<a
-				class="btn-plain mt-2 flex items-center justify-center gap-1 rounded-lg p-1.5
-					text-sm accent-text-grad-rose font-semibold"
-				href={url("/dynamic/")}
+			<button
+				slot="title-icon"
+				type="button"
+				class="dynamics-widget__close"
+				data-dynamics-close
+				aria-label={closeLabel}
+				title={closeLabel}
 			>
-				<Icon
-					is:inline
-					name="material-symbols:dynamic-feed-rounded"
-					class="size-4.5"
-					aria-hidden="true"
-				/>
-				<span>{i18n(I18nKey.moreDynamics)}</span>
-				<span data-dynamic-count class="opacity-60"></span>
-			</a>
+				<Icon is:inline name="fa7-solid:xmark" class="text-[0.7rem]" />
+			</button>
+
+			<div
+				class="dynamics-widget__body"
+				data-dynamics-root
+				data-api-url={apiUrl}
+				data-storage-key={storageKey}
+				data-ssr-latest={String(ssrLatestStamp)}
+				data-memos-enable={memos?.enable ? "1" : "0"}
+				data-memos-api={memos?.apiUrl || ""}
+				data-memos-parent={memos?.parent || ""}
+			>
+				<DynamicSidebar client:load apiUrl={apiUrl} limit={limit} {memos} />
+				<a
+					class="btn-plain mt-2 flex items-center justify-center gap-1 rounded-lg p-1.5
+						text-sm accent-text-grad-rose font-semibold"
+					href={url("/dynamic/")}
+				>
+					<Icon
+						is:inline
+						name="material-symbols:dynamic-feed-rounded"
+						class="size-4.5"
+						aria-hidden="true"
+					/>
+					<span>{i18n(I18nKey.moreDynamics)}</span>
+					<span data-dynamic-count class="opacity-60"></span>
+				</a>
+			</div>
 		</WidgetLayout>
 	)
 }
+
+<style is:global>
+	/* pending / dismissed：彻底不占 flex gap */
+	.dynamics-widget.dynamics-widget--pending,
+	.dynamics-widget.dynamics-widget--dismissed {
+		display: none !important;
+	}
+
+	.dynamics-widget .widget-title {
+		padding-right: 0.75rem;
+		gap: 0.5rem;
+	}
+
+	.dynamics-widget__close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 1.4rem;
+		height: 1.4rem;
+		margin-left: auto;
+		padding: 0;
+		border: none;
+		border-radius: 0.4rem;
+		background: transparent;
+		color: rgb(0 0 0 / 0.4);
+		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			background-color 0.15s ease;
+	}
+
+	:root.dark .dynamics-widget__close {
+		color: rgb(255 255 255 / 0.45);
+	}
+
+	.dynamics-widget__close:hover {
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 12%, transparent);
+	}
+</style>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    var STORAGE_FALLBACK = "firefly.dynamics.dismissedStamp";
+
+    function latestStamp(list) {
+      var max = 0;
+      if (!Array.isArray(list)) return 0;
+      for (var i = 0; i < list.length; i++) {
+        var t = Number(list[i] && list[i].published) || 0;
+        if (t > max) max = t;
+      }
+      return max;
+    }
+
+    function readDismissed(key) {
+      try {
+        var n = Number(localStorage.getItem(key || STORAGE_FALLBACK));
+        return Number.isFinite(n) && n > 0 ? n : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function writeDismissed(key, stamp) {
+      try {
+        localStorage.setItem(key || STORAGE_FALLBACK, String(stamp));
+      } catch (e) {}
+    }
+
+    function getLayout(root) {
+      return root.closest("widget-layout.dynamics-widget");
+    }
+
+    function setVisible(layout, visible) {
+      if (!layout) return;
+      layout.classList.remove("dynamics-widget--pending");
+      if (visible) layout.classList.remove("dynamics-widget--dismissed");
+      else layout.classList.add("dynamics-widget--dismissed");
+      try {
+        document.dispatchEvent(new CustomEvent("firefly:sidebar-layout"));
+      } catch (e) {}
+    }
+
+    function fetchEntries(root) {
+      if (root.dataset.memosEnable === "1" && root.dataset.memosApi) {
+        return fetch(root.dataset.memosApi)
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!Array.isArray(data)) return [];
+            return data.map(function (item) {
+              var ts =
+                item.published ||
+                (item.createdTs ? item.createdTs * 1000 : 0) ||
+                (item.createTime ? Date.parse(item.createTime) : 0);
+              return { published: ts };
+            });
+          });
+      }
+      return fetch(root.dataset.apiUrl || "/api/dynamic.json").then(function (r) {
+        return r.json();
+      });
+    }
+
+    function bindClose(layout, root) {
+      var btn = layout.querySelector("[data-dynamics-close]");
+      if (!btn || btn.dataset.bound === "1") return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var key = root.dataset.storageKey || STORAGE_FALLBACK;
+        var current = Number(layout.dataset.latestStamp) || 0;
+        if (current > 0) writeDismissed(key, current);
+        layout.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+        layout.style.opacity = "0";
+        layout.style.transform = "translateY(-6px)";
+        setTimeout(function () {
+          setVisible(layout, false);
+          layout.style.opacity = "";
+          layout.style.transform = "";
+          layout.style.transition = "";
+        }, 250);
+      });
+    }
+
+    function decide(layout, root, stamp) {
+      layout.dataset.latestStamp = String(stamp || 0);
+      var dismissed = readDismissed(root.dataset.storageKey || STORAGE_FALLBACK);
+      if (!stamp) {
+        setVisible(layout, false);
+        return;
+      }
+      var shouldShow = stamp > dismissed;
+      setVisible(layout, shouldShow);
+      if (shouldShow) bindClose(layout, root);
+    }
+
+    function applyRoot(root) {
+      var layout = getLayout(root);
+      if (!layout) return;
+
+      // 本地 SSR 戳：首屏同步判定，避免关闭态闪现
+      var ssr = Number(root.dataset.ssrLatest) || 0;
+      if (ssr > 0) decide(layout, root, ssr);
+
+      fetchEntries(root)
+        .then(function (data) {
+          decide(layout, root, latestStamp(data) || ssr);
+        })
+        .catch(function () {
+          if (ssr > 0) return;
+          setVisible(layout, true);
+          bindClose(layout, root);
+        });
+    }
+
+    function initDynamicsDismiss() {
+      document.querySelectorAll("[data-dynamics-root]").forEach(applyRoot);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initDynamicsDismiss);
+    } else {
+      initDynamicsDismiss();
+    }
+
+    document.addEventListener("swup:contentReplaced", function () {
+      setTimeout(initDynamicsDismiss, 50);
+    });
+  })();
+</script>
