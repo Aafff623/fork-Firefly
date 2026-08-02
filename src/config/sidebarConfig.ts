@@ -133,6 +133,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
+			// 意想不到时钟（对照 bili-goat widgets/意想不到时钟）
+			type: "surpriseClock",
+			enable: true,
+			showTitle: false,
+			position: "top",
+			showOnPostPage: false,
+		},
+		{
 			// 站点统计（已合并精简站点信息；独立 siteInfo 关闭以腾日历位）
 			type: "stats",
 			// 是否启用该组件

@@ -58,75 +58,88 @@ const calendarDataUrl = url("/api/allPostMeta.json");
 const postUrlPrefix = url("/posts/");
 ---
 
-<WidgetLayout name={i18n(I18nKey.calendar)} showTitle={showTitle} id="calendar-widget" class={className} style={style}>
-  <div class="calendar-container">
-    <div class="flex justify-between items-center mb-2">
-        <button id="prev-month-btn" class="btn-plain rounded-lg w-8 h-8 flex items-center justify-center hover:bg-(--btn-plain-bg-hover) transition-colors" aria-label="Previous Month">
-            <Icon is:inline name="lucide:chevron-left" class="text-sm" />
+<WidgetLayout
+  name={i18n(I18nKey.calendar)}
+  showTitle={showTitle}
+  id="calendar-widget"
+  class:list={["calendar-notebook-widget", className]}
+  style={style}
+  contentPadding={false}
+>
+  <!-- 笔记本日历：蓝紫渐变封面 + 活页环 + 白底月历 -->
+  <div class="calendar-shell">
+    <header class="calendar-cover">
+      <div class="calendar-cover-scrim" aria-hidden="true"></div>
+      <div class="calendar-cover-copy">
+        <div class="calendar-cover-day" id="calendar-cover-day"></div>
+        <div class="calendar-cover-month" id="calendar-cover-month"></div>
+      </div>
+      <div class="calendar-cover-nav">
+        <button id="prev-month-btn" class="calendar-nav-btn" aria-label="Previous Month" type="button">
+          <Icon is:inline name="lucide:chevron-left" class="text-sm" />
         </button>
-        <div id="current-month-display" class="text-lg font-bold text-neutral-900 dark:text-neutral-100 cursor-pointer hover:text-(--primary) transition-colors select-none"></div>
-        <div class="flex gap-2">
-            <button id="reset-month-btn" class="btn-plain rounded-lg w-8 h-8 flex items-center justify-center hover:bg-(--btn-plain-bg-hover) transition-colors" aria-label="Back to Today">
-                <Icon is:inline name="lucide:rotate-ccw" class="text-sm" />
-            </button>
-            <button id="next-month-btn" class="btn-plain rounded-lg w-8 h-8 flex items-center justify-center hover:bg-(--btn-plain-bg-hover) transition-colors" aria-label="Next Month">
-                <Icon is:inline name="lucide:chevron-right" class="text-sm" />
-            </button>
+        <button
+          id="current-month-display"
+          class="calendar-nav-title"
+          type="button"
+          aria-label="Change view"
+        ></button>
+        <div class="calendar-cover-nav-right">
+          <button id="reset-month-btn" class="calendar-nav-btn" aria-label="Back to Today" type="button">
+            <Icon is:inline name="lucide:rotate-ccw" class="text-sm" />
+          </button>
+          <button id="next-month-btn" class="calendar-nav-btn" aria-label="Next Month" type="button">
+            <Icon is:inline name="lucide:chevron-right" class="text-sm" />
+          </button>
         </div>
-    </div>
+      </div>
+    </header>
 
-    <!-- 日历视图容器 -->
-    <div id="calendar-view-container">
-      <!-- 星期标题 -->
-      <div class="weekdays grid grid-cols-7 gap-1 mb-2">
-        {weekDays.map(day => (
-          <div class="text-center text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-            {day}
+    <div class="calendar-ring calendar-ring--left" aria-hidden="true"></div>
+    <div class="calendar-ring calendar-ring--right" aria-hidden="true"></div>
+
+    <div class="calendar-body">
+      <div class="calendar-container">
+        <!-- 日历视图容器 -->
+        <div id="calendar-view-container">
+          <div class="weekdays grid grid-cols-7 gap-1 mb-2">
+            {weekDays.map(day => (
+              <div class="calendar-weekday">
+                {day}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <!-- 日历格子（由客户端动态生成） -->
-      <div class="calendar-grid grid grid-cols-7 gap-1 pb-1" id="calendar-grid">
-        <!-- 将由 JavaScript 填充 -->
-      </div>
-    </div>
+          <div class="calendar-grid grid grid-cols-7 gap-1 pb-1" id="calendar-grid">
+          </div>
+        </div>
 
-    <!-- 年度文章热力图：贴合卡片宽度的 12×4，贡献用 GitHub 绿阶 -->
-    {showHeatmap && (
-    <div id="heatmap-container" class="heatmap-wrap mt-2 mb-1" style="display: none;">
-      <div class="heatmap-months grid gap-0.5 mb-1" id="heatmap-months" style="grid-template-columns: repeat(12, 1fr);"></div>
-      <div class="heatmap-grid-wrap relative">
-        <div class="heatmap-grid grid" id="heatmap-grid" style="grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(4, 1fr);"></div>
-        <canvas id="heatmap-snake" class="heatmap-snake" aria-hidden="true"></canvas>
-      </div>
-      <div class="heatmap-legend" aria-hidden="true">
-        <span>Less</span>
-        <i class="heatmap-cell level-0"></i>
-        <i class="heatmap-cell level-1"></i>
-        <i class="heatmap-cell level-2"></i>
-        <i class="heatmap-cell level-3"></i>
-        <i class="heatmap-cell level-4"></i>
-        <span>More</span>
-      </div>
-    </div>
-    )}
+        {showHeatmap && (
+        <div id="heatmap-container" class="heatmap-wrap mt-2 mb-1" style="display: none;">
+          <div class="heatmap-months grid gap-0.5 mb-1" id="heatmap-months" style="grid-template-columns: repeat(12, 1fr);"></div>
+          <div class="heatmap-grid-wrap relative">
+            <div class="heatmap-grid grid" id="heatmap-grid" style="grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(4, 1fr);"></div>
+            <canvas id="heatmap-snake" class="heatmap-snake" aria-hidden="true"></canvas>
+          </div>
+          <div class="heatmap-legend" aria-hidden="true">
+            <span>Less</span>
+            <i class="heatmap-cell level-0"></i>
+            <i class="heatmap-cell level-1"></i>
+            <i class="heatmap-cell level-2"></i>
+            <i class="heatmap-cell level-3"></i>
+            <i class="heatmap-cell level-4"></i>
+            <span>More</span>
+          </div>
+        </div>
+        )}
 
-    <!-- 月份选择视图 -->
-    <div id="month-view-container" class="grid grid-cols-3 gap-2" style="display: none;">
-      <!-- 将由 JavaScript 填充 -->
-    </div>
+        <div id="month-view-container" class="grid grid-cols-3 gap-2" style="display: none;"></div>
+        <div id="year-view-container" class="grid grid-cols-3 gap-2" style="display: none;"></div>
 
-    <!-- 年份选择视图 -->
-    <div id="year-view-container" class="grid grid-cols-3 gap-2" style="display: none;">
-      <!-- 将由 JavaScript 填充 -->
-    </div>
-    
-    <!-- 文章列表 -->
-    <div id="calendar-posts" class="mt-3">
-      <div class="border-t border-neutral-200 dark:border-neutral-700 mb-2" id="calendar-posts-divider" style="display: none;"></div>
-      <div class="flex flex-col gap-1 max-h-48 overflow-y-auto custom-scrollbar" id="calendar-posts-list">
-        <!-- 将由 JavaScript 填充 -->
+        <div id="calendar-posts" class="mt-3">
+          <div class="border-t border-black/8 dark:border-white/10 mb-2" id="calendar-posts-divider" style="display: none;"></div>
+          <div class="flex flex-col gap-1 max-h-48 overflow-y-auto custom-scrollbar" id="calendar-posts-list"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -663,6 +676,10 @@ const postUrlPrefix = url("/posts/");
     const resetBtn = document.getElementById('reset-month-btn');
     const prevBtn = document.getElementById('prev-month-btn');
     const nextBtn = document.getElementById('next-month-btn');
+    const coverDay = document.getElementById('calendar-cover-day');
+    const coverMonth = document.getElementById('calendar-cover-month');
+    const now = new Date();
+    const isCurrentMonth = displayYear === now.getFullYear() && displayMonth === now.getMonth();
     
     if (navDisplay) {
       if (currentView === 'day') {
@@ -678,9 +695,23 @@ const postUrlPrefix = url("/posts/");
       }
     }
 
+    // 封面大号数字：当月显示「今天」；翻到其他月则显示月序（对照 demo 大号数字气质）
+    if (coverDay) {
+      if (currentView === 'year') {
+        coverDay.textContent = String(displayYear).slice(-2);
+      } else if (currentView === 'month') {
+        coverDay.textContent = String(displayYear).slice(-2);
+      } else {
+        coverDay.textContent = String(isCurrentMonth ? now.getDate() : displayMonth + 1);
+      }
+    }
+    if (coverMonth) {
+      const monthLabel = monthNames[displayMonth] || '';
+      coverMonth.textContent = currentView === 'year' ? yearText : monthLabel.toLowerCase();
+    }
+
     if (resetBtn) {
-      const now = new Date();
-      const isCurrent = displayYear === now.getFullYear() && displayMonth === now.getMonth();
+      const isCurrent = isCurrentMonth;
       resetBtn.style.display = (currentView === 'day' && isCurrent) ? 'none' : 'flex';
     }
     
@@ -742,7 +773,7 @@ const postUrlPrefix = url("/posts/");
       }
       
       if (isToday) {
-        classes.push("ring-2 ring-(--primary)");
+        classes.push("calendar-day-today");
       }
       
       return `
@@ -990,19 +1021,221 @@ const postUrlPrefix = url("/posts/");
 </script>
 
 <style>
+  /* ── 笔记本日历壳（对照 widgets/日历）── */
+  :global(.calendar-notebook-widget) {
+    overflow: visible;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  :global(.calendar-notebook-widget .collapse-wrapper) {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .calendar-shell {
+    position: relative;
+    width: 100%;
+    border-radius: 0 0 0.95rem 0.95rem;
+    box-shadow:
+      0 14px 28px rgb(0 0 0 / 0.12),
+      0 8px 10px rgb(0 0 0 / 0.08);
+  }
+
+  .calendar-cover {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 0.95rem 0.95rem 0 0;
+    min-height: 8.2rem;
+    padding: 1rem 0.9rem 2.1rem;
+    color: #fff;
+    container-type: inline-size;
+    /* 蓝 → 靛 → 紫：干净光带，不做脏粉紫糊一层 */
+    background:
+      radial-gradient(ellipse 90% 70% at 12% 0%, rgb(147 197 253 / 0.55), transparent 55%),
+      radial-gradient(ellipse 70% 60% at 95% 90%, rgb(196 181 253 / 0.45), transparent 50%),
+      linear-gradient(148deg, #2563eb 0%, #4f46e5 46%, #7c3aed 100%);
+  }
+
+  .calendar-cover-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent 38%),
+      linear-gradient(180deg, transparent 45%, rgb(15 23 42 / 0.28));
+  }
+
+  .calendar-cover-copy {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .calendar-cover-day {
+    font-size: clamp(2.8rem, 18cqi, 3.6rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-shadow: 0 2px 16px rgb(0 0 0 / 0.28);
+  }
+
+  .calendar-cover-month {
+    margin-top: 0.15rem;
+    font-size: clamp(1.05rem, 6.5cqi, 1.35rem);
+    font-weight: 600;
+    line-height: 1.1;
+    text-transform: lowercase;
+    opacity: 0.95;
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.25);
+  }
+
+  .calendar-cover-nav {
+    position: absolute;
+    left: 0.55rem;
+    right: 0.55rem;
+    bottom: 0.45rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .calendar-cover-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .calendar-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 0;
+    border-radius: 0.45rem;
+    color: #fff;
+    background: rgb(255 255 255 / 0.16);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .calendar-nav-btn:hover {
+    background: rgb(255 255 255 / 0.28);
+  }
+
+  .calendar-nav-title {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: rgb(255 255 255 / 0.92);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .calendar-nav-title:hover {
+    color: #fff;
+  }
+
+  .calendar-ring {
+    position: absolute;
+    top: calc(8.2rem - 0.85rem);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .calendar-ring--left {
+    left: 1.1rem;
+  }
+
+  .calendar-ring--right {
+    right: 1.1rem;
+  }
+
+  .calendar-ring::before {
+    content: "";
+    display: block;
+    width: 0.42rem;
+    height: 1.35rem;
+    margin: 0.3rem;
+    border-radius: 0.2rem;
+    background: #fff;
+    box-shadow:
+      0 3px 1px rgb(0 0 0 / 0.28),
+      0 -1px 1px rgb(0 0 0 / 0.18);
+  }
+
+  .calendar-body {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 0 0 0.95rem 0.95rem;
+    box-shadow:
+      0 2px 1px rgb(0 0 0 / 0.08),
+      0 3px 1px #fff;
+    padding: 1.15rem 0.75rem 0.85rem;
+    color: #111;
+  }
+
+  :global(.dark) .calendar-body {
+    background: color-mix(in oklab, var(--card-bg) 92%, #1a1a1a);
+    color: rgb(245 245 245 / 0.92);
+    box-shadow:
+      0 2px 1px rgb(0 0 0 / 0.35),
+      0 3px 1px rgb(255 255 255 / 0.04);
+  }
+
+  .calendar-weekday {
+    text-align: center;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #4f46e5;
+  }
+
+  :global(.dark) .calendar-weekday {
+    color: #a5b4fc;
+  }
+
   :global(.calendar-day) {
     transition: all 0.2s ease;
     min-height: 32px;
+    border-radius: 999px;
   }
 
   :global(.calendar-day[data-has-post="true"]:hover) {
     transform: translateY(-2px);
+    background: color-mix(in oklab, #6366f1 70%, #2563eb);
+    color: #fff !important;
+  }
+
+  :global(.calendar-day-today) {
+    color: #4f46e5 !important;
+    font-weight: 800;
+  }
+
+  :global(.dark .calendar-day-today) {
+    color: #a5b4fc !important;
   }
 
   /* 自定义选中日期样式 */
   :global(.calendar-day-selected) {
-    background-color: var(--btn-regular-bg);
-    border-radius: 0.25rem;
+    background-color: color-mix(in oklab, #6366f1 55%, #2563eb);
+    color: #fff !important;
+    border-radius: 999px;
   }
 
   /* —— 贡献绿标（GitHub 热力色阶）+ 贴合卡片的 12×4 —— */

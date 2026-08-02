@@ -17,4 +17,13 @@ export const announcementConfig: AnnouncementConfig = {
 		url: "https://threetwoa-digital-garden.vercel.app",
 		external: true,
 	},
+
+	// mast 下方：520 情书翻页卡
+	loveLetter: {
+		enable: true,
+		note: "Open it!",
+		heading: "520",
+		message:
+			"你眼里有雨、有日月山川，也有云和花鸟；可我的眼睛更好——因为里面有你。",
+	},
 };

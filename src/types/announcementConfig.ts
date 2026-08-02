@@ -11,4 +11,11 @@ export type AnnouncementConfig = {
 		url: string; // 链接地址
 		external?: boolean; // 是否外部链接
 	};
+	/** 公告 mast 下方的 520 情书翻页卡（对照 seasonal/520情书） */
+	loveLetter?: {
+		enable?: boolean;
+		note?: string;
+		heading?: string;
+		message?: string;
+	};
 };

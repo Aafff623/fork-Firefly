@@ -25,13 +25,20 @@ const { class: className, style } = Astro.props;
 
 const issueDate = new Date().toISOString().slice(0, 10);
 const title = config.title || i18n(I18nKey.announcement);
+const loveLetter = config.loveLetter;
+const showLoveLetter = Boolean(loveLetter) && loveLetter?.enable !== false;
+const loveNote = loveLetter?.note || "Open it! 💗💗💗";
+const loveHeading = loveLetter?.heading || "💌520💌";
+const loveMessage =
+	loveLetter?.message ||
+	"Your eyes are really beautiful — and mine are better, because I have you in them.";
 ---
 
 {/* showTitle=false：自绘 masthead，避免与紫条标题重复，仍套 card-base */}
 <WidgetLayout
   id="announcement"
   showTitle={false}
-  class={className}
+  class:list={["announcement-widget", className]}
   style={style}
 >
   <article class="announcement-press" data-widget-type="announcement">
@@ -64,6 +71,34 @@ const title = config.title || i18n(I18nKey.announcement);
       <div class="announcement-press__double-rule" aria-hidden="true"></div>
       <p class="announcement-press__kicker">Notice · 在研 · Agent 工作流</p>
     </header>
+
+    {
+      showLoveLetter && (
+        <section class="love-letter" aria-label="520情书">
+          <input id="love-letter-open" type="checkbox" class="love-letter__check" />
+          <label class="love-letter__hit" for="love-letter-open" aria-label="打开或合上情书"></label>
+          <div class="love-letter__front">
+            <div class="love-letter__stage">
+              <img
+                class="love-letter__heart"
+                src="/assets/images/announcement/love.png"
+                alt=""
+                width="90"
+                height="90"
+                draggable="false"
+              />
+              <div class="love-letter__note">{loveNote}</div>
+            </div>
+          </div>
+          <div class="love-letter__inside">
+            <div class="love-letter__text">
+              <h3 class="love-letter__heading">{loveHeading}</h3>
+              <p class="love-letter__message">{loveMessage}</p>
+            </div>
+          </div>
+        </section>
+      )
+    }
 
     <p class="announcement-press__lede">{config.content}</p>
 

@@ -8,6 +8,7 @@ export type WidgetComponentType =
 	| "recommend"
 	| "advertisement"
 	| "stats"
+	| "surpriseClock"
 	| "calendar"
 	| "music"
 	| "siteInfo"
