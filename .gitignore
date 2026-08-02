@@ -50,3 +50,8 @@ package/
 tmp/
 __tmp__/
 
+# ob2blog staging + local fingerprint dumps (manifest.json is kept)
+.ob2blog/staging/
+.ob2blog/fp-*.txt
+.ob2blog/_diff.py
+

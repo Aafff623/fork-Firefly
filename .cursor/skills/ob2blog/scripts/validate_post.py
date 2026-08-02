@@ -132,6 +132,15 @@ def validate(path: Path) -> list[str]:
         if not (base / rel).resolve().exists():
             errors.append(f"missing local image: {rel}")
 
+    # Relative HTML <img src="./..."> bypasses Astro content image pipeline → 404 in browser
+    for rel in re.findall(
+        r"""<img\b[^>]*\bsrc\s*=\s*["'](\./[^"']+)["']""", body, re.I
+    ):
+        errors.append(
+            f"relative HTML <img src={rel!r}> 404s at runtime — use Markdown "
+            "![](./images/...) or /posts/<slug>/... under public/"
+        )
+
     cover = meta.get("image") or ""
     if cover.startswith("./") and not (base / cover).resolve().exists():
         errors.append(f"missing cover file: {cover}")

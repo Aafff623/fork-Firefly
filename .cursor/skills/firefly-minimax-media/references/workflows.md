@@ -55,9 +55,9 @@
 4. <audio controls src="/assets/music/...">
 ```
 
-## E. 与 firefly-md-to-post 联用
+## E. 与 ob2blog 联用
 
-媒体齐了仍要文章像文章：正文从 `##` 起、重建干净 FM、`draft` 策略、跑 `validate_post.py`。  
+媒体齐了仍要文章像文章：正文从 `##` 起、重建干净 FM、`draft` 策略、跑 `ob2blog/scripts/validate_post.py`。  
 Skill Lab mock 最低也要：title / draft / 一段导语 / 媒体块 / 一句验收说明。
 
 ## 失败排障

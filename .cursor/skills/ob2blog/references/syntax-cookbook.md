@@ -21,7 +21,9 @@
 | 源 | 目标 |
 |----|------|
 | `\|\|x\|\|` | `:spoiler[x]` |
-| `![[a.png]]` | `![a](./images/a.png)` |
+| `![[a.png]]` | `![a](./images/a.png)`（附件查找见 obsidian-vault） |
+| `![[a.png\|750]]` | `![a](./images/a.png)`（默认可丢宽度）；保宽→`public/posts/<slug>/` + 绝对路径 `<img>` |
+| 列表项之间的图 | 缩进挂在当前 `li` 下，避免拆断 `ol`/`ul` |
 | `::github{repo="o/r"}` | 保留；`:::github` 容器→叶指令 |
 | `https://github.com/o/r` | 可升卡片 |
 | `…/o/r/issues…` | **保持**普通链接 |
