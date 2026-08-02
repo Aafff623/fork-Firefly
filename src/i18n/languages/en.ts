@@ -292,6 +292,8 @@ export const en: Translation = {
 	[Key.noRelatedPosts]: "No related posts",
 	[Key.noRandomPosts]: "No random posts",
 	[Key.noRecommendedPosts]: "No recommendations",
+	[Key.hotPosts]: "Hot Notes",
+	[Key.noHotPosts]: "No trending posts yet",
 
 	// Encrypted
 	[Key.postEncrypted]: "This post is encrypted",
@@ -405,6 +407,7 @@ export const en: Translation = {
 	[Key.calendar]: "Site Calendar",
 	[Key.calendarHeatmapWeek]: "Week {week} of {month}, {count} posts",
 	[Key.surpriseClock]: "Surprise Clock",
+	[Key.layeredClock]: "Layered Clock",
 	[Key.advertisement]: "Advertisement",
 
 	[Key.shareArticle]: "Share",

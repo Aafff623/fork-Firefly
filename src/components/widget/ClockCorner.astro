@@ -1,0 +1,36 @@
+---
+/**
+ * 右侧时钟角区：仅惊喜数字钟（透明无卡）
+ * 分层时钟已并入站点统计卡
+ */
+import SurpriseClock from "@/components/widget/SurpriseClock.astro";
+import type { WidgetComponentConfig } from "@/types/config";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+}
+
+const { class: className, style } = Astro.props;
+---
+
+<div
+  class:list={["clock-corner", className]}
+  style={style}
+  data-id="clock-corner"
+>
+  <SurpriseClock bare={true} />
+</div>
+
+<style>
+  .clock-corner {
+    width: 100%;
+    margin: 0;
+    padding: 0.05rem 0 0.1rem;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+</style>

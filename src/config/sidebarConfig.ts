@@ -69,18 +69,25 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：分类组件（文章页让位给推荐，避免与右栏目录抢高）
+			// 分类与顶部分类条重复，首页改由「热笺」承接
 			type: "categories",
-			// 是否启用该组件
-			enable: true,
-			// 组件位置
+			enable: false,
 			position: "sticky",
-			// 文章详情页隐藏，由推荐卡片顶替
 			showOnPostPage: false,
-			// 组件专属配置
 			specificConfig: {
-				// 折叠阈值：当分类数量超过>5个时自动折叠
 				collapseThreshold: 5,
+			},
+		},
+		{
+			// 热笺：最近热门（热度代理 + 强时效）
+			type: "hotPosts",
+			enable: true,
+			position: "sticky",
+			showOnPostPage: false,
+			specificConfig: {
+				hotPosts: {
+					limit: 8,
+				},
 			},
 		},
 		{
@@ -133,15 +140,31 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 意想不到时钟（对照 bili-goat widgets/意想不到时钟）
-			type: "surpriseClock",
+			// 时钟角区：仅惊喜数字钟（透明无卡）；分层时钟已并入 stats
+			type: "clockCorner",
 			enable: true,
 			showTitle: false,
 			position: "top",
 			showOnPostPage: false,
 		},
 		{
-			// 站点统计（已合并精简站点信息；独立 siteInfo 关闭以腾日历位）
+			// 已并入 clockCorner
+			type: "surpriseClock",
+			enable: false,
+			showTitle: false,
+			position: "top",
+			showOnPostPage: false,
+		},
+		{
+			// 已并入站点统计 SiteStats
+			type: "layeredClock",
+			enable: false,
+			showTitle: false,
+			position: "top",
+			showOnPostPage: false,
+		},
+		{
+			// 站点统计 + 迷你分层时钟
 			type: "stats",
 			// 是否启用该组件
 			enable: true,
@@ -276,16 +299,22 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：分类组件（文章页让位给推荐）
+			// 分类与顶部分类条重复，移动端改由「热笺」承接
 			type: "categories",
-			// 是否启用该组件
-			enable: true,
-			// 是否在文章详情页显示
+			enable: false,
 			showOnPostPage: false,
-			// 组件专属配置
 			specificConfig: {
-				// 折叠阈值：当分类数量超过5个时自动折叠
 				collapseThreshold: 5,
+			},
+		},
+		{
+			type: "hotPosts",
+			enable: true,
+			showOnPostPage: false,
+			specificConfig: {
+				hotPosts: {
+					limit: 8,
+				},
 			},
 		},
 		{

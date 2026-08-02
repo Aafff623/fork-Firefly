@@ -1,0 +1,112 @@
+---
+/**
+ * 热笺：侧栏最近热门（热度代理 + 时效偏置）
+ * 承接原日历下方文章列表位，放在左侧原分类卡位置。
+ */
+import { Icon } from "astro-icon/components";
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { WidgetComponentConfig } from "@/types/config";
+import { getHotPosts } from "@/utils/content-utils";
+import { getPostUrlBySlug } from "@/utils/url-utils";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+}
+
+const { class: className, style, widgetConfig } = Astro.props;
+const showTitle = widgetConfig?.showTitle !== false;
+const limit = widgetConfig?.specificConfig?.hotPosts?.limit ?? 8;
+const title = i18n(I18nKey.hotPosts);
+const emptyText = i18n(I18nKey.noHotPosts);
+
+const posts = await getHotPosts(limit);
+
+const rows = posts.map((p) => {
+	const d = p.data.published;
+	const dateStr = `${d.getMonth() + 1}-${d.getDate()}`;
+	return {
+		id: p.id,
+		title: p.data.title,
+		dateStr,
+		href: getPostUrlBySlug(p.id),
+	};
+});
+---
+
+<WidgetLayout
+  name={title}
+  showTitle={showTitle}
+  id="hot-posts"
+  class:list={["hot-posts-widget", className]}
+  style={style}
+>
+  <span slot="title-leading" class="hot-posts__mark" aria-hidden="true" title="热笺 · 最近热门">
+    <Icon is:inline name="lucide:flame" class="hot-posts__icon" />
+  </span>
+
+  {
+    rows.length > 0 ? (
+      <div class="flex flex-col gap-1 max-h-52 overflow-y-auto custom-scrollbar px-1">
+        {rows.map((post) => (
+          <a
+            href={post.href}
+            class="flex justify-between items-center text-sm text-neutral-700 dark:text-neutral-300 hover:text-(--primary) dark:hover:text-(--primary) transition-colors px-2 py-1 rounded-sm hover:bg-(--btn-plain-bg-hover)"
+            title={post.title}
+          >
+            <span class="truncate">{post.title}</span>
+            <span class="text-xs text-neutral-500 dark:text-neutral-400 ml-2 whitespace-nowrap">
+              {post.dateStr}
+            </span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="px-3 text-sm text-neutral-500 dark:text-neutral-400">{emptyText}</p>
+    )
+  }
+</WidgetLayout>
+
+<style>
+  /* 热笺：余烬色（衬线字体由 WidgetLayout 统一） */
+  :global(widget-layout.hot-posts-widget .widget-title)::before {
+    background: linear-gradient(
+      180deg,
+      oklch(0.82 0.16 55),
+      oklch(0.62 0.18 40)
+    ) !important;
+  }
+
+  :global(widget-layout.hot-posts-widget .widget-name),
+  :global(widget-layout.hot-posts-widget .widget-name__text) {
+    color: oklch(0.55 0.16 42);
+  }
+
+  :global(html.dark widget-layout.hot-posts-widget .widget-name),
+  :global(html.dark widget-layout.hot-posts-widget .widget-name__text) {
+    color: oklch(0.84 0.12 55);
+  }
+
+  .hot-posts__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: oklch(0.68 0.19 45);
+    line-height: 0;
+    filter: drop-shadow(0 0 5px oklch(0.75 0.18 50 / 0.5));
+  }
+
+  :global(html.dark) .hot-posts__mark {
+    color: oklch(0.82 0.16 55);
+    filter: drop-shadow(0 0 6px oklch(0.72 0.18 48 / 0.55));
+  }
+
+  .hot-posts__icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    stroke-width: 1.75;
+  }
+</style>

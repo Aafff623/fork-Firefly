@@ -1,10 +1,11 @@
 ---
 /**
- * 站点概览：统计 + 精简站点信息合并为一张高密度卡，给下方日历腾位。
- * 信息侧只保留版本 / 许可两核；去掉「最后活动」。
+ * 站点概览：统计 + 精简站点信息 + 迷你分层时钟（右侧装饰融合）
+ * 分层时钟源：bilibili-goat/widgets/分层时钟/x.html
  */
 import { readFileSync } from "node:fs";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import LayeredClock from "@/components/widget/LayeredClock.astro";
 import { licenseConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -103,43 +104,49 @@ const metrics = [
     </div>
 
     <div class="site-overview__rail">
-      <span class="site-overview__run">
-        {i18n(I18nKey.siteStatsRunningDays)}
-        <b data-stat-id="running-days">—</b>
-        <span data-days-suffix>{daysLabel}</span>
-      </span>
-      <span class="site-overview__dot" aria-hidden="true">·</span>
-      <a
-        class="site-overview__link"
-        href="https://github.com/CuteLeaf/Firefly"
-        target="_blank"
-        rel="noopener noreferrer"
-        title={i18n(I18nKey.siteInfoBlogVersion)}
-      >
-        Firefly v{blogVersion}
-      </a>
-      {
-        licenseName && (
-          <>
-            <span class="site-overview__dot" aria-hidden="true">
-              ·
-            </span>
-            <span
-              class="site-overview__meta"
-              title={i18n(I18nKey.siteInfoLicense)}
-            >
-              {licenseName}
-            </span>
-          </>
-        )
-      }
+      <div class="site-overview__rail-meta">
+        <span class="site-overview__run">
+          {i18n(I18nKey.siteStatsRunningDays)}
+          <b data-stat-id="running-days">—</b>
+          <span data-days-suffix>{daysLabel}</span>
+        </span>
+        <span class="site-overview__dot" aria-hidden="true">·</span>
+        <a
+          class="site-overview__link"
+          href="https://github.com/CuteLeaf/Firefly"
+          target="_blank"
+          rel="noopener noreferrer"
+          title={i18n(I18nKey.siteInfoBlogVersion)}
+        >
+          Firefly v{blogVersion}
+        </a>
+        {
+          licenseName && (
+            <>
+              <span class="site-overview__dot" aria-hidden="true">
+                ·
+              </span>
+              <span
+                class="site-overview__meta"
+                title={i18n(I18nKey.siteInfoLicense)}
+              >
+                {licenseName}
+              </span>
+            </>
+          )
+        }
+      </div>
+
+      <div class="site-overview__clock">
+        <LayeredClock bare={true} class="lc7--in-stats" />
+      </div>
     </div>
   </div>
 </WidgetLayout>
 
 <style is:global>
   .site-overview-widget.card-base {
-    padding-bottom: 0.65rem !important;
+    padding-bottom: 0.45rem !important;
   }
 
   .site-overview {
@@ -150,7 +157,7 @@ const metrics = [
     --so-soft: oklch(96% 0.01 var(--hue));
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.5rem;
     min-width: 0;
   }
 
@@ -197,18 +204,41 @@ const metrics = [
     white-space: nowrap;
   }
 
+  /* 底栏：文案在左，迷你分层钟在右（黄框位） */
   .site-overview__rail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.1rem;
+    border-top: 1px solid var(--so-rule);
+  }
+
+  .site-overview__rail-meta {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.25rem 0.4rem;
-    padding-top: 0.45rem;
-    border-top: 1px solid var(--so-rule);
+    gap: 0.2rem 0.35rem;
+    min-width: 0;
+    flex: 1 1 auto;
     font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
     font-size: 0.64rem;
     letter-spacing: 0.03em;
     color: var(--so-muted);
     line-height: 1.35;
+  }
+
+  .site-overview__clock {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 3.6rem;
+    min-height: 3.4rem;
+    padding: 0.15rem 0.05rem 0.2rem;
+    perspective: 360px;
+    isolation: isolate;
   }
 
   .site-overview__run b {

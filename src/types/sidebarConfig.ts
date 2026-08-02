@@ -3,12 +3,15 @@ export type WidgetComponentType =
 	| "profile"
 	| "announcement"
 	| "categories"
+	| "hotPosts"
 	| "tags"
 	| "sidebarToc"
 	| "recommend"
 	| "advertisement"
 	| "stats"
 	| "surpriseClock"
+	| "layeredClock"
+	| "clockCorner"
 	| "calendar"
 	| "music"
 	| "siteInfo"
@@ -44,6 +47,11 @@ export type WidgetSpecificConfig = {
 	siteInfo?: SiteInfoConfig; // 站点信息组件专用配置
 	dynamic?: DynamicWidgetConfig; // 最新动态组件专用配置
 	recommend?: RecommendWidgetConfig; // 推荐文章（标签相关 + 热度代理）
+	hotPosts?: HotPostsWidgetConfig; // 灯下常读 / 热门文章
+};
+
+export type HotPostsWidgetConfig = {
+	limit?: number; // 显示条数，默认 8
 };
 
 export type RecommendWidgetConfig = {

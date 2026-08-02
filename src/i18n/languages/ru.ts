@@ -294,6 +294,8 @@ export const ru: Translation = {
 	[Key.noRelatedPosts]: "Нет похожих статей",
 	[Key.noRandomPosts]: "Нет случайных статей",
 	[Key.noRecommendedPosts]: "Нет рекомендаций",
+	[Key.hotPosts]: "Горячие записки",
+	[Key.noHotPosts]: "Пока нет популярных записей",
 
 	// Зашифровано
 	[Key.postEncrypted]: "Эта статья зашифрована",
@@ -407,6 +409,7 @@ export const ru: Translation = {
 	[Key.calendar]: "Календарь сайта",
 	[Key.calendarHeatmapWeek]: "Неделя {week} {month}, {count} записей",
 	[Key.surpriseClock]: "Часы-сюрприз",
+	[Key.layeredClock]: "Многослойные часы",
 	[Key.advertisement]: "Реклама",
 
 	[Key.shareArticle]: "Поделиться",

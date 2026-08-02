@@ -291,6 +291,8 @@ export const ja: Translation = {
 	[Key.noRelatedPosts]: "関連記事がありません",
 	[Key.noRandomPosts]: "ランダム記事がありません",
 	[Key.noRecommendedPosts]: "おすすめ記事がありません",
+	[Key.hotPosts]: "熱箋",
+	[Key.noHotPosts]: "人気の記事はまだありません",
 
 	// 暗号化
 	[Key.postEncrypted]: "この記事は暗号化されています",
@@ -404,6 +406,7 @@ export const ja: Translation = {
 	[Key.calendar]: "サイトカレンダー",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}週、{count}記事",
 	[Key.surpriseClock]: "サプライズ時計",
+	[Key.layeredClock]: "レイヤード時計",
 	[Key.advertisement]: "広告",
 
 	[Key.shareArticle]: "共有",

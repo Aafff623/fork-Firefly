@@ -1,7 +1,7 @@
 ---
 /**
  * 意想不到时钟：对照 bilibili-goat widgets/意想不到时钟
- * 侧栏等比压缩；亮数字正立放大，其余数字横躺淡显。
+ * bare=true 时无 WidgetLayout（供 ClockCorner 角区嵌底）
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
@@ -12,39 +12,265 @@ interface Props {
 	class?: string;
 	style?: string;
 	widgetConfig?: WidgetComponentConfig;
+	/** 无卡片外壳，交给 ClockCorner 排布 */
+	bare?: boolean;
 }
 
-const { class: className, style, widgetConfig } = Astro.props;
+const { class: className, style, widgetConfig, bare = false } = Astro.props;
 const showTitle = widgetConfig?.showTitle === true;
 ---
 
-<WidgetLayout
-  name={i18n(I18nKey.surpriseClock)}
-  showTitle={showTitle}
-  id="surprise-clock"
-  class:list={["surprise-clock-widget", className]}
-  style={style}
-  contentPadding={false}
->
-  <div
-    class="surprise-clock"
-    id="surprise-clock-root"
-    role="timer"
-    aria-live="polite"
-    aria-label={i18n(I18nKey.surpriseClock)}
-  ></div>
-</WidgetLayout>
+{
+  bare ? (
+    <div
+      class:list={["surprise-clock", "surprise-clock--bare", className]}
+      id="surprise-clock-root"
+      role="timer"
+      aria-live="polite"
+      aria-label={i18n(I18nKey.surpriseClock)}
+      style={style}
+    />
+  ) : (
+    <WidgetLayout
+      name={i18n(I18nKey.surpriseClock)}
+      showTitle={showTitle}
+      id="surprise-clock"
+      class:list={["surprise-clock-widget", className]}
+      style={style}
+      contentPadding={false}
+    >
+      <div
+        class="surprise-clock"
+        id="surprise-clock-root"
+        role="timer"
+        aria-live="polite"
+        aria-label={i18n(I18nKey.surpriseClock)}
+      />
+    </WidgetLayout>
+  )
+}
 
 <script is:inline data-swup-ignore-script>
   (function () {
     const ROOT_ID = "surprise-clock-root";
+    const REPEL_RADIUS = 100;
+    const REPEL_STRENGTH = 2.4;
+    const SPRING = 0.11;
+    const DAMPING = 0.78;
+    const TILT_MAX = 7;
+
     let raf = 0;
     /** @type {HTMLElement[]} */
     let digitGroups = [];
     let builtFor = null;
 
+    /** @type {WeakMap<HTMLElement, ReturnType<typeof createRepelController>>} */
+    const repelByRoot = new WeakMap();
+
+    function canUsePointerRepel() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+      // 仅精细指针 + 可悬停：触屏/粗指针不抢滚动、不误触
+      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return false;
+      return true;
+    }
+
+    function createRepelController(root) {
+      const pointer = { x: -9999, y: -9999, active: false };
+      /** @type {Map<HTMLElement, {x:number,y:number,vx:number,vy:number,cx:number,cy:number}>} */
+      const states = new Map();
+      let physicsRaf = 0;
+      let disposed = false;
+
+      const measure = () => {
+        if (disposed) return;
+        /** @type {HTMLElement[]} */
+        const glyphs = Array.from(
+          root.querySelectorAll(".surprise-clock__num.is-bright .surprise-clock__glyph"),
+        );
+        /** @type {HTMLElement[]} */
+        const colons = Array.from(
+          root.querySelectorAll(".surprise-clock__group:not(:last-child)"),
+        );
+        /** @type {Set<HTMLElement>} */
+        const keep = new Set([...glyphs, ...colons]);
+
+        states.forEach((_, el) => {
+          if (keep.has(el)) return;
+          if (el.classList.contains("surprise-clock__group")) {
+            el.style.setProperty("--colon-rx", "0px");
+            el.style.setProperty("--colon-ry", "0px");
+          } else {
+            el.style.setProperty("--rx", "0px");
+            el.style.setProperty("--ry", "0px");
+          }
+          states.delete(el);
+        });
+
+        glyphs.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const prev = states.get(el);
+          const x = prev?.x ?? 0;
+          const y = prev?.y ?? 0;
+          states.set(el, {
+            x,
+            y,
+            vx: prev?.vx ?? 0,
+            vy: prev?.vy ?? 0,
+            cx: rect.left + rect.width / 2 - x,
+            cy: rect.top + rect.height / 2 - y,
+          });
+        });
+
+        colons.forEach((group) => {
+          if (!(group instanceof HTMLElement)) return;
+          const rect = group.getBoundingClientRect();
+          const prev = states.get(group);
+          const x = prev?.x ?? 0;
+          const y = prev?.y ?? 0;
+          // 近似冒号锚点：组右缘内侧
+          states.set(group, {
+            x,
+            y,
+            vx: prev?.vx ?? 0,
+            vy: prev?.vy ?? 0,
+            cx: rect.right - 6 - x,
+            cy: rect.top + rect.height / 2 - y,
+          });
+        });
+      };
+
+      const setTilt = (tx, ty) => {
+        root.style.setProperty("--sc-tilt-x", `${tx.toFixed(2)}deg`);
+        root.style.setProperty("--sc-tilt-y", `${ty.toFixed(2)}deg`);
+      };
+
+      const tickPhysics = () => {
+        if (disposed) return;
+        let moving = false;
+
+        if (pointer.active) {
+          const r = root.getBoundingClientRect();
+          const nx = (pointer.x - (r.left + r.width * 0.5)) / Math.max(r.width * 0.5, 1);
+          const ny = (pointer.y - (r.top + r.height * 0.5)) / Math.max(r.height * 0.5, 1);
+          const clamp = (v) => Math.max(-1, Math.min(1, v));
+          setTilt(clamp(-ny) * TILT_MAX, clamp(nx) * TILT_MAX);
+          moving = true;
+        } else {
+          setTilt(0, 0);
+        }
+
+        states.forEach((s, el) => {
+          if (pointer.active) {
+            const dx = s.cx + s.x - pointer.x;
+            const dy = s.cy + s.y - pointer.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < REPEL_RADIUS && dist > 1) {
+              const force = (1 - dist / REPEL_RADIUS) * REPEL_STRENGTH;
+              s.vx += (dx / dist) * force;
+              s.vy += (dy / dist) * force;
+            }
+          }
+          s.vx += -s.x * SPRING;
+          s.vy += -s.y * SPRING;
+          s.vx *= DAMPING;
+          s.vy *= DAMPING;
+          s.x += s.vx;
+          s.y += s.vy;
+
+          const active =
+            Math.abs(s.vx) > 0.03 ||
+            Math.abs(s.vy) > 0.03 ||
+            (!pointer.active && (Math.abs(s.x) > 0.08 || Math.abs(s.y) > 0.08));
+          if (!pointer.active && !active) {
+            s.x = 0;
+            s.y = 0;
+            s.vx = 0;
+            s.vy = 0;
+          }
+
+          if (el.classList.contains("surprise-clock__group")) {
+            el.style.setProperty("--colon-rx", `${s.x.toFixed(2)}px`);
+            el.style.setProperty("--colon-ry", `${s.y.toFixed(2)}px`);
+          } else {
+            el.style.setProperty("--rx", `${s.x.toFixed(2)}px`);
+            el.style.setProperty("--ry", `${s.y.toFixed(2)}px`);
+          }
+          moving = moving || active;
+        });
+
+        physicsRaf = moving ? requestAnimationFrame(tickPhysics) : 0;
+        if (!moving && !pointer.active) {
+          root.classList.remove("is-repelling");
+        }
+      };
+
+      const startPhysics = () => {
+        if (!physicsRaf) physicsRaf = requestAnimationFrame(tickPhysics);
+      };
+
+      const onEnter = () => {
+        root.classList.add("is-repelling");
+        measure();
+      };
+      const onMove = (e) => {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        pointer.active = true;
+        root.classList.add("is-repelling");
+        startPhysics();
+      };
+      const onLeave = () => {
+        pointer.active = false;
+        startPhysics();
+      };
+
+      root.classList.add("surprise-clock--repel");
+      root.addEventListener("pointerenter", onEnter);
+      root.addEventListener("pointermove", onMove);
+      root.addEventListener("pointerleave", onLeave);
+
+      if (typeof ResizeObserver !== "undefined") {
+        new ResizeObserver(() => {
+          if (pointer.active) measure();
+        }).observe(root);
+      }
+
+      return {
+        onBrightChange() {
+          if (pointer.active || physicsRaf) measure();
+        },
+        dispose() {
+          disposed = true;
+          if (physicsRaf) cancelAnimationFrame(physicsRaf);
+          physicsRaf = 0;
+          root.removeEventListener("pointerenter", onEnter);
+          root.removeEventListener("pointermove", onMove);
+          root.removeEventListener("pointerleave", onLeave);
+          root.classList.remove("surprise-clock--repel", "is-repelling");
+          root.style.removeProperty("--sc-tilt-x");
+          root.style.removeProperty("--sc-tilt-y");
+          states.clear();
+        },
+      };
+    }
+
+    function ensureRepel(root) {
+      if (!canUsePointerRepel()) return;
+      let ctrl = repelByRoot.get(root);
+      if (!ctrl) {
+        ctrl = createRepelController(root);
+        repelByRoot.set(root, ctrl);
+      }
+      return ctrl;
+    }
+
     function build(root) {
       if (builtFor === root && digitGroups.length) return;
+      const prev = repelByRoot.get(root);
+      if (prev) {
+        prev.dispose();
+        repelByRoot.delete(root);
+      }
       root.innerHTML = "";
       digitGroups = [];
       builtFor = root;
@@ -66,15 +292,23 @@ const showTitle = widgetConfig?.showTitle === true;
         digits.forEach((digitList) => {
           const digit = document.createElement("div");
           digit.className = "surprise-clock__digit";
+          const track = document.createElement("div");
+          track.className = "surprise-clock__digit-track";
           digitList.forEach((n) => {
             const el = document.createElement("div");
             el.className = "surprise-clock__num";
-            el.textContent = String(n);
-            digit.appendChild(el);
+            const glyph = document.createElement("span");
+            glyph.className = "surprise-clock__glyph";
+            glyph.textContent = String(n);
+            el.appendChild(glyph);
+            track.appendChild(el);
           });
+          digit.appendChild(track);
           group.appendChild(digit);
         });
       });
+
+      ensureRepel(root);
     }
 
     function tick() {
@@ -95,19 +329,40 @@ const showTitle = widgetConfig?.showTitle === true;
         root.setAttribute("aria-label", label);
       }
 
+      let brightChanged = false;
       time.forEach((n, i) => {
         const group = digitGroups[Math.floor(i * 0.5)];
         if (!group) return;
         const digit = group.children[i % 2];
-        if (!digit) return;
-        Array.from(digit.children).forEach((el, i2) => {
-          el.classList.toggle("is-bright", i2 === n);
+        if (!(digit instanceof HTMLElement)) return;
+        const track = digit.querySelector(".surprise-clock__digit-track");
+        if (!(track instanceof HTMLElement)) return;
+        Array.from(track.children).forEach((el, i2) => {
+          const on = i2 === n;
+          if (el.classList.contains("is-bright") !== on) brightChanged = true;
+          el.classList.toggle("is-bright", on);
         });
+        const bright = track.children[n];
+        if (bright instanceof HTMLElement) {
+          const mid = digit.clientHeight * 0.5 - bright.offsetHeight * 0.5;
+          track.style.setProperty("--sc-shift", `${mid - bright.offsetTop}px`);
+        }
       });
+
+      const ctrl = ensureRepel(root);
+      if (brightChanged && ctrl) ctrl.onBrightChange();
     }
 
     function start() {
       if (raf) cancelAnimationFrame(raf);
+      const root = document.getElementById(ROOT_ID);
+      if (root) {
+        const prev = repelByRoot.get(root);
+        if (prev) {
+          prev.dispose();
+          repelByRoot.delete(root);
+        }
+      }
       digitGroups = [];
       builtFor = null;
       raf = requestAnimationFrame(tick);
@@ -124,98 +379,199 @@ const showTitle = widgetConfig?.showTitle === true;
 </script>
 
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
+
+  :global(.surprise-clock-widget.card-base),
   :global(.surprise-clock-widget) {
-    overflow: hidden;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+
+  :global(.enable-card-border .surprise-clock-widget.card-base),
+  :global(.wallpaper-transparent .surprise-clock-widget.card-base) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
 
   :global(.surprise-clock-widget .collapse-wrapper) {
     padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
   }
 
   .surprise-clock {
-    --sc-h: 8.75rem;
+    --sc-h: 7.85rem;
+    --sc-muted: rgb(0 0 0 / 0.18);
+    --sc-bright: var(--primary);
+    --sc-pixel: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
+    --sc-tilt-x: 0deg;
+    --sc-tilt-y: 0deg;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.1rem;
+    gap: 0.08rem;
     width: 100%;
     height: var(--sc-h);
     overflow: hidden;
-    color: #fff;
+    color: var(--sc-bright);
     text-align: center;
-    font-weight: 800;
+    font-family: var(--sc-pixel);
+    font-weight: 400;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-    border-radius: var(--radius-large, 0.9rem);
-    /* 蓝紫光带：可读白字优先 */
-    background:
-      radial-gradient(ellipse 80% 60% at 15% 10%, rgb(147 197 253 / 0.45), transparent 55%),
-      radial-gradient(ellipse 70% 55% at 90% 85%, rgb(196 181 253 / 0.4), transparent 50%),
-      linear-gradient(128deg, #2563eb 0%, #4f46e5 48%, #7c3aed 100%);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    letter-spacing: 0.06em;
+    border-radius: 0;
+    background: transparent;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    text-rendering: optimizeSpeed;
+  }
+
+  /* 桌面精细指针：可悬停斥力；触屏不启用该类 */
+  .surprise-clock--repel {
+    cursor: crosshair;
+    pointer-events: auto;
+    transform: perspective(520px) rotateX(var(--sc-tilt-x)) rotateY(var(--sc-tilt-y));
+    transform-style: preserve-3d;
+    transition: transform 180ms ease-out;
+    /* 略增命中区，避免难瞄 */
+    padding-block: 0.35rem;
+    margin-block: -0.35rem;
+    box-sizing: content-box;
+  }
+
+  .surprise-clock--repel.is-repelling {
+    overflow: visible;
+    transition: none;
+    z-index: 2;
+  }
+
+  .surprise-clock--bare {
+    padding-right: 0;
+    justify-content: center;
+  }
+
+  :global(.dark) .surprise-clock {
+    --sc-muted: rgb(255 255 255 / 0.26);
+    --sc-bright: color-mix(in oklch, var(--primary) 72%, white);
   }
 
   :global(.surprise-clock__group) {
+    --colon-rx: 0px;
+    --colon-ry: 0px;
     display: inline-flex;
     align-items: center;
-    height: var(--sc-h, 8.75rem);
+    height: var(--sc-h, 7.85rem);
   }
 
+  /* 像素冒号 */
   :global(.surprise-clock__group:not(:last-child)::after) {
     content: ":";
     display: inline-flex;
     align-items: center;
-    font-size: 1.65rem;
-    font-weight: 700;
+    font-family: var(--sc-pixel, "DotGothic16", monospace);
+    font-size: 1.55rem;
+    font-weight: 400;
     line-height: 1;
-    padding: 0 0.18rem;
+    padding: 0 0.1rem;
+    color: var(--sc-bright, var(--primary));
     opacity: 0.9;
-    text-shadow: 0 2px 12px rgb(15 23 42 / 0.35);
+    text-shadow: 0 0 12px color-mix(in oklab, var(--sc-bright, var(--primary)) 45%, transparent);
+    -webkit-font-smoothing: none;
+    will-change: transform;
+    transform: translate3d(var(--colon-rx, 0px), var(--colon-ry, 0px), 0);
   }
 
-  /* 每列只清晰显示当前亮数字；其余叠在同一格淡出 */
   :global(.surprise-clock__digit) {
     position: relative;
     display: inline-block;
-    width: 1.7rem;
-    height: 2.5rem;
-    margin: 0 0.05rem;
+    width: 1.65rem;
+    height: var(--sc-h, 7.85rem);
+    margin: 0 0.02rem;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  /* 悬停斥力时放开裁剪，并藏起暗字，避免整列数字溢出露馅 */
+  :global(.surprise-clock.is-repelling .surprise-clock__digit) {
+    overflow: visible;
+  }
+
+  :global(.surprise-clock.is-repelling .surprise-clock__num:not(.is-bright)) {
+    visibility: hidden;
+  }
+
+  :global(.surprise-clock__digit-track) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+    transform: translateY(var(--sc-shift, 0px));
+    transition: transform 320ms steps(8, end);
   }
 
   :global(.surprise-clock__num) {
-    position: absolute;
-    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgb(255 255 255 / 0.22);
-    font-size: 1.05rem;
+    width: 100%;
+    height: 1.2rem;
+    color: var(--sc-muted, rgb(0 0 0 / 0.18));
+    font-family: var(--sc-pixel, "DotGothic16", monospace);
+    font-size: 0.95rem;
+    font-weight: 400;
     line-height: 1;
-    opacity: 0;
-    transform: rotate(-70deg) scale(0.55);
+    transform: rotate(-90deg);
     transition:
-      opacity 160ms ease,
-      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-      color 140ms ease,
-      font-size 200ms ease;
+      font-size 160ms steps(4, end),
+      transform 280ms steps(6, end),
+      color 120ms linear,
+      height 160ms steps(4, end);
     pointer-events: none;
+    -webkit-font-smoothing: none;
   }
 
+  /* 斥力位移放在内层，避免与翻页 rotate 抢 transform */
+  :global(.surprise-clock__glyph) {
+    display: inline-block;
+    will-change: transform;
+    transform: translate3d(var(--rx, 0px), var(--ry, 0px), 0);
+  }
+
+  /* 亮字：像素艺术主数字 */
   :global(.surprise-clock__num.is-bright) {
-    opacity: 1;
-    color: #fff;
-    font-size: 1.85rem;
-    font-weight: 800;
-    transform: rotate(0deg) scale(1);
+    color: var(--sc-bright, var(--primary));
+    height: 2.2rem;
+    font-size: 1.95rem;
+    font-weight: 400;
+    transform: rotate(0deg);
     text-shadow:
-      0 1px 0 rgb(255 255 255 / 0.25),
-      0 4px 16px rgb(15 23 42 / 0.35);
+      1px 0 0 color-mix(in oklab, var(--sc-bright, var(--primary)) 35%, transparent),
+      0 1px 0 color-mix(in oklab, var(--sc-bright, var(--primary)) 25%, transparent),
+      0 0 14px color-mix(in oklab, var(--sc-bright, var(--primary)) 40%, transparent);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.surprise-clock__num) {
+    :global(.surprise-clock__num),
+    :global(.surprise-clock__digit-track) {
       transition-duration: 0.01ms !important;
+      transition-timing-function: linear !important;
+    }
+
+    .surprise-clock--repel {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .surprise-clock--repel {
+      cursor: default;
+      transform: none !important;
     }
   }
 </style>

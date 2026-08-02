@@ -345,3 +345,66 @@ export async function getRelatedPosts(
 
 	return result;
 }
+
+/**
+ * 热笺 · 最近热门（侧栏）：热度代理 + 强时效偏置。
+ * 无真实 PV 时：标签流行度 + 置顶 + 近更，再加重近 60 天半衰期。
+ */
+export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
+	const allPosts = await getCollection<"posts">("posts", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	const tagCorpusFreq = new Map<string, number>();
+	for (const p of allPosts) {
+		for (const t of p.data.tags || []) {
+			const key = t.trim().toLowerCase();
+			if (!key) continue;
+			tagCorpusFreq.set(key, (tagCorpusFreq.get(key) || 0) + 1);
+		}
+	}
+	let maxTopicHeat = 1;
+	for (const p of allPosts) {
+		let h = 0;
+		for (const t of p.data.tags || []) {
+			h += tagCorpusFreq.get(t.trim().toLowerCase()) || 0;
+		}
+		if (h > maxTopicHeat) maxTopicHeat = h;
+	}
+
+	const now = Date.now();
+	const scored = allPosts
+		.filter((p) => !p.data.password)
+		.map((post) => {
+			const postTags = (post.data.tags || [])
+				.map((t) => t.trim().toLowerCase())
+				.filter(Boolean);
+			let topicHeat = 0;
+			for (const t of postTags) {
+				topicHeat += tagCorpusFreq.get(t) || 0;
+			}
+			const topicHeatNorm =
+				18 * (Math.log1p(topicHeat) / Math.log1p(maxTopicHeat));
+			const pinBonus = post.data.pinned ? 10 : 0;
+			const updatedMs = post.data.updated?.getTime();
+			const recentUpdateBonus =
+				updatedMs && now - updatedMs < 30 * 24 * 60 * 60 * 1000 ? 8 : 0;
+			const heatScore = topicHeatNorm + pinBonus + recentUpdateBonus;
+
+			// 热笺：60 天半衰期，时效权重大于热度代理
+			const daysSince =
+				(now - getEffectivePostTime(post.data)) / (1000 * 60 * 60 * 24);
+			const timeFreshnessScore = 48 * Math.exp((-Math.LN2 * daysSince) / 60);
+
+			return {
+				post,
+				score: heatScore + timeFreshnessScore,
+			};
+		});
+
+	scored.sort((a, b) => b.score - a.score);
+	return scored.slice(0, Math.max(1, maxCount)).map((s) => ({
+		id: s.post.id,
+		data: s.post.data,
+	}));
+}

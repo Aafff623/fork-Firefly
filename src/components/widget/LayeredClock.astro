@@ -1,0 +1,454 @@
+---
+/**
+ * 分层时钟 — 对照 bilibili-goat/widgets/分层时钟/x.html
+ * 保留 3D 分层大方向；样式/字体/徽章做精致化。
+ * bare=true：无卡片（嵌站点统计等）
+ */
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { WidgetComponentConfig } from "@/types/config";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+	bare?: boolean;
+}
+
+const { class: className, style, widgetConfig, bare = false } = Astro.props;
+const showTitle = widgetConfig?.showTitle === true;
+
+const faceImg = "/assets/images/widgets/layered-clock/05.jpg";
+const profileImg = "/assets/images/widgets/layered-clock/04.jpg";
+const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
+---
+
+{
+  bare ? (
+    <div
+      class:list={rootClass}
+      id="layered-clock-root"
+      role="timer"
+      aria-live="polite"
+      aria-label={i18n(I18nKey.layeredClock)}
+      style={style}
+      data-face={faceImg}
+    >
+      <div class="lc7__layer lc7__layer--img" aria-hidden="true"></div>
+      <div class="lc7__layer lc7__layer--shade" aria-hidden="true"></div>
+      <div class="lc7__layer lc7__layer--face">
+        <div class="lc7__digits">
+          <span class="lc7__digit" data-unit="h">12</span>
+          <span class="lc7__sep" aria-hidden="true">:</span>
+          <span class="lc7__digit" data-unit="m">00</span>
+          <span class="lc7__sep lc7__sep--sec" aria-hidden="true">:</span>
+          <span class="lc7__digit lc7__digit--sec" data-unit="s">00</span>
+          <span class="lc7__ampm" data-unit="ap">AM</span>
+        </div>
+        <div class="lc7__hand lc7__hand--hr" aria-hidden="true"></div>
+        <div class="lc7__hand lc7__hand--min" aria-hidden="true"></div>
+        <div class="lc7__hand lc7__hand--sec" aria-hidden="true"></div>
+        <div class="lc7__ring" aria-hidden="true"></div>
+      </div>
+      <div class="lc7__layer lc7__layer--profile">
+        <img class="lc7__profile" src={profileImg} alt="" width="32" height="32" loading="lazy" />
+      </div>
+    </div>
+  ) : (
+    <WidgetLayout
+      name={i18n(I18nKey.layeredClock)}
+      showTitle={showTitle}
+      id="layered-clock"
+      class:list={["layered-clock-widget", className]}
+      style={style}
+      contentPadding={false}
+    >
+      <div
+        class:list={rootClass}
+        id="layered-clock-root"
+        role="timer"
+        aria-live="polite"
+        aria-label={i18n(I18nKey.layeredClock)}
+        data-face={faceImg}
+      >
+        <div class="lc7__layer lc7__layer--img" aria-hidden="true"></div>
+        <div class="lc7__layer lc7__layer--shade" aria-hidden="true"></div>
+        <div class="lc7__layer lc7__layer--face">
+          <div class="lc7__digits">
+            <span class="lc7__digit" data-unit="h">12</span>
+            <span class="lc7__sep" aria-hidden="true">:</span>
+            <span class="lc7__digit" data-unit="m">00</span>
+            <span class="lc7__sep lc7__sep--sec" aria-hidden="true">:</span>
+            <span class="lc7__digit lc7__digit--sec" data-unit="s">00</span>
+            <span class="lc7__ampm" data-unit="ap">AM</span>
+          </div>
+          <div class="lc7__hand lc7__hand--hr" aria-hidden="true"></div>
+          <div class="lc7__hand lc7__hand--min" aria-hidden="true"></div>
+          <div class="lc7__hand lc7__hand--sec" aria-hidden="true"></div>
+          <div class="lc7__ring" aria-hidden="true"></div>
+        </div>
+        <div class="lc7__layer lc7__layer--profile">
+          <img class="lc7__profile" src={profileImg} alt="" width="32" height="32" loading="lazy" />
+        </div>
+      </div>
+    </WidgetLayout>
+  )
+}
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    const ROOT_ID = "layered-clock-root";
+    /** @type {number | undefined} */
+    let loop;
+
+    function applyFace(el) {
+      const face = el.getAttribute("data-face");
+      if (!face) return;
+      const img = el.querySelector(".lc7__layer--img");
+      if (img instanceof HTMLElement) {
+        img.style.backgroundImage = 'url("' + face + '")';
+        img.style.backgroundSize = "100% 100%";
+        img.style.backgroundPosition = "0 0";
+      }
+    }
+
+    function timeAsObject() {
+      const date = new Date();
+      return { h: date.getHours(), m: date.getMinutes(), s: date.getSeconds() };
+    }
+
+    function timeDigitsGrouped() {
+      let { h, m, s } = timeAsObject();
+      const ap = h > 11 ? "PM" : "AM";
+      if (h === 0) h += 12;
+      else if (h > 12) h -= 12;
+      return [
+        String(h),
+        m < 10 ? "0" + m : String(m),
+        s < 10 ? "0" + s : String(s),
+        ap,
+      ];
+    }
+
+    function timeAsString() {
+      const p = timeDigitsGrouped();
+      return p[0] + ":" + p[1] + ":" + p[2] + " " + p[3];
+    }
+
+    function tick() {
+      const el = document.getElementById(ROOT_ID);
+      if (!el) return;
+      applyFace(el);
+
+      const time = timeAsObject();
+      const secFraction = time.s / 60;
+      const minFraction = (time.m + secFraction) / 60;
+      const hrFraction = (time.h + minFraction) / 12;
+      el.style.setProperty("--secAngle", 360 * secFraction + "deg");
+      el.style.setProperty("--minAngle", 360 * minFraction + "deg");
+      el.style.setProperty("--hrAngle", 360 * hrFraction + "deg");
+      el.setAttribute("aria-label", timeAsString());
+
+      const digits = timeDigitsGrouped();
+      el.querySelectorAll("[data-unit]").forEach(function (unit, i) {
+        unit.textContent = digits[i] || "";
+      });
+
+      clearTimeout(loop);
+      loop = window.setTimeout(tick, 1000);
+    }
+
+    function start() {
+      clearTimeout(loop);
+      tick();
+    }
+
+    start();
+    document.addEventListener("swup:contentReplaced", function () {
+      setTimeout(start, 80);
+    });
+    document.addEventListener("astro:page-load", function () {
+      setTimeout(start, 80);
+    });
+  })();
+</script>
+
+<style is:global>
+  @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap");
+
+  .layered-clock-widget.card-base,
+  .layered-clock-widget {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+
+  .layered-clock-widget .collapse-wrapper {
+    padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    perspective: 720px;
+  }
+
+  #layered-clock-root.lc7 {
+    --hrAngle: 0deg;
+    --minAngle: 0deg;
+    --secAngle: 0deg;
+    --lc-ink: #f8fafc;
+    --lc-ring: #f1f5f9;
+    --lc-shade: hsla(222, 42%, 10%, 0.52);
+    --lc-hand: #f8fafc;
+    --lc-ampm-bg: rgb(15 23 42 / 0.48);
+    --lc-ampm-bd: rgb(255 255 255 / 0.32);
+    font-size: 0.36rem;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    line-height: 1.45;
+    color: var(--lc-ink);
+    position: relative;
+    width: 12em;
+    height: 12em;
+    margin: 0;
+    border-radius: 50%;
+    outline: transparent;
+    transform: rotateX(26deg) rotateY(-24deg) rotateZ(22deg);
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    background: transparent;
+    filter: drop-shadow(0 6px 14px rgb(15 23 42 / 0.18));
+  }
+
+  #layered-clock-root.lc7--bare {
+    font-size: 0.34rem;
+  }
+
+  #layered-clock-root.lc7--in-stats {
+    font-size: 0.3rem;
+    filter: drop-shadow(0 4px 10px rgb(15 23 42 / 0.14));
+  }
+
+  #layered-clock-root.lc7--solo {
+    font-size: 0.85rem;
+    margin: 0.5rem auto;
+  }
+
+  #layered-clock-root.lc7:hover,
+  #layered-clock-root.lc7:focus-visible {
+    transform: rotateX(0) rotateY(0) rotateZ(0);
+  }
+
+  #layered-clock-root .lc7__profile {
+    background-color: hsl(222, 14%, 42%);
+    border: 0;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 0.18em rgb(255 255 255 / 0.55),
+      0 0 0 0.32em rgb(15 23 42 / 0.35);
+    display: block;
+    margin: 7.75em auto 0 auto;
+    width: 2em;
+    height: 2em;
+    object-fit: cover;
+  }
+
+  #layered-clock-root .lc7__digits {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.1em;
+    line-height: 1;
+    margin-top: 2.2em;
+    padding: 0.2em 0.55em;
+    user-select: none;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-shadow:
+      0 1px 2px rgb(0 0 0 / 0.7),
+      0 0 10px rgb(0 0 0 / 0.35);
+  }
+
+  #layered-clock-root .lc7__digit {
+    margin: 0;
+    min-width: 1.15ch;
+    text-align: center;
+  }
+
+  #layered-clock-root .lc7__digit[data-unit="h"] {
+    text-align: right;
+    min-width: 1ch;
+  }
+
+  #layered-clock-root .lc7__digit[data-unit="m"],
+  #layered-clock-root .lc7__digit--sec {
+    min-width: 2ch;
+  }
+
+  #layered-clock-root .lc7__sep {
+    opacity: 0.8;
+    margin: 0 0.04em;
+    font-weight: 500;
+  }
+
+  #layered-clock-root .lc7__sep--sec {
+    opacity: 0.5;
+    font-size: 0.85em;
+  }
+
+  #layered-clock-root .lc7__digit--sec {
+    font-size: 0.72em;
+    font-weight: 600;
+    opacity: 0.88;
+  }
+
+  #layered-clock-root .lc7__ampm {
+    margin-left: 0.32em;
+    padding: 0.14em 0.42em;
+    border-radius: 999px;
+    font-size: 0.52em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    color: #fff;
+    background: var(--lc-ampm-bg);
+    border: 1px solid var(--lc-ampm-bd);
+    backdrop-filter: blur(4px);
+    text-shadow: none;
+  }
+
+  #layered-clock-root.lc7--in-stats .lc7__sep--sec,
+  #layered-clock-root.lc7--in-stats .lc7__digit--sec {
+    display: none;
+  }
+
+  #layered-clock-root.lc7--in-stats .lc7__digits {
+    margin-top: 2.6em;
+    gap: 0.14em;
+    font-size: 1.18em;
+  }
+
+  #layered-clock-root.lc7--in-stats .lc7__ampm {
+    font-size: 0.5em;
+    padding: 0.16em 0.44em;
+  }
+
+  #layered-clock-root .lc7__hand,
+  #layered-clock-root .lc7__layer,
+  #layered-clock-root .lc7__ring {
+    position: absolute;
+  }
+
+  #layered-clock-root .lc7__hand {
+    bottom: calc(50% - 0.5em);
+    left: calc(50% - 0.5em);
+    width: 1em;
+    mix-blend-mode: difference;
+    perspective: 4.25em;
+    transform-origin: 0.5em calc(100% - 0.5em);
+    transition: 0.5s;
+  }
+
+  #layered-clock-root .lc7__hand--hr {
+    height: 2.75em;
+    transform: rotate(var(--hrAngle)) translateY(-2em);
+  }
+
+  #layered-clock-root .lc7__hand--min {
+    height: 3.75em;
+    transform: rotate(var(--minAngle)) translateY(-2em);
+  }
+
+  #layered-clock-root .lc7__hand--sec {
+    width: 0.45em;
+    height: 3.75em;
+    transform: rotate(var(--secAngle)) translateY(-2em);
+  }
+
+  #layered-clock-root .lc7__hand::before {
+    background-color: var(--lc-hand);
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: rotateX(-30deg);
+    transform-origin: 50% 100%;
+    box-shadow: 0 0 0.35em rgb(255 255 255 / 0.35);
+  }
+
+  #layered-clock-root .lc7__hand--hr::before {
+    border-radius: 0.5em 0.5em 0.5em 0.5em / 0.5em 0.5em 0.75em 0.75em;
+  }
+
+  #layered-clock-root .lc7__hand--min::before {
+    border-radius: 0 0 0.5em 0.5em / 0 0 0.75em 0.75em;
+  }
+
+  #layered-clock-root .lc7__hand--sec::before {
+    border-radius: 0 0 0.25em 0.25em / 0 0 0.5em 0.5em;
+  }
+
+  #layered-clock-root .lc7__layer,
+  #layered-clock-root .lc7__ring {
+    border-radius: 50%;
+    inset: 0;
+  }
+
+  #layered-clock-root .lc7__layer--face {
+    transform: translateZ(3.75em);
+  }
+
+  #layered-clock-root .lc7__layer--img {
+    transform: translateZ(-3.75em);
+  }
+
+  #layered-clock-root .lc7__layer--profile {
+    transform: translateZ(11em);
+  }
+
+  #layered-clock-root .lc7__layer--shade {
+    background:
+      radial-gradient(circle at 42% 28%, rgb(255 255 255 / 0.14), transparent 40%),
+      var(--lc-shade);
+  }
+
+  #layered-clock-root .lc7__ring {
+    box-shadow:
+      0 0 0 0.55em var(--lc-ring) inset,
+      0 0 0 0.7em rgb(15 23 42 / 0.18) inset;
+  }
+
+  :root.dark #layered-clock-root.lc7 {
+    --lc-ink: #f8fafc;
+    --lc-ring: color-mix(in oklch, white 82%, var(--primary));
+    --lc-shade: hsla(222, 36%, 6%, 0.68);
+    --lc-hand: color-mix(in oklch, white 90%, var(--primary));
+    --lc-ampm-bg: rgb(0 0 0 / 0.55);
+    --lc-ampm-bd: color-mix(in oklch, white 32%, var(--primary));
+    filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.35));
+  }
+
+  :root.dark #layered-clock-root .lc7__digits {
+    text-shadow:
+      0 1px 2px rgb(0 0 0 / 0.9),
+      0 0 12px rgb(0 0 0 / 0.55);
+  }
+
+  :root.dark #layered-clock-root .lc7__profile {
+    box-shadow:
+      0 0 0 0.18em color-mix(in oklch, white 55%, var(--primary)),
+      0 0 0 0.32em rgb(0 0 0 / 0.45);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #layered-clock-root.lc7 {
+      transform: none;
+      transition: none;
+      filter: none;
+    }
+
+    #layered-clock-root .lc7__hand {
+      transition: none;
+    }
+  }
+</style>

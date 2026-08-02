@@ -285,6 +285,8 @@ enum I18nKey {
 	noRelatedPosts = "noRelatedPosts",
 	noRandomPosts = "noRandomPosts",
 	noRecommendedPosts = "noRecommendedPosts",
+	hotPosts = "hotPosts",
+	noHotPosts = "noHotPosts",
 
 	// 加密
 	postEncrypted = "postEncrypted",
@@ -395,6 +397,7 @@ enum I18nKey {
 	calendar = "calendar",
 	calendarHeatmapWeek = "calendarHeatmapWeek",
 	surpriseClock = "surpriseClock",
+	layeredClock = "layeredClock",
 	advertisement = "advertisement",
 
 	shareArticle = "shareArticle",

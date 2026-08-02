@@ -5,12 +5,15 @@ import Announcement from "@/components/widget/Announcement.astro";
 import Calendar from "@/components/widget/Calendar.astro";
 import Categories from "@/components/widget/Categories.astro";
 import Dynamic from "@/components/widget/Dynamic.astro";
+import HotPosts from "@/components/widget/HotPosts.astro";
 import Music from "@/components/widget/Music.astro";
 import Profile from "@/components/widget/Profile.astro";
 import Recommend from "@/components/widget/Recommend.astro";
 import SidebarTOC from "@/components/widget/SidebarTOC.astro";
 import SiteInfo from "@/components/widget/SiteInfo.astro";
 import SiteStats from "@/components/widget/SiteStats.astro";
+import ClockCorner from "@/components/widget/ClockCorner.astro";
+import LayeredClock from "@/components/widget/LayeredClock.astro";
 import SurpriseClock from "@/components/widget/SurpriseClock.astro";
 import Tags from "@/components/widget/Tags.astro";
 import { sidebarLayoutConfig } from "@/config";
@@ -52,12 +55,15 @@ const componentMap = {
 	profile: Profile,
 	announcement: Announcement,
 	categories: Categories,
+	hotPosts: HotPosts,
 	tags: Tags,
 	sidebarToc: SidebarTOC,
 	recommend: Recommend,
 	advertisement: Advertisement,
 	stats: SiteStats,
 	surpriseClock: SurpriseClock,
+	layeredClock: LayeredClock,
+	clockCorner: ClockCorner,
 	calendar: Calendar,
 	music: Music,
 	siteInfo: SiteInfo,

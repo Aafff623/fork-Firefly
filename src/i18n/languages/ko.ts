@@ -291,6 +291,8 @@ export const ko: Translation = {
 	[Key.noRelatedPosts]: "관련 게시글이 없습니다",
 	[Key.noRandomPosts]: "무작위 게시글이 없습니다",
 	[Key.noRecommendedPosts]: "추천 글이 없습니다",
+	[Key.hotPosts]: "열전",
+	[Key.noHotPosts]: "인기 글이 없습니다",
 
 	// Encrypted
 	[Key.postEncrypted]: "이 게시글은 암호화되어 있습니다",
@@ -403,6 +405,7 @@ export const ko: Translation = {
 	[Key.calendar]: "사이트 캘린더",
 	[Key.calendarHeatmapWeek]: "{month}의 {week}주차, 게시글 {count}개",
 	[Key.surpriseClock]: "서프라이즈 시계",
+	[Key.layeredClock]: "레이어드 시계",
 	[Key.advertisement]: "광고",
 
 	[Key.shareArticle]: "공유",

@@ -285,6 +285,8 @@ export const zh_TW: Translation = {
 	[Key.randomRecommend]: "隨機推薦",
 	[Key.noRelatedPosts]: "暫無相關文章",
 	[Key.noRecommendedPosts]: "暫無推薦文章",
+	[Key.hotPosts]: "熱箋",
+	[Key.noHotPosts]: "暫無熱門篇目",
 	[Key.noRandomPosts]: "暫無隨機文章",
 
 	// 加密
@@ -398,6 +400,7 @@ export const zh_TW: Translation = {
 	[Key.calendar]: "站點日曆",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}週，{count}篇文章",
 	[Key.surpriseClock]: "意想不到時鐘",
+	[Key.layeredClock]: "分層時鐘",
 	[Key.advertisement]: "廣告",
 
 	[Key.shareArticle]: "分享",

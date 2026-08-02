@@ -284,6 +284,8 @@ export const zh_CN: Translation = {
 	[Key.noRelatedPosts]: "暂无相关文章",
 	[Key.noRandomPosts]: "暂无随机文章",
 	[Key.noRecommendedPosts]: "暂无推荐文章",
+	[Key.hotPosts]: "热笺",
+	[Key.noHotPosts]: "暂无热门篇目",
 
 	// 加密
 	[Key.postEncrypted]: "本文已加密",
@@ -396,6 +398,7 @@ export const zh_CN: Translation = {
 	[Key.calendar]: "站点日历",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}周，{count}篇文章",
 	[Key.surpriseClock]: "意想不到时钟",
+	[Key.layeredClock]: "分层时钟",
 	[Key.advertisement]: "广告",
 
 	[Key.shareArticle]: "分享",
