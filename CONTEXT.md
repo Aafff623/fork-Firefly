@@ -35,7 +35,7 @@
 | `src/` | 产品层（pages / layouts / components / config / content / plugins / utils） |
 | `public/` | 原样静态资源 |
 | `scripts/` | LQIP、字体子集、new-post / new-dynamic |
-| `docs/` | 上游主题多语言 README 图 + **本仓 Agent 流程资产**（`docs/agents` 等） |
+| `docs/` | 上游主题多语言 README 图 + **本仓 Agent 流程资产**（`docs/agents` · `docs/idea` 灵感库等） |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |

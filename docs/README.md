@@ -4,6 +4,7 @@
 |---|---|
 | `agents/` | Agent 任务流与 tracker 配置 |
 | `adr/` | 架构决策 |
+| `idea/` | 灵感库：样式 / 组件构想（`idea/{theme}/*.md`，有构想再建） |
 | `knowledge/` | 可迁移知识（含 `official-docs.tree.json`） |
 | `glossary/` | 术语补充（可选） |
 | `official/` | 官方中文配置文档（**gitignore，不提交**） |

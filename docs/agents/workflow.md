@@ -1,6 +1,8 @@
 # 任务流（workflow）
 
 ```text
+docs/idea/{theme}/                   # 可选：灵感库沉淀（本 session 可只写到这）
+  → 新 session 提取
 Issue(.scratch/<feature>/)
   → docs/outputs/report/{theme}/     # 可选调研
   → docs/outputs/prd/{theme}/prd.md  # draft → 你批准
@@ -9,6 +11,8 @@ Issue(.scratch/<feature>/)
   → 通过 → commit + docs/outputs/commit-history/{branch}/YYYY-MM-DD.md
   → archive
 ```
+
+灵感只进 `docs/idea/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
 
 ## Phase / 交付闭环（强制）
 
