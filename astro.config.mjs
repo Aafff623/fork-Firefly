@@ -145,6 +145,7 @@ export default defineConfig({
 		}),
 		icon({
 			include: {
+				lucide: ["*"],
 				"material-symbols": ["*"],
 				"fa7-brands": ["*"],
 				"fa7-regular": ["*"],
