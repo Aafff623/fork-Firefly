@@ -1,6 +1,6 @@
 ---
 /**
- * 标签墙：mosaic 嵌砖。
+ * 标签墙：砖石错落嵌砖（对照文章 brick dense）+ 青灰/红褐棋盘色。
  * 文章页聚焦当前文标签；侧栏常为静态，靠 #swup-container[data-current-post-tags] + 脚本同步。
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
@@ -30,15 +30,6 @@ const isFocusMode = Array.isArray(focusTags);
 const focusSet = new Set(
 	(focusTags ?? []).map((t) => t.trim()).filter(Boolean),
 );
-
-const maxCount = Math.max(1, ...allTags.map((t) => t.count));
-
-function brickWeight(count: number): 1 | 2 | 3 {
-	const ratio = count / maxCount;
-	if (ratio >= 0.55) return 3;
-	if (ratio >= 0.28) return 2;
-	return 1;
-}
 
 const visibleCount = isFocusMode
 	? allTags.filter((t) => focusSet.has(t.name.trim())).length
@@ -78,7 +69,6 @@ const titleAll = i18n(I18nKey.tagWall);
     {
       allTags.map((t) => {
         const name = t.name.trim();
-        const weight = brickWeight(t.count);
         const filteredOut = isFocusMode && !focusSet.has(name);
         return (
           <a
@@ -86,7 +76,6 @@ const titleAll = i18n(I18nKey.tagWall);
             href={getTagUrl(name)}
             class:list={[
               "tag-wall__brick",
-              `tag-wall__brick--w${weight}`,
               { "is-filtered-out": filteredOut },
             ]}
             data-tag={name}
@@ -103,100 +92,24 @@ const titleAll = i18n(I18nKey.tagWall);
   </div>
 </WidgetLayout>
 
-{/* 布局兜底（材质/配色以 tags.css 为准） */}
+{/* 结构/聚焦兜底；砖面材质与配色以 tags.css 为准，勿在此覆盖 background */}
 <style is:global>
-  widget-layout.tags-widget .tag-wall,
-  .tags-widget .tag-wall {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(5.1rem, 1fr));
-    grid-auto-flow: dense;
-    gap: 2px;
-    padding: 2px;
-    border-radius: 0.65rem;
-    background: oklch(0.78 0.02 var(--hue));
-    overflow: hidden;
-  }
-
-  html.dark widget-layout.tags-widget .tag-wall,
-  html.dark .tags-widget .tag-wall {
-    background: oklch(0.18 0.025 var(--hue));
-  }
-
-  widget-layout.tags-widget .tag-wall__brick,
-  .tags-widget .tag-wall__brick {
-    display: flex !important;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0.18rem;
-    min-width: 0;
-    min-height: 2.65rem;
-    padding: 0.48rem 0.55rem;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
-    background: oklch(0.965 0.012 85);
-    color: oklch(0.28 0.03 var(--hue));
-    text-decoration: none !important;
-    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-    line-height: 1.25;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.55),
-      inset 0 -1px 0 oklch(0.55 0.02 var(--hue) / 0.12);
-  }
-
-  html.dark widget-layout.tags-widget .tag-wall__brick,
-  html.dark .tags-widget .tag-wall__brick {
-    background: oklch(0.26 0.02 70);
-    color: oklch(0.9 0.015 var(--hue));
-  }
-
-  /* 覆盖 display:flex !important，否则 [hidden] 无效 */
-  widget-layout.tags-widget .tag-wall__brick.is-filtered-out,
-  .tags-widget .tag-wall__brick.is-filtered-out {
-    display: none !important;
-  }
-
-  widget-layout.tags-widget .tag-wall__brick--w2,
-  widget-layout.tags-widget .tag-wall__brick--w3,
-  .tags-widget .tag-wall__brick--w2,
-  .tags-widget .tag-wall__brick--w3 {
-    grid-column: span 2;
-  }
-
-  widget-layout.tags-widget .tag-wall__name,
-  .tags-widget .tag-wall__name {
-    display: block;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 0.72rem;
-    font-weight: 650;
-  }
-
-  widget-layout.tags-widget .tag-wall__count,
-  .tags-widget .tag-wall__count {
-    display: block;
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: oklch(0.48 0.025 var(--hue));
-    font-variant-numeric: tabular-nums;
-  }
-
   .tag-wall__empty {
     display: none;
     grid-column: 1 / -1;
     margin: 0;
     padding: 0.65rem 0.5rem;
     font-size: 0.78rem;
-    color: oklch(0.48 0.025 var(--hue));
+    color: oklch(0.45 0.02 70);
     text-align: center;
   }
 
   .tag-wall__empty.is-visible {
     display: block;
+  }
+
+  html.dark .tag-wall__empty {
+    color: oklch(0.7 0.02 70);
   }
 
   widget-layout.tags-widget.tags-widget--focus .expand-btn,

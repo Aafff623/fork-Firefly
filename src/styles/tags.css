@@ -1,59 +1,42 @@
-/* 标签墙 · 砖头材质
- * 配色对齐 Hallmark Letter（hue 290）：暖纸砖面 + 紫灰砂浆 + accent 热砖
- * 质感：2px 砂浆缝、顶亮底阴、细颗粒、按权重微变色
+/* 标签墙 · 砖石错落（对照文章 brick 布局）+ 青灰/红褐棋盘色
+ * 注意：侧栏约 2 列；用 4n 棋盘避免「左青右褐」竖条
  */
 
 .tag-wall {
-	/* 砂浆：偏紫灰、比砖面明显更深 → 缝才「咬」得出墙 */
-	--wall-mortar: oklch(0.78 0.02 var(--hue));
-	/* 砖面：暖纸 + 站点 hue 轻染（不是纯白卡片） */
-	--brick-face: oklch(0.965 0.012 85);
-	--brick-face-cool: oklch(0.96 0.014 var(--hue));
-	--brick-face-hot: oklch(0.94 0.04 var(--hue));
-	--brick-ink: oklch(0.28 0.03 var(--hue));
-	--brick-muted: oklch(0.48 0.025 var(--hue));
-	--brick-highlight: rgb(255 255 255 / 0.55);
-	--brick-shade: oklch(0.55 0.02 var(--hue) / 0.12);
+	--wall-mortar: #9a938a;
 
 	display: grid !important;
-	grid-template-columns: repeat(auto-fill, minmax(5.1rem, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-auto-rows: 2.4rem;
 	grid-auto-flow: dense;
-	gap: 2px;
-	padding: 2px;
+	gap: 3px;
+	padding: 3px;
 	border-radius: 0.65rem;
 	background:
-		/* 细颗粒砂浆底 */
-		radial-gradient(oklch(0.55 0.02 var(--hue) / 0.08) 0.6px, transparent 0.7px),
-		linear-gradient(
-			160deg,
-			color-mix(in oklch, var(--wall-mortar) 82%, var(--primary)),
-			var(--wall-mortar) 55%,
-			color-mix(in oklch, var(--wall-mortar) 88%, black)
-		);
+		radial-gradient(rgb(0 0 0 / 0.12) 0.55px, transparent 0.7px),
+		linear-gradient(165deg, #8f877c, #9a938a 50%, #7e8490);
 	background-size:
-		3px 3px,
+		2.75px 2.75px,
 		auto;
 	box-shadow:
-		inset 0 0 0 1px color-mix(in oklch, var(--primary) 18%, transparent),
-		inset 0 1px 0 rgb(255 255 255 / 0.25),
-		0 1px 2px oklch(0.4 0.02 var(--hue) / 0.08);
+		inset 0 0 0 1px rgb(0 0 0 / 0.18),
+		inset 0 1px 0 rgb(255 255 255 / 0.18),
+		0 1px 2px rgb(0 0 0 / 0.1);
 	overflow: hidden;
 	isolation: isolate;
 }
 
 html.dark .tag-wall {
-	--wall-mortar: oklch(0.18 0.025 var(--hue));
-	--brick-face: oklch(0.26 0.02 70);
-	--brick-face-cool: oklch(0.27 0.028 var(--hue));
-	--brick-face-hot: oklch(0.3 0.05 var(--hue));
-	--brick-ink: oklch(0.9 0.015 var(--hue));
-	--brick-muted: oklch(0.68 0.02 var(--hue));
-	--brick-highlight: rgb(255 255 255 / 0.07);
-	--brick-shade: oklch(0.1 0.02 var(--hue) / 0.45);
+	--wall-mortar: #3a3834;
+	background:
+		radial-gradient(rgb(255 255 255 / 0.06) 0.55px, transparent 0.7px),
+		linear-gradient(165deg, #2c2a27, #3a3834 50%, #2a3038);
+	background-size:
+		2.75px 2.75px,
+		auto;
 	box-shadow:
 		inset 0 0 0 1px rgb(255 255 255 / 0.06),
-		inset 0 1px 0 rgb(255 255 255 / 0.04),
-		0 1px 2px rgb(0 0 0 / 0.35);
+		0 1px 2px rgb(0 0 0 / 0.4);
 }
 
 .tag-wall__brick {
@@ -61,94 +44,115 @@ html.dark .tag-wall {
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: center;
-	gap: 0.18rem;
+	gap: 0.12rem;
 	min-width: 0;
-	min-height: 2.65rem;
-	padding: 0.48rem 0.55rem;
+	min-height: 0;
+	height: 100%;
+	padding: 0.35rem 0.45rem;
 	margin: 0;
 	border: 0;
 	border-radius: 0;
-	/* 砖面：暖纸底 + 斜向高光 + 颗粒 */
-	background:
-		radial-gradient(oklch(0.45 0.02 var(--hue) / 0.05) 0.55px, transparent 0.65px),
-		linear-gradient(
-			168deg,
-			color-mix(in oklch, var(--brick-face) 70%, white) 0%,
-			var(--brick-face) 42%,
-			color-mix(in oklch, var(--brick-face) 88%, var(--brick-face-cool)) 100%
-		);
-	background-size:
-		2.5px 2.5px,
-		auto;
-	color: var(--brick-ink);
 	text-decoration: none !important;
 	font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-	line-height: 1.25;
-	/* 顶亮底阴 = 砖的浮雕 */
-	box-shadow:
-		inset 0 1px 0 var(--brick-highlight),
-		inset 0 -1px 0 var(--brick-shade),
-		inset 1px 0 0 rgb(255 255 255 / 0.18);
+	line-height: 1.2;
 	transition:
-		background 0.15s ease,
-		color 0.15s ease,
-		box-shadow 0.15s ease,
-		filter 0.15s ease;
+		filter 0.15s ease,
+		box-shadow 0.15s ease;
 }
 
-html.dark .tag-wall__brick {
+/* —— 砖石错落（dense）：tall / wide / big —— */
+.tag-wall > .tag-wall__brick:nth-of-type(5n + 1) {
+	grid-row: span 2;
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(7n + 3) {
+	grid-column: span 2;
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(11n + 5) {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+/* —— 棋盘配色：2 列下青灰↔红褐交错，不是左右整列同色 ——
+ * 行1: slate clay | 行2: clay slate | …
+ */
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 1),
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
+	color: #1e2a33;
 	background:
-		radial-gradient(oklch(0.85 0.02 var(--hue) / 0.04) 0.55px, transparent 0.65px),
-		linear-gradient(
-			168deg,
-			color-mix(in oklch, var(--brick-face-cool) 75%, white) 0%,
-			var(--brick-face) 50%,
-			color-mix(in oklch, var(--brick-face) 90%, black) 100%
-		);
+		radial-gradient(rgb(0 0 0 / 0.1) 0.45px, transparent 0.65px),
+		linear-gradient(168deg, #8fa3b0 0%, #6f8493 48%, #5a7080 100%);
 	background-size:
-		2.5px 2.5px,
+		2.4px 2.4px,
+		auto;
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.35),
+		inset 0 -2px 0 rgb(0 0 0 / 0.22),
+		inset 1px 0 0 rgb(255 255 255 / 0.14),
+		inset -1px 0 0 rgb(0 0 0 / 0.1);
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 1) .tag-wall__count,
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) .tag-wall__count {
+	color: #314552;
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 2),
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) {
+	color: #2a160f;
+	background:
+		radial-gradient(rgb(0 0 0 / 0.12) 0.45px, transparent 0.65px),
+		linear-gradient(168deg, #c48462 0%, #a85d42 48%, #8f4632 100%);
+	background-size:
+		2.4px 2.4px,
+		auto;
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.28),
+		inset 0 -2px 0 rgb(0 0 0 / 0.28),
+		inset 1px 0 0 rgb(255 255 255 / 0.12),
+		inset -1px 0 0 rgb(0 0 0 / 0.12);
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 2) .tag-wall__count,
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
+	color: #4a2a1c;
+}
+
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 1),
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
+	color: #e4eef4;
+	background:
+		radial-gradient(rgb(255 255 255 / 0.05) 0.45px, transparent 0.65px),
+		linear-gradient(168deg, #5c7384 0%, #445968 50%, #344654 100%);
+	background-size:
+		2.4px 2.4px,
 		auto;
 }
 
-/* 中频：略偏站点紫的「青砖」 */
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 1) .tag-wall__count,
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 4) .tag-wall__count {
+	color: #b7c9d4;
+}
+
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 2),
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) {
+	color: #f3e4da;
+	background:
+		radial-gradient(rgb(255 255 255 / 0.05) 0.45px, transparent 0.65px),
+		linear-gradient(168deg, #9a5a42 0%, #7a4030 50%, #623226 100%);
+	background-size:
+		2.4px 2.4px,
+		auto;
+}
+
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 2) .tag-wall__count,
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
+	color: #d4b4a4;
+}
+
 .tag-wall__brick.is-filtered-out {
 	display: none !important;
-}
-
-.tag-wall__brick--w2 {
-	grid-column: span 2;
-	min-height: 2.8rem;
-	background:
-		radial-gradient(oklch(0.45 0.03 var(--hue) / 0.06) 0.55px, transparent 0.65px),
-		linear-gradient(
-			168deg,
-			color-mix(in oklch, var(--brick-face-cool) 78%, white),
-			var(--brick-face-cool)
-		);
-	background-size:
-		2.5px 2.5px,
-		auto;
-}
-
-/* 高频：accent 热砖，墙面上的「醒目砖」 */
-.tag-wall__brick--w3 {
-	grid-column: span 2;
-	min-height: 3.05rem;
-	background:
-		radial-gradient(oklch(0.5 0.08 var(--hue) / 0.08) 0.55px, transparent 0.65px),
-		linear-gradient(
-			168deg,
-			color-mix(in oklch, var(--brick-face-hot) 72%, white),
-			var(--brick-face-hot) 55%,
-			color-mix(in oklch, var(--brick-face-hot) 85%, var(--primary))
-		);
-	background-size:
-		2.5px 2.5px,
-		auto;
-	box-shadow:
-		inset 0 1px 0 var(--brick-highlight),
-		inset 0 -1px 0 var(--brick-shade),
-		inset 0 0 0 1px color-mix(in oklch, var(--primary) 22%, transparent);
 }
 
 .tag-wall__name {
@@ -157,43 +161,24 @@ html.dark .tag-wall__brick {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: 0.72rem;
-	font-weight: 650;
+	font-size: 0.7rem;
+	font-weight: 700;
 	letter-spacing: 0.01em;
 }
 
 .tag-wall__count {
 	display: block;
-	font-size: 0.62rem;
+	font-size: 0.58rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--brick-muted);
 	font-variant-numeric: tabular-nums;
+	font-weight: 600;
 }
 
 @media (hover: hover) {
 	.tag-wall__brick:hover {
-		color: var(--primary);
-		filter: brightness(1.03);
-		background:
-			radial-gradient(oklch(0.5 0.1 var(--hue) / 0.1) 0.55px, transparent 0.65px),
-			linear-gradient(
-				168deg,
-				color-mix(in oklch, var(--primary) 16%, white),
-				color-mix(in oklch, var(--primary) 18%, var(--brick-face))
-			);
-		background-size:
-			2.5px 2.5px,
-			auto;
-		box-shadow:
-			inset 0 1px 0 rgb(255 255 255 / 0.6),
-			inset 0 -1px 0 color-mix(in oklch, var(--primary) 20%, transparent),
-			inset 0 0 0 1px color-mix(in oklch, var(--primary) 32%, transparent);
+		filter: brightness(1.08) saturate(1.08);
 		z-index: 1;
-	}
-
-	.tag-wall__brick:hover .tag-wall__count {
-		color: color-mix(in oklch, var(--primary) 70%, var(--brick-muted));
 	}
 }
 
@@ -202,57 +187,30 @@ html.dark .tag-wall__brick {
 }
 
 .tag-wall__brick:focus-visible {
-	outline: 2px solid var(--primary);
+	outline: 2px solid #c9a227;
 	outline-offset: -2px;
 	z-index: 2;
 }
 
-@media (max-width: 380px) {
-	.tag-wall__brick--w2,
-	.tag-wall__brick--w3 {
-		grid-column: span 1;
-	}
-}
-
-/* /tags 全站页：同色系单砖 */
+/* /tags 全站页 */
 .tag-item {
-	background:
-		linear-gradient(
-			168deg,
-			oklch(0.97 0.01 85),
-			oklch(0.955 0.014 var(--hue))
-		);
-	color: oklch(0.32 0.03 var(--hue));
-	border: 1px solid oklch(0.86 0.02 var(--hue));
-	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.45),
-		0 1px 0 oklch(0.55 0.02 var(--hue) / 0.08);
+	background: linear-gradient(168deg, #8fa3b0, #a85d42);
+	color: #1f1712;
+	border: 1px solid rgb(0 0 0 / 0.18);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
 }
 
 .tag-item:hover {
-	background: color-mix(in oklch, var(--primary) 12%, oklch(0.97 0.01 85));
-	color: var(--primary);
-	border-color: color-mix(in oklch, var(--primary) 35%, oklch(0.86 0.02 var(--hue)));
+	filter: brightness(1.06);
 }
 
 html.dark .tag-item {
-	background: linear-gradient(168deg, oklch(0.28 0.025 var(--hue)), oklch(0.24 0.02 var(--hue)));
-	color: oklch(0.86 0.015 var(--hue));
-	border-color: oklch(0.34 0.025 var(--hue));
-	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
-}
-
-html.dark .tag-item:hover {
-	background: color-mix(in oklch, var(--primary) 18%, oklch(0.26 0.025 var(--hue)));
-	color: var(--primary);
+	background: linear-gradient(168deg, #445968, #7a4030);
+	color: #f0e6de;
+	border-color: rgb(255 255 255 / 0.1);
 }
 
 .tag-item .tag-count-badge {
-	background: color-mix(in srgb, currentColor 12%, transparent);
-	color: inherit;
-}
-
-html.dark .tag-item .tag-count-badge {
-	background: color-mix(in srgb, currentColor 16%, transparent);
+	background: color-mix(in srgb, currentColor 14%, transparent);
 	color: inherit;
 }
