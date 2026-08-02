@@ -31,7 +31,7 @@ const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
                 >
                     <div class="shrink-0 w-14 h-14 rounded-full bg-(--primary)/10 group-hover:bg-(--primary)/20 flex items-center justify-center transition-colors">
                         <Icon is:inline
-                            name="material-symbols:folder-open"
+                            name="lucide:folder-open"
                             class="text-3xl text-(--primary)"
                         />
                     </div>
@@ -45,7 +45,7 @@ const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
                     </div>
                     <div class="shrink-0">
                         <Icon is:inline
-                            name="material-symbols:chevron-right-rounded"
+                            name="lucide:chevron-right"
                             class="text-2xl text-30 group-hover:text-(--primary) transition-colors "
                         />
                     </div>
@@ -59,7 +59,7 @@ const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
         categories.length === 0 && (
             <div class="card-base px-8 py-12 text-center">
                 <Icon is:inline
-                    name="material-symbols:folder-off"
+                    name="lucide:folder-x"
                     class="text-5xl text-30 mx-auto mb-4"
                 />
                 <p class="text-30">{i18n(I18nKey.noData)}</p>

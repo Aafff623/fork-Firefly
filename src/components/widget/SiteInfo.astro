@@ -94,20 +94,20 @@ const licenseName = licenseConfig.enable ? licenseConfig.name : "None";
 // 始终显示的项目（列表）
 const mainItems = [
 	{
-		icon: "material-symbols:cloud-outline",
+		icon: "lucide:cloud",
 		iconClass: "text-(--accent-cool)",
 		label: i18n(I18nKey.siteInfoBuildPlatform),
 		value: buildPlatform,
 	},
 	{
-		icon: "mdi:clover",
+		icon: "lucide:leaf",
 		iconClass: "text-(--accent-violet)",
 		label: i18n(I18nKey.siteInfoBlogVersion),
 		value: `Firefly v${blogVersion}`,
 		href: "https://github.com/CuteLeaf/Firefly",
 	},
 	{
-		icon: "material-symbols:copyright-outline",
+		icon: "lucide:copyright",
 		iconClass: "text-(--accent-rose)",
 		label: i18n(I18nKey.siteInfoLicense),
 		value: licenseName,
@@ -124,20 +124,20 @@ const detailItems: {
 	fullWidth?: boolean;
 }[] = [
 	{
-		icon: "material-symbols:language",
+		icon: "lucide:languages",
 		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteInfoDomain),
 		value: siteDomain,
 		fullWidth: true,
 	},
 	{
-		icon: "mdi:clover",
+		icon: "lucide:leaf",
 		iconClass: "text-(--accent-violet)",
 		label: "Firefly",
 		value: `v${blogVersion}`,
 	},
 	{
-		icon: "material-symbols:rocket-launch-outline",
+		icon: "lucide:rocket",
 		iconClass: "text-(--accent-rose)",
 		label: i18n(I18nKey.siteInfoAstroVersion),
 		value: `v${astroVersion}`,
@@ -155,14 +155,14 @@ const detailItems: {
 		value: pnpmVersion,
 	},
 	{
-		icon: "material-symbols:build-outline",
+		icon: "lucide:wrench",
 		iconClass: "text-(--primary)",
 		label: i18n(I18nKey.siteInfoBuildTime),
 		value: buildTime,
 		fullWidth: true,
 	},
 	{
-		icon: "material-symbols:computer-outline",
+		icon: "lucide:monitor",
 		iconClass: "text-(--accent-indigo)",
 		label: i18n(I18nKey.siteInfoSystem),
 		value: systemInfo,
@@ -253,7 +253,7 @@ const detailItems: {
         class="site-info-toggle-btn btn-plain rounded-lg w-full h-8 flex items-center justify-center gap-1.5 mt-1 accent-text-grad text-sm font-semibold cursor-pointer"
       >
         <Icon
-          name="material-symbols:keyboard-arrow-down-rounded" is:inline
+          name="lucide:chevron-down" is:inline
           class="site-info-toggle-icon w-6 h-6 transition-transform duration-200"
         />
         <span class="site-info-toggle-text"></span>

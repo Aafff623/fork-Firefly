@@ -1,4 +1,4 @@
----
+﻿---
 import fs from "node:fs";
 import path from "node:path";
 import { Icon } from "astro-icon/components";
@@ -11,7 +11,7 @@ import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getAlbumCover, scanAlbumPhotos } from "@/utils/gallery-utils";
 import { url } from "@/utils/url-utils";
 
-/** 无限画布专用：同源 demo 画库（避免外链 CORS 导致 WebGL 只剩 1 张图） */
+/** 鏃犻檺鐢诲竷涓撶敤锛氬悓婧?demo 鐢诲簱锛堥伩鍏嶅閾?CORS 瀵艰嚧 WebGL 鍙墿 1 寮犲浘锛?*/
 function scanDemoArtworks(): string[] {
 	const dir = path.join(process.cwd(), "public", "gallery", "_demo", "artworks");
 	if (!fs.existsSync(dir)) return [];
@@ -22,15 +22,14 @@ function scanDemoArtworks(): string[] {
 		.map((f) => url(`/gallery/_demo/artworks/${f}`));
 }
 
-// 检查页面是否启用
-if (!siteConfig.pages.gallery) {
+// 妫€鏌ラ〉闈㈡槸鍚﹀惎鐢?if (!siteConfig.pages.gallery) {
 	return Astro.redirect("/404/");
 }
 
 const title = i18n(I18nKey.gallery);
 const description = i18n(I18nKey.galleryDescription);
 
-// 构建相册数据（扫描照片、获取封面）
+// 鏋勫缓鐩稿唽鏁版嵁锛堟壂鎻忕収鐗囥€佽幏鍙栧皝闈級
 const albums = galleryConfig.albums.map((album) => {
 	const photos = scanAlbumPhotos(album.id);
 	const cover = getAlbumCover(album, photos);
@@ -43,17 +42,17 @@ const demoPlaceholders = Array.from({ length: 7 }, (_, i) =>
 );
 
 const DEMO_WORK_META = [
-	{ title: "日常切片", description: "把灵感收成可复用的视觉模块。" },
-	{ title: "光影节奏", description: "用缓动与比例讲清楚一张图的叙事。" },
-	{ title: "柔光留白", description: "柔光蒙版与层次，留给日常留白。" },
-	{ title: "漫游取景", description: "滚动与目光同向，让浏览像散步。" },
-	{ title: "画布游戏", description: "画布里的自由漫游与取景。" },
-	{ title: "结构巧思", description: "少一点装饰，多一点结构节奏。" },
-	{ title: "静时片刻", description: "把时间感写进色块与留白。" },
+	{ title: "鏃ュ父鍒囩墖", description: "鎶婄伒鎰熸敹鎴愬彲澶嶇敤鐨勮瑙夋ā鍧椼€? },
+	{ title: "鍏夊奖鑺傚", description: "鐢ㄧ紦鍔ㄤ笌姣斾緥璁叉竻妤氫竴寮犲浘鐨勫彊浜嬨€? },
+	{ title: "鏌斿厜鐣欑櫧", description: "鏌斿厜钂欑増涓庡眰娆★紝鐣欑粰鏃ュ父鐣欑櫧銆? },
+	{ title: "婕父鍙栨櫙", description: "婊氬姩涓庣洰鍏夊悓鍚戯紝璁╂祻瑙堝儚鏁ｆ銆? },
+	{ title: "鐢诲竷娓告垙", description: "鐢诲竷閲岀殑鑷敱婕父涓庡彇鏅€? },
+	{ title: "缁撴瀯宸ф€?, description: "灏戜竴鐐硅楗帮紝澶氫竴鐐圭粨鏋勮妭濂忋€? },
+	{ title: "闈欐椂鐗囧埢", description: "鎶婃椂闂存劅鍐欒繘鑹插潡涓庣暀鐧姐€? },
 ] as const;
 
 function buildWorks() {
-	// 多相册：手风琴面板 = 相册
+	// 澶氱浉鍐岋細鎵嬮鐞撮潰鏉?= 鐩稿唽
 	if (albums.length >= 2) {
 		return albums.slice(0, 7).map((album) => ({
 			id: album.id,
@@ -64,8 +63,7 @@ function buildWorks() {
 		}));
 	}
 
-	// 单相册或仅有照片：手风琴面板 = 作品图
-	const photoPool = allPhotos.length > 0 ? allPhotos : demoPlaceholders;
+	// 鍗曠浉鍐屾垨浠呮湁鐓х墖锛氭墜椋庣惔闈㈡澘 = 浣滃搧鍥?	const photoPool = allPhotos.length > 0 ? allPhotos : demoPlaceholders;
 	return photoPool.slice(0, 7).map((image, index) => {
 		const meta = DEMO_WORK_META[index % DEMO_WORK_META.length];
 		const album = albums[0];
@@ -82,15 +80,14 @@ function buildWorks() {
 const works = buildWorks();
 const localAlbumPhotos = allPhotos.filter((p) => !/^https?:\/\//i.test(p));
 const demoArtworks = scanDemoArtworks();
-// 画布优先：本地相册图 + 原版风格 demo 画库（密度/多样性）；外链不进 WebGL
+// 鐢诲竷浼樺厛锛氭湰鍦扮浉鍐屽浘 + 鍘熺増椋庢牸 demo 鐢诲簱锛堝瘑搴?澶氭牱鎬э級锛涘閾句笉杩?WebGL
 const explorerPhotos =
 	localAlbumPhotos.length + demoArtworks.length > 0
 		? [...localAlbumPhotos, ...demoArtworks]
 		: demoPlaceholders;
 const defaultViewMode = galleryConfig.defaultViewMode || "portfolio";
 
-// 收集所有标签用于筛选
-const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
+// 鏀堕泦鎵€鏈夋爣绛剧敤浜庣瓫閫?const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
 ---
 
 <MainGridLayout title={title} description={description}>
@@ -98,13 +95,13 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
     <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
+      <!-- 椤甸潰鏍囬鍜屾弿杩?-->
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-3">
           <div
             class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70"
           >
-            <Icon is:inline name="material-symbols:photo-library" class="text-[1.5rem]" />
+            <Icon is:inline name="lucide:images" class="text-[1.5rem]" />
           </div>
           <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
             {title}
@@ -117,7 +114,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         )}
       </div>
 
-      <!-- 作品集 / 普通相册 双模式舞台（等比例适配卡片） -->
+      <!-- 浣滃搧闆?/ 鏅€氱浉鍐?鍙屾ā寮忚垶鍙帮紙绛夋瘮渚嬮€傞厤鍗＄墖锛?-->
       <GalleryExplorer
         client:load
         works={works}
@@ -133,12 +130,12 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         }}
       />
 
-      <!-- 搜索框 + 标签筛选 -->
+      <!-- 鎼滅储妗?+ 鏍囩绛涢€?-->
       {albums.length > 0 && (
         <gallery-filter class="mb-6 mt-6 block">
           <div class="relative mb-3">
             <Icon is:inline
-              name="material-symbols:search"
+              name="lucide:search"
               class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-lg pointer-events-none"
             />
             <input
@@ -170,7 +167,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         </gallery-filter>
       )}
 
-      <!-- 相册卡片网格（传统入口，作为双模式舞台的补充索引） -->
+      <!-- 鐩稿唽鍗＄墖缃戞牸锛堜紶缁熷叆鍙ｏ紝浣滀负鍙屾ā寮忚垶鍙扮殑琛ュ厖绱㈠紩锛?-->
       {albums.length > 0 ? (
         <>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
@@ -188,9 +185,9 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               />
             ))}
           </div>
-          {/* 搜索无结果提示 */}
+          {/* 鎼滅储鏃犵粨鏋滄彁绀?*/}
           <div class="albums-empty hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
-            <Icon is:inline name="material-symbols:search-off-rounded" class="text-4xl mb-3" />
+            <Icon is:inline name="lucide:search-x" class="text-4xl mb-3" />
             <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
           </div>
         </>

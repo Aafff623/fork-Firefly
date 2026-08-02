@@ -1,4 +1,4 @@
----
+﻿---
 import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
@@ -13,8 +13,7 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-// 检查页面是否启用
-if (!siteConfig.pages.friends) {
+// 妫€鏌ラ〉闈㈡槸鍚﹀惎鐢?if (!siteConfig.pages.friends) {
 	return Astro.redirect("/404/");
 }
 
@@ -26,18 +25,16 @@ if (!friendsPost) {
 
 const { Content } = await render(friendsPost);
 
-// 检查评论系统是否启用
-const isCommentEnabled =
+// 妫€鏌ヨ瘎璁虹郴缁熸槸鍚﹀惎鐢?const isCommentEnabled =
 	commentConfig?.type &&
 	commentConfig.type !== "none" &&
 	friendsPageConfig.showComment !== false;
 
-// 使用配置文件中的友链数据，按权重排序
+// 浣跨敤閰嶇疆鏂囦欢涓殑鍙嬮摼鏁版嵁锛屾寜鏉冮噸鎺掑簭
 const items = getEnabledFriends();
 const allTags = [...new Set(items.flatMap((item) => item.tags || []))].sort();
 
-// 页面标题和描述
-const title = friendsPageConfig.title || i18n(I18nKey.friends);
+// 椤甸潰鏍囬鍜屾弿杩?const title = friendsPageConfig.title || i18n(I18nKey.friends);
 const description =
 	friendsPageConfig.description || i18n(I18nKey.friendsDescription);
 ---
@@ -47,13 +44,13 @@ const description =
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
     <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
+      <!-- 椤甸潰鏍囬鍜屾弿杩?-->
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-3">
           <div
             class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70"
           >
-            <Icon is:inline name="material-symbols:group" class="text-[1.5rem]" />
+            <Icon is:inline name="lucide:users" class="text-[1.5rem]" />
           </div>
           <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
             {title}
@@ -68,19 +65,19 @@ const description =
         }
       </div>
 
-      <!-- 搜索框 -->
+      <!-- 鎼滅储妗?-->
       {
         items.length > 0 && (
           <friend-filter class="mb-6">
             <div class="relative mb-3">
               <Icon is:inline
-                name="material-symbols:search"
+                name="lucide:search"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-lg pointer-events-none"
               />
               <input
                 type="text"
                 data-search
-                placeholder={i18n(I18nKey.searchFriends) || "搜索友链..."}
+                placeholder={i18n(I18nKey.searchFriends) || "鎼滅储鍙嬮摼..."}
                 class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
               />
             </div>
@@ -109,7 +106,7 @@ const description =
         {
           items.length === 0 && (
             <div class="col-span-full flex flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
-              <Icon is:inline name="material-symbols:group-off-outline" class="text-4xl mb-3" />
+              <Icon is:inline name="lucide:user-x" class="text-4xl mb-3" />
               <div class="text-sm">{i18n(I18nKey.friendsEmpty)}</div>
             </div>
           )
@@ -123,10 +120,10 @@ const description =
               data-tags={item.tags?.join(",")}
               class="friend-card group flex items-center gap-3 p-2.5 rounded-xl border border-(--line-divider) hover:border-(--primary) hover:bg-(--card-bg) transition-all duration-300 hover:shadow-lg relative overflow-hidden"
             >
-              {/* 背景装饰 - 仅悬停显示 */}
+              {/* 鑳屾櫙瑁呴グ - 浠呮偓鍋滄樉绀?*/}
               <div class="absolute inset-0 bg-(--primary) opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none" />
 
-              {/* 头像 */}
+              {/* 澶村儚 */}
               <div class="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-black/5 dark:border-white/5 group-hover:scale-105 transition-transform duration-300">
                 <img
                   src={item.imgurl}
@@ -135,15 +132,15 @@ const description =
                 />
               </div>
 
-              {/* 内容 */}
+              {/* 鍐呭 */}
               <div class="grow min-w-0 flex flex-col justify-center gap-0.5">
                 <div class="flex items-center justify-between">
                   <div class="font-bold text-base text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors truncate pr-4">
                     {item.title}
                   </div>
-                  {/* 外部链接图标 */}
+                  {/* 澶栭儴閾炬帴鍥炬爣 */}
                   <Icon is:inline
-                    name="material-symbols:arrow-outward-rounded"
+                    name="lucide:square-arrow-out-up-right"
                     class="text-(--primary) text-lg opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                   />
                 </div>
@@ -155,7 +152,7 @@ const description =
                   {item.desc}
                 </div>
 
-                {/* 标签 */}
+                {/* 鏍囩 */}
                 <div class="flex flex-wrap gap-1 mt-1">
                   {item.tags && item.tags.length > 0
                     ? item.tags
@@ -173,9 +170,9 @@ const description =
         }
       </div>
 
-      {/* 搜索无结果提示 */}
+      {/* 鎼滅储鏃犵粨鏋滄彁绀?*/}
       <div class="friends-empty hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
-        <Icon is:inline name="material-symbols:search-off-rounded" class="text-4xl mb-3" />
+        <Icon is:inline name="lucide:search-x" class="text-4xl mb-3" />
         <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
       </div>
     </div>
@@ -189,7 +186,7 @@ const description =
     </div>
   )}
 
-  <!-- 评论区 -->
+  <!-- 璇勮鍖?-->
   {isCommentEnabled && (
     <div class="mt-4">
       <Comment post={friendsPost} customPath="/friends/" />

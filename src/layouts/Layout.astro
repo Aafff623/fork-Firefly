@@ -1036,11 +1036,6 @@ function disableAnimation() {
       // 只处理katex元素的容器，使用浏览器原生滚动条
       scheduleContentOverflowEnhancements();
 
-      // 重新初始化图标加载器
-      import("@/utils/icon-loader").then(({ initIconLoader }) => {
-        initIconLoader();
-      });
-
       // 检查当前页面是否为文章页面（有TOC元素）
       const tocWrapper = document.getElementById("toc-wrapper");
       const isArticlePage = tocWrapper !== null;
@@ -1720,7 +1715,6 @@ function disableAnimation() {
 
   // Initialize wallpaper mode
   import { initWallpaperMode, initThemeListener } from "@/utils/setting-utils";
-  import { initIconLoader } from "@/utils/icon-loader";
 
   function initCurtainFocusOnLoad() {
     // 首屏若落在动态/相册：先保持合拢，下一帧再推开，才能看到幕布动画
@@ -1743,7 +1737,6 @@ function disableAnimation() {
       updateSidebarComponentsVisibility();
       initWallpaperMode();
       initThemeListener();
-      initIconLoader();
       initCurtainFocusOnLoad();
     });
   } else {
@@ -1751,7 +1744,6 @@ function disableAnimation() {
     updateSidebarComponentsVisibility();
     initWallpaperMode();
     initThemeListener();
-    initIconLoader();
     initCurtainFocusOnLoad();
   }
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import Icon from "@/components/common/Icon.svelte";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { StandardizedAnime } from "@/types/anime";
@@ -78,9 +79,7 @@ function getTypeColor(seasonType: number): string {
 				onclick={onclose}
 				aria-label={i18n(I18nKey.animeClose)}
 			>
-				<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-				</svg>
+				<Icon icon="lucide:x" class="h-4 w-4" />
 			</button>
 
 			<!-- 内容区域 -->
@@ -104,9 +103,7 @@ function getTypeColor(seasonType: number): string {
 						/>
 					{:else}
 						<div class="flex h-full min-h-[300px] items-center justify-center">
-							<svg class="h-16 w-16 text-neutral-300 dark:text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-							</svg>
+							<Icon icon="lucide:image" class="h-16 w-16 text-neutral-300 dark:text-neutral-600" />
 						</div>
 					{/if}
 				</div>
@@ -130,9 +127,7 @@ function getTypeColor(seasonType: number): string {
 						</span>
 						{#if anime.rating > 0}
 							<span class="inline-flex items-center gap-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20 px-3 py-1 text-xs font-bold text-yellow-600 dark:text-yellow-400">
-								<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-									<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-								</svg>
+								<Icon icon="lucide:star" class="h-3 w-3" />
 								{anime.rating.toFixed(1)}
 							</span>
 						{/if}
@@ -164,15 +159,10 @@ function getTypeColor(seasonType: number): string {
 						class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-(--primary) px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-(--primary)/90 hover:shadow-lg"
 					>
 						{#if anime.source === 'bilibili'}
-							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
+							<Icon icon="lucide:circle-play" class="h-4 w-4" />
 							{i18n(I18nKey.animeWatchNow)}
 						{:else}
-							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-							</svg>
+							<Icon icon="lucide:external-link" class="h-4 w-4" />
 							{i18n(I18nKey.animeViewTmdb)}
 						{/if}
 					</a>

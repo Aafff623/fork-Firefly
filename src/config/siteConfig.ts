@@ -68,7 +68,7 @@ export const siteConfig: SiteConfig = {
 	navbar: {
 		// 导航栏Logo
 		// 支持三种类型：
-		// 1. Astro图标库: { type: "icon", value: "material-symbols:home-pin-outline" }
+		// 1. Astro图标库: { type: "icon", value: "lucide:house" }
 		// 2. 本地图片（public目录，不优化）: { type: "image", value: "/assets/images/logo.webp", alt: "Logo" }
 		// 3. 本地图片（src目录，自动优化但会增加构建时间）: { type: "image", value: "assets/images/logo.webp", alt: "Logo" }
 		// 4. 网络图片: { type: "url", value: "https://example.com/logo.png", alt: "Logo" }

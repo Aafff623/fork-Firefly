@@ -1,0 +1,211 @@
+---
+/**
+ * 文章底部分享条：只做分享，不含打赏 CTA。
+ */
+import { Icon } from "astro-icon/components";
+import SharePoster from "@/components/misc/SharePoster.svelte";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import { siteConfig } from "@/config";
+
+interface Props {
+	title: string;
+	author: string;
+	description: string;
+	pubDate: string;
+	coverImage?: string | null;
+	coverImageSelector?: string | null;
+	pageUrl: string;
+	siteTitle: string;
+	avatar?: string | null;
+	avatarSelector?: string | null;
+	class?: string;
+}
+
+const {
+	title,
+	author,
+	description,
+	pubDate,
+	coverImage = null,
+	coverImageSelector = null,
+	pageUrl,
+	siteTitle,
+	avatar = null,
+	avatarSelector = null,
+	class: className,
+} = Astro.props;
+
+const enablePoster = siteConfig.post.sharePoster !== false;
+---
+
+{
+  enablePoster && (
+    <div class:list={["share-bar onload-animation", className]}>
+      <div class="share-bar__inner">
+        <div class="share-bar__copy">
+          <span class="share-bar__kicker">SHARE</span>
+          <h3 class="share-bar__title">{i18n(I18nKey.shareOnSocial)}</h3>
+          <p class="share-bar__desc">{i18n(I18nKey.shareOnSocialDescription)}</p>
+        </div>
+        <div class="share-bar__actions">
+          <button
+            type="button"
+            class="share-bar__copy-btn"
+            data-share-copy
+            data-share-url={pageUrl}
+            data-copied-label="✓"
+            title={i18n(I18nKey.copyLink)}
+          >
+            <Icon is:inline name="lucide:link" class="text-lg" aria-hidden="true" />
+            <span data-share-copy-label>{i18n(I18nKey.copyLink)}</span>
+          </button>
+          <SharePoster
+            client:load
+            title={title}
+            author={author}
+            description={description}
+            pubDate={pubDate}
+            coverImage={coverImage}
+            coverImageSelector={coverImageSelector}
+            url={pageUrl}
+            siteTitle={siteTitle}
+            avatar={avatar}
+            avatarSelector={avatarSelector}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<style is:global>
+  .share-bar {
+    margin-bottom: 1.5rem;
+  }
+
+  .share-bar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.25rem;
+    padding: 1rem 1.15rem;
+    border-radius: 0.75rem;
+    border: 1px solid oklch(88% 0.012 var(--hue));
+    background: oklch(99% 0.004 var(--hue));
+    box-shadow: 0 0 0 1px oklch(0.3 0.01 260 / 0.04);
+  }
+
+  html.dark .share-bar__inner {
+    border-color: oklch(32% 0.02 var(--hue));
+    background: oklch(18% 0.022 var(--hue));
+  }
+
+  .wallpaper-transparent .share-bar__inner {
+    background: oklch(99% 0.004 var(--hue)) !important;
+    backdrop-filter: none !important;
+  }
+
+  html.dark .wallpaper-transparent .share-bar__inner {
+    background: oklch(18% 0.022 var(--hue)) !important;
+  }
+
+  .share-bar__kicker {
+    display: block;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: oklch(48% 0.02 var(--hue));
+    margin-bottom: 0.2rem;
+  }
+
+  .share-bar__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--deep-text);
+    line-height: 1.3;
+  }
+
+  .share-bar__desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.84rem;
+    color: var(--content-meta);
+    max-width: 36ch;
+  }
+
+  .share-bar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .share-bar__copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 0.55rem;
+    border: 1px solid color-mix(in oklch, var(--primary) 35%, oklch(88% 0.012 var(--hue)));
+    background: color-mix(in oklch, var(--primary) 8%, transparent);
+    color: var(--primary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .share-bar__copy-btn:hover {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    border-color: color-mix(in oklch, var(--primary) 50%, transparent);
+  }
+
+  .share-bar__copy-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .share-bar__copy-btn.is-copied {
+    color: oklch(42% 0.1 145);
+    border-color: oklch(70% 0.08 145);
+    background: oklch(95% 0.03 145);
+  }
+</style>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    function bindCopy() {
+      document.querySelectorAll("[data-share-copy]").forEach(function (btn) {
+        if (btn.dataset.bound === "1") return;
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", async function () {
+          var url = btn.getAttribute("data-share-url") || location.href;
+          var label = btn.querySelector("[data-share-copy-label]");
+          var copied = btn.getAttribute("data-copied-label") || "已复制";
+          var original = label ? label.textContent : "";
+          try {
+            await navigator.clipboard.writeText(url);
+            btn.classList.add("is-copied");
+            if (label) label.textContent = copied;
+            setTimeout(function () {
+              btn.classList.remove("is-copied");
+              if (label) label.textContent = original;
+            }, 1600);
+          } catch (e) {
+            window.prompt("复制链接：", url);
+          }
+        });
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bindCopy);
+    } else {
+      bindCopy();
+    }
+    document.addEventListener("swup:contentReplaced", bindCopy);
+  })();
+</script>

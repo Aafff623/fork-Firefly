@@ -97,7 +97,7 @@ const visibleTags =
         <div class="meta-icon">
           <Icon
             is:inline
-            name="material-symbols:calendar-today-outline-rounded"
+            name="lucide:calendar-days"
             class="text-xl"
           />
         </div>
@@ -117,7 +117,7 @@ const visibleTags =
           <div class="meta-icon">
             <Icon
               is:inline
-              name="material-symbols:edit-calendar-outline-rounded"
+              name="lucide:calendar-days"
               class="text-xl"
             />
           </div>
@@ -132,7 +132,7 @@ const visibleTags =
     showCategory && (
       <div class="flex items-center">
         <div class="meta-icon">
-          <Icon is:inline name="material-symbols:book-2-outline-rounded" class="text-xl" />
+          <Icon is:inline name="lucide:book-open" class="text-xl" />
         </div>
         <div class="flex flex-row flex-nowrap items-center">
           <a
@@ -157,7 +157,7 @@ const visibleTags =
         ]}
       >
         <div class="meta-icon">
-          <Icon is:inline name="material-symbols:tag-rounded" class="text-xl" />
+          <Icon is:inline name="lucide:tag" class="text-xl" />
         </div>
         <div class="flex flex-row flex-nowrap items-center">
           {visibleTags &&
@@ -201,7 +201,7 @@ const visibleTags =
           <div class="meta-icon">
             <Icon
               is:inline
-              name="material-symbols:visibility-outline-rounded"
+              name="lucide:eye"
               class="text-xl"
             />
           </div>
@@ -224,7 +224,7 @@ const visibleTags =
           <div class="meta-icon">
             <Icon
               is:inline
-              name="material-symbols:visibility-outline-rounded"
+              name="lucide:eye"
               class="text-xl"
             />
           </div>
@@ -250,7 +250,7 @@ const visibleTags =
           <div class="meta-icon">
             <Icon
               is:inline
-              name="material-symbols:visibility-outline-rounded"
+              name="lucide:eye"
               class="text-xl"
             />
           </div>
@@ -271,7 +271,7 @@ const visibleTags =
     showWords && typeof words === "number" && (
       <div class="flex items-center">
         <div class="meta-icon">
-          <Icon is:inline name="material-symbols:notes-rounded" class="text-xl" />
+          <Icon is:inline name="lucide:file-text" class="text-xl" />
         </div>
         <span class="text-50 text-sm font-medium">
           {words} {i18n(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}
@@ -284,7 +284,7 @@ const visibleTags =
     showReadingTime && typeof minutes === "number" && (
       <div class="flex items-center">
         <div class="meta-icon">
-          <Icon is:inline name="material-symbols:schedule-outline-rounded" class="text-xl" />
+          <Icon is:inline name="lucide:clock" class="text-xl" />
         </div>
         <span class="text-50 text-sm font-medium">
           {minutes} {i18n(minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
@@ -297,7 +297,7 @@ const visibleTags =
     password && (
       <div class="flex items-center">
         <div class="meta-icon">
-          <Icon is:inline name="material-symbols:lock-outline" class="text-xl" />
+          <Icon is:inline name="lucide:lock" class="text-xl" />
         </div>
         <span class="text-50 text-sm font-medium">
           {i18n(I18nKey.postEncrypted)}
