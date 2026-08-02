@@ -52,6 +52,7 @@ Firefly 校验：正文残留 `![[…]]` → **FAIL**（见 `validate_post.py`�
 | 无 YAML | `title` = 文件名去 `.md`；`published` = 今天或文件 mtime 日；`draft: false`（默认发布） |
 | 有 Obsidian YAML | 映射已知键；未知键丢弃（可当线索） |
 | 文内重复标题 | 不写 H1 |
+| **已映射帖改名** | `title` 跟新文件名；`obsidianNote` 写新路径；**默认不动 slug**；同步「新笔记」动态里的锚文本 |
 
 ## 列表与空白
 

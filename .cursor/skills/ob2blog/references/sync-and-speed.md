@@ -9,7 +9,16 @@
 | **manifest** | `.ob2blog/manifest.json`：笔记路径 ↔ `slug` ↔ 资源映射 ↔ `noteSha256` |
 
 允许差异（不算漂移）：`description` / `draft` / `pinned` / `comment` / 导语句 / GitHub 卡片 / ASCII 资源改名。  
-算漂移：章节增删、段落改写、配图增删、列表结构明显变化。
+算漂移：章节增删、段落改写、配图增删、列表结构明显变化、**笔记改名后 manifest 仍指旧路径**、**博客 `title` 与 vault 文件名（或声明标题）不一致**。
+
+### 笔记改名 / 标题变更
+
+| 现象 | 动作 |
+|------|------|
+| 只改 vault 文件名 | `prep_convert.py --note <新路径> --slug <原 slug> --apply`；更新 `title` + 动态链接文案 |
+| 用户说「标题以本地为准」 | 同上；勿保留旧营销标题 |
+| 用户要改 URL | 新 slug + 迁移目录；旧 `/posts/<old>/` 是否留跳转先问 |
+| `sync_check` → `obsidian note missing` | 先核对 vault 是否改名，再修映射；勿当「笔记删了」直接删帖 |
 
 ## 时刻检查（怎么「一直对着」）
 

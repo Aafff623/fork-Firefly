@@ -40,15 +40,25 @@ compatibility: Requires the Firefly project root (package.json with pnpm new-pos
 4. 导入未声明时默认 `draft: false`（直接发布）；仅当用户明确要求草稿、或安全规则触发（如口令帖）才设 `draft: true`。勿改站点壁纸嵌视频。  
 5. **必须解析 Obsidian 附件**；`![[…]]` 不得留在正文。  
 6. **一致性：** 已映射文章每次动手前跑 `sync_check.py`；漂移先处理再改。  
-7. **加速：** 新文/重转优先 `prep_convert.py`，Agent 只审 `report.json` 警告项，勿从零手搓拷图。  
-8. 跑 `validate_post.py`；未获准不 commit/push。
+7. **本地改名必跟：** vault 改文件名/标题 → 同步博客 `title` + manifest 路径 + 动态锚文本（见下节）；默认保留 slug。  
+8. **加速：** 新文/重转优先 `prep_convert.py`，Agent 只审 `report.json` 警告项，勿从零手搓拷图。  
+9. 跑 `validate_post.py`；未获准不 commit/push。
 
 ## 真源与一致性（摘要）
 
-- **Obsidian = 正文真源**；博客可多站点装饰（导语、`::github`、FM）。  
+- **Obsidian = 真源**（文件名/标题 + 正文 + 附件）；博客可多站点装饰（导语、`description`、`::github`、部分 FM 开关）。  
 - 映射表：`.ob2blog/manifest.json`（`obsidianNote` ↔ `slug` ↔ `assetMap` ↔ `noteSha256`）。  
 - 检查：`python .cursor/skills/ob2blog/scripts/sync_check.py`（可加 `--slug` / `--watch 5` / `--json`）。  
 - **默认不回写 Obsidian**；博客改正文导致冲突时停下来问用户。  
+
+### 本地改名 / 改标题（必跟）
+
+vault 笔记**改文件名**或用户声明标题以本地为准时，博客必须跟着维护，不能只留旧卡面：
+
+1. `sync_check` 若报 `obsidian note missing` → 用**新绝对路径**重跑 `prep_convert.py --apply`（同一 `slug` 除非用户要改 URL）。  
+2. 博客 `title` = 笔记文件名去 `.md`（或用户指定 `--title`）；同步更新指向该帖的「新笔记」动态文案。  
+3. **默认保留 slug**（避免外链断裂）；仅当用户明确要求改 URL 才换 slug 并处理旧路径。  
+4. 附件 wiki 名可仍是旧资源名——以 vault `Assets` 解析为准，不必因笔记改名强改附件文件名。  
 
 详表与退出码 → [sync-and-speed.md](references/sync-and-speed.md)。
 

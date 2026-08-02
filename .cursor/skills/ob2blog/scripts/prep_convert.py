@@ -69,6 +69,13 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    # Windows 控制台常为 GBK；标题/路径含 emoji 时避免 print 炸
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
     args = parse_args()
     note = Path(args.note).expanduser().resolve()
     if not note.is_file():
