@@ -766,6 +766,10 @@ const siteLang = lang.replace("_", "-");
     // MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
   } from "@/constants/constants";
   import { backgroundWallpaper, expressiveCodeConfig, siteConfig } from "@/config";
+  import {
+    isCurtainFocusPath,
+    syncCurtainFocusFromUrl,
+  } from "@/utils/curtain-focus";
 
   /* Preload fonts */
   // (async function() {
@@ -1081,9 +1085,14 @@ function disableAnimation() {
       const bodyElement = document.querySelector("body");
       const isHomePage = pathsEqual(visit.to.url, url("/"));
 
+      // 动态/相册：提前开合幕布，让两侧与中间动画跟 Swup 切页叠在一起
+      const wasCurtain = document.documentElement.classList.contains("curtain-focus");
+      const curtainChanged = syncCurtainFocusFromUrl(visit.to.url);
+
       // 禁用 #main-grid 的过渡动画，防止 lg:is-home 切换时 transform 产生 700ms 动画
+      // 幕布开合时保留过渡，否则两侧会硬切
       const mainGrid = document.getElementById("main-grid");
-      if (mainGrid) {
+      if (mainGrid && !(curtainChanged || wasCurtain)) {
         mainGrid.style.setProperty("transition", "none", "important");
       }
 
@@ -1246,6 +1255,9 @@ function disableAnimation() {
       if (mainGrid) {
         mainGrid.style.removeProperty("transition");
       }
+
+      // 按落地 URL 再同步一次幕布状态（防缓存/回退偏差）
+      syncCurtainFocusFromUrl(window.location.pathname);
 
       // 更新网格列数和侧边栏组件可见性
       updateMainGridCols();
@@ -1686,6 +1698,22 @@ function disableAnimation() {
   // Initialize wallpaper mode
   import { initWallpaperMode, initThemeListener } from "@/utils/setting-utils";
   import { initIconLoader } from "@/utils/icon-loader";
+
+  function initCurtainFocusOnLoad() {
+    // 首屏若落在动态/相册：先保持合拢，下一帧再推开，才能看到幕布动画
+    if (!isCurtainFocusPath(window.location.pathname)) {
+      syncCurtainFocusFromUrl(window.location.pathname);
+      return;
+    }
+    document.documentElement.classList.remove("curtain-focus");
+    document.body.classList.remove("curtain-focus");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        syncCurtainFocusFromUrl(window.location.pathname);
+      });
+    });
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       updateMainGridCols();
@@ -1693,6 +1721,7 @@ function disableAnimation() {
       initWallpaperMode();
       initThemeListener();
       initIconLoader();
+      initCurtainFocusOnLoad();
     });
   } else {
     updateMainGridCols();
@@ -1700,6 +1729,7 @@ function disableAnimation() {
     initWallpaperMode();
     initThemeListener();
     initIconLoader();
+    initCurtainFocusOnLoad();
   }
 
   // LQIP fade-in：图片加载完成后淡出占位渐变

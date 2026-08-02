@@ -1,0 +1,136 @@
+/* ==========================================================================
+   Curtain Focus — 动态 / 相册：两侧弹开，中间幕布推近
+   ========================================================================== */
+
+#left-sidebar,
+#right-sidebar,
+#mobile-bottom-sidebar {
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+#main-grid {
+  transition: grid-template-columns 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#content-wrapper {
+  transform-origin: 50% 8%;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 左侧栏：向左弹开 */
+html.curtain-focus #left-sidebar {
+  opacity: 0;
+  transform: translate3d(calc(-100% - 1.25rem), 0, 0) scale(0.96);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* 右侧栏：向右弹开 */
+html.curtain-focus #right-sidebar {
+  opacity: 0;
+  transform: translate3d(calc(100% + 1.25rem), 0, 0) scale(0.96);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* 移动端底部栏一并收起 */
+html.curtain-focus #mobile-bottom-sidebar {
+  opacity: 0;
+  transform: translate3d(0, 1.25rem, 0) scale(0.98);
+  filter: blur(2px);
+  pointer-events: none;
+  max-height: 0;
+  margin-top: 0 !important;
+  overflow: hidden;
+}
+
+/* 中间内容：像幕布推到眼前并略放大
+   注意：不用 filter:drop-shadow（会迫使子树每帧重绘，拖累作品集手风琴） */
+html.curtain-focus #content-wrapper {
+  transform: scale(1.02);
+}
+
+html.curtain-focus #swup-container {
+  filter: none;
+}
+
+html.curtain-focus .gallery-stage-frame,
+html.curtain-focus .card-base {
+  box-shadow: 0 22px 48px rgb(15 23 42 / 0.12);
+}
+
+:is(.dark) html.curtain-focus .gallery-stage-frame,
+:is(.dark) html.curtain-focus .card-base {
+  box-shadow: 0 22px 48px rgb(0 0 0 / 0.35);
+}
+
+/* 折叠侧栏轨道，把横向空间还给中间列 */
+@media (min-width: 768px) {
+  html.curtain-focus #main-grid[data-sidebar-position="left"] {
+    grid-template-columns: 0fr 1fr !important;
+  }
+
+  html.curtain-focus #main-grid[data-sidebar-position="right"] {
+    grid-template-columns: 1fr 0fr !important;
+  }
+
+  /* both：平板阶段仍是双列 */
+  html.curtain-focus #main-grid[data-sidebar-position="both"][data-tablet-sidebar="left"] {
+    grid-template-columns: 0fr 1fr !important;
+  }
+
+  html.curtain-focus #main-grid[data-sidebar-position="both"][data-tablet-sidebar="right"] {
+    grid-template-columns: 1fr 0fr !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html.curtain-focus #main-grid[data-sidebar-position="both"] {
+    grid-template-columns: 0fr 1fr 0fr !important;
+  }
+
+  html.curtain-focus #main-grid[data-sidebar-position="left"] {
+    grid-template-columns: 0fr 1fr !important;
+  }
+
+  html.curtain-focus #main-grid[data-sidebar-position="right"] {
+    grid-template-columns: 1fr 0fr !important;
+  }
+}
+
+/* 轨道收成 0fr 时裁切侧栏，避免飞出残影占位 */
+html.curtain-focus #left-sidebar,
+html.curtain-focus #right-sidebar {
+  overflow: hidden;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #left-sidebar,
+  #right-sidebar,
+  #mobile-bottom-sidebar,
+  #main-grid,
+  #content-wrapper {
+    transition-duration: 0.01ms !important;
+  }
+
+  html.curtain-focus #left-sidebar,
+  html.curtain-focus #right-sidebar,
+  html.curtain-focus #mobile-bottom-sidebar {
+    transform: none;
+    filter: none;
+  }
+
+  html.curtain-focus #content-wrapper {
+    transform: none;
+    filter: none;
+  }
+}
