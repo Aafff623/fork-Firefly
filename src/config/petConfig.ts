@@ -32,5 +32,6 @@ export const spritePetConfig: SpritePetConfig = {
 		mobileBreakpoint: 768,
 	},
 
-	zIndex: 1000,
+	// 须高于主内容层(z-30)与 sticky 侧栏；与 FloatingControls 同级
+	zIndex: 1100,
 };

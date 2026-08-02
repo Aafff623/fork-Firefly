@@ -21,8 +21,17 @@
 
 .banner-post-title {
     max-width: 72rem;
-    font-size: 2.75rem;
+    /* 与首页 .banner-title 一致：可用 --banner-title-size，并防溢出 */
+    font-size: var(--banner-title-size, 2.75rem);
+    font-size: min(var(--banner-title-size, 2.75rem), 9vw);
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.65);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    cursor: crosshair;
+}
+
+.banner-post-title.repel-text {
+    animation: none;
 }
 
 .banner-page-title {

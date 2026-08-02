@@ -683,9 +683,23 @@ $effect(() => {
 	startPlayback(animationState);
 });
 
+// hidden 切换后根节点会重建，需再次挂到 body
+$effect(() => {
+	mountPetToBody(rootEl);
+});
+
+/** 挂到 body，避免被主栅格 transform / sticky 侧栏合成层盖住 */
+function mountPetToBody(el: HTMLElement | null) {
+	if (!el || typeof document === "undefined") return;
+	if (el.parentElement !== document.body) {
+		document.body.appendChild(el);
+	}
+}
+
 onMount(() => {
 	updateHidden();
 	loadStoredPosition();
+	mountPetToBody(rootEl);
 
 	const media = window.matchMedia(REDUCED_MOTION_QUERY);
 	prefersReducedMotion = media.matches;
@@ -906,6 +920,8 @@ onDestroy(() => {
 <style>
 	.sprite-pet-root {
 		position: fixed;
+		/* 高于主内容 z-30 / sticky 侧栏，低于或对齐浮动控件层 */
+		z-index: 1000;
 		pointer-events: auto;
 		touch-action: none;
 		user-select: none;

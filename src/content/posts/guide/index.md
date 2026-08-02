@@ -2,7 +2,7 @@
 title: Firefly 简单使用指南
 author: threetwoa
 published: 2026-08-01
-pinned: true
+pinned: false
 description: "如何使用 Firefly 博客模板。"
 image: ../images/minimax/v2-guide.jpg
 tags: [Firefly, Markdown]
@@ -35,7 +35,7 @@ draft: false
 | `title`       | 文章标题。                                                                                                                                                                                          |
 | `published`   | 文章发布日期。                                                                                                                                                                                      |
 | `updated`     | 文章更新日期。如果未设置，将默认使用发布日期。                                                                                                                                                      |
-| `pinned`      | 是否将此文章置顶在文章列表顶部。                                                                                                                                                                    |
+| `pinned`      | 设为 `true` 时为**常驻置顶**。未常驻时，站点会把「发布时间 / 更新时间」最新的一篇自动标为**默认置顶**。                                                                                                 |
 | `description` | 文章的简短描述。显示在首页上。                                                                                                                                                                      |
 | `image`       | 文章封面图片路径。<br/>1. 以 `http://` 或 `https://` 开头：使用网络图片<br/>2. 以 `/` 开头：`public` 目录中的图片<br/>3. 不带任何前缀：相对于 markdown 文件的路径 |
 | `tags`        | 文章标签。                                                                                                                                                                                          |

@@ -88,14 +88,17 @@
 	}
 
 	function enhance(el: HTMLElement) {
-		if (el.dataset.repelDone) return;
-		const text = el.textContent || "";
-		if (!text.trim()) return;
+		// 已拆词且仍有字符节点 → 跳过；Swup 换入的新标题需重新增强
+		if (el.dataset.repelDone === "1" && el.querySelector(".repel-char")) return;
+
+		const text = (el.textContent || "").trim();
+		if (!text) return;
+
 		el.dataset.repelDone = "1";
+		el.replaceChildren();
 
 		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		const words = splitWords(text.trim());
-		el.textContent = "";
+		const words = splitWords(text);
 
 		words.forEach((word, i) => {
 			const w = document.createElement("span");
@@ -112,6 +115,8 @@
 		});
 
 		if (reduced) return;
+		if (el.dataset.repelBound === "1") return;
+		el.dataset.repelBound = "1";
 
 		// ---- 指针斥力（use-pointer-repel.ts 移植）----
 		let elements: HTMLElement[] = [];
@@ -199,13 +204,27 @@
 		document.querySelectorAll(".repel-text").forEach((el) => enhance(el as HTMLElement));
 	}
 
+	function scheduleInitRepelText() {
+		requestAnimationFrame(() => {
+			initRepelText();
+			// 横幅 overlay 经 Swup 替换后偶发晚一拍，再扫一次
+			window.setTimeout(initRepelText, 80);
+		});
+	}
+
 	initRepelText();
 
+	document.addEventListener("swup:contentReplaced", scheduleInitRepelText);
+	document.addEventListener("swup:page:view", scheduleInitRepelText);
+
+	function bindSwupRepel() {
+		if (!window.swup?.hooks) return;
+		window.swup.hooks.on("content:replace", scheduleInitRepelText);
+		window.swup.hooks.on("page:view", scheduleInitRepelText);
+	}
 	if (window.swup?.hooks) {
-		window.swup.hooks.on("content:replace", initRepelText);
+		bindSwupRepel();
 	} else {
-		document.addEventListener("swup:enable", () => {
-			window.swup.hooks.on("content:replace", initRepelText);
-		});
+		document.addEventListener("swup:enable", bindSwupRepel);
 	}
 </script>
