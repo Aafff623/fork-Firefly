@@ -16,6 +16,7 @@ export const ko: Translation = {
 	[Key.all]: "전체",
 
 	[Key.tags]: "태그",
+	[Key.tagWall]: "🧱 태그 벽",
 	[Key.categories]: "카테고리",
 	[Key.allCategories]: "모든 카테고리",
 	[Key.allTags]: "모든 태그",
@@ -267,14 +268,29 @@ export const ko: Translation = {
 
 	// Pinned
 	[Key.pinned]: "고정됨",
+	[Key.pinnedAuto]: "자동 고정",
+	[Key.pinnedSticky]: "상시 고정",
+	[Key.pinAdminMenu]: "고정 관리",
+	[Key.pinAdminSetSticky]: "상시 고정",
+	[Key.pinAdminUnsetSticky]: "상시 해제",
+	[Key.pinAdminConfirmSet]: "상시 고정하기",
+	[Key.pinAdminConfirmUnset]: "상시 고정 해제",
+	[Key.pinAdminConfirmSetDesc]: "확인하면 목록 상단에 오래 유지되며 자동 고정으로 대체되지 않습니다.",
+	[Key.pinAdminConfirmUnsetDesc]: "해제하면 일반 정렬로 돌아가고, 가장 최근 글이 다시 자동 고정됩니다.",
+	[Key.pinAdminConfirmOk]: "확인",
+	[Key.pinAdminConfirmCancel]: "나중에",
+	[Key.pinAdminDevHint]: "고정됨, 새로고침 중…",
+	[Key.pinAdminProdHint]: "온라인 원클릭 저장은 아직 없습니다. 로컬에서 pinned를 수정한 뒤 배포하세요",
 
 	// Related Posts
 	[Key.relatedPosts]: "관련 게시글",
 	[Key.randomPosts]: "무작위 게시글",
+	[Key.recommendedPosts]: "🪶 여운",
 	[Key.smartRecommend]: "스마트",
 	[Key.randomRecommend]: "무작위",
 	[Key.noRelatedPosts]: "관련 게시글이 없습니다",
 	[Key.noRandomPosts]: "무작위 게시글이 없습니다",
+	[Key.noRecommendedPosts]: "추천 글이 없습니다",
 
 	// Encrypted
 	[Key.postEncrypted]: "이 게시글은 암호화되어 있습니다",

@@ -16,6 +16,7 @@ export const ja: Translation = {
 	[Key.all]: "すべて",
 
 	[Key.tags]: "タグ",
+	[Key.tagWall]: "🧱 タグウォール",
 	[Key.categories]: "カテゴリ",
 	[Key.allCategories]: "すべてのカテゴリ",
 	[Key.allTags]: "すべてのタグ",
@@ -267,14 +268,29 @@ export const ja: Translation = {
 
 	// ピン留め
 	[Key.pinned]: "ピン留め",
+	[Key.pinnedAuto]: "自動ピン",
+	[Key.pinnedSticky]: "常時ピン",
+	[Key.pinAdminMenu]: "ピン管理",
+	[Key.pinAdminSetSticky]: "常時ピンにする",
+	[Key.pinAdminUnsetSticky]: "常時ピンを解除",
+	[Key.pinAdminConfirmSet]: "常時ピンにする",
+	[Key.pinAdminConfirmUnset]: "常時ピンを解除",
+	[Key.pinAdminConfirmSetDesc]: "確定後、この記事はリスト上部に固定され、自動ピンに置き換わりません。",
+	[Key.pinAdminConfirmUnsetDesc]: "解除後は通常の並び順に戻り、最新更新の記事が自動ピンになります。",
+	[Key.pinAdminConfirmOk]: "確定",
+	[Key.pinAdminConfirmCancel]: "やめる",
+	[Key.pinAdminDevHint]: "固定しました。更新中…",
+	[Key.pinAdminProdHint]: "本番の一括書き込みは未対応です。ローカルで pinned を編集してデプロイしてください",
 
 	// 関連記事
 	[Key.relatedPosts]: "関連記事",
 	[Key.randomPosts]: "ランダム記事",
+	[Key.recommendedPosts]: "🪶 余韻",
 	[Key.smartRecommend]: "スマート",
 	[Key.randomRecommend]: "ランダム",
 	[Key.noRelatedPosts]: "関連記事がありません",
 	[Key.noRandomPosts]: "ランダム記事がありません",
+	[Key.noRecommendedPosts]: "おすすめ記事がありません",
 
 	// 暗号化
 	[Key.postEncrypted]: "この記事は暗号化されています",

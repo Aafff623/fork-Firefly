@@ -16,6 +16,7 @@ export const ru: Translation = {
 	[Key.all]: "Все",
 
 	[Key.tags]: "Теги",
+	[Key.tagWall]: "🧱 Стена тегов",
 	[Key.categories]: "Категории",
 	[Key.allCategories]: "Все категории",
 	[Key.allTags]: "Все теги",
@@ -270,14 +271,29 @@ export const ru: Translation = {
 
 	// Закреплено
 	[Key.pinned]: "Закреплено",
+	[Key.pinnedAuto]: "Авто-пин",
+	[Key.pinnedSticky]: "Закреплено",
+	[Key.pinAdminMenu]: "Управление пином",
+	[Key.pinAdminSetSticky]: "Закрепить",
+	[Key.pinAdminUnsetSticky]: "Открепить",
+	[Key.pinAdminConfirmSet]: "Постоянно закрепить",
+	[Key.pinAdminConfirmUnset]: "Снять закрепление",
+	[Key.pinAdminConfirmSetDesc]: "Запись останется сверху и не будет заменена авто-пином.",
+	[Key.pinAdminConfirmUnsetDesc]: "Вернётся в обычный порядок; снова закрепится самый свежий пост.",
+	[Key.pinAdminConfirmOk]: "Подтвердить",
+	[Key.pinAdminConfirmCancel]: "Не сейчас",
+	[Key.pinAdminDevHint]: "Закреплено, обновление…",
+	[Key.pinAdminProdHint]: "Онлайн-запись пока недоступна; измените pinned локально и задеплойте",
 
 	// Похожие статьи
 	[Key.relatedPosts]: "Похожие статьи",
 	[Key.randomPosts]: "Случайные статьи",
+	[Key.recommendedPosts]: "🪶 Эхо",
 	[Key.smartRecommend]: "Умный",
 	[Key.randomRecommend]: "Случайный",
 	[Key.noRelatedPosts]: "Нет похожих статей",
 	[Key.noRandomPosts]: "Нет случайных статей",
+	[Key.noRecommendedPosts]: "Нет рекомендаций",
 
 	// Зашифровано
 	[Key.postEncrypted]: "Эта статья зашифрована",

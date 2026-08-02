@@ -16,6 +16,7 @@ export const zh_CN: Translation = {
 	[Key.all]: "全部",
 
 	[Key.tags]: "标签",
+	[Key.tagWall]: "🧱 标签墙",
 	[Key.categories]: "分类",
 	[Key.allCategories]: "全部分类",
 	[Key.allTags]: "全部标签",
@@ -260,14 +261,29 @@ export const zh_CN: Translation = {
 
 	// 置顶
 	[Key.pinned]: "置顶",
+	[Key.pinnedAuto]: "默认置顶",
+	[Key.pinnedSticky]: "常驻置顶",
+	[Key.pinAdminMenu]: "置顶管理",
+	[Key.pinAdminSetSticky]: "设为常驻",
+	[Key.pinAdminUnsetSticky]: "取消常驻",
+	[Key.pinAdminConfirmSet]: "设为常驻置顶",
+	[Key.pinAdminConfirmUnset]: "取消常驻置顶",
+	[Key.pinAdminConfirmSetDesc]: "确认后，这篇文章会长期留在列表顶部，不再被默认置顶替换。",
+	[Key.pinAdminConfirmUnsetDesc]: "取消后，它会回到普通排序；最新更新的文章将重新成为默认置顶。",
+	[Key.pinAdminConfirmOk]: "确认",
+	[Key.pinAdminConfirmCancel]: "再想想",
+	[Key.pinAdminDevHint]: "已设为常驻，正在刷新…",
+	[Key.pinAdminProdHint]: "线上暂未开通一键写库，请本地改 pinned 后部署",
 
 	// 相关文章推荐
 	[Key.relatedPosts]: "相关文章",
 	[Key.randomPosts]: "随机文章",
-	[Key.smartRecommend]: "智能推荐",
+	[Key.recommendedPosts]: "🪶 旁支",
+	[Key.smartRecommend]: "相关推荐",
 	[Key.randomRecommend]: "随机推荐",
 	[Key.noRelatedPosts]: "暂无相关文章",
 	[Key.noRandomPosts]: "暂无随机文章",
+	[Key.noRecommendedPosts]: "暂无推荐文章",
 
 	// 加密
 	[Key.postEncrypted]: "本文已加密",
@@ -326,8 +342,8 @@ export const zh_CN: Translation = {
 	[Key.sponsorButtonText]:
 		"如果这篇文章对你有帮助，欢迎分享给更多人或打赏支持！",
 
-	[Key.shareOnSocial]: "文章分享",
-	[Key.shareOnSocialDescription]: "如果这篇文章对你有帮助，欢迎分享给更多人！",
+	[Key.shareOnSocial]: "分享这篇文章",
+	[Key.shareOnSocialDescription]: "复制链接或生成海报，发给感兴趣的人。",
 
 	// 站点统计
 	[Key.siteStats]: "站点统计",

@@ -16,6 +16,7 @@ export const en: Translation = {
 	[Key.all]: "All",
 
 	[Key.tags]: "Tags",
+	[Key.tagWall]: "🧱 Tag Wall",
 	[Key.categories]: "Categories",
 	[Key.allCategories]: "All Categories",
 	[Key.allTags]: "All Tags",
@@ -268,14 +269,29 @@ export const en: Translation = {
 
 	// Pinned
 	[Key.pinned]: "Pinned",
+	[Key.pinnedAuto]: "Auto pinned",
+	[Key.pinnedSticky]: "Sticky",
+	[Key.pinAdminMenu]: "Pin controls",
+	[Key.pinAdminSetSticky]: "Make sticky",
+	[Key.pinAdminUnsetSticky]: "Unset sticky",
+	[Key.pinAdminConfirmSet]: "Make this post sticky",
+	[Key.pinAdminConfirmUnset]: "Remove sticky pin",
+	[Key.pinAdminConfirmSetDesc]: "It will stay at the top of the list and won’t be replaced by auto-pin.",
+	[Key.pinAdminConfirmUnsetDesc]: "It returns to normal order; the newest updated post becomes auto-pinned again.",
+	[Key.pinAdminConfirmOk]: "Confirm",
+	[Key.pinAdminConfirmCancel]: "Not now",
+	[Key.pinAdminDevHint]: "Sticky saved, refreshing…",
+	[Key.pinAdminProdHint]: "Online one-click pin is not enabled yet; edit pinned locally then deploy",
 
 	// Related Posts
 	[Key.relatedPosts]: "Related Posts",
 	[Key.randomPosts]: "Random Posts",
-	[Key.smartRecommend]: "Smart",
+	[Key.recommendedPosts]: "🪶 Echoes",
+	[Key.smartRecommend]: "Related",
 	[Key.randomRecommend]: "Random",
 	[Key.noRelatedPosts]: "No related posts",
 	[Key.noRandomPosts]: "No random posts",
+	[Key.noRecommendedPosts]: "No recommendations",
 
 	// Encrypted
 	[Key.postEncrypted]: "This post is encrypted",

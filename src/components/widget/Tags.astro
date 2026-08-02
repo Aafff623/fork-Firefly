@@ -1,6 +1,8 @@
 ---
-
-import ButtonTag from "@/components/common/ButtonTag.astro";
+/**
+ * 标签墙：mosaic 嵌砖。
+ * 文章页聚焦当前文标签；侧栏常为静态，靠 #swup-container[data-current-post-tags] + 脚本同步。
+ */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -8,35 +10,292 @@ import type { WidgetComponentConfig } from "@/types/config";
 import { getTagList } from "@/utils/content-utils";
 import { getTagUrl, url } from "@/utils/url-utils";
 
-const tags = await getTagList();
+const allTags = await getTagList();
 
-const COLLAPSED_HEIGHT = "7.5rem";
+const COLLAPSED_HEIGHT = "9.25rem";
 
 interface Props {
 	class?: string;
 	style?: string;
 	widgetConfig?: WidgetComponentConfig;
+	/** 传入则进入「本文标签」聚焦（即使为空数组） */
+	focusTags?: string[];
 }
-const { class: className, style, widgetConfig } = Astro.props;
+const { class: className, style, widgetConfig, focusTags } = Astro.props;
 
 const collapseThreshold = widgetConfig?.specificConfig?.collapseThreshold;
 const showTitle = widgetConfig?.showTitle !== false;
-const isCollapsed = collapseThreshold ? tags.length > collapseThreshold : false;
+
+const isFocusMode = Array.isArray(focusTags);
+const focusSet = new Set(
+	(focusTags ?? []).map((t) => t.trim()).filter(Boolean),
+);
+
+const maxCount = Math.max(1, ...allTags.map((t) => t.count));
+
+function brickWeight(count: number): 1 | 2 | 3 {
+	const ratio = count / maxCount;
+	if (ratio >= 0.55) return 3;
+	if (ratio >= 0.28) return 2;
+	return 1;
+}
+
+const visibleCount = isFocusMode
+	? allTags.filter((t) => focusSet.has(t.name.trim())).length
+	: allTags.length;
+
+const isCollapsed =
+	!isFocusMode && collapseThreshold ? allTags.length > collapseThreshold : false;
+
+const emptyLabel = i18n(I18nKey.noTags);
+const titleAll = i18n(I18nKey.tagWall);
 ---
-<WidgetLayout name={i18n(I18nKey.tags)} showTitle={showTitle} id="tags" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} useExpandedButtonSpacing={true} moreUrl={url("/tags/")} class={className} style={style}>
-    <div class="tags-container">
-        {tags.map(t => (
-            <ButtonTag href={getTagUrl(t.name)} label={`View all posts with the ${t.name.trim()} tag`}>
-                {t.name.trim()}
-            </ButtonTag>
-        ))}
-    </div>
+<WidgetLayout
+  name={titleAll}
+  showTitle={showTitle}
+  id="tags"
+  isCollapsed={isCollapsed}
+  collapsedHeight={COLLAPSED_HEIGHT}
+  useExpandedButtonSpacing={true}
+  moreUrl={url("/tags/")}
+  class:list={["tags-widget", { "tags-widget--focus": isFocusMode }, className]}
+  style={style}
+>
+  <div
+    class="tag-wall"
+    role="list"
+    aria-label={titleAll}
+    data-collapse-threshold={collapseThreshold ?? ""}
+    data-tag-wall-focus={isFocusMode ? "1" : "0"}
+  >
+    <p
+      class:list={["tag-wall__empty", { "is-visible": isFocusMode && visibleCount === 0 }]}
+      data-tag-wall-empty
+      hidden={!(isFocusMode && visibleCount === 0)}
+    >
+      {emptyLabel}
+    </p>
+    {
+      allTags.map((t) => {
+        const name = t.name.trim();
+        const weight = brickWeight(t.count);
+        const filteredOut = isFocusMode && !focusSet.has(name);
+        return (
+          <a
+            role="listitem"
+            href={getTagUrl(name)}
+            class:list={[
+              "tag-wall__brick",
+              `tag-wall__brick--w${weight}`,
+              { "is-filtered-out": filteredOut },
+            ]}
+            data-tag={name}
+            aria-label={`${name}，${t.count} 篇`}
+            title={`${name} · ${t.count}`}
+            aria-hidden={filteredOut ? "true" : undefined}
+          >
+            <span class="tag-wall__name">#{name}</span>
+            <span class="tag-wall__count">{t.count}</span>
+          </a>
+        );
+      })
+    }
+  </div>
 </WidgetLayout>
 
-<style>
-  .tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+{/* 布局兜底（材质/配色以 tags.css 为准） */}
+<style is:global>
+  widget-layout.tags-widget .tag-wall,
+  .tags-widget .tag-wall {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(5.1rem, 1fr));
+    grid-auto-flow: dense;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 0.65rem;
+    background: oklch(0.78 0.02 var(--hue));
+    overflow: hidden;
+  }
+
+  html.dark widget-layout.tags-widget .tag-wall,
+  html.dark .tags-widget .tag-wall {
+    background: oklch(0.18 0.025 var(--hue));
+  }
+
+  widget-layout.tags-widget .tag-wall__brick,
+  .tags-widget .tag-wall__brick {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.18rem;
+    min-width: 0;
+    min-height: 2.65rem;
+    padding: 0.48rem 0.55rem;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: oklch(0.965 0.012 85);
+    color: oklch(0.28 0.03 var(--hue));
+    text-decoration: none !important;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    line-height: 1.25;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.55),
+      inset 0 -1px 0 oklch(0.55 0.02 var(--hue) / 0.12);
+  }
+
+  html.dark widget-layout.tags-widget .tag-wall__brick,
+  html.dark .tags-widget .tag-wall__brick {
+    background: oklch(0.26 0.02 70);
+    color: oklch(0.9 0.015 var(--hue));
+  }
+
+  /* 覆盖 display:flex !important，否则 [hidden] 无效 */
+  widget-layout.tags-widget .tag-wall__brick.is-filtered-out,
+  .tags-widget .tag-wall__brick.is-filtered-out {
+    display: none !important;
+  }
+
+  widget-layout.tags-widget .tag-wall__brick--w2,
+  widget-layout.tags-widget .tag-wall__brick--w3,
+  .tags-widget .tag-wall__brick--w2,
+  .tags-widget .tag-wall__brick--w3 {
+    grid-column: span 2;
+  }
+
+  widget-layout.tags-widget .tag-wall__name,
+  .tags-widget .tag-wall__name {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 650;
+  }
+
+  widget-layout.tags-widget .tag-wall__count,
+  .tags-widget .tag-wall__count {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: oklch(0.48 0.025 var(--hue));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tag-wall__empty {
+    display: none;
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.78rem;
+    color: oklch(0.48 0.025 var(--hue));
+    text-align: center;
+  }
+
+  .tag-wall__empty.is-visible {
+    display: block;
+  }
+
+  widget-layout.tags-widget.tags-widget--focus .expand-btn,
+  .tags-widget.tags-widget--focus .expand-btn {
+    display: none !important;
   }
 </style>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    function isPostPath(pathname) {
+      return /\/posts\//.test(pathname || "");
+    }
+
+    function readFocusTags() {
+      if (!isPostPath(location.pathname)) return null;
+      const host = document.getElementById("swup-container");
+      const raw = host?.getAttribute("data-current-post-tags");
+      if (raw == null || raw === "") return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed)
+          ? parsed.map(function (t) { return String(t).trim(); }).filter(Boolean)
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function applyTagWallFocus() {
+      const widgets = document.querySelectorAll("widget-layout.tags-widget");
+      if (!widgets.length) return;
+
+      const focusTags = readFocusTags();
+      const focusMode = focusTags !== null;
+      const focusSet = focusMode ? new Set(focusTags) : null;
+
+      widgets.forEach(function (widget) {
+        const wall = widget.querySelector(".tag-wall");
+        if (!wall) return;
+
+        widget.classList.toggle("tags-widget--focus", focusMode);
+        wall.setAttribute("data-tag-wall-focus", focusMode ? "1" : "0");
+
+        let visible = 0;
+        wall.querySelectorAll(".tag-wall__brick[data-tag]").forEach(function (brick) {
+          const name = brick.getAttribute("data-tag") || "";
+          const out = focusMode && focusSet && !focusSet.has(name);
+          brick.classList.toggle("is-filtered-out", !!out);
+          brick.setAttribute("aria-hidden", out ? "true" : "false");
+          if (!out) visible += 1;
+        });
+
+        const empty = wall.querySelector("[data-tag-wall-empty]");
+        if (empty) {
+          const showEmpty = focusMode && visible === 0;
+          empty.classList.toggle("is-visible", showEmpty);
+          empty.hidden = !showEmpty;
+        }
+
+        const wrapper = widget.querySelector("#tags");
+        const expandBtn = widget.querySelector(".expand-btn");
+        if (focusMode) {
+          if (wrapper) wrapper.classList.remove("collapsed");
+          if (expandBtn) expandBtn.style.display = "none";
+        } else {
+          if (expandBtn) expandBtn.style.display = "";
+          const threshold = Number(wall.getAttribute("data-collapse-threshold") || 0);
+          const total = wall.querySelectorAll(".tag-wall__brick[data-tag]").length;
+          if (threshold > 0 && total > threshold && widget.dataset.isCollapsed === "true") {
+            if (widget.dataset.expanded !== "true" && wrapper) {
+              wrapper.classList.add("collapsed");
+            }
+          }
+        }
+      });
+    }
+
+    function boot() {
+      applyTagWallFocus();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+
+    document.addEventListener("swup:contentReplaced", applyTagWallFocus);
+    document.addEventListener("swup:page:view", applyTagWallFocus);
+
+    function bindSwup() {
+      if (!window.swup || !window.swup.hooks) return;
+      window.swup.hooks.on("content:replace", function () {
+        setTimeout(applyTagWallFocus, 0);
+      });
+      window.swup.hooks.on("page:view", applyTagWallFocus);
+    }
+    if (window.swup && window.swup.hooks) bindSwup();
+    else document.addEventListener("swup:enable", bindSwup);
+  })();
+</script>

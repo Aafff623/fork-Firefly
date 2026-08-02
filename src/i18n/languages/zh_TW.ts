@@ -16,6 +16,7 @@ export const zh_TW: Translation = {
 	[Key.all]: "全部",
 
 	[Key.tags]: "標籤",
+	[Key.tagWall]: "🧱 標籤牆",
 	[Key.categories]: "分類",
 	[Key.allCategories]: "全部分類",
 	[Key.allTags]: "全部標籤",
@@ -262,13 +263,28 @@ export const zh_TW: Translation = {
 
 	// 置頂
 	[Key.pinned]: "置頂",
+	[Key.pinnedAuto]: "預設置頂",
+	[Key.pinnedSticky]: "常駐置頂",
+	[Key.pinAdminMenu]: "置頂管理",
+	[Key.pinAdminSetSticky]: "設為常駐",
+	[Key.pinAdminUnsetSticky]: "取消常駐",
+	[Key.pinAdminConfirmSet]: "設為常駐置頂",
+	[Key.pinAdminConfirmUnset]: "取消常駐置頂",
+	[Key.pinAdminConfirmSetDesc]: "確認後，這篇文章會長期留在列表頂部，不再被預設置頂替換。",
+	[Key.pinAdminConfirmUnsetDesc]: "取消後，它會回到普通排序；最新更新的文章將重新成為預設置頂。",
+	[Key.pinAdminConfirmOk]: "確認",
+	[Key.pinAdminConfirmCancel]: "再想想",
+	[Key.pinAdminDevHint]: "已設為常駐，正在重新整理…",
+	[Key.pinAdminProdHint]: "線上暫未開通一鍵寫庫，請本地改 pinned 後部署",
 
 	// 相關文章推薦
 	[Key.relatedPosts]: "相關文章",
 	[Key.randomPosts]: "隨機文章",
-	[Key.smartRecommend]: "智慧推薦",
+	[Key.recommendedPosts]: "🪶 旁支",
+	[Key.smartRecommend]: "相關推薦",
 	[Key.randomRecommend]: "隨機推薦",
 	[Key.noRelatedPosts]: "暫無相關文章",
+	[Key.noRecommendedPosts]: "暫無推薦文章",
 	[Key.noRandomPosts]: "暫無隨機文章",
 
 	// 加密

@@ -12,6 +12,8 @@ enum I18nKey {
 	other = "other",
 
 	tags = "tags",
+	/** 侧栏标签墙标题（可含 emoji）；与 tags 页标题分离 */
+	tagWall = "tagWall",
 	categories = "categories",
 	allCategories = "allCategories",
 	allTags = "allTags",
@@ -260,14 +262,29 @@ enum I18nKey {
 
 	// 置顶
 	pinned = "pinned",
+	pinnedAuto = "pinnedAuto",
+	pinnedSticky = "pinnedSticky",
+	pinAdminMenu = "pinAdminMenu",
+	pinAdminSetSticky = "pinAdminSetSticky",
+	pinAdminUnsetSticky = "pinAdminUnsetSticky",
+	pinAdminConfirmSet = "pinAdminConfirmSet",
+	pinAdminConfirmUnset = "pinAdminConfirmUnset",
+	pinAdminConfirmSetDesc = "pinAdminConfirmSetDesc",
+	pinAdminConfirmUnsetDesc = "pinAdminConfirmUnsetDesc",
+	pinAdminConfirmOk = "pinAdminConfirmOk",
+	pinAdminConfirmCancel = "pinAdminConfirmCancel",
+	pinAdminDevHint = "pinAdminDevHint",
+	pinAdminProdHint = "pinAdminProdHint",
 
 	// 相关文章推荐
 	relatedPosts = "relatedPosts",
 	randomPosts = "randomPosts",
+	recommendedPosts = "recommendedPosts",
 	smartRecommend = "smartRecommend",
 	randomRecommend = "randomRecommend",
 	noRelatedPosts = "noRelatedPosts",
 	noRandomPosts = "noRandomPosts",
+	noRecommendedPosts = "noRecommendedPosts",
 
 	// 加密
 	postEncrypted = "postEncrypted",
