@@ -5,6 +5,7 @@ export type WidgetComponentType =
 	| "categories"
 	| "tags"
 	| "sidebarToc"
+	| "recommend"
 	| "advertisement"
 	| "stats"
 	| "calendar"
@@ -41,6 +42,11 @@ export type WidgetSpecificConfig = {
 	ad?: AdConfig; // 广告组件专用配置
 	siteInfo?: SiteInfoConfig; // 站点信息组件专用配置
 	dynamic?: DynamicWidgetConfig; // 最新动态组件专用配置
+	recommend?: RecommendWidgetConfig; // 推荐文章（标签相关 + 热度代理）
+};
+
+export type RecommendWidgetConfig = {
+	limit?: number; // 显示条数，默认 3
 };
 
 export type DynamicWidgetConfig = {

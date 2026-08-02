@@ -7,6 +7,7 @@ import Categories from "@/components/widget/Categories.astro";
 import Dynamic from "@/components/widget/Dynamic.astro";
 import Music from "@/components/widget/Music.astro";
 import Profile from "@/components/widget/Profile.astro";
+import Recommend from "@/components/widget/Recommend.astro";
 import SidebarTOC from "@/components/widget/SidebarTOC.astro";
 import SiteInfo from "@/components/widget/SiteInfo.astro";
 import SiteStats from "@/components/widget/SiteStats.astro";
@@ -21,6 +22,11 @@ interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
 	encrypted?: boolean;
+	/** 文章页当前文标签；传给 Tags 做聚焦（非文章页勿传） */
+	postTags?: string[];
+	/** 文章页相关推荐；传给 Recommend */
+	relatedPosts?: import("@/utils/content-utils").PostForList[];
+	currentPostId?: string;
 	side?: "left" | "right" | "bottom";
 }
 
@@ -47,6 +53,7 @@ const componentMap = {
 	categories: Categories,
 	tags: Tags,
 	sidebarToc: SidebarTOC,
+	recommend: Recommend,
 	advertisement: Advertisement,
 	stats: SiteStats,
 	calendar: Calendar,
@@ -158,6 +165,22 @@ const getComponentProps = (
 			...baseProps,
 			headings: Astro.props.headings || [],
 			encrypted: Astro.props.encrypted || false,
+		};
+	}
+
+	// 文章页：标签墙聚焦当前文标签
+	if (config.type === "tags" && Array.isArray(Astro.props.postTags)) {
+		return {
+			...baseProps,
+			focusTags: Astro.props.postTags,
+		};
+	}
+
+	if (config.type === "recommend") {
+		return {
+			...baseProps,
+			relatedPosts: Astro.props.relatedPosts || [],
+			currentPostId: Astro.props.currentPostId || "",
 		};
 	}
 

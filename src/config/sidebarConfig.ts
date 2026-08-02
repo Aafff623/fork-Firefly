@@ -59,28 +59,41 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：音乐播放器
+			// 组件类型：音乐播放器（已有顶栏 #music-player-switch，侧栏不再重复）
 			type: "music",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 组件位置
 			position: "sticky",
 			// 是否在文章详情页显示
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：分类组件
+			// 组件类型：分类组件（文章页让位给推荐，避免与右栏目录抢高）
 			type: "categories",
 			// 是否启用该组件
 			enable: true,
 			// 组件位置
 			position: "sticky",
-			// 是否在文章详情页显示
-			showOnPostPage: true,
+			// 文章详情页隐藏，由推荐卡片顶替
+			showOnPostPage: false,
 			// 组件专属配置
 			specificConfig: {
 				// 折叠阈值：当分类数量超过>5个时自动折叠
 				collapseThreshold: 5,
+			},
+		},
+		{
+			// 推荐文章：仅文章页显示，顶替上方分类位；标签相关 + 热度代理，限 3 篇
+			type: "recommend",
+			enable: true,
+			position: "sticky",
+			showOnPostPage: true,
+			hideOnNonPostPage: true,
+			specificConfig: {
+				recommend: {
+					limit: 3,
+				},
 			},
 		},
 		{
@@ -120,7 +133,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 组件类型：站点统计组件
+			// 站点统计（已合并精简站点信息；独立 siteInfo 关闭以腾日历位）
 			type: "stats",
 			// 是否启用该组件
 			enable: true,
@@ -130,10 +143,10 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: false,
 		},
 		{
-			// 组件类型：站点信息组件
+			// 站点信息已并入 stats，不再单独占位
 			type: "siteInfo",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 组件位置
 			position: "top",
 			// 是否在文章详情页显示
@@ -255,16 +268,28 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：分类组件
+			// 组件类型：分类组件（文章页让位给推荐）
 			type: "categories",
 			// 是否启用该组件
 			enable: true,
 			// 是否在文章详情页显示
-			showOnPostPage: true,
+			showOnPostPage: false,
 			// 组件专属配置
 			specificConfig: {
 				// 折叠阈值：当分类数量超过5个时自动折叠
 				collapseThreshold: 5,
+			},
+		},
+		{
+			// 移动端：推荐文章（顶替分类位）
+			type: "recommend",
+			enable: true,
+			showOnPostPage: true,
+			hideOnNonPostPage: true,
+			specificConfig: {
+				recommend: {
+					limit: 3,
+				},
 			},
 		},
 		{
@@ -296,7 +321,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 组件类型：站点统计组件
+			// 站点统计（含精简站点信息）
 			type: "stats",
 			// 是否启用该组件
 			enable: true,
@@ -304,10 +329,10 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 组件类型：站点信息组件
+			// 站点信息已并入 stats
 			type: "siteInfo",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 是否在文章详情页显示
 			showOnPostPage: true,
 			// 组件专属配置

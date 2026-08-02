@@ -3,23 +3,74 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils";
 
-// // Retrieve posts and sort them by publication date
+/** sticky=人工常驻 · auto=默认动态置顶（最新 published/updated） */
+export type PinKind = "sticky" | "auto";
+
+/** 用于默认置顶：有更新时间用 updated，否则用 published */
+export function getEffectivePostTime(data: {
+	published: Date;
+	updated?: Date;
+}): number {
+	return (data.updated ?? data.published).getTime();
+}
+
+/** 在非常驻文章中选出默认置顶（时间戳最新的一篇） */
+export function getAutoPinnedPostId(
+	posts: CollectionEntry<"posts">[],
+): string | null {
+	let bestId: string | null = null;
+	let bestTime = Number.NEGATIVE_INFINITY;
+	for (const post of posts) {
+		// 草稿永不参与默认置顶（本地 DEV 也会列出草稿，但不能抢置顶）
+		if (post.data.pinned || post.data.draft) continue;
+		const time = getEffectivePostTime(post.data);
+		// 时间相同则 id 字典序更大者胜，保证结果稳定
+		if (
+			bestId === null ||
+			time > bestTime ||
+			(time === bestTime && post.id.localeCompare(bestId) > 0)
+		) {
+			bestTime = time;
+			bestId = post.id;
+		}
+	}
+	return bestId;
+}
+
+export function getPostPinKind(
+	post: CollectionEntry<"posts">,
+	autoPinnedId: string | null,
+): PinKind | null {
+	if (post.data.pinned) return "sticky";
+	if (autoPinnedId && post.id === autoPinnedId) return "auto";
+	return null;
+}
+
+function compareByEffectiveTimeDesc(
+	a: CollectionEntry<"posts">,
+	b: CollectionEntry<"posts">,
+): number {
+	return getEffectivePostTime(b.data) - getEffectivePostTime(a.data);
+}
+
+// Retrieve posts and sort: 常驻 → 默认置顶 → 其余（均按有效时间倒序）
 async function getRawSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
-	const sorted = allBlogPosts.sort((a, b) => {
-		// 首先按置顶状态排序，置顶文章在前
-		if (a.data.pinned && !b.data.pinned) return -1;
-		if (!a.data.pinned && b.data.pinned) return 1;
+	const autoPinnedId = getAutoPinnedPostId(allBlogPosts);
+	const stickyPosts = allBlogPosts
+		.filter((post) => post.data.pinned && !post.data.draft)
+		.sort(compareByEffectiveTimeDesc);
+	const autoPosts = autoPinnedId
+		? allBlogPosts.filter((post) => post.id === autoPinnedId)
+		: [];
+	const restPosts = allBlogPosts
+		.filter((post) => !post.data.pinned && post.id !== autoPinnedId)
+		.sort(compareByEffectiveTimeDesc);
 
-		// 如果置顶状态相同，则按发布日期排序
-		const dateA = new Date(a.data.published);
-		const dateB = new Date(b.data.published);
-		return dateA > dateB ? -1 : 1;
-	});
-	return sorted;
+	return [...stickyPosts, ...autoPosts, ...restPosts];
 }
 
 export async function getSortedPosts(): Promise<CollectionEntry<"posts">[]> {
@@ -149,73 +200,126 @@ function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
 }
 
 /**
- * 获取相关文章推荐
- * 评分公式: totalScore = tagMatchScore + titleSimilarityScore + timeFreshnessScore + categoryBonus
- * - tagMatchScore (0-100): 标签 Jaccard 相似度 × 100
- * - titleSimilarityScore (0-100): 标题分词 Jaccard 相似度 × 100
- * - timeFreshnessScore (0-30): 6 个月半衰期指数衰减
- * - categoryBonus (0 or 10): 同分类加 10 分
+ * 获取相关文章推荐（默认 3 篇）
+ *
+ * 评分公式:
+ *   totalScore = tagMatchScore×1.4 + sharedTagBonus + titleSimilarityScore×0.55
+ *              + timeFreshnessScore + categoryBonus + heatScore
+ *
+ * - tagMatchScore (0-100): 标签 Jaccard × 100（主信号）
+ * - sharedTagBonus (0-36): 交集标签数 × 12（绝对重叠，避免稀有标签被 Jaccard 稀释）
+ * - titleSimilarityScore (0-100): 标题分词 Jaccard × 100
+ * - timeFreshnessScore (0-30): 有效时间（updated ?? published）6 个月半衰期
+ * - categoryBonus (0|12): 同分类
+ * - heatScore (0-40): 热度代理（无赞/浏览批量接口时）
+ *     · 标签流行度 log1p(Σ corpusFreq) 归一化 0-22
+ *     · 常驻置顶 +12
+ *     · 近 30 天有更新 +6
+ *
+ * 注：站点评论为 Giscus，暂无全站点赞/浏览量 API；有数据源时可把真实 likes/views 并入 heatScore。
  */
 export async function getRelatedPosts(
 	currentPost: CollectionEntry<"posts">,
-	maxCount = 5,
+	maxCount = 3,
 ): Promise<PostForList[]> {
 	const allPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
-	// 排除自身和加密文章
+	const tagCorpusFreq = new Map<string, number>();
+	for (const p of allPosts) {
+		for (const t of p.data.tags || []) {
+			const key = t.trim().toLowerCase();
+			if (!key) continue;
+			tagCorpusFreq.set(key, (tagCorpusFreq.get(key) || 0) + 1);
+		}
+	}
+	let maxTopicHeat = 1;
+	for (const p of allPosts) {
+		let h = 0;
+		for (const t of p.data.tags || []) {
+			h += tagCorpusFreq.get(t.trim().toLowerCase()) || 0;
+		}
+		if (h > maxTopicHeat) maxTopicHeat = h;
+	}
+
 	const candidates = allPosts.filter(
 		(p) => p.id !== currentPost.id && !p.data.password,
 	);
 
-	const currentTags = new Set(currentPost.data.tags || []);
+	const currentTags = new Set(
+		(currentPost.data.tags || []).map((t) => t.trim().toLowerCase()).filter(Boolean),
+	);
 	const currentTokens = tokenizeTitle(currentPost.data.title);
-	const currentCategory = currentPost.data.category || "";
+	const currentCategory = (currentPost.data.category || "").trim();
 	const now = Date.now();
 
 	const scored = candidates.map((post) => {
-		const postTags = new Set(post.data.tags || []);
+		const rawTags = post.data.tags || [];
+		const postTags = new Set(
+			rawTags.map((t) => t.trim().toLowerCase()).filter(Boolean),
+		);
 
-		// tagMatchScore (0-100)
+		let shared = 0;
+		for (const t of currentTags) {
+			if (postTags.has(t)) shared++;
+		}
 		const tagMatchScore = jaccardSimilarity(currentTags, postTags) * 100;
+		const sharedTagBonus = Math.min(36, shared * 12);
 
-		// titleSimilarityScore (0-100)
 		const postTokens = tokenizeTitle(post.data.title);
 		const titleSimilarityScore =
 			jaccardSimilarity(currentTokens, postTokens) * 100;
 
-		// timeFreshnessScore (0-30): 6 个月半衰期
-		const daysSincePublished =
-			(now - new Date(post.data.published).getTime()) / (1000 * 60 * 60 * 24);
+		const effectiveMs = getEffectivePostTime(post.data);
+		const daysSince =
+			(now - effectiveMs) / (1000 * 60 * 60 * 24);
 		const timeFreshnessScore =
-			30 * Math.exp((-Math.LN2 * daysSincePublished) / 180);
+			30 * Math.exp((-Math.LN2 * daysSince) / 180);
 
-		// categoryBonus (0 or 10)
-		const postCategory = post.data.category || "";
+		const postCategory = (post.data.category || "").trim();
 		const categoryBonus =
 			currentCategory && postCategory && currentCategory === postCategory
-				? 10
+				? 12
 				: 0;
 
+		let topicHeat = 0;
+		for (const t of postTags) {
+			topicHeat += tagCorpusFreq.get(t) || 0;
+		}
+		const topicHeatNorm =
+			22 * (Math.log1p(topicHeat) / Math.log1p(maxTopicHeat));
+		const pinBonus = post.data.pinned ? 12 : 0;
+		const updatedMs = post.data.updated?.getTime();
+		const recentUpdateBonus =
+			updatedMs && now - updatedMs < 30 * 24 * 60 * 60 * 1000 ? 6 : 0;
+		const heatScore = topicHeatNorm + pinBonus + recentUpdateBonus;
+
 		const totalScore =
-			tagMatchScore + titleSimilarityScore + timeFreshnessScore + categoryBonus;
+			tagMatchScore * 1.4 +
+			sharedTagBonus +
+			titleSimilarityScore * 0.55 +
+			timeFreshnessScore +
+			categoryBonus +
+			heatScore;
 
 		return {
 			post,
 			totalScore,
 			tagMatchScore,
+			shared,
 			timeFreshnessScore,
 			categoryBonus,
+			heatScore,
 		};
 	});
 
-	// 按总分降序排列
 	scored.sort((a, b) => b.totalScore - a.totalScore);
 
-	// 优先取有标签匹配的
-	const withTagMatch = scored.filter((s) => s.tagMatchScore > 0);
-	const withoutTagMatch = scored.filter((s) => s.tagMatchScore === 0);
+	const withTagMatch = scored.filter((s) => s.tagMatchScore > 0 || s.shared > 0);
+	const withoutTagMatch = scored.filter(
+		(s) => s.tagMatchScore === 0 && s.shared === 0,
+	);
 
 	const result: PostForList[] = [];
 
@@ -224,13 +328,14 @@ export async function getRelatedPosts(
 		result.push({ id: s.post.id, data: s.post.data });
 	}
 
-	// 不足时从剩余候选中按 timeFreshnessScore + categoryBonus 降序补充
+	// 不足时按热度 + 时效 + 同分类补齐（不再纯随机）
 	if (result.length < maxCount) {
 		withoutTagMatch.sort(
 			(a, b) =>
+				b.heatScore +
 				b.timeFreshnessScore +
 				b.categoryBonus -
-				(a.timeFreshnessScore + a.categoryBonus),
+				(a.heatScore + a.timeFreshnessScore + a.categoryBonus),
 		);
 		for (const s of withoutTagMatch) {
 			if (result.length >= maxCount) break;

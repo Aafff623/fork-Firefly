@@ -54,6 +54,11 @@ interface Props {
 	setOGTypeArticle?: boolean;
 	postSlug?: string;
 	postCategory?: string;
+	/** 文章页标签；供侧栏标签墙聚焦当前文（Swup 静态侧栏靠 data 属性同步） */
+	postTags?: string[];
+	/** 文章页相关推荐；供侧栏「推荐文章」 */
+	relatedPosts?: import("@/utils/content-utils").PostForList[];
+	currentPostId?: string;
 	headings?: MarkdownHeading[];
 	encrypted?: boolean;
 	bannerPostMeta?: {
@@ -76,10 +81,27 @@ const {
 	setOGTypeArticle,
 	postSlug,
 	postCategory,
+	postTags,
+	relatedPosts,
+	currentPostId,
 	headings = [],
 	encrypted = false,
 	bannerPostMeta,
 } = Astro.props;
+
+const postTagsJson = Array.isArray(postTags) ? JSON.stringify(postTags) : "";
+const relatedPostsJson = Array.isArray(relatedPosts)
+	? JSON.stringify(
+			relatedPosts.map((p) => ({
+				id: p.id,
+				title: p.data.title,
+				category: (p.data.category || "NOTE").trim(),
+				published: p.data.published
+					? new Date(p.data.published).toISOString().slice(0, 10)
+					: "",
+			})),
+		)
+	: "";
 
 // 检查背景壁纸模式和是否允许切换
 const isBannerMode = backgroundWallpaper.mode === "banner";
@@ -697,7 +719,10 @@ const hasMultipleImages =
         <div class="banner-post-meta-overlay absolute inset-0 z-20 hidden lg:flex items-center justify-center pointer-events-none">
             <div class="w-4/5 lg:w-3/4 text-center mb-0">
                 <div class="flex flex-col items-center gap-3">
-                    <div class="banner-post-title repel-text font-bold text-white leading-tight">
+                    <div
+                        class="banner-post-title banner-title repel-text pointer-events-auto font-bold text-white leading-tight"
+                        style={{ "--banner-title-size": backgroundWallpaper.common?.homeText?.titleSize || "2.75rem" }}
+                    >
                         {bannerPostMeta.title}
                     </div>
                     {bannerPostInfoMode === "description" && bannerPostMeta.description && (
@@ -864,6 +889,9 @@ const hasMultipleImages =
                                     class={sidebarClass}
                                     headings={headings}
                                     encrypted={encrypted}
+                                    postTags={postTags}
+                                    relatedPosts={relatedPosts}
+                                    currentPostId={currentPostId}
                                 />
                             )}
                         </div>
@@ -875,7 +903,7 @@ const hasMultipleImages =
             ) : (
                 <div id="left-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasLeftComponents && (
-						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted}></SideBar>
+						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
@@ -889,6 +917,10 @@ const hasMultipleImages =
                     id="swup-container"
                     class="transition-main"
                     data-current-post-category={postCategory || ""}
+                    data-current-post-tags={postTagsJson}
+                    data-current-post-id={currentPostId || postSlug || ""}
+                    data-current-post-title={bannerPostMeta?.title || title || ""}
+                    data-related-posts={relatedPostsJson}
                 >
                 {/* 携带网格布局类名，用于JS更新父容器 */}
                 <div id="grid-class-carrier" data-grid-class={gridCols} class="hidden"></div>
@@ -912,7 +944,7 @@ const hasMultipleImages =
                     {sidebarLayoutConfig.enable ? (
                         <div id="right-sidebar-static" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
                             {(effectiveIsBothSidebars || sidebarLayoutConfig.position === "right") && effectiveHasRightComponents && (
-								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted}></SideBar>
+								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                             )}
                         </div>
                     ) : (
@@ -923,7 +955,7 @@ const hasMultipleImages =
             ) : (
                 <div id="right-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasRightComponents && (
-						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted}></SideBar>
+						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
@@ -931,7 +963,7 @@ const hasMultipleImages =
             {/* 移动端底部组件 - 768px及以下显示 */}
             {sidebarLayoutConfig.mobileBottomComponents && sidebarLayoutConfig.mobileBottomComponents.length > 0 && (
                 <div id="mobile-bottom-sidebar" class="col-span-1 block md:hidden mt-4">
-					<SideBar side="bottom" headings={headings} encrypted={encrypted}></SideBar>
+					<SideBar side="bottom" headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                 </div>
             )}
 
@@ -939,34 +971,34 @@ const hasMultipleImages =
                 <Footer></Footer>
             </div>
         </div>
-
-        {/* 看板娘 / 桌宠互斥：优先 sprite pet → Spine → Live2D */}
-        <div class="pointer-events-auto">
-            {spritePetConfig.enable ? (
-                <SpritePet
-                    client:only="svelte"
-                    petId={spritePetConfig.petId}
-                    position={spritePetConfig.position}
-                    offsetX={spritePetConfig.offset.x}
-                    offsetY={spritePetConfig.offset.y}
-                    size={spritePetConfig.size}
-                    motionEnabled={spritePetConfig.motionEnabled}
-                    draggable={spritePetConfig.draggable}
-                    clickInteract={spritePetConfig.clickInteract}
-                    lookFollow={spritePetConfig.lookFollow}
-                    reactToSiteUi={spritePetConfig.reactToSiteUi}
-                    hideOnMobile={spritePetConfig.responsive.hideOnMobile}
-                    mobileBreakpoint={spritePetConfig.responsive.mobileBreakpoint}
-                    zIndex={spritePetConfig.zIndex}
-                />
-            ) : (
-                <>
-                    {spineModelConfig.enable && <SpineModel></SpineModel>}
-                    {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
-                </>
-            )}
-        </div>
     </div>
+</div>
+
+{/* 桌宠必须在 z-30 主内容层之外：侧栏 sticky + #main-grid transform 会在滚动时盖住层内 fixed */}
+<div id="site-pet-host" class="pointer-events-none contents">
+    {spritePetConfig.enable ? (
+        <SpritePet
+            client:only="svelte"
+            petId={spritePetConfig.petId}
+            position={spritePetConfig.position}
+            offsetX={spritePetConfig.offset.x}
+            offsetY={spritePetConfig.offset.y}
+            size={spritePetConfig.size}
+            motionEnabled={spritePetConfig.motionEnabled}
+            draggable={spritePetConfig.draggable}
+            clickInteract={spritePetConfig.clickInteract}
+            lookFollow={spritePetConfig.lookFollow}
+            reactToSiteUi={spritePetConfig.reactToSiteUi}
+            hideOnMobile={spritePetConfig.responsive.hideOnMobile}
+            mobileBreakpoint={spritePetConfig.responsive.mobileBreakpoint}
+            zIndex={spritePetConfig.zIndex}
+        />
+    ) : (
+        <>
+            {spineModelConfig.enable && <SpineModel></SpineModel>}
+            {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
+        </>
+    )}
 </div>
 
 <FloatingControls headings={headings} encrypted={encrypted} />
@@ -1011,6 +1043,24 @@ const hasMultipleImages =
   #right-sidebar {
     transition: opacity 0.35s ease-in-out,
                 transform 0.35s ease-in-out;
+  }
+
+  /* 文章页：右栏顶部空时，目录在视口内光学居中并略偏上 */
+  @media (min-width: 1280px) {
+    #right-sidebar-sticky.right-sidebar-sticky--optical-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: calc(100dvh - 5.5rem);
+      /* 底部留白把视觉中心上移一点 */
+      padding-bottom: 12vh;
+      box-sizing: border-box;
+    }
+
+    #right-sidebar-sticky.right-sidebar-sticky--optical-center
+      .toc-scroll-container {
+      max-height: min(58vh, calc(100dvh - 9rem));
+    }
   }
 
   @keyframes swupFadeOut {

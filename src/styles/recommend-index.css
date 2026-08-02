@@ -1,0 +1,201 @@
+/* 相关 / 随机文章 · Hallmark Index Garden（对照 blog-mock footer foot-row） */
+
+.recommend-index {
+	--ri-ink: oklch(22% 0.02 var(--hue));
+	--ri-muted: oklch(48% 0.02 var(--hue));
+	--ri-rule: oklch(88% 0.012 var(--hue));
+	--ri-leaf: oklch(45% 0.1 145);
+	--ri-accent: oklch(48% 0.18 var(--hue));
+	--ri-surface: oklch(99% 0.004 var(--hue));
+
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	padding: 1rem 1.1rem 0.85rem;
+	border-radius: 0.75rem;
+	border: 1px solid var(--ri-rule);
+	background: var(--ri-surface);
+	box-shadow: 0 0 0 1px oklch(0.3 0.01 260 / 0.04);
+}
+
+html.dark .recommend-index {
+	--ri-ink: oklch(95% 0.01 var(--hue));
+	--ri-muted: oklch(72% 0.02 var(--hue));
+	--ri-rule: oklch(30% 0.02 var(--hue));
+	--ri-leaf: oklch(72% 0.08 145);
+	--ri-accent: oklch(78% 0.12 55);
+	--ri-surface: oklch(18% 0.022 var(--hue));
+}
+
+.wallpaper-transparent .card-base.recommend-index,
+.wallpaper-transparent .recommend-index.card-base {
+	background: var(--ri-surface) !important;
+	background-color: var(--ri-surface) !important;
+	backdrop-filter: none !important;
+}
+
+.recommend-index__mast {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.55rem;
+	padding-bottom: 0.55rem;
+	border-bottom: 2px solid var(--ri-ink);
+}
+
+.recommend-index__wordmark {
+	font-family: "Zen Maru Gothic", "PingFang SC", var(--font-family), sans-serif;
+	font-weight: 700;
+	font-size: 1.15rem;
+	line-height: 1.2;
+	color: var(--ri-ink);
+}
+
+html.dark .recommend-index__wordmark {
+	font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+	font-weight: 400;
+	font-size: 1.25rem;
+}
+
+.recommend-index__issue {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ri-muted);
+}
+
+.recommend-index__rows {
+	border-top: 1px solid var(--ri-rule);
+	flex: 1 1 auto;
+}
+
+.recommend-index__row {
+	display: grid;
+	grid-template-columns: minmax(0, 5rem) minmax(0, 1fr) auto;
+	gap: 0.75rem;
+	align-items: baseline;
+	padding: 0.65rem 0;
+	border-bottom: 1px solid var(--ri-rule);
+	font-size: 0.9rem;
+	min-width: 0;
+	text-decoration: none !important;
+	color: inherit;
+	transition: color 0.15s ease;
+}
+
+.recommend-index__row:last-child {
+	border-bottom: 0;
+}
+
+.recommend-index__row:hover .recommend-index__title,
+.recommend-index__row:focus-visible .recommend-index__title {
+	color: var(--ri-accent);
+}
+
+.recommend-index__row:focus-visible {
+	outline: 2px solid var(--ri-accent);
+	outline-offset: 2px;
+}
+
+.recommend-index__key {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ri-leaf);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.recommend-index__title {
+	font-family: "Zen Maru Gothic", "PingFang SC", var(--font-family), sans-serif;
+	font-weight: 700;
+	color: var(--ri-ink);
+	overflow-wrap: anywhere;
+	min-width: 0;
+	transition: color 0.15s ease;
+}
+
+html.dark .recommend-index__title {
+	font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+	font-weight: 400;
+}
+
+.recommend-index__meta {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.64rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--ri-muted);
+	white-space: nowrap;
+}
+
+.recommend-index__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	min-height: 8rem;
+	padding: 0.85rem 0 0.35rem;
+	border-left: 2px solid var(--ri-accent);
+	padding-left: 0.9rem;
+	margin-top: 0.35rem;
+	color: var(--ri-muted);
+	font-size: 0.88rem;
+}
+
+/* 侧栏版：嵌在 WidgetLayout 内，去掉外层卡片壳 */
+.recommend-index--sidebar {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.recommend-index--sidebar .recommend-index__mast {
+	margin-bottom: 0.35rem;
+	padding-bottom: 0.4rem;
+	border-bottom-width: 1px;
+}
+
+.recommend-index--sidebar .recommend-index__row {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.15rem;
+	padding: 0.55rem 0;
+}
+
+.recommend-index--sidebar .recommend-index__meta {
+	white-space: normal;
+	font-size: 0.6rem;
+}
+
+.recommend-index--sidebar .recommend-index__title {
+	font-size: 0.86rem;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.recommend-index--sidebar .recommend-index__empty {
+	min-height: 4.5rem;
+	font-size: 0.8rem;
+}
+
+@media (max-width: 720px) {
+	.recommend-index__row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.2rem;
+		padding: 0.7rem 0;
+	}
+
+	.recommend-index__meta {
+		white-space: normal;
+	}
+}
