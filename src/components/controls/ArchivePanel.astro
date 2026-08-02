@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import { siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -94,9 +95,7 @@ const foldOnFilter = collapseAllButFirst;
             {" "}
             <span class="archive-year-count-label">{i18n(group.posts.length === 1 ? I18nKey.postCount : I18nKey.postsCount)}</span>
             <span class="archive-arrow" style={collapsed ? "transform: rotate(-90deg)" : ""}>
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <Icon is:inline name="lucide:chevron-down" class="w-4 h-4" aria-hidden="true" />
             </span>
           </div>
         </button>
