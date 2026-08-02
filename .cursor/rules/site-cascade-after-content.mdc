@@ -1,0 +1,26 @@
+---
+description: 新增/更新博客文章或动态后，必须级联维护最新动态、站点统计、分类标签与热力图（调用 site-cascade skill）。
+globs: src/content/posts/**/*,src/content/dynamic/**/*
+alwaysApply: false
+---
+
+# 发文后站点级联（site-cascade）
+
+当本规则因编辑 `src/content/posts/**` 或 `src/content/dynamic/**` 而生效，或你刚完成 `ob2blog` / 手写新帖时：
+
+1. **必须**读取并遵循项目 skill：`.cursor/skills/site-cascade/SKILL.md`
+2. 在 `Firefly/` 根目录跑：
+
+```bash
+python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug>
+```
+
+3. 若新帖 **`draft: false`** 且尚无关联「发布了新笔记」动态：
+
+```bash
+python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug> --emit-dynamic
+```
+
+4. 汇报：统计摘要、是否 emit 动态、侧栏/热力 WARN；不要手写假统计数字进组件。
+
+与 `ob2blog` 的关系：ob2blog 负责 Obsidian→帖正文；**本规则负责发文后的站点表面级联**。二者收尾都要做完再宣称「文章已挂上首页」。
