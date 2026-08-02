@@ -6,64 +6,307 @@ if (!commentConfig?.giscus) {
 }
 
 const giscus = commentConfig.giscus;
-const lightTheme = "light";
-const darkTheme = "dark";
+
+const giscusAttrs = {
+	repo: giscus.repo,
+	repoId: giscus.repoId,
+	category: giscus.category,
+	categoryId: giscus.categoryId,
+	mapping: giscus.mapping,
+	strict: giscus.strict,
+	reactionsEnabled: giscus.reactionsEnabled,
+	emitMetadata: giscus.emitMetadata,
+	inputPosition: giscus.inputPosition,
+	lang: giscus.lang,
+	loading: giscus.loading,
+};
 ---
 
-<!-- 
-  Giscus 官方Web Component用法，兼容Astro静态输出，无需import包，无需NPM依赖！
-  参考：https://giscus.app/ 详情配置说明
--->
-<giscus-widget
-  id="comments"
-  repo={giscus.repo}
-  repoId={giscus.repoId}
-  category={giscus.category}
-  categoryId={giscus.categoryId}
-  mapping={giscus.mapping}
-  strict={giscus.strict}
-  reactionsEnabled={giscus.reactionsEnabled}
-  emitMetadata={giscus.emitMetadata}
-  inputPosition={giscus.inputPosition}
-  theme={lightTheme}
-  lang={giscus.lang}
-  loading={giscus.loading}
-/>
+<!--
+  官方 client.js。
+  主题：Catppuccin + 园主徽章。
+  优先 data: CSS（绕过 localhost http 被 https iframe 拦截）；
+  回退到站点 HTTPS 静态文件。
 
-<script is:inline define:vars={{ lightTheme, darkTheme }}>
-  const requestedPath = new URLSearchParams(window.location.search).get("path");
-  const widget = document.querySelector("giscus-widget");
-  if (requestedPath && widget) {
-    widget.setAttribute("mapping", "specific");
-    widget.setAttribute("term", requestedPath);
+  注意：导航栏「园主/已登录」在 DEV 可伪注入，≠ 本 iframe 已成功加载。
+-->
+<div class="giscus" id="giscus">
+  <p id="giscus-status" class="giscus-status" hidden></p>
+</div>
+
+<script is:inline define:vars={{ giscusAttrs }}>
+  const OWNER_LOGIN = "Aafff623";
+  const LOAD_TIMEOUT_MS = 8000;
+
+  function ownerBadgeCss(isDark) {
+    const baseTheme = isDark
+      ? "https://giscus.app/themes/catppuccin_mocha.css"
+      : "https://giscus.app/themes/catppuccin_latte.css";
+
+    // 数字花园：草木绿 + 叶片感（非霓虹紫）
+    const leaf = isDark ? "#a6e3a1" : "#3d7a4a";
+    const moss = isDark ? "#94e2d5" : "#5b8f6a";
+    const leafSoft = isDark ? "rgba(166,227,161,.22)" : "rgba(61,122,74,.14)";
+    const labelBg = isDark
+      ? "linear-gradient(135deg, rgba(166,227,161,.18), rgba(148,226,213,.12))"
+      : "linear-gradient(135deg, rgba(232,245,233,.95), rgba(220,237,224,.9))";
+    const labelBorder = isDark ? "rgba(166,227,161,.42)" : "rgba(61,122,74,.28)";
+    const labelText = isDark ? "#a6e3a1" : "#2f5d3a";
+    const cardBorder = isDark ? "rgba(166,227,161,.28)" : "rgba(91,143,106,.22)";
+    const cardBg = isDark ? "rgba(166,227,161,.045)" : "rgba(232,245,233,.55)";
+    const avatarGap = isDark ? "#1e1e2e" : "#eff1f5";
+
+    const sel = `.gsc-comment:has(img[alt="@${OWNER_LOGIN}"])`;
+    const selAuthor = `.gsc-comment-author:has(a[href*="github.com/${OWNER_LOGIN}"])`;
+
+    return `@import url("${baseTheme}");
+/* —— 园主：草木双环头像 —— */
+${sel} a.gsc-comment-author-avatar img{
+  border-radius:999px!important;
+  box-shadow:
+    0 0 0 2px ${avatarGap},
+    0 0 0 3.5px ${leaf},
+    0 0 0 6px ${leafSoft},
+    0 2px 10px ${leafSoft}!important;
+}
+/* —— 园主：❀园主 标签 —— */
+${sel} a.gsc-comment-author-avatar,
+${selAuthor} a.gsc-comment-author-avatar{
+  align-items:center!important;
+}
+${sel} a.gsc-comment-author-avatar span,
+${selAuthor} a.gsc-comment-author-avatar span{
+  display:inline-flex!important;
+  align-items:center;
+  gap:.4rem;
+  flex-wrap:wrap;
+}
+${sel} a.gsc-comment-author-avatar span::after,
+${selAuthor} a.gsc-comment-author-avatar span::after{
+  content:"\\2740 \\56ED\\4E3B"; /* ❀园主 */
+  display:inline-flex!important;
+  align-items:center;
+  margin-left:.2rem;
+  padding:.14rem .6rem .14rem .5rem;
+  border-radius:999px;
+  font-size:10.5px;
+  font-weight:650;
+  letter-spacing:.14em;
+  line-height:1.3;
+  color:${labelText};
+  background:${labelBg};
+  border:1px solid ${labelBorder};
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 1px 2px ${leafSoft};
+  vertical-align:middle;
+}
+/* —— 园主：评论卡片藤蔓色条 + 浅绿底 —— */
+${sel} > div{
+  position:relative!important;
+  border-color:${cardBorder}!important;
+  background-color:${cardBg}!important;
+  background-image:
+    radial-gradient(120px 40px at 100% 0%, ${leafSoft}, transparent 70%),
+    radial-gradient(80px 30px at 0% 100%, ${isDark ? "rgba(148,226,213,.08)" : "rgba(91,143,106,.06)"}, transparent 70%)!important;
+  box-shadow:inset 3px 0 0 0 ${moss}, 0 1px 2px rgba(0,0,0,.03)!important;
+}
+/* 隐藏原生 OWNER「所有者」 */
+${sel} .gsc-comment-author > div,
+${selAuthor} > div{
+  display:none!important;
+}`;
   }
 
-  import("https://esm.sh/giscus");
+  function resolveTheme() {
+    const isDark = document.documentElement.classList.contains("dark");
+    // data: 可被 https://giscus.app iframe 加载；避免 localhost http 混合内容拦截
+    return `data:text/css;charset=utf-8,${encodeURIComponent(ownerBadgeCss(isDark))}`;
+  }
+
+  function resolveMapping() {
+    const requestedPath = new URLSearchParams(window.location.search).get("path");
+    if (requestedPath) {
+      return { mapping: "specific", term: requestedPath };
+    }
+    return { mapping: giscusAttrs.mapping, term: null };
+  }
+
+  function sendTheme(theme) {
+    const iframe = document.querySelector("iframe.giscus-frame");
+    if (!iframe?.contentWindow) return;
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme } } },
+      "https://giscus.app",
+    );
+  }
+
+  let loadWatchTimer = 0;
+
+  function setGiscusStatus(message, isError) {
+    const status = document.getElementById("giscus-status");
+    if (!status) return;
+    if (!message) {
+      status.hidden = true;
+      status.textContent = "";
+      status.classList.remove("is-error");
+      return;
+    }
+    status.hidden = false;
+    status.textContent = message;
+    status.classList.toggle("is-error", !!isError);
+  }
+
+  function watchGiscusLoad(host) {
+    if (loadWatchTimer) window.clearTimeout(loadWatchTimer);
+    setGiscusStatus("评论组件加载中…", false);
+
+    const markReady = () => {
+      if (host.querySelector("iframe.giscus-frame")) {
+        setGiscusStatus("", false);
+        if (loadWatchTimer) window.clearTimeout(loadWatchTimer);
+        return true;
+      }
+      return false;
+    };
+
+    if (markReady()) return;
+
+    const observer = new MutationObserver(() => {
+      if (markReady()) observer.disconnect();
+    });
+    observer.observe(host, { childList: true, subtree: true });
+
+    loadWatchTimer = window.setTimeout(() => {
+      observer.disconnect();
+      if (markReady()) return;
+      setGiscusStatus(
+        "评论框未能加载。常见原因：扩展拦截了 giscus.app、网络不通，或需硬刷新。导航栏「园主」在本地开发可伪显示，不代表评论 iframe 已就绪。",
+        true,
+      );
+    }, LOAD_TIMEOUT_MS);
+  }
+
+  function mountGiscus() {
+    const host = document.getElementById("giscus");
+    if (!host) return;
+
+    host.querySelectorAll("iframe.giscus-frame, script[data-giscus]").forEach((el) => {
+      el.remove();
+    });
+    document
+      .querySelectorAll('script[src="https://giscus.app/client.js"][data-giscus]')
+      .forEach((el) => el.remove());
+
+    // 保留状态行节点
+    if (!document.getElementById("giscus-status")) {
+      const status = document.createElement("p");
+      status.id = "giscus-status";
+      status.className = "giscus-status";
+      status.hidden = true;
+      host.prepend(status);
+    }
+
+    const { mapping, term } = resolveMapping();
+    const theme = resolveTheme();
+
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.dataset.giscus = "1";
+
+    script.setAttribute("data-repo", giscusAttrs.repo);
+    script.setAttribute("data-repo-id", giscusAttrs.repoId);
+    script.setAttribute("data-category", giscusAttrs.category);
+    script.setAttribute("data-category-id", giscusAttrs.categoryId);
+    script.setAttribute("data-mapping", mapping);
+    if (term) script.setAttribute("data-term", term);
+    script.setAttribute("data-strict", giscusAttrs.strict);
+    script.setAttribute("data-reactions-enabled", giscusAttrs.reactionsEnabled);
+    script.setAttribute("data-emit-metadata", giscusAttrs.emitMetadata);
+    script.setAttribute("data-input-position", giscusAttrs.inputPosition);
+    script.setAttribute("data-theme", theme);
+    script.setAttribute("data-lang", giscusAttrs.lang);
+    if (giscusAttrs.loading) {
+      script.setAttribute("data-loading", giscusAttrs.loading);
+    }
+
+    script.onerror = () => {
+      setGiscusStatus(
+        "无法拉取 giscus.app/client.js（请检查网络、代理或广告拦截扩展）。",
+        true,
+      );
+    };
+
+    host.appendChild(script);
+    watchGiscusLoad(host);
+
+    [500, 1200, 2400].forEach((ms) => {
+      setTimeout(() => sendTheme(resolveTheme()), ms);
+    });
+  }
 
   function updateGiscusTheme() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const theme = isDark ? darkTheme : lightTheme;
-    if (widget) {
-      widget.setAttribute('theme', theme);
-    }
+    sendTheme(resolveTheme());
   }
 
-  // Initial update
-  updateGiscusTheme();
+  function boot() {
+    mountGiscus();
+  }
 
-  // Clean up previous observer if exists
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+
   if (window.giscusThemeObserver) {
     window.giscusThemeObserver.disconnect();
   }
-
-  // Create new observer
   window.giscusThemeObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+    for (const mutation of mutations) {
+      if (mutation.type === "attributes" && mutation.attributeName === "class") {
         updateGiscusTheme();
       }
-    });
+    }
+  });
+  window.giscusThemeObserver.observe(document.documentElement, {
+    attributes: true,
   });
 
-  window.giscusThemeObserver.observe(document.documentElement, { attributes: true });
+  function bindSwup() {
+    if (!window.swup?.hooks) return;
+    window.swup.hooks.on("content:replace", () => {
+      setTimeout(mountGiscus, 200);
+    });
+  }
+  if (window.swup?.hooks) {
+    bindSwup();
+  } else {
+    document.addEventListener("swup:enable", bindSwup);
+  }
 </script>
+
+<style is:global>
+  .giscus-status {
+    margin: 0 0 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.65rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--deep-text) 72%, transparent);
+    background: color-mix(in oklch, var(--primary) 8%, var(--card-bg));
+    border: 1px solid color-mix(in oklch, var(--primary) 18%, transparent);
+  }
+
+  .giscus-status.is-error {
+    color: oklch(0.38 0.08 25);
+    background: oklch(0.96 0.02 25);
+    border-color: oklch(0.82 0.05 25);
+  }
+
+  html.dark .giscus-status.is-error {
+    color: oklch(0.86 0.06 25);
+    background: oklch(0.28 0.04 25);
+    border-color: oklch(0.4 0.06 25);
+  }
+</style>

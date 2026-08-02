@@ -56,6 +56,8 @@ export type CommentConfig = {
 		inputPosition: string;
 		lang: string;
 		loading: string;
+		/** GitHub login 列表：评论区 / 导航栏「园主」身份标记 */
+		adminLogins?: string[];
 	};
 	disqus?: {
 		shortname: string;

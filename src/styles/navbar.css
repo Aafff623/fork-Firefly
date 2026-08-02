@@ -345,3 +345,79 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar[data-transparent-mode="full"].navbar-sticky-shadow>div {
     box-shadow: none !important;
 }
+
+/* ============================================
+ * 品牌按钮 · 水流波纹
+ * 改编自 bilibili-goat effects/水流波纹按钮
+ * ============================================ */
+#navbar a.navbar-brand-ripple {
+    /* 固定蓝色波浪（不跟主题 hue / 紫色走） */
+    --brand-ripple: rgb(59 130 246 / 0.55);
+    --brand-ripple-strong: rgb(37 99 235 / 0.9);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    isolation: isolate;
+    border: 1.5px solid rgb(59 130 246 / 0.4);
+    transition:
+        color 0.9s ease,
+        border-color 0.9s ease,
+        transform 0.15s ease;
+}
+
+#navbar a.navbar-brand-ripple::before,
+#navbar a.navbar-brand-ripple::after {
+    content: "";
+    position: absolute;
+    top: -1.35em;
+    z-index: -1;
+    width: 210%;
+    aspect-ratio: 1;
+    border-radius: 42%;
+    background-color: var(--brand-ripple);
+    transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 1.05s ease;
+    pointer-events: none;
+}
+
+#navbar a.navbar-brand-ripple::before {
+    left: -85%;
+    transform: translate3d(0, 4.2em, 0) rotate(-340deg);
+}
+
+#navbar a.navbar-brand-ripple::after {
+    right: -85%;
+    transform: translate3d(0, 4.2em, 0) rotate(390deg);
+}
+
+#navbar a.navbar-brand-ripple:hover,
+#navbar a.navbar-brand-ripple:focus-visible {
+    border-color: rgb(37 99 235 / 0.75);
+    color: white;
+}
+
+#navbar a.navbar-brand-ripple:hover > div,
+#navbar a.navbar-brand-ripple:focus-visible > div {
+    color: white !important;
+}
+
+#navbar a.navbar-brand-ripple:hover::before,
+#navbar a.navbar-brand-ripple:hover::after,
+#navbar a.navbar-brand-ripple:focus-visible::before,
+#navbar a.navbar-brand-ripple:focus-visible::after {
+    transform: none;
+    background-color: var(--brand-ripple-strong);
+}
+
+:root.dark #navbar a.navbar-brand-ripple {
+    --brand-ripple: rgb(96 165 250 / 0.42);
+    --brand-ripple-strong: rgb(59 130 246 / 0.82);
+    border-color: rgb(96 165 250 / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #navbar a.navbar-brand-ripple::before,
+    #navbar a.navbar-brand-ripple::after {
+        transition-duration: 0.01ms;
+    }
+}

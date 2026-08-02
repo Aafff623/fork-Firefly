@@ -4,11 +4,13 @@ import * as path from "node:path";
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import DisplaySettings from "@/components/controls/DisplaySettingsIntegrated.svelte";
+import GiscusAuthStatus from "@/components/controls/GiscusAuthStatus.svelte";
 import LightDarkSwitch from "@/components/controls/LightDarkSwitch.svelte";
 import Search from "@/components/controls/Search.svelte";
 import MusicPlayer from "@/components/features/MusicPlayer.astro";
 import {
 	backgroundWallpaper,
+	commentConfig,
 	displaySettingsConfig,
 	navBarConfig,
 	siteConfig,
@@ -45,6 +47,11 @@ const navbarBlur =
 
 // 获取导航栏标题，如果没有设置则使用 siteConfig.title
 const navbarTitle = siteConfig.navbar.title || siteConfig.title;
+
+/** 当前仓库 GitHub 页（优先跟 Giscus repo 配置走） */
+const githubRepoUrl = commentConfig.giscus?.repo
+	? `https://github.com/${commentConfig.giscus.repo}`
+	: "https://github.com/Aafff623/fork-Firefly";
 
 // 获取导航栏宽度配置
 const navbarWidthFull = siteConfig.navbar.widthFull ?? false;
@@ -168,9 +175,9 @@ const logoVariants = await Promise.all(
         "overflow-visible! h-18 px-4"
     ]}>
         <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
-            <a href={url('/')} class="btn-plain scale-animation rounded-full h-13 px-3 md:px-5 font-bold active:scale-95">
+            <a href={url('/')} class="btn-plain scale-animation rounded-full h-13 px-3 md:px-5 font-bold active:scale-95 navbar-brand-ripple">
                 <div class:list={[
-                    "flex flex-row items-center text-md",
+                    "flex flex-row items-center text-md relative z-[1]",
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
                 ]} style="font-family: var(--font-navbar-title, inherit)">
                                     {logoConfig?.type === "icon" ? (
@@ -212,6 +219,16 @@ const logoVariants = await Promise.all(
                 <Search
                     client:load
                 />
+                <a
+                    href={githubRepoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer me"
+                    aria-label="GitHub Repository"
+                    title="GitHub"
+                    class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 inline-flex items-center justify-center"
+                >
+                    <Icon is:inline name="lucide:github" class="text-[1.25rem]" />
+                </a>
                 {musicPlayerConfig.showInNavbar && (
                     <button aria-label={i18n(I18nKey.music)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="music-player-switch">
                         <Icon is:inline name="lucide:music" class="text-[1.25rem]"></Icon>
@@ -233,6 +250,12 @@ const logoVariants = await Promise.all(
                         <button aria-label={i18n(I18nKey.settingsTabWallpaper)} title={i18n(I18nKey.settingsTabWallpaper)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="display-settings-switch">
                             <Icon is:inline name="lucide:sliders-horizontal" class="text-[1.25rem]"></Icon>
                         </button>
+                )}
+                {commentConfig.type === "giscus" && (
+                    <GiscusAuthStatus
+                        client:load
+                        adminLogins={commentConfig.giscus?.adminLogins ?? []}
+                    />
                 )}
                 {/* @ts-ignore */}
                 <LightDarkSwitch client:load></LightDarkSwitch>

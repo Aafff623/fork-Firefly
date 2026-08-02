@@ -2,7 +2,7 @@ import type { CommentConfig } from "../types/commentConfig";
 
 export const commentConfig: CommentConfig = {
 	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk，默认为none，即不启用评论系统
-	type: "none",
+	type: "giscus",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -53,28 +53,21 @@ export const commentConfig: CommentConfig = {
 
 	//giscus评论系统配置
 	giscus: {
-		// 设置 Giscus 评论系统仓库（启用前请到 giscus.app 填写真实 repoId / categoryId）
 		repo: "Aafff623/fork-Firefly",
-		// 设置 Giscus 评论系统仓库ID
-		repoId: "",
-		// 设置 Giscus 评论系统分类
-		category: "General",
-		// 获取 Giscus 评论系统分类ID
-		categoryId: "",
-		// 获取 Giscus 评论系统映射方式
-		mapping: "title",
-		// 获取 Giscus 评论系统严格模式
+		repoId: "R_kgDOToSNAw",
+		category: "Announcements",
+		categoryId: "DIC_kwDOToSNA84DCe8K",
+		mapping: "pathname",
 		strict: "0",
-		// 获取 Giscus 评论系统反应功能
 		reactionsEnabled: "1",
-		// 获取 Giscus 评论系统元数据功能
+		// 向父页 postMessage 同步 viewer（导航栏头像）；需该页已有 Discussion
 		emitMetadata: "1",
-		// 获取 Giscus 评论系统输入位置
-		inputPosition: "top",
-		// 获取 Giscus 评论系统语言
+		inputPosition: "bottom",
 		lang: "zh-CN",
-		// 获取 Giscus 评论系统加载方式
-		loading: "lazy",
+		// 不用 lazy：侧栏 sticky / overflow / Swup 下 IntersectionObserver 偶发不触发，会出现「只有外壳、无输入框」
+		loading: "",
+		// 评论区 / 导航栏「园主」身份标记（GitHub login）
+		adminLogins: ["Aafff623"],
 	},
 
 	//disqus评论系统配置

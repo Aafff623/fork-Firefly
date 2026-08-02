@@ -1,0 +1,57 @@
+@charset "UTF-8";
+/*! Firefly giscus light: Catppuccin Latte + 数字花园园主 */
+@import url("https://giscus.app/themes/catppuccin_latte.css");
+
+.gsc-comment:has(img[alt="@Aafff623"]) a.gsc-comment-author-avatar img {
+	border-radius: 999px !important;
+	box-shadow:
+		0 0 0 2px #eff1f5,
+		0 0 0 3.5px #3d7a4a,
+		0 0 0 6px rgba(61, 122, 74, 0.14),
+		0 2px 10px rgba(61, 122, 74, 0.14) !important;
+}
+
+.gsc-comment:has(img[alt="@Aafff623"]) a.gsc-comment-author-avatar span,
+.gsc-comment-author:has(a[href*="github.com/Aafff623"]) a.gsc-comment-author-avatar span {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+}
+
+.gsc-comment:has(img[alt="@Aafff623"]) a.gsc-comment-author-avatar span::after,
+.gsc-comment-author:has(a[href*="github.com/Aafff623"]) a.gsc-comment-author-avatar span::after {
+	content: "\2740 \56ED\4E3B";
+	display: inline-flex !important;
+	align-items: center;
+	margin-left: 0.2rem;
+	padding: 0.14rem 0.6rem 0.14rem 0.5rem;
+	border-radius: 999px;
+	font-size: 10.5px;
+	font-weight: 650;
+	letter-spacing: 0.14em;
+	line-height: 1.3;
+	color: #2f5d3a;
+	background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(220, 237, 224, 0.9));
+	border: 1px solid rgba(61, 122, 74, 0.28);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.35),
+		0 1px 2px rgba(61, 122, 74, 0.14);
+	vertical-align: middle;
+}
+
+.gsc-comment:has(img[alt="@Aafff623"]) > div {
+	border-color: rgba(91, 143, 106, 0.22) !important;
+	background-color: rgba(232, 245, 233, 0.55) !important;
+	background-image:
+		radial-gradient(120px 40px at 100% 0%, rgba(61, 122, 74, 0.14), transparent 70%),
+		radial-gradient(80px 30px at 0% 100%, rgba(91, 143, 106, 0.06), transparent 70%) !important;
+	box-shadow:
+		inset 3px 0 0 0 #5b8f6a,
+		0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.gsc-comment:has(img[alt="@Aafff623"]) .gsc-comment-author > div,
+.gsc-comment-author:has(a[href*="github.com/Aafff623"]) > div {
+	display: none !important;
+}
