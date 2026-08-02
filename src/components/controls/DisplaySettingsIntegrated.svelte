@@ -72,7 +72,7 @@ let hue = $state(getHue());
 const defaultHue = getDefaultHue();
 let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
 const defaultWallpaperMode = backgroundWallpaper.mode;
-type PostListLayoutMode = "list" | "grid" | "waterfall" | "brick";
+type PostListLayoutMode = "list" | "grid" | "waterfall";
 let currentLayout: PostListLayoutMode = $state("list");
 const defaultLayout = siteConfig.postListLayout.defaultMode;
 const mobileDefaultLayout =
@@ -482,10 +482,13 @@ onMount(() => {
 	if (
 		savedLayout === "list" ||
 		savedLayout === "grid" ||
-		savedLayout === "waterfall" ||
-		savedLayout === "brick"
+		savedLayout === "waterfall"
 	) {
 		currentLayout = savedLayout;
+	} else if (savedLayout === "brick") {
+		// 砖石布局已下线，旧偏好回退到瀑布
+		currentLayout = "waterfall";
+		localStorage.setItem("postListLayout", "waterfall");
 	} else {
 		currentLayout =
 			window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
@@ -707,18 +710,6 @@ $effect(() => {
 				>
 					<Icon icon="lucide:columns-3" class="w-4 h-4 shrink-0"></Icon>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutWaterfall)}</span>
-				</button>
-				<button
-					aria-label={i18n(I18nKey.postListLayoutBrick)}
-					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
-					class:opacity-60={currentLayout !== 'brick'}
-					class:bg-(--btn-regular-bg-hover)={currentLayout === 'brick'}
-					disabled={isSwitching}
-					onclick={() => setLayout('brick')}
-					title={i18n(I18nKey.postListLayoutBrick)}
-				>
-					<Icon icon="lucide:brick-wall" class="w-4 h-4 shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutBrick)}</span>
 				</button>
 			</div>
 		</div>

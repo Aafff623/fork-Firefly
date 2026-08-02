@@ -1,4 +1,4 @@
----
+﻿---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
 import PostCard from "@/components/layout/PostCard.astro";
@@ -33,9 +33,7 @@ const initialLayoutClass =
 		? "post-grid-auto grid-mode"
 		: defaultLayout === "waterfall"
 			? "waterfall-mode"
-			: defaultLayout === "brick"
-				? "brick-mode"
-				: "flex flex-col gap-4 md:gap-4 list-mode";
+			: "flex flex-col gap-4 md:gap-4 list-mode";
 ---
 
 <div
@@ -81,9 +79,14 @@ const initialLayoutClass =
   (function() {
     // 未开放布局切换时忽略历史偏好，始终用站点默认
     const rawSaved = layoutSwitchable ? localStorage.getItem('postListLayout') : null;
-    const savedLayout = (rawSaved === 'list' || rawSaved === 'grid' || rawSaved === 'waterfall' || rawSaved === 'brick')
+    let savedLayout = (rawSaved === 'list' || rawSaved === 'grid' || rawSaved === 'waterfall')
       ? rawSaved
       : null;
+    // 砖石布局已下线：旧偏好回退瀑布
+    if (rawSaved === 'brick') {
+      savedLayout = 'waterfall';
+      try { localStorage.setItem('postListLayout', 'waterfall'); } catch (_) {}
+    }
     // 根据视口宽度确定有效的默认布局
     const effectiveDefault = window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
     let effectiveLayout = savedLayout || effectiveDefault;
@@ -100,14 +103,12 @@ const initialLayoutClass =
         container.style.transition = 'none';
 
         // 移除所有布局类
-        container.classList.remove('list-mode', 'grid-mode', 'waterfall-mode', 'brick-mode', 'post-grid-auto', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
+        container.classList.remove('list-mode', 'grid-mode', 'waterfall-mode', '', 'post-grid-auto', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
 
         if (effectiveLayout === 'grid') {
           container.classList.add('grid-mode', 'post-grid-auto');
         } else if (effectiveLayout === 'waterfall') {
           container.classList.add('waterfall-mode');
-        } else if (effectiveLayout === 'brick') {
-          container.classList.add('brick-mode');
         } else {
           container.classList.add('list-mode', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
         }
@@ -157,17 +158,14 @@ const initialLayoutClass =
     // Check current layout state
     const isCurrentGrid = postListContainer.classList.contains("grid-mode");
     const isCurrentWaterfall = postListContainer.classList.contains("waterfall-mode");
-    const isCurrentBrick = postListContainer.classList.contains("brick-mode");
     const isCurrentList = postListContainer.classList.contains("list-mode");
     const currentLayout = isCurrentGrid
       ? "grid"
       : isCurrentWaterfall
         ? "waterfall"
-        : isCurrentBrick
-          ? "brick"
-          : isCurrentList
-            ? "list"
-            : null;
+        : isCurrentList
+          ? "list"
+          : null;
 
     // Common logic vars
     const masonryEnabled = postListContainer.getAttribute("data-masonry-enabled") === "true";
@@ -178,13 +176,12 @@ const initialLayoutClass =
           "list-mode",
           "grid-mode",
           "waterfall-mode",
-          "brick-mode",
+          "",
           "post-grid-auto",
           "flex",
           "flex-col",
           "gap-4",
-          "md:gap-4",
-        );
+          "md:gap-4");
         if (layout === "grid") {
             postListContainer.classList.add("grid-mode");
             if (masonryEnabled) {
@@ -195,9 +192,6 @@ const initialLayoutClass =
             }
         } else if (layout === "waterfall") {
             postListContainer.classList.add("waterfall-mode");
-            resetMasonryLayout();
-        } else if (layout === "brick") {
-            postListContainer.classList.add("brick-mode");
             resetMasonryLayout();
         } else {
             postListContainer.classList.add("list-mode", "flex", "flex-col", "gap-4", "md:gap-4");
@@ -410,8 +404,7 @@ const initialLayoutClass =
     const container = document.getElementById("post-list-container");
     if (
       !container?.classList.contains("grid-mode") &&
-      !container?.classList.contains("waterfall-mode") &&
-      !container?.classList.contains("brick-mode")
+      !container?.classList.contains("waterfall-mode")
     ) return;
     const target = e.target as Element | null;
     const card = target?.closest?.(".post-card-wrapper") as HTMLElement | null;
@@ -483,11 +476,11 @@ const initialLayoutClass =
   }
 
   /* Grid / Waterfall / Brick card chrome */
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-card-wrapper) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-card-wrapper) {
     flex-direction: column-reverse !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-card-image) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-card-image) {
     width: 100% !important;
     position: relative !important;
     top: auto !important;
@@ -496,99 +489,91 @@ const initialLayoutClass =
     border-radius: var(--radius-large) var(--radius-large) 0 0 !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-card-content) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-card-content) {
     width: 100% !important;
     padding: 1rem !important;
   }
 
-  /* letter 在瀑布/砖石已改为上下堆叠，用更紧凑内边距，避免被上面 1rem 盖掉 */
-  #post-list-container:is(.waterfall-mode, .brick-mode) :global(.post-card-wrapper--letter > .post-card-content) {
+  /* letter 在瀑布已改为上下堆叠，用更紧凑内边距，避免被上面 1rem 盖掉 */
+  #post-list-container:is(.waterfall-mode) :global(.post-card-wrapper--letter > .post-card-content) {
     padding: 0.85rem 0.9rem 0.7rem !important;
   }
 
-  #post-list-container.brick-mode :global(.post-card-wrapper:not(.post-card-wrapper--letter) .post-card-content) {
-    padding: 0.65rem 0.75rem 0.7rem !important;
-  }
-
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.no-cover .post-card-content) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.no-cover .post-card-content) {
     padding-right: 4.5rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-card-title) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-card-title) {
     font-size: 1.35rem !important;
     line-height: 1.75rem !important;
     margin-bottom: 0.5rem !important;
   }
 
-  #post-list-container:is(.waterfall-mode, .brick-mode) :global(.post-card-wrapper--letter .post-card-title) {
+  #post-list-container:is(.waterfall-mode) :global(.post-card-wrapper--letter .post-card-title) {
     font-size: 1.05rem !important;
     line-height: 1.35 !important;
   }
 
-  #post-list-container.brick-mode :global(.post-card-wrapper--letter .post-card-title) {
-    font-size: 0.98rem !important;
-  }
-
   /* letter 用 grid 上下堆叠，不要被 column-reverse 干扰 */
-  #post-list-container:is(.waterfall-mode, .brick-mode) :global(.post-card-wrapper--letter) {
+  #post-list-container:is(.waterfall-mode) :global(.post-card-wrapper--letter) {
     display: grid !important;
     flex-direction: unset !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta) {
     margin-bottom: 0.5rem !important;
     gap: 0.5rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta .text-xl) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta .text-xl) {
     font-size: 1rem !important;
     line-height: 1.25rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.meta-icon) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.meta-icon) {
     width: 1.5rem !important;
     height: 1.5rem !important;
     margin-right: 0.25rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta .text-sm) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta .text-sm) {
     font-size: 0.75rem !important;
     line-height: 1rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.card-header-meta .text-sm) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.card-header-meta .text-sm) {
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.card-header-meta .meta-icon) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.card-header-meta .meta-icon) {
     width: 2rem !important;
     height: 2rem !important;
     margin-right: 0.5rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.card-header-meta .text-xl) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.card-header-meta .text-xl) {
     font-size: 1.25rem !important;
     line-height: 1.75rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta .pinned-btn) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta .pinned-btn) {
     height: 2rem !important;
     padding: 0 0.5rem !important;
     gap: 0.25rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta .pinned-btn .text-xl) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta .pinned-btn .text-xl) {
     font-size: 1.25rem !important;
     line-height: 1.75rem !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-meta .pinned-btn .text-sm) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-meta .pinned-btn .text-sm) {
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
   }
 
-  /* 园主置顶：list / grid / waterfall / brick 统一挂在内容区标题行 */
+  /* 园主置顶：list / grid / waterfall 统一挂在内容区标题行 */
   #post-list-container :global(.post-card-head) {
     display: flex;
     align-items: flex-start;
@@ -600,7 +585,7 @@ const initialLayoutClass =
     margin-bottom: 0 !important;
   }
 
-  #post-list-container:is(.grid-mode, .waterfall-mode, .brick-mode) :global(.post-card-head) {
+  #post-list-container:is(.grid-mode, .waterfall-mode) :global(.post-card-head) {
     margin-bottom: 0.55rem;
   }
 

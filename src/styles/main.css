@@ -16,7 +16,6 @@
 @import './recommend-index.css';
 @import './site-footer.css';
 @import './waterfall.css';
-@import './brick.css';
 @import './text-voice.css';
 @import './announcement-press.css';
 
@@ -585,12 +584,12 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
   @apply bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-hover);
 }
 
-/* 网格 / 瀑布 / 砖石模式下的文章卡片样式调整 */
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item {
+/* 网格 / 瀑布模式下的文章卡片样式调整 */
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item {
   @apply w-full;
 }
 
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item a[href] {
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item a[href] {
   @apply text-xl before:h-4 before:top-[28px] before:left-[-18px] truncate;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -601,35 +600,35 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
   max-height: 2.8em; /* 2行的高度 */
 }
 
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item a[aria-label] {
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item a[aria-label] {
   @apply hidden;
 }
 
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item .btn-regular {
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item .btn-regular {
   @apply hidden;
 }
 
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item .line-clamp-1 {
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item .line-clamp-1 {
   @apply line-clamp-2;
 }
 
-/* 网格 / 瀑布 / 砖石模式下的卡片内容区域调整 */
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item > div {
+/* 网格 / 瀑布模式下的卡片内容区域调整 */
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item > div {
   @apply p-4;
 }
 
-/* 网格 / 瀑布 / 砖石模式下的元数据样式调整 */
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item .post-meta {
+/* 网格 / 瀑布模式下的元数据样式调整 */
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item .post-meta {
   @apply mb-2;
 }
 
-/* 网格 / 瀑布 / 砖石模式下的描述文本调整 */
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item .description {
+/* 网格 / 瀑布模式下的描述文本调整 */
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item .description {
   @apply text-sm mb-2 line-clamp-2;
 }
 
-/* 网格 / 瀑布 / 砖石模式下的统计信息调整 */
-:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode, .brick-mode) .post-card-item .stats {
+/* 网格 / 瀑布模式下的统计信息调整 */
+:is(.post-list-container, #post-list-container):is(.grid-mode, .waterfall-mode) .post-card-item .stats {
   @apply text-xs;
 }
 
