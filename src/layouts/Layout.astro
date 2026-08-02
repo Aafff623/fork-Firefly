@@ -1661,6 +1661,7 @@ function disableAnimation() {
   function updateSidebarStickySpacing() {
     const scrollTop = document.documentElement.scrollTop || window.scrollY || 0;
     const isScrolled = scrollTop > 2;
+    const isPostPage = isCurrentPagePost();
 
     (["left", "right"] as const).forEach((side) => {
       const sticky = document.getElementById(`${side}-sidebar-sticky`);
@@ -1668,6 +1669,7 @@ function disableAnimation() {
 
       // 结构为：sidebar -> top 容器（可选） + sticky 容器
       const topContainer = sticky.previousElementSibling as HTMLElement | null;
+      // display:none 的动态栏不算「可见顶部」
       const hasVisibleTop = !!topContainer && topContainer.offsetHeight > 1;
 
       // swup 从非文章页切换到文章页时，top 容器可能残留 mb-4，需要按可见性动态修正
@@ -1692,8 +1694,29 @@ function disableAnimation() {
         sticky.classList.add(nextTopClass);
         sidebarStickyState[side].topClass = nextTopClass;
       }
+
+      // 文章页右栏：顶部无可视组件时，目录光学居中（略偏上），避免贴顶
+      if (side === "right") {
+        const toc = sticky.querySelector<HTMLElement>(
+          'widget-layout[data-id="sidebar-toc"]',
+        );
+        const tocVisible =
+          !!toc &&
+          !toc.classList.contains("hidden") &&
+          toc.getClientRects().length > 0;
+        const opticalCenter = isPostPage && !hasVisibleTop && tocVisible;
+        sticky.classList.toggle(
+          "right-sidebar-sticky--optical-center",
+          opticalCenter,
+        );
+      }
     });
   }
+
+  // 动态栏关闭等场景主动重算
+  document.addEventListener("firefly:sidebar-layout", () => {
+    updateSidebarStickySpacing();
+  });
 
   // Initialize wallpaper mode
   import { initWallpaperMode, initThemeListener } from "@/utils/setting-utils";
@@ -1732,7 +1755,7 @@ function disableAnimation() {
     initCurtainFocusOnLoad();
   }
 
-  // LQIP fade-in：图片加载完成后淡出占位渐变
+  // LQIP fade-in：图片加载完成后淡出占位渐变（失败也要露出图，避免永久 opacity-0）
   function initImageLoadFadeIn() {
     const placeholders = document.querySelectorAll<HTMLElement>('.lqip-placeholder');
     placeholders.forEach(placeholder => {
@@ -1741,15 +1764,18 @@ function disableAnimation() {
       const img = container.querySelector<HTMLImageElement>('img, picture img');
       if (!img) return;
 
-      if (img.complete && img.naturalWidth > 0) {
+      const reveal = () => {
         img.style.opacity = '1';
         placeholder.classList.add('loaded');
+      };
+
+      if (img.complete && img.naturalWidth > 0) {
+        reveal();
       } else {
-        img.addEventListener('load', () => {
-          img.style.opacity = '1';
-          placeholder.classList.add('loaded');
-        }, { once: true });
+        img.addEventListener('load', reveal, { once: true });
         img.addEventListener('error', () => {
+          // 加载失败时仍去掉透明，避免侧栏头像等永久隐形
+          img.style.opacity = '1';
           if (!container.classList.contains('cover-image-container')) {
             placeholder.classList.add('loaded');
           }
