@@ -323,6 +323,7 @@ export const zh_CN: Translation = {
 	[Key.postListLayoutList]: "列表",
 	[Key.postListLayoutGrid]: "卡片",
 	[Key.postListLayoutWaterfall]: "瀑布",
+	[Key.postListLayoutBrick]: "砖石",
 
 	// 打赏页面
 	[Key.sponsor]: "打赏",
@@ -394,6 +395,7 @@ export const zh_CN: Translation = {
 	[Key.calendarDecember]: "12月",
 	[Key.calendar]: "站点日历",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}周，{count}篇文章",
+	[Key.surpriseClock]: "意想不到时钟",
 	[Key.advertisement]: "广告",
 
 	[Key.shareArticle]: "分享",

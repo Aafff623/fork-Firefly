@@ -331,6 +331,7 @@ export const en: Translation = {
 	[Key.postListLayoutList]: "List",
 	[Key.postListLayoutGrid]: "Cards",
 	[Key.postListLayoutWaterfall]: "Waterfall",
+	[Key.postListLayoutBrick]: "Brick",
 
 	// Sponsor Page
 	[Key.sponsor]: "Sponsor",
@@ -403,6 +404,7 @@ export const en: Translation = {
 	[Key.calendarDecember]: "Dec",
 	[Key.calendar]: "Site Calendar",
 	[Key.calendarHeatmapWeek]: "Week {week} of {month}, {count} posts",
+	[Key.surpriseClock]: "Surprise Clock",
 	[Key.advertisement]: "Advertisement",
 
 	[Key.shareArticle]: "Share",

@@ -1,0 +1,114 @@
+/* ===== 砖石布局（对照 bilibili-goat layouts/砖石布局）=====
+ * CSS Grid + dense：tall / wide / big 错落铺砖；卡片内图文上下契合。
+ */
+
+#post-list-container.brick-mode {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+	grid-auto-rows: 8.5rem;
+	grid-auto-flow: dense;
+	gap: 0.75rem;
+	align-items: stretch;
+}
+
+@media (min-width: 640px) {
+	#post-list-container.brick-mode {
+		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+		grid-auto-rows: 9.5rem;
+		gap: 0.85rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	#post-list-container.brick-mode {
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+		grid-auto-rows: 10rem;
+	}
+}
+
+#post-list-container.brick-mode > .post-card-item {
+	display: flex;
+	min-width: 0;
+	min-height: 0;
+	height: 100%;
+	margin: 0;
+}
+
+/* 错落：tall / wide / big */
+#post-list-container.brick-mode > .post-card-item:nth-child(5n + 1) {
+	grid-row: span 2;
+}
+
+#post-list-container.brick-mode > .post-card-item:nth-child(7n + 3) {
+	grid-column: span 2;
+}
+
+#post-list-container.brick-mode > .post-card-item:nth-child(11n + 5) {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+#post-list-container.brick-mode .post-card-wrapper {
+	height: 100% !important;
+	min-height: 0 !important;
+	overflow: hidden !important;
+}
+
+/* 普通卡：封面顶、正文底，填满砖格 */
+#post-list-container.brick-mode .post-card-wrapper:not(.post-card-wrapper--letter) {
+	display: flex !important;
+	flex-direction: column-reverse !important;
+	justify-content: flex-end !important;
+}
+
+#post-list-container.brick-mode .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-image {
+	position: relative !important;
+	inset: auto !important;
+	width: 100% !important;
+	flex: 1 1 auto !important;
+	min-height: 0 !important;
+	aspect-ratio: auto !important;
+	max-height: none !important;
+	margin: 0 !important;
+	border-radius: var(--radius-large) var(--radius-large) 0 0 !important;
+}
+
+#post-list-container.brick-mode .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-content {
+	width: 100% !important;
+	flex: 0 0 auto !important;
+	height: auto !important;
+	padding: 0.65rem 0.75rem 0.7rem !important;
+}
+
+#post-list-container.brick-mode .post-card-wrapper--letter > .letter-cover {
+	flex: 1 1 auto;
+	min-height: 0 !important;
+	aspect-ratio: auto !important;
+	height: 100% !important;
+}
+
+#post-list-container.brick-mode > .post-card-item:nth-child(5n + 1) .post-card-wrapper--letter {
+	grid-template-rows: minmax(0, 1.35fr) auto !important;
+}
+
+#post-list-container.brick-mode > .post-card-item:nth-child(11n + 5) .post-card-wrapper--letter {
+	grid-template-rows: minmax(0, 1.6fr) auto !important;
+}
+
+#post-list-container.brick-mode .post-card-wrapper--letter {
+	height: 100% !important;
+	grid-template-rows: minmax(0, 1fr) auto !important;
+}
+
+#post-list-container.brick-mode .description {
+	-webkit-line-clamp: 2 !important;
+	line-clamp: 2 !important;
+	font-size: 0.8rem !important;
+	margin-bottom: 0.35rem !important;
+}
+
+#post-list-container.brick-mode .post-card-title,
+#post-list-container.brick-mode .post-card-wrapper--letter .post-card-title {
+	font-size: 0.98rem !important;
+	line-height: 1.3 !important;
+}

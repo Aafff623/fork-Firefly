@@ -330,6 +330,7 @@ export const ko: Translation = {
 	[Key.postListLayoutList]: "목록형",
 	[Key.postListLayoutGrid]: "카드형",
 	[Key.postListLayoutWaterfall]: "폭포형",
+	[Key.postListLayoutBrick]: "벽돌형",
 
 	// Sponsor Page
 	[Key.sponsor]: "후원",
@@ -401,6 +402,7 @@ export const ko: Translation = {
 	[Key.calendarDecember]: "12월",
 	[Key.calendar]: "사이트 캘린더",
 	[Key.calendarHeatmapWeek]: "{month}의 {week}주차, 게시글 {count}개",
+	[Key.surpriseClock]: "서프라이즈 시계",
 	[Key.advertisement]: "광고",
 
 	[Key.shareArticle]: "공유",

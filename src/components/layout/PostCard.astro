@@ -409,9 +409,9 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     }
   }
 
-  /* === Grid / Waterfall Mode Styles === */
-  /* 封面在顶部（网格与瀑布共用卡片壳） */
-  :global(:is(.grid-mode, .waterfall-mode)) .post-card-wrapper {
+  /* === Grid / Waterfall / Brick Mode Styles === */
+  /* 封面在顶部（网格 / 瀑布 / 砖石共用卡片壳；letter 由 post-card-letter.css 单独改形态） */
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .post-card-wrapper {
     flex-direction: column-reverse !important;
     justify-content: flex-end !important;
   }
@@ -424,13 +424,17 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     height: auto !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .post-card-content {
+  :global(.brick-mode) .post-card-wrapper {
+    height: 100% !important;
+  }
+
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .post-card-content {
     width: 100% !important;
     height: auto !important;
     flex-grow: 1 !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .post-card-image {
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .post-card-image {
     position: relative !important;
     top: auto !important;
     bottom: auto !important;
@@ -442,23 +446,29 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     aspect-ratio: 2/1 !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .description {
+  :global(.brick-mode) .post-card-image {
+    aspect-ratio: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+  }
+
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .description {
     flex-grow: 0 !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .stats {
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .stats {
     margin-top: auto !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .has-cover .post-card-content {
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .has-cover .post-card-content {
     padding-top: 0.8rem !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .no-cover .post-card-content {
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .no-cover .post-card-content {
     width: calc(100% - 52px - 12px) !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode)) .post-card-enter-btn {
+  :global(:is(.grid-mode, .waterfall-mode, .brick-mode)) .post-card-enter-btn {
     display: flex !important;
   }
 </style>

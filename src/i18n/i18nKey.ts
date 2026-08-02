@@ -324,6 +324,7 @@ enum I18nKey {
 	postListLayoutList = "postListLayoutList",
 	postListLayoutGrid = "postListLayoutGrid",
 	postListLayoutWaterfall = "postListLayoutWaterfall",
+	postListLayoutBrick = "postListLayoutBrick",
 
 	// 打赏页面
 	sponsor = "sponsor",
@@ -393,6 +394,7 @@ enum I18nKey {
 	calendarDecember = "calendarDecember",
 	calendar = "calendar",
 	calendarHeatmapWeek = "calendarHeatmapWeek",
+	surpriseClock = "surpriseClock",
 	advertisement = "advertisement",
 
 	shareArticle = "shareArticle",

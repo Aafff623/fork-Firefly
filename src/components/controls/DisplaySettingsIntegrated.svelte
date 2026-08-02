@@ -72,7 +72,7 @@ let hue = $state(getHue());
 const defaultHue = getDefaultHue();
 let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
 const defaultWallpaperMode = backgroundWallpaper.mode;
-type PostListLayoutMode = "list" | "grid" | "waterfall";
+type PostListLayoutMode = "list" | "grid" | "waterfall" | "brick";
 let currentLayout: PostListLayoutMode = $state("list");
 const defaultLayout = siteConfig.postListLayout.defaultMode;
 const mobileDefaultLayout =
@@ -482,7 +482,8 @@ onMount(() => {
 	if (
 		savedLayout === "list" ||
 		savedLayout === "grid" ||
-		savedLayout === "waterfall"
+		savedLayout === "waterfall" ||
+		savedLayout === "brick"
 	) {
 		currentLayout = savedLayout;
 	} else {
@@ -670,10 +671,10 @@ $effect(() => {
 					</div>
 				</button>
 			</div>
-			<div class="flex gap-1.5">
+			<div class="grid grid-cols-2 gap-1.5">
 				<button
 					aria-label={i18n(I18nKey.postListLayoutList)}
-					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={currentLayout !== 'list'}
 					class:bg-(--btn-regular-bg-hover)={currentLayout === 'list'}
 					disabled={isSwitching}
@@ -685,7 +686,7 @@ $effect(() => {
 				</button>
 				<button
 					aria-label={i18n(I18nKey.postListLayoutGrid)}
-					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={currentLayout !== 'grid'}
 					class:bg-(--btn-regular-bg-hover)={currentLayout === 'grid'}
 					disabled={isSwitching}
@@ -697,7 +698,7 @@ $effect(() => {
 				</button>
 				<button
 					aria-label={i18n(I18nKey.postListLayoutWaterfall)}
-					class="flex-1 btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={currentLayout !== 'waterfall'}
 					class:bg-(--btn-regular-bg-hover)={currentLayout === 'waterfall'}
 					disabled={isSwitching}
@@ -706,6 +707,18 @@ $effect(() => {
 				>
 					<Icon icon="lucide:columns-3" class="w-4 h-4 shrink-0"></Icon>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutWaterfall)}</span>
+				</button>
+				<button
+					aria-label={i18n(I18nKey.postListLayoutBrick)}
+					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
+					class:opacity-60={currentLayout !== 'brick'}
+					class:bg-(--btn-regular-bg-hover)={currentLayout === 'brick'}
+					disabled={isSwitching}
+					onclick={() => setLayout('brick')}
+					title={i18n(I18nKey.postListLayoutBrick)}
+				>
+					<Icon icon="lucide:brick-wall" class="w-4 h-4 shrink-0"></Icon>
+					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutBrick)}</span>
 				</button>
 			</div>
 		</div>

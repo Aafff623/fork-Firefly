@@ -330,6 +330,7 @@ export const ja: Translation = {
 	[Key.postListLayoutList]: "リスト",
 	[Key.postListLayoutGrid]: "カード",
 	[Key.postListLayoutWaterfall]: "瀑布流",
+	[Key.postListLayoutBrick]: "レンガ",
 
 	// スポンサーページ
 	[Key.sponsor]: "スポンサー",
@@ -402,6 +403,7 @@ export const ja: Translation = {
 	[Key.calendarDecember]: "12月",
 	[Key.calendar]: "サイトカレンダー",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}週、{count}記事",
+	[Key.surpriseClock]: "サプライズ時計",
 	[Key.advertisement]: "広告",
 
 	[Key.shareArticle]: "共有",

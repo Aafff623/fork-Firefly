@@ -333,6 +333,7 @@ export const ru: Translation = {
 	[Key.postListLayoutList]: "Список",
 	[Key.postListLayoutGrid]: "Карточки",
 	[Key.postListLayoutWaterfall]: "Водопад",
+	[Key.postListLayoutBrick]: "Кирпич",
 
 	// Страница спонсоров
 	[Key.sponsor]: "Спонсор",
@@ -405,6 +406,7 @@ export const ru: Translation = {
 	[Key.calendarDecember]: "Дек",
 	[Key.calendar]: "Календарь сайта",
 	[Key.calendarHeatmapWeek]: "Неделя {week} {month}, {count} записей",
+	[Key.surpriseClock]: "Часы-сюрприз",
 	[Key.advertisement]: "Реклама",
 
 	[Key.shareArticle]: "Поделиться",
