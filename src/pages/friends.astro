@@ -1,4 +1,4 @@
-﻿---
+---
 import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
@@ -13,7 +13,8 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-// 妫€鏌ラ〉闈㈡槸鍚﹀惎鐢?if (!siteConfig.pages.friends) {
+// 检查页面是否启用
+if (!siteConfig.pages.friends) {
 	return Astro.redirect("/404/");
 }
 
@@ -25,16 +26,18 @@ if (!friendsPost) {
 
 const { Content } = await render(friendsPost);
 
-// 妫€鏌ヨ瘎璁虹郴缁熸槸鍚﹀惎鐢?const isCommentEnabled =
+// 检查评论系统是否启用
+const isCommentEnabled =
 	commentConfig?.type &&
 	commentConfig.type !== "none" &&
 	friendsPageConfig.showComment !== false;
 
-// 浣跨敤閰嶇疆鏂囦欢涓殑鍙嬮摼鏁版嵁锛屾寜鏉冮噸鎺掑簭
+// 使用配置文件中的友链数据，按权重排序
 const items = getEnabledFriends();
 const allTags = [...new Set(items.flatMap((item) => item.tags || []))].sort();
 
-// 椤甸潰鏍囬鍜屾弿杩?const title = friendsPageConfig.title || i18n(I18nKey.friends);
+// 页面标题和描述
+const title = friendsPageConfig.title || i18n(I18nKey.friends);
 const description =
 	friendsPageConfig.description || i18n(I18nKey.friendsDescription);
 ---
@@ -44,7 +47,7 @@ const description =
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
     <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 椤甸潰鏍囬鍜屾弿杩?-->
+      <!-- 页面标题和描述 -->
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-3">
           <div
@@ -65,7 +68,7 @@ const description =
         }
       </div>
 
-      <!-- 鎼滅储妗?-->
+      <!-- 搜索框 -->
       {
         items.length > 0 && (
           <friend-filter class="mb-6">
@@ -77,7 +80,7 @@ const description =
               <input
                 type="text"
                 data-search
-                placeholder={i18n(I18nKey.searchFriends) || "鎼滅储鍙嬮摼..."}
+                placeholder={i18n(I18nKey.searchFriends) || "搜索友链..."}
                 class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
               />
             </div>
@@ -120,10 +123,10 @@ const description =
               data-tags={item.tags?.join(",")}
               class="friend-card group flex items-center gap-3 p-2.5 rounded-xl border border-(--line-divider) hover:border-(--primary) hover:bg-(--card-bg) transition-all duration-300 hover:shadow-lg relative overflow-hidden"
             >
-              {/* 鑳屾櫙瑁呴グ - 浠呮偓鍋滄樉绀?*/}
+              {/* 背景装饰 - 仅悬停显示 */}
               <div class="absolute inset-0 bg-(--primary) opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none" />
 
-              {/* 澶村儚 */}
+              {/* 头像 */}
               <div class="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-black/5 dark:border-white/5 group-hover:scale-105 transition-transform duration-300">
                 <img
                   src={item.imgurl}
@@ -132,13 +135,13 @@ const description =
                 />
               </div>
 
-              {/* 鍐呭 */}
+              {/* 内容 */}
               <div class="grow min-w-0 flex flex-col justify-center gap-0.5">
                 <div class="flex items-center justify-between">
                   <div class="font-bold text-base text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors truncate pr-4">
                     {item.title}
                   </div>
-                  {/* 澶栭儴閾炬帴鍥炬爣 */}
+                  {/* 外部链接图标 */}
                   <Icon is:inline
                     name="lucide:square-arrow-out-up-right"
                     class="text-(--primary) text-lg opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
@@ -152,7 +155,7 @@ const description =
                   {item.desc}
                 </div>
 
-                {/* 鏍囩 */}
+                {/* 标签 */}
                 <div class="flex flex-wrap gap-1 mt-1">
                   {item.tags && item.tags.length > 0
                     ? item.tags
@@ -170,7 +173,7 @@ const description =
         }
       </div>
 
-      {/* 鎼滅储鏃犵粨鏋滄彁绀?*/}
+      {/* 搜索无结果提示 */}
       <div class="friends-empty hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
         <Icon is:inline name="lucide:search-x" class="text-4xl mb-3" />
         <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
@@ -186,7 +189,7 @@ const description =
     </div>
   )}
 
-  <!-- 璇勮鍖?-->
+  <!-- 评论区 -->
   {isCommentEnabled && (
     <div class="mt-4">
       <Comment post={friendsPost} customPath="/friends/" />
