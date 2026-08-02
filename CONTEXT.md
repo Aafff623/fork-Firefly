@@ -68,7 +68,7 @@ Content Collections（`src/content.config.ts`）：
 
 ## 部署事实
 
-- 默认 **static**；仅当 `CF_WORKERS` 时启用 Cloudflare Astro adapter
+- 默认页面仍 **prerender/static**；`CF_WORKERS` → Cloudflare adapter，否则 → `@astrojs/vercel`（供 `prerender=false` API）
 - Vercel 项目：`fork-firefly`，已连 GitHub origin
 - 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind）
 

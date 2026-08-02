@@ -4,6 +4,7 @@ import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
+import vercel from "@astrojs/vercel";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
@@ -57,11 +58,13 @@ if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
 }
 
+// CF Workers → Cloudflare adapter；其余（本地 / Vercel）→ Vercel adapter
+// 供 /api/comment-image、/api/admin/pin 等 prerender=false 路由使用
 const adapter = process.env.CF_WORKERS
 	? cloudflare({
 			prerenderEnvironment: "node",
 		})
-	: undefined;
+	: vercel();
 
 // https://astro.build/config
 export default defineConfig({
