@@ -93,7 +93,7 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 ```
 [ ] check_quota --need image
 [ ] 读帖主题；查重
-[ ] 艺术 prompt（禁紫玻璃）→ text_to_image
+[ ] 艺术 prompt（见 prompt-craft：创意/艺术现代感/贴题或高度抽象/多要素；禁蓝紫渐变与廉价 AI 味）→ text_to_image
 [ ] fetch_media 落到 cover.*
 [ ] 改 FM；可选 understand_image
 ```
