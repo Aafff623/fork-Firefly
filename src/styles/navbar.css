@@ -339,14 +339,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
         inset 0 -1px 0 rgba(0, 0, 0, 0.28);
 }
 
-/* ============================================
- * 小于1280px时隐藏导航栏菜单图标
- * ============================================ */
-@media (max-width: 1279px) {
-    .navbar-icon {
-        display: none !important;
-    }
-}
+/* 导航项 Lucide 图标：桌面菜单可见宽度内始终显示（不再在 <1280px 隐藏） */
 
 /* full 透明模式下不显示滚动阴影（底层无背景，阴影会变成悬空色带） */
 #navbar[data-transparent-mode="full"].navbar-sticky-shadow>div {
