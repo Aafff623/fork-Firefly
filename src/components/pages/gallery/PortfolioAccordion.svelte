@@ -11,7 +11,7 @@ const { works, viewLabel }: Props = $props();
 let activeIndex = $state(0);
 let listEl = $state<HTMLDivElement | null>(null);
 
-/** 已预热图片：当前 + 邻格，避免多张大图同时解码 */
+/** 当前 + 邻格预热，避免一次解码太多大图 */
 let warmed = $state<Set<number>>(new Set([0, 1]));
 
 let rafPending = 0;
@@ -26,12 +26,13 @@ function warmAround(index: number) {
 }
 
 function applyIndex(index: number) {
-	if (index === activeIndex || index < 0 || index >= works.length) return;
-	activeIndex = index;
-	warmAround(index);
+	if (index < 0 || index >= works.length) return;
+	if (index !== activeIndex) {
+		activeIndex = index;
+		warmAround(index);
+	}
 }
 
-/** 合并到每帧最多一次，避免快速扫过时连续触发布局 */
 function requestIndex(index: number) {
 	queuedIndex = index;
 	if (rafPending) return;
@@ -97,7 +98,7 @@ function onKeydown(event: KeyboardEvent) {
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
 			id={`portfolio-panel-${index}`}
-			class="portfolio-panel"
+			class="portfolio-card"
 			class:is-active={active}
 			role="option"
 			aria-selected={active}
@@ -113,7 +114,8 @@ function onKeydown(event: KeyboardEvent) {
 				}
 			}}
 		>
-			<div class="portfolio-panel-media" aria-hidden="true">
+			<!-- 收起态：窄条裁切原图（对照原神 .box） -->
+			<div class="portfolio-box" aria-hidden="true">
 				{#if ready}
 					<img
 						src={work.image}
@@ -122,31 +124,44 @@ function onKeydown(event: KeyboardEvent) {
 						decoding="async"
 						loading={index <= 1 ? "eager" : "lazy"}
 						fetchpriority={active ? "high" : "low"}
-						sizes="(max-width: 640px) 78vw, 55vw"
 					/>
 				{:else}
-					<div class="portfolio-panel-skeleton"></div>
-				{/if}
-				<div class="portfolio-panel-scrim"></div>
-			</div>
-
-			<span class="portfolio-panel-title">{work.title}</span>
-
-			<div class="portfolio-panel-meta">
-				{#if work.description}
-					<p>{work.description}</p>
-				{/if}
-				{#if work.href}
-					<a
-						class="portfolio-panel-cta"
-						href={work.href}
-						tabindex={active ? 0 : -1}
-						onclick={(e) => e.stopPropagation()}
-					>
-						{viewLabel}
-					</a>
+					<div class="portfolio-card-skeleton"></div>
 				{/if}
 			</div>
+
+			<!-- 展开态：同图放大弹出（对照原神 .character；素材仍是相册封面） -->
+			<div class="portfolio-character" aria-hidden="true">
+				{#if ready}
+					<img
+						src={work.image}
+						alt=""
+						draggable="false"
+						decoding="async"
+						loading={index <= 1 ? "eager" : "lazy"}
+					/>
+				{/if}
+			</div>
+
+			<h4 class="portfolio-card-title">{work.title}</h4>
+
+			{#if work.description || work.href}
+				<div class="portfolio-card-meta">
+					{#if work.description}
+						<p>{work.description}</p>
+					{/if}
+					{#if work.href}
+						<a
+							class="portfolio-card-cta"
+							href={work.href}
+							tabindex={active ? 0 : -1}
+							onclick={(e) => e.stopPropagation()}
+						>
+							{viewLabel}
+						</a>
+					{/if}
+				</div>
+			{/if}
 		</div>
 	{/each}
 </div>

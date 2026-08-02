@@ -94,10 +94,11 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
 ---
 
 <MainGridLayout title={title} description={description}>
+  <!-- overflow visible：作品集手风琴弹出层不被圆角容器裁切 -->
   <div
-    class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
+    class="flex w-full rounded-(--radius-large) overflow-visible relative min-h-32"
   >
-    <div class="card-base z-10 px-9 py-6 relative w-full">
+    <div class="card-base z-10 px-9 py-6 relative w-full overflow-visible">
       <!-- 页面标题和描述 -->
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-3">
