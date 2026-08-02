@@ -1,0 +1,466 @@
+/* ===== Letter / Night 置顶卡 =====
+ * 对照 tmp/hallmark-style-lab/blog-mock.html
+ *
+ * 结构（与 mock 一致的两栏 grid）:
+ *   .post-card-wrapper--letter  →  .card
+ *   .post-card-content           →  .card-body   （浅黄/奶油纸）
+ *   .letter-cover               →  .cover       （淡紫底，始终铺满右栏）
+ *   .letter-cover__media        →  主题封面图叠在淡紫底之上（第三层）
+ *
+ * 亮色：暖奶油纸 + 淡紫 cover
+ * 暗色：Night 纸面 + brass accent
+ */
+
+.post-card-wrapper--letter {
+	--letter-surface: oklch(95% 0.012 85);
+	--letter-surface-soft: oklch(97% 0.008 85);
+	--letter-cover: oklch(93% 0.03 var(--hue));
+	--letter-ink: oklch(22% 0.02 var(--hue));
+	--letter-muted: oklch(48% 0.02 var(--hue));
+	--letter-rule: oklch(86% 0.02 var(--hue));
+	--letter-accent: oklch(48% 0.18 var(--hue));
+	--letter-accent-soft: oklch(48% 0.18 var(--hue) / 0.12);
+	--letter-leaf: oklch(45% 0.1 145);
+	--letter-shadow: 0 0 0 1px oklch(0.3 0.02 var(--hue) / 0.07);
+
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 8.5rem);
+	grid-template-rows: auto;
+	flex-direction: unset !important;
+	align-items: stretch;
+	gap: 0 !important;
+	border-radius: 0.95rem !important;
+	border: 1px solid var(--letter-rule) !important;
+	/* 整卡底色 = 左栏浅黄；右栏由 .letter-cover 盖住 */
+	background: var(--letter-surface) !important;
+	background-color: var(--letter-surface) !important;
+	box-shadow: var(--letter-shadow) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	overflow: hidden !important;
+	min-height: 0 !important;
+	position: relative !important;
+}
+
+:root.dark .post-card-wrapper--letter {
+	--letter-surface: oklch(18% 0.022 var(--hue));
+	--letter-surface-soft: oklch(20% 0.02 var(--hue));
+	--letter-cover: oklch(22% 0.03 var(--hue));
+	--letter-ink: oklch(95% 0.01 var(--hue));
+	--letter-muted: oklch(72% 0.02 var(--hue));
+	--letter-rule: oklch(30% 0.02 var(--hue));
+	--letter-accent: oklch(78% 0.12 55);
+	--letter-accent-soft: oklch(78% 0.12 55 / 0.14);
+	--letter-leaf: oklch(72% 0.08 145);
+	--letter-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.05),
+		0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* 壁纸透明模式会刷半透明白——整卡 + 两栏都必须压住 */
+.wallpaper-transparent .card-base.post-card-wrapper--letter,
+.wallpaper-transparent .post-card-wrapper--letter.card-base,
+body.wallpaper-transparent .card-base.post-card-wrapper--letter,
+.wallpaper-transparent .post-card-wrapper--letter .post-card-content,
+.wallpaper-transparent .post-card-wrapper--letter .letter-cover {
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	opacity: 1 !important;
+}
+
+.wallpaper-transparent .card-base.post-card-wrapper--letter,
+.wallpaper-transparent .post-card-wrapper--letter.card-base,
+body.wallpaper-transparent .card-base.post-card-wrapper--letter,
+.wallpaper-transparent .post-card-wrapper--letter .post-card-content {
+	background: var(--letter-surface) !important;
+	background-color: var(--letter-surface) !important;
+	border-color: var(--letter-rule) !important;
+}
+
+.post-card-wrapper--letter:hover,
+.post-card-wrapper--letter:active {
+	transform: none !important;
+	border-color: color-mix(
+		in oklch,
+		var(--letter-accent) 42%,
+		var(--letter-rule)
+	) !important;
+	background: var(--letter-surface) !important;
+	background-color: var(--letter-surface) !important;
+	box-shadow: var(--letter-shadow) !important;
+	padding-left: 0 !important;
+}
+
+.post-card-wrapper--letter::after {
+	opacity: 0.012;
+}
+
+/* 无封面：收起右栏（mock `.card.no-cover`） */
+.post-card-wrapper--letter.no-cover {
+	grid-template-columns: 1fr;
+}
+
+.post-card-wrapper--letter.no-cover .letter-cover {
+	display: none !important;
+}
+
+/* —— ① 左栏：浅黄/奶油纸（.card-body） —— */
+.post-card-wrapper--letter > .post-card-content,
+.list-mode .post-card-wrapper--letter.post-card-wrapper--featured > .post-card-content,
+.list-mode
+	.post-card-wrapper--letter.post-card-wrapper--featured.has-cover
+	> .post-card-content {
+	grid-column: 1;
+	grid-row: 1;
+	width: 100% !important;
+	max-width: none !important;
+	min-width: 0;
+	height: auto !important;
+	align-self: stretch;
+	padding: 1.15rem 1.15rem 0.85rem !important;
+	display: flex;
+	flex-direction: column;
+	background: var(--letter-surface) !important;
+	background-color: var(--letter-surface) !important;
+	color: var(--letter-ink);
+	box-sizing: border-box;
+}
+
+.post-card-wrapper--letter .post-card-head {
+	margin-bottom: 0.45rem;
+}
+
+.post-card-wrapper--letter .post-card-title {
+	font-family: "Zen Maru Gothic", "PingFang SC", var(--font-family), sans-serif;
+	font-style: normal;
+	font-weight: 700;
+	font-size: 1.28rem !important;
+	line-height: 1.3 !important;
+	letter-spacing: -0.01em;
+	color: var(--letter-ink);
+	margin-bottom: 0 !important;
+}
+
+:root.dark .post-card-wrapper--letter .post-card-title {
+	font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+	font-weight: 400;
+	font-size: 1.4rem !important;
+}
+
+.post-card-wrapper--letter .post-card-title:hover,
+.post-card-wrapper--letter .post-card-title:hover .post-card-title-hl {
+	color: var(--letter-accent) !important;
+}
+
+.post-card-wrapper--letter .post-card-title-hl {
+	background-image: none !important;
+	background-size: 0 !important;
+}
+
+.post-card-wrapper--letter .card-header-meta {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.68rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--letter-muted);
+	margin-bottom: 0.65rem !important;
+	gap: 0.55rem 0.85rem !important;
+}
+
+.post-card-wrapper--letter .card-header-meta .meta-icon,
+.post-card-wrapper--letter .card-header-meta .meta-divider {
+	display: none !important;
+}
+
+.post-card-wrapper--letter .card-header-meta a {
+	color: var(--letter-leaf);
+	font-weight: 600;
+}
+
+.post-card-wrapper--letter .card-header-meta .text-50,
+.post-card-wrapper--letter .card-header-meta .text-sm {
+	color: var(--letter-muted) !important;
+	font-size: inherit !important;
+}
+
+.post-card-wrapper--letter .description {
+	color: var(--letter-muted);
+	font-size: 0.92rem;
+	max-width: 52ch;
+	margin: 0 0 0.85rem !important;
+	flex: 1 1 auto;
+}
+
+.post-card-wrapper--letter .post-card-bottom-tags,
+.post-card-wrapper--letter .stats,
+.post-card-wrapper--letter .post-card-enter-btn {
+	display: none !important;
+}
+
+/* Index Garden rail */
+.post-card-wrapper--letter .card-rail {
+	margin-top: auto;
+	border-top: 1px solid var(--letter-rule);
+	padding-top: 0.55rem;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: 0.65rem;
+	align-items: baseline;
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--letter-muted);
+}
+
+.post-card-wrapper--letter .card-rail .tags {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.post-card-wrapper--letter .card-rail .tags a,
+.post-card-wrapper--letter .card-rail .tags b {
+	color: var(--letter-accent);
+	font-weight: 500;
+}
+
+.post-card-wrapper--letter .card-rail .tags a:hover {
+	text-decoration: underline;
+	text-underline-offset: 0.12em;
+}
+
+/* —— ② 右栏淡紫底（.cover）③ 封面图叠上 —— */
+.post-card-wrapper--letter > .letter-cover {
+	grid-column: 2;
+	grid-row: 1;
+	position: relative !important;
+	top: auto !important;
+	right: auto !important;
+	bottom: auto !important;
+	left: auto !important;
+	display: block !important;
+	width: 100% !important;
+	min-width: 0;
+	height: auto !important;
+	min-height: 100%;
+	align-self: stretch;
+	margin: 0 !important;
+	padding: 0 !important;
+	aspect-ratio: auto !important;
+	border-radius: 0 !important;
+	border: 0;
+	border-left: 1px solid var(--letter-rule);
+	overflow: hidden;
+	text-decoration: none;
+	/* mock .cover：淡紫渐变铺满整格，作为图下底色 */
+	background:
+		linear-gradient(
+			160deg,
+			color-mix(in oklch, var(--letter-accent) 22%, var(--letter-surface)),
+			var(--letter-cover)
+		) !important;
+	background-color: var(--letter-cover) !important;
+}
+
+.wallpaper-transparent .post-card-wrapper--letter > .letter-cover {
+	background:
+		linear-gradient(
+			160deg,
+			color-mix(in oklch, var(--letter-accent) 22%, var(--letter-surface)),
+			var(--letter-cover)
+		) !important;
+	background-color: var(--letter-cover) !important;
+}
+
+:root.dark .post-card-wrapper--letter > .letter-cover {
+	background: linear-gradient(
+		160deg,
+		color-mix(in oklch, var(--letter-accent) 28%, var(--letter-surface)),
+		var(--letter-cover)
+	) !important;
+	background-color: var(--letter-cover) !important;
+}
+
+/* 主题图：绝对铺满右栏，压在淡紫底之上 */
+.post-card-wrapper--letter .letter-cover__media {
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 0;
+	width: 100% !important;
+	height: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	overflow: hidden !important;
+	background: transparent !important;
+}
+
+.post-card-wrapper--letter .letter-cover__media > *,
+.post-card-wrapper--letter .letter-cover__media picture,
+.post-card-wrapper--letter .letter-cover__media img {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none !important;
+	max-height: none !important;
+	object-fit: cover !important;
+	border-radius: 0 !important;
+	margin: 0 !important;
+}
+
+.post-card-wrapper--letter .letter-cover .loading-spinner {
+	background-color: transparent !important;
+}
+
+.post-card-wrapper--letter .letter-cover .lqip-placeholder {
+	opacity: 0.4;
+}
+
+/* 有图时轻罩一层淡紫，气质贴近 mock（仍能看见图） */
+.post-card-wrapper--letter.has-cover > .letter-cover::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	background: linear-gradient(
+		160deg,
+		color-mix(in oklch, var(--letter-accent) 14%, transparent),
+		color-mix(in oklch, var(--letter-cover) 22%, transparent)
+	);
+}
+
+.post-card-wrapper--letter > .letter-cover::after {
+	content: "cover";
+	position: absolute;
+	right: 0.55rem;
+	bottom: 0.5rem;
+	z-index: 2;
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.6rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: color-mix(in oklch, var(--letter-muted) 70%, white);
+	pointer-events: none;
+}
+
+.post-card-wrapper--letter .pinned-btn--auto,
+.post-card-wrapper--letter .pinned-btn--sticky {
+	color: var(--letter-accent) !important;
+	background: var(--letter-accent-soft) !important;
+	border: 1px dashed
+		color-mix(in oklch, var(--letter-accent) 48%, var(--letter-rule)) !important;
+}
+
+.post-card-wrapper--letter .pinned-btn--sticky {
+	border-style: solid !important;
+}
+
+.post-card-wrapper--letter .post-card-image-ring {
+	display: none !important;
+}
+
+/* list：取消 featured/row 对置顶卡的降级与缩宽 */
+.list-mode .post-card-wrapper--letter,
+.list-mode .post-card-wrapper--letter.post-card-wrapper--row,
+.list-mode .post-card-wrapper--letter.post-card-wrapper--featured,
+.wallpaper-transparent .list-mode .post-card-wrapper--letter {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 8.5rem) !important;
+	flex-direction: unset !important;
+	border-radius: 0.95rem !important;
+	border: 1px solid var(--letter-rule) !important;
+	border-bottom: 1px solid var(--letter-rule) !important;
+	background: var(--letter-surface) !important;
+	background-color: var(--letter-surface) !important;
+	box-shadow: var(--letter-shadow) !important;
+	backdrop-filter: none !important;
+	margin-bottom: 0.85rem;
+	overflow: hidden !important;
+}
+
+.list-mode .post-card-wrapper--letter.no-cover,
+.list-mode .post-card-wrapper--letter.post-card-wrapper--featured.no-cover {
+	grid-template-columns: 1fr !important;
+}
+
+.list-mode .post-card-wrapper--letter .post-card-title {
+	font-size: 1.28rem !important;
+	font-weight: 700;
+}
+
+.list-mode .post-card-wrapper--letter .description {
+	-webkit-line-clamp: 2 !important;
+	line-clamp: 2 !important;
+	font-size: 0.92rem !important;
+}
+
+.list-mode .post-card-wrapper--letter .pinned-btn {
+	display: inline-flex !important;
+}
+
+.list-mode .post-card-wrapper--letter > .letter-cover {
+	display: block !important;
+	position: relative !important;
+	top: auto !important;
+	right: auto !important;
+	bottom: auto !important;
+	width: 100% !important;
+}
+
+/* grid / waterfall：仍左右分栏 */
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper--letter {
+	flex-direction: unset !important;
+	height: auto !important;
+	grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 6.5rem) !important;
+}
+
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper--letter > .post-card-content {
+	width: 100% !important;
+	padding: 1rem 1rem 0.75rem !important;
+}
+
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper--letter > .letter-cover {
+	position: relative !important;
+	width: 100% !important;
+	min-height: 7rem;
+	aspect-ratio: auto !important;
+	border-radius: 0 !important;
+	max-height: none !important;
+}
+
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper--letter .post-card-title {
+	font-size: 1.15rem !important;
+	line-height: 1.35 !important;
+}
+
+@media (max-width: 720px) {
+	.post-card-wrapper--letter,
+	.list-mode .post-card-wrapper--letter,
+	.list-mode .post-card-wrapper--letter.post-card-wrapper--featured,
+	:is(.grid-mode, .waterfall-mode) .post-card-wrapper--letter {
+		grid-template-columns: 1fr !important;
+	}
+
+	.post-card-wrapper--letter > .letter-cover {
+		grid-column: 1;
+		grid-row: 1;
+		order: -1;
+		min-height: 7.5rem;
+		border-left: 0;
+		border-bottom: 1px solid var(--letter-rule);
+	}
+
+	.post-card-wrapper--letter > .post-card-content {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.post-card-wrapper--letter .card-rail {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.25rem;
+	}
+}

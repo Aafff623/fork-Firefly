@@ -3,9 +3,14 @@ import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 import CoverImage from "@/components/common/CoverImage.astro";
+import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
 import PostMetadata from "@/components/layout/PostMeta.astro";
 import PostStats from "@/components/layout/PostStats.astro";
-import { siteConfig } from "@/config";
+import { commentConfig, siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { PinKind } from "@/utils/content-utils";
+import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
 import { getFileDirFromPath, getTagUrl } from "@/utils/url-utils";
 
@@ -22,6 +27,7 @@ interface Props {
 	description: string;
 	draft: boolean;
 	pinned?: boolean;
+	pinKind?: PinKind | null;
 	password?: boolean;
 	style: string;
 	loading?: "lazy" | "eager";
@@ -38,11 +44,30 @@ const {
 	image,
 	description,
 	pinned,
+	pinKind = null,
 	password,
 	style,
 	loading = "lazy",
 	listVariant,
 } = Astro.props;
+
+const isPinnedCard = pinKind === "sticky" || pinKind === "auto" || !!pinned;
+/** Letter/Night 皮肤：仅默认置顶或常驻置顶 */
+const useLetterSkin = pinKind === "sticky" || pinKind === "auto";
+const adminLogins = commentConfig.giscus?.adminLogins ?? [];
+const pinAdminLabels = {
+	menu: i18n(I18nKey.pinAdminMenu),
+	setSticky: i18n(I18nKey.pinAdminSetSticky),
+	unsetSticky: i18n(I18nKey.pinAdminUnsetSticky),
+	confirmSet: i18n(I18nKey.pinAdminConfirmSet),
+	confirmUnset: i18n(I18nKey.pinAdminConfirmUnset),
+	confirmSetDesc: i18n(I18nKey.pinAdminConfirmSetDesc),
+	confirmUnsetDesc: i18n(I18nKey.pinAdminConfirmUnsetDesc),
+	confirmOk: i18n(I18nKey.pinAdminConfirmOk),
+	confirmCancel: i18n(I18nKey.pinAdminConfirmCancel),
+	devHint: i18n(I18nKey.pinAdminDevHint),
+	prodHint: i18n(I18nKey.pinAdminProdHint),
+};
 const className = Astro.props.class;
 
 // 处理随机图：如果image为"api"，则从配置的API获取随机图
@@ -89,16 +114,28 @@ const { remarkPluginFrontmatter } = await render(entry);
 const descriptionText = description || remarkPluginFrontmatter.excerpt || "";
 const words = remarkPluginFrontmatter.words;
 const minutes = remarkPluginFrontmatter.minutes;
+const railSection = (category || i18n(I18nKey.uncategorized)).trim() || "notes";
+const railTags = (tags || []).map((t) => t.trim()).filter(Boolean);
+const railWordsLabel =
+	typeof words === "number"
+		? `${words >= 1000 ? `${(words / 1000).toFixed(1).replace(/\.0$/, "")}k` : words} words`
+		: "";
+const publishedLabel = formatDateToYYYYMMDD(published);
 ---
 
 <div
   class:list={[
     "post-card-wrapper",
     hasCover ? "has-cover" : "no-cover",
-    pinned ? "pinned" : "",
+    isPinnedCard ? "pinned" : "",
+    useLetterSkin && "post-card-wrapper--letter",
+    pinKind === "sticky" && "pinned-sticky",
+    pinKind === "auto" && "pinned-auto",
     listVariant === "featured" && "post-card-wrapper--featured",
     listVariant === "row" && "post-card-wrapper--row",
-    "card-base flex flex-col-reverse w-full rounded-(--radius-large) overflow-hidden relative",
+    useLetterSkin
+      ? "card-base w-full relative"
+      : "card-base flex flex-col-reverse w-full rounded-(--radius-large) overflow-hidden relative",
     className,
   ]}
   style={style}
@@ -108,30 +145,45 @@ const minutes = remarkPluginFrontmatter.minutes;
     class:list={[
       "post-card-content",
       "pl-4 md:pl-9 pr-4 md:pr-2 pt-4 md:pt-7 pb-4 md:pb-7 relative flex flex-col h-full",
-      {
-        "w-full md:w-[calc(100%-52px-12px)]": !hasCover,
-        "w-full md:w-[calc(100%-var(--coverWidth)-1.5rem)]": hasCover,
-      },
+      // Letter 皮肤用 grid 分栏，勿再按 coverWidth 缩内容宽（会留出右侧白缝）
+      useLetterSkin
+        ? "w-full"
+        : {
+            "w-full md:w-[calc(100%-52px-12px)]": !hasCover,
+            "w-full md:w-[calc(100%-var(--coverWidth)-1.5rem)]": hasCover,
+          },
     ]}
   >
-    <a
-      href={url}
-      class="post-card-title transition group w-full block font-bold mb-3 text-3xl text-90
-        hover:text-(--primary) dark:hover:text-(--primary)
-        active:text-(--title-active) dark:active:text-(--title-active)"
-    >
-      <span class="post-card-title-hl">{title}</span>
+    <!-- 标题行 + 园主置顶：三种布局共用内容区，避免盖住封面/进文按钮 -->
+    <div class="post-card-head">
+      <a
+        href={url}
+        class="post-card-title transition group min-w-0 flex-1 font-bold text-3xl text-90
+          hover:text-(--primary) dark:hover:text-(--primary)
+          active:text-(--title-active) dark:active:text-(--title-active)"
+      >
+        <span class="post-card-title-hl">{title}</span>
 
-      {
-        password && (
-          <Icon
-            is:inline
-            name="material-symbols:lock-outline"
-            class="inline text-2xl align-middle -translate-y-px"
-          />
-        )
-      }
-    </a>
+        {
+          password && (
+            <Icon
+              is:inline
+              name="material-symbols:lock-outline"
+              class="inline text-2xl align-middle -translate-y-px"
+            />
+          )
+        }
+      </a>
+      <PostPinAdmin
+        client:load
+        postId={entry.id}
+        filePath={entry.filePath || ""}
+        sticky={!!pinned}
+        adminLogins={adminLogins}
+        isDev={import.meta.env.DEV}
+        labels={pinAdminLabels}
+      />
+    </div>
 
     <!-- metadata -->
     <PostMetadata
@@ -139,16 +191,17 @@ const minutes = remarkPluginFrontmatter.minutes;
       tags={tags}
       showPublished={metaShowPublished}
       showCategory={showCategory}
-      showTags={showTagsInMeta}
+      showTags={useLetterSkin ? false : showTagsInMeta}
       maxTags={metaTagCount > 0 ? metaTagCount : undefined}
-      showNoTags={true}
+      showNoTags={!useLetterSkin}
       hideUpdateDate={true}
       category={category || undefined}
       pinned={pinned}
+      pinKind={pinKind}
       words={words}
       minutes={minutes}
-      showWords={metaShowWords}
-      showReadingTime={metaShowReadingTime}
+      showWords={useLetterSkin ? false : metaShowWords}
+      showReadingTime={useLetterSkin ? false : metaShowReadingTime}
       className="mb-4 post-meta card-header-meta"
     />
 
@@ -163,67 +216,100 @@ const minutes = remarkPluginFrontmatter.minutes;
       {descriptionText}
     </div>
 
-    <!-- bottom tags（与 stats 二选一） -->
-    {showTagsAtBottom && tags && tags.length > 0 && (
-      <div class="post-card-bottom-tags flex flex-wrap items-center gap-1.5 mt-auto pt-3">
-        {(metaTagCount > 0 ? tags.slice(0, metaTagCount) : tags).map((tag) => (
-          <a
-            href={getTagUrl(tag)}
-            aria-label={`View all posts with the ${tag.trim()} tag`}
-            class="post-card-tag transition text-xs font-medium px-2.5 py-1 rounded-full
-              bg-black/5 dark:bg-white/10 text-neutral-500 dark:text-neutral-400
-              hover:bg-(--btn-regular-bg) hover:text-(--primary)"
-          >
-            #{tag.trim()}
-          </a>
-        ))}
-      </div>
-    )}
-
-    <!-- stats（与底部标签二选一） -->
-    {!showTagsAtBottom && (
-      <PostStats
-        published={published}
-        words={words}
-        minutes={minutes}
-        showPublished={statsShowPublished}
-        showWords={statsShowWords}
-        showReadingTime={statsShowReadingTime}
-        showIcons={siteConfig.postListLayout.showStatsIcons}
-        className="stats mt-auto pt-3 text-black/30 dark:text-white/30 gap-x-2"
-      />
-    )}
+    {
+      useLetterSkin ? (
+        <div class="card-rail" aria-label="post index">
+          <span>{railSection}</span>
+          <span class="tags">
+            {railTags.length > 0 ? (
+              railTags
+                .slice(0, metaTagCount > 0 ? metaTagCount : railTags.length)
+                .map((tag, i) => (
+                  <>
+                    {i > 0 && <span aria-hidden="true"> · </span>}
+                    <a href={getTagUrl(tag)}>#{tag}</a>
+                  </>
+                ))
+            ) : (
+              <span>—</span>
+            )}
+          </span>
+          <span>{railWordsLabel || publishedLabel}</span>
+        </div>
+      ) : (
+        <>
+          {showTagsAtBottom && tags && tags.length > 0 && (
+            <div class="post-card-bottom-tags flex flex-wrap items-center gap-1.5 mt-auto pt-3">
+              {(metaTagCount > 0 ? tags.slice(0, metaTagCount) : tags).map(
+                (tag) => (
+                  <a
+                    href={getTagUrl(tag)}
+                    aria-label={`View all posts with the ${tag.trim()} tag`}
+                    class="post-card-tag transition text-xs font-medium px-2.5 py-1 rounded-full
+                      bg-black/5 dark:bg-white/10 text-neutral-500 dark:text-neutral-400
+                      hover:bg-(--btn-regular-bg) hover:text-(--primary)"
+                  >
+                    #{tag.trim()}
+                  </a>
+                ),
+              )}
+            </div>
+          )}
+          {!showTagsAtBottom && (
+            <PostStats
+              published={published}
+              words={words}
+              minutes={minutes}
+              showPublished={statsShowPublished}
+              showWords={statsShowWords}
+              showReadingTime={statsShowReadingTime}
+              showIcons={siteConfig.postListLayout.showStatsIcons}
+              className="stats mt-auto pt-3 text-black/30 dark:text-white/30 gap-x-2"
+            />
+          )}
+        </>
+      )
+    }
   </div>
   {
-    hasCover && (
-      <a
-        href={url}
-        aria-label={title}
-        class:list={[
-          "post-card-image",
-          "group",
-          "w-full md:w-(--coverWidth)",
-          "aspect-2/1 md:aspect-auto",
-          "relative md:absolute md:top-4 md:bottom-4 md:right-4",
-          "rounded-(--radius-large) md:rounded-xl overflow-hidden",
-        ]}
-      >
-        <div class="post-card-image-ring" />
-        <CoverImage
-          src={processedImage}
-          basePath={getFileDirFromPath(entry.filePath || "")}
-          alt="Cover Image of the Post"
-          class="w-full h-full"
-          preview={true}
-          loading={loading}
-          apiUrls={apiUrls}
-        />
+    useLetterSkin ? (
+      <a href={url} aria-label={title} class="letter-cover group">
+        {hasCover && (
+          <CoverImage
+            src={processedImage}
+            basePath={getFileDirFromPath(entry.filePath || "")}
+            alt="Cover Image of the Post"
+            class="letter-cover__media"
+            preview={true}
+            loading={loading}
+            apiUrls={apiUrls}
+          />
+        )}
       </a>
+    ) : (
+      hasCover && (
+        <a
+          href={url}
+          aria-label={title}
+          class="post-card-image group w-full md:w-(--coverWidth) aspect-2/1 md:aspect-auto relative md:absolute md:top-4 md:bottom-4 md:right-4 rounded-(--radius-large) md:rounded-xl overflow-hidden"
+        >
+          <div class="post-card-image-ring" />
+          <CoverImage
+            src={processedImage}
+            basePath={getFileDirFromPath(entry.filePath || "")}
+            alt="Cover Image of the Post"
+            class="w-full h-full"
+            preview={true}
+            loading={loading}
+            apiUrls={apiUrls}
+          />
+        </a>
+      )
     )
   }
 
   {
-    !hasCover && (
+    !useLetterSkin && !hasCover && (
       <a
         href={url}
         aria-label={title}
@@ -240,6 +326,17 @@ const minutes = remarkPluginFrontmatter.minutes;
 </div>
 
 <style define:vars={{ coverWidth, descriptionClampLines }}>
+  .post-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-card-head .post-card-title {
+    margin-bottom: 0;
+  }
+
   .description-clamped {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -248,17 +345,21 @@ const minutes = remarkPluginFrontmatter.minutes;
     line-clamp: var(--descriptionClampLines);
   }
 
-  /* === List Featured：封面侧栏（row 变体由 post-card.css 处理） === */
-  :global(.list-mode) .post-card-wrapper--featured {
+  /* === List Featured：封面侧栏（Letter 置顶卡用独立 grid，必须排除） === */
+  :global(.list-mode) .post-card-wrapper--featured:not(.post-card-wrapper--letter) {
     flex-direction: row !important;
   }
 
-  :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-content {
+  :global(.list-mode)
+    .post-card-wrapper--featured.has-cover:not(.post-card-wrapper--letter)
+    .post-card-content {
     width: calc(100% - 9rem - 0.75rem) !important;
     padding: 0.85rem 0.65rem 0.85rem 0.9rem !important;
   }
 
-  :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-image {
+  :global(.list-mode)
+    .post-card-wrapper--featured.has-cover:not(.post-card-wrapper--letter)
+    .post-card-image {
     position: absolute !important;
     top: 0.5rem !important;
     bottom: 0.5rem !important;
@@ -268,23 +369,31 @@ const minutes = remarkPluginFrontmatter.minutes;
     border-radius: 0.5rem !important;
   }
 
-  :global(.list-mode) .post-card-wrapper--featured .post-card-title {
+  :global(.list-mode)
+    .post-card-wrapper--featured:not(.post-card-wrapper--letter)
+    .post-card-title {
     font-size: 1.2rem !important;
     line-height: 1.45 !important;
     margin-bottom: 0.45rem !important;
   }
 
-  :global(.list-mode) .post-card-wrapper--featured.no-cover .post-card-content {
+  :global(.list-mode)
+    .post-card-wrapper--featured.no-cover:not(.post-card-wrapper--letter)
+    .post-card-content {
     width: 100% !important;
   }
 
   @media (min-width: 768px) {
-    :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-content {
+    :global(.list-mode)
+      .post-card-wrapper--featured.has-cover:not(.post-card-wrapper--letter)
+      .post-card-content {
       width: calc(100% - var(--coverWidth) - 1.5rem) !important;
       padding: 1.35rem 0.5rem 1.35rem 1.5rem !important;
     }
 
-    :global(.list-mode) .post-card-wrapper--featured.has-cover .post-card-image {
+    :global(.list-mode)
+      .post-card-wrapper--featured.has-cover:not(.post-card-wrapper--letter)
+      .post-card-image {
       top: 1rem !important;
       bottom: 1rem !important;
       right: 1rem !important;
@@ -292,7 +401,9 @@ const minutes = remarkPluginFrontmatter.minutes;
       border-radius: 0.5rem !important;
     }
 
-    :global(.list-mode) .post-card-wrapper--featured .post-card-title {
+    :global(.list-mode)
+      .post-card-wrapper--featured:not(.post-card-wrapper--letter)
+      .post-card-title {
       font-size: 1.45rem !important;
       line-height: 1.35 !important;
     }

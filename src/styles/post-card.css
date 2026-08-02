@@ -75,6 +75,25 @@
 	text-wrap: balance;
 }
 
+/* 园主置顶：三种布局共用标题行，不覆盖封面 */
+.post-card-head {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.55rem;
+	margin-bottom: 0.7rem;
+}
+
+.post-card-head .post-card-title {
+	flex: 1 1 auto;
+	min-width: 0;
+	margin-bottom: 0;
+}
+
+.post-card-head .pin-admin {
+	flex: 0 0 auto;
+	margin-top: 0.15rem;
+}
+
 /* 荧光笔：仅 grid hover 展开（原语 C）；list-row 禁用 */
 /* --card-hl 由 JS 在 pointerenter 时随机写入，避免同卡连刷撞色 */
 .post-card-title-hl {
@@ -310,9 +329,11 @@
 	font-size: 0.72rem;
 }
 
-/* list featured 桌面：保留封面侧栏 */
+/* list featured 桌面：保留封面侧栏（Letter 置顶卡自有 grid，勿缩内容宽） */
 @media (min-width: 768px) {
-	.list-mode .post-card-wrapper--featured.has-cover .post-card-content {
+	.list-mode
+		.post-card-wrapper--featured.has-cover:not(.post-card-wrapper--letter)
+		.post-card-content {
 		width: calc(100% - var(--coverWidth, 30%) - 1.5rem) !important;
 	}
 }

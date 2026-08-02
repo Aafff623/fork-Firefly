@@ -11,6 +11,7 @@
 @import './display-settings.css';
 @import './categories.css';
 @import './post-card.css';
+@import './post-card-letter.css';
 @import './waterfall.css';
 @import './text-voice.css';
 @import './announcement-press.css';
@@ -645,4 +646,3 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 .pagination-info {
   @apply text-sm text-(--text-secondary) text-center mb-2;
 }
-
