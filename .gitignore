@@ -46,3 +46,7 @@ package/
 # local agent scratch
 .scratch/
 
+# local temp (Skill Lab / MiniMax locks / agent scratch)
+tmp/
+__tmp__/
+

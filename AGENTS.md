@@ -52,6 +52,15 @@ pnpm new-d <content>
 
 ## Agent skills
 
+项目级 Skill 在 `.cursor/skills/`（勿装到工作区根 `blog/.cursor/skills/`）。
+
+| Skill | 路径 | 何时用 |
+|---|---|---|
+| `firefly-md-to-post` | `.cursor/skills/firefly-md-to-post/` | 导入/撰写 MD→本仓帖；frontmatter、媒体路径、校验 |
+| `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
+
+二者分工：写文结构走 `firefly-md-to-post`；生成与额度门禁走 `firefly-minimax-media`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
+
 ### Issue tracker
 
 本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。
