@@ -736,14 +736,14 @@ const hasMultipleImages =
                             >
                                 <Icon
                                     is:inline
-                                    name="material-symbols:format-quote-rounded"
+                                    name="lucide:quote"
                                     class="banner-post-description-quote banner-post-description-quote-start"
                                     aria-hidden="true"
                                 />
                                 {bannerPostMeta.description}
                                 <Icon
                                     is:inline
-                                    name="material-symbols:format-quote-rounded"
+                                    name="lucide:quote"
                                     class="banner-post-description-quote banner-post-description-quote-end"
                                     aria-hidden="true"
                                 />
@@ -753,19 +753,19 @@ const hasMultipleImages =
                     {bannerPostInfoMode === "meta" && (
                         <div class="banner-post-meta-list flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-white/90 text-sm md:text-base">
                             <span class="inline-flex items-center gap-1.5">
-                                <Icon is:inline name="material-symbols:calendar-month-outline-rounded" class="text-[1.05em]" />
+                                <Icon is:inline name="lucide:calendar-days" class="text-[1.05em]" />
                                 <span>{i18n(I18nKey.publishedAt)} {formatDateToYYYYMMDD(bannerPostMeta.published)}</span>
                             </span>
                             {bannerPostMeta.updated &&
                                 bannerPostMeta.updated.getTime() !== bannerPostMeta.published.getTime() && (
                                     <span class="inline-flex items-center gap-1.5">
-                                        <Icon is:inline name="material-symbols:update-rounded" class="text-[1.05em]" />
+                                        <Icon is:inline name="lucide:refresh-cw" class="text-[1.05em]" />
                                         <span>{i18n(I18nKey.updatedAt)} {formatDateToYYYYMMDD(bannerPostMeta.updated)}</span>
                                     </span>
                                 )}
                             {typeof bannerPostMeta.words === "number" && (
                                 <span class="inline-flex items-center gap-1.5">
-                                    <Icon is:inline name="material-symbols:ink-pen-outline-rounded" class="text-[1.05em]" />
+                                    <Icon is:inline name="lucide:pen-line" class="text-[1.05em]" />
                                     <span>
                                         {bannerPostMeta.words} {i18n(bannerPostMeta.words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}
                                     </span>
@@ -773,7 +773,7 @@ const hasMultipleImages =
                             )}
                             {typeof bannerPostMeta.minutes === "number" && (
                                 <span class="inline-flex items-center gap-1.5">
-                                    <Icon is:inline name="material-symbols:schedule-outline-rounded" class="text-[1.05em]" />
+                                    <Icon is:inline name="lucide:clock" class="text-[1.05em]" />
                                     <span>
                                         {bannerPostMeta.minutes} {i18n(bannerPostMeta.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)} · {i18n(I18nKey.readTime)}
                                     </span>

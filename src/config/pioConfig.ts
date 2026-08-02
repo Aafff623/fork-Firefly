@@ -126,27 +126,27 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		// 完全替换默认菜单项
 		items: [
 			{
-				icon: "mdi:home",
+				icon: "lucide:house",
 				label: "返回主页",
 				action: "home",
 			},
 			{
-				icon: "mdi:arrow-up",
+				icon: "lucide:arrow-up",
 				label: "返回顶部",
 				action: "scrollToTop",
 			},
 			{
-				icon: "mdi:bed",
+				icon: "lucide:moon",
 				label: "休眠",
 				action: "sleep",
 			},
 			{
-				icon: "mdi:swap-horizontal",
+				icon: "lucide:arrow-left-right",
 				label: "切换模型",
 				action: "switchModel",
 			},
 			{
-				icon: "mdi:github",
+				icon: "fa7-brands:github",
 				label: "GitHub",
 				action: "github",
 			},

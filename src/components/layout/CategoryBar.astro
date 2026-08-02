@@ -57,7 +57,7 @@ function initialActive(categoryName: string): {
       data-active={initialActive("").active ? "" : undefined}
       aria-label={i18n(I18nKey.home)}
     >
-      <Icon is:inline name="material-symbols:home" class="text-lg" />
+      <Icon is:inline name="lucide:house" class="text-lg" />
     </a>
     <a
       href={archiveUrl}
@@ -104,7 +104,7 @@ function initialActive(categoryName: string): {
       aria-label={i18n(I18nKey.more)}
     >
       <span>{i18n(I18nKey.more)}</span>
-      <Icon is:inline name="fa7-solid:chevron-right" class="text-sm" />
+      <Icon is:inline name="lucide:chevron-right" class="text-sm" />
     </a>
   </div>
 </div>

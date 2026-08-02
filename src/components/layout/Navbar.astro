@@ -174,7 +174,7 @@ const logoVariants = await Promise.all(
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
                 ]} style="font-family: var(--font-navbar-title, inherit)">
                                     {logoConfig?.type === "icon" ? (
-                                        <Icon is:inline name={logoConfig.value || "material-symbols:home-pin-outline"} class="navbar-logo text-[1.75rem] mb-1 mr-2" />
+                                        <Icon is:inline name={logoConfig.value || "lucide:house"} class="navbar-logo text-[1.75rem] mb-1 mr-2" />
                                     ) : logoIsImage && logoVariants.length > 0 ? (
                                         logoVariants.map((variant) => variant.image ? (
                                             <Picture
@@ -192,7 +192,7 @@ const logoVariants = await Promise.all(
                                             <img src={variant.src} alt={logoAlt} class={variant.class} data-logo-theme={variant.theme} fetchpriority="high" />
                                         ))
                                     ) : (
-                                        <Icon is:inline name="material-symbols:home-pin-outline" class="navbar-logo text-[1.75rem] mb-1 mr-2" />
+                                        <Icon is:inline name="lucide:house" class="navbar-logo text-[1.75rem] mb-1 mr-2" />
                                     )}
                     {navbarTitle}
                 </div>
@@ -214,7 +214,7 @@ const logoVariants = await Promise.all(
                 />
                 {musicPlayerConfig.showInNavbar && (
                     <button aria-label={i18n(I18nKey.music)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="music-player-switch">
-                        <Icon is:inline name="material-symbols:music-note-rounded" class="text-[1.25rem]"></Icon>
+                        <Icon is:inline name="lucide:music" class="text-[1.25rem]"></Icon>
                     </button>
                 )}
                 {backgroundWallpaper.playerEnable && backgroundWallpaper.mode !== "none" && (
@@ -225,19 +225,19 @@ const logoVariants = await Promise.all(
                         data-i18n-play={i18n(I18nKey.videoPlay)}
                         data-i18n-pause={i18n(I18nKey.videoPause)}
                     >
-                        <span class="bg-player-icon-play"><Icon is:inline name="material-symbols:play-arrow-rounded" class="text-[1.5rem]" /></span>
-                        <span class="bg-player-icon-pause hidden"><Icon is:inline name="material-symbols:pause-rounded" class="text-[1.5rem]" /></span>
+                        <span class="bg-player-icon-play"><Icon is:inline name="lucide:play" class="text-[1.5rem]" /></span>
+                        <span class="bg-player-icon-pause hidden"><Icon is:inline name="lucide:pause" class="text-[1.5rem]" /></span>
                     </button>
                 )}
                 {hasDisplaySettings && (
                         <button aria-label={i18n(I18nKey.settingsTabWallpaper)} title={i18n(I18nKey.settingsTabWallpaper)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="display-settings-switch">
-                            <Icon is:inline name="material-symbols:wallpaper" class="text-[1.25rem]"></Icon>
+                            <Icon is:inline name="lucide:sliders-horizontal" class="text-[1.25rem]"></Icon>
                         </button>
                 )}
                 {/* @ts-ignore */}
                 <LightDarkSwitch client:load></LightDarkSwitch>
                 <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90 lg:hidden!" id="nav-menu-switch">
-                    <Icon is:inline name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
+                    <Icon is:inline name="lucide:menu" class="text-[1.25rem]"></Icon>
                 </button>
             </div>
         </div>

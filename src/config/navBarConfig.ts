@@ -8,6 +8,7 @@ import {
 // ============================================================================
 // 导航栏配置 - 根据顺序动态生成导航栏链接
 // NavBar Configuration - Dynamically generate navigation bar links based on order
+// UI chrome 统一 Lucide outline（品牌外链仍可用 fa7-brands）
 // ============================================================================
 const getDynamicNavBarConfig = (): NavBarConfig => {
 	// 基础导航栏链接
@@ -20,7 +21,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	links.push({
 		name: "文章",
 		url: "#",
-		icon: "material-symbols:article",
+		icon: "lucide:book-open",
 		children: [
 			// 归档
 			LinkPresets.Archive,
@@ -37,7 +38,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	links.push({
 		name: "社交",
 		url: "#",
-		icon: "material-symbols:group",
+		icon: "lucide:users",
 		children: [
 			// 友链
 			LinkPresets.Friends,
@@ -51,7 +52,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	links.push({
 		name: "我的",
 		url: "#",
-		icon: "material-symbols:person",
+		icon: "lucide:user",
 		children: [
 			// 动态
 			LinkPresets.Dynamic,
@@ -71,7 +72,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	links.push({
 		name: "关于",
 		url: "#",
-		icon: "material-symbols:info",
+		icon: "lucide:info",
 		children: [
 			// 打赏
 			LinkPresets.Sponsor,
@@ -85,7 +86,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	links.push({
 		name: "链接",
 		url: "#",
-		icon: "material-symbols:link",
+		icon: "lucide:link",
 		// 子菜单
 		children: [
 			{
@@ -98,7 +99,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 				name: "Digital Garden",
 				url: "https://threetwoa-digital-garden.vercel.app",
 				external: true,
-				icon: "material-symbols:forest",
+				icon: "lucide:trees",
 			},
 		],
 	});
@@ -113,74 +114,74 @@ export const navBarSearchConfig: NavBarSearchConfig = {
 
 // ============================================================================
 // 链接预设 - 可自由自定义导航栏链接的名称、图标和URL
-// Link Presets - Allows free customization of the name, icon, and URL of navigation bar links
+// Link Presets - Allows free customization of the name, icon and URL of navigation bar links
 // ============================================================================
 export const LinkPresets: Record<string, NavBarLink> = {
 	Home: {
 		name: "主页",
 		url: "/",
-		icon: "material-symbols:home",
+		icon: "lucide:house",
 	},
 	Dynamic: {
 		name: "动态",
 		url: "/dynamic/",
-		icon: "material-symbols:forum-rounded",
+		icon: "lucide:messages-square",
 		pageKey: "dynamic",
 	},
 	Archive: {
 		name: "归档",
 		url: "/archive/",
-		icon: "material-symbols:archive",
+		icon: "lucide:archive",
 	},
 	Categories: {
 		name: "分类",
 		url: "/categories/",
-		icon: "material-symbols:folder-open-rounded",
+		icon: "lucide:folder-open",
 	},
 	Tags: {
 		name: "标签",
 		url: "/tags/",
-		icon: "material-symbols:tag-rounded",
+		icon: "lucide:tag",
 	},
 	Friends: {
 		name: "友链",
 		url: "/friends/",
-		icon: "material-symbols:link-2-rounded",
+		icon: "lucide:link-2",
 		pageKey: "friends",
 	},
 	Sponsor: {
 		name: "打赏",
 		url: "/sponsor/",
-		icon: "material-symbols:favorite",
+		icon: "lucide:heart",
 		pageKey: "sponsor",
 	},
 	Guestbook: {
 		name: "留言",
 		url: "/guestbook/",
-		icon: "material-symbols:chat",
+		icon: "lucide:message-circle",
 		pageKey: "guestbook",
 	},
 	About: {
 		name: "关于我",
 		url: "/about/",
-		icon: "material-symbols:person",
+		icon: "lucide:badge-info",
 	},
 	Bangumi: {
 		name: "番组计划",
 		url: "/bangumi/",
-		icon: "material-symbols:movie",
+		icon: "lucide:clapperboard",
 		pageKey: "bangumi",
 	},
 	Gallery: {
 		name: "相册",
 		url: "/gallery/",
-		icon: "material-symbols:photo-library",
+		icon: "lucide:images",
 		pageKey: "gallery",
 	},
 	Anime: {
 		name: "追番",
 		url: "/anime/",
-		icon: "material-symbols:live-tv",
+		icon: "lucide:tv",
 		pageKey: "anime",
 	},
 };

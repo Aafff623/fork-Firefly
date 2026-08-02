@@ -31,8 +31,8 @@ const hideSidebarOnPostPage =
 <div id="floating-toc-wrapper" class="floating-toc-wrapper" data-is-sidebar-toc-enabled={String(isSidebarTocEnabled)} data-sidebar-position={sidebarPosition} data-show-both-sidebars-on-post={String(sidebarLayoutConfig.showBothSidebarsOnPostPage ?? false)} data-hide-sidebar-on-post={String(hideSidebarOnPostPage)}>
   <FloatingButton
     id="floating-toc-btn"
-    icon="material-symbols:format-list-bulleted"
-    toggleIcon="material-symbols:close"
+    icon="lucide:list"
+    toggleIcon="lucide:x"
     ariaLabel="Table of Contents"
     onclick="window.toggleFloatingTOC()"
     class="hide"

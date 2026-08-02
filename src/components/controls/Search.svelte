@@ -154,7 +154,7 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 <div id="search-bar" class="navbar-liquid-glass relative hidden lg:flex transition-all items-center h-11 ml-5 mr-3 rounded-full
       hover:brightness-110 focus-within:brightness-110
 ">
-    <Icon icon="material-symbols:search"
+    <Icon icon="lucide:search"
           class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
     <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop}
            on:focus={() => search(keywordDesktop, true)}
@@ -166,7 +166,7 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 <!-- toggle btn for phone/tablet view -->
 <button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
         class="btn-plain scale-animation lg:hidden! rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90">
-    <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
+    <Icon icon="lucide:search" class="text-[1.25rem]"></Icon>
 </button>
 
 <!-- search panel -->
@@ -178,7 +178,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       bg-black/4 hover:bg-black/6 focus-within:bg-black/6
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
-        <Icon icon="material-symbols:search"
+        <Icon icon="lucide:search"
               class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
         <input placeholder={i18n(I18nKey.search)} bind:value={keywordMobile}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
@@ -199,7 +199,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
            rounded-xl text-lg px-3 py-2 hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active)">
                 <div class="transition text-90 inline-flex font-bold group-hover:text-(--primary)">
                     {@html item.meta.title}
-                    <Icon icon="fa7-solid:chevron-right"
+                    <Icon icon="lucide:chevron-right"
                           class="transition text-[0.75rem] translate-x-1 my-auto text-(--primary)"></Icon>
                 </div>
                 {#if item.excerpt.includes('<mark>')}
@@ -228,7 +228,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
                class="transition first-of-type:mt-2 lg:first-of-type:mt-0 group block rounded-xl text-lg px-3 py-2 hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active) text-(--primary) font-bold text-center">
                 <span class="inline-flex items-center">
                     {i18n(I18nKey.searchViewMore).replace('{count}', (result.length - 5).toString())}
-                    <Icon icon="fa7-solid:arrow-right" class="transition text-[0.75rem] ml-1"></Icon>
+                    <Icon icon="lucide:arrow-right" class="transition text-[0.75rem] ml-1"></Icon>
                 </span>
             </a>
         {/if}

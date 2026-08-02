@@ -49,13 +49,18 @@ const title = config.title || i18n(I18nKey.announcement);
               onclick="this.closest('widget-layout')?.remove()"
               aria-label={i18n(I18nKey.announcementClose)}
             >
-              <Icon is:inline name="fa7-solid:xmark" class="text-[0.7rem]" />
+              <Icon is:inline name="lucide:x" class="text-[0.7rem]" />
             </button>
           )
         }
       </div>
 
-      <h2 class="announcement-press__nameplate">{title}</h2>
+      <h2 class="announcement-press__nameplate">
+        {config.icon && (
+          <Icon is:inline name={config.icon} class="announcement-press__title-icon" aria-hidden="true" />
+        )}
+        {title}
+      </h2>
       <div class="announcement-press__double-rule" aria-hidden="true"></div>
       <p class="announcement-press__kicker">Notice · 在研 · Agent 工作流</p>
     </header>
@@ -74,7 +79,7 @@ const title = config.title || i18n(I18nKey.announcement);
             <span>{config.link.text}</span>
             <Icon
               is:inline
-              name={config.link.external ? "fa7-solid:arrow-up-right-from-square" : "material-symbols:arrow-forward-rounded"}
+              name={config.link.external ? "lucide:square-arrow-out-up-right" : "lucide:arrow-right"}
               class="text-[0.75rem]"
             />
           </a>

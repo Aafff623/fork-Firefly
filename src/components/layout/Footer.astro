@@ -1,12 +1,18 @@
 ---
+/**
+ * 站点底栏 · Hallmark Index Garden colophon
+ * 保留 RSS / Sitemap / Astro / Firefly 的 --primary 高亮
+ */
 import fs from "node:fs";
 import path from "node:path";
-import { footerConfig, profileConfig } from "@/config";
+import { Icon } from "astro-icon/components";
+import { footerConfig, profileConfig, siteConfig } from "@/config";
 import { url } from "@/utils/url-utils";
 
 const currentYear = new Date().getFullYear();
+const wordmark = siteConfig.navbar?.title || profileConfig.name || siteConfig.title;
+const issue = `index · elsewhere · ${currentYear}—`;
 
-// 读取FooterConfig.html文件内容
 let customFooterHtml = "";
 if (footerConfig.enable) {
 	try {
@@ -17,7 +23,6 @@ if (footerConfig.enable) {
 			"FooterConfig.html",
 		);
 		customFooterHtml = fs.readFileSync(footerConfigPath, "utf-8");
-		// 移除HTML注释
 		customFooterHtml = customFooterHtml.replace(/<!--[\s\S]*?-->/g, "").trim();
 	} catch (error) {
 		console.warn(
@@ -28,53 +33,59 @@ if (footerConfig.enable) {
 }
 ---
 
+<footer class="site-footer">
+  <div class="site-footer__mast">
+    <div class="site-footer__wordmark">{wordmark}</div>
+    <div class="site-footer__issue">{issue}</div>
+  </div>
 
-<div
-  class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"
->
-</div>
+  {
+    customFooterHtml && (
+      <div class="site-footer__custom" set:html={customFooterHtml} />
+    )
+  }
 
-<div
-  class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"
->
-  <div class="transition text-50 text-sm text-center wrap">
-    <div class="mb-2">
-      {customFooterHtml && <div set:html={customFooterHtml} />}
-    </div>
-    <div class="m-0.5 flex gap-2 justify-center flex-wrap">
-      &copy; <span id="copyright-year">{currentYear}</span>
-      {profileConfig.name}. All Rights Reserved.
-      <span aria-hidden="true">/</span>
+  <div class="site-footer__colophon">
+    <div class="site-footer__line">
+      <span>
+        &copy; <span id="copyright-year">{currentYear}</span>
+        {profileConfig.name}. All Rights Reserved.
+      </span>
+      <span class="site-footer__sep" aria-hidden="true">/</span>
+      <a class="link site-footer__icon-link" target="_blank" rel="noopener noreferrer" href={url("rss.xml")}>
+        <Icon is:inline name="lucide:rss" class="site-footer__icon" aria-hidden="true" />
+        RSS
+      </a>
+      <span class="site-footer__sep" aria-hidden="true">/</span>
       <a
-        class="transition link text-(--primary) font-medium"
+        class="link site-footer__icon-link"
         target="_blank"
-        href={url("rss.xml")}>RSS</a
+        rel="noopener noreferrer"
+        href={url("sitemap-index.xml")}
       >
-      <span aria-hidden="true">/</span>
-      <a
-        class="transition link text-(--primary) font-medium"
-        target="_blank"
-        href={url("sitemap-index.xml")}>Sitemap</a
-      >
+        <Icon is:inline name="lucide:map" class="site-footer__icon" aria-hidden="true" />
+        Sitemap
+      </a>
     </div>
-    <div class="m-0.5 flex gap-2 justify-center flex-wrap">
+    <div class="site-footer__line">
       <span>Powered by</span>
       <a
-        class="transition link text-(--primary) font-medium"
+        class="link"
         target="_blank"
+        rel="noopener noreferrer"
         href="https://astro.build">Astro</a
       >
-      <span aria-hidden="true">&</span>
+      <span class="site-footer__sep" aria-hidden="true">&</span>
       <a
-        class="transition link text-(--primary) font-medium"
+        class="link"
         target="_blank"
+        rel="noopener noreferrer"
         href="https://github.com/CuteLeaf/Firefly">Firefly</a
       >
     </div>
-    <!-- 
-      注意：请勿随意修改或删除 "Powered by Astro & Firefly" 部分，这是对开源项目的尊重和支持。
-      如果您需要在底部增加内容，请在src/config/footerConfig.ts中修改enable属性为true，然后编辑src/config/FooterConfig.html文件。
-      您可以随意在src/config/FooterConfig.html中随意添加自定义内容，不需要修改Footer.astro文件。
-    -->
   </div>
-</div>
+  <!--
+    请勿删除 Powered by Astro & Firefly。
+    额外备案等内容：footerConfig.enable = true 后编辑 FooterConfig.html。
+  -->
+</footer>

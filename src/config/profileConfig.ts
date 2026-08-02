@@ -15,10 +15,8 @@ export const profileConfig: ProfileConfig = {
 	bio: "Code less, Architect more. Turning AI tools into reusable, production-ready workflows.",
 
 	// 链接配置（对齐 GitHub profile / README Contact）
-	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons
-	// 访问https://icones.js.org/ 获取图标代码，
-	// 如果想使用尚未包含相应的图标集，则需要安装它
-	// `pnpm add @iconify-json/<icon-set-name>`
+	// UI 通用：lucide；品牌：fa7-brands / simple-icons
+	// 访问 https://icones.js.org/ 获取图标代码
 	// showName: true 时显示图标和名称，false 时只显示图标
 	links: [
 		{
@@ -29,13 +27,13 @@ export const profileConfig: ProfileConfig = {
 		},
 		{
 			name: "Email",
-			icon: "fa7-solid:envelope",
+			icon: "lucide:mail",
 			url: "mailto:laiyif68@gmail.com",
 			showName: false,
 		},
 		{
 			name: "Digital Garden",
-			icon: "material-symbols:forest",
+			icon: "lucide:trees",
 			url: "https://threetwoa-digital-garden.vercel.app",
 			showName: false,
 		},
@@ -59,7 +57,7 @@ export const profileConfig: ProfileConfig = {
 		},
 		{
 			name: "RSS",
-			icon: "fa7-solid:rss",
+			icon: "lucide:rss",
 			url: "/rss/",
 			showName: false,
 		},

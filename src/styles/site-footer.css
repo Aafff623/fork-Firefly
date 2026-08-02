@@ -1,0 +1,133 @@
+/* 站点 Footer · Hallmark Index Garden colophon
+ * 对照 tmp/hallmark-style-lab/blog-mock.html · .site-footer / .colophon
+ * 链接高亮保留 --primary
+ */
+
+.site-footer {
+	--sf-ink: oklch(22% 0.02 var(--hue));
+	--sf-muted: oklch(48% 0.02 var(--hue));
+	--sf-rule: oklch(88% 0.012 var(--hue));
+	--sf-accent: var(--primary);
+
+	margin: 2.2rem 0 2.5rem;
+	padding-top: 1rem;
+	border-top: 2px solid var(--sf-ink);
+	min-width: 0;
+}
+
+html.dark .site-footer {
+	--sf-ink: oklch(92% 0.01 var(--hue));
+	--sf-muted: oklch(72% 0.02 var(--hue));
+	--sf-rule: oklch(32% 0.02 var(--hue));
+}
+
+.site-footer__mast {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.75rem 1rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.75rem;
+}
+
+.site-footer__wordmark {
+	font-family: "Zen Maru Gothic", "PingFang SC", var(--font-family), sans-serif;
+	font-weight: 700;
+	font-size: 1.2rem;
+	line-height: 1.2;
+	color: var(--sf-ink);
+}
+
+html.dark .site-footer__wordmark {
+	font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+	font-weight: 400;
+	font-size: 1.3rem;
+}
+
+.site-footer__issue {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sf-muted);
+}
+
+.site-footer__custom {
+	margin-bottom: 0.65rem;
+	font-size: 0.85rem;
+	color: var(--sf-muted);
+	text-align: center;
+}
+
+.site-footer__colophon {
+	margin-top: 0.35rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--sf-rule);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.45rem;
+	text-align: center;
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.7rem;
+	letter-spacing: 0.04em;
+	line-height: 1.55;
+	color: var(--sf-muted);
+}
+
+.site-footer__line {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: baseline;
+	gap: 0.35rem 0.55rem;
+	max-width: 48rem;
+}
+
+.site-footer__sep {
+	opacity: 0.55;
+	user-select: none;
+}
+
+.site-footer__icon-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+}
+
+.site-footer__icon {
+	width: 0.85em;
+	height: 0.85em;
+	flex-shrink: 0;
+}
+
+.site-footer__colophon a {
+	color: var(--sf-accent);
+	font-weight: 600;
+	text-decoration: none;
+	transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.site-footer__colophon a:hover {
+	opacity: 0.82;
+	text-decoration: underline;
+	text-underline-offset: 0.14em;
+}
+
+.site-footer__colophon a:focus-visible {
+	outline: 2px solid var(--sf-accent);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+@media (max-width: 640px) {
+	.site-footer {
+		margin-left: 0.25rem;
+		margin-right: 0.25rem;
+	}
+
+	.site-footer__colophon {
+		font-size: 0.66rem;
+		letter-spacing: 0.03em;
+	}
+}
