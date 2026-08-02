@@ -2,7 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { navigateToPage } from "@utils/navigation-utils";
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
 import type { SearchResult } from "@/global";
 import { url as formatUrl, getSearchUrl } from "@/utils/url-utils";
@@ -14,6 +14,12 @@ let result: SearchResult[] = [];
 let isSearching = false;
 let initialized = false;
 let debounceTimer: NodeJS.Timeout;
+/** 桌面实用搜索框：收起 / 展开（对照 bilibili-goat 实用搜索框） */
+let desktopExpanded = false;
+
+const searchLabel = i18n(I18nKey.search);
+/** 展开时上浮的逐字提示（Search...... 形态） */
+const floatChars = [...`${searchLabel}......`];
 
 // --- Mocks for Dev Mode ---
 const fakeResult: SearchResult[] = [
@@ -57,9 +63,25 @@ const closeSearchPanel = (): void => {
 	result = [];
 };
 
+const collapseDesktopSearch = (): void => {
+	desktopExpanded = false;
+	closeSearchPanel();
+};
+
+const onDesktopToggle = async (): Promise<void> => {
+	if (desktopExpanded) {
+		await tick();
+		(
+			document.getElementById("search-desktop-input") as HTMLInputElement | null
+		)?.focus();
+	} else {
+		closeSearchPanel();
+	}
+};
+
 const handleResultClick = (event: Event, url: string): void => {
 	event.preventDefault();
-	closeSearchPanel();
+	collapseDesktopSearch();
 	navigateToPage(url);
 };
 
@@ -150,17 +172,59 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 }
 </script>
 
-<!-- search bar for desktop view：圆角对齐导航胶囊，液态玻璃与 Navigator 一致 -->
-<div id="search-bar" class="navbar-liquid-glass relative hidden lg:flex transition-all items-center h-11 ml-5 mr-3 rounded-full
-      hover:brightness-110 focus-within:brightness-110
-">
-    <Icon icon="lucide:search"
-          class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop}
-           on:focus={() => search(keywordDesktop, true)}
-           class="transition-all pl-10 pr-4 text-sm bg-transparent outline-0 rounded-full
-         h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
-    >
+<!-- 桌面搜索：展开交互保留「实用搜索框」思路，外壳对齐 GitHub/音乐 btn-plain -->
+<div
+	id="search-bar"
+	class="practical-search relative hidden lg:flex items-center"
+	class:is-open={desktopExpanded}
+	class:has-query={keywordDesktop.length > 0}
+>
+	<input
+		type="checkbox"
+		id="search-desktop-toggle"
+		class="practical-search-check"
+		bind:checked={desktopExpanded}
+		on:change={onDesktopToggle}
+	/>
+	<label
+		for="search-desktop-toggle"
+		class="practical-search-toggle btn-plain scale-animation rounded-full active:scale-90"
+		aria-label={desktopExpanded ? `${searchLabel} close` : searchLabel}
+		title={searchLabel}
+	>
+		<Icon
+			icon={desktopExpanded ? "lucide:x" : "lucide:search"}
+			class="practical-search-toggle-icon"
+		/>
+	</label>
+	<input
+		id="search-desktop-input"
+		type="search"
+		class="practical-search-input"
+		autocomplete="off"
+		spellcheck="false"
+		placeholder={searchLabel}
+		aria-label={searchLabel}
+		bind:value={keywordDesktop}
+		readonly={!desktopExpanded}
+		tabindex={desktopExpanded ? 0 : -1}
+		on:focus={() => {
+			if (desktopExpanded) search(keywordDesktop, true);
+		}}
+		on:keydown={(e) => {
+			if (e.key === "Escape") {
+				e.preventDefault();
+				collapseDesktopSearch();
+			}
+		}}
+	/>
+	{#if desktopExpanded && !keywordDesktop}
+		<div class="practical-search-fonts" aria-hidden="true">
+			{#each floatChars as ch, i (i)}
+				<span style={`--i:${i + 1}`}>{ch === " " ? "\u00a0" : ch}</span>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <!-- toggle btn for phone/tablet view -->
@@ -244,13 +308,142 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 </div>
 
 <style>
-    input:focus {
+    /* 交互：可展开；外观：对齐导航 GitHub / 音乐 btn-plain 圆钮 */
+    .practical-search {
+        --ps-size: 2.75rem;
+        --ps-open-w: min(14.5rem, 32vw);
+        --ps-ease: 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+        position: relative;
+        height: var(--ps-size);
+        min-width: var(--ps-size);
+    }
+
+    .practical-search-check {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    .practical-search-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 3;
+        width: var(--ps-size);
+        height: var(--ps-size);
+        margin: 0;
+        cursor: pointer;
+        /* 覆盖方框描边：完全吃 btn-plain 圆钮 */
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    :global(.practical-search-toggle-icon) {
+        width: 1.25rem;
+        height: 1.25rem;
+        font-size: 1.25rem;
+    }
+
+    .practical-search-input {
+        box-sizing: border-box;
+        width: 0;
+        height: var(--ps-size);
+        padding: 0;
+        margin: 0;
+        opacity: 0;
+        border: 0;
         outline: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: inherit;
+        font-size: 0.875rem;
+        pointer-events: none;
+        transition:
+            width var(--ps-ease),
+            opacity 0.22s ease,
+            padding var(--ps-ease),
+            background-color var(--ps-ease);
+        caret-color: var(--primary);
+    }
+
+    .practical-search-input::-webkit-search-cancel-button {
+        display: none;
+    }
+
+    .practical-search-fonts {
+        position: absolute;
+        top: 0;
+        left: 0.95rem;
+        height: var(--ps-size);
+        display: flex;
+        align-items: center;
+        color: rgb(0 0 0 / 0.35);
+        letter-spacing: 0.1em;
+        font: 600 0.8rem/1 inherit;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    :global(.dark) .practical-search-fonts {
+        color: rgb(255 255 255 / 0.4);
+    }
+
+    .practical-search-fonts span {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(0.2rem);
+        animation: ps-float-in 0.35s ease forwards;
+        animation-delay: calc(var(--i) * 0.04s);
+    }
+
+    @keyframes ps-float-in {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 展开：胶囊输入条 + 右侧仍是同一套圆钮 */
+    .practical-search.is-open .practical-search-input {
+        width: var(--ps-open-w);
+        opacity: 1;
+        pointer-events: auto;
+        padding: 0 calc(var(--ps-size) + 0.35rem) 0 1rem;
+        background: var(--btn-plain-bg, rgb(0 0 0 / 0.04));
+        color: rgb(0 0 0 / 0.72);
+    }
+
+    :global(.dark) .practical-search.is-open .practical-search-input {
+        background: var(--btn-plain-bg, rgb(255 255 255 / 0.06));
+        color: rgb(255 255 255 / 0.82);
+    }
+
+    .practical-search.is-open .practical-search-input:hover,
+    .practical-search.is-open .practical-search-input:focus {
+        background: var(--btn-plain-bg-hover, rgb(0 0 0 / 0.06));
+    }
+
+    :global(.dark) .practical-search.is-open .practical-search-input:hover,
+    :global(.dark) .practical-search.is-open .practical-search-input:focus {
+        background: var(--btn-plain-bg-hover, rgb(255 255 255 / 0.1));
     }
 
     .search-panel {
         max-height: calc(100vh - 100px);
         overflow-y: auto;
     }
-</style>
 
+    @media (prefers-reduced-motion: reduce) {
+        .practical-search-input,
+        .practical-search-fonts span {
+            transition-duration: 0.01ms !important;
+            animation: none !important;
+            opacity: 1;
+        }
+    }
+</style>
