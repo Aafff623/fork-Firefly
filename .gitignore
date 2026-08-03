@@ -49,6 +49,11 @@ package/
 # local temp (Skill Lab / MiniMax locks / agent scratch)
 tmp/
 __tmp__/
+temp/
+
+# local agent and deployment state
+.hallmark/
+.wrangler/
 
 # ob2blog staging + local fingerprint dumps (manifest.json is kept)
 .ob2blog/staging/
