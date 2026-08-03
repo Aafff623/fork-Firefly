@@ -11,11 +11,19 @@ export type AnnouncementConfig = {
 		url: string; // 链接地址
 		external?: boolean; // 是否外部链接
 	};
-	/** 公告 mast 下方的 520 情书翻页卡（对照 seasonal/520情书） */
+	/** 公告 mast 下方：不定期惊喜礼盒 */
 	loveLetter?: {
 		enable?: boolean;
+		/**
+		 * 惊喜期号。换新礼盒时改这个（或改 heading/message），
+		 * 访客侧「已开启」标记会按期号重置。
+		 */
+		version?: string;
+		/** 合盖时的提示（如「点开惊喜」） */
 		note?: string;
+		/** 开盖后标题 */
 		heading?: string;
+		/** 开盖后正文 */
 		message?: string;
 	};
 };

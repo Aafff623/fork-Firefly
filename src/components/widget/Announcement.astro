@@ -26,22 +26,34 @@ const { class: className, style } = Astro.props;
 const issueDate = new Date().toISOString().slice(0, 10);
 const title = config.title || i18n(I18nKey.announcement);
 const loveLetter = config.loveLetter;
-const showLoveLetter = Boolean(loveLetter) && loveLetter?.enable !== false;
-const loveNote = loveLetter?.note || "Open it! 💗💗💗";
-const loveHeading = loveLetter?.heading || "💌520💌";
-const loveMessage =
+const showGiftBox = Boolean(loveLetter) && loveLetter?.enable !== false;
+const giftHeading = loveLetter?.heading || "致每一位路过的你";
+const giftMessage =
 	loveLetter?.message ||
-	"Your eyes are really beautiful — and mine are better, because I have you in them.";
+	"谢谢你停在这里。愿你被温柔以待——这是我留给访客的小小礼物。";
+/** 惊喜期号：显式 version 优先，否则用文案指纹；换新后「已开启」自动消失 */
+function giftFingerprint(parts: string[]): string {
+	const s = parts.join("|");
+	let h = 0;
+	for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+	return `g${(h >>> 0).toString(36)}`;
+}
+const giftId = loveLetter?.version || giftFingerprint([giftHeading, giftMessage]);
+/** CodePen twhite96/NWRxmwG：丝带体素环 0..40 */
+const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
 ---
 
 {/* showTitle=false：自绘 masthead，避免与紫条标题重复，仍套 card-base */}
 <WidgetLayout
   id="announcement"
   showTitle={false}
-  class:list={["announcement-widget", className]}
+  class:list={["announcement-widget", showGiftBox && "announcement-widget--gift", className]}
   style={style}
 >
-  <article class="announcement-press" data-widget-type="announcement">
+  <article
+    class:list={["announcement-press", showGiftBox && "announcement-press--gift"]}
+    data-widget-type="announcement"
+  >
     <header class="announcement-press__mast">
       <div class="announcement-press__folio">
         <span class="announcement-press__vol">Vol. II</span>
@@ -69,38 +81,154 @@ const loveMessage =
         {title}
       </h2>
       <div class="announcement-press__double-rule" aria-hidden="true"></div>
-      <p class="announcement-press__kicker">Notice · 在研 · Agent 工作流</p>
+      <p class="announcement-press__kicker">
+        {showGiftBox ? "Surprise · 不定期 · 随缘更新" : "Notice · 在研 · Agent 工作流"}
+      </p>
     </header>
 
     {
-      showLoveLetter && (
-        <section class="love-letter" aria-label="520情书">
-          <input id="love-letter-open" type="checkbox" class="love-letter__check" />
-          <label class="love-letter__hit" for="love-letter-open" aria-label="打开或合上情书"></label>
-          <div class="love-letter__front">
-            <div class="love-letter__stage">
-              <img
-                class="love-letter__heart"
-                src="/assets/images/announcement/love.png"
-                alt=""
-                width="90"
-                height="90"
-                draggable="false"
-              />
-              <div class="love-letter__note">{loveNote}</div>
+      showGiftBox && (
+        <section
+          class="gift-surprise"
+          aria-label="不期而至"
+          data-gift-source="twhite96-NWRxmwG+djdai-MWjEZBJ"
+          data-gift-id={giftId}
+          data-gift-opened="false"
+        >
+          <input id="gift-box-open" type="checkbox" class="gift-surprise__check" />
+          <label class="gift-surprise__hit" for="gift-box-open" aria-label="打开惊喜信封"></label>
+
+          {/* 本机开过当期惊喜才显示；换 version / 文案后自动消失 */}
+          <span class="gift-surprise__opened-badge" hidden>已开启</span>
+
+          {/* 舞台：粉框内居中；常驻 3D + 悬停/点击经典盒叠放 */}
+          <div class="gift-surprise__stage">
+            {/*
+              常驻 3D：johnnyfekete/NWRxmwG（社区常标 twhite96）
+              结构必须与原 Pen 一致：盖面 + 丝带都是 .gift-box 的直接子节点，
+              勿再包 .gift-box-lid（会 flatten 3D，看起来像平面贴纸）。
+              https://codepen.io/johnnyfekete/pen/NWRxmwG
+            */}
+            <div class="gift-box-container" aria-hidden="true">
+              <div class="gift-box">
+                <div class="gift-box__side gift-box__side--front"></div>
+                <div class="gift-box__side gift-box__side--back"></div>
+                <div class="gift-box__side gift-box__side--left"></div>
+                <div class="gift-box__side gift-box__side--right"></div>
+                <div class="gift-box__end gift-box__side--top"></div>
+                <div class="gift-box__end gift-box__side--bottom"></div>
+
+                <div class="gift-box-lid__side gift-box-lid__side--front"></div>
+                <div class="gift-box-lid__side gift-box-lid__side--back"></div>
+                <div class="gift-box-lid__side gift-box-lid__side--left"></div>
+                <div class="gift-box-lid__side gift-box-lid__side--right"></div>
+                <div class="gift-box-lid__end gift-box-lid__side--top"></div>
+
+                {
+                  ribbonPositions.map((i) => (
+                    <div
+                      class="ribbon-l"
+                      style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 37 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
+                    />
+                  ))
+                }
+                <div class="ribbon-l-end"></div>
+                {
+                  ribbonPositions.map((i) => (
+                    <div
+                      class="ribbon-r"
+                      style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 37 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
+                    />
+                  ))
+                }
+                <div class="ribbon-r-end"></div>
+              </div>
+            </div>
+
+            {/*
+              悬停/点击经典开盖：djdai/MWjEZBJ
+              https://codepen.io/djdai/pen/MWjEZBJ
+            */}
+            <div class="box" id="luckyBox" aria-hidden="true">
+              <div class="box-body">
+                <div class="img" aria-hidden="true">
+                  <span class="gift-surprise__spark">♥</span>
+                </div>
+                <div class="box-lid">
+                  <div class="box-bowtie"></div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="love-letter__inside">
-            <div class="love-letter__text">
-              <h3 class="love-letter__heading">{loveHeading}</h3>
-              <p class="love-letter__message">{loveMessage}</p>
+
+          {/* 信封在舞台外：可越过粉框，略倾斜放大 */}
+          <aside class="gift-surprise__envelope" aria-live="polite">
+            <span class="gift-surprise__wax" aria-hidden="true">520</span>
+            <div class="gift-surprise__paper">
+              <p class="gift-surprise__seal">SURPRISE</p>
+              <h3 class="gift-surprise__heading">{giftHeading}</h3>
+              <p class="gift-surprise__message">{giftMessage}</p>
+              <p class="gift-surprise__sign">— threetwoa</p>
             </div>
-          </div>
+            <span class="gift-surprise__corner" aria-hidden="true"></span>
+          </aside>
         </section>
       )
     }
 
-    <p class="announcement-press__lede">{config.content}</p>
+    {
+      showGiftBox && (
+        <script>
+          function initGiftOpenedBadges() {
+            document.querySelectorAll(".gift-surprise[data-gift-id]").forEach((node) => {
+              const root = node as HTMLElement;
+              if (root.dataset.giftBound === "1") return;
+              root.dataset.giftBound = "1";
+
+              const giftId = root.dataset.giftId;
+              if (!giftId) return;
+
+              const storageKey = `firefly-gift-opened:${giftId}`;
+              const check = root.querySelector(".gift-surprise__check");
+              const badge = root.querySelector(".gift-surprise__opened-badge");
+              if (!(check instanceof HTMLInputElement) || !(badge instanceof HTMLElement)) return;
+
+              const syncOpenedBadge = () => {
+                let opened = false;
+                try {
+                  opened = localStorage.getItem(storageKey) === "1";
+                } catch {
+                  opened = false;
+                }
+                root.dataset.giftOpened = opened ? "true" : "false";
+                badge.hidden = !opened;
+              };
+
+              check.addEventListener("change", () => {
+                if (!check.checked) return;
+                try {
+                  localStorage.setItem(storageKey, "1");
+                } catch {
+                  /* private mode：不持久化 */
+                }
+                syncOpenedBadge();
+              });
+
+              syncOpenedBadge();
+            });
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initGiftOpenedBadges);
+          } else {
+            initGiftOpenedBadges();
+          }
+          document.addEventListener("swup:contentReplaced", initGiftOpenedBadges);
+          document.addEventListener("swup:content:replace", initGiftOpenedBadges);
+          document.addEventListener("swup:page:view", initGiftOpenedBadges);
+        </script>
+      )
+    }
 
     {
       config.link && config.link.enable !== false && (

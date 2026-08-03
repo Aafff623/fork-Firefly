@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 侧栏公告 · 主题卡壳内的编辑/报纸家具
  *
  * 平衡点（调研）：
@@ -7,9 +7,13 @@
  * - Hallmark / katagami：主表面跟主题；纸感只作极轻内衬；强调色 < 5%
  *
  * 因此：外壳走 card-base；内文加 masthead 家具；accent 只用 --primary。
+ *
+ * 惊喜礼盒双形态（见 .gift-surprise）：
+ * 1) 常驻 3D：johnnyfekete/NWRxmwG（粉金改色 + 慢转 + 轻浮）
+ * 2) 悬停/点击经典盒：djdai/MWjEZBJ → 开盖后信封飞入
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Sacramento&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DotGothic16&family=Ma+Shan+Zheng&family=Sacramento&display=swap");
 
 .announcement-press {
 	/* 极轻纸感内衬：不换卡，只让正文区略暖一点 */
@@ -153,6 +157,42 @@
 	color: var(--primary);
 }
 
+/* 打字机：取消 drop cap（逐字出现时不适用）+ 像素风 */
+.announcement-press__lede--typewriter {
+	font-family: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
+	font-size: 0.8rem;
+	line-height: 1.8;
+	letter-spacing: 0.03em;
+	-webkit-font-smoothing: none;
+	-moz-osx-font-smoothing: unset;
+	text-rendering: optimizeSpeed;
+}
+
+.announcement-press__lede--typewriter::first-letter {
+	float: none;
+	margin: 0;
+	font: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+.announcement-press__lede--typewriter .announcement-press__typewriter {
+	font-family: inherit;
+	font-size: inherit;
+	letter-spacing: inherit;
+}
+
+.announcement-press__lede--typewriter .announcement-press__typewriter::after {
+	color: var(--primary);
+	font-weight: 700;
+}
+
+.announcement-press--gift .announcement-press__lede--typewriter .announcement-press__typewriter::after {
+	color: var(--ap-gift, #c45b6f);
+}
+
 /* —— Colophon / CTA —— */
 .announcement-press__colophon {
 	margin-top: 0.75rem;
@@ -182,29 +222,91 @@
 	border-bottom-color: var(--primary);
 }
 
-/* ── 520 情书（来源 seasonal/520情书；侧栏内翻开，禁止甩出左栏）── */
+/* 惊喜礼盒模式：标题 + 图标走粉系 */
+.announcement-press--gift {
+	--ap-gift: #c45b6f;
+	--ap-gift-soft: #e8919f;
+}
 
-.love-letter {
-	--ll-pink: #fff7f9;
-	--ll-rose: #f4a0a8;
-	--ll-ink: #c45b6c;
-	--ll-ease: 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-	/* 宽度吃满公告内容区，高度跟宽走，不再用会溢出的外摆 3D */
+/*
+ * 礼盒模式：放行 WidgetLayout 默认 overflow-hidden，
+ * 否则 3D 自转 / 信封飞出会被 card 裁成「平面贴纸」。
+ */
+.announcement-widget--gift,
+.announcement-widget--gift .collapse-wrapper,
+.announcement-widget--gift #announcement {
+	overflow: visible !important;
+}
+
+.announcement-widget--gift:has(.gift-surprise__check:checked) {
+	z-index: 28;
+}
+
+.announcement-press--gift .announcement-press__vol {
+	color: var(--ap-gift);
+}
+
+.announcement-press--gift .announcement-press__nameplate {
+	color: #5a2a36;
+}
+
+.announcement-press--gift .announcement-press__nameplate::before {
+	background: var(--ap-gift);
+}
+
+.announcement-press--gift .announcement-press__title-icon {
+	color: var(--ap-gift);
+}
+
+.announcement-press--gift .announcement-press__kicker {
+	color: color-mix(in oklab, var(--ap-gift) 70%, var(--ap-mute));
+}
+
+.announcement-press--gift .announcement-press__lede {
+	border-left-color: color-mix(in oklch, var(--ap-gift) 55%, transparent);
+}
+
+.announcement-press--gift .announcement-press__lede::first-letter {
+	color: var(--ap-gift);
+}
+
+.announcement-press--gift .announcement-press__cta {
+	color: var(--ap-gift);
+	border-bottom-color: color-mix(in oklch, var(--ap-gift) 40%, transparent);
+}
+
+/* ── 520 惊喜礼盒 ──
+ * 常驻：3D 自转（不晃）
+ * 悬停：淡入切换到「准备开盖」经典盒，经典盒轻微晃动（不开盖）
+ * 点击：经典盒开盖 → 礼盒淡出 → 信封淡入
+ */
+
+.gift-surprise {
+	--gb-ease: 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+	/* 3D ↔ 准备开盖：交叉淡入淡出（偏缓，不硬切） */
+	--gift-crossfade: 0.7s ease-in-out;
+	/* 侧栏宽度有限：略放大，保证体块可读 */
+	--gift-3d-scale: 0.42;
+	--gift-classic-scale: 0.32;
+	--gb-ink: #4a2430;
+	--gb-rose: #c45b6f;
 	position: relative;
 	width: 100%;
 	max-width: 100%;
-	aspect-ratio: 1;
-	height: auto;
-	margin: 0.75rem 0 1rem;
+	margin: 0.4rem 0 0.55rem;
+	padding: 0;
+	/* 粉框仍裁圆角，但舞台内部用 visible 保 3D 深度 */
 	overflow: hidden;
-	border-radius: 0.65rem;
-	transform-style: preserve-3d;
-	perspective: 900px;
+	border-radius: 0.9rem;
 	container-type: inline-size;
-	isolation: isolate;
+	z-index: 1;
+	background:
+		radial-gradient(ellipse 80% 55% at 50% 0%, rgb(255 230 236 / 0.85), transparent 62%),
+		linear-gradient(180deg, #fff5f7 0%, #fce8ec 100%);
+	box-shadow: inset 0 0 0 1px rgb(196 91 111 / 0.12);
 }
 
-.love-letter__check {
+.gift-surprise__check {
 	position: absolute;
 	opacity: 0;
 	width: 0;
@@ -212,173 +314,864 @@
 	pointer-events: none;
 }
 
-.love-letter__hit {
+.gift-surprise__hit {
 	position: absolute;
 	inset: 0;
-	z-index: 6;
+	z-index: 30;
 	cursor: pointer;
-	background: transparent;
 	border-radius: inherit;
 }
 
-.love-letter__front {
+/* 本机已开过当期惊喜：角落小胶囊，不抢主体 */
+.gift-surprise__opened-badge {
 	position: absolute;
-	inset: 0;
-	z-index: 2;
-	overflow: hidden;
-	border-radius: inherit;
-	background:
-		radial-gradient(circle at 30% 20%, rgb(255 255 255 / 0.55), transparent 42%),
-		var(--ll-pink);
-	/* 从左缘折起，只折到「立在左边」——不再 -145° 甩出屏幕 */
-	transform-origin: left center;
-	transform: rotateY(0deg);
-	backface-visibility: hidden;
-	box-shadow:
-		0.35rem 0 0.9rem rgb(120 40 60 / 0.14),
-		inset 0 0 0 1px rgb(255 255 255 / 0.35);
-	transition: transform var(--ll-ease), box-shadow var(--ll-ease);
+	top: 0.4rem;
+	right: 0.4rem;
+	z-index: 31;
+	pointer-events: none;
+	display: inline-flex;
+	align-items: center;
+	padding: 0.12rem 0.42rem;
+	border-radius: 999px;
+	font-size: 0.58rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	color: color-mix(in oklab, var(--gb-rose) 78%, #5a2a36);
+	background: rgb(255 255 255 / 0.72);
+	border: 1px solid rgb(196 91 111 / 0.28);
+	box-shadow: 0 2px 8px rgb(90 40 55 / 0.08);
+	backdrop-filter: blur(4px);
 }
 
-.love-letter__front::before {
+.gift-surprise__opened-badge[hidden] {
+	display: none !important;
+}
+
+:root.dark .gift-surprise__opened-badge {
+	color: #f3c4cd;
+	background: rgb(40 24 30 / 0.72);
+	border-color: rgb(232 160 173 / 0.28);
+}
+
+/*
+ * 已开启：只留平面经典箱（djdai 形态），绿色配系；3D 永不再出现。
+ * 不是通体纯绿：盒身深绿→嫩绿，盖子翠绿，丝带仍偏奶油金。
+ */
+.gift-surprise[data-gift-opened="true"] {
+	--gb-ink: #1b4332;
+	--gb-rose: #2d6a4f;
+	--gift-open-body-a: #2d6a4f;
+	--gift-open-body-b: #74c69d;
+	--gift-open-lid: #40916c;
+	--gift-open-ribbon-a: #f8fff6;
+	--gift-open-ribbon-b: #d8f3dc;
+	--gift-open-bow: #f1faee;
+	--gift-open-halo: rgb(167 214 188 / 0.42);
+	background:
+		radial-gradient(ellipse 80% 55% at 50% 0%, rgb(220 245 230 / 0.9), transparent 62%),
+		linear-gradient(180deg, #f4fbf6 0%, #e7f5ee 100%);
+	box-shadow: inset 0 0 0 1px rgb(45 106 79 / 0.14);
+}
+
+.gift-surprise[data-gift-opened="true"] .gift-surprise__opened-badge {
+	color: color-mix(in oklab, var(--gb-rose) 72%, #1b4332);
+	border-color: rgb(45 106 79 / 0.28);
+	box-shadow: 0 2px 8px rgb(27 67 50 / 0.08);
+}
+
+:root.dark .gift-surprise[data-gift-opened="true"] {
+	background:
+		radial-gradient(ellipse 80% 55% at 50% 0%, rgb(45 106 79 / 0.28), transparent 62%),
+		linear-gradient(180deg, #1a2a22 0%, #15241c 100%);
+	box-shadow: inset 0 0 0 1px rgb(116 198 157 / 0.18);
+}
+
+:root.dark .gift-surprise[data-gift-opened="true"] .gift-surprise__opened-badge {
+	color: #b7e4c7;
+	background: rgb(20 36 28 / 0.72);
+	border-color: rgb(116 198 157 / 0.28);
+}
+
+/* 已开启：3D 彻底关掉 */
+.gift-surprise[data-gift-opened="true"] .gift-box-container {
+	opacity: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+/* 回访已开启（checkbox 未勾）：平面箱静置可见，绿色配系 */
+.gift-surprise[data-gift-opened="true"]:not(:has(.gift-surprise__check:checked)) .box {
+	opacity: 1;
+	visibility: visible;
+	animation: none;
+}
+
+.gift-surprise[data-gift-opened="true"] .box::before {
+	background-color: var(--gift-open-halo);
+}
+
+.gift-surprise[data-gift-opened="true"] .box-body {
+	background: linear-gradient(var(--gift-open-body-a), var(--gift-open-body-b));
+}
+
+.gift-surprise[data-gift-opened="true"] .box-body::after {
+	background: linear-gradient(var(--gift-open-ribbon-a), var(--gift-open-ribbon-b));
+}
+
+.gift-surprise[data-gift-opened="true"] .box-lid {
+	background-color: var(--gift-open-lid);
+}
+
+.gift-surprise[data-gift-opened="true"] .box-lid::after {
+	background: linear-gradient(var(--gift-open-ribbon-b), var(--gift-open-ribbon-a));
+}
+
+.gift-surprise[data-gift-opened="true"] .box-bowtie::before,
+.gift-surprise[data-gift-opened="true"] .box-bowtie::after {
+	border-color: var(--gift-open-bow);
+}
+
+.gift-surprise[data-gift-opened="true"] .box-body .img {
+	color: var(--gift-open-lid);
+	background: rgb(248 255 246 / 0.92);
+	box-shadow: 0 6px 14px rgb(27 67 50 / 0.12);
+}
+
+/* 粉框舞台：水平 + 垂直居中；允许 3D 深度溢出一点 */
+.gift-surprise__stage {
+	position: relative;
+	width: 100%;
+	height: 9.25rem;
+	display: grid;
+	place-items: center;
+	overflow: visible;
+	perspective: 480px;
+	transform-style: preserve-3d;
+}
+
+/*
+ * 原 Pen：200×200 + perspective:400px
+ * 缩放放在容器上；容器本身保留 perspective，子树 preserve-3d
+ */
+.gift-box-container {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 200px;
+	height: 200px;
+	margin: 0;
+	perspective: 400px;
+	transform: translate(-50%, -50%) scale(var(--gift-3d-scale));
+	transform-origin: center center;
+	transform-style: preserve-3d;
+	opacity: 1;
+	z-index: 4;
+	pointer-events: none;
+	transition: opacity var(--gift-crossfade);
+	/* 轻微上下悬浮，强调「3D 悬浮」而不是贴在平面上 */
+	animation: gift-float-3d 4.5s ease-in-out infinite;
+}
+
+.gift-box {
+	/* 原 Pen 变量名保留；色值改为粉金（站内品牌） */
+	--gift-box-color: #e8919f;
+	--gift-box-edge-color: #7a2f3d;
+	--wrap-color: #f8ecd8;
+	--wrap-ribbon-color: #e0c08a;
+	--wrap-top-color: #f3e6c8;
+
+	width: 200px;
+	height: 200px;
+	position: relative;
+	transform-style: preserve-3d;
+	transition: transform 1s;
+	animation: gift-rotation-3d 20s infinite linear;
+	will-change: transform;
+}
+
+.gift-box .gift-box__side,
+.gift-box .gift-box__end {
+	position: absolute;
+	width: 200px;
+	height: 200px;
+	border: 2px solid var(--gift-box-edge-color);
+}
+
+.gift-box .gift-box-lid__side {
+	position: absolute;
+	width: 220px;
+	height: 50px;
+	border: 2px solid var(--gift-box-edge-color);
+}
+
+.gift-box .gift-box-lid__end {
+	position: absolute;
+	width: 220px;
+	height: 220px;
+	border: 2px solid var(--gift-box-edge-color);
+}
+
+.gift-box .gift-box__side,
+.gift-box .gift-box-lid__side {
+	background: linear-gradient(
+		to right,
+		var(--gift-box-color) 40%,
+		var(--wrap-color) 40%,
+		var(--wrap-color) 60%,
+		var(--gift-box-color) 60%
+	);
+}
+
+.gift-box .gift-box__end,
+.gift-box .gift-box-lid__end {
+	background:
+		linear-gradient(
+			to right,
+			transparent 40%,
+			var(--wrap-top-color) 40%,
+			var(--wrap-top-color) 60%,
+			transparent 60%
+		),
+		linear-gradient(
+			to bottom,
+			var(--gift-box-color) 40%,
+			var(--wrap-color) 40%,
+			var(--wrap-color) 60%,
+			var(--gift-box-color) 60%
+		);
+}
+
+.gift-box .gift-box__side--front {
+	transform: rotateY(0deg) translateZ(100px);
+}
+.gift-box .gift-box__side--back {
+	transform: rotateY(180deg) translateZ(100px);
+}
+.gift-box .gift-box__side--left {
+	transform: rotateY(-90deg) translateZ(100px);
+}
+.gift-box .gift-box__side--right {
+	transform: rotateY(90deg) translateZ(100px);
+}
+.gift-box .gift-box__side--top {
+	transform: rotateX(90deg) translateZ(100px);
+}
+.gift-box .gift-box__side--bottom {
+	transform: rotateX(-90deg) translateZ(100px);
+}
+
+.gift-box .gift-box-lid__side--front {
+	transform: rotateY(0deg) translateZ(110px) translateX(-10px) translateY(-10px);
+}
+.gift-box .gift-box-lid__side--back {
+	transform: rotateY(180deg) translateZ(110px) translateX(10px) translateY(-10px);
+}
+.gift-box .gift-box-lid__side--left {
+	transform: rotateY(-90deg) translateZ(120px) translateY(-10px);
+}
+.gift-box .gift-box-lid__side--right {
+	transform: rotateY(90deg) translateZ(100px) translateY(-10px);
+}
+.gift-box .gift-box-lid__side--top {
+	transform: rotateX(90deg) translateZ(120px) translateX(-10px) translateY(0);
+}
+
+/* 丝带 / 结：与原 Pen 一致，须为 .gift-box 直接子节点 */
+.gift-box .ribbon-l {
+	position: absolute;
+	width: 70px;
+	height: 70px;
+	border: 2px solid var(--wrap-ribbon-color);
+	border-radius: 50% 50% 0 50%;
+	transform-style: preserve-3d;
+	transform-origin: 50% 50%;
+	transform: rotateX(75deg) rotateY(90deg) translateZ(calc(80px - var(--gift-box-position)))
+		translateX(-85px) translateY(-75px) skewY(30deg);
+}
+
+.gift-box .ribbon-r {
+	position: absolute;
+	width: 70px;
+	height: 70px;
+	border: 2px solid var(--wrap-ribbon-color);
+	border-radius: 50% 50% 0 50%;
+	transform-style: preserve-3d;
+	transform-origin: 50% 50%;
+	transform: rotateX(-5deg) rotateY(90deg) translateZ(calc(80px - var(--gift-box-position)))
+		translateX(-30px) translateY(-110px) skewY(30deg);
+}
+
+.gift-box .ribbon-l-end,
+.ribbon-l-end {
+	position: absolute;
+	width: 40px;
+	height: 110px;
+	background:
+		linear-gradient(45deg, var(--wrap-top-color) 72%, transparent 72%),
+		linear-gradient(-45deg, var(--wrap-top-color) 72%, transparent 72%);
+	border: 2px solid var(--gift-box-edge-color);
+	border-top: none;
+	border-bottom: none;
+	transform: rotateX(-70deg) translateX(80px) translateY(-80px) translateZ(-60px);
+}
+
+.gift-box .ribbon-r-end,
+.ribbon-r-end {
+	position: absolute;
+	width: 40px;
+	height: 110px;
+	background:
+		linear-gradient(45deg, var(--wrap-top-color) 72%, transparent 72%),
+		linear-gradient(-45deg, var(--wrap-top-color) 72%, transparent 72%);
+	border: 2px solid var(--gift-box-edge-color);
+	border-top: none;
+	border-bottom: none;
+	transform: rotateX(80deg) translateX(80px) translateY(-80px) translateZ(60px);
+}
+
+/* 原 Pen rotation-3d：绕 Y 慢转 + 固定俯仰/倾侧，形成悬浮体块 */
+@keyframes gift-rotation-3d {
+	from {
+		transform: translateZ(-100px) rotateY(50deg) rotateX(-5deg) rotateZ(-30deg);
+	}
+	to {
+		transform: translateZ(-100px) rotateY(409deg) rotateX(-5deg) rotateZ(-30deg);
+	}
+}
+
+/* 容器级轻浮：与自转叠加，不打断 preserve-3d 子树 */
+@keyframes gift-float-3d {
+	0%,
+	100% {
+		transform: translate(-50%, calc(-50% + 0px)) scale(var(--gift-3d-scale));
+	}
+	50% {
+		transform: translate(-50%, calc(-50% - 6px)) scale(var(--gift-3d-scale));
+	}
+}
+
+/* —— djdai/MWjEZBJ：经典开盖（悬停 / 点击形态）—— */
+.gift-surprise .box {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 200px;
+	height: 200px;
+	margin: 0;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -50%) scale(var(--gift-classic-scale));
+	transform-origin: center center;
+	z-index: 5;
+	/* 只用 opacity 淡入淡出，避免 visibility 硬切成「一帧跳下一帧」 */
+	transition: opacity var(--gift-crossfade);
+}
+
+.gift-surprise .box::before {
+	content: "";
+	width: 280px;
+	height: 280px;
+	background-color: rgb(243 196 205 / 0.45);
+	position: absolute;
+	z-index: -1;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+}
+
+.gift-surprise .box-body {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 200px;
+	width: 200px;
+	margin: 0;
+	transform: translate(-50%, -50%);
+	border-bottom-left-radius: 5%;
+	border-bottom-right-radius: 5%;
+	box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.3);
+	background: linear-gradient(#a34458, #e8919f);
+	cursor: pointer;
+}
+
+.gift-surprise .box-body .img {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(0%);
+	transition: all 0.5s;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 72px;
+	height: 72px;
+	border-radius: 999px;
+	background: rgb(255 248 246 / 0.92);
+	box-shadow: 0 6px 14px rgb(90 40 55 / 0.12);
+	position: relative;
+	z-index: 0;
+	/* 装饰心，不是信封正文 */
+	font-size: 1.6rem;
+	line-height: 1;
+	color: #c45b6f;
+	pointer-events: none;
+}
+
+.gift-surprise__spark {
+	display: block;
+	transform: translateY(1px);
+}
+
+.gift-surprise .box-body::after {
 	content: "";
 	position: absolute;
-	inset: 5%;
-	border-radius: 0.4rem;
-	background:
-		linear-gradient(160deg, color-mix(in oklab, var(--ll-rose) 80%, #fff), var(--ll-rose));
-	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
-	transition: opacity 0.25s ease, inset var(--ll-ease);
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 50px;
+	background: linear-gradient(#ffffff, #ffefa0);
 }
 
-/* 封面内容：心在上、字在下 */
-.love-letter__stage {
+.gift-surprise .box-lid {
+	position: absolute;
+	z-index: 1;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 90%;
+	height: 40px;
+	width: 220px;
+	background-color: #c45b6f;
+	border-radius: 5%;
+	box-shadow: 0 8px 4px -4px rgba(0, 0, 0, 0.3);
+}
+
+.gift-surprise .box-lid::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 50px;
+	background: linear-gradient(#ffefa0, #fff);
+}
+
+.gift-surprise .box-bowtie {
+	z-index: 1;
+	height: 100%;
+}
+
+.gift-surprise .box-bowtie::before,
+.gift-surprise .box-bowtie::after {
+	content: "";
+	width: 83.3333333333px;
+	height: 83.3333333333px;
+	border: 16.6666666667px solid #fff8f0;
+	border-radius: 50% 50% 0 50%;
+	position: absolute;
+	bottom: 99%;
+	z-index: -1;
+}
+
+.gift-surprise .box-bowtie::before {
+	left: 50%;
+	transform: translateX(-100%) skew(10deg, 10deg);
+}
+
+.gift-surprise .box-bowtie::after {
+	left: 50%;
+	transform: translateX(0%) rotate(90deg) skew(10deg, 10deg);
+}
+
+@keyframes box-lid {
+	0%,
+	42% {
+		transform: translate3d(-50%, 0%, 0) rotate(0deg);
+	}
+	60% {
+		transform: translate3d(-85%, -230%, 0) rotate(-25deg);
+	}
+	90%,
+	100% {
+		transform: translate3d(-119%, 225%, 0) rotate(-70deg);
+	}
+}
+
+@keyframes box-body {
+	0% {
+		transform: translate3d(0%, 0%, 0) rotate(0deg);
+	}
+	25% {
+		transform: translate3d(0%, 25%, 0) rotate(20deg);
+	}
+	50% {
+		transform: translate3d(0%, -15%, 0) rotate(0deg);
+	}
+	70% {
+		transform: translate3d(0%, 0%, 0) rotate(0deg);
+	}
+}
+
+@keyframes box-bowtie-right {
+	0%,
+	50%,
+	75% {
+		transform: translateX(0%) rotate(90deg) skew(10deg, 10deg);
+	}
+	90%,
+	100% {
+		transform: translate(-50%, -15%) rotate(45deg) skew(10deg, 10deg);
+		box-shadow: 0px 4px 8px -4px rgba(0, 0, 0, 0.3);
+	}
+}
+
+@keyframes box-bowtie-left {
+	0% {
+		transform: translateX(-100%) rotate(0deg) skew(10deg, 10deg);
+	}
+	50%,
+	75% {
+		transform: translate(-50%, -15%) rotate(45deg) skew(10deg, 10deg);
+	}
+	90%,
+	100% {
+		transform: translateX(-100%) rotate(0deg) skew(10deg, 10deg);
+	}
+}
+
+/* 真信封：默认隐身；打开后越出粉框、略倾斜、更大 */
+.gift-surprise__envelope {
+	position: absolute;
+	left: 50%;
+	top: 42%;
+	width: min(118%, 15.5rem);
+	z-index: 40;
+	transform-style: preserve-3d;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -50%) scale(0.4) rotate(-4deg);
+	transform-origin: center center;
+	filter: blur(2px);
+	will-change: transform, opacity, filter;
+}
+
+.gift-surprise__paper {
 	position: relative;
-	z-index: 2;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	gap: 0.55rem;
-	width: 100%;
-	height: 100%;
-	padding: 12% 10% 14%;
-	box-sizing: border-box;
-	transition: opacity 0.18s ease;
-}
-
-.love-letter__heart {
-	display: block;
-	width: min(36%, 3.2rem);
-	height: auto;
-	flex: 0 0 auto;
-	filter: drop-shadow(0 6px 12px rgb(180 60 90 / 0.28));
-	pointer-events: none;
-	user-select: none;
-}
-
-.love-letter__note {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 78%;
-	min-height: 2.5rem;
-	padding: 0.45rem 0.55rem;
-	border-radius: 0.35rem;
-	background: color-mix(in oklab, #fff 88%, var(--ll-pink));
-	color: #4a2430;
-	font-weight: 800;
-	font-size: clamp(0.82rem, 5cqi, 1.05rem);
-	letter-spacing: 0.04em;
-	line-height: 1.2;
+	gap: 0.3rem;
+	padding: 1.15rem 0.7rem 0.7rem;
 	text-align: center;
-	box-shadow:
-		0 8px 18px rgb(120 40 60 / 0.16),
-		inset 0 1px 0 rgb(255 255 255 / 0.7);
-}
-
-.love-letter__inside {
-	position: absolute;
-	inset: 0;
-	z-index: 1;
-	overflow: hidden;
-	border-radius: inherit;
+	border-radius: 0.35rem 0.35rem 0.55rem 0.55rem;
 	background:
-		radial-gradient(circle at 80% 10%, rgb(255 214 222 / 0.7), transparent 45%),
-		#faf6f7;
+		linear-gradient(180deg, transparent 0 12%, rgb(196 91 111 / 0.08) 12% 12.5%, transparent 12.5%),
+		repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 1.35rem,
+			rgb(196 91 111 / 0.05) 1.35rem,
+			rgb(196 91 111 / 0.05) 1.37rem
+		),
+		linear-gradient(165deg, #fffdfb 0%, #fff3ee 55%, #ffe8e4 100%);
+	box-shadow:
+		inset 0 0 0 1px rgb(212 165 116 / 0.45),
+		inset 0 1px 0 rgb(255 255 255 / 0.75),
+		0 14px 32px rgb(90 40 55 / 0.18);
+	clip-path: polygon(
+		0 0.55rem,
+		0.55rem 0,
+		calc(100% - 0.55rem) 0,
+		100% 0.55rem,
+		100% 100%,
+		0 100%
+	);
 }
 
-.love-letter__text {
+.gift-surprise__paper::before {
+	content: "";
 	position: absolute;
-	inset: 10% 8% auto;
+	left: 10%;
+	right: 10%;
+	top: 0;
+	height: 0.7rem;
+	background: linear-gradient(180deg, #f3c4cd, #e8919f);
+	clip-path: polygon(0 0, 50% 100%, 100% 0);
+	opacity: 0.9;
+}
+
+.gift-surprise__wax {
+	position: absolute;
+	top: -0.35rem;
+	left: 50%;
 	z-index: 2;
-	width: 84%;
-	text-align: center;
-	color: var(--ll-ink);
-	font-family: Sacramento, "Segoe Script", "Apple Chancery", cursive;
+	display: grid;
+	place-items: center;
+	width: 2.1rem;
+	height: 2.1rem;
+	margin-left: -1.05rem;
+	border-radius: 50%;
+	font-family: "Ma Shan Zheng", serif;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	color: #fff8f4;
+	background:
+		radial-gradient(circle at 35% 30%, #f0a0ae, #c45b6f 55%, #8f3d4f 100%);
+	box-shadow:
+		0 2px 0 #7a2f3d,
+		0 6px 14px rgb(90 40 55 / 0.28);
+	transform: rotate(-8deg);
 }
 
-.love-letter__heading {
-	margin: 0 0 0.4rem;
-	font-size: clamp(1.45rem, 9cqi, 1.9rem);
-	font-weight: 400;
-	line-height: 1.1;
-	letter-spacing: 0.08em;
-	color: #c24d63;
+.gift-surprise__corner {
+	position: absolute;
+	right: 0.35rem;
+	bottom: 0.35rem;
+	width: 1.6rem;
+	height: 1.6rem;
+	background: linear-gradient(135deg, transparent 50%, rgb(224 192 138 / 0.55) 50%);
+	border-radius: 0 0 0.35rem;
+	pointer-events: none;
 }
 
-.love-letter__message {
+.gift-surprise__seal {
+	margin: 0.15rem 0 0;
+	font-family: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
+	font-size: 0.5rem;
+	letter-spacing: 0.22em;
+	color: color-mix(in oklab, var(--gb-rose) 55%, #e0c08a);
+}
+
+.gift-surprise__heading {
 	margin: 0;
-	font-size: clamp(0.78rem, 4.6cqi, 0.95rem);
-	line-height: 1.5;
-	color: #b45d6d;
+	font-family: "Ma Shan Zheng", "Songti SC", serif;
+	font-size: clamp(1.05rem, 6.2cqi, 1.3rem);
+	font-weight: 400;
+	line-height: 1.25;
+	color: var(--gb-ink);
+	text-wrap: balance;
+}
+
+.gift-surprise__message {
+	margin: 0;
+	font-family: "Ma Shan Zheng", "KaiTi", "STKaiti", serif;
+	font-size: clamp(0.78rem, 4.4cqi, 0.9rem);
+	line-height: 1.55;
+	color: color-mix(in oklab, var(--gb-ink) 88%, #8a6070);
 	text-wrap: pretty;
 }
 
-/* 打开：封面折成左侧书脊（约 88°），动画全程落在卡片盒内 */
-.love-letter__check:checked ~ .love-letter__front {
-	transform: rotateY(-88deg);
-	box-shadow: 0.15rem 0 0.45rem rgb(120 40 60 / 0.2);
+.gift-surprise__sign {
+	margin: 0.2rem 0 0;
+	font-family: Sacramento, "Segoe Script", cursive;
+	font-size: clamp(1.05rem, 6cqi, 1.25rem);
+	color: var(--gb-rose);
 }
 
-.love-letter__check:checked ~ .love-letter__front::before {
-	inset: 0;
-	border-radius: inherit;
-	/* 不再二次 rotate / translateX 甩出左栏；动图改到内页 */
-	opacity: 0.92;
-	background-image: none;
-	background: linear-gradient(90deg, #e89aa4, #f4a0a8);
-}
-
-.love-letter__check:checked ~ .love-letter__front .love-letter__stage {
+/* 悬停 / 点击：两态重叠交叉溶解（同时淡出 3D + 淡入经典盒） */
+.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+.gift-surprise:has(.gift-surprise__check:checked) .gift-box-container {
 	opacity: 0;
 }
 
-.love-letter__check:checked ~ .love-letter__inside {
-	background:
-		linear-gradient(180deg, rgb(250 246 247 / 0.88), rgb(250 246 247 / 0.94)),
-		url("/assets/images/announcement/love.gif") center / cover no-repeat;
+.gift-surprise:hover:not(:has(.gift-surprise__check:checked)) .box,
+.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)) .box,
+.gift-surprise:has(.gift-surprise__check:checked) .box {
+	opacity: 1;
+}
+
+/* 悬停：晃动挂在盒身；已开启静置时不晃，避免「还能再开」的错觉 */
+.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .box-body,
+.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .box-body {
+	animation: gift-invite-wiggle 0.7s ease-in-out 0.25s infinite;
+}
+
+@keyframes gift-invite-wiggle {
+	0%,
+	100% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	25% {
+		transform: translate(-52%, -50%) rotate(-2.2deg);
+	}
+	50% {
+		transform: translate(-48%, -50%) rotate(2.2deg);
+	}
+	75% {
+		transform: translate(-51%, -50%) rotate(-1.4deg);
+	}
+}
+
+/* 点击：开盖 → 礼盒淡出 → 信封淡入 */
+.gift-surprise:has(.gift-surprise__check:checked) .box {
+	animation: gift-classic-lifecycle 1.85s forwards ease-in-out;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .box-body .img {
+	opacity: 1;
+	visibility: visible;
+	z-index: 0;
+	transform: translateY(-157px);
+	transition:
+		opacity 0.45s ease 0.2s,
+		transform 0.5s ease 0.2s,
+		visibility 0s linear 0.2s;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .box-lid {
+	animation: box-lid 1s 0.2s forwards ease-in-out;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .box-bowtie::before {
+	animation: box-bowtie-left 1.1s 0.2s forwards ease-in-out;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .box-bowtie::after {
+	animation: box-bowtie-right 1.1s 0.2s forwards ease-in-out;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .box-body {
+	/* 保留 translate(-50%,-50%) 居中，避免原 Pen box-body 关键帧把盒子甩偏 */
+	animation: gift-box-body-shake 1s 0.2s forwards ease-in-out;
+}
+
+@keyframes gift-box-body-shake {
+	0% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	25% {
+		transform: translate(-50%, -35%) rotate(16deg);
+	}
+	50% {
+		transform: translate(-50%, -58%) rotate(0deg);
+	}
+	70%,
+	100% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+}
+
+/* 打开后允许信封越界；舞台仍裁 3D/经典盒 */
+.gift-surprise:has(.gift-surprise__check:checked) {
+	overflow: visible;
+	z-index: 24;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .gift-surprise__envelope {
+	animation: gift-envelope-flyin 0.85s 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 经典盒：停留开盖 → 淡出（始终保持舞台居中） */
+@keyframes gift-classic-lifecycle {
+	0%,
+	68% {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(-50%, -50%) scale(var(--gift-classic-scale));
+	}
+	100% {
+		opacity: 0;
+		visibility: hidden;
+		transform: translate(-50%, -50%) scale(0.26);
+	}
+}
+
+/* 信封：远处旋转飞来 → 越出粉框、略倾斜停稳 */
+@keyframes gift-envelope-flyin {
+	0% {
+		opacity: 0;
+		filter: blur(3px);
+		transform: translate(-50%, -50%) translateZ(-180px) scale(0.4) rotateY(-48deg) rotate(-14deg);
+	}
+	55% {
+		opacity: 1;
+		filter: blur(0.5px);
+		transform: translate(-50%, -50%) translateZ(-40px) scale(0.95) rotateY(10deg) rotate(2deg);
+	}
+	78% {
+		filter: blur(0);
+		transform: translate(-50%, -52%) translateZ(8px) scale(1.12) rotateY(-3deg) rotate(-5deg);
+	}
+	100% {
+		opacity: 1;
+		filter: blur(0);
+		transform: translate(-50%, -52%) translateZ(0) scale(1.1) rotate(-3.5deg);
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.love-letter__front {
+	.gift-box {
+		animation: none !important;
+		transform: translateZ(-100px) rotateY(35deg) rotateX(-8deg) rotateZ(-18deg);
+	}
+
+	.gift-box-container {
+		animation: none !important;
+	}
+
+	.gift-surprise:hover:not(:has(.gift-surprise__check:checked)) .box-body,
+	.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)) .box-body {
+		animation: none !important;
+	}
+
+	.gift-box-container,
+	.gift-surprise .box {
 		transition-duration: 0.01ms !important;
 	}
 
-	.love-letter__check:checked ~ .love-letter__front {
-		transform: none;
+	.gift-surprise:has(.gift-surprise__check:checked) .box-lid,
+	.gift-surprise:has(.gift-surprise__check:checked) .box-bowtie::before,
+	.gift-surprise:has(.gift-surprise__check:checked) .box-bowtie::after,
+	.gift-surprise:has(.gift-surprise__check:checked) .box-body,
+	.gift-surprise:has(.gift-surprise__check:checked) .box,
+	.gift-surprise:has(.gift-surprise__check:checked) .gift-surprise__envelope {
+		animation: none !important;
+	}
+
+	.gift-surprise:has(.gift-surprise__check:checked) .box {
 		opacity: 0;
-		pointer-events: none;
+		visibility: hidden;
+	}
+
+	.gift-surprise:has(.gift-surprise__check:checked) .gift-surprise__envelope {
+		opacity: 1;
+		filter: none;
+		transform: translate(-50%, -52%) scale(1.1) rotate(-3.5deg);
+	}
+
+	.gift-surprise .box-body {
+		transform: translate(-50%, -50%);
 	}
 }
 
-:root.dark .love-letter__inside {
+:root.dark .gift-surprise__paper {
 	background:
-		radial-gradient(circle at 80% 10%, rgb(90 40 55 / 0.45), transparent 45%),
-		color-mix(in oklab, #2a1f24 80%, var(--card-bg));
+		linear-gradient(180deg, transparent 0 12%, rgb(232 160 173 / 0.12) 12% 12.5%, transparent 12.5%),
+		linear-gradient(165deg, #322428 0%, #2a1c22 55%, #24181d 100%);
+	box-shadow: inset 0 0 0 1px rgb(212 165 116 / 0.28);
 }
 
-:root.dark .love-letter__note {
-	background: color-mix(in oklab, #fff 12%, #3a2430);
-	color: #f3d5dc;
+:root.dark .gift-surprise {
+	background:
+		radial-gradient(ellipse 80% 55% at 50% 0%, rgb(90 40 55 / 0.45), transparent 62%),
+		linear-gradient(180deg, #2c1c22 0%, #22161b 100%);
+	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
 }
+
+:root.dark .gift-surprise__heading {
+	color: #f6e4e8;
+}
+
+:root.dark .gift-surprise__message {
+	color: rgb(245 220 226 / 0.86);
+}
+
+:root.dark .announcement-press--gift .announcement-press__nameplate {
+	color: #f6e4e8;
+}
+
+
