@@ -1,4 +1,8 @@
 ---
+/* Hallmark · macrostructure: Index-First (timeline feed) · tone: editorial
+ * genre: editorial · theme: Firefly tokens (hue 290) · enrichment: none
+ * polish: rail + meta mono + filter tray + indent tokens
+ */
 import { Icon } from "astro-icon/components";
 import DynamicFeed from "@/components/pages/dynamic/DynamicFeed.svelte";
 import DynamicItemTemplate from "@/components/pages/dynamic/DynamicItemTemplate.astro";
@@ -30,58 +34,52 @@ const memos = dynamicConfig.memos;
 
 <MainGridLayout title={title} description={description}>
 	<section class="dynamic-page" aria-labelledby="dynamic-page-title">
-		<div>
-			<header class="dynamic-page-header card-base">
-				<div class="dynamic-page-heading">
-					<div class="dynamic-page-icon" aria-hidden="true">
-						<Icon is:inline name="lucide:messages-square" />
-					</div>
-					<div>
-						<h2 id="dynamic-page-title">{title}</h2>
-						{description && <p>{description}</p>}
-					</div>
-				</div>
-				<div
-					class="dynamic-count"
-					aria-label={i18n(I18nKey.dynamic)}
-				>
-					<Icon is:inline name="lucide:rss" />
+		<header class="dynamic-page-header card-base">
+			<p class="dynamic-mast-meta">
+				<span>DYNAMIC · FEED</span>
+				<span class="dynamic-count" aria-label={i18n(I18nKey.dynamic)}>
 					<strong data-dynamic-page-count>0</strong>
 					<span>{i18n(I18nKey.dynamic)}</span>
-				</div>
-				<div class="dynamic-filter">
-					<label class="dynamic-search">
-						<Icon is:inline name="lucide:search" />
-						<input
-							type="search"
-							data-dynamic-search
-							placeholder={i18n(I18nKey.dynamicSearch)}
-						/>
-					</label>
-					<label class="dynamic-year-select">
-						<Icon is:inline name="lucide:calendar-days" />
-						<select data-year-select aria-label={i18n(I18nKey.year)}>
-							<option value="all">{i18n(I18nKey.dynamicAllYears)}</option>
-						</select>
-						<Icon is:inline name="lucide:chevron-down" />
-					</label>
-				</div>
-			</header>
+				</span>
+			</p>
+			<div class="dynamic-page-heading">
+				<h1 id="dynamic-page-title" class="dynamic-page-title">{title}</h1>
+				{description && <p class="dynamic-page-lede">{description}</p>}
+			</div>
+			<div class="dynamic-filter">
+				<label class="dynamic-search">
+					<span class="sr-only">{i18n(I18nKey.dynamicSearch)}</span>
+					<Icon is:inline name="lucide:search" />
+					<input
+						type="search"
+						data-dynamic-search
+						placeholder={i18n(I18nKey.dynamicSearch)}
+					/>
+				</label>
+				<label class="dynamic-year-select">
+					<span class="sr-only">{i18n(I18nKey.year)}</span>
+					<Icon is:inline name="lucide:calendar-days" />
+					<select data-year-select aria-label={i18n(I18nKey.year)}>
+						<option value="all">{i18n(I18nKey.dynamicAllYears)}</option>
+					</select>
+					<Icon is:inline name="lucide:chevron-down" />
+				</label>
+			</div>
+		</header>
 
-			<DynamicFeed
-				client:load
-				source={dataUrl}
-				{itemsPerPage}
-				showComments={showInlineComments}
-				emptyText={i18n(I18nKey.dynamicEmpty)}
-				noResultsText={i18n(I18nKey.dynamicNoResults)}
-				loadingText={i18n(I18nKey.dynamicLoading)}
-				allYearsText={i18n(I18nKey.dynamicAllYears)}
-				timezone={siteConfig.timezone || "UTC"}
-				{memos}
-			/>
+		<DynamicFeed
+			client:load
+			source={dataUrl}
+			{itemsPerPage}
+			showComments={showInlineComments}
+			emptyText={i18n(I18nKey.dynamicEmpty)}
+			noResultsText={i18n(I18nKey.dynamicNoResults)}
+			loadingText={i18n(I18nKey.dynamicLoading)}
+			allYearsText={i18n(I18nKey.dynamicAllYears)}
+			timezone={siteConfig.timezone || "UTC"}
+			{memos}
+		/>
 
-			<DynamicItemTemplate />
-		</div>
+		<DynamicItemTemplate />
 	</section>
 </MainGridLayout>

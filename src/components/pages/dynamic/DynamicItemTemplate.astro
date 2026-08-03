@@ -17,39 +17,40 @@ const profileUrl = url(dynamicConfig.profileUrl || "/about/");
 
 <template data-dynamic-item-template>
 	<dynamic-entry class="dynamic-entry card-base" data-dynamic-entry>
-		<article>
+		<article class="dynamic-entry-body">
+			<span class="dynamic-rail-dot" aria-hidden="true"></span>
 			<header class="dynamic-entry-header">
 				<a href={profileUrl} class="dynamic-avatar" aria-label={profileLabel}>
 					<ImageWrapper
 						src={profileConfig.avatar || ""}
 						alt={profileConfig.name}
 						widths={[96]}
-						sizes="48px"
+						sizes="40px"
 						loading="lazy"
 						fadeIn={false}
 					/>
 				</a>
 				<div class="dynamic-identity">
-					<a href={profileUrl} class="dynamic-author" aria-label={profileLabel}>
-						<strong data-dynamic-author>{profileConfig.name}</strong>
-					</a>
+					<div class="dynamic-identity-row">
+						<a href={profileUrl} class="dynamic-author" aria-label={profileLabel}>
+							<strong data-dynamic-author>{profileConfig.name}</strong>
+						</a>
+						<span class="dynamic-pinned-badge" data-dynamic-pinned hidden>
+							<Icon is:inline name="lucide:pin" class="size-3" />
+							{i18n(I18nKey.pinned)}
+						</span>
+					</div>
 					<div class="dynamic-meta">
-						<a class="dynamic-time" data-dynamic-permalink>
+						<a class="dynamic-time" data-dynamic-permalink title="永久链接">
 							<time data-dynamic-time></time>
 						</a>
+						<span class="dynamic-meta-sep" aria-hidden="true">·</span>
 						<span class="dynamic-location" data-dynamic-location hidden>
 							<Icon is:inline name="lucide:map-pin" />
 							<span data-dynamic-location-text></span>
 						</span>
 					</div>
 				</div>
-				<span class="dynamic-pinned-badge" data-dynamic-pinned hidden>
-	<Icon is:inline name="lucide:pin" class="size-3" />
-	{i18n(I18nKey.pinned)}
-</span>
-				<span class="dynamic-entry-decoration" aria-hidden="true">
-					<Icon is:inline name="lucide:quote" />
-				</span>
 			</header>
 
 			<div class="dynamic-content custom-md" data-dynamic-content></div>

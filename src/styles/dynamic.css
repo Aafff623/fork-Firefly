@@ -1,74 +1,110 @@
+/* Hallmark · Index-First timeline · detail polish · Firefly tokens */
+
 .dynamic-page {
+	--dyn-avatar: 2.5rem;
+	--dyn-gap: 0.7rem;
+	--dyn-indent: calc(var(--dyn-avatar) + var(--dyn-gap));
+	--dyn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--dyn-line: color-mix(in oklab, var(--line-color, var(--line-divider)), transparent);
 	box-sizing: border-box;
 	min-width: 0;
 	width: 100%;
 	max-width: 100%;
 }
 
+.dynamic-page .sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
 .dynamic-page-header {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
 	margin-bottom: 1rem;
-	padding: 1.5rem 2rem;
+	padding: 1.2rem 1.3rem 1.15rem;
+}
+
+@media (min-width: 768px) {
+	.dynamic-page-header {
+		padding: 1.4rem 1.75rem 1.3rem;
+		gap: 0.85rem;
+	}
+}
+
+.dynamic-mast-meta {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1rem;
+	margin: 0;
+	padding-bottom: 0.6rem;
+	border-bottom: 1px solid var(--dyn-line);
+	font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: color-mix(in oklab, var(--content-meta) 82%, transparent);
 }
 
 .dynamic-page-heading {
 	display: flex;
-	align-items: center;
-	gap: 0.875rem;
+	flex-direction: column;
+	gap: 0.3rem;
+	min-width: 0;
+}
+
+.dynamic-page-title,
+.dynamic-page-header h1,
+.dynamic-page-header h2 {
+	margin: 0;
+	color: rgb(0 0 0 / 90%);
+	font-size: clamp(1.5rem, 2.2vw, 1.8rem);
+	font-weight: 700;
+	line-height: 1.18;
+	letter-spacing: -0.022em;
+	font-style: normal;
+}
+
+.dynamic-page-lede,
+.dynamic-page-header p.dynamic-page-lede {
+	margin: 0;
+	max-width: 40rem;
+	color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+	font-size: 0.9rem;
+	line-height: 1.62;
 }
 
 .dynamic-count {
 	display: inline-flex;
 	align-items: baseline;
 	gap: 0.3rem;
-	align-self: center;
-	color: var(--primary);
+	color: inherit;
 	white-space: nowrap;
-}
-
-.dynamic-count svg {
-	align-self: center;
-	font-size: 1.35rem;
+	text-transform: none;
+	letter-spacing: 0.01em;
+	font-family: inherit;
 }
 
 .dynamic-count strong {
-	font-size: 1.3rem;
+	font-size: 0.9rem;
 	font-weight: 700;
 	line-height: 1;
+	color: var(--primary);
+	font-variant-numeric: tabular-nums;
 }
 
 .dynamic-count span {
-	color: var(--content-meta);
-	font-size: 0.8rem;
+	color: color-mix(in oklab, var(--content-meta) 85%, transparent);
+	font-size: 0.7rem;
 	font-weight: 500;
-}
-
-.dynamic-page-icon {
-	display: grid;
-	width: 3rem;
-	height: 3rem;
-	flex: 0 0 3rem;
-	place-items: center;
-	border-radius: var(--radius-large);
-	background: var(--btn-regular-bg);
-	color: var(--primary);
-	font-size: 1.75rem;
-}
-
-.dynamic-page-header h2 {
-	margin: 0;
-	color: rgb(0 0 0 / 90%);
-	font-size: 1.5rem;
-	font-weight: 700;
-	line-height: 1.25;
-}
-
-.dynamic-page-header p {
-	margin: 0.2rem 0 0;
-	color: var(--content-meta);
-	font-size: 0.875rem;
 }
 
 dynamic-feed {
@@ -76,44 +112,61 @@ dynamic-feed {
 }
 
 .dynamic-filter {
-	grid-column: 1 / -1;
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
+	gap: 0.5rem;
+	margin-top: 0.2rem;
+	padding: 0.45rem;
+	border-radius: 0.65rem;
+	background: color-mix(in oklab, var(--content-meta) 5%, transparent);
+	border: 1px solid color-mix(in oklab, var(--dyn-line) 80%, transparent);
 }
 
 .dynamic-search {
 	position: relative;
 	display: block;
-	min-width: 12rem;
+	min-width: 0;
 	flex: 1;
 }
 
 .dynamic-search svg {
 	position: absolute;
 	top: 50%;
-	left: 0.875rem;
-	color: var(--content-meta);
-	font-size: 1.25rem;
+	left: 0.7rem;
+	width: 0.95rem;
+	height: 0.95rem;
+	color: color-mix(in oklab, var(--content-meta) 72%, transparent);
+	font-size: 0.95rem;
 	pointer-events: none;
 	transform: translateY(-50%);
 }
 
 .dynamic-search input {
 	width: 100%;
-	min-height: 2.75rem;
-	border: 1px solid var(--line-divider);
-	border-radius: var(--radius-large);
+	min-height: 2.35rem;
+	border: 1px solid transparent;
+	border-radius: 0.48rem;
 	outline: none;
-	background: transparent;
+	background: var(--card-bg, transparent);
 	color: rgb(0 0 0 / 90%);
-	padding: 0.625rem 1rem 0.625rem 2.75rem;
-	font-size: 0.9rem;
+	padding: 0.45rem 0.8rem 0.45rem 2.15rem;
+	font-size: 0.86rem;
+	transition:
+		border-color 160ms var(--dyn-ease),
+		box-shadow 160ms var(--dyn-ease);
 }
 
-.dynamic-search input:focus {
+.dynamic-search input::placeholder {
+	color: color-mix(in oklab, var(--content-meta) 62%, transparent);
+}
+
+.dynamic-search input:hover {
+	border-color: color-mix(in oklab, var(--primary) 28%, transparent);
+}
+
+.dynamic-search input:focus-visible {
 	border-color: var(--primary);
-	box-shadow: 0 0 0 1px var(--primary);
+	box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 24%, transparent);
 }
 
 .dynamic-year-select {
@@ -124,33 +177,42 @@ dynamic-feed {
 	color: var(--content-meta);
 }
 
-.dynamic-year-select svg:first-child {
+.dynamic-year-select svg:first-of-type {
 	position: absolute;
-	left: 0.75rem;
-	font-size: 1.15rem;
+	left: 0.65rem;
+	width: 0.9rem;
+	height: 0.9rem;
+	font-size: 0.9rem;
 	pointer-events: none;
+	opacity: 0.85;
 }
 
-.dynamic-year-select svg:last-child {
+.dynamic-year-select svg:last-of-type {
 	position: absolute;
-	right: 0.5rem;
-	font-size: 1.25rem;
+	right: 0.4rem;
+	width: 0.95rem;
+	height: 0.95rem;
+	font-size: 0.95rem;
 	pointer-events: none;
+	opacity: 0.7;
 }
 
 .dynamic-year-select select {
-	min-width: 9.5rem;
-	min-height: 2.75rem;
+	min-width: 8.25rem;
+	min-height: 2.35rem;
 	appearance: none;
-	border: 1px solid var(--line-divider);
-	border-radius: var(--radius-large);
+	border: 1px solid transparent;
+	border-radius: 0.48rem;
 	outline: none;
-	background: var(--card-bg);
+	background: var(--card-bg, transparent);
 	color: rgb(0 0 0 / 90%);
 	color-scheme: light;
-	padding: 0.625rem 2.25rem 0.625rem 2.35rem;
-	font-size: 0.9rem;
+	padding: 0.45rem 1.9rem 0.45rem 2.05rem;
+	font-size: 0.86rem;
 	cursor: pointer;
+	transition:
+		border-color 160ms var(--dyn-ease),
+		box-shadow 160ms var(--dyn-ease);
 }
 
 .dynamic-year-select select option {
@@ -158,43 +220,124 @@ dynamic-feed {
 	color: rgb(0 0 0 / 90%);
 }
 
-.dynamic-year-select select:focus {
-	border-color: var(--primary);
-	box-shadow: 0 0 0 1px var(--primary);
+.dynamic-year-select select:hover {
+	border-color: color-mix(in oklab, var(--primary) 28%, transparent);
 }
 
+.dynamic-year-select select:focus-visible {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 24%, transparent);
+}
+
+/* —— Feed timeline —— */
 .dynamic-feed {
 	display: grid;
-	gap: 0.875rem;
+	gap: 0.65rem;
+	position: relative;
+	padding-left: 0.85rem;
+}
+
+.dynamic-feed::before {
+	content: "";
+	position: absolute;
+	left: 0.2rem;
+	top: 0.35rem;
+	bottom: 0.35rem;
+	width: 1px;
+	background: linear-gradient(
+		180deg,
+		color-mix(in oklab, var(--primary) 45%, transparent),
+		var(--dyn-line) 12%,
+		var(--dyn-line) 88%,
+		transparent
+	);
+	pointer-events: none;
 }
 
 .dynamic-entry {
 	display: block;
+	position: relative;
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
 	overflow: visible;
-	padding: 1.125rem;
+	padding: 0.95rem 1rem 1rem;
 	scroll-margin-top: 5.5rem;
+	/* card-base 已有边框：这里只补圆角节奏与左侧强调 */
+	border-radius: 0.7rem;
+	transition:
+		border-color 180ms var(--dyn-ease),
+		box-shadow 180ms var(--dyn-ease);
+}
+
+.dynamic-entry:hover {
+	border-color: color-mix(in oklab, var(--primary) 32%, var(--line-divider));
+	box-shadow: 0 1px 0 color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+.dynamic-entry:focus-within {
+	border-color: color-mix(in oklab, var(--primary) 40%, var(--line-divider));
 }
 
 .dynamic-entry[hidden] {
 	display: none;
 }
 
+.dynamic-entry-body {
+	position: relative;
+	min-width: 0;
+}
+
+.dynamic-rail-dot {
+	/* 相对 entry-body：回退 entry 左内边距 + feed 左缩进，对准时间线 */
+	position: absolute;
+	left: calc(-0.95rem - 0.85rem + 0.2rem - 0.21rem);
+	top: calc(var(--dyn-avatar) / 2 - 0.21rem);
+	width: 0.42rem;
+	height: 0.42rem;
+	border-radius: 999px;
+	background: var(--card-bg, #fff);
+	border: 1.5px solid color-mix(in oklab, var(--primary) 70%, var(--line-divider));
+	box-shadow: 0 0 0 2px var(--card-bg, #fff);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.dynamic-entry:hover .dynamic-rail-dot {
+	border-color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 18%, var(--card-bg, #fff));
+}
+
+.dynamic-entry:has([data-dynamic-pinned]:not([hidden])) .dynamic-rail-dot {
+	background: var(--primary);
+	border-color: var(--primary);
+}
+
 .dynamic-entry-header {
 	display: flex;
 	align-items: center;
 	min-width: 0;
-	gap: 0.75rem;
+	gap: var(--dyn-gap);
 }
 
 .dynamic-avatar {
-	width: 3rem;
-	height: 3rem;
-	flex: 0 0 3rem;
+	width: var(--dyn-avatar);
+	height: var(--dyn-avatar);
+	flex: 0 0 var(--dyn-avatar);
 	overflow: hidden;
-	border-radius: 50%;
+	border-radius: 0.48rem;
+	border: 1px solid var(--dyn-line);
+	transition: border-color 160ms var(--dyn-ease);
+}
+
+.dynamic-avatar:hover,
+.dynamic-avatar:focus-visible {
+	border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+}
+
+.dynamic-avatar:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
 }
 
 .dynamic-avatar img {
@@ -209,26 +352,43 @@ dynamic-feed {
 	min-width: 0;
 	flex: 1;
 	flex-direction: column;
+	gap: 0.12rem;
+}
+
+.dynamic-identity-row {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	min-width: 0;
 }
 
 .dynamic-author {
 	width: fit-content;
 	max-width: 100%;
+	min-width: 0;
 	overflow: hidden;
 	color: rgb(0 0 0 / 90%);
 	text-decoration: none;
+	transition: color 140ms var(--dyn-ease);
 }
 
 .dynamic-author:hover {
 	color: var(--primary);
 }
 
+.dynamic-author:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+	border-radius: 0.15rem;
+}
+
 .dynamic-identity strong {
 	display: block;
 	overflow: hidden;
 	color: inherit;
-	font-size: 0.95rem;
-	line-height: 1.4;
+	font-size: 0.9rem;
+	font-weight: 700;
+	line-height: 1.3;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -236,31 +396,57 @@ dynamic-feed {
 .dynamic-meta {
 	display: flex;
 	min-width: 0;
+	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.625rem;
+	gap: 0.2rem 0.35rem;
+}
+
+.dynamic-meta-sep {
+	color: color-mix(in oklab, var(--content-meta) 55%, transparent);
+	font-size: 0.72rem;
+	line-height: 1;
+	user-select: none;
+}
+
+/* 地点隐藏时，分隔符也藏掉 */
+.dynamic-meta:has(.dynamic-location[hidden]) .dynamic-meta-sep {
+	display: none;
 }
 
 .dynamic-time {
 	width: fit-content;
 	flex: 0 0 auto;
-	color: var(--content-meta);
-	font-size: 0.78rem;
-	line-height: 1.5;
+	color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+	font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	line-height: 1.45;
+	letter-spacing: 0.01em;
 	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition:
+		color 140ms var(--dyn-ease),
+		border-color 140ms var(--dyn-ease);
 }
 
 .dynamic-time:hover {
 	color: var(--primary);
+	border-bottom-color: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+.dynamic-time:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+	border-radius: 0.1rem;
 }
 
 .dynamic-location {
 	display: inline-flex;
 	min-width: 0;
 	align-items: center;
-	gap: 0.15rem;
-	color: var(--content-meta);
-	font-size: 0.78rem;
-	line-height: 1.5;
+	gap: 0.12rem;
+	color: color-mix(in oklab, var(--content-meta) 90%, transparent);
+	font-size: 0.74rem;
+	line-height: 1.45;
 }
 
 .dynamic-location[hidden] {
@@ -268,9 +454,10 @@ dynamic-feed {
 }
 
 .dynamic-location svg {
-	width: 1rem;
-	height: 1rem;
+	width: 0.85rem;
+	height: 0.85rem;
 	flex: 0 0 auto;
+	opacity: 0.8;
 }
 
 .dynamic-location span {
@@ -287,38 +474,24 @@ dynamic-feed {
 	font-size: 1.25rem;
 }
 
-.dynamic-entry-decoration {
-	display: inline-flex;
-	width: 2.5rem;
-	height: 2.5rem;
-	flex: 0 0 2.5rem;
-	align-items: center;
-	justify-content: center;
-	color: var(--primary);
-	opacity: 0.55;
-	pointer-events: none;
-}
-
 .dynamic-pinned-badge {
 	display: inline-flex;
 	align-items: center;
-	margin-left: auto;
-	font-size: 0.65rem;
-	padding: 0.125rem 0.375rem;
-	border-radius: 0.25rem;
-	background: color-mix(in srgb, var(--primary) 10%, transparent);
+	gap: 0.18rem;
+	flex-shrink: 0;
+	font-size: 0.62rem;
+	padding: 0.1rem 0.4rem;
+	border-radius: 999px;
+	border: 1px solid color-mix(in oklab, var(--primary) 32%, transparent);
+	background: color-mix(in oklab, var(--primary) 9%, transparent);
 	color: var(--primary);
-	font-weight: 500;
-	line-height: 1;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0.03em;
 }
 
 .dynamic-pinned-badge[hidden] {
 	display: none;
-}
-
-.dynamic-entry-decoration svg {
-	width: 1.5rem;
-	height: 1.5rem;
 }
 
 .dynamic-content {
@@ -326,10 +499,27 @@ dynamic-feed {
 	min-width: 0;
 	max-width: 100%;
 	overflow-wrap: anywhere;
-	margin: 0.875rem 0 0 3.75rem;
-	color: rgb(0 0 0 / 90%);
-	font-size: 0.98rem;
-	line-height: 1.75;
+	margin: 0.65rem 0 0 var(--dyn-indent);
+	color: rgb(0 0 0 / 88%);
+	font-size: 0.935rem;
+	line-height: 1.68;
+}
+
+.dynamic-content a {
+	color: var(--primary);
+	text-decoration: none;
+	border-bottom: 1px solid color-mix(in oklab, var(--primary) 28%, transparent);
+	transition: border-color 140ms var(--dyn-ease);
+}
+
+.dynamic-content a:hover {
+	border-bottom-color: var(--primary);
+}
+
+.dynamic-content a:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+	border-radius: 0.1rem;
 }
 
 .dynamic-content > :first-child {
@@ -366,9 +556,9 @@ dynamic-feed {
 	display: block;
 	box-sizing: border-box;
 	min-width: 0;
-	width: min(calc(100% - 3.75rem), 48rem);
+	width: min(calc(100% - var(--dyn-indent)), 48rem);
 	max-width: 100%;
-	margin: 0.875rem 0 0 3.75rem;
+	margin: 0.65rem 0 0 var(--dyn-indent);
 }
 
 .dynamic-gallery[hidden],
@@ -399,10 +589,20 @@ dynamic-feed {
 	overflow: hidden;
 	aspect-ratio: 1;
 	border: 0;
-	border-radius: calc(var(--radius-large) - 0.25rem);
+	border-radius: 0.45rem;
 	background: var(--btn-regular-bg);
 	cursor: pointer;
 	padding: 0;
+	transition: opacity 160ms var(--dyn-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.dynamic-gallery-grid-item:hover {
+	opacity: 0.92;
+}
+
+.dynamic-gallery-grid-item:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
 }
 
 .dynamic-gallery-grid[data-layout="single"] {
@@ -556,21 +756,22 @@ dynamic-feed {
 
 .dynamic-inline-comments {
 	display: block;
-	margin: 0.75rem 0 0 3.75rem;
-	border-top: 1px solid color-mix(in srgb, var(--content-meta) 16%, transparent);
-	padding-top: 0.35rem;
+	margin: 0.6rem 0 0 var(--dyn-indent);
+	border-top: 1px solid color-mix(in oklab, var(--content-meta) 12%, transparent);
+	padding-top: 0.3rem;
 }
 
 .dynamic-comment-toggle {
 	display: inline-flex;
-	min-height: 2.25rem;
+	min-height: 2.1rem;
 	align-items: center;
-	gap: 0.4rem;
-	padding: 0 0.25rem;
-	border-radius: 0;
+	gap: 0.35rem;
+	padding: 0 0.15rem;
+	border-radius: 0.2rem;
 	background: transparent;
-	color: var(--content-meta);
-	font-size: 0.85rem;
+	color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+	font-size: 0.82rem;
+	transition: color 140ms var(--dyn-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .dynamic-comment-toggle:hover,
@@ -580,8 +781,13 @@ dynamic-feed {
 	color: var(--primary);
 }
 
+.dynamic-comment-toggle:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+
 .dynamic-comment-chevron {
-	transition: transform 180ms ease;
+	transition: transform 160ms var(--dyn-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .dynamic-inline-comments[data-expanded="true"] .dynamic-comment-chevron {
@@ -606,36 +812,57 @@ dynamic-feed {
 }
 
 .dynamic-empty {
-	display: grid;
-	min-height: 13rem;
-	place-content: center;
-	justify-items: center;
-	gap: 0.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.7rem;
+	min-height: 0;
+	margin-top: 0.1rem;
+	padding: 0.8rem 0.95rem;
+	border-radius: 0.65rem;
 	color: var(--content-meta);
 }
 
+.dynamic-empty::before {
+	content: "";
+	width: 1.35rem;
+	height: 1px;
+	flex-shrink: 0;
+	background: linear-gradient(
+		90deg,
+		var(--primary),
+		color-mix(in oklab, var(--line-divider), transparent)
+	);
+}
+
 .dynamic-empty svg {
-	font-size: 2.5rem;
+	display: none;
 }
 
 .dynamic-empty p {
 	margin: 0;
+	font-size: 0.86rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
 }
 
 .dynamic-loading {
-	display: grid;
-	min-height: 10rem;
-	margin-top: 0.875rem;
-	place-content: center;
-	justify-items: center;
-	gap: 0.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	min-height: 4.75rem;
+	margin-top: 0.65rem;
+	padding: 0.9rem;
+	border-radius: 0.65rem;
+	border: 1px dashed var(--dyn-line, color-mix(in oklab, var(--line-divider), transparent));
 	color: var(--content-meta);
 }
 
 .dynamic-loading-spinner {
-	width: 2rem;
-	height: 2rem;
-	border: 0.2rem solid color-mix(in srgb, var(--primary) 18%, transparent);
+	width: 1.35rem;
+	height: 1.35rem;
+	border: 0.15rem solid color-mix(in oklab, var(--primary) 16%, transparent);
 	border-top-color: var(--primary);
 	border-radius: 50%;
 	animation: dynamic-loading-spin 0.75s linear infinite;
@@ -643,6 +870,7 @@ dynamic-feed {
 
 .dynamic-loading p {
 	margin: 0;
+	font-size: 0.84rem;
 }
 
 @keyframes dynamic-loading-spin {
@@ -653,17 +881,26 @@ dynamic-feed {
 
 @media (prefers-reduced-motion: reduce) {
 	.dynamic-loading-spinner {
-		animation-duration: 1.5s;
+		animation: none;
+		border-top-color: color-mix(in oklab, var(--primary) 40%, transparent);
+	}
+
+	.dynamic-search input,
+	.dynamic-year-select select,
+	.dynamic-entry {
+		transition: none;
 	}
 }
 
 .dynamic-no-results {
-	display: grid;
-	min-height: 10rem;
-	margin-top: 0.875rem;
-	place-content: center;
-	justify-items: center;
-	gap: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.55rem;
+	min-height: 0;
+	margin-top: 0.65rem;
+	padding: 0.8rem 0.95rem;
+	border-radius: 0.65rem;
 	color: var(--content-meta);
 }
 
@@ -672,11 +909,15 @@ dynamic-feed {
 }
 
 .dynamic-no-results svg {
-	font-size: 2rem;
+	width: 1rem;
+	height: 1rem;
+	opacity: 0.5;
+	flex-shrink: 0;
 }
 
 .dynamic-no-results p {
 	margin: 0;
+	font-size: 0.86rem;
 }
 
 .dynamic-detail {
@@ -698,6 +939,8 @@ dynamic-feed {
 	margin-top: 0.25rem;
 }
 
+:root.dark .dynamic-page-title,
+:root.dark .dynamic-page-header h1,
 :root.dark .dynamic-page-header h2,
 :root.dark .dynamic-author,
 :root.dark .dynamic-content {
@@ -734,6 +977,14 @@ body.wallpaper-transparent .dynamic-year-select select option {
 }
 
 @media (max-width: 768px) {
+	.dynamic-feed {
+		padding-left: 0.7rem;
+	}
+
+	.dynamic-rail-dot {
+		left: calc(-0.95rem - 0.7rem + 0.2rem - 0.21rem);
+	}
+
 	.dynamic-content,
 	.dynamic-gallery,
 	.dynamic-inline-comments {
@@ -749,25 +1000,44 @@ body.wallpaper-transparent .dynamic-year-select select option {
 }
 
 @media (max-width: 640px) {
-	.dynamic-page-header {
-		padding: 1.25rem;
+	.dynamic-page {
+		--dyn-avatar: 2.35rem;
+		--dyn-gap: 0.6rem;
 	}
 
-	.dynamic-count {
-		align-self: center;
+	.dynamic-page-header {
+		padding: 1.05rem 1.05rem 1rem;
+		gap: 0.65rem;
 	}
 
 	.dynamic-filter {
 		align-items: stretch;
 		flex-direction: column;
+		padding: 0.4rem;
+		gap: 0.4rem;
 	}
 
+	.dynamic-year-select,
 	.dynamic-year-select select {
 		width: 100%;
 	}
 
+	.dynamic-feed {
+		padding-left: 0;
+	}
+
+	.dynamic-feed::before,
+	.dynamic-rail-dot {
+		display: none;
+	}
+
 	.dynamic-entry {
-		padding: 1rem;
+		padding: 0.85rem 0.9rem 0.9rem;
+	}
+
+	.dynamic-empty,
+	.dynamic-no-results {
+		padding: 0.7rem 0.8rem;
 	}
 
 	.dynamic-gallery-grid[data-layout="single"] img {
@@ -793,7 +1063,17 @@ body.wallpaper-transparent .dynamic-year-select select option {
 	}
 
 	.dynamic-content {
-		font-size: 0.95rem;
+		font-size: 0.92rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dynamic-gallery-grid-item,
+	.dynamic-comment-chevron,
+	.dynamic-author,
+	.dynamic-time,
+	.dynamic-comment-toggle {
+		transition: none;
 	}
 }
 
