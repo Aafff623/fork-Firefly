@@ -1,4 +1,8 @@
 ---
+/* Hallmark · macrostructure: Split Studio + Index-First · tone: editorial
+ * genre: editorial · theme: Firefly tokens (hue 290) · enrichment: none
+ * pre-emit critique: P4 H4 E4 S4 R4 V4
+ */
 import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
@@ -13,7 +17,6 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-// 检查页面是否启用
 if (!siteConfig.pages.friends) {
 	return Astro.redirect("/404/");
 }
@@ -26,77 +29,61 @@ if (!friendsPost) {
 
 const { Content } = await render(friendsPost);
 
-// 检查评论系统是否启用
 const isCommentEnabled =
 	commentConfig?.type &&
 	commentConfig.type !== "none" &&
 	friendsPageConfig.showComment !== false;
 
-// 使用配置文件中的友链数据，按权重排序
 const items = getEnabledFriends();
 const allTags = [...new Set(items.flatMap((item) => item.tags || []))].sort();
 
-// 页面标题和描述
 const title = friendsPageConfig.title || i18n(I18nKey.friends);
 const description =
 	friendsPageConfig.description || i18n(I18nKey.friendsDescription);
 ---
 
 <MainGridLayout title={title} description={description}>
-  <div
-    class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
-  >
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
-      <div class="mb-4">
-        <div class="flex items-center gap-3 mb-3">
-          <div
-            class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70"
-          >
-            <Icon is:inline name="lucide:users" class="text-[1.5rem]" />
-          </div>
-          <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            {title}
-          </div>
-        </div>
+  <div class="friends-shell flex w-full relative min-h-32">
+    <div class="friends-panel card-base z-10 relative w-full">
+      <header class="friends-mast">
+        <p class="friends-mast-meta">
+          <span>FRIENDS · LINK</span>
+          <span>{items.length > 0 ? `${items.length}` : "OPEN"}</span>
+        </p>
+        <h1 class="friends-title">{title}</h1>
         {
           description && (
-            <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
-              {description}
-            </p>
+            <p class="friends-lede">{description}</p>
           )
         }
-      </div>
+      </header>
 
-      <!-- 搜索框 -->
       {
         items.length > 0 && (
-          <friend-filter class="mb-6">
-            <div class="relative mb-3">
-              <Icon is:inline
+          <friend-filter class="friends-filter">
+            <div class="friends-search">
+              <Icon
+                is:inline
                 name="lucide:search"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-lg pointer-events-none"
+                class="friends-search-icon"
               />
               <input
                 type="text"
                 data-search
                 placeholder={i18n(I18nKey.searchFriends) || "搜索友链..."}
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+                class="friends-search-input"
               />
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="friends-tags">
               <button
                 data-tag="all"
-                class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
+                class="friends-tag"
                 data-active
               >
                 {i18n(I18nKey.all)}
               </button>
               {allTags.map((tag) => (
-                <button
-                  data-tag={tag}
-                  class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
-                >
+                <button data-tag={tag} class="friends-tag">
                   {tag}
                 </button>
               ))}
@@ -105,12 +92,18 @@ const description =
         )
       }
 
-      <div class="friends-grid my-4">
+      <div class="friends-grid">
         {
           items.length === 0 && (
-            <div class="col-span-full flex flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
-              <Icon is:inline name="lucide:user-x" class="text-4xl mb-3" />
-              <div class="text-sm">{i18n(I18nKey.friendsEmpty)}</div>
+            <div class="friends-empty-state col-span-full">
+              <div class="friends-empty-rule" aria-hidden="true" />
+              <div class="friends-empty-body">
+                <Icon is:inline name="lucide:link-2-off" class="friends-empty-icon" />
+                <div>
+                  <p class="friends-empty-title">{i18n(I18nKey.friendsEmpty)}</p>
+                  <p class="friends-empty-hint">名单空着 · 先看下方如何互换</p>
+                </div>
+              </div>
             </div>
           )
         }
@@ -121,89 +114,67 @@ const description =
               target="_blank"
               rel="noopener noreferrer"
               data-tags={item.tags?.join(",")}
-              class="friend-card group flex items-center gap-3 p-2.5 rounded-xl border border-(--line-divider) hover:border-(--primary) hover:bg-(--card-bg) transition-all duration-300 hover:shadow-lg relative overflow-hidden"
+              class="friend-card group"
             >
-              {/* 背景装饰 - 仅悬停显示 */}
-              <div class="absolute inset-0 bg-(--primary) opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none" />
-
-              {/* 头像 */}
-              <div class="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-black/5 dark:border-white/5 group-hover:scale-105 transition-transform duration-300">
-                <img
-                  src={item.imgurl}
-                  alt={item.title}
-                  class="w-full h-full object-cover"
-                />
+              <div class="friend-card-avatar">
+                <img src={item.imgurl} alt={item.title} loading="lazy" />
               </div>
-
-              {/* 内容 */}
-              <div class="grow min-w-0 flex flex-col justify-center gap-0.5">
-                <div class="flex items-center justify-between">
-                  <div class="font-bold text-base text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors truncate pr-4">
-                    {item.title}
-                  </div>
-                  {/* 外部链接图标 */}
-                  <Icon is:inline
-                    name="lucide:square-arrow-out-up-right"
-                    class="text-(--primary) text-lg opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+              <div class="friend-card-body">
+                <div class="friend-card-head">
+                  <span class="font-bold friend-card-name">{item.title}</span>
+                  <Icon
+                    is:inline
+                    name="lucide:arrow-up-right"
+                    class="friend-card-ext"
                   />
                 </div>
-
-                <div
-                  class="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1"
-                  title={item.desc}
-                >
+                <p class="friend-card-desc line-clamp-1" title={item.desc}>
                   {item.desc}
-                </div>
-
-                {/* 标签 */}
-                <div class="flex flex-wrap gap-1 mt-1">
-                  {item.tags && item.tags.length > 0
-                    ? item.tags
-                        .slice(0, 3)
-                        .map((tag) => (
-                          <span class="text-[0.65rem] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors duration-300">
-                            {tag}
-                          </span>
-                        ))
-                    : null}
-                </div>
+                </p>
+                {
+                  item.tags && item.tags.length > 0 && (
+                    <div class="friend-card-tags">
+                      {item.tags.slice(0, 3).map((tag) => (
+                        <span class="friend-card-tag">{tag}</span>
+                      ))}
+                    </div>
+                  )
+                }
               </div>
             </a>
           ))
         }
       </div>
 
-      {/* 搜索无结果提示 */}
-      <div class="friends-empty hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
-        <Icon is:inline name="lucide:search-x" class="text-4xl mb-3" />
+      <div class="friends-empty hidden flex-col items-center justify-center py-10 text-[var(--content-meta)]">
+        <Icon is:inline name="lucide:search-x" class="text-3xl mb-2 opacity-60" />
         <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
       </div>
     </div>
   </div>
 
-  {friendsPageConfig.showCustomContent !== false && (
-    <div class="mt-4 card-base z-10 px-9 py-6 relative w-full">
-      <Markdown class="">
-        <Content />
-      </Markdown>
-    </div>
-  )}
+  {
+    friendsPageConfig.showCustomContent !== false && (
+      <div class="mt-4 friends-spec card-base z-10 relative w-full">
+        <Markdown class="">
+          <Content />
+        </Markdown>
+      </div>
+    )
+  }
 
-  <!-- 评论区 -->
-  {isCommentEnabled && (
-    <div class="mt-4">
-      <Comment post={friendsPost} customPath="/friends/" />
-    </div>
-  )}
+  {
+    isCommentEnabled && (
+      <div class="mt-4">
+        <Comment post={friendsPost} customPath="/friends/" />
+      </div>
+    )
+  }
 
   <script slot="head" is:inline>
     if (!customElements.get("friend-filter")) {
       class FriendFilter extends HTMLElement {
         selectedTag = "all";
-
-        constructor() {
-          super();
-        }
 
         connectedCallback() {
           this.addEventListener("click", this.handleClick);
@@ -218,18 +189,14 @@ const description =
         }
 
         handleClick(e) {
-          const target = e.target;
-          const button = target.closest("button");
-          if (!button) return;
+          const button = e.target.closest("button");
+          if (!button || !button.dataset.tag) return;
 
           this.selectedTag = button.dataset.tag;
-          const filters = this.querySelectorAll("button");
-
-          filters.forEach((f) => {
+          this.querySelectorAll("button[data-tag]").forEach((f) => {
             f.removeAttribute("data-active");
           });
           button.setAttribute("data-active", "");
-
           this.applyFilters();
         }
 
@@ -240,14 +207,17 @@ const description =
           const input = this.querySelector("[data-search]");
           const query = (input?.value || "").toLowerCase().trim();
           const cards = container.querySelectorAll(".friend-card");
-
           let hasVisible = false;
 
           cards.forEach((card) => {
             const cardEl = card;
             const tags = (cardEl.dataset.tags || "").split(",");
-            const name = (cardEl.querySelector(".font-bold")?.textContent || "").toLowerCase();
-            const desc = (cardEl.querySelector(".line-clamp-1")?.textContent || "").toLowerCase();
+            const name = (
+              cardEl.querySelector(".font-bold")?.textContent || ""
+            ).toLowerCase();
+            const desc = (
+              cardEl.querySelector(".line-clamp-1")?.textContent || ""
+            ).toLowerCase();
 
             const tagMatch =
               this.selectedTag === "all" ||
@@ -260,11 +230,9 @@ const description =
 
             if (tagMatch && searchMatch) {
               cardEl.style.display = "";
-              cardEl.classList.add("animate-fade-in-up");
               hasVisible = true;
             } else {
               cardEl.style.display = "none";
-              cardEl.classList.remove("animate-fade-in-up");
             }
           });
 
@@ -277,13 +245,679 @@ const description =
       }
       customElements.define("friend-filter", FriendFilter);
     }
+
+    function bindFriendsCopy(root) {
+      const scope = root || document;
+      scope.querySelectorAll(".friends-copy").forEach((btn) => {
+        if (btn.dataset.bound === "1") return;
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", async () => {
+          const text = btn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            ta.remove();
+          }
+          btn.classList.add("is-done");
+          window.setTimeout(() => btn.classList.remove("is-done"), 1400);
+        });
+      });
+    }
+
+    bindFriendsCopy();
+    document.addEventListener("astro:page-load", () => bindFriendsCopy());
+    document.addEventListener("swup:page:view", () => bindFriendsCopy());
   </script>
 
-  <style is:global>
+  <style>
+    .friends-shell {
+      border-radius: 0.35rem;
+      overflow: visible;
+    }
+
+    .friends-panel {
+      padding: 1.25rem 1.35rem 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .friends-panel {
+        padding: 1.5rem 1.85rem 1.75rem;
+      }
+    }
+
+    .friends-mast {
+      margin: 0 0 1.15rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    }
+
+    .friends-mast-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 0.55rem;
+      font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--content-meta) 85%, transparent);
+    }
+
+    .friends-title {
+      margin: 0;
+      font-size: clamp(1.55rem, 2.4vw, 1.85rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--content-title, inherit);
+      font-style: normal;
+    }
+
+    .friends-lede {
+      margin: 0.45rem 0 0;
+      max-width: 42rem;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+    }
+
+    .friends-filter {
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .friends-search {
+      position: relative;
+      margin-bottom: 0.65rem;
+    }
+
+    .friends-search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 1rem;
+      color: color-mix(in oklab, var(--content-meta) 70%, transparent);
+      pointer-events: none;
+    }
+
+    .friends-search-input {
+      width: 100%;
+      padding: 0.6rem 0.85rem 0.6rem 2.35rem;
+      border-radius: 0.55rem;
+      border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+      background: transparent;
+      font-size: 0.875rem;
+      color: inherit;
+      outline: none;
+      transition:
+        border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friends-search-input::placeholder {
+      color: color-mix(in oklab, var(--content-meta) 65%, transparent);
+    }
+
+    .friends-search-input:hover {
+      border-color: color-mix(in oklab, var(--primary) 35%, var(--line-color));
+    }
+
+    .friends-search-input:focus-visible {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 28%, transparent);
+    }
+
+    .friends-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .friends-tag {
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+      background: transparent;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+      cursor: pointer;
+      transition:
+        border-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friends-tag:hover {
+      border-color: color-mix(in oklab, var(--primary) 40%, var(--line-color));
+      color: var(--primary);
+    }
+
+    .friends-tag:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .friends-tag[data-active] {
+      border-color: color-mix(in oklab, var(--primary) 55%, var(--line-color));
+      background: color-mix(in oklab, var(--primary) 12%, transparent);
+      color: var(--primary);
+    }
+
     .friends-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.5rem), 1fr));
+      gap: 0.65rem;
+    }
+
+    .friends-empty-state {
+      padding: 0.35rem 0 0.15rem;
+    }
+
+    .friends-empty-rule {
+      height: 1px;
+      margin-bottom: 0.85rem;
+      background: linear-gradient(
+        90deg,
+        var(--primary),
+        color-mix(in oklab, var(--line-color), transparent) 42%,
+        transparent
+      );
+    }
+
+    .friends-empty-body {
+      display: flex;
+      align-items: center;
       gap: 0.75rem;
+      min-width: 0;
+      padding: 0.55rem 0.15rem 0.35rem;
+    }
+
+    .friends-empty-icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      flex-shrink: 0;
+      opacity: 0.45;
+      color: var(--content-meta);
+    }
+
+    .friends-empty-title {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+    }
+
+    .friends-empty-hint {
+      margin: 0.15rem 0 0;
+      font-size: 0.78rem;
+      color: color-mix(in oklab, var(--content-meta) 72%, transparent);
+    }
+
+    .friend-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.65rem;
+      border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+      background: transparent;
+      text-decoration: none;
+      color: inherit;
+      transition:
+        border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friend-card:hover {
+      border-color: color-mix(in oklab, var(--primary) 42%, var(--line-color));
+      background: color-mix(in oklab, var(--primary) 5%, transparent);
+    }
+
+    .friend-card:active {
+      transform: translateY(1px);
+    }
+
+    .friend-card:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .friend-card-avatar {
+      width: 3rem;
+      height: 3rem;
+      flex-shrink: 0;
+      border-radius: 0.55rem;
+      overflow: hidden;
+      border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+      background: color-mix(in oklab, var(--content-meta) 8%, transparent);
+    }
+
+    .friend-card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .friend-card-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+    }
+
+    .friend-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .friend-card-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friend-card:hover .friend-card-name {
+      color: var(--primary);
+    }
+
+    .friend-card-ext {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      opacity: 0;
+      color: var(--primary);
+      transform: translate(-0.2rem, 0.15rem);
+      transition:
+        opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friend-card:hover .friend-card-ext,
+    .friend-card:focus-visible .friend-card-ext {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    .friend-card-desc {
+      margin: 0;
+      font-size: 0.8rem;
+      color: color-mix(in oklab, var(--content-meta) 88%, transparent);
+    }
+
+    .friend-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.2rem;
+    }
+
+    .friend-card-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--content-meta) 9%, transparent);
+      color: color-mix(in oklab, var(--content-meta) 85%, transparent);
+    }
+
+    .friends-spec {
+      padding: 1.15rem 1.25rem 1.35rem;
+    }
+
+    @media (min-width: 768px) {
+      .friends-spec {
+        padding: 1.35rem 1.75rem 1.55rem;
+      }
+    }
+
+    /* —— friends.mdx apply block (scoped via page) —— */
+    .friends-spec :global(.friends-apply) {
+      --friends-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friends-spec :global(.friends-split) {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.35rem;
+    }
+
+    @media (min-width: 960px) {
+      .friends-spec :global(.friends-split) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0;
+      }
+
+      .friends-spec :global(.friends-col-site) {
+        padding-right: 1.35rem;
+        border-right: 1px solid color-mix(in oklab, var(--line-color), transparent);
+      }
+
+      .friends-spec :global(.friends-col-flow) {
+        padding-left: 1.35rem;
+      }
+    }
+
+    .friends-spec :global(.friends-col-kicker) {
+      margin: 0 0 0.3rem;
+      font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--content-meta) 78%, transparent);
+    }
+
+    .friends-spec :global(.friends-col-title) {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.015em;
+      font-style: normal;
+    }
+
+    .friends-spec :global(.friends-site-head) {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+      min-width: 0;
+    }
+
+    .friends-spec :global(.friends-site-avatar) {
+      position: relative;
+      width: 3.5rem;
+      height: 3.5rem;
+      flex-shrink: 0;
+    }
+
+    .friends-spec :global(.friends-site-avatar img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.55rem;
+      border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    }
+
+    .friends-spec :global(.friends-site-ok) {
+      position: absolute;
+      right: -0.2rem;
+      bottom: -0.2rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 2px var(--card-bg, #fff);
+    }
+
+    :global(:root.dark) .friends-spec :global(.friends-site-ok) {
+      color: rgba(0, 0, 0, 0.72);
+    }
+
+    .friends-spec :global(.friends-site-desc) {
+      margin: 0.25rem 0 0;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: color-mix(in oklab, var(--content-meta) 90%, transparent);
+    }
+
+    .friends-spec :global(.friends-fields) {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .friends-spec :global(.friends-field) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      min-width: 0;
+      padding: 0.55rem 0.65rem;
+      border-radius: 0.5rem;
+      border: 1px solid transparent;
+      background: color-mix(in oklab, var(--content-meta) 6%, transparent);
+      transition: border-color 160ms var(--friends-ease, cubic-bezier(0.16, 1, 0.3, 1));
+    }
+
+    .friends-spec :global(.friends-field:hover) {
+      border-color: color-mix(in oklab, var(--primary) 28%, transparent);
+    }
+
+    .friends-spec :global(.friends-field-label) {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--content-meta) 72%, transparent);
+      margin-bottom: 0.12rem;
+    }
+
+    .friends-spec :global(.friends-field-value) {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .friends-spec :global(.friends-copy) {
+      position: relative;
+      flex-shrink: 0;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 0.4rem;
+      background: color-mix(in oklab, var(--content-meta) 10%, transparent);
+      color: inherit;
+      cursor: pointer;
+      transition:
+        background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .friends-spec :global(.friends-copy:hover) {
+      background: color-mix(in oklab, var(--primary) 14%, transparent);
+      color: var(--primary);
+    }
+
+    .friends-spec :global(.friends-copy:active) {
+      transform: translateY(1px);
+    }
+
+    .friends-spec :global(.friends-copy:focus-visible) {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .friends-spec :global(.friends-copy-done) {
+      display: none;
+      color: #16a34a;
+    }
+
+    .friends-spec :global(.friends-copy.is-done .friends-copy-ico) {
+      display: none;
+    }
+
+    .friends-spec :global(.friends-copy.is-done .friends-copy-done) {
+      display: block;
+    }
+
+    .friends-spec :global(.friends-steps) {
+      list-style: none;
+      margin: 0.85rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .friends-spec :global(.friends-step) {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.7rem;
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    .friends-spec :global(.friends-step:not(:last-child)::before) {
+      content: "";
+      position: absolute;
+      left: 0.95rem;
+      top: 1.45rem;
+      bottom: 0.15rem;
+      width: 1px;
+      background: color-mix(in oklab, var(--line-color), transparent);
+    }
+
+    .friends-spec :global(.friends-step-num) {
+      font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1.4rem;
+      color: var(--primary);
+    }
+
+    .friends-spec :global(.friends-step-title) {
+      margin: 0 0 0.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .friends-spec :global(.friends-step-body) {
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: color-mix(in oklab, var(--content-meta) 90%, transparent);
+    }
+
+    .friends-spec :global(.friends-mail) {
+      color: var(--primary);
+      text-decoration: none;
+      border-bottom: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
+      word-break: break-all;
+    }
+
+    .friends-spec :global(.friends-mail:hover) {
+      border-bottom-color: var(--primary);
+    }
+
+    .friends-spec :global(.friends-mail:focus-visible) {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .friends-spec :global(.friends-template) {
+      position: relative;
+      margin-top: 0.55rem;
+      padding: 0.7rem 2.4rem 0.7rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px dashed color-mix(in oklab, var(--line-color), transparent);
+      background: color-mix(in oklab, var(--content-meta) 5%, transparent);
+    }
+
+    .friends-spec :global(.friends-template pre) {
+      margin: 0;
+      font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.72rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .friends-spec :global(.friends-copy-abs) {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+    }
+
+    .friends-spec :global(.friends-notes) {
+      margin-top: 1.25rem;
+      padding-top: 1.05rem;
+      border-top: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    }
+
+    .friends-spec :global(.friends-notes-head) {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .friends-spec :global(.friends-notes-list) {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .friends-spec :global(.friends-notes-row) {
+      display: grid;
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+      gap: 0.45rem 0.85rem;
+      min-width: 0;
+    }
+
+    .friends-spec :global(.friends-notes-dt) {
+      margin: 0;
+      font-weight: 600;
+      color: inherit;
+    }
+
+    .friends-spec :global(.friends-notes-dd) {
+      margin: 0;
+      color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    }
+
+    @media (max-width: 520px) {
+      .friends-spec :global(.friends-notes-row) {
+        grid-template-columns: 1fr;
+        gap: 0.1rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .friend-card,
+      .friend-card-ext,
+      .friend-card-name,
+      .friends-search-input,
+      .friends-tag,
+      .friends-spec :global(.friends-copy),
+      .friends-spec :global(.friends-field) {
+        transition: none;
+      }
     }
   </style>
 </MainGridLayout>
