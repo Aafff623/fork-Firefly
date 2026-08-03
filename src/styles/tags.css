@@ -1,9 +1,15 @@
-/* 标签墙 · 砖石错落（对照文章 brick 布局）+ 青灰/红褐棋盘色
- * 注意：侧栏约 2 列；用 4n 棋盘避免「左青右褐」竖条
+/* 标签墙 · 砖石错落 + 砖皮贴图 + 光晕/层次渐变
+ * 纹理：/assets/images/widgets/tag-wall/brick-grain.webp
+ * 光：左上主光 → 右下渐暗；墙面整体晕光 + 单砖微观明暗
  */
 
 .tag-wall {
 	--wall-mortar: #9a938a;
+	--brick-grain: url("/assets/images/widgets/tag-wall/brick-grain.webp");
+	--brick-grain-size: 64px 64px;
+	/* 主光方向（与单砖高光一致） */
+	--brick-light: 145deg;
+	--brick-light-soft: 155deg;
 
 	display: grid !important;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -12,34 +18,120 @@
 	gap: 3px;
 	padding: 3px;
 	border-radius: 0.65rem;
-	background:
-		radial-gradient(rgb(0 0 0 / 0.12) 0.55px, transparent 0.7px),
-		linear-gradient(165deg, #8f877c, #9a938a 50%, #7e8490);
+	position: relative;
+	/* 灰泥：环境渐变（上亮下暗）+ 砖皮 + 角落光晕 */
+	background-color: #8a8378;
+	background-image:
+		/* 左上环境光晕 */
+		radial-gradient(
+			ellipse 85% 70% at 12% 8%,
+			rgb(255 248 240 / 0.42) 0%,
+			transparent 58%
+		),
+		/* 右下收暗 */
+		radial-gradient(
+			ellipse 70% 65% at 92% 95%,
+			rgb(40 36 32 / 0.28) 0%,
+			transparent 55%
+		),
+		var(--brick-grain),
+		/* 墙面整体：斜向折射层次 */
+		linear-gradient(
+			var(--brick-light-soft),
+			#a39a8e 0%,
+			#948b80 28%,
+			#857c72 55%,
+			#746c64 78%,
+			#655e58 100%
+		);
 	background-size:
-		2.75px 2.75px,
+		auto,
+		auto,
+		var(--brick-grain-size),
 		auto;
+	background-blend-mode: soft-light, multiply, soft-light, normal;
 	box-shadow:
-		inset 0 0 0 1px rgb(0 0 0 / 0.18),
-		inset 0 1px 0 rgb(255 255 255 / 0.18),
-		0 1px 2px rgb(0 0 0 / 0.1);
+		inset 0 0 0 1px rgb(0 0 0 / 0.16),
+		inset 0 1px 0 rgb(255 255 255 / 0.22),
+		inset 0 -12px 28px rgb(0 0 0 / 0.12),
+		/* 外缘极轻光晕 */
+		0 0 0 1px rgb(255 255 255 / 0.04),
+		0 4px 18px rgb(90 70 50 / 0.12);
 	overflow: hidden;
 	isolation: isolate;
 }
 
+/* 墙面大气光膜：柔和罩一层，不挡点击 */
+.tag-wall::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	border-radius: inherit;
+	background:
+		radial-gradient(
+			ellipse 90% 55% at 50% -5%,
+			rgb(255 255 255 / 0.14) 0%,
+			transparent 50%
+		),
+		linear-gradient(
+			180deg,
+			rgb(255 255 255 / 0.06) 0%,
+			transparent 35%,
+			rgb(0 0 0 / 0.06) 100%
+		);
+	mix-blend-mode: soft-light;
+}
+
 html.dark .tag-wall {
 	--wall-mortar: #3a3834;
-	background:
-		radial-gradient(rgb(255 255 255 / 0.06) 0.55px, transparent 0.7px),
-		linear-gradient(165deg, #2c2a27, #3a3834 50%, #2a3038);
-	background-size:
-		2.75px 2.75px,
-		auto;
+	background-color: #2a2824;
+	background-image:
+		radial-gradient(
+			ellipse 85% 70% at 14% 6%,
+			rgb(180 200 220 / 0.16) 0%,
+			transparent 55%
+		),
+		radial-gradient(
+			ellipse 70% 65% at 90% 95%,
+			rgb(0 0 0 / 0.45) 0%,
+			transparent 55%
+		),
+		var(--brick-grain),
+		linear-gradient(
+			var(--brick-light-soft),
+			#3a3834 0%,
+			#322f2b 32%,
+			#2a2824 58%,
+			#22201c 82%,
+			#1a1816 100%
+		);
+	background-blend-mode: soft-light, multiply, soft-light, normal;
 	box-shadow:
-		inset 0 0 0 1px rgb(255 255 255 / 0.06),
-		0 1px 2px rgb(0 0 0 / 0.4);
+		inset 0 0 0 1px rgb(255 255 255 / 0.05),
+		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 -12px 28px rgb(0 0 0 / 0.35),
+		0 4px 18px rgb(0 0 0 / 0.35);
+}
+
+html.dark .tag-wall::before {
+	background:
+		radial-gradient(
+			ellipse 90% 55% at 50% -5%,
+			rgb(200 220 240 / 0.08) 0%,
+			transparent 50%
+		),
+		linear-gradient(
+			180deg,
+			rgb(255 255 255 / 0.04) 0%,
+			transparent 40%,
+			rgb(0 0 0 / 0.18) 100%
+		);
 }
 
 .tag-wall__brick {
+	position: relative;
 	display: flex !important;
 	flex-direction: column;
 	align-items: flex-start;
@@ -55,9 +147,64 @@ html.dark .tag-wall {
 	text-decoration: none !important;
 	font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 	line-height: 1.2;
+	overflow: hidden;
+	isolation: isolate;
+	z-index: 1;
+	background-repeat: repeat, no-repeat, no-repeat;
+	background-size:
+		var(--brick-grain-size),
+		auto,
+		auto;
+	background-blend-mode: soft-light, soft-light, normal;
 	transition:
 		filter 0.15s ease,
 		box-shadow 0.15s ease;
+}
+
+/*
+ * 单砖光膜：左上高光斑 + 右下暗角（模拟受光面）
+ * 叠在色相渐变之上，文字仍在 z-index:1
+ */
+.tag-wall__brick::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(
+			ellipse 75% 60% at 18% 16%,
+			rgb(255 255 255 / 0.38) 0%,
+			rgb(255 255 255 / 0.08) 38%,
+			transparent 62%
+		),
+		radial-gradient(
+			ellipse 70% 55% at 88% 90%,
+			rgb(0 0 0 / 0.28) 0%,
+			transparent 58%
+		);
+	mix-blend-mode: soft-light;
+	opacity: 0.9;
+}
+
+/* 微立体边：顶/左受光，底/右入影 */
+.tag-wall__brick::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.34),
+		inset 1px 0 0 rgb(255 255 255 / 0.14),
+		inset 0 -2px 0 rgb(0 0 0 / 0.22),
+		inset -1px 0 0 rgb(0 0 0 / 0.14),
+		inset 0 -10px 16px rgb(0 0 0 / 0.1);
+}
+
+.tag-wall__brick > * {
+	position: relative;
+	z-index: 1;
 }
 
 /* —— 砖石错落（dense）：tall / wide / big —— */
@@ -74,60 +221,201 @@ html.dark .tag-wall {
 	grid-row: span 2;
 }
 
-/* —— 棋盘配色：2 列下青灰↔红褐交错，不是左右整列同色 ——
- * 行1: slate clay | 行2: clay slate | …
+/* —— 棋盘：青灰 ↔ 红褐；同色系再分亮/暗两档 ——
+ * 4n+1 青灰偏亮 · 4n+4 青灰偏暗
+ * 4n+2 红褐偏亮 · 4n+3 红褐偏暗
  */
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 1),
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
-	color: #1e2a33;
-	background:
-		radial-gradient(rgb(0 0 0 / 0.1) 0.45px, transparent 0.65px),
-		linear-gradient(168deg, #8fa3b0 0%, #6f8493 48%, #5a7080 100%);
-	background-size:
-		2.4px 2.4px,
-		auto;
+
+/* 青灰 · 亮档（更靠光源） */
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 1) {
+	color: #17232c;
+	background-color: #7a8f9e;
+	background-image:
+		var(--brick-grain),
+		/* 受光面：左上更浅 */
+		radial-gradient(
+			ellipse 90% 70% at 20% 12%,
+			#b4c5d0 0%,
+			transparent 55%
+		),
+		/* 体色斜向折射 */
+		linear-gradient(
+			var(--brick-light),
+			#a8bac6 0%,
+			#8fa3b0 24%,
+			#748a99 52%,
+			#5f7686 78%,
+			#4e6574 100%
+		);
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.35),
-		inset 0 -2px 0 rgb(0 0 0 / 0.22),
-		inset 1px 0 0 rgb(255 255 255 / 0.14),
+		inset 0 1px 0 rgb(255 255 255 / 0.4),
+		inset 1px 0 0 rgb(255 255 255 / 0.16),
+		inset 0 -2px 0 rgb(0 0 0 / 0.2),
 		inset -1px 0 0 rgb(0 0 0 / 0.1);
 }
 
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 1) .tag-wall__count,
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) .tag-wall__count {
-	color: #314552;
+/* 青灰 · 暗档（略背光） */
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
+	color: #141e26;
+	background-color: #5c7180;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 80% 60% at 22% 14%,
+			#8ea2b0 0%,
+			transparent 52%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#7d92a0 0%,
+			#6a8190 26%,
+			#566d7c 54%,
+			#455a68 80%,
+			#364854 100%
+		);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.26),
+		inset 1px 0 0 rgb(255 255 255 / 0.1),
+		inset 0 -2px 0 rgb(0 0 0 / 0.28),
+		inset -1px 0 0 rgb(0 0 0 / 0.14);
 }
 
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 2),
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) {
-	color: #2a160f;
-	background:
-		radial-gradient(rgb(0 0 0 / 0.12) 0.45px, transparent 0.65px),
-		linear-gradient(168deg, #c48462 0%, #a85d42 48%, #8f4632 100%);
-	background-size:
-		2.4px 2.4px,
-		auto;
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 1) .tag-wall__count {
+	color: #2a3e4c;
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 4) .tag-wall__count {
+	color: #243642;
+}
+
+/* 红褐 · 亮档 */
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 2) {
+	color: #2a130c;
+	background-color: #b56848;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 90% 70% at 18% 12%,
+			#e0a07a 0%,
+			transparent 55%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#d49672 0%,
+			#c07a54 22%,
+			#a85d42 50%,
+			#924a32 76%,
+			#7a3b28 100%
+		);
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.28),
-		inset 0 -2px 0 rgb(0 0 0 / 0.28),
+		inset 0 1px 0 rgb(255 255 255 / 0.32),
 		inset 1px 0 0 rgb(255 255 255 / 0.12),
+		inset 0 -2px 0 rgb(0 0 0 / 0.24),
 		inset -1px 0 0 rgb(0 0 0 / 0.12);
 }
 
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 2) .tag-wall__count,
-.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
-	color: #4a2a1c;
+/* 红褐 · 暗档 */
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) {
+	color: #24100a;
+	background-color: #8f4a32;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 80% 60% at 20% 14%,
+			#c07a54 0%,
+			transparent 52%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#b06042 0%,
+			#984c34 26%,
+			#7e3c28 54%,
+			#6a3222 80%,
+			#58281c 100%
+		);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.22),
+		inset 1px 0 0 rgb(255 255 255 / 0.08),
+		inset 0 -2px 0 rgb(0 0 0 / 0.32),
+		inset -1px 0 0 rgb(0 0 0 / 0.16);
 }
 
-html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 1),
-html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
-	color: #e4eef4;
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 2) .tag-wall__count {
+	color: #4a2618;
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
+	color: #3e2014;
+}
+
+/* 同色再微调光角：避免墙面「批量克隆」感 */
+.tag-wall > .tag-wall__brick:nth-of-type(8n + 1)::before {
 	background:
-		radial-gradient(rgb(255 255 255 / 0.05) 0.45px, transparent 0.65px),
-		linear-gradient(168deg, #5c7384 0%, #445968 50%, #344654 100%);
-	background-size:
-		2.4px 2.4px,
-		auto;
+		radial-gradient(
+			ellipse 70% 55% at 28% 22%,
+			rgb(255 255 255 / 0.42) 0%,
+			transparent 60%
+		),
+		radial-gradient(
+			ellipse 65% 50% at 82% 86%,
+			rgb(0 0 0 / 0.22) 0%,
+			transparent 55%
+		);
+}
+
+.tag-wall > .tag-wall__brick:nth-of-type(8n + 5)::before {
+	background:
+		radial-gradient(
+			ellipse 65% 50% at 12% 30%,
+			rgb(255 255 255 / 0.28) 0%,
+			transparent 55%
+		),
+		radial-gradient(
+			ellipse 75% 60% at 92% 78%,
+			rgb(0 0 0 / 0.32) 0%,
+			transparent 58%
+		);
+}
+
+/* 暗色：青灰亮/暗 */
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 1) {
+	color: #eaf2f7;
+	background-color: #4e6574;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 90% 70% at 20% 12%,
+			#7a92a2 0%,
+			transparent 55%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#6a8294 0%,
+			#5c7384 26%,
+			#445968 54%,
+			#364a58 80%,
+			#2c3c48 100%
+		);
+}
+
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 4) {
+	color: #dce8f0;
+	background-color: #3a4e5c;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 80% 60% at 22% 14%,
+			#5a7080 0%,
+			transparent 52%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#4e6574 0%,
+			#405666 28%,
+			#344654 56%,
+			#2a3a48 82%,
+			#222e38 100%
+		);
 }
 
 html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 1) .tag-wall__count,
@@ -135,20 +423,63 @@ html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 4) .tag-wall__count {
 	color: #b7c9d4;
 }
 
-html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 2),
+/* 暗色：红褐亮/暗 */
+html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 2) {
+	color: #f7ebe3;
+	background-color: #8a4e38;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 90% 70% at 18% 12%,
+			#b87052 0%,
+			transparent 55%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#a86448 0%,
+			#9a5a42 24%,
+			#7a4030 52%,
+			#653428 78%,
+			#542a20 100%
+		);
+}
+
 html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) {
-	color: #f3e4da;
-	background:
-		radial-gradient(rgb(255 255 255 / 0.05) 0.45px, transparent 0.65px),
-		linear-gradient(168deg, #9a5a42 0%, #7a4030 50%, #623226 100%);
-	background-size:
-		2.4px 2.4px,
-		auto;
+	color: #f0e0d6;
+	background-color: #6a3828;
+	background-image:
+		var(--brick-grain),
+		radial-gradient(
+			ellipse 80% 60% at 20% 14%,
+			#8a5038 0%,
+			transparent 52%
+		),
+		linear-gradient(
+			var(--brick-light),
+			#7a4030 0%,
+			#683628 28%,
+			#542c20 56%,
+			#46241a 82%,
+			#3a1e16 100%
+		);
 }
 
 html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 2) .tag-wall__count,
 html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
 	color: #d4b4a4;
+}
+
+html.dark .tag-wall__brick::before {
+	opacity: 0.75;
+}
+
+html.dark .tag-wall__brick::after {
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.12),
+		inset 1px 0 0 rgb(255 255 255 / 0.06),
+		inset 0 -2px 0 rgb(0 0 0 / 0.4),
+		inset -1px 0 0 rgb(0 0 0 / 0.22),
+		inset 0 -10px 16px rgb(0 0 0 / 0.22);
 }
 
 .tag-wall__brick.is-filtered-out {
@@ -164,6 +495,11 @@ html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
 	font-size: 0.7rem;
 	font-weight: 700;
 	letter-spacing: 0.01em;
+	text-shadow: 0 1px 0 rgb(255 255 255 / 0.16);
+}
+
+html.dark .tag-wall__name {
+	text-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
 }
 
 .tag-wall__count {
@@ -177,8 +513,12 @@ html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
 
 @media (hover: hover) {
 	.tag-wall__brick:hover {
-		filter: brightness(1.08) saturate(1.08);
-		z-index: 1;
+		filter: brightness(1.08) saturate(1.05);
+		z-index: 3;
+	}
+
+	.tag-wall__brick:hover::before {
+		opacity: 1;
 	}
 }
 
@@ -189,12 +529,18 @@ html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
 .tag-wall__brick:focus-visible {
 	outline: 2px solid #c9a227;
 	outline-offset: -2px;
-	z-index: 2;
+	z-index: 4;
 }
 
 /* /tags 全站页 */
 .tag-item {
-	background: linear-gradient(168deg, #8fa3b0, #a85d42);
+	background-color: #8fa3b0;
+	background-image:
+		url("/assets/images/widgets/tag-wall/brick-grain.webp"),
+		radial-gradient(ellipse 80% 60% at 20% 15%, #b4c5d0 0%, transparent 55%),
+		linear-gradient(145deg, #8fa3b0 0%, #7a6a5e 48%, #a85d42 100%);
+	background-size: 64px 64px, auto, auto;
+	background-blend-mode: soft-light, soft-light, normal;
 	color: #1f1712;
 	border: 1px solid rgb(0 0 0 / 0.18);
 	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
@@ -205,7 +551,13 @@ html.dark .tag-wall > .tag-wall__brick:nth-of-type(4n + 3) .tag-wall__count {
 }
 
 html.dark .tag-item {
-	background: linear-gradient(168deg, #445968, #7a4030);
+	background-color: #445968;
+	background-image:
+		url("/assets/images/widgets/tag-wall/brick-grain.webp"),
+		radial-gradient(ellipse 80% 60% at 20% 15%, #5c7384 0%, transparent 55%),
+		linear-gradient(145deg, #445968 0%, #5a4038 48%, #7a4030 100%);
+	background-size: 64px 64px, auto, auto;
+	background-blend-mode: soft-light, soft-light, normal;
 	color: #f0e6de;
 	border-color: rgb(255 255 255 / 0.1);
 }
