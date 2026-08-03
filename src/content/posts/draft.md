@@ -2,6 +2,8 @@
 title: 草稿示例
 author: threetwoa
 published: 2026-08-01
+description: 这篇文章目前处于草稿状态，尚未发布。
+image: ./images/minimax/v2-draft.jpg
 tags: [Firefly, Markdown]
 category: 功能
 draft: true

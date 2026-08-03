@@ -2,7 +2,7 @@
 title: 论 AI Coding 的奇淫技巧👿
 published: 2026-08-02
 description: 咸鱼租号、中转倍率、已知羊毛与订阅号池管理——一套务实的 AI Coding 省钱渠道与技巧笔记。
-image: ./cover.webp
+image: ./cover.jpg
 tags: [AI Coding, Cursor, 省钱]
 category: Agentic Coding
 draft: false
