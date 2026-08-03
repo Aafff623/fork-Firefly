@@ -317,8 +317,10 @@ function loadButtonScript() {
         }
         window.addEventListener("bg-player-state-change", function (e) {
             var ce = e as CustomEvent;
-            var playing = ce.detail && ce.detail.playing;
-            toggleBgPlayerIcon(playing);
+            var detail = ce.detail || {};
+            // loading 阶段保持 play 图标，避免“假暂停”
+            if (detail.loading && !detail.playing) return;
+            toggleBgPlayerIcon(!!detail.playing);
         });
         // 切换壁纸模式时隐藏/显示播放按钮
         window.addEventListener("wallpaperModeChange", function (e) {

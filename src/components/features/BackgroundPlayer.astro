@@ -6,9 +6,15 @@ import { i18n } from "@/i18n/translation";
 export interface Props {
 	playerUrl: string | string[];
 	playerMode?: "order" | "random";
+	/** 与横幅壁纸 object-position 对齐，避免切换时裁切不一致露出底色 */
+	objectPosition?: string;
 }
 
-const { playerUrl, playerMode = "order" } = Astro.props;
+const {
+	playerUrl,
+	playerMode = "order",
+	objectPosition = "center",
+} = Astro.props;
 
 const urls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
 const hasMultiple = urls.length > 1;
@@ -21,15 +27,22 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 
 {
 	urls.length > 0 && (
-		<div id="bg-player">
+		<div id="bg-player" class="absolute inset-0 pointer-events-none" aria-hidden="true">
 			<div
 				id="bg-player-overlay"
-				class="absolute inset-0 z-15 overflow-hidden pointer-events-none transition-opacity duration-500 ease-in-out opacity-0"
+				class="absolute inset-0 z-[6] overflow-hidden bg-black pointer-events-none transition-opacity duration-500 ease-in-out opacity-0"
 			>
-				<video id="bg-player-video" preload="auto" playsinline class="size-full object-cover"></video>
+				<video
+					id="bg-player-video"
+					preload="metadata"
+					playsinline
+					webkit-playsinline
+					class="absolute inset-0 size-full min-w-full min-h-full object-cover"
+					style={`object-position: ${objectPosition}; transform: scale(1.02); transform-origin: center;`}
+				></video>
 			</div>
 
-			<div id="bg-player-controls" class="absolute bottom-4 left-4 z-30 flex items-center gap-1.5 group">
+			<div id="bg-player-controls" class="absolute bottom-4 left-4 z-30 flex items-center gap-1.5 group pointer-events-auto">
 				{hasMultiple && (
 					<button
 						id="bg-prev-btn"
@@ -82,9 +95,11 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		video.setAttribute("data-player-init", "true");
 
 		var isPlaying = false;
+		var isStarting = false;
 		var currentIndex = 0;
 		var errorCount = 0;
 		var toastTimer = null;
+		var primed = false;
 
 		function showToast() {
 			if (!toast) return;
@@ -113,52 +128,161 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			return (currentIndex - 1 + urlList.length) % urlList.length;
 		}
 
+		function setLoading(on) {
+			document.body.toggleAttribute("data-bg-video-loading", on);
+			document.documentElement.toggleAttribute("data-bg-video-loading", on);
+		}
+
 		function syncAttr() {
 			document.body.toggleAttribute("data-bg-video-playing", isPlaying);
 			document.documentElement.toggleAttribute("data-bg-video-playing", isPlaying);
 			window.dispatchEvent(new CustomEvent("bg-player-state-change", { detail: { playing: isPlaying } }));
 		}
 
+		function revealOverlay() {
+			if (!overlay) return;
+			overlay.classList.remove("opacity-0");
+			overlay.classList.add("opacity-100");
+		}
+
+		function hideOverlay() {
+			if (!overlay) return;
+			overlay.classList.remove("opacity-100");
+			overlay.classList.add("opacity-0");
+		}
+
+		function ensureSrc(index) {
+			var next = urlList[index];
+			if (video.getAttribute("src") !== next) {
+				video.src = next;
+				video.load();
+			}
+		}
+
+		/** 空闲时预取当前轨，缩短点击后的等待 */
+		function primeCurrent() {
+			if (primed) return;
+			primed = true;
+			ensureSrc(currentIndex);
+			try {
+				video.preload = "auto";
+			} catch (_) {}
+		}
+
+		function waitForPlaybackReady() {
+			return new Promise(function (resolve, reject) {
+				if (video.error) {
+					reject(video.error);
+					return;
+				}
+				if (video.readyState >= 3) {
+					resolve();
+					return;
+				}
+				var settled = false;
+				function done() {
+					if (settled) return;
+					settled = true;
+					cleanup();
+					resolve();
+				}
+				function fail() {
+					if (settled) return;
+					settled = true;
+					cleanup();
+					reject(video.error || new Error("video load failed"));
+				}
+				function cleanup() {
+					video.removeEventListener("canplay", done);
+					video.removeEventListener("loadeddata", done);
+					video.removeEventListener("error", fail);
+				}
+				video.addEventListener("canplay", done);
+				video.addEventListener("loadeddata", done);
+				video.addEventListener("error", fail);
+			});
+		}
+
 		function doPlay() {
-			video.src = urlList[currentIndex];
+			ensureSrc(currentIndex);
 			video.muted = true;
-			video.play()
-				.then(function () { setTimeout(function () { if (video) video.muted = false; }, 100); })
-				.catch(function () { isPlaying = false; syncAttr(); });
+			setLoading(true);
+
+			return waitForPlaybackReady()
+				.then(function () {
+					if (!isPlaying && !isStarting) return;
+					// 先盖上黑底+视频层，再播；壁纸图等首帧后再淡出，避免白边闪一下
+					revealOverlay();
+					return video.play();
+				})
+				.then(function () {
+					if (!isPlaying && !isStarting) return;
+					isStarting = false;
+					isPlaying = true;
+					setLoading(false);
+					syncAttr();
+					setTimeout(function () {
+						if (video && isPlaying) video.muted = false;
+					}, 100);
+				})
+				.catch(function () {
+					isStarting = false;
+					isPlaying = false;
+					setLoading(false);
+					hideOverlay();
+					syncAttr();
+				});
 		}
 
 		function switchTrack(index) {
 			if (index < 0 || index >= urlList.length) return;
 			currentIndex = index;
-			if (isPlaying) {
+			primed = false;
+			if (isPlaying || isStarting) {
+				isStarting = true;
 				doPlay();
 			} else {
-				video.src = urlList[currentIndex];
-				video.load();
+				ensureSrc(currentIndex);
 			}
 		}
 
 		function toggle() {
-			isPlaying = !isPlaying;
+			if (isStarting) return;
+
 			if (isPlaying) {
-				if (currentIndex >= urlList.length) currentIndex = 0;
-				syncAttr();
-				if (overlay) { overlay.classList.remove("opacity-0"); overlay.classList.add("opacity-100"); }
-				requestAnimationFrame(function () { doPlay(); });
-			} else {
+				isPlaying = false;
 				video.pause();
-				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				hideOverlay();
+				setLoading(false);
 				syncAttr();
+				return;
 			}
+
+			if (currentIndex >= urlList.length) currentIndex = 0;
+			isStarting = true;
+			setLoading(true);
+			// 关键：缓冲完成前不挂 data-bg-video-playing（否则壁纸立刻透明 → 白边）
+			window.dispatchEvent(
+				new CustomEvent("bg-player-state-change", {
+					detail: { playing: false, loading: true },
+				}),
+			);
+			primeCurrent();
+			requestAnimationFrame(function () {
+				doPlay();
+			});
 		}
 
 		function onEnded() {
 			if (isMultiple) {
 				currentIndex = pickIndex(currentIndex);
+				isStarting = true;
 				doPlay();
 			} else {
 				isPlaying = false;
-				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				isStarting = false;
+				hideOverlay();
+				setLoading(false);
 				syncAttr();
 			}
 		}
@@ -166,49 +290,71 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		function onError() {
 			errorCount++;
 			if (isMultiple && errorCount < urlList.length) {
-				// 多视频模式下自动尝试下一个
 				currentIndex = pickIndex(currentIndex);
-				video.src = urlList[currentIndex];
-				video.load();
+				ensureSrc(currentIndex);
+				if (isPlaying || isStarting) doPlay();
 			} else {
-				// 所有视频都失败或只有单个视频
 				isPlaying = false;
-				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				isStarting = false;
+				hideOverlay();
+				setLoading(false);
 				syncAttr();
 				showToast();
 			}
 		}
 
-		// 监听导航栏播放按钮事件
 		window.addEventListener("bg-player-toggle", toggle);
 		video.addEventListener("ended", onEnded);
 		video.addEventListener("error", onError);
-		// 播放成功时重置错误计数
-		video.addEventListener("playing", function () { errorCount = 0; });
+		video.addEventListener("playing", function () {
+			errorCount = 0;
+		});
 		if (prevBtn) prevBtn.addEventListener("click", function () { switchTrack(prevIndex()); });
 		if (nextBtn) nextBtn.addEventListener("click", function () { switchTrack(pickIndex(currentIndex)); });
 
-		// 切换壁纸模式时停止播放
 		window.addEventListener("wallpaperModeChange", function (e) {
-			if (e.detail && e.detail.mode === "none" && isPlaying) {
+			if (e.detail && e.detail.mode === "none" && (isPlaying || isStarting)) {
 				isPlaying = false;
+				isStarting = false;
 				video.pause();
-				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				hideOverlay();
+				setLoading(false);
 				syncAttr();
 			}
 		});
 
-		// 动态控制 prev/next 按钮显示
 		if (!isMultiple) {
 			if (prevBtn) prevBtn.style.display = "none";
 			if (nextBtn) nextBtn.style.display = "none";
 		}
 
+		// 悬停播放钮 / 空闲时预缓冲
+		var playBtn = document.getElementById("bg-player-toggle");
+		if (playBtn) {
+			playBtn.addEventListener("pointerenter", primeCurrent, { once: true });
+			playBtn.addEventListener("focus", primeCurrent, { once: true });
+		}
+		var idleId = 0;
+		function schedulePrime() {
+			if (typeof requestIdleCallback === "function") {
+				idleId = requestIdleCallback(function () { primeCurrent(); }, { timeout: 2500 });
+			} else {
+				idleId = setTimeout(primeCurrent, 1800);
+			}
+		}
+		if (document.readyState === "complete") schedulePrime();
+		else window.addEventListener("load", schedulePrime, { once: true });
+
 		function cleanup() {
-			// 视频仍在播放时保留属性，供 Navbar 同步按钮状态
 			if (!isPlaying) {
 				document.body.removeAttribute("data-bg-video-playing");
 				document.documentElement.removeAttribute("data-bg-video-playing");
+			}
+			document.body.removeAttribute("data-bg-video-loading");
+			document.documentElement.removeAttribute("data-bg-video-loading");
+			if (idleId) {
+				if (typeof cancelIdleCallback === "function") cancelIdleCallback(idleId);
+				else clearTimeout(idleId);
 			}
 		}
 		document.addEventListener("astro:before-swap", cleanup);
@@ -216,6 +362,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 </script>
 
 <style>
+	/* 仅在真正开始播放后才藏壁纸层；加载中保持壁纸可见垫底 */
 	:global([data-bg-video-playing] #banner-images-container),
 	:global([data-bg-video-playing] #banner-dim-container),
 	:global([data-bg-video-playing] #banner-overlay-container),
@@ -223,5 +370,15 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 	:global([data-bg-video-playing] #wallpaper-gradient) {
 		opacity: 0 !important;
 		transition: opacity 0.5s ease;
+	}
+
+	:global([data-bg-video-playing] #wallpaper-wrapper),
+	:global([data-bg-video-loading] #wallpaper-wrapper) {
+		background-color: #000;
+	}
+
+	:global([data-bg-video-loading] #bg-player-toggle) {
+		opacity: 0.55;
+		pointer-events: none;
 	}
 </style>

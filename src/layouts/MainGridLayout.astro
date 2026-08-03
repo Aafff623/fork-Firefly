@@ -416,7 +416,7 @@ const hasMultipleImages =
     </div>
     ) : (
     /* 单图模式 */
-    <div class="relative h-full w-full" id="banner-images-container">
+    <div class="relative h-full w-full bg-black" id="banner-images-container">
         {backgroundImages.mobile.length > 0 && (
             <div class="banner-image-slot-mobile absolute inset-0 block lg:hidden">
                 <ImageWrapper
@@ -635,7 +635,11 @@ const hasMultipleImages =
     )}
     
     {backgroundWallpaper.playerEnable && typeof backgroundWallpaper.src === "object" && !Array.isArray(backgroundWallpaper.src) && backgroundWallpaper.src.playerUrl && (
-        <BackgroundPlayer playerUrl={backgroundWallpaper.src.playerUrl} playerMode={backgroundWallpaper.common?.playerMode ?? "order"} />
+        <BackgroundPlayer
+            playerUrl={backgroundWallpaper.src.playerUrl}
+            playerMode={backgroundWallpaper.common?.playerMode ?? "order"}
+            objectPosition={backgroundWallpaper.banner?.position ?? backgroundWallpaper.fullscreen?.position ?? "center"}
+        />
     )}
 
     <div id="banner-dim-container" class="absolute inset-0 z-10 pointer-events-none">
@@ -719,7 +723,7 @@ const hasMultipleImages =
                 <div class="flex flex-col items-center gap-3">
                     <div
                         class="banner-post-title banner-title repel-text pointer-events-auto font-bold text-white leading-tight"
-                        style={{ "--banner-title-size": backgroundWallpaper.common?.homeText?.titleSize || "2.75rem" }}
+                        style={{ "--banner-title-size": "3.25rem" }}
                     >
                         {bannerPostMeta.title}
                     </div>

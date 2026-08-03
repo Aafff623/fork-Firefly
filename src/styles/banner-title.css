@@ -28,6 +28,17 @@
     overflow-wrap: break-word;
     word-break: break-word;
     cursor: crosshair;
+    font-family:
+        "Iowan Old Style",
+        "Palatino Linotype",
+        "Songti SC",
+        "Noto Serif SC",
+        Georgia,
+        serif;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    text-wrap: balance;
 }
 
 .banner-post-title.repel-text {
@@ -59,14 +70,36 @@
 .banner-post-description {
     position: relative;
     max-width: min(var(--banner-post-description-width, 50rem), 78vw);
-    padding: 0.85rem 2.25rem;
-    border-radius: var(--radius-large);
-    background: rgba(0, 0, 0, 0.16);
+    padding: 0.9rem 2.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-left: 3px solid rgba(255, 255, 255, 0.62);
+    border-radius: 1.15rem 0.45rem 1.15rem 0.45rem;
+    background: linear-gradient(135deg, rgba(20, 15, 35, 0.48), rgba(20, 15, 35, 0.2));
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(12px) saturate(1.12);
     font-size: 0.95rem;
     line-height: 1.7;
     font-weight: 400;
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
     text-wrap: pretty;
+}
+
+.post-banner-title,
+.post-article-title-art {
+    font-family:
+        "Iowan Old Style",
+        "Palatino Linotype",
+        "Songti SC",
+        "Noto Serif SC",
+        Georgia,
+        serif;
+    letter-spacing: -0.035em;
+}
+
+.post-article-title-art {
+    text-wrap: balance;
 }
 
 .banner-post-description-quote {
