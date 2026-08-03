@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Icon } from "@iconify/svelte";
+import Icon from "./Icon.svelte";
 
 interface Props {
 	totalItems: number;
