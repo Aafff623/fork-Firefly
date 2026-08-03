@@ -107,7 +107,7 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
 </div>
 
 <script>
-  function bindAboutPopCard(root) {
+  function bindAboutPopCard(root: Element) {
     if (!(root instanceof HTMLElement) || root.dataset.bound === "1") return;
     root.dataset.bound = "1";
 

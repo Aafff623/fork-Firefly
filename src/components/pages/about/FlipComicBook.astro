@@ -149,7 +149,7 @@ const pages = [
 </style>
 
 <script>
-  function bindTouch(root) {
+  function bindTouch(root: Element) {
     if (!(root instanceof HTMLElement) || root.dataset.bound === "1") return;
     root.dataset.bound = "1";
     const book = root.querySelector(".about-flip__book");
