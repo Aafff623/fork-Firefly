@@ -74,6 +74,18 @@
   img
     border-radius: 0.75rem
 
+  // 正文插图略收窄，避免大图占满阅读列；封面、评论和 image-grid 不受影响。
+  center
+    display: block
+
+    figure
+      width: min(67%, 41.6rem)
+      margin-left: auto
+      margin-right: auto
+
+  .image-grid center figure
+    width: 100%
+
   hr
     border-color: var(--line-divider)
     border-style: dashed

@@ -867,7 +867,7 @@ const hasMultipleImages =
     <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给 .banner-title.repel-text；可点区域由 [&>*]:pointer-events-auto 收回 -->
     <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-none">
         <div id="main-grid"
-          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
+          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isPostPage ? 'post-zen-mode' : ''}`}
           data-sidebar-enable={sidebarLayoutConfig.enable ? "true" : "false"}
           data-grid-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
           data-sidebar-position={sidebarLayoutConfig.position}
@@ -1041,6 +1041,55 @@ const hasMultipleImages =
 </Layout>
 
 <style is:global>
+  /* 左栏维持冷紫，右栏切换为玫粉，避免目录与正文高亮混成同一层。 */
+  #left-sidebar {
+    --sidebar-accent: oklch(0.58 0.23 292);
+  }
+
+  #right-sidebar {
+    --sidebar-accent: oklch(0.68 0.19 350);
+  }
+
+  #left-sidebar .widget-title::before,
+  #right-sidebar .widget-title::before {
+    background: var(--sidebar-accent) !important;
+  }
+
+  #right-sidebar .widget-name,
+  #right-sidebar .widget-title-icon {
+    color: var(--sidebar-accent);
+  }
+
+  /* 文章页进入禅模式：正文独占栅格，首页侧栏不再挤压阅读宽度。 */
+  @media (min-width: 1024px) {
+    #main-grid.post-zen-mode {
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 1.25rem;
+    }
+
+    #main-grid.post-zen-mode #left-sidebar-wrapper,
+    #main-grid.post-zen-mode #left-sidebar-dynamic,
+    #main-grid.post-zen-mode #right-sidebar-static,
+    #main-grid.post-zen-mode #right-sidebar-dynamic,
+    #main-grid.post-zen-mode #mobile-bottom-sidebar {
+      display: none !important;
+    }
+
+    #main-grid.post-zen-mode .transition-main {
+      width: min(100%, 78rem);
+      margin-inline: auto;
+    }
+
+    #main-grid.post-zen-mode > [class*="md:col-start-2"] {
+      grid-column: 1 / -1 !important;
+      width: 100%;
+    }
+
+    #main-grid.post-zen-mode > .footer {
+      grid-column: 1 / -1 !important;
+    }
+  }
+
   /* 右侧栏平滑过渡 */
   #right-sidebar {
     transition: opacity 0.35s ease-in-out,

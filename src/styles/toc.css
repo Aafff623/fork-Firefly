@@ -25,6 +25,8 @@
 /* 紧凑行：无大圆角胶囊 */
 .toc-item {
 	--toc-focus: 0;
+	--toc-focus-purple: oklch(0.58 0.23 292);
+	--toc-focus-pink: oklch(0.68 0.19 350);
 	display: grid;
 	grid-template-columns: 3.25ch 1fr;
 	align-items: center;
@@ -147,7 +149,7 @@
 	box-shadow: inset 2.5px 0 0
 		color-mix(
 			in oklab,
-			var(--primary) calc(var(--toc-focus) * var(--toc-focus) * 100%),
+			var(--toc-focus-purple) calc(var(--toc-focus) * var(--toc-focus) * 100%),
 			transparent
 		);
 }
@@ -164,7 +166,7 @@
 	/* 低分更灰、高分更饱和：用 focus² 拉开两端 */
 	color: color-mix(
 		in oklab,
-		var(--primary) calc(var(--toc-focus) * var(--toc-focus) * 100%),
+		var(--toc-focus-purple) calc(var(--toc-focus) * var(--toc-focus) * 100%),
 		var(--content-meta)
 	);
 	opacity: calc(0.28 + var(--toc-focus) * var(--toc-focus) * 0.72);
@@ -173,7 +175,7 @@
 .toc-item.visible .toc-badge-index {
 	color: color-mix(
 		in oklab,
-		var(--primary) calc(var(--toc-focus) * var(--toc-focus) * 100%),
+		var(--toc-focus-purple) calc(var(--toc-focus) * var(--toc-focus) * 100%),
 		var(--content-meta)
 	);
 	opacity: calc(0.32 + var(--toc-focus) * var(--toc-focus) * 0.68);
@@ -189,32 +191,44 @@
 	opacity: calc(0.25 + var(--toc-focus) * var(--toc-focus) * 0.75);
 }
 
-/* 中间高原带：满色 */
-.toc-item.toc-focus-primary,
-.toc-item.toc-focus-band {
-	box-shadow: inset 2.5px 0 0 var(--primary);
+/* 中间高原带：主焦点紫色，同带内其它标题粉色，形成可辨的多项映射。 */
+.toc-item.toc-focus-primary {
+	box-shadow: inset 2.5px 0 0 var(--toc-focus-purple);
 }
 
 .toc-item.toc-focus-primary .toc-label,
-.toc-item.toc-focus-band .toc-label {
-	color: var(--primary);
-	opacity: 1;
-	font-weight: 600;
-}
-
-.toc-item.toc-focus-primary .toc-badge-index,
-.toc-item.toc-focus-band .toc-badge-index {
-	color: var(--primary);
+.toc-item.toc-focus-primary .toc-badge-index {
+	color: var(--toc-focus-purple);
 	opacity: 1;
 	font-weight: 600;
 }
 
 .toc-item.toc-focus-primary .toc-badge-dot,
-.toc-item.toc-focus-primary .toc-badge-dot-sm,
+.toc-item.toc-focus-primary .toc-badge-dot-sm {
+	background: var(--toc-focus-purple);
+	opacity: 1;
+}
+
+.toc-item.toc-focus-band {
+	box-shadow: inset 2.5px 0 0 var(--toc-focus-pink);
+}
+
+.toc-item.toc-focus-band .toc-label,
+.toc-item.toc-focus-band .toc-badge-index {
+	color: var(--toc-focus-pink);
+	opacity: 1;
+	font-weight: 600;
+}
+
 .toc-item.toc-focus-band .toc-badge-dot,
 .toc-item.toc-focus-band .toc-badge-dot-sm {
-	background: var(--primary);
+	background: var(--toc-focus-pink);
 	opacity: 1;
+}
+
+:root.dark .toc-item {
+	--toc-focus-purple: oklch(0.76 0.16 292);
+	--toc-focus-pink: oklch(0.8 0.15 350);
 }
 
 /* 保留 DOM 节点供 TOCManager 定位，视觉隐藏 */
