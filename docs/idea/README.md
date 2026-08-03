@@ -55,3 +55,4 @@ docs/idea/{theme}/          # 灵感沉淀（本目录）
 | theme | 说明 | 状态 |
 |---|---|---|
 | `hallmark-gsap-ui` | Hallmark×GSAP（+MiniMax）组件动效编排 skill 构想 | step-1 分析完成 |
+| `calendar-cover` | 侧栏日历封面 GIF：像素/软绘人物 · idle 闭环 · 轮询 | 已认可截图 + mood 沉淀（2026-08-03） |
