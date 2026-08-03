@@ -222,28 +222,6 @@ if (bilibiliItems.length > 0) {
 	animeList = [...animeList, ...bilibiliMapped];
 }
 
-// 统计数据
-const totalCount = animeList.length;
-const tmdbAverageRating =
-	tmdbItems.length > 0
-		? (
-				tmdbItems.reduce(
-					(sum, item) => sum + (Number(item.vote_average) || 0),
-					0,
-				) / tmdbItems.length
-			).toFixed(1)
-		: "0.0";
-
-const bilibiliAverageRating =
-	bilibiliItems.length > 0
-		? (
-				bilibiliItems.reduce(
-					(sum, item) => sum + (Number(item.rating?.score) || 0),
-					0,
-				) / bilibiliItems.length
-			).toFixed(1)
-		: "0.0";
-
 const isConfigured = !!(BILIBILI_UID || (TMDB_API_KEY && TMDB_LIST_ID));
 ---
 
@@ -254,8 +232,8 @@ const isConfigured = !!(BILIBILI_UID || (TMDB_API_KEY && TMDB_LIST_ID));
       <div class="relative w-full mb-8">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-3">
-            <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
-              <Icon is:inline name="lucide:tv" class="text-[1.5rem]"></Icon>
+            <div class="h-8 w-8 rounded-lg bg-[#FB7299] flex items-center justify-center text-white">
+              <Icon is:inline name="simple-icons:bilibili" class="text-[1.15rem]" />
             </div>
             <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
               {i18n(I18nKey.anime)}
@@ -283,64 +261,7 @@ const isConfigured = !!(BILIBILI_UID || (TMDB_API_KEY && TMDB_LIST_ID));
             </p>
           </div>
         ) : (
-          <>
-            <!-- 统计卡片 -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-              <div class="bg-(--card-bg) rounded-xl p-3 sm:p-4 border border-(--line-divider)">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-(--primary)/10 flex items-center justify-center shrink-0">
-                    <Icon is:inline name="lucide:clapperboard" class="text-[1rem] sm:text-[1.25rem] text-(--primary)" />
-                  </div>
-                  <div class="min-w-0">
-                    <div class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">{i18n(I18nKey.animeTotal)}</div>
-                    <div class="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">{totalCount}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-(--card-bg) rounded-xl p-3 sm:p-4 border border-(--line-divider)">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-pink-500/10 flex items-center justify-center shrink-0">
-                    <Icon is:inline name="lucide:heart" class="text-[1rem] sm:text-[1.25rem] text-pink-500" />
-                  </div>
-                  <div class="min-w-0">
-                    <div class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">{i18n(I18nKey.animeBilibiliAvg)}</div>
-                    <div class="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">{bilibiliAverageRating}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-(--card-bg) rounded-xl p-3 sm:p-4 border border-(--line-divider)">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
-                    <Icon is:inline name="lucide:star" class="text-[1rem] sm:text-[1.25rem] text-yellow-500" />
-                  </div>
-                  <div class="min-w-0">
-                    <div class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">{i18n(I18nKey.animeTmdbAvg)}</div>
-                    <div class="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">{tmdbAverageRating}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-(--card-bg) rounded-xl p-3 sm:p-4 border border-(--line-divider)">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                    <Icon is:inline name="lucide:database" class="text-[1rem] sm:text-[1.25rem] text-emerald-500" />
-                  </div>
-                  <div class="min-w-0">
-                    <div class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">{i18n(I18nKey.animeSource)}</div>
-                    <div class="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 truncate">
-                      {BILIBILI_UID && (TMDB_API_KEY && TMDB_LIST_ID) ? i18n(I18nKey.animeDualSynced) : BILIBILI_UID ? "Bilibili" : "TMDB"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 番剧网格（Svelte 交互组件） */}
-            <AnimeGrid
-              client:load
-              items={animeList}
-              bilibiliAverageRating={bilibiliAverageRating}
-            />
-          </>
+          <AnimeGrid client:load items={animeList} />
         )}
       </div>
     </div>

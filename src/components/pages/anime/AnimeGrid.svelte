@@ -12,11 +12,10 @@ import AnimeDetailModal from "./AnimeDetailModal.svelte";
 
 interface Props {
 	items: StandardizedAnime[];
-	bilibiliAverageRating?: string;
 	itemsPerPage?: number;
 }
 
-let { items, bilibiliAverageRating, itemsPerPage = 24 }: Props = $props();
+let { items, itemsPerPage = 24 }: Props = $props();
 
 const DEMO_BLIND_TITLES = [
 	"切片光影",
