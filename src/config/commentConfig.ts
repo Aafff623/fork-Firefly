@@ -23,9 +23,8 @@ export const commentConfig: CommentConfig = {
 
 	//waline评论系统配置
 	waline: {
-		// 自建服务端（Vercel + Neon）。优先用 Production 域名；部署预览 URL 会变且可能需登录
-		serverURL:
-			"https://threetwoa-waline-fjzbuq3on-laiyif68-5443s-projects.vercel.app",
+		// 自建服务端（Vercel + Neon）。必须用 Production 稳定域名，禁止 Preview hash URL
+		serverURL: "https://threetwoa-waline.vercel.app",
 		// 设置 Waline 评论系统语言
 		lang: "zh-CN",
 		// 表情预设（CDN；含静图/可带动图包）。搜索 GIF：客户端默认启用 Giphy，无需额外配置
