@@ -7,63 +7,218 @@ import { getCategoryList } from "@/utils/content-utils";
 
 const categories = await getCategoryList();
 const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
+const maxCount = Math.max(...categories.map((c) => c.count), 1);
 ---
 
 <MainGridLayout title={i18n(I18nKey.categories)}>
-    <!-- 页面标题 -->
-    <div class="card-base px-8 py-6 mb-4">
-        <div class="text-2xl font-bold text-(--primary) mb-2">
-            {i18n(I18nKey.categories)}
-        </div>
-        <p class="text-30 text-sm">
-            {i18n(I18nKey.allCategories)} · {totalPosts} {i18n(I18nKey.postsCount)}
-        </p>
+  <div class="card-base px-8 py-6 mb-4">
+    <div class="text-2xl font-bold text-(--primary) mb-2">
+      {i18n(I18nKey.categories)}
     </div>
+    <p class="text-30 text-sm">
+      {i18n(I18nKey.allCategories)} · {totalPosts} {i18n(I18nKey.postsCount)}
+    </p>
+  </div>
 
-    <!-- 分类卡片列表 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-        {
-            categories.map((category, index) => (
-                <a
-                    href={category.url}
-                    class="card-base p-6 flex items-center gap-4 group onload-animation"
-                    style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
-                >
-                    <div class="shrink-0 w-14 h-14 rounded-full bg-(--primary)/10 group-hover:bg-(--primary)/20 flex items-center justify-center transition-colors">
-                        <Icon is:inline
-                            name="lucide:folder-open"
-                            class="text-3xl text-(--primary)"
-                        />
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-lg font-bold text-90 truncate group-hover:text-(--primary) transition-colors" title={category.name}>
-                            {category.name}
-                        </h2>
-                        <p class="text-sm text-30 mt-1 group-hover:text-(--primary)/60 transition-colors">
-                            {category.count} {i18n(I18nKey.postsCount)}
-                        </p>
-                    </div>
-                    <div class="shrink-0">
-                        <Icon is:inline
-                            name="lucide:chevron-right"
-                            class="text-2xl text-30 group-hover:text-(--primary) transition-colors "
-                        />
-                    </div>
-                </a>
-            ))
-        }
-    </div>
-
-    <!-- 空状态 -->
+  <div class="category-showcase grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
     {
-        categories.length === 0 && (
-            <div class="card-base px-8 py-12 text-center">
-                <Icon is:inline
-                    name="lucide:folder-x"
-                    class="text-5xl text-30 mx-auto mb-4"
-                />
-                <p class="text-30">{i18n(I18nKey.noData)}</p>
+      categories.map((category, index) => {
+        const weight = Math.max(0.22, category.count / maxCount);
+        const idx = String(index + 1).padStart(2, "0");
+        return (
+          <a
+            href={category.url}
+            class="category-tile onload-animation group"
+            style={`--cat-weight: ${weight}; animation-delay: calc(var(--content-delay) + ${index * 50}ms);`}
+          >
+            <span class="category-tile__index" aria-hidden="true">{idx}</span>
+            <span class="category-tile__glow" aria-hidden="true"></span>
+            <div class="category-tile__body">
+              <h2 class="category-tile__name" title={category.name}>{category.name}</h2>
+              <p class="category-tile__meta">
+                <span class="category-tile__count">{category.count}</span>
+                <span>{i18n(I18nKey.postsCount)}</span>
+              </p>
             </div>
-        )
+            <span class="category-tile__bar" aria-hidden="true"></span>
+            <Icon
+              is:inline
+              name="lucide:arrow-up-right"
+              class="category-tile__arrow"
+              aria-hidden="true"
+            />
+          </a>
+        );
+      })
     }
+  </div>
+
+  {
+    categories.length === 0 && (
+      <div class="card-base px-8 py-12 text-center">
+        <Icon is:inline name="lucide:folder-x" class="text-5xl text-30 mx-auto mb-4" />
+        <p class="text-30">{i18n(I18nKey.noData)}</p>
+      </div>
+    )
+  }
 </MainGridLayout>
+
+<style>
+  .category-tile {
+    --cat-ink: rgb(0 0 0 / 0.84);
+    --cat-mute: rgb(0 0 0 / 0.45);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 9.5rem;
+    padding: 1.25rem 1.35rem 1.15rem;
+    overflow: hidden;
+    border-radius: 1.15rem;
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    background:
+      linear-gradient(155deg, color-mix(in oklch, var(--card-bg) 88%, white) 0%, var(--card-bg) 55%, color-mix(in oklch, var(--card-bg) 92%, var(--primary)) 100%);
+    border: 1px solid color-mix(in oklch, var(--line-divider) 80%, transparent);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.45) inset,
+      0 10px 28px rgb(0 0 0 / 0.05);
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s ease,
+      border-color 0.25s ease;
+  }
+
+  :root.dark .category-tile {
+    --cat-ink: rgb(255 255 255 / 0.9);
+    --cat-mute: rgb(255 255 255 / 0.48);
+    background:
+      linear-gradient(155deg, color-mix(in oklch, var(--card-bg) 90%, white) 0%, var(--card-bg) 60%, color-mix(in oklch, var(--card-bg) 85%, var(--primary)) 100%);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.06) inset,
+      0 12px 32px rgb(0 0 0 / 0.28);
+  }
+
+  .category-tile__glow {
+    position: absolute;
+    inset: auto -20% -45% auto;
+    width: 11rem;
+    height: 11rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in oklch, var(--primary) 28%, transparent), transparent 68%);
+    opacity: calc(0.35 + var(--cat-weight) * 0.55);
+    transform: translate(10%, 10%);
+    transition: opacity 0.35s ease, transform 0.45s ease;
+    z-index: 0;
+  }
+
+  .category-tile__index {
+    position: absolute;
+    top: 0.95rem;
+    left: 1.2rem;
+    z-index: 1;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: color-mix(in oklch, var(--primary) 70%, var(--cat-mute));
+  }
+
+  .category-tile__body {
+    position: relative;
+    z-index: 1;
+    padding-right: 1.75rem;
+  }
+
+  .category-tile__name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--cat-ink);
+    text-wrap: balance;
+    transition: color 0.2s ease;
+  }
+
+  .category-tile__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin: 0.45rem 0 0;
+    font-size: 0.78rem;
+    color: var(--cat-mute);
+  }
+
+  .category-tile__count {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+  }
+
+  .category-tile__bar {
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in oklch, var(--primary) calc(40% + var(--cat-weight) * 50%), transparent),
+      transparent
+    );
+    opacity: 0.85;
+  }
+
+  .category-tile__arrow {
+    position: absolute;
+    right: 1.1rem;
+    bottom: 1.1rem;
+    z-index: 1;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--cat-mute);
+    transition:
+      color 0.2s ease,
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .category-tile:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklch, var(--primary) 35%, var(--line-divider));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.5) inset,
+      0 16px 36px rgb(0 0 0 / 0.09);
+  }
+
+  .category-tile:hover .category-tile__name {
+    color: var(--primary);
+  }
+
+  .category-tile:hover .category-tile__glow {
+    opacity: 0.95;
+    transform: translate(0%, 0%) scale(1.08);
+  }
+
+  .category-tile:hover .category-tile__arrow {
+    color: var(--primary);
+    transform: translate(2px, -2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-tile,
+    .category-tile__arrow,
+    .category-tile__glow {
+      transition: none;
+    }
+
+    .category-tile:hover {
+      transform: none;
+    }
+  }
+</style>
