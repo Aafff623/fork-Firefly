@@ -4,6 +4,8 @@ export interface Props {
 	speed?: number;
 	deleteSpeed?: number;
 	pauseTime?: number;
+	/** 为 true 时不自动开打，等 typewriter:restart（用于面板轮播） */
+	deferStart?: boolean;
 	class?: string;
 }
 
@@ -12,6 +14,7 @@ const {
 	speed = 100,
 	deleteSpeed = 50,
 	pauseTime = 2000,
+	deferStart = false,
 	class: className = "",
 } = Astro.props;
 const textData = Array.isArray(text) ? JSON.stringify(text) : text;
@@ -22,7 +25,8 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
   data-text={textData}
   data-speed={speed}
   data-delete-speed={deleteSpeed}
-  data-pause-time={pauseTime}></span>
+  data-pause-time={pauseTime}
+  data-defer-start={deferStart ? "true" : undefined}></span>
 
 <script>
   class TypewriterEffect {
@@ -51,6 +55,11 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
       this.speed = parseInt(element.dataset.speed || "100");
       this.deleteSpeed = parseInt(element.dataset.deleteSpeed || "50");
       this.pauseTime = parseInt(element.dataset.pauseTime || "2000");
+
+      // 面板轮播等场景：等 typewriter:restart 再开打
+      if (element.dataset.deferStart === "true") {
+        return;
+      }
 
       // 如果有多条文本且未启用打字机效果，随机显示一条
       if (this.texts.length > 1 && !this.isTypewriterEnabled()) {
@@ -141,15 +150,34 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
 
   }
 
+  function bindTypewriter(el: HTMLElement) {
+    const typed = el as HTMLElement & { __typewriterInstance?: TypewriterEffect; __typewriterRestartBound?: boolean };
+    if (typed.__typewriterInstance) {
+      typed.__typewriterInstance.destroy();
+    }
+    typed.textContent = "";
+    typed.__typewriterInstance = new TypewriterEffect(typed);
+
+    if (!typed.__typewriterRestartBound) {
+      typed.__typewriterRestartBound = true;
+      typed.addEventListener("typewriter:restart", () => {
+        if (typed.__typewriterInstance) {
+          typed.__typewriterInstance.destroy();
+        }
+        typed.textContent = "";
+        // restart 强制开打（忽略 data-defer-start）
+        const deferred = typed.dataset.deferStart;
+        delete typed.dataset.deferStart;
+        typed.__typewriterInstance = new TypewriterEffect(typed);
+        if (deferred) typed.dataset.deferStart = deferred;
+      });
+    }
+  }
+
   function initTypewriterElements() {
     const typewriterElements = document.querySelectorAll(".typewriter");
     typewriterElements.forEach((element) => {
-      const el = element as HTMLElement & { __typewriterInstance?: TypewriterEffect };
-      if (el.__typewriterInstance) {
-        el.__typewriterInstance.destroy();
-      }
-      el.textContent = "";
-      el.__typewriterInstance = new TypewriterEffect(el);
+      bindTypewriter(element as HTMLElement);
     });
   }
 

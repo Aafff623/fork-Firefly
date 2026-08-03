@@ -1,6 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
+import TypewriterText from "@/components/features/TypewriterText.astro";
+import { announcementConfig } from "@/config/announcementConfig";
 import { profileConfig } from "@/config/profileConfig";
 import { url } from "@/utils/url-utils";
 
@@ -10,14 +12,17 @@ interface Props {
 }
 const { style } = Astro.props;
 const className = Astro.props.class;
+
+const voiceBio = profileConfig.bio;
+const noticeText = announcementConfig.content;
 ---
 
-<div class:list={["card-base", "p-3", className]} style={style}>
+<div class:list={["card-base", "profile-widget", "p-3", className]} style={style}>
   <a
     aria-label="Go to About Page"
     href={url("/about/")}
-    class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
-       aspect-square w-full max-w-48 lg:max-w-none overflow-hidden rounded-full active:scale-95"
+    class="profile-avatar-shell group block relative mx-auto mt-1 lg:mt-0 mb-3
+       aspect-square w-[76%] max-w-36 lg:w-[74%] lg:max-w-40 overflow-hidden rounded-full active:scale-95"
   >
     <div
       class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
@@ -51,9 +56,26 @@ const className = Astro.props.class;
       class="accent-bar-grad h-1 w-5 mx-auto rounded-full mb-2 transition"
     >
     </div>
-    <div class="text-voice-shell mb-2.5">
-      <div class="text-voice text-center italic text-sm leading-relaxed">
-        {profileConfig.bio}
+    {/* 同一张卡：格言=原墨光 UI；近况=像素打字机 UI；整段切换，不是同一套样式轮播字 */}
+    <div
+      class="text-voice-shell text-voice-shell--rotate mb-2.5"
+      data-mode="voice"
+      data-voice-dwell="5600"
+      data-notice-dwell="8200"
+      aria-live="polite"
+    >
+      <div class="voice-rotate-panel voice-rotate-panel--voice" data-panel="voice">
+        <div class="text-voice text-center italic text-sm leading-relaxed">
+          {voiceBio}
+        </div>
+      </div>
+      <div class="voice-rotate-panel voice-rotate-panel--notice" data-panel="notice" aria-hidden="true">
+        <TypewriterText
+          text={noticeText}
+          speed={48}
+          deferStart={true}
+          class="motto-typewriter"
+        />
       </div>
     </div>
         <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-1">
@@ -122,3 +144,100 @@ const className = Astro.props.class;
         </div>
   </div>
 </div>
+
+<script>
+  function initVoiceNoticeRotate(root?: ParentNode) {
+    const scope = root ?? document;
+    scope.querySelectorAll(".text-voice-shell--rotate").forEach((node) => {
+      const shell = node as HTMLElement & { __voiceRotateTimer?: number };
+      if (shell.dataset.rotateBound === "1") return;
+      shell.dataset.rotateBound = "1";
+
+      const voicePanel = shell.querySelector<HTMLElement>('[data-panel="voice"]');
+      const noticePanel = shell.querySelector<HTMLElement>('[data-panel="notice"]');
+      const typewriter = shell.querySelector<HTMLElement>(".motto-typewriter");
+      if (!voicePanel || !noticePanel) return;
+
+      const voiceDwell = Number(shell.dataset.voiceDwell || 5600);
+      const noticeDwell = Number(shell.dataset.noticeDwell || 8200);
+      let mode: "voice" | "notice" = "voice";
+
+      const applyMode = (next: "voice" | "notice") => {
+        mode = next;
+        shell.dataset.mode = next;
+        voicePanel.setAttribute("aria-hidden", next === "voice" ? "false" : "true");
+        noticePanel.setAttribute("aria-hidden", next === "notice" ? "false" : "true");
+        if (next === "notice" && typewriter) {
+          typewriter.dispatchEvent(new CustomEvent("typewriter:restart", { bubbles: true }));
+        }
+      };
+
+      const tick = () => {
+        if (mode === "voice") {
+          applyMode("notice");
+          shell.__voiceRotateTimer = window.setTimeout(tick, noticeDwell);
+        } else {
+          applyMode("voice");
+          shell.__voiceRotateTimer = window.setTimeout(tick, voiceDwell);
+        }
+      };
+
+      applyMode("voice");
+      shell.__voiceRotateTimer = window.setTimeout(tick, voiceDwell);
+    });
+  }
+
+  function bootVoiceNoticeRotate() {
+    document.querySelectorAll(".text-voice-shell--rotate").forEach((node) => {
+      delete (node as HTMLElement).dataset.rotateBound;
+    });
+    initVoiceNoticeRotate();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootVoiceNoticeRotate);
+  } else {
+    bootVoiceNoticeRotate();
+  }
+  document.addEventListener("swup:contentReplaced", bootVoiceNoticeRotate);
+  document.addEventListener("swup:content:replace", bootVoiceNoticeRotate);
+  document.addEventListener("swup:page:view", bootVoiceNoticeRotate);
+</script>
+
+<style>
+  .profile-widget {
+    border-radius: calc(var(--radius-large) + 0.3rem);
+  }
+
+  .profile-avatar-shell {
+    padding: 0.2rem;
+    background: color-mix(in oklch, var(--card-bg) 82%, #b9aa98);
+    border: 1px solid color-mix(in oklch, var(--line-divider) 68%, #a89987);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--card-bg) 68%, white),
+      0 0.28rem 0.7rem rgb(69 58 45 / 0.1);
+    animation: profile-avatar-breathe 4.8s ease-in-out infinite;
+  }
+
+  .profile-avatar-shell :global(.profile-avatar-image),
+  .profile-avatar-shell :global(.profile-avatar-image picture),
+  .profile-avatar-shell :global(.profile-avatar-image img) {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  @keyframes profile-avatar-breathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% {
+      transform: translateY(-0.12rem) scale(1.012);
+      box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--card-bg) 68%, white),
+        0 0.38rem 0.82rem rgb(69 58 45 / 0.12);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile-avatar-shell { animation: none; }
+  }
+</style>

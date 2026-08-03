@@ -52,6 +52,13 @@ if (!memos?.enable) {
 			class:list={["dynamics-widget", "dynamics-widget--pending", className]}
 			style={style}
 		>
+			<Icon
+				slot="title-leading"
+				is:inline
+				name="lucide:bell-ring"
+				class="widget-title-icon"
+				aria-hidden="true"
+			/>
 			<button
 				slot="title-icon"
 				type="button"

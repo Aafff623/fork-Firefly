@@ -284,9 +284,18 @@ const showTitle = widgetConfig?.showTitle === true;
         [time6, time10],
       ];
 
-      structure.forEach((digits) => {
+      const units = ["hour", "minute", "second"];
+      const gradients = [
+        ["oklch(0.66 0.2 292)", "oklch(0.61 0.2 255)"],
+        ["oklch(0.72 0.19 350)", "oklch(0.7 0.18 20)"],
+        ["oklch(0.72 0.15 205)", "oklch(0.75 0.14 165)"],
+      ];
+      structure.forEach((digits, index) => {
         const group = document.createElement("div");
         group.className = "surprise-clock__group";
+        group.dataset.unit = units[index];
+        group.style.setProperty("--sc-group-start", gradients[index][0]);
+        group.style.setProperty("--sc-group-end", gradients[index][1]);
         root.appendChild(group);
         digitGroups.push(group);
         digits.forEach((digitList) => {
@@ -299,6 +308,10 @@ const showTitle = widgetConfig?.showTitle === true;
             el.className = "surprise-clock__num";
             const glyph = document.createElement("span");
             glyph.className = "surprise-clock__glyph";
+            glyph.style.background = `linear-gradient(125deg, ${gradients[index][0]}, ${gradients[index][1]})`;
+            glyph.style.backgroundClip = "text";
+            glyph.style.setProperty("-webkit-background-clip", "text");
+            glyph.style.setProperty("-webkit-text-fill-color", "transparent");
             glyph.textContent = String(n);
             el.appendChild(glyph);
             track.appendChild(el);
@@ -468,6 +481,21 @@ const showTitle = widgetConfig?.showTitle === true;
     height: var(--sc-h, 7.85rem);
   }
 
+  :global(.surprise-clock__group[data-unit="hour"]) {
+    --sc-group-start: oklch(0.66 0.2 292);
+    --sc-group-end: oklch(0.61 0.2 255);
+  }
+
+  :global(.surprise-clock__group[data-unit="minute"]) {
+    --sc-group-start: oklch(0.72 0.19 350);
+    --sc-group-end: oklch(0.7 0.18 20);
+  }
+
+  :global(.surprise-clock__group[data-unit="second"]) {
+    --sc-group-start: oklch(0.72 0.15 205);
+    --sc-group-end: oklch(0.75 0.14 165);
+  }
+
   /* 像素冒号 */
   :global(.surprise-clock__group:not(:last-child)::after) {
     content: ":";
@@ -480,7 +508,7 @@ const showTitle = widgetConfig?.showTitle === true;
     padding: 0 0.1rem;
     color: var(--sc-bright, var(--primary));
     opacity: 0.9;
-    text-shadow: 0 0 12px color-mix(in oklab, var(--sc-bright, var(--primary)) 45%, transparent);
+    text-shadow: none;
     -webkit-font-smoothing: none;
     will-change: transform;
     transform: translate3d(var(--colon-rx, 0px), var(--colon-ry, 0px), 0);
@@ -549,10 +577,16 @@ const showTitle = widgetConfig?.showTitle === true;
     font-size: 1.95rem;
     font-weight: 400;
     transform: rotate(0deg);
-    text-shadow:
-      1px 0 0 color-mix(in oklab, var(--sc-bright, var(--primary)) 35%, transparent),
-      0 1px 0 color-mix(in oklab, var(--sc-bright, var(--primary)) 25%, transparent),
-      0 0 14px color-mix(in oklab, var(--sc-bright, var(--primary)) 40%, transparent);
+    text-shadow: none;
+  }
+
+  :global(.surprise-clock__group .surprise-clock__num.is-bright .surprise-clock__glyph) {
+    background: linear-gradient(125deg, var(--sc-group-start), var(--sc-group-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: none;
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -2,8 +2,10 @@
  * text-voice：整段文字的轻量「墨光」效果
  * - 不拆词、不斥力、不改排版结构（区别于 .repel-text）
  * - 扫光带沿彩虹色相流转（边扫边变色）
- * - 用于侧栏简介 / 公告正文等语气文本
+ * - Profile 轮播：格言保留本文件墨光 UI；近况另用像素打字机 UI（整段切换）
  */
+
+@import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
 
 @property --voice-sheen-hue {
 	syntax: "<number>";
@@ -70,6 +72,108 @@
 		inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
+/* Profile：同一外壳内两套 UI 整段切换（grid 叠层，高度取较长面板，避免绝对定位撑破边框） */
+.text-voice-shell--rotate {
+	display: grid;
+	padding: 0.85rem 1rem;
+	overflow: hidden;
+	transition:
+		background 0.45s ease,
+		border-color 0.45s ease,
+		box-shadow 0.45s ease;
+}
+
+.text-voice-shell--rotate[data-mode="notice"] {
+	background:
+		radial-gradient(ellipse 90% 80% at 50% 0%, rgb(196 91 111 / 0.12), transparent 55%),
+		color-mix(in oklch, white 46%, transparent);
+	border-color: color-mix(in oklch, #c45b6f 22%, white);
+}
+
+:root.dark .text-voice-shell--rotate[data-mode="notice"] {
+	background:
+		radial-gradient(ellipse 90% 80% at 50% 0%, rgb(196 91 111 / 0.18), transparent 55%),
+		color-mix(in oklch, white 12%, transparent);
+	border-color: color-mix(in oklch, #e8a0ad 28%, transparent);
+}
+
+.voice-rotate-panel {
+	grid-area: 1 / 1;
+	width: 100%;
+	min-width: 0;
+	align-self: center;
+	transition:
+		opacity 0.45s ease,
+		transform 0.45s ease,
+		filter 0.45s ease;
+}
+
+.voice-rotate-panel--notice {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.text-voice-shell--rotate[data-mode="voice"] .voice-rotate-panel--voice {
+	opacity: 1;
+	transform: translateY(0);
+	filter: blur(0);
+}
+
+.text-voice-shell--rotate[data-mode="voice"] .voice-rotate-panel--notice {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(0.35rem);
+	filter: blur(1px);
+}
+
+.text-voice-shell--rotate[data-mode="notice"] .voice-rotate-panel--voice {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(-0.25rem);
+	filter: blur(1px);
+}
+
+.text-voice-shell--rotate[data-mode="notice"] .voice-rotate-panel--notice {
+	opacity: 1;
+	transform: translateY(0);
+	filter: blur(0);
+}
+
+/* 近况面板：像素打字机（与墨光格言不同套 UI） */
+.motto-typewriter {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	padding-inline: 0.15rem;
+	text-align: center;
+	font-family: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
+	font-size: 0.74rem;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.7;
+	letter-spacing: 0.015em;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	color: color-mix(in oklab, #5a2a36 55%, #525252);
+	-webkit-font-smoothing: none;
+	text-rendering: optimizeSpeed;
+}
+
+:root.dark .motto-typewriter {
+	color: color-mix(in oklch, white 78%, #f3c4cd);
+}
+
+.motto-typewriter::after {
+	color: #c45b6f;
+	font-weight: 700;
+}
+
+:root.dark .motto-typewriter::after {
+	color: #e8a0ad;
+}
+
 @keyframes text-voice-enter {
 	from {
 		opacity: 0.25;
@@ -115,5 +219,14 @@
 	.text-voice-shell {
 		-webkit-backdrop-filter: none;
 		backdrop-filter: none;
+	}
+
+	.motto-typewriter::after {
+		animation: none;
+		opacity: 0.55;
+	}
+
+	.voice-rotate-panel {
+		transition: none;
 	}
 }

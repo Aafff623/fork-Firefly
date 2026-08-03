@@ -4,6 +4,7 @@
  * 分层时钟源：bilibili-goat/widgets/分层时钟/x.html
  */
 import { readFileSync } from "node:fs";
+import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import LayeredClock from "@/components/widget/LayeredClock.astro";
 import { licenseConfig, siteConfig } from "@/config";
@@ -87,6 +88,13 @@ const metrics = [
   class:list={["site-overview-widget", className]}
   style={style}
 >
+  <Icon
+    slot="title-leading"
+    is:inline
+    name="lucide:chart-column"
+    class="widget-title-icon"
+    aria-hidden="true"
+  />
   <div
     class="site-overview"
     data-site-start={siteStartDate}

@@ -81,6 +81,14 @@ const className = Astro.props.class;
 </widget-layout>
 
 <style define:vars={{ collapsedHeight }}>
+    :global(.widget-title-icon) {
+        width: 1.05rem;
+        height: 1.05rem;
+        flex: 0 0 auto;
+        color: var(--sidebar-accent, var(--primary));
+        stroke-width: 1.9;
+    }
+
     .collapsed {
         height: var(--collapsedHeight);
     }

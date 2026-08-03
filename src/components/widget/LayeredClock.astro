@@ -273,33 +273,46 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
     margin: 0;
     min-width: 1.15ch;
     text-align: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
   }
 
+  /* 时 / 分 / 秒：紫系邻近渐变 */
   #layered-clock-root .lc7__digit[data-unit="h"] {
     text-align: right;
     min-width: 1ch;
+    background-image: linear-gradient(165deg, #c4b5fd 0%, #8b5cf6 42%, #6d28d9 100%);
   }
 
-  #layered-clock-root .lc7__digit[data-unit="m"],
+  #layered-clock-root .lc7__digit[data-unit="m"] {
+    min-width: 2ch;
+    background-image: linear-gradient(165deg, #ddd6fe 0%, #a78bfa 40%, #7c3aed 100%);
+  }
+
+  #layered-clock-root .lc7__digit[data-unit="s"],
   #layered-clock-root .lc7__digit--sec {
     min-width: 2ch;
+    font-size: 0.72em;
+    font-weight: 600;
+    opacity: 1;
+    background-image: linear-gradient(165deg, #e9d5ff 0%, #c084fc 45%, #9333ea 100%);
   }
 
   #layered-clock-root .lc7__sep {
-    opacity: 0.8;
+    opacity: 0.85;
     margin: 0 0.04em;
     font-weight: 500;
+    color: #c4b5fd;
+    text-shadow: 0 0 8px rgb(139 92 246 / 0.45);
   }
 
   #layered-clock-root .lc7__sep--sec {
-    opacity: 0.5;
+    opacity: 0.7;
     font-size: 0.85em;
-  }
-
-  #layered-clock-root .lc7__digit--sec {
-    font-size: 0.72em;
-    font-weight: 600;
-    opacity: 0.88;
+    color: #d8b4fe;
   }
 
   #layered-clock-root .lc7__ampm {

@@ -100,19 +100,19 @@ function formatDate(timestamp: number): string {
 			{i18n(I18nKey.dynamicEmpty)}
 		</p>
 	{:else}
-		{#each entries as entry (entry.id)}
+		{#each entries as entry, index (entry.id)}
 			{@const text = getPlainText(entry.html)}
 			{@const image = entry.images?.[0]}
 			<a
 				href={url(`/dynamic/#dynamic-${entry.id}`)}
-				class="group flex min-w-0 min-h-16 items-center gap-3 rounded-lg p-2
+				class={`dynamics-sidebar__entry dynamics-sidebar__entry--${index % 2 === 0 ? "ink" : "ash"} group flex min-w-0 min-h-16 items-center gap-3 rounded-lg p-2
 					text-neutral-700/75 dark:text-neutral-300/75
-					hover:bg-(--btn-plain-bg-hover) hover:text-(--primary)
-					active:bg-(--btn-plain-bg-active) transition-colors duration-150"
+					hover:bg-(--btn-plain-bg-hover)
+					active:bg-(--btn-plain-bg-active) transition-colors duration-150`}
 				aria-label={`${i18n(I18nKey.dynamic)}: ${text}`}
 			>
 				<div class="min-w-0 flex-1">
-					<div class="mb-1 flex items-center gap-1 text-xs leading-4 text-(--primary)">
+					<div class="dynamics-sidebar__time mb-1 flex items-center gap-1 text-xs leading-4">
 						<Icon icon="lucide:clock" class="size-4 shrink-0" />
 						<time datetime={new Date(entry.published).toISOString()}>
 							{formatDate(entry.published)}
@@ -124,7 +124,7 @@ function formatDate(timestamp: number): string {
 							</span>
 						{/if}
 					</div>
-					<p class="m-0 line-clamp-3 text-sm leading-[1.35rem]">
+					<p class="dynamics-sidebar__body m-0 line-clamp-3 text-sm leading-[1.35rem] italic">
 						{text}
 					</p>
 				</div>
@@ -141,3 +141,34 @@ function formatDate(timestamp: number): string {
 		{/each}
 	{/if}
 </div>
+
+<style>
+	.dynamics-sidebar__entry--ink {
+		--dynamic-accent: oklch(0.16 0.008 265);
+		--dynamic-body: oklch(0.2 0.008 265);
+	}
+
+	.dynamics-sidebar__entry--ash {
+		--dynamic-accent: oklch(0.5 0.012 265);
+		--dynamic-body: oklch(0.54 0.01 265);
+	}
+
+	.dynamics-sidebar__time,
+	.dynamics-sidebar__entry:hover .dynamics-sidebar__body {
+		color: var(--dynamic-accent);
+	}
+
+	.dynamics-sidebar__body {
+		color: var(--dynamic-body);
+	}
+
+	:global(.dark) .dynamics-sidebar__entry--ink {
+		--dynamic-accent: oklch(0.9 0.01 265);
+		--dynamic-body: oklch(0.82 0.01 265);
+	}
+
+	:global(.dark) .dynamics-sidebar__entry--ash {
+		--dynamic-accent: oklch(0.74 0.01 265);
+		--dynamic-body: oklch(0.68 0.01 265);
+	}
+</style>
