@@ -9,8 +9,6 @@
 /* ── Gallery explorer（作品集手风琴 / 普通无限画布）── */
 .gallery-explorer {
   width: 100%;
-  /* 给手风琴纵向拔高 / 标题下移留出呼吸空间 */
-  padding-bottom: 2.75rem;
 }
 
 .gallery-mode-switch {
@@ -51,12 +49,12 @@
   color: rgba(0, 0, 0, 0.78);
 }
 
-/* 等比例舞台：锁在卡片内，不撑破中栏 */
+/* 等比例舞台：压低高度，锁在卡片内 */
 .gallery-stage-frame {
-  --gallery-stage-ratio: 16 / 10;
+  --gallery-stage-ratio: 16 / 9;
   width: 100%;
   aspect-ratio: var(--gallery-stage-ratio);
-  max-height: min(560px, 62vh);
+  max-height: min(400px, 46vh);
   container-type: size;
   position: relative;
   overflow: hidden;
@@ -84,8 +82,8 @@
 /* 高度被 max-height 裁切时，保持比例框可用 */
 @supports (height: 1cqh) {
   .gallery-stage-frame {
-    height: min(100cqw / (16 / 10), min(560px, 62vh));
-    max-height: min(560px, 62vh);
+    height: min(100cqw / (16 / 9), min(400px, 46vh));
+    max-height: min(400px, 46vh);
   }
 }
 
@@ -100,295 +98,316 @@
   cursor: grabbing;
 }
 
-/* ── 作品集：原神角色手风琴形态（素材仍用相册封面）──
- * 对照 bilibili-goat menus/原神角色手风琴：
- * 窄条 .box 裁切图 → hover/active 纵向拔高 + 同图 .character 弹出
+/* ── 作品集：水平手风琴（website-ui-share horizontal-accordion）
+ * Grid 列宽 10fr/1fr；竖排标题；单图 + scrim；展开远→近呼吸放大
+ * 性能：只过渡 grid-template-columns / opacity / transform，不用 filter/mask
  */
 .gallery-stage-frame.is-portfolio {
-  overflow: visible;
+  overflow: hidden;
   background:
-    linear-gradient(
-      120deg,
-      color-mix(in oklab, var(--primary) 22%, #e0c3fc) 0%,
-      color-mix(in oklab, var(--primary) 28%, #8ec5fc) 100%
-    );
+    radial-gradient(circle at 28% 18%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 48%),
+    color-mix(in oklab, var(--card-bg) 94%, #eef1f6);
 }
 
 :is(.dark) .gallery-stage-frame.is-portfolio {
   background:
-    linear-gradient(
-      120deg,
-      color-mix(in oklab, var(--primary) 35%, #1e1630) 0%,
-      color-mix(in oklab, var(--primary) 28%, #122033) 100%
-    );
+    radial-gradient(circle at 28% 18%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 52%),
+    color-mix(in oklab, var(--card-bg) 92%, #111827);
 }
 
 .portfolio-accordion {
-  --gap: clamp(0.55rem, 1.6cqi, 1.1rem);
-  --ease: cubic-bezier(0.165, 0.84, 0.44, 1);
-  --accent: color-mix(in oklab, var(--primary) 72%, #7d419f);
-  display: flex;
+  --gap: 0.55rem;
+  --base: clamp(2rem, 6cqi, 3.6rem);
+  --speed: 0.36s;
+  /* 源码 linear() 缓动的近似：快速起步、末端柔和落定 */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --article-width: 0;
+  display: grid;
   align-items: stretch;
+  gap: var(--gap);
   width: 100%;
   height: 100%;
-  padding: clamp(1.1rem, 3.5cqi, 1.75rem) clamp(0.7rem, 2cqi, 1.15rem);
+  padding: clamp(0.55rem, 1.8cqi, 0.85rem);
   box-sizing: border-box;
   outline: none;
+  transition: grid-template-columns var(--speed) var(--ease);
 }
 
-.portfolio-card {
+.portfolio-panel {
   position: relative;
-  flex: 1 1 0;
-  min-width: 0;
+  min-width: var(--base);
   height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   cursor: pointer;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in oklab, var(--line-divider) 80%, transparent);
+  background: color-mix(in oklab, var(--card-bg) 96%, white);
+  box-shadow: 0 4px 16px rgb(120 140 170 / 0.08);
   color: inherit;
+  text-align: left;
+  contain: layout paint style;
 }
 
-.portfolio-card + .portfolio-card {
-  margin-left: var(--gap);
+:is(.dark) .portfolio-panel {
+  background: color-mix(in oklab, var(--card-bg) 94%, #0b0f16);
+  box-shadow: 0 4px 18px rgb(0 0 0 / 0.22);
 }
 
-.portfolio-card:is(:hover, :focus-within, .is-active) {
-  overflow: visible;
-  z-index: 4;
+.portfolio-panel.is-active {
+  z-index: 1;
+  border-color: color-mix(in oklab, var(--primary) 22%, var(--line-divider));
 }
 
-/* 窄条底盒 */
-.portfolio-box {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 0.65rem;
-  transition: transform 0.12s var(--ease), background 0.12s var(--ease),
-    background-image 0.12s var(--ease);
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--primary) 55%, #a18cd1),
-    color-mix(in oklab, var(--primary) 18%, #fcaae55c),
-    rgb(20 20 20 / 0.8)
-  );
-}
-
-.portfolio-box > img {
-  position: relative;
-  z-index: 0;
-  display: block;
-  width: 100%;
+.portfolio-panel-body {
+  /* 文案区宽度锚定最宽一栏，收起时靠 overflow 裁切 */
+  width: max(100%, calc(var(--article-width) * 1px));
   height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-  transform: translate(-8%, 6%) scale(2.35);
-  transform-origin: center center;
-  transition: opacity 0.12s var(--ease);
-  pointer-events: none;
-  user-select: none;
-}
-
-.portfolio-card-skeleton {
   position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      120deg,
-      color-mix(in oklab, var(--primary) 18%, transparent) 20%,
-      color-mix(in oklab, white 22%, transparent) 45%,
-      color-mix(in oklab, var(--primary) 18%, transparent) 70%
-    );
-  background-size: 200% 100%;
-  animation: portfolio-skel 1.2s linear infinite;
-}
-
-@keyframes portfolio-skel {
-  to {
-    background-position: -200% 0;
-  }
-}
-
-.portfolio-card:is(:hover, :focus-within, .is-active) > .portfolio-box {
-  transform: scaleY(1.42);
-  background-image: none;
-  background-color: var(--accent);
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding-inline: calc(var(--base) * 0.42);
+  padding-bottom: 1.1rem;
+  overflow: hidden;
   z-index: 2;
 }
 
-.portfolio-card:is(:hover, :focus-within, .is-active) > .portfolio-box > img {
-  opacity: 0;
-}
-
-/* 弹出大图层（同封面放大） */
-.portfolio-character {
+/* 竖排侧标题（收起可见） */
+.portfolio-panel-title {
   position: absolute;
-  inset: 0;
-  top: -18%;
-  left: -118%;
-  width: 100%;
-  height: 100%;
+  top: 1.05rem;
+  left: calc(var(--base) * 0.42);
   z-index: 3;
-  pointer-events: none;
-}
-
-.portfolio-character > img {
-  width: min(340%, 26rem);
-  height: min(150%, 26rem);
-  max-width: none;
-  object-fit: cover;
-  object-position: center 22%;
-  opacity: 0;
-  transition: opacity 0.28s ease;
-  position: relative;
-  z-index: 1;
-  border-radius: 0.35rem;
-  box-shadow: 0 18px 40px rgb(20 10 40 / 0.28);
-  filter: saturate(1.05);
-}
-
-.portfolio-card:is(:hover, :focus-within, .is-active) .portfolio-character > img {
-  opacity: 1;
-}
-
-/* 底部标题：收起半透明，展开下移变白 */
-.portfolio-card-title {
-  position: absolute;
-  display: block;
-  width: min(100%, 7.5rem);
   margin: 0;
-  padding: 0 0.15rem;
-  text-align: center;
-  color: rgb(255 255 255 / 0.28);
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, -35%);
-  font-size: clamp(0.78rem, 2.4cqi, 1.15rem);
+  transform-origin: 0 50%;
+  rotate: 90deg;
+  font-size: clamp(0.7rem, 2.2cqi, 0.86rem);
   font-weight: 700;
   letter-spacing: 0.02em;
-  line-height: 1.25;
-  z-index: 5;
-  transition: color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  color: var(--deep-text);
+  opacity: 0.5;
+  transition: opacity calc(var(--speed) * 0.9) var(--ease);
+  text-shadow: 0 1px 10px rgb(255 255 255 / 0.28);
   pointer-events: none;
-  text-wrap: balance;
 }
 
-.portfolio-card:is(:hover, :focus-within, .is-active) .portfolio-card-title {
-  color: #fff;
-  transform: translate(-50%, 210%);
+:is(.dark) .portfolio-panel-title {
+  color: rgb(255 255 255 / 0.92);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.45);
 }
 
-.portfolio-card-meta {
-  position: absolute;
-  left: 50%;
-  bottom: -2.6rem;
-  z-index: 6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  width: max-content;
-  max-width: min(14rem, 42cqi);
-  opacity: 0;
-  transform: translate(-50%, 0.35rem);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  pointer-events: none;
-  text-align: center;
-}
-
-.portfolio-card:is(:hover, :focus-within, .is-active) .portfolio-card-meta {
+.portfolio-panel.is-active .portfolio-panel-title {
   opacity: 1;
-  transform: translate(-50%, 0);
-  pointer-events: auto;
-  transition-delay: 0.05s;
 }
 
-.portfolio-card-meta p {
+.portfolio-panel-desc {
   margin: 0;
-  font-size: 0.68rem;
-  line-height: 1.35;
-  color: rgb(255 255 255 / 0.88);
+  max-width: min(18rem, 72%);
+  font-size: clamp(0.68rem, 1.9cqi, 0.78rem);
+  line-height: 1.45;
+  color: rgb(255 255 255 / 0.9);
   text-shadow: 0 1px 8px rgb(0 0 0 / 0.35);
+  text-wrap: balance;
+  opacity: 0;
+  transform: translate3d(0, 0.35rem, 0);
+  transition:
+    opacity calc(var(--speed) * 0.85) var(--ease),
+    transform calc(var(--speed) * 0.85) var(--ease);
+  pointer-events: none;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.portfolio-card-cta {
+.portfolio-panel.is-active .portfolio-panel-desc {
+  opacity: 0.92;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  transition-delay: 0.06s;
+}
+
+.portfolio-panel-cta {
+  position: relative;
+  z-index: 3;
+  width: fit-content;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-decoration: none;
-  color: #fff;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--primary) 75%, black);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.18);
+  color: color-mix(in oklab, white 90%, var(--primary));
+  opacity: 0;
+  transform: translate3d(0, 0.3rem, 0);
+  transition:
+    opacity calc(var(--speed) * 0.85) var(--ease),
+    transform calc(var(--speed) * 0.85) var(--ease);
+  pointer-events: none;
 }
 
-.portfolio-card-cta:hover {
-  filter: brightness(1.08);
+.portfolio-panel-cta span {
+  display: inline-block;
+  line-height: 1.2;
+  translate: calc(var(--base) * 0.15);
 }
 
-/* 窄舞台：横滑 + 减弱弹出，避免裁切炸掉布局 */
-@container (max-width: 520px) {
-  .gallery-stage-frame.is-portfolio {
-    overflow: hidden;
+.portfolio-panel.is-active .portfolio-panel-cta {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  transition-delay: 0.08s;
+}
+
+.portfolio-panel-cta:hover span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.portfolio-panel-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--btn-regular-bg) 80%, transparent);
+  pointer-events: none;
+}
+
+.portfolio-panel-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transform: scale(1);
+  transform-origin: center center;
+  opacity: 0.7;
+  /* 只动 transform/opacity，避免 filter 重绘拖慢悬停 */
+  transition: opacity var(--speed) var(--ease);
+  user-select: none;
+}
+
+/* 激活：由远及近微放大 + 过冲回落（呼吸感） */
+.portfolio-panel.is-active .portfolio-panel-media img {
+  opacity: 1;
+  animation: portfolio-breathe 0.72s var(--ease) both;
+}
+
+@keyframes portfolio-breathe {
+  0% {
+    transform: scale(1);
   }
+  42% {
+    transform: scale(1.09);
+  }
+  100% {
+    transform: scale(1.055);
+  }
+}
 
+/* 独立渐隐层，代替 img mask（缩放时不重采样蒙版） */
+.portfolio-panel-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.5), transparent 44%),
+    linear-gradient(0deg, rgb(15 23 42 / 0.58), transparent 50%);
+  opacity: 0.55;
+  transition: opacity var(--speed) var(--ease);
+}
+
+:is(.dark) .portfolio-panel-scrim {
+  background:
+    linear-gradient(90deg, rgb(15 23 42 / 0.55), transparent 42%),
+    linear-gradient(0deg, rgb(0 0 0 / 0.62), transparent 50%);
+}
+
+.portfolio-panel.is-active .portfolio-panel-scrim {
+  opacity: 1;
+}
+
+/* 窄舞台：横滑卡片，避开 grid 列宽动画成本 */
+@container (max-width: 520px) {
   .portfolio-accordion {
+    display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 2.4rem;
+    transition: none;
+    will-change: auto;
   }
 
-  .portfolio-card {
-    flex: 0 0 min(46%, 9.5rem);
-    scroll-snap-align: center;
+  .portfolio-panel {
+    flex: 0 0 min(78%, 280px);
+    min-width: min(78%, 280px);
+    scroll-snap-align: start;
   }
 
-  .portfolio-card + .portfolio-card {
-    margin-left: 0.65rem;
+  .portfolio-panel-body {
+    width: 100%;
+    position: relative;
+    padding: 0.85rem 0.9rem 0.9rem;
+    justify-content: flex-end;
   }
 
-  .portfolio-card:is(:hover, :focus-within, .is-active) > .portfolio-box {
-    transform: scaleY(1.22);
+  .portfolio-panel-title {
+    position: static;
+    display: block;
+    margin: 0 0 0.35rem;
+    rotate: none;
+    transform: none;
+    opacity: 1;
+    color: rgb(255 255 255 / 0.95);
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.4);
   }
 
-  .portfolio-character {
-    top: -8%;
-    left: -40%;
+  .portfolio-panel-desc,
+  .portfolio-panel-cta {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
   }
 
-  .portfolio-character > img {
-    width: min(220%, 14rem);
-    height: min(120%, 14rem);
+  .portfolio-panel-cta span {
+    translate: 0;
   }
 
-  .portfolio-card:is(:hover, :focus-within, .is-active) .portfolio-card-title {
-    transform: translate(-50%, 120%);
+  .portfolio-panel-media {
+    position: absolute;
   }
 
-  .portfolio-card-meta {
-    bottom: -2.1rem;
+  .portfolio-panel-media img {
+    opacity: 0.85;
+  }
+
+  .portfolio-panel.is-active .portfolio-panel-media img {
+    animation: none;
+    transform: scale(1.05);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portfolio-box,
-  .portfolio-box > img,
-  .portfolio-character > img,
-  .portfolio-card-title,
-  .portfolio-card-meta {
+  .portfolio-accordion,
+  .portfolio-panel-title,
+  .portfolio-panel-desc,
+  .portfolio-panel-cta,
+  .portfolio-panel-media img,
+  .portfolio-panel-scrim {
     transition-duration: 0.01ms !important;
   }
 
-  .portfolio-card:is(:hover, :focus-within, .is-active) > .portfolio-box {
-    transform: none;
-  }
-
-  .portfolio-card-skeleton {
+  .portfolio-panel.is-active .portfolio-panel-media img {
     animation: none;
+    transform: scale(1.04);
   }
 }
 
@@ -495,7 +514,14 @@
 @media (max-width: 640px) {
   .gallery-stage-frame {
     --gallery-stage-ratio: 4 / 3;
-    max-height: min(420px, 58vh);
+    max-height: min(340px, 48vh);
+  }
+
+  @supports (height: 1cqh) {
+    .gallery-stage-frame {
+      height: min(100cqw / (4 / 3), min(340px, 48vh));
+      max-height: min(340px, 48vh);
+    }
   }
 
   .infinite-canvas-title {
