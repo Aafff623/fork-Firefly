@@ -117,6 +117,7 @@ const remoteReferrerPolicy =
 			dataCoverImg={true}
 			showLqip={false}
 			showOverlay={false}
+			fadeIn={!preview}
 		/>
 	)}
 
@@ -125,7 +126,7 @@ const remoteReferrerPolicy =
 		<img
 			src={isPublic ? url(src) : src}
 			alt={alt || ""}
-			class={imageClass}
+			class={preview ? "w-full h-full object-cover" : imageClass}
 			style={imageStyle}
 			loading={loading}
 			decoding="async"

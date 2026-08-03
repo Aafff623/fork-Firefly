@@ -55,7 +55,7 @@ const getPageUrl = (p: number) => {
 
 <div class:list={[className, "pagination-wrapper flex flex-col gap-4 items-center"]} style={style}>
   <!-- 分页控件 -->
-  <div class="flex flex-row gap-3 justify-center" role="navigation" aria-label={i18n(I18nKey.postList)}>
+  <div class="pagination-shell flex flex-row gap-3 justify-center" role="navigation" aria-label={i18n(I18nKey.postList)}>
     <!-- 移动端简化版分页 -->
     <div class="mobile-pagination flex items-center gap-3">
       <a
@@ -64,7 +64,7 @@ const getPageUrl = (p: number) => {
         aria-disabled={!page.url.prev ? "true" : "false"}
         tabindex={!page.url.prev ? "-1" : "0"}
         class:list={[
-          "btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
           {
             disabled: !page.url.prev,
             "opacity-50": !page.url.prev,
@@ -79,7 +79,7 @@ const getPageUrl = (p: number) => {
         />
       </a>
 
-      <div class="btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
+      <div class="pagination-summary btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
         <span class="text-base font-bold text-(--primary)">{page.currentPage}</span>
         <span class="text-sm text-neutral-500 dark:text-neutral-500">/</span>
         <span class="text-base font-bold text-neutral-700 dark:text-neutral-300">{page.lastPage}</span>
@@ -91,7 +91,7 @@ const getPageUrl = (p: number) => {
         aria-disabled={!page.url.next ? "true" : "false"}
         tabindex={!page.url.next ? "-1" : "0"}
         class:list={[
-          "btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
           {
             disabled: !page.url.next,
             "opacity-50": !page.url.next,
@@ -115,7 +115,7 @@ const getPageUrl = (p: number) => {
         aria-disabled={!page.url.prev ? "true" : "false"}
         tabindex={!page.url.prev ? "-1" : "0"}
         class:list={[
-          "btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
           {
             disabled: !page.url.prev,
             "opacity-50": !page.url.prev,
@@ -136,7 +136,7 @@ const getPageUrl = (p: number) => {
           if (p == page.currentPage)
             return (
               <div
-                class="h-11 w-11 rounded-(--radius-large) bg-(--primary) flex items-center justify-center
+                class="pagination-button pagination-button--active h-11 w-11 rounded-(--radius-large) bg-(--primary) flex items-center justify-center
                         font-bold text-white dark:text-black/70"
                 aria-current="page"
               >
@@ -147,7 +147,7 @@ const getPageUrl = (p: number) => {
             <a
               href={url(getPageUrl(p))}
               aria-label={`${i18n(I18nKey.paginationPage)} ${p}`}
-              class="btn-card w-11 h-11 rounded-(--radius-large) overflow-hidden active:scale-[0.85] font-bold text-neutral-700 dark:text-neutral-300"
+              class="pagination-button btn-card w-11 h-11 rounded-(--radius-large) overflow-hidden active:scale-[0.85] font-bold text-neutral-700 dark:text-neutral-300"
             >
               {p}
             </a>
@@ -160,7 +160,7 @@ const getPageUrl = (p: number) => {
         aria-disabled={!page.url.next ? "true" : "false"}
         tabindex={!page.url.next ? "-1" : "0"}
         class:list={[
-          "btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
           {
             disabled: !page.url.next,
             "opacity-50": !page.url.next,
@@ -181,6 +181,29 @@ const getPageUrl = (p: number) => {
 <style>
   .pagination-wrapper {
     max-width: 100%;
+  }
+
+  .pagination-shell {
+    padding: 0.35rem;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 80%, transparent);
+    border-radius: calc(var(--radius-large) + 0.35rem);
+    background: color-mix(in oklch, var(--card-bg) 92%, var(--primary));
+    box-shadow: 0 0.45rem 1.2rem rgb(44 38 31 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.3);
+  }
+
+  .pagination-button,
+  .pagination-summary {
+    border: 1px solid color-mix(in oklch, var(--line-divider) 76%, transparent);
+  }
+
+  .pagination-button:hover:not(.disabled) {
+    border-color: color-mix(in oklch, var(--primary) 42%, var(--line-divider));
+    transform: translateY(-1px);
+  }
+
+  .pagination-button--active {
+    border-color: color-mix(in oklch, var(--primary) 62%, transparent);
+    box-shadow: 0 3px 7px color-mix(in oklch, var(--primary) 20%, transparent);
   }
 
   .mobile-pagination {

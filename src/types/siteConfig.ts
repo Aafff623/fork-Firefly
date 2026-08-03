@@ -96,9 +96,9 @@ export type SiteConfig = {
 
 	// 文章列表布局配置
 	postListLayout: {
-		// list=列表 · grid=卡片网格 · waterfall=瀑布流 · brick=砖石（CSS grid dense）
-		defaultMode: "list" | "grid" | "waterfall" | "brick";
-		mobileDefaultMode?: "list" | "grid" | "waterfall" | "brick"; // 视口宽度<780px；不设置则跟随 defaultMode
+		// list=列表 · grid=卡片网格 · waterfall=瀑布流
+		defaultMode: "list" | "grid" | "waterfall";
+		mobileDefaultMode?: "list" | "grid" | "waterfall"; // 视口宽度<780px；不设置则跟随 defaultMode
 		descriptionLines?: number; // 文章简介显示行数，设为 0 则不截断，默认 2
 		showStatsIcons?: boolean; // 文章卡片底部统计是否显示图标
 		// 标签显示位置："meta"=跟随元数据行（默认），"bottom"=卡片底部独立一行（将替换stats显示，二者只能选其一）

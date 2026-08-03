@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Icon } from "@iconify/svelte";
+
 interface Props {
 	totalItems: number;
 	itemsPerPage: number;
@@ -46,15 +48,15 @@ function goToPage(page: number) {
     <div class="mobile-pagination items-center gap-3">
       <button
         type="button"
-        class="btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="上一页"
       >
-        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        <Icon icon="lucide:chevron-left" class="w-5 h-5" aria-hidden="true" />
       </button>
 
-      <div class="btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
+      <div class="pagination-summary btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
         <span class="text-base font-bold text-(--primary)">{currentPage}</span>
         <span class="text-sm text-neutral-500 dark:text-neutral-500">/</span>
         <span class="text-base font-bold text-neutral-700 dark:text-neutral-300">{totalPages}</span>
@@ -62,12 +64,12 @@ function goToPage(page: number) {
 
       <button
         type="button"
-        class="btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="下一页"
       >
-        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <Icon icon="lucide:chevron-right" class="w-5 h-5" aria-hidden="true" />
       </button>
     </div>
 
@@ -75,21 +77,21 @@ function goToPage(page: number) {
     <div class="desktop-pagination items-center gap-3">
       <button
         type="button"
-        class="btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="上一页"
       >
-        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        <Icon icon="lucide:chevron-left" class="w-5 h-5" aria-hidden="true" />
       </button>
 
       {#each pageNumbers as pageItem}
         {#if pageItem === "..."}
-          <svg class="w-11 h-11 flex items-center justify-center text-neutral-700 dark:text-neutral-300" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          <Icon icon="lucide:ellipsis" class="w-11 h-11 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />
         {:else}
           <button
             type="button"
-            class="rounded-(--radius-large) overflow-hidden w-11 h-11 flex items-center justify-center font-bold {pageItem === currentPage
+            class="pagination-button rounded-(--radius-large) overflow-hidden w-11 h-11 flex items-center justify-center font-bold {pageItem === currentPage
               ? 'bg-(--primary) text-white dark:text-black/70'
               : 'btn-card active:scale-[0.85] text-neutral-700 dark:text-neutral-300'}"
             onclick={() => goToPage(pageItem as number)}
@@ -103,12 +105,12 @@ function goToPage(page: number) {
 
       <button
         type="button"
-        class="btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="下一页"
       >
-        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <Icon icon="lucide:chevron-right" class="w-5 h-5" aria-hidden="true" />
       </button>
     </div>
   </div>
@@ -119,6 +121,11 @@ function goToPage(page: number) {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    padding: 0.35rem;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 80%, transparent);
+    border-radius: calc(var(--radius-large) + 0.35rem);
+    background: color-mix(in oklch, var(--card-bg) 92%, var(--primary));
+    box-shadow: 0 0.45rem 1.2rem rgb(44 38 31 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.3);
   }
 
   .mobile-pagination {
@@ -152,7 +159,13 @@ function goToPage(page: number) {
   }
 
   .responsive-pagination button {
+    border: 1px solid color-mix(in oklch, var(--line-divider) 76%, transparent);
     transition: all 0.2s ease-in-out;
+  }
+
+  .responsive-pagination button:not(:disabled):hover {
+    border-color: color-mix(in oklch, var(--primary) 42%, var(--line-divider));
+    transform: translateY(-1px);
   }
 
   @media (prefers-contrast: high) {

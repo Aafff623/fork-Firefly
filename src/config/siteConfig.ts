@@ -126,7 +126,7 @@ export const siteConfig: SiteConfig = {
 
 	// 文章列表布局配置
 	postListLayout: {
-		// 默认布局："list" 列表 · "grid" 卡片网格 · "waterfall" 瀑布流 · "brick" 砖石
+		// 默认布局："list" 列表 · "grid" 卡片网格 · "waterfall" 瀑布流
 		defaultMode: "grid",
 		// 移动端默认布局，不设置则跟随 defaultMode
 		mobileDefaultMode: "grid",

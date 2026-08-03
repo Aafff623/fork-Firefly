@@ -1,5 +1,6 @@
-/* ===== 瀑布流布局（Tailwind Plus 10-subtle-grid 思路）=====
- * CSS multi-column + break-inside: avoid；卡片壳复用 Firefly grid 卡样式。
+/* ===== 瀑布流布局 =====
+ * CSS multi-column + break-inside: avoid。
+ * 封面统一 1:1 方形（对齐置顶卡视觉尺度），避免 3/4 过高卡。
  */
 
 #post-list-container.waterfall-mode {
@@ -32,9 +33,10 @@
 
 #post-list-container.waterfall-mode .post-card-wrapper {
 	height: auto !important;
+	overflow: hidden !important;
 }
 
-/* 封面：用明确 aspect-ratio 撑开高度（避免 h-full + height:auto 互相塌缩） */
+/* 封面：统一方形，object-fit:cover 裁切而非拉长卡片 */
 #post-list-container.waterfall-mode .post-card-image {
 	display: block !important;
 	position: relative !important;
@@ -42,20 +44,7 @@
 	height: auto !important;
 	max-height: none !important;
 	overflow: hidden !important;
-	/* 默认中等比例；下方 nth-child 再拉开错落 */
-	aspect-ratio: 4 / 3 !important;
-}
-
-#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 1) .post-card-image {
-	aspect-ratio: 16 / 9 !important;
-}
-
-#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 2) .post-card-image {
 	aspect-ratio: 1 / 1 !important;
-}
-
-#post-list-container.waterfall-mode > .post-card-item:nth-child(3n + 3) .post-card-image {
-	aspect-ratio: 3 / 4 !important;
 }
 
 #post-list-container.waterfall-mode .post-card-image .cover-image-container {
@@ -71,4 +60,27 @@
 	height: 100% !important;
 	object-fit: cover !important;
 	opacity: 1 !important;
+}
+
+/* 正文区高度收敛：简介固定 2 行，避免无图卡过高 */
+#post-list-container.waterfall-mode .post-card-content {
+	padding-top: 0.75rem !important;
+	padding-bottom: 0.75rem !important;
+}
+
+#post-list-container.waterfall-mode .description {
+	-webkit-line-clamp: 2 !important;
+	line-clamp: 2 !important;
+	flex-grow: 0 !important;
+	font-size: 0.84rem !important;
+}
+
+#post-list-container.waterfall-mode .post-card-title {
+	font-size: 1.05rem !important;
+	line-height: 1.35 !important;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
 }

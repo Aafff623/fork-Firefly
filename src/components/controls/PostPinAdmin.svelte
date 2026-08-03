@@ -9,6 +9,8 @@ import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
 import {
 	DEV_OWNER_KEY,
+	LEGACY_SESSION_KEY,
+	LEGACY_VIEWER_KEY,
 	SESSION_KEY,
 	VIEWER_KEY,
 	ensureDevOwnerSession,
@@ -66,7 +68,9 @@ function syncAdmin() {
 		ensureDevOwnerSession(adminLogins);
 	}
 	const hasSession =
-		!!localStorage.getItem(SESSION_KEY) || isDevOwnerFlag();
+		!!localStorage.getItem(SESSION_KEY) ||
+		!!localStorage.getItem(LEGACY_SESSION_KEY) ||
+		isDevOwnerFlag();
 	if (!hasSession && !isDev) {
 		isAdmin = false;
 		return;
@@ -161,6 +165,8 @@ onMount(() => {
 		if (
 			event.key === VIEWER_KEY ||
 			event.key === SESSION_KEY ||
+			event.key === LEGACY_VIEWER_KEY ||
+			event.key === LEGACY_SESSION_KEY ||
 			event.key === DEV_OWNER_KEY
 		) {
 			syncAdmin();

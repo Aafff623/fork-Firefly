@@ -29,16 +29,28 @@
 		0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
-/* grid：仅轻阴影（原语 C 留给荧光笔）；不上浮 3px */
+/* grid：轻阴影；transform 交给方向感应（post-card-grid-bg），瀑布仍不上浮 */
 @media (hover: hover) {
-	:is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover {
+	.waterfall-mode .post-card-wrapper:hover {
 		transform: none;
 		box-shadow:
 			0 0 0 1px oklch(0.45 0.01 260 / 0.1),
 			0 4px 16px -10px oklch(0.35 0.01 260 / 0.14);
 	}
 
-	:root.dark :is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover {
+	.grid-mode .post-card-wrapper:hover {
+		box-shadow:
+			0 0 0 1px oklch(0.45 0.01 260 / 0.1),
+			0 4px 16px -10px oklch(0.35 0.01 260 / 0.14);
+	}
+
+	:root.dark .waterfall-mode .post-card-wrapper:hover {
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.07),
+			0 4px 18px -12px rgba(0, 0, 0, 0.45);
+	}
+
+	:root.dark .grid-mode .post-card-wrapper:hover {
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.07),
 			0 4px 18px -12px rgba(0, 0, 0, 0.45);
@@ -147,23 +159,71 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 底部标签：中性 + 单点缀 hover */
+/* 底部标签：列表/卡片/瀑布统一为 rail 风格（mono · #tag · #tag），去掉违和 pill */
+.post-card-wrapper .post-card-bottom-tags {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: baseline;
+	gap: 0;
+	margin-top: auto;
+	padding-top: 0.55rem;
+	border-top: 1px solid color-mix(in oklab, var(--line-color, currentColor) 14%, transparent);
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.66rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	overflow: hidden;
+	min-width: 0;
+}
+
 .post-card-wrapper .post-card-bottom-tags a,
 .post-card-wrapper .post-card-tag {
-	background: oklch(0.95 0.004 260) !important;
-	color: oklch(0.45 0.01 260) !important;
+	background: transparent !important;
+	color: var(--primary) !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	font-size: inherit !important;
+	font-weight: 500 !important;
+	font-family: inherit !important;
+	letter-spacing: inherit !important;
+	line-height: 1.35 !important;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.post-card-wrapper .post-card-bottom-tags a:not(:last-child)::after,
+.post-card-wrapper .post-card-tag:not(:last-child)::after {
+	content: " · ";
+	color: color-mix(in oklab, var(--content-meta, currentColor) 55%, transparent);
+	font-weight: 400;
+	pointer-events: none;
 }
 
 :root.dark .post-card-wrapper .post-card-bottom-tags a,
 :root.dark .post-card-wrapper .post-card-tag {
-	background: rgba(255, 255, 255, 0.08) !important;
-	color: rgb(163, 163, 163) !important;
+	background: transparent !important;
+	color: color-mix(in oklab, var(--primary) 88%, white) !important;
 }
 
 .post-card-wrapper .post-card-bottom-tags a:hover,
 .post-card-wrapper .post-card-tag:hover {
-	background: color-mix(in oklch, var(--primary) 12%, transparent) !important;
+	background: transparent !important;
 	color: var(--primary) !important;
+	text-decoration: underline;
+	text-underline-offset: 0.12em;
+}
+
+/* 卡片 / 瀑布：与列表 rail 同尺度，禁止大号换行堆叠 */
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-bottom-tags {
+	padding-top: 0.5rem;
+	font-size: 0.62rem;
+}
+
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-bottom-tags a,
+:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-tag {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* 封面：grid 轻微 scale；list-row 隐藏 */
@@ -179,6 +239,19 @@
 		transform: scale(1.015);
 		filter: saturate(1.02);
 	}
+
+	/* grid 全卡背景：封面轻微放大 */
+	.grid-mode .post-card-wrapper.has-cover:hover .post-card-image img,
+	.grid-mode .post-card-wrapper--letter.has-cover:hover .letter-cover__media img {
+		transform: scale(1.03);
+		filter: saturate(1.04);
+	}
+}
+
+.grid-mode .post-card-wrapper--letter.has-cover .letter-cover__media img {
+	transition:
+		transform 0.55s var(--ease-decelerate),
+		filter 0.55s var(--ease-decelerate);
 }
 
 .post-card-image-ring {
@@ -337,6 +410,10 @@
 		width: calc(100% - var(--coverWidth, 30%) - 1.5rem) !important;
 	}
 }
+
+
+/* grid full-bleed styles: post-card-grid-bg.css */
+
 
 /* ========== 相关/随机推荐行 ========== */
 .recommend-num {
