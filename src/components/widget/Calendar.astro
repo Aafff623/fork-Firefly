@@ -72,7 +72,18 @@ const postUrlPrefix = url("/posts/");
 >
   <!-- 笔记本日历：对照 bili-goat widgets/日历（GIF 封面 + 活页环 + 珊瑚点缀） -->
   <div class="calendar-shell">
-    <header class="calendar-cover">
+    <header
+      class="calendar-cover"
+      data-cover-gifs={JSON.stringify([
+        "/assets/images/widgets/calendar/01.gif",
+        "/assets/images/widgets/calendar/02.gif",
+        "/assets/images/widgets/calendar/03.gif",
+        "/assets/images/widgets/calendar/04.gif",
+        "/assets/images/widgets/calendar/05.gif",
+        "/assets/images/widgets/calendar/06.gif",
+      ])}
+      data-cover-interval-ms="4500"
+    >
       <div class="calendar-cover-media" aria-hidden="true"></div>
       <div class="calendar-cover-scrim" aria-hidden="true"></div>
       <div class="calendar-cover-copy">
@@ -158,6 +169,59 @@ const postUrlPrefix = url("/posts/");
   let postDateMap = {};
   let allPostsData = [];
   let availableYears = [];
+
+  /** 封面 GIF 轮询：多图切换，避免只烧一张 */
+  function initCalendarCoverRotate() {
+    const cover = document.querySelector(".calendar-shell .calendar-cover");
+    const media = cover && cover.querySelector(".calendar-cover-media");
+    if (!cover || !media) return;
+    if (media.dataset.coverRotateBound === "1") return;
+    media.dataset.coverRotateBound = "1";
+
+    let gifs = [];
+    try {
+      gifs = JSON.parse(cover.getAttribute("data-cover-gifs") || "[]");
+    } catch {
+      gifs = [];
+    }
+    gifs = (Array.isArray(gifs) ? gifs : [])
+      .map(function (u) { return String(u || "").trim(); })
+      .filter(Boolean);
+    if (!gifs.length) {
+      gifs = ["/assets/images/widgets/calendar/01.gif"];
+    }
+
+    const intervalMs = Math.max(
+      2500,
+      Number(cover.getAttribute("data-cover-interval-ms") || 4500) || 4500,
+    );
+    let idx = 0;
+
+    function apply(url) {
+      media.style.backgroundImage = 'url("' + url + '")';
+    }
+
+    // 预热，减少切换闪白
+    gifs.forEach(function (url) {
+      const img = new Image();
+      img.src = url;
+    });
+
+    apply(gifs[0]);
+    if (gifs.length < 2) return;
+
+    if (window.__calendarCoverRotateTimer) {
+      clearInterval(window.__calendarCoverRotateTimer);
+    }
+    window.__calendarCoverRotateTimer = setInterval(function () {
+      media.classList.add("is-fading");
+      window.setTimeout(function () {
+        idx = (idx + 1) % gifs.length;
+        apply(gifs[idx]);
+        media.classList.remove("is-fading");
+      }, 280);
+    }, intervalMs);
+  }
 
   async function fetchData() {
     try {
@@ -1054,6 +1118,7 @@ const postUrlPrefix = url("/posts/");
       displayMonth = now.getMonth();
       
       fetchData();
+      initCalendarCoverRotate();
       
       // Bind events
       const prevBtn = document.getElementById('prev-month-btn');
@@ -1124,10 +1189,16 @@ const postUrlPrefix = url("/posts/");
     position: absolute;
     inset: 0;
     z-index: 0;
+    /* 由脚本轮询 .calendar-cover 的 data-cover-gifs；默认首帧兜底 */
     background-image: url("/assets/images/widgets/calendar/01.gif");
     background-size: cover;
     background-position: center 28%;
     background-repeat: no-repeat;
+    transition: opacity 0.55s ease;
+  }
+
+  .calendar-cover-media.is-fading {
+    opacity: 0;
   }
 
   .calendar-cover-scrim {
