@@ -1,0 +1,111 @@
+<svg width="1600" height="860" viewBox="0 0 1600 860" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Firefly blog technology map</title>
+  <desc id="desc">A structured technology map grouped by runtime core, publishing, interaction, build enrichment, delivery and optional services.</desc>
+  <style>
+    .eyebrow { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2.4px; fill: #5B5960; }
+    .title { font: 800 42px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: -1.4px; fill: #20222A; }
+    .subtitle { font: 400 17px ui-sans-serif, system-ui, sans-serif; fill: #66636A; }
+    .rail-title { font: 800 15px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.4px; fill: #20222A; }
+    .rail-main { font: 800 26px ui-sans-serif, system-ui, sans-serif; fill: #20222A; }
+    .rail-copy { font: 400 13px ui-sans-serif, system-ui, sans-serif; fill: #6B6865; }
+    .lane-label { font: 800 14px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.2px; fill: #20222A; }
+    .lane-copy { font: 400 12px ui-sans-serif, system-ui, sans-serif; fill: #6B6865; }
+    .chip { font: 700 14px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #20222A; }
+    .chip-small { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #20222A; }
+    .bottom-title { font: 800 14px ui-sans-serif, system-ui, sans-serif; fill: #20222A; }
+    .bottom-copy { font: 400 12px ui-sans-serif, system-ui, sans-serif; fill: #6B6865; }
+  </style>
+
+  <rect width="1600" height="860" fill="#F7F3EC"/>
+  <path d="M56 56H1544V804H56Z" stroke="#D4CFC6" stroke-width="1.5"/>
+  <path d="M56 56V804M88 56V804M1512 56V804" stroke="#E2DDD4" stroke-width="1"/>
+  <path d="M56 184H1544M56 744H1544" stroke="#D4CFC6" stroke-width="1"/>
+
+  <text x="96" y="104" class="eyebrow">FIREfly / TECHNOLOGY MAP / 02</text>
+  <text x="96" y="158" class="title">A stack with a point of view</text>
+  <text x="96" y="193" class="subtitle">Small composable tools, grouped by the job they perform in the system.</text>
+  <text x="1280" y="104" class="eyebrow">NODE 22+</text>
+  <text x="1280" y="132" class="eyebrow">PNPM 9.14.4</text>
+
+  <rect x="96" y="222" width="300" height="490" fill="#20222A"/>
+  <rect x="96" y="222" width="8" height="490" fill="#2F5BDB"/>
+  <text x="132" y="266" class="eyebrow" fill="#C7D5FF">RUNTIME CORE</text>
+  <text x="132" y="319" class="rail-main" fill="#FFFFFF">Astro</text>
+  <text x="132" y="347" class="rail-copy" fill="#D1D0D5">Static generation is the default</text>
+  <text x="132" y="367" class="rail-copy" fill="#D1D0D5">delivery model. Islands are opt-in.</text>
+  <path d="M132 397H360" stroke="#565A66"/>
+  <text x="132" y="435" class="rail-title" fill="#FFFFFF">7.1.3</text>
+  <text x="132" y="460" class="rail-copy" fill="#D1D0D5">pages · layouts · content layer</text>
+  <text x="132" y="510" class="rail-title" fill="#FFFFFF">Svelte 5</text>
+  <text x="132" y="535" class="rail-copy" fill="#D1D0D5">interactive islands where needed</text>
+  <text x="132" y="585" class="rail-title" fill="#FFFFFF">TypeScript 6</text>
+  <text x="132" y="610" class="rail-copy" fill="#D1D0D5">typed configuration and UI contracts</text>
+  <rect x="132" y="655" width="196" height="30" fill="#334477"/>
+  <text x="148" y="675" class="chip-small" fill="#FFFFFF">STATIC-FIRST / CDN READY</text>
+
+  <text x="456" y="248" class="eyebrow">CAPABILITY LANES</text>
+  <text x="1220" y="248" class="eyebrow">DEPENDENCY ROLE</text>
+
+  <rect x="456" y="270" width="1030" height="78" fill="#EAF0FF" stroke="#A8BCEB"/>
+  <rect x="456" y="270" width="8" height="78" fill="#2F5BDB"/>
+  <text x="486" y="299" class="lane-label">PUBLISHING</text>
+  <text x="486" y="322" class="lane-copy">authoring and content contracts</text>
+  <rect x="740" y="288" width="128" height="38" fill="#FFFFFF" stroke="#7B9AE7"/><text x="760" y="312" class="chip">MD / MDX</text>
+  <rect x="882" y="288" width="176" height="38" fill="#FFFFFF" stroke="#7B9AE7"/><text x="901" y="312" class="chip-small">Content Collections</text>
+  <rect x="1072" y="288" width="132" height="38" fill="#FFFFFF" stroke="#7B9AE7"/><text x="1091" y="312" class="chip-small">remark / rehype</text>
+  <text x="1220" y="306" class="lane-copy">content in</text>
+  <text x="1220" y="322" class="lane-copy">→ typed model</text>
+
+  <rect x="456" y="364" width="1030" height="78" fill="#FFE9E6" stroke="#E8AAA4"/>
+  <rect x="456" y="364" width="8" height="78" fill="#D95C58"/>
+  <text x="486" y="393" class="lane-label">INTERACTION</text>
+  <text x="486" y="416" class="lane-copy">responsive surfaces and transitions</text>
+  <rect x="740" y="382" width="154" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="761" y="406" class="chip">Tailwind CSS 4</text>
+  <rect x="908" y="382" width="110" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="934" y="406" class="chip">Swup</text>
+  <rect x="1032" y="382" width="124" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="1054" y="406" class="chip">Three.js</text>
+  <text x="1220" y="400" class="lane-copy">hydrate only</text>
+  <text x="1220" y="416" class="lane-copy">where interaction pays</text>
+
+  <rect x="456" y="458" width="1030" height="78" fill="#FFF0CD" stroke="#E7C16F"/>
+  <rect x="456" y="458" width="8" height="78" fill="#D58A18"/>
+  <text x="486" y="487" class="lane-label">BUILD ENRICHMENT</text>
+  <text x="486" y="510" class="lane-copy">prepare expensive work before deploy</text>
+  <rect x="740" y="476" width="138" height="38" fill="#FFFFFF" stroke="#D7A444"/><text x="759" y="500" class="chip">Astro SSG</text>
+  <rect x="892" y="476" width="112" height="38" fill="#FFFFFF" stroke="#D7A444"/><text x="914" y="500" class="chip">Sharp</text>
+  <rect x="1018" y="476" width="138" height="38" fill="#FFFFFF" stroke="#D7A444"/><text x="1040" y="500" class="chip">Pagefind</text>
+  <text x="1220" y="494" class="lane-copy">assets · fonts</text>
+  <text x="1220" y="510" class="lane-copy">· search index</text>
+
+  <rect x="456" y="552" width="1030" height="78" fill="#E7F5EC" stroke="#9BCDAF"/>
+  <rect x="456" y="552" width="8" height="78" fill="#2A9868"/>
+  <text x="486" y="581" class="lane-label">DELIVERY</text>
+  <text x="486" y="604" class="lane-copy">static output and deployment boundary</text>
+  <rect x="740" y="570" width="100" height="38" fill="#FFFFFF" stroke="#6EB894"/><text x="766" y="594" class="chip">dist/</text>
+  <rect x="854" y="570" width="118" height="38" fill="#FFFFFF" stroke="#6EB894"/><text x="879" y="594" class="chip">Vercel</text>
+  <rect x="986" y="570" width="170" height="38" fill="#FFFFFF" stroke="#6EB894"/><text x="1004" y="594" class="chip-small">Cloudflare adapter</text>
+  <text x="1220" y="588" class="lane-copy">ship static</text>
+  <text x="1220" y="604" class="lane-copy">→ CDN</text>
+
+  <rect x="456" y="646" width="1030" height="78" fill="#F0EAFE" stroke="#BBA3E8"/>
+  <rect x="456" y="646" width="8" height="78" fill="#7B56D8"/>
+  <text x="486" y="675" class="lane-label">OPTIONAL SERVICES</text>
+  <text x="486" y="698" class="lane-copy">configuration-gated integrations</text>
+  <rect x="740" y="664" width="106" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="766" y="688" class="chip">Waline</text>
+  <rect x="860" y="664" width="106" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="887" y="688" class="chip">Memos</text>
+  <rect x="980" y="664" width="116" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1004" y="688" class="chip-small">Tencent COS</text>
+  <rect x="1110" y="664" width="116" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1128" y="688" class="chip-small">Live2D / Spine</text>
+  <text x="1220" y="682" class="lane-copy">off by</text>
+  <text x="1220" y="698" class="lane-copy">default</text>
+
+  <rect x="96" y="748" width="1390" height="56" fill="#20222A"/>
+  <text x="132" y="781" class="bottom-title" fill="#FFFFFF">DECISION LENS</text>
+  <text x="360" y="781" class="bottom-copy" fill="#E1E0E4">static-first</text>
+  <circle cx="464" cy="777" r="4" fill="#2F5BDB"/>
+  <text x="500" y="781" class="bottom-copy" fill="#E1E0E4">config-driven</text>
+  <circle cx="624" cy="777" r="4" fill="#D95C58"/>
+  <text x="660" y="781" class="bottom-copy" fill="#E1E0E4">progressive enhancement</text>
+  <circle cx="884" cy="777" r="4" fill="#D58A18"/>
+  <text x="920" y="781" class="bottom-copy" fill="#E1E0E4">build-time enrichment</text>
+  <circle cx="1160" cy="777" r="4" fill="#2A9868"/>
+  <text x="1196" y="781" class="bottom-copy" fill="#E1E0E4">CDN-friendly delivery</text>
+</svg>
