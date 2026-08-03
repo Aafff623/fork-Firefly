@@ -79,6 +79,9 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
           <Icon is:inline name={config.icon} class="announcement-press__title-icon" aria-hidden="true" />
         )}
         {title}
+        {showGiftBox && (
+          <span class="announcement-press__gift-badge">惊喜礼盒</span>
+        )}
       </h2>
       <div class="announcement-press__double-rule" aria-hidden="true"></div>
       <p class="announcement-press__kicker">
@@ -99,7 +102,7 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
           <label class="gift-surprise__hit" for="gift-box-open" aria-label="打开惊喜信封"></label>
 
           {/* 本机开过当期惊喜才显示；换 version / 文案后自动消失 */}
-          <span class="gift-surprise__opened-badge" hidden>已开启</span>
+          <span class="gift-surprise__opened-badge" hidden>本次惊喜限定已开启</span>
 
           {/* 舞台：粉框内居中；常驻 3D + 悬停/点击经典盒叠放 */}
           <div class="gift-surprise__stage">
