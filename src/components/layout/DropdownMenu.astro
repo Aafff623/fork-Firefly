@@ -121,84 +121,162 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 </style>
 
 <script>
-	// 键盘导航支持
-	document.addEventListener('DOMContentLoaded', function() {
-		const dropdowns = document.querySelectorAll('[data-dropdown]');
-		
-		dropdowns.forEach(dropdown => {
-			const trigger = dropdown.querySelector('[data-dropdown-trigger]') as HTMLElement | null;
-			const menu = dropdown.querySelector('[data-dropdown-menu]');
-			const items = dropdown.querySelectorAll('.dropdown-item') as NodeListOf<HTMLElement>;
-			
-			if (!trigger || !menu) return;
-			
-			// 键盘事件处理
-			trigger.addEventListener('keydown', function(e: KeyboardEvent) {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					toggleDropdown(dropdown, trigger, menu);
-				} else if (e.key === 'ArrowDown') {
-					e.preventDefault();
-					openDropdown(dropdown, trigger, menu);
-					if (items.length > 0) {
-						items[0].focus();
-					}
-				} else if (e.key === 'Escape') {
-					closeDropdown(dropdown, trigger, menu);
-				}
-			});
-			
-			// 菜单项键盘导航
-			items.forEach((item, index) => {
-				item.addEventListener('keydown', function(e: KeyboardEvent) {
-					if (e.key === 'ArrowDown') {
-						e.preventDefault();
-						const nextIndex = (index + 1) % items.length;
-						items[nextIndex].focus();
-					} else if (e.key === 'ArrowUp') {
-						e.preventDefault();
-						const prevIndex = (index - 1 + items.length) % items.length;
-						items[prevIndex].focus();
-					} else if (e.key === 'Escape') {
-						closeDropdown(dropdown, trigger, menu);
-						trigger.focus();
-					}
-				});
-			});
+	/**
+	 * 导航下拉：hover / 键盘互斥
+	 *
+	 * 根因：CSS 用 :hover 与 :focus-within 开菜单。点击触发器后 focus 留在按钮上，
+	 * 再 hover 另一项时旧项仍命中 :focus-within，两个弹层叠在一起。
+	 * 修复：进入任一 dropdown 时关闭并 blur 其它项；打开时同样互斥。
+	 */
+	const INIT_KEY = "data-dropdown-nav-init";
+
+	function getDropdowns(): NodeListOf<Element> {
+		return document.querySelectorAll("[data-dropdown]");
+	}
+
+	function closeDropdown(_dropdown: Element, trigger: Element, menu: Element) {
+		trigger.setAttribute("aria-expanded", "false");
+		menu.classList.add(
+			"opacity-0",
+			"invisible",
+			"pointer-events-none",
+			"translate-y-[-8px]",
+		);
+		menu.classList.remove(
+			"opacity-100",
+			"visible",
+			"pointer-events-auto",
+			"translate-y-0",
+		);
+	}
+
+	function closeOthers(except: Element | null) {
+		getDropdowns().forEach((other) => {
+			if (except && other === except) return;
+			const trigger = other.querySelector(
+				"[data-dropdown-trigger]",
+			) as HTMLElement | null;
+			const menu = other.querySelector("[data-dropdown-menu]");
+			if (trigger && menu) closeDropdown(other, trigger, menu);
+
+			// 清掉残留 focus，避免 :focus-within 继续撑开菜单
+			const active = document.activeElement as HTMLElement | null;
+			if (active && other.contains(active)) active.blur();
 		});
-		
-		// 点击外部关闭下拉菜单
-		document.addEventListener('click', function(e) {
-			dropdowns.forEach(dropdown => {
-				if (!dropdown.contains(e.target as Node)) {
-					const trigger = dropdown.querySelector('[data-dropdown-trigger]');
-					const menu = dropdown.querySelector('[data-dropdown-menu]');
-					if (trigger && menu) {
-						closeDropdown(dropdown, trigger, menu);
-					}
-				}
-			});
-		});
-	});
-	
-	function toggleDropdown(_dropdown: Element, trigger: Element, menu: Element) {
-		const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+	}
+
+	function openDropdown(dropdown: Element, trigger: Element, menu: Element) {
+		closeOthers(dropdown);
+		trigger.setAttribute("aria-expanded", "true");
+		menu.classList.remove(
+			"opacity-0",
+			"invisible",
+			"pointer-events-none",
+			"translate-y-[-8px]",
+		);
+		menu.classList.add(
+			"opacity-100",
+			"visible",
+			"pointer-events-auto",
+			"translate-y-0",
+		);
+	}
+
+	function toggleDropdown(dropdown: Element, trigger: Element, menu: Element) {
+		const isOpen = trigger.getAttribute("aria-expanded") === "true";
 		if (isOpen) {
-			closeDropdown(_dropdown, trigger, menu);
+			closeDropdown(dropdown, trigger, menu);
 		} else {
-			openDropdown(_dropdown, trigger, menu);
+			openDropdown(dropdown, trigger, menu);
 		}
 	}
-	
-	function openDropdown(_dropdown: Element, trigger: Element, menu: Element) {
-		trigger.setAttribute('aria-expanded', 'true');
-		menu.classList.remove('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-[-8px]');
-		menu.classList.add('opacity-100', 'visible', 'pointer-events-auto', 'translate-y-0');
+
+	function bindDropdown(dropdown: Element) {
+		if (dropdown.hasAttribute(INIT_KEY)) return;
+		dropdown.setAttribute(INIT_KEY, "1");
+
+		const trigger = dropdown.querySelector(
+			"[data-dropdown-trigger]",
+		) as HTMLElement | null;
+		const menu = dropdown.querySelector("[data-dropdown-menu]");
+		const items = dropdown.querySelectorAll(
+			".dropdown-item",
+		) as NodeListOf<HTMLElement>;
+
+		if (!trigger || !menu) return;
+
+		// 鼠标滑到本项：关掉其它（含「点开后 focus 卡住」的那一项）
+		dropdown.addEventListener("pointerenter", () => {
+			closeOthers(dropdown);
+		});
+
+		// 纯鼠标点击后主动 blur，避免 focus-within 粘住；键盘操作不 blur
+		trigger.addEventListener("pointerup", (e: PointerEvent) => {
+			if (e.pointerType === "mouse" || e.pointerType === "pen") {
+				// 下一帧再 blur，避免打断 click 自身
+				requestAnimationFrame(() => {
+					if (document.activeElement === trigger) trigger.blur();
+				});
+			}
+		});
+
+		trigger.addEventListener("keydown", (e: KeyboardEvent) => {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				toggleDropdown(dropdown, trigger, menu);
+			} else if (e.key === "ArrowDown") {
+				e.preventDefault();
+				openDropdown(dropdown, trigger, menu);
+				if (items.length > 0) items[0].focus();
+			} else if (e.key === "Escape") {
+				closeDropdown(dropdown, trigger, menu);
+			}
+		});
+
+		items.forEach((item, index) => {
+			item.addEventListener("keydown", (e: KeyboardEvent) => {
+				if (e.key === "ArrowDown") {
+					e.preventDefault();
+					items[(index + 1) % items.length].focus();
+				} else if (e.key === "ArrowUp") {
+					e.preventDefault();
+					items[(index - 1 + items.length) % items.length].focus();
+				} else if (e.key === "Escape") {
+					closeDropdown(dropdown, trigger, menu);
+					trigger.focus();
+				}
+			});
+		});
 	}
-	
-	function closeDropdown(_dropdown: Element, trigger: Element, menu: Element) {
-		trigger.setAttribute('aria-expanded', 'false');
-		menu.classList.add('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-[-8px]');
-		menu.classList.remove('opacity-100', 'visible', 'pointer-events-auto', 'translate-y-0');
+
+	function initNavbarDropdowns() {
+		getDropdowns().forEach(bindDropdown);
+
+		if (document.documentElement.hasAttribute("data-dropdown-doc-click")) return;
+		document.documentElement.setAttribute("data-dropdown-doc-click", "1");
+
+		document.addEventListener("click", (e) => {
+			const target = e.target as Node | null;
+			getDropdowns().forEach((dropdown) => {
+				if (target && dropdown.contains(target)) return;
+				const trigger = dropdown.querySelector("[data-dropdown-trigger]");
+				const menu = dropdown.querySelector("[data-dropdown-menu]");
+				if (trigger && menu) closeDropdown(dropdown, trigger, menu);
+			});
+		});
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initNavbarDropdowns);
+	} else {
+		initNavbarDropdowns();
+	}
+
+	// Swup 换页后 navbar 若重建，补绑一次
+	document.addEventListener("swup:enable", () => {
+		window.swup?.hooks?.on("content:replace", initNavbarDropdowns);
+	});
+	if (window.swup?.hooks) {
+		window.swup.hooks.on("content:replace", initNavbarDropdowns);
 	}
 </script>
