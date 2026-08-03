@@ -21,25 +21,8 @@ export const sponsorConfig: SponsorConfig = {
 	showButtonInPost: false,
 
 	// 打赏方式列表
-	methods: [
-		{
-			name: "支付宝",
-			icon: "fa7-brands:alipay",
-			// 收款码图片路径（需要放在 public 目录下）
-			qrCode: "/assets/images/sponsor/alipay.png",
-			link: "",
-			description: "使用支付宝扫码打赏",
-			enabled: true,
-		},
-		{
-			name: "微信",
-			icon: "fa7-brands:weixin",
-			qrCode: "/assets/images/sponsor/wechat.png",
-			link: "",
-			description: "使用微信扫码打赏",
-			enabled: true,
-		},
-	],
+	// 暂不展示支付方式；收到新的收款素材后再在此添加。
+	methods: [],
 
 	// 打赏者列表（可选）
 	sponsors: [],

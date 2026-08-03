@@ -63,7 +63,8 @@ function getQrLqipProps(qrCode: string) {
         )}
       </div>
 
-      <!-- 打赏方式 -->
+      <!-- 打赏方式：没有可用方式时不渲染空白区域 -->
+      {enabledMethods.length > 0 && (
       <div class="mb-8">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {enabledMethods.map((method) => (
@@ -113,6 +114,7 @@ function getQrLqipProps(qrCode: string) {
                     ))}
         </div>
       </div>
+      )}
     </div>
   </div>
 
@@ -213,4 +215,3 @@ function getQrLqipProps(qrCode: string) {
     gap: 0.75rem;
   }
 </style>
-
