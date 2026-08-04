@@ -1061,6 +1061,17 @@ const hasMultipleImages =
     --sidebar-accent: oklch(0.68 0.19 350);
   }
 
+  /* 桌面/平板：左右栏整体略低于中间分类栏顶线；猫娘卡停靠跟卡片 DOM，无需改坐标 */
+  @media (min-width: 768px) {
+    :root {
+      --sidebar-top-nudge: 3rem; /* 再下一点，错开分类栏顶齐 */
+    }
+    #left-sidebar.sidebar-region,
+    #right-sidebar.sidebar-region {
+      padding-top: var(--sidebar-top-nudge);
+    }
+  }
+
   #left-sidebar .widget-title::before,
   #right-sidebar .widget-title::before {
     background: var(--sidebar-accent) !important;

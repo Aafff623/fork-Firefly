@@ -75,7 +75,7 @@
 /* Profile：同一外壳内两套 UI 整段切换（grid 叠层，高度取较长面板，避免绝对定位撑破边框） */
 .text-voice-shell--rotate {
 	display: grid;
-	padding: 0.85rem 1rem;
+	padding: 0.5rem 0.65rem; /* 压矮 Profile 卡：收紧外壳内边距 */
 	overflow: hidden;
 	transition:
 		background 0.45s ease,
@@ -142,17 +142,20 @@
 
 /* 近况面板：像素打字机（与墨光格言不同套 UI） */
 .motto-typewriter {
-	display: block;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3; /* 与格言同限 3 行，避免轮播撑高 */
+	overflow: hidden;
 	box-sizing: border-box;
 	width: 100%;
 	max-width: 100%;
 	padding-inline: 0.15rem;
 	text-align: center;
 	font-family: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
-	font-size: 0.74rem;
+	font-size: 0.7rem;
 	font-style: normal;
 	font-weight: 400;
-	line-height: 1.7;
+	line-height: 1.45;
 	letter-spacing: 0.015em;
 	overflow-wrap: anywhere;
 	word-break: break-word;

@@ -90,13 +90,13 @@ function formatDate(timestamp: number): string {
 }
 </script>
 
-<div class="flex flex-col gap-1.5">
+<div class="flex flex-col gap-1">
 	{#if loading}
-		<div class="flex justify-center p-3">
+		<div class="flex justify-center p-2">
 			<Icon icon="lucide:loader-circle" class="size-5 animate-spin text-(--primary)" />
 		</div>
 	{:else if error || entries.length === 0}
-		<p class="m-0 p-3 text-center text-sm text-neutral-500">
+		<p class="m-0 p-2 text-center text-sm text-neutral-500">
 			{i18n(I18nKey.dynamicEmpty)}
 		</p>
 	{:else}
@@ -105,15 +105,15 @@ function formatDate(timestamp: number): string {
 			{@const image = entry.images?.[0]}
 			<a
 				href={url(`/dynamic/#dynamic-${entry.id}`)}
-				class={`dynamics-sidebar__entry dynamics-sidebar__entry--${index % 2 === 0 ? "ink" : "ash"} group flex min-w-0 min-h-16 items-center gap-3 rounded-lg p-2
+				class={`dynamics-sidebar__entry dynamics-sidebar__entry--${index % 2 === 0 ? "ink" : "ash"} group flex min-w-0 items-center gap-2 rounded-lg p-1.5
 					text-neutral-700/75 dark:text-neutral-300/75
 					hover:bg-(--btn-plain-bg-hover)
 					active:bg-(--btn-plain-bg-active) transition-colors duration-150`}
 				aria-label={`${i18n(I18nKey.dynamic)}: ${text}`}
 			>
 				<div class="min-w-0 flex-1">
-					<div class="dynamics-sidebar__time mb-1 flex items-center gap-1 text-xs leading-4">
-						<Icon icon="lucide:clock" class="size-4 shrink-0" />
+					<div class="dynamics-sidebar__time mb-0.5 flex items-center gap-1 text-[0.7rem] leading-3.5">
+						<Icon icon="lucide:clock" class="size-3.5 shrink-0" />
 						<time datetime={new Date(entry.published).toISOString()}>
 							{formatDate(entry.published)}
 						</time>
@@ -124,7 +124,7 @@ function formatDate(timestamp: number): string {
 							</span>
 						{/if}
 					</div>
-					<p class="dynamics-sidebar__body m-0 line-clamp-3 text-sm leading-[1.35rem] italic">
+					<p class="dynamics-sidebar__body m-0 line-clamp-2 text-[0.8rem] leading-5 italic">
 						{text}
 					</p>
 				</div>
@@ -132,7 +132,7 @@ function formatDate(timestamp: number): string {
 					<img
 						src={image.src}
 						alt={image.alt}
-						class="size-14 shrink-0 rounded-lg bg-(--btn-plain-bg-hover) object-cover"
+						class="size-11 shrink-0 rounded-lg bg-(--btn-plain-bg-hover) object-cover"
 						loading="lazy"
 						decoding="async"
 					/>

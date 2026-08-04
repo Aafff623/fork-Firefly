@@ -17,12 +17,12 @@ const voiceBio = profileConfig.bio;
 const noticeText = announcementConfig.content;
 ---
 
-<div class:list={["card-base", "profile-widget", "p-3", className]} style={style}>
+<div class:list={["card-base", "profile-widget", "p-2.5", className]} style={style}>
   <a
     aria-label="Go to About Page"
     href={url("/about/")}
-    class="profile-avatar-shell group block relative mx-auto mt-1 lg:mt-0 mb-3
-       aspect-square w-[76%] max-w-36 lg:w-[74%] lg:max-w-40 overflow-hidden rounded-full active:scale-95"
+    class="profile-avatar-shell group block relative mx-auto mt-0.5 lg:mt-0 mb-2
+       aspect-square w-[58%] max-w-28 lg:w-[60%] lg:max-w-32 overflow-hidden rounded-full active:scale-95"
   >
     <div
       class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
@@ -48,24 +48,24 @@ const noticeText = announcementConfig.content;
   </a>
   <div class="px-2">
     <div
-      class="repel-text font-bold text-xl text-center mb-1 dark:text-neutral-50 transition"
+      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition"
     >
       {profileConfig.name}
     </div>
     <div
-      class="accent-bar-grad h-1 w-5 mx-auto rounded-full mb-2 transition"
+      class="accent-bar-grad h-0.5 w-4 mx-auto rounded-full mb-1.5 transition"
     >
     </div>
     {/* 同一张卡：格言=原墨光 UI；近况=像素打字机 UI；整段切换，不是同一套样式轮播字 */}
     <div
-      class="text-voice-shell text-voice-shell--rotate mb-2.5"
+      class="text-voice-shell text-voice-shell--rotate mb-1.5"
       data-mode="voice"
       data-voice-dwell="5600"
       data-notice-dwell="8200"
       aria-live="polite"
     >
       <div class="voice-rotate-panel voice-rotate-panel--voice" data-panel="voice">
-        <div class="text-voice text-center italic text-sm leading-relaxed">
+        <div class="text-voice text-center italic text-xs leading-snug line-clamp-3">
           {voiceBio}
         </div>
       </div>
@@ -78,7 +78,7 @@ const noticeText = announcementConfig.content;
         />
       </div>
     </div>
-        <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-1">
+        <div class="flex flex-wrap gap-x-4 gap-y-1.5 justify-center mb-0.5">
             {profileConfig.links.length > 1 && profileConfig.links.map(item =>
                     {
                     const showName = item.showName;
