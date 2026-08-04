@@ -403,8 +403,17 @@ const widgetId =
         var title = clone.querySelector('.item-title');
         var artist = clone.querySelector('.item-artist');
 
-        img.src = track.pic || '';
-        img.alt = track.name + ' - ' + track.artist;
+		img.src = track.pic || '';
+		img.alt = track.name + ' - ' + track.artist;
+		if (track.pic) {
+			img.removeAttribute('hidden');
+			img.classList.remove('hidden');
+		} else {
+			// 无封面时不设空 src，避免浏览器裂图图标
+			img.removeAttribute('src');
+			img.setAttribute('hidden', '');
+			img.classList.add('hidden');
+		}
         title.innerText = track.name;
         artist.innerText = track.artist;
 

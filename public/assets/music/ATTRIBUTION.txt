@@ -1,0 +1,7 @@
+﻿# Site ambient BGM attribution
+
+- Soft Night Pad / Quiet Horizon / Gentle Drift / Morning Haze / Still Water / Deep Calm
+  Source: Pixabay Music CDN (Content License). Personal blog background use.
+- 使一颗心免于哀伤: existing sample in repo.
+
+Files live in public/assets/music/ambient-*.mp3

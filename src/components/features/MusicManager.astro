@@ -120,14 +120,79 @@ const managerConfigStr = JSON.stringify({
         error: null
     };
 
-    // Map config playMode string to number
+    // Map config playMode string to number（可被 localStorage 覆盖）
     if (config.playMode === 'random') state.playMode = 2;
     else if (config.playMode === 'one') state.playMode = 1;
     else state.playMode = 0;
+    var storedMode = localStorage.getItem('music-player-mode');
+    if (storedMode !== null) {
+        var parsedMode = parseInt(storedMode, 10);
+        if (parsedMode >= 0 && parsedMode <= 2) state.playMode = parsedMode;
+    }
 
     // ── Event helpers ────────────────────────────────────────
     function emit(name, detail) {
         window.dispatchEvent(new CustomEvent(name, { detail: detail || {} }));
+    }
+
+    // ── Media Session（系统媒体键 / 锁屏；无 API 则跳过）──
+    function updateMediaSessionMetadata(track) {
+        if (!('mediaSession' in navigator) || !track) return;
+        try {
+            var artwork = [];
+            if (track.pic) {
+                artwork.push({ src: track.pic, sizes: '512x512', type: 'image/jpeg' });
+            }
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: track.name || '',
+                artist: track.artist || '',
+                artwork: artwork
+            });
+        } catch (e) { /* 旧环境静默 */ }
+    }
+
+    function setMediaSessionPlaybackState(playing) {
+        if (!('mediaSession' in navigator)) return;
+        try {
+            navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+        } catch (e) { /* ignore */ }
+    }
+
+    function bindMediaSessionHandlers() {
+        if (!('mediaSession' in navigator) || !navigator.mediaSession.setActionHandler) return;
+        try {
+            navigator.mediaSession.setActionHandler('play', function () {
+                if (audio.paused) togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('pause', function () {
+                if (!audio.paused) pauseOnly();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', function () { playPrev(); });
+            navigator.mediaSession.setActionHandler('nexttrack', function () { playNext(false); });
+            try {
+                navigator.mediaSession.setActionHandler('seekto', function (details) {
+                    if (details && typeof details.seekTime === 'number') {
+                        seekToTime(details.seekTime);
+                    }
+                });
+            } catch (e2) { /* 部分浏览器不支持 seekto */ }
+        } catch (e) { /* ignore */ }
+    }
+
+    // 仅暂停音频（供视频互斥 / Media Session 使用，不触发「起播」）
+    function pauseOnly() {
+        if (audio.paused && !state.isPlaying) return;
+        audio.pause();
+        state.isPlaying = false;
+        setMediaSessionPlaybackState(false);
+        emit('fm:play-state', { isPlaying: false });
+    }
+
+    function notifyPlaying() {
+        state.isPlaying = true;
+        state.error = null;
+        setMediaSessionPlaybackState(true);
+        emit('fm:play-state', { isPlaying: true });
     }
 
     // ── Meting fetch ─────────────────────────────────────────
@@ -214,9 +279,7 @@ const managerConfigStr = JSON.stringify({
         if (autoPlay) {
             audio.play().then(function () {
                 if (ver !== loadVersion) return; // stale, discard
-                state.isPlaying = true;
-                state.error = null;
-                emit('fm:play-state', { isPlaying: true });
+                notifyPlaying();
             }).catch(function (e) {
                 if (ver !== loadVersion) return; // stale, discard
                 if (e.name === 'AbortError') return; // interrupted by new load
@@ -224,6 +287,7 @@ const managerConfigStr = JSON.stringify({
             });
         } else {
             state.isPlaying = false;
+            setMediaSessionPlaybackState(false);
             emit('fm:play-state', { isPlaying: false });
         }
     }
@@ -232,6 +296,9 @@ const managerConfigStr = JSON.stringify({
     function loadTrack(index, autoPlay) {
         if (index < 0 || index >= state.playlist.length) return;
         state.currentIndex = index;
+        try {
+            localStorage.setItem('music-player-index', String(index));
+        } catch (e) { /* ignore */ }
         var track = state.playlist[index];
         var ver = ++loadVersion;
 
@@ -258,6 +325,7 @@ const managerConfigStr = JSON.stringify({
         }
 
         loadLyrics(track);
+        updateMediaSessionMetadata(track);
 
         emit('fm:track', { index: index, track: track, autoPlay: !!autoPlay });
 
@@ -268,23 +336,22 @@ const managerConfigStr = JSON.stringify({
     function togglePlay() {
         if (audio.paused) {
             audio.play().then(function () {
-                state.isPlaying = true;
-                emit('fm:play-state', { isPlaying: true });
+                notifyPlaying();
             }).catch(function (e) {
                 if (e.name === 'AbortError') return;
                 console.warn('Playback failed:', e);
             });
         } else {
-            audio.pause();
-            state.isPlaying = false;
-            emit('fm:play-state', { isPlaying: false });
+            pauseOnly();
         }
     }
 
     function playNext(auto) {
         if (state.playMode === 1 && auto) {
             audio.currentTime = 0;
-            audio.play();
+            audio.play().then(function () {
+                notifyPlaying();
+            }).catch(function () { /* ignore */ });
             return;
         }
         var nextIndex;
@@ -308,6 +375,9 @@ const managerConfigStr = JSON.stringify({
 
     function setPlayMode(mode) {
         state.playMode = mode;
+        try {
+            localStorage.setItem('music-player-mode', String(mode));
+        } catch (e) { /* ignore */ }
         emit('fm:mode', { playMode: mode });
     }
 
@@ -417,12 +487,22 @@ const managerConfigStr = JSON.stringify({
                 // Apply volume
                 audio.volume = state.volume;
 
+                // 硬刷新恢复曲目索引；无记录时随机模式才随机选一首。不自动 play()
                 var startIndex = 0;
-                if (state.playMode === 2) {
+                var storedIndex = localStorage.getItem('music-player-index');
+                if (storedIndex !== null) {
+                    var idx = parseInt(storedIndex, 10);
+                    if (!isNaN(idx) && idx >= 0 && idx < state.playlist.length) {
+                        startIndex = idx;
+                    } else if (state.playMode === 2) {
+                        startIndex = Math.floor(Math.random() * state.playlist.length);
+                    }
+                } else if (state.playMode === 2) {
                     startIndex = Math.floor(Math.random() * state.playlist.length);
                 }
 
                 state.initialized = true;
+                bindMediaSessionHandlers();
 
                 emit('fm:init', {
                     playlist: state.playlist,
@@ -457,6 +537,14 @@ const managerConfigStr = JSON.stringify({
         }
     }
 
+    // 视频起播 → 暂停音乐（后启者优胜；pauseOnly 只发 isPlaying:false，不会反触发视频起播）
+    window.addEventListener('bg-player-state-change', function (e) {
+        var detail = (e && e.detail) || {};
+        if (detail.playing) {
+            pauseOnly();
+        }
+    });
+
     // ── Public API ───────────────────────────────────────────
     window.__fireflyMusic = {
         init: init,
@@ -483,6 +571,7 @@ const managerConfigStr = JSON.stringify({
             };
         },
         togglePlay: togglePlay,
+        pause: pauseOnly,
         playNext: function () { playNext(false); },
         playPrev: playPrev,
         cyclePlayMode: cyclePlayMode,

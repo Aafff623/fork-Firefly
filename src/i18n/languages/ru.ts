@@ -45,6 +45,7 @@ export const ru: Translation = {
 	[Key.dynamicViewImage]: "Открыть изображение {index}",
 	[Key.dynamicSelectImage]: "Выбрать изображение {index}",
 	[Key.musicNoPlaying]: "Ничего не воспроизводится",
+	[Key.musicNowPlaying]: "Сейчас играет",
 	[Key.musicLyrics]: "Текст песни",
 	[Key.musicVolume]: "Громкость",
 	[Key.musicPlayMode]: "Переключить режим воспроизведения",

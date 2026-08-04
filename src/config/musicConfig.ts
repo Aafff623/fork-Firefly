@@ -1,15 +1,17 @@
 import type { MusicPlayerConfig } from "../types/musicConfig";
 
 // 音乐播放器配置
+// 生产默认 mode: "local"（自托管曲库，不依赖公共 Meting）。
+// Meting 块保留作可选备源：把 mode 改回 "meting" 即可手工切回（API 可能失效，见 ADR-0002）。
 export const musicPlayerConfig: MusicPlayerConfig = {
 	// 是否在导航栏显示音乐播放器入口
 	showInNavbar: true,
 
-	// 是否在侧边栏显示音乐播放器组件
+	// 是否在侧边栏显示音乐播放器组件（侧栏组件仍须 sidebarConfig 里 type:"music" enable）
 	showInSidebar: true,
 
-	// 使用方式："meting" 使用 Meting API，"local" 使用本地音乐列表
-	mode: "meting",
+	// 使用方式："local" 本地清单（默认）| "meting" 第三方歌单 API（备选）
+	mode: "local",
 
 	// 默认音量 (0-1)
 	volume: 0.7,
@@ -20,7 +22,7 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 	// 是否显启用歌词
 	showLyrics: true,
 
-	// Meting API 配置
+	// Meting API 配置（仅 mode === "meting" 时生效；备选，非默认）
 	meting: {
 		// Meting API 地址
 		// 默认使用官方 API，也可以使用自定义 API
@@ -40,13 +42,57 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 		],
 	},
 
-	// 本地音乐配置（当 mode 为 'local' 时使用）
-	// 1. 支持传入歌词文件的路径
-	// lrc: "/assets/music/lrc/使一颗心免于哀伤-哼唱.lrc",
-	// 2. 或者直接填入歌词字符串内容
-	// lrc: "[00:00.00]歌词内容...",
+	// 本地音乐配置（mode === "local" 时使用）
+	// 加歌步骤：
+	// 1. 把 mp3（及可选封面/歌词）放到 public/assets/music/（封面建议 cover/，歌词建议 lrc/）
+	// 2. 在下方 playlist 追加一项：name / artist / url / cover? / lrc?
+	// 3. url、cover 用站点根路径，如 "/assets/music/xxx.mp3"；也可填 https:// 远程地址
+	// 4. lrc 可为文件路径 "/assets/music/lrc/xxx.lrc"、远程 URL，或内联 LRC 字符串；没有歌词就填 ""
+	// 氛围曲来源：Pixabay Content License（可个人站使用）；默认列表以安静纯音乐为主
 	local: {
 		playlist: [
+			{
+				name: "Soft Night Pad",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-02-soft-night-pad.mp3",
+				cover: "/assets/music/cover/ambient-02.webp",
+				lrc: "",
+			},
+			{
+				name: "Quiet Horizon",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-03-quiet-horizon.mp3",
+				cover: "/assets/music/cover/ambient-03.webp",
+				lrc: "",
+			},
+			{
+				name: "Gentle Drift",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-04-gentle-drift.mp3",
+				cover: "/assets/music/cover/ambient-04.webp",
+				lrc: "",
+			},
+			{
+				name: "Morning Haze",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-05-morning-haze.mp3",
+				cover: "/assets/music/cover/ambient-05.webp",
+				lrc: "",
+			},
+			{
+				name: "Still Water",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-06-still-water.mp3",
+				cover: "/assets/music/cover/ambient-06.webp",
+				lrc: "",
+			},
+			{
+				name: "Deep Calm",
+				artist: "Pixabay · Ambient",
+				url: "/assets/music/ambient-07-deep-calm.mp3",
+				cover: "/assets/music/cover/ambient-07.webp",
+				lrc: "",
+			},
 			{
 				name: "使一颗心免于哀伤",
 				artist: "知更鸟 / HOYO-MiX / Chevy",

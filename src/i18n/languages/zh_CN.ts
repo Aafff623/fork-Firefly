@@ -45,6 +45,7 @@ export const zh_CN: Translation = {
 	[Key.dynamicViewImage]: "查看图片 {index}",
 	[Key.dynamicSelectImage]: "切换到图片 {index}",
 	[Key.musicNoPlaying]: "暂未播放",
+	[Key.musicNowPlaying]: "正在播放",
 	[Key.musicLyrics]: "歌词",
 	[Key.musicVolume]: "音量",
 	[Key.musicPlayMode]: "切换播放模式",

@@ -45,6 +45,7 @@ export const ko: Translation = {
 	[Key.dynamicViewImage]: "이미지 {index} 보기",
 	[Key.dynamicSelectImage]: "이미지 {index} 선택",
 	[Key.musicNoPlaying]: "재생 중인 곡 없음",
+	[Key.musicNowPlaying]: "재생 중",
 	[Key.musicLyrics]: "가사",
 	[Key.musicVolume]: "볼륨",
 	[Key.musicPlayMode]: "재생 모드 전환",

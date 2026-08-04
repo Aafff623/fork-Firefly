@@ -69,6 +69,7 @@ enum I18nKey {
 
 	// Music Widget
 	musicNoPlaying = "musicNoPlaying",
+	musicNowPlaying = "musicNowPlaying",
 	musicLyrics = "musicLyrics",
 	musicVolume = "musicVolume",
 	musicPlayMode = "musicPlayMode",

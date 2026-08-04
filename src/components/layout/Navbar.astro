@@ -226,8 +226,16 @@ const logoVariants = await Promise.all(
                     <Icon is:inline name="lucide:github" class="text-[1.25rem]" />
                 </a>
                 {musicPlayerConfig.showInNavbar && (
-                    <button aria-label={i18n(I18nKey.music)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="music-player-switch">
+                    <button
+                        aria-label={i18n(I18nKey.music)}
+                        class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 relative"
+                        id="music-player-switch"
+                        data-i18n-idle={i18n(I18nKey.music)}
+                        data-i18n-playing={i18n(I18nKey.musicNowPlaying)}
+                    >
                         <Icon is:inline name="lucide:music" class="text-[1.25rem]"></Icon>
+                        {/* 播放中角标：关面板后仍可知正在播 */}
+                        <span class="music-playing-dot pointer-events-none absolute right-1 bottom-1 h-2 w-2 rounded-full bg-(--primary) opacity-0 scale-75 transition-all duration-200" aria-hidden="true"></span>
                     </button>
                 )}
                 {backgroundWallpaper.playerEnable && backgroundWallpaper.mode !== "none" && (
@@ -264,6 +272,24 @@ const logoVariants = await Promise.all(
     </div>
 </div>
 
+<style>
+	/* 导航栏音乐钮：播放中显示主题色小圆点 */
+	#music-player-switch[data-music-playing] .music-playing-dot {
+		opacity: 1;
+		scale: 1;
+		animation: music-dot-pulse 1.6s ease-in-out infinite;
+	}
+	@keyframes music-dot-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.45;
+		}
+	}
+</style>
+
 <script>
 function loadButtonScript() {
     let settingBtn = document.getElementById("display-settings-switch");
@@ -294,6 +320,25 @@ function loadButtonScript() {
                 musicPanel.classList.toggle("float-panel-closed");
             }
         };
+        // 迷你播放态：关面板后用角标 + aria 表示正在播放
+        function syncMusicPlayingBadge(playing: boolean) {
+            musicBtn!.toggleAttribute("data-music-playing", playing);
+            var idle = musicBtn!.getAttribute("data-i18n-idle") ?? "";
+            var nowPlaying = musicBtn!.getAttribute("data-i18n-playing") ?? "";
+            var label = playing && nowPlaying ? `${nowPlaying} · ${idle}` : idle;
+            musicBtn!.setAttribute("aria-label", label);
+            musicBtn!.setAttribute("title", label);
+        }
+        window.addEventListener("fm:play-state", function (e) {
+            var ce = e as CustomEvent;
+            syncMusicPlayingBadge(!!(ce.detail && ce.detail.isPlaying));
+        });
+        // Swup / 脚本晚到时按当前状态对齐
+        if (window.__fireflyMusic) {
+            try {
+                syncMusicPlayingBadge(!!window.__fireflyMusic.getState().isPlaying);
+            } catch (_) { /* ignore */ }
+        }
     }
 
     // 背景视频播放器控制按钮

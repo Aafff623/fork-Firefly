@@ -45,6 +45,7 @@ export const en: Translation = {
 	[Key.dynamicViewImage]: "View image {index}",
 	[Key.dynamicSelectImage]: "Select image {index}",
 	[Key.musicNoPlaying]: "No playing",
+	[Key.musicNowPlaying]: "Now playing",
 	[Key.musicLyrics]: "Lyrics",
 	[Key.musicVolume]: "Volume",
 	[Key.musicPlayMode]: "Switch Play Mode",

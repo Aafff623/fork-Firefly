@@ -45,6 +45,7 @@ export const ja: Translation = {
 	[Key.dynamicViewImage]: "画像 {index} を表示",
 	[Key.dynamicSelectImage]: "画像 {index} に切り替え",
 	[Key.musicNoPlaying]: "再生中なし",
+	[Key.musicNowPlaying]: "再生中",
 	[Key.musicLyrics]: "歌詞",
 	[Key.musicVolume]: "音量",
 	[Key.musicPlayMode]: "再生モードを切り替え",
