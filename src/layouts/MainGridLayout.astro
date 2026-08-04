@@ -981,7 +981,8 @@ const hasMultipleImages =
     {spritePetConfig.enable ? (
         <SpritePet
             client:only="svelte"
-            petId={spritePetConfig.petId}
+            defaultPetId={spritePetConfig.defaultPetId}
+            postPetId={spritePetConfig.postPetId}
             position={spritePetConfig.position}
             offsetX={spritePetConfig.offset.x}
             offsetY={spritePetConfig.offset.y}
@@ -991,8 +992,10 @@ const hasMultipleImages =
             clickInteract={spritePetConfig.clickInteract}
             lookFollow={spritePetConfig.lookFollow}
             reactToSiteUi={spritePetConfig.reactToSiteUi}
-            hideOnMobile={spritePetConfig.responsive.hideOnMobile}
+            hideOnMobileBrowse={spritePetConfig.responsive.hideOnMobileBrowse}
+            hideOnMobilePost={spritePetConfig.responsive.hideOnMobilePost}
             mobileBreakpoint={spritePetConfig.responsive.mobileBreakpoint}
+            roam={spritePetConfig.roam}
             zIndex={spritePetConfig.zIndex}
         />
     ) : (

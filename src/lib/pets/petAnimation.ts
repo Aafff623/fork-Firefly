@@ -1,8 +1,9 @@
 /**
- * Spritesheet animation core ported from cc-haha (MIT).
- * Source: https://github.com/NanmiCoder/cc-haha — desktop/src/features/pets/petAnimation.ts
- * Chat/agent state mapping removed for blog use.
+ * Spritesheet animation core (Codex / cc-haha atlas layout).
+ * Supports Atlas v2 (8×11 + look) and classic 8×9 (no look rows).
  */
+
+import type { PetAtlasVariant } from "@/lib/pets/builtinPets";
 
 export const PET_ATLAS_V2 = {
 	spriteVersionNumber: 2,
@@ -13,6 +14,25 @@ export const PET_ATLAS_V2 = {
 	width: 1536,
 	height: 2288,
 } as const;
+
+/** Classic Codex 8×9 (no look rows 9–10). Cell size matches v2. */
+export const PET_ATLAS_CLASSIC_8X9 = {
+	spriteVersionNumber: 1,
+	columns: 8,
+	rows: 9,
+	cellWidth: 192,
+	cellHeight: 208,
+	width: 1536,
+	height: 1872,
+} as const;
+
+export type PetAtlas =
+	| typeof PET_ATLAS_V2
+	| typeof PET_ATLAS_CLASSIC_8X9;
+
+export function getAtlas(variant: PetAtlasVariant): PetAtlas {
+	return variant === "classic-8x9" ? PET_ATLAS_CLASSIC_8X9 : PET_ATLAS_V2;
+}
 
 export const PET_ANIMATION_STATES = [
 	"idle",
@@ -101,33 +121,34 @@ export type PetAnimationPlaybackTick = PetAnimationPlaybackStep &
 export function getPetAtlasFrame(
 	rowIndex: number,
 	columnIndex: number,
+	atlas: PetAtlas = PET_ATLAS_V2,
 ): PetAtlasFrame {
 	if (
 		!Number.isInteger(rowIndex) ||
 		rowIndex < 0 ||
-		rowIndex >= PET_ATLAS_V2.rows
+		rowIndex >= atlas.rows
 	) {
 		throw new RangeError(
-			`rowIndex must be between 0 and ${PET_ATLAS_V2.rows - 1}`,
+			`rowIndex must be between 0 and ${atlas.rows - 1}`,
 		);
 	}
 	if (
 		!Number.isInteger(columnIndex) ||
 		columnIndex < 0 ||
-		columnIndex >= PET_ATLAS_V2.columns
+		columnIndex >= atlas.columns
 	) {
 		throw new RangeError(
-			`columnIndex must be between 0 and ${PET_ATLAS_V2.columns - 1}`,
+			`columnIndex must be between 0 and ${atlas.columns - 1}`,
 		);
 	}
 
 	return {
 		rowIndex,
 		columnIndex,
-		x: columnIndex * PET_ATLAS_V2.cellWidth,
-		y: rowIndex * PET_ATLAS_V2.cellHeight,
-		width: PET_ATLAS_V2.cellWidth,
-		height: PET_ATLAS_V2.cellHeight,
+		x: columnIndex * atlas.cellWidth,
+		y: rowIndex * atlas.cellHeight,
+		width: atlas.cellWidth,
+		height: atlas.cellHeight,
 	};
 }
 
@@ -180,30 +201,31 @@ export function getPetAnimationPlaybackFrames(
 			PET_IDLE_DURATION_MULTIPLIER,
 		);
 
+	// idle：只偶尔挥手，绝不自动连跳（跳只留给抓取/显式交互）
+	// jumping：只播 1 轮，避免机械连跳
 	const playback =
 		state === "idle"
 			? [
 					...Array.from({ length: PET_AMBIENT_IDLE_LOOPS }, slowIdle).flat(),
-					...getRepeatedPetAnimationFrames(
-						"waving",
-						PET_AMBIENT_GESTURE_LOOPS,
-						"action",
-					),
-					...Array.from({ length: PET_AMBIENT_IDLE_LOOPS }, slowIdle).flat(),
-					...getRepeatedPetAnimationFrames(
-						"jumping",
-						PET_AMBIENT_GESTURE_LOOPS,
-						"action",
-					),
+					...getRepeatedPetAnimationFrames("waving", 1, "action"),
+					...Array.from(
+						{ length: PET_AMBIENT_IDLE_LOOPS + 1 },
+						slowIdle,
+					).flat(),
 				]
-			: [
-					...getRepeatedPetAnimationFrames(
-						state,
-						PET_ACTIVE_BURST_LOOPS,
-						"action",
-					),
-					...slowIdle(),
-				];
+			: state === "jumping"
+				? [
+						...getRepeatedPetAnimationFrames("jumping", 1, "action"),
+						...slowIdle(),
+					]
+				: [
+						...getRepeatedPetAnimationFrames(
+							state,
+							PET_ACTIVE_BURST_LOOPS,
+							"action",
+						),
+						...slowIdle(),
+					];
 
 	petAnimationPlaybackCache.set(state, playback);
 	return playback;

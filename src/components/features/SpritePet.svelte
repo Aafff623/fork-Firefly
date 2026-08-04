@@ -1,25 +1,42 @@
 <script lang="ts">
 /**
- * 站内桌宠：cc-haha spritesheet 渲染核的 Svelte 移植（MIT）。
- * 交互：分部位点击、双击、拖拽、站点控件联动。
+ * 站内桌宠：spritesheet 渲染核。
+ * 双宠：浏览态 defaultPetId · 文章页 postPetId（单实例路由换皮）。
  */
 import { onDestroy, onMount } from "svelte";
-import { type BuiltinPetId, findBuiltinPet } from "@/lib/pets/builtinPets";
 import {
+	type BuiltinPetId,
+	findBuiltinPet,
+	resolvePetIdForPath,
+} from "@/lib/pets/builtinPets";
+import {
+	getAtlas,
 	getPetAnimationDurationMs,
 	getPetAnimationPlaybackStep,
 	getPetAnimationPlaybackTickAtElapsedMs,
 	getPetLookFrame,
-	PET_ATLAS_V2,
 	type PetAnimationState,
 	type PetAtlasFrame,
 	type PetLookDirection,
 	quantizePetLookDirection,
 } from "@/lib/pets/petAnimation";
+import {
+	facingForCorner,
+	findVisibleAnchorById,
+	isViewportCornerPark,
+	listVisibleRoamAnchors,
+	pickNextRoamAnchor,
+	type PetRoamAnchorId,
+	type PetRoamCorner,
+	type PetRoamFacing,
+	type PetRoamResolvedAnchor,
+} from "@/lib/pets/petRoamAnchors";
+import type { SpritePetRoamConfig } from "@/types/petConfig";
 import { url } from "@/utils/url-utils";
 
 interface Props {
-	petId: BuiltinPetId;
+	defaultPetId: BuiltinPetId;
+	postPetId: BuiltinPetId;
 	position?: "bottom-left" | "bottom-right";
 	offsetX?: number;
 	offsetY?: number;
@@ -29,28 +46,45 @@ interface Props {
 	clickInteract?: boolean;
 	lookFollow?: boolean;
 	reactToSiteUi?: boolean;
-	hideOnMobile?: boolean;
+	hideOnMobileBrowse?: boolean;
+	hideOnMobilePost?: boolean;
 	mobileBreakpoint?: number;
+	roam?: SpritePetRoamConfig;
 	zIndex?: number;
 }
 
 let {
-	petId,
-	position = "bottom-left",
-	offsetX = 12,
-	offsetY = 12,
+	defaultPetId,
+	postPetId,
+	position = "bottom-right",
+	offsetX = 28,
+	offsetY = 96,
 	size = 128,
 	motionEnabled = true,
 	draggable = true,
 	clickInteract = true,
 	lookFollow = true,
 	reactToSiteUi = true,
-	hideOnMobile = true,
+	hideOnMobileBrowse = false,
+	hideOnMobilePost = true,
 	mobileBreakpoint = 768,
+	roam = {
+		enable: true,
+		intervalMs: 5_000,
+		minIntervalMs: 5_000,
+		jitterMs: 0,
+		fadeMs: 380,
+		portalHoldMs: 160,
+		scrollLeaveDelayMs: 2_400,
+		resumeAfterDragMs: 2_000,
+		pauseWhenPinned: false,
+	},
 	zIndex = 1000,
 }: Props = $props();
 
-const STORAGE_KEY = "firefly-sprite-pet-pos";
+/** v3：默认锚到「最新动态」旁，废弃旧左下角记忆 */
+/** v4：位置必须相对侧栏卡片角；丢弃旧版贴视口右下的坐标 */
+const STORAGE_KEY = "firefly-sprite-pet-pos-v4";
 const DRAG_THRESHOLD_PX = 4;
 /** 进入视线跟随的距离；略大一点，避免边缘抖帧 */
 const LOOK_DEADZONE_PX = 28;
@@ -77,7 +111,7 @@ const SITE_UI_REACTIONS: ReadonlyArray<{
 	{
 		selector:
 			".floating-controls-container button, #back-to-top, [aria-label*='Top'], [aria-label*='顶部']",
-		state: "jumping",
+		state: "waving",
 	},
 	{ selector: "nav a, .navbar a, header a", state: "running" },
 	{
@@ -88,33 +122,77 @@ const SITE_UI_REACTIONS: ReadonlyArray<{
 	{
 		selector:
 			"[aria-label*='like' i], [aria-label*='赞'], .sponsor button, button[data-like]",
-		state: "jumping",
+		state: "waving",
 	},
 ];
 
 const IDLE_WAITING_MS = 45_000;
 const READ_SCROLL_TRIGGER_MS = 2_400;
 const SCENARIO_COOLDOWN_MS = 8_000;
+/** 路由换皮淡入淡出时长（ms）；reduced-motion 时跳过 */
+const SKIN_CROSSFADE_MS = 200;
+const THEME_PULSE_MS = 420;
 
 const CLICK_POOL_HEAD: PetAnimationState[] = ["waving", "waving", "review"];
 const CLICK_POOL_BODY: PetAnimationState[] = ["review", "waiting", "waving"];
-const CLICK_POOL_FEET: PetAnimationState[] = ["jumping", "running", "jumping"];
+/** 脚部点击偏轻动作；跳只在「抓取」时播一次 */
+const CLICK_POOL_FEET: PetAnimationState[] = ["running", "waving", "waiting"];
 
-const pet = $derived(findBuiltinPet(petId));
-const height = $derived(
-	(size * PET_ATLAS_V2.cellHeight) / PET_ATLAS_V2.cellWidth,
-);
+function isPostPath(pathname = window.location.pathname) {
+	return /\/posts\//.test(pathname);
+}
+
+function initialPetId(): BuiltinPetId {
+	if (typeof window === "undefined") return defaultPetId;
+	return resolvePetIdForPath(
+		window.location.pathname,
+		defaultPetId,
+		postPetId,
+	);
+}
+
+let activePetId: BuiltinPetId = $state(initialPetId());
+
+const pet = $derived(findBuiltinPet(activePetId));
+const atlas = $derived(getAtlas(pet.atlasVariant));
+const height = $derived((size * atlas.cellHeight) / atlas.cellWidth);
 const atlasUrl = $derived(url(pet.spritesheetPath));
+/** classic-8x9 无 look 行，强制关闭视线跟随 */
+const effectiveLookFollow = $derived(
+	lookFollow && pet.atlasVariant === "v2",
+);
 
 let rootEl: HTMLDivElement | undefined = $state();
 let spriteEl: HTMLDivElement | undefined = $state();
 let hidden = $state(false);
 let prefersReducedMotion = $state(false);
+/** 换皮交叉淡化用（仅 opacity，不动 background-position） */
+let skinOpacity = $state(1);
+/** 换皮代数：并发 Swup 钩子只让最新一次落地，避免 opacity 卡在 0 / 皮错乱 */
+let skinSwapGen = 0;
+let themePulse = $state(false);
 let animationState: PetAnimationState = $state("idle");
 let lookDirection: PetLookDirection | null | undefined = $state(undefined);
 let posX = $state<number | null>(null);
 let posY = $state<number | null>(null);
 let dragging = $state(false);
+/** card=挂在侧栏卡片上随卡片走；free=页面绝对坐标（拖放后不跟视口滚） */
+let dockMode = $state<"card" | "free">("free");
+let dockCorner = $state<PetRoamCorner>("bottom-right");
+/** 停靠时面朝内容：左留白朝右、右留白朝左 */
+let dockFacing = $state<PetRoamFacing>("right");
+let dockHost: HTMLElement | null = null;
+/** 当前贴着的侧栏锚点（浏览态游走） */
+let currentAnchorId: PetRoamAnchorId | null = null;
+let roamTimer: ReturnType<typeof setTimeout> | null = null;
+let scrollLeaveTimer: ReturnType<typeof setTimeout> | null = null;
+let resumeAfterDragTimer: ReturnType<typeof setTimeout> | null = null;
+let roamMoving = false;
+let roamLoopActive = false;
+/** 本轮 5s 倒计时锁定的下一张卡；拖拽会作废，松开后 2s 再重新随机 */
+let plannedRoamTargetId: PetRoamAnchorId | null = null;
+/** 钻洞换位代数：滚动/定时并发时只让最后一次落地 */
+let roamPortalGen = 0;
 
 let playbackTimer: ReturnType<typeof setTimeout> | null = null;
 let transientTimer: ReturnType<typeof setTimeout> | null = null;
@@ -131,6 +209,8 @@ let gazeActive = $state(false);
 let stickyLook: PetLookDirection | null | undefined;
 let pointerPressed = false;
 let captureEl: HTMLElement | null = null;
+/** 抓取瞬间正在播「跳一下」，未结束前不切成跑步帧 */
+let grabJumping = false;
 let dragStart: {
 	pointerId: number;
 	startClientX: number;
@@ -162,7 +242,6 @@ function resolveLookWithHysteresis(
 
 	if (!inGaze && distance <= LOOK_DEADZONE_PX) return undefined;
 	if (inGaze && distance <= LOOK_EXIT_DEADZONE_PX) {
-		// 仍在跟随区边缘：保持中性脸，但不立刻退出 gaze（由 leave 事件退出）
 		return null;
 	}
 
@@ -172,7 +251,6 @@ function resolveLookWithHysteresis(
 	if (next === current) return current;
 
 	const angle = ((Math.atan2(deltaX, -deltaY) * 180) / Math.PI + 360) % 360;
-	// 还没离开当前扇区足够远 → 粘住，避免来回跳帧
 	if (angularDistanceDeg(angle, current) < 11.25 + LOOK_STICKINESS_DEG) {
 		return current;
 	}
@@ -180,7 +258,7 @@ function resolveLookWithHysteresis(
 }
 
 function applyGazeFrame(direction: PetLookDirection | null) {
-	if (!spriteEl) return;
+	if (!spriteEl || !effectiveLookFollow) return;
 	stopPlayback();
 	gazeActive = true;
 	stickyLook = direction;
@@ -203,40 +281,8 @@ function pick<T>(items: readonly T[]): T {
 	return items[Math.floor(Math.random() * items.length)] ?? items[0];
 }
 
-function getDadaFrameOffset(frame: PetAtlasFrame): {
-	offsetX: number;
-	offsetY: number;
-} {
-	const centerX: Record<number, number[]> = {
-		1: [8.5, 6.5, 7, 14, 13.5, 7, 3, -1.5],
-		2: [-3.5, 3, 2.5, 3, 5, -2, -4.5, -7.5],
-	};
-	const baselineY: Record<number, number[]> = {
-		1: [2, 3, 3, 0, 3, 0, 0, 0],
-		2: [-6, 1, -1, 0, 0, 0, 0, 0],
-	};
-	return {
-		offsetX:
-			((centerX[frame.rowIndex]?.[frame.columnIndex] ?? 0) * size) /
-			PET_ATLAS_V2.cellWidth,
-		offsetY:
-			((baselineY[frame.rowIndex]?.[frame.columnIndex] ?? 0) * height) /
-			PET_ATLAS_V2.cellHeight,
-	};
-}
-
-function getFrameOffset(frame: PetAtlasFrame): {
-	offsetX: number;
-	offsetY: number;
-} {
-	return pet.id === "dada-code"
-		? getDadaFrameOffset(frame)
-		: { offsetX: 0, offsetY: 0 };
-}
-
 function atlasBackgroundPosition(frame: PetAtlasFrame): string {
-	const { offsetX: ox, offsetY: oy } = getFrameOffset(frame);
-	return `${-frame.columnIndex * size + ox}px ${-frame.rowIndex * height + oy}px`;
+	return `${-frame.columnIndex * size}px ${-frame.rowIndex * height}px`;
 }
 
 function applyFrame(
@@ -263,8 +309,7 @@ function startPlayback(state: PetAnimationState) {
 	stopPlayback();
 	if (!spriteEl) return;
 
-	// 视线跟随单独渲染，避免每次转头都重启动画循环
-	if (state === "idle" && stickyLook !== undefined) {
+	if (state === "idle" && stickyLook !== undefined && effectiveLookFollow) {
 		applyGazeFrame(stickyLook);
 		return;
 	}
@@ -330,12 +375,101 @@ function canTriggerScenario(key: string, cooldownMs = SCENARIO_COOLDOWN_MS) {
 	return true;
 }
 
-function isPostPath(pathname = window.location.pathname) {
-	return /\/posts\//.test(pathname);
-}
-
 function is404Page() {
 	return Boolean(document.querySelector('[data-page="404"]'));
+}
+
+function updateHidden() {
+	const narrow = window.innerWidth <= mobileBreakpoint;
+	if (isPostPath()) {
+		hidden = hideOnMobilePost && narrow;
+	} else {
+		hidden = hideOnMobileBrowse && narrow;
+	}
+	// 从隐藏恢复时务必可见（{#if !hidden} 重建节点时沿用旧 skinOpacity）
+	if (!hidden && skinOpacity < 1) {
+		skinOpacity = 1;
+	}
+	if (hidden || isPostPath()) {
+		stopRoamLoop();
+	} else if (!userPinnedPosition || !roam.pauseWhenPinned) {
+		startRoamLoop();
+	}
+}
+
+function waitMs(ms: number) {
+	return new Promise<void>((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
+
+function preloadPetSheets() {
+	const ids: BuiltinPetId[] = [defaultPetId, postPetId];
+	for (const id of ids) {
+		const sheet = findBuiltinPet(id);
+		const img = new Image();
+		img.decoding = "async";
+		img.src = url(sheet.spritesheetPath);
+	}
+}
+
+function clearTransientAndGaze() {
+	stopPlayback();
+	gazeActive = false;
+	stickyLook = undefined;
+	lookDirection = undefined;
+	if (transientTimer) {
+		clearTimeout(transientTimer);
+		transientTimer = null;
+	}
+}
+
+/**
+ * 按路由换皮；交叉淡化后切换 spritesheet。
+ * 返回是否发生了切换（Promise，供 Swup 钩子 await）。
+ */
+async function syncPetFromPath(
+	pathname = window.location.pathname,
+): Promise<boolean> {
+	const next = resolvePetIdForPath(pathname, defaultPetId, postPetId);
+	updateHidden();
+	if (next !== defaultPetId || /\/posts\//.test(pathname)) {
+		stopRoamLoop();
+	}
+	// 同皮也强制可见，避免上次淡出被并发打断后卡在 opacity:0
+	if (next === activePetId) {
+		skinOpacity = 1;
+		return false;
+	}
+
+	const gen = ++skinSwapGen;
+	clearTransientAndGaze();
+
+	const useFade = effectiveMotion && !prefersReducedMotion;
+	if (useFade) {
+		skinOpacity = 0;
+		await waitMs(SKIN_CROSSFADE_MS);
+		if (gen !== skinSwapGen) return false;
+	}
+
+	activePetId = next;
+	// 等一帧让 background-image / background-size 落地再淡入
+	await waitMs(useFade ? 32 : 0);
+	if (gen !== skinSwapGen) return false;
+
+	skinOpacity = 1;
+	if (useFade) {
+		await waitMs(SKIN_CROSSFADE_MS);
+	}
+	return gen === skinSwapGen;
+}
+
+function pulseForThemeChange() {
+	if (!effectiveMotion || prefersReducedMotion || hidden) return;
+	themePulse = true;
+	window.setTimeout(() => {
+		themePulse = false;
+	}, THEME_PULSE_MS);
 }
 
 function reactToRoute() {
@@ -377,25 +511,23 @@ function actionForPetClick(
 	clientY: number,
 	isDouble: boolean,
 ): PetAnimationState {
-	if (isDouble) return "jumping";
+	// 双击也改为轻挥手，避免「到处在跳」
+	if (isDouble) return "waving";
 	const zone = resolveHitZone(clientY);
 	if (zone === "head") return pick(CLICK_POOL_HEAD);
 	if (zone === "feet") return pick(CLICK_POOL_FEET);
 	return pick(CLICK_POOL_BODY);
 }
 
-function updateHidden() {
-	if (!hideOnMobile) {
-		hidden = false;
-		return;
-	}
-	hidden = window.innerWidth <= mobileBreakpoint;
-}
+/** 用户是否拖过（本会话或 v3 存储）；有则不再自动贴「最新动态」 */
+let userPinnedPosition = false;
 
-function loadStoredPosition() {
+function loadStoredPosition(): boolean {
 	try {
+		// 清掉旧 key，避免继续停在视口右下
+		localStorage.removeItem("firefly-sprite-pet-pos-v3");
 		const raw = localStorage.getItem(STORAGE_KEY);
-		if (!raw) return;
+		if (!raw) return false;
 		const parsed = JSON.parse(raw) as { x?: number; y?: number };
 		if (
 			typeof parsed.x === "number" &&
@@ -403,26 +535,396 @@ function loadStoredPosition() {
 			Number.isFinite(parsed.x) &&
 			Number.isFinite(parsed.y)
 		) {
+			if (isViewportCornerPark(parsed.x, parsed.y, size, height)) {
+				localStorage.removeItem(STORAGE_KEY);
+				return false;
+			}
 			posX = parsed.x;
 			posY = parsed.y;
+			userPinnedPosition = true;
+			return true;
 		}
 	} catch {
 		/* ignore */
 	}
+	return false;
 }
 
 function persistPosition(x: number, y: number) {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify({ x, y }));
+		userPinnedPosition = true;
 	} catch {
 		/* ignore */
 	}
+}
+
+function resolveDockHost(el: HTMLElement): HTMLElement {
+	const layout = el.closest("widget-layout");
+	return layout instanceof HTMLElement ? layout : el;
+}
+
+function clearDockHost() {
+	if (dockHost) {
+		dockHost.classList.remove("has-sprite-pet-anchor");
+		dockHost = null;
+	}
+}
+
+/** 从卡片卸下，按当前屏幕坐标挂回 body（拖拽 / 自由停靠用） */
+function undockToBodyAtCurrentScreenPos() {
+	if (!rootEl || typeof document === "undefined") return;
+	const r = rootEl.getBoundingClientRect();
+	posX = r.left;
+	posY = r.top;
+	clearDockHost();
+	dockMode = "free";
+	if (rootEl.parentElement !== document.body) {
+		document.body.appendChild(rootEl);
+	}
+}
+
+/** 挂到侧栏卡片外侧留白：随卡片滚动/sticky，朝向内容，不挡正文 */
+function dockToCard(
+	host: HTMLElement,
+	corner: PetRoamCorner,
+	anchorId: PetRoamAnchorId,
+	facing: PetRoamFacing = facingForCorner(corner),
+) {
+	if (!rootEl || typeof document === "undefined") return;
+	const mountEl = resolveDockHost(host);
+	clearDockHost();
+	mountEl.classList.add("has-sprite-pet-anchor");
+	mountEl.appendChild(rootEl);
+	dockHost = mountEl;
+	dockCorner = corner;
+	dockFacing = facing;
+	dockMode = "card";
+	posX = null;
+	posY = null;
+	currentAnchorId = anchorId;
+}
+
+/**
+ * 贴在侧栏「最新动态」卡片角（须在视口内）。
+ * 失败则尝试任意可见侧栏卡角；禁止用视口右下当长期落点。
+ */
+function placeNearDynamicsWidget(): boolean {
+	const dynamics = findVisibleAnchorById("dynamics", size, height);
+	if (!dynamics) return false;
+	dockToCard(dynamics.el, dynamics.corner, dynamics.id, dynamics.facing);
+	return true;
+}
+
+function placeOnAnyVisibleAnchor(): boolean {
+	const visible = listVisibleRoamAnchors(size, height);
+	const pick =
+		visible.find((a) => a.id === "dynamics") ??
+		pickNextRoamAnchor(visible, null);
+	if (!pick) return false;
+	dockToCard(pick.el, pick.corner, pick.id, pick.facing);
+	return true;
+}
+
+/** 浏览态默认落点：侧栏卡片角；找不到锚点时继续重试，不钉死窗口角 */
+function applyBrowseDefaultPlacement() {
+	if (userPinnedPosition || isPostPath()) return;
+	if (placeNearDynamicsWidget()) return;
+	if (placeOnAnyVisibleAnchor()) return;
+	// 暂留 null 仅作首帧占位；schedule 会再贴卡片
+	posX = null;
+	posY = null;
+	currentAnchorId = null;
+}
+
+function scheduleBrowseDefaultPlacement() {
+	if (userPinnedPosition || isPostPath()) return;
+	const tryPlace = () => {
+		if (userPinnedPosition || isPostPath()) return;
+		if (placeNearDynamicsWidget()) return;
+		if (placeOnAnyVisibleAnchor()) return;
+	};
+	requestAnimationFrame(tryPlace);
+	window.setTimeout(tryPlace, 120);
+	window.setTimeout(tryPlace, 360);
+	window.setTimeout(tryPlace, 800);
+	window.setTimeout(tryPlace, 1600);
+}
+
+function canRoamNow(): boolean {
+	if (!roam.enable || hidden) return false;
+	if (isPostPath()) return false;
+	if (activePetId !== defaultPetId) return false;
+	if (roam.pauseWhenPinned && userPinnedPosition) return false;
+	if (dragging || roamMoving) return false;
+	return true;
+}
+
+function clearScrollLeaveTimer() {
+	if (scrollLeaveTimer) {
+		clearTimeout(scrollLeaveTimer);
+		scrollLeaveTimer = null;
+	}
+}
+
+function clearResumeAfterDragTimer() {
+	if (resumeAfterDragTimer) {
+		clearTimeout(resumeAfterDragTimer);
+		resumeAfterDragTimer = null;
+	}
+}
+
+function clearPlannedRoamTarget() {
+	plannedRoamTargetId = null;
+}
+
+function stopRoamLoop() {
+	roamLoopActive = false;
+	if (roamTimer) {
+		clearTimeout(roamTimer);
+		roamTimer = null;
+	}
+	clearScrollLeaveTimer();
+	clearResumeAfterDragTimer();
+	clearPlannedRoamTarget();
+	roamPortalGen += 1;
+	roamMoving = false;
+	if (skinOpacity < 1) {
+		skinOpacity = 1;
+	}
+}
+
+/**
+ * 用户松开拖拽后：作废原计划目标 → 2s 倒计时 → 在当前视口卡里重新随机落点。
+ * 拖拽期间不计时；只有松开才开表。
+ */
+function scheduleResumeRoamAfterDrag() {
+	if (!roam.enable || isPostPath() || hidden) return;
+	if (roam.pauseWhenPinned) return;
+	clearResumeAfterDragTimer();
+	clearScrollLeaveTimer();
+	clearPlannedRoamTarget();
+	if (roamTimer) {
+		clearTimeout(roamTimer);
+		roamTimer = null;
+	}
+	roamLoopActive = false;
+
+	const delay = Math.max(0, roam.resumeAfterDragMs ?? 2_000);
+	resumeAfterDragTimer = setTimeout(() => {
+		resumeAfterDragTimer = null;
+		if (hidden || isPostPath() || dragging) return;
+		userPinnedPosition = false;
+		try {
+			localStorage.removeItem(STORAGE_KEY);
+		} catch {
+			/* ignore */
+		}
+		void (async () => {
+			const visible = listVisibleRoamAnchors(size, height);
+			// 拖后目标与原先计划无关：视口内重新随机（可含拖前那张卡）
+			const target =
+				pickNextRoamAnchor(visible, null) ?? visible[0] ?? null;
+			if (target) {
+				await roamToAnchor(target);
+			} else {
+				placeOnAnyVisibleAnchor();
+			}
+			startRoamLoop();
+		})();
+	}, delay);
+}
+
+/** 正常换卡：固定 intervalMs；仅 jitterMs>0 时才抖动（默认 0） */
+function nextRoamDelayMs(): number {
+	const base = Math.max(roam.minIntervalMs, roam.intervalMs);
+	if (roam.jitterMs <= 0) return base;
+	const jitter = Math.floor(Math.random() * roam.jitterMs);
+	return Math.max(roam.minIntervalMs, roam.intervalMs + jitter - roam.jitterMs / 2);
+}
+
+/**
+ * 钻洞换位：原地淡出（像钻进小洞）→ 挪到目标卡角 → 淡入并跑两步爬出。
+ * 不再整屏插值闪现。
+ */
+async function portalToAnchor(target: PetRoamResolvedAnchor) {
+	const gen = ++roamPortalGen;
+	const fadeMs = Math.max(120, roam.fadeMs ?? 380);
+	const holdMs = Math.max(0, roam.portalHoldMs ?? 160);
+	const useFade = effectiveMotion && !prefersReducedMotion;
+
+	roamMoving = true;
+	gazeActive = false;
+	stickyLook = undefined;
+	lookDirection = undefined;
+	stopPlayback();
+
+	try {
+		// 进洞：先播一小段跑，再压透明
+		if (useFade) {
+			animationState = "running";
+			await waitMs(Math.min(220, fadeMs));
+			if (gen !== roamPortalGen) return;
+			skinOpacity = 0;
+			await waitMs(fadeMs);
+			if (gen !== roamPortalGen) return;
+		}
+
+		// 换挂到目标卡片外侧留白（随卡片走，不用视口坐标追滚动）
+		dockToCard(target.el, target.corner, target.id, target.facing);
+
+		if (useFade) {
+			await waitMs(holdMs);
+			if (gen !== roamPortalGen) return;
+			// 出洞：透明拉回 + 朝内容方向小跑出来
+			animationState =
+				target.facing === "right" ? "running-right" : "running-left";
+			skinOpacity = 1;
+			await waitMs(fadeMs);
+			if (gen !== roamPortalGen) return;
+		} else {
+			skinOpacity = 1;
+		}
+
+		if (effectiveMotion) {
+			playTransient(target.arrivalAction, 1);
+		} else {
+			animationState = "idle";
+		}
+	} finally {
+		if (gen === roamPortalGen) {
+			roamMoving = false;
+			if (skinOpacity < 1) skinOpacity = 1;
+		}
+	}
+}
+
+async function roamToAnchor(target: PetRoamResolvedAnchor) {
+	if (!canRoamNow() && !roamMoving) return;
+	await portalToAnchor(target);
+}
+
+async function performRoamStep() {
+	if (!canRoamNow()) return;
+	const visible = listVisibleRoamAnchors(size, height);
+	if (visible.length === 0) {
+		clearPlannedRoamTarget();
+		return;
+	}
+
+	const currentStillVisible =
+		currentAnchorId != null &&
+		visible.some((a) => a.id === currentAnchorId);
+
+	// 定时换卡：只在当前卡仍可见时主动换；滚丢的交给 scroll 延迟逻辑
+	if (!currentStillVisible) {
+		clearPlannedRoamTarget();
+		return;
+	}
+
+	// 优先用开表时锁定的目标；若已滚出视口则当场另抽一张（仍排除当前卡）
+	let target =
+		(plannedRoamTargetId
+			? (visible.find((a) => a.id === plannedRoamTargetId) ?? null)
+			: null) ?? pickNextRoamAnchor(visible, currentAnchorId);
+	clearPlannedRoamTarget();
+	if (!target || target.id === currentAnchorId) return;
+	await roamToAnchor(target);
+}
+
+function scheduleNextRoam() {
+	if (!roamLoopActive) return;
+	if (roamTimer) clearTimeout(roamTimer);
+
+	// 开 5s 表时就锁定下一张卡（随机且 ≠ 当前）；拖拽会 stopRoamLoop 作废
+	const visible = listVisibleRoamAnchors(size, height);
+	const planned = pickNextRoamAnchor(visible, currentAnchorId);
+	plannedRoamTargetId = planned?.id ?? null;
+
+	roamTimer = setTimeout(() => {
+		roamTimer = null;
+		void (async () => {
+			await performRoamStep();
+			scheduleNextRoam();
+		})();
+	}, nextRoamDelayMs());
+}
+
+function startRoamLoop() {
+	if (!roam.enable) return;
+	if (roam.pauseWhenPinned && userPinnedPosition) return;
+	if (isPostPath() || activePetId !== defaultPetId || hidden) return;
+	if (roamLoopActive) return;
+	roamLoopActive = true;
+	scheduleNextRoam();
+}
+
+/**
+ * 滚动后当前卡滚出：先等几秒（用户可能还在滑），再钻洞挪到仍可见的卡。
+ * 若中途又滚回原卡，取消这次换位。
+ */
+function onScrollRoamCheck() {
+	if (!roam.enable || hidden || isPostPath()) return;
+	if (activePetId !== defaultPetId) return;
+	if (roam.pauseWhenPinned && userPinnedPosition) return;
+	if (roamMoving) return;
+
+	const visible = listVisibleRoamAnchors(size, height);
+	const ok =
+		currentAnchorId != null &&
+		visible.some((a) => a.id === currentAnchorId);
+
+	if (ok || visible.length === 0) {
+		clearScrollLeaveTimer();
+		return;
+	}
+
+	if (scrollLeaveTimer) return;
+	const delay = Math.max(800, roam.scrollLeaveDelayMs ?? 2_400);
+	scrollLeaveTimer = setTimeout(() => {
+		scrollLeaveTimer = null;
+		if (!canRoamNow()) return;
+		const still = listVisibleRoamAnchors(size, height);
+		if (still.length === 0) return;
+		if (
+			currentAnchorId != null &&
+			still.some((a) => a.id === currentAnchorId)
+		) {
+			return;
+		}
+		const target = pickNextRoamAnchor(still, null) ?? still[0];
+		if (target) void roamToAnchor(target);
+	}, delay);
+}
+
+function scrollOffset(): { x: number; y: number } {
+	if (typeof window === "undefined") return { x: 0, y: 0 };
+	return {
+		x: window.scrollX || document.documentElement.scrollLeft || 0,
+		y: window.scrollY || document.documentElement.scrollTop || 0,
+	};
+}
+
+/** 视口坐标 → 文档坐标（拖放后钉在页面上，不跟窗口滚） */
+function viewportToPage(x: number, y: number): { x: number; y: number } {
+	const s = scrollOffset();
+	return { x: x + s.x, y: y + s.y };
 }
 
 function clampToViewport(x: number, y: number): { x: number; y: number } {
 	if (typeof window === "undefined") return { x, y };
 	const maxX = Math.max(0, window.innerWidth - size);
 	const maxY = Math.max(0, window.innerHeight - height);
+	return {
+		x: Math.min(maxX, Math.max(0, x)),
+		y: Math.min(maxY, Math.max(0, y)),
+	};
+}
+
+function clampToDocument(x: number, y: number): { x: number; y: number } {
+	if (typeof document === "undefined") return { x, y };
+	const maxX = Math.max(0, document.documentElement.scrollWidth - size);
+	const maxY = Math.max(0, document.documentElement.scrollHeight - height);
 	return {
 		x: Math.min(maxX, Math.max(0, x)),
 		y: Math.min(maxY, Math.max(0, y)),
@@ -438,6 +940,15 @@ function defaultStyle(): string {
 }
 
 function positionedStyle(): string {
+	if (dockMode === "card") {
+		// 大半身子落在卡片外侧页边留白，只留一点「踩」卡边，避免挡正文
+		const sink = Math.round(height * 0.08);
+		const out = Math.round(size * 0.82);
+		if (dockCorner === "bottom-left") {
+			return `left:${-out}px;right:auto;bottom:${-sink}px;top:auto;`;
+		}
+		return `right:${-out}px;left:auto;bottom:${-sink}px;top:auto;`;
+	}
 	if (posX === null || posY === null) return defaultStyle();
 	return `left:${posX}px;top:${posY}px;right:auto;bottom:auto;`;
 }
@@ -448,7 +959,7 @@ function flushPendingLook() {
 	pendingLook = null;
 	if (!pending || !rootEl) return;
 	if (
-		!lookFollow ||
+		!effectiveLookFollow ||
 		!effectiveMotion ||
 		pointerPressed ||
 		dragging ||
@@ -475,7 +986,7 @@ function flushPendingLook() {
 
 function onPointerMoveLook(event: PointerEvent) {
 	if (
-		!lookFollow ||
+		!effectiveLookFollow ||
 		!effectiveMotion ||
 		pointerPressed ||
 		dragging ||
@@ -536,8 +1047,9 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 	unbindDragWindowListeners();
 	releaseCaptureSafe(pointerId);
 
+	grabJumping = false;
+
 	if (!wasDrag) {
-		// 普通点击：恢复 idle，交给 onclick 播交互动作
 		if (animationState === "idle") startPlayback("idle");
 		return;
 	}
@@ -549,11 +1061,28 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 
 	const dx = clientX - origin.startClientX;
 	const dy = clientY - origin.startClientY;
-	const next = clampToViewport(origin.originLeft + dx, origin.originTop + dy);
-	posX = next.x;
-	posY = next.y;
-	persistPosition(posX, posY);
-	playTransient("jumping", 2);
+	// 拖拽中用视口坐标跟手；松手换成文档坐标，滚动窗口时停在原落点
+	const screen = clampToViewport(origin.originLeft + dx, origin.originTop + dy);
+	const rawPage = viewportToPage(screen.x, screen.y);
+	const page = clampToDocument(rawPage.x, rawPage.y);
+	posX = page.x;
+	posY = page.y;
+	dockMode = "free";
+	currentAnchorId = null;
+	userPinnedPosition = false;
+	// 拖拽只临时改坐标，不永久钉死；松开后开快速倒计时再回卡片游走
+	animationState = "idle";
+	if (roam.pauseWhenPinned) {
+		persistPosition(posX, posY);
+		userPinnedPosition = true;
+	} else {
+		try {
+			localStorage.removeItem(STORAGE_KEY);
+		} catch {
+			/* ignore */
+		}
+		scheduleResumeRoamAfterDrag();
+	}
 }
 
 function onWindowPointerMove(event: PointerEvent) {
@@ -566,12 +1095,36 @@ function onWindowPointerMove(event: PointerEvent) {
 		if (Math.hypot(dxFromOrigin, dyFromOrigin) < DRAG_THRESHOLD_PX) return;
 		dragStart.moved = true;
 		dragging = true;
+		// 一开始拖就改成视口 fixed 跟手：卡片卸下 / 页面绝对坐标也切回屏幕坐标
+		if (dockMode === "card") {
+			undockToBodyAtCurrentScreenPos();
+			dragStart.originLeft = posX ?? dragStart.originLeft;
+			dragStart.originTop = posY ?? dragStart.originTop;
+		} else if (dockMode === "free" && rootEl) {
+			const r = rootEl.getBoundingClientRect();
+			posX = r.left;
+			posY = r.top;
+			dragStart.originLeft = r.left;
+			dragStart.originTop = r.top;
+		}
+		stopRoamLoop();
 		gazeActive = false;
 		stickyLook = undefined;
 		lookDirection = undefined;
+		// 抓起来：只跳一下（单轮），不循环
+		grabJumping = true;
+		playTransient("jumping", 1, () => {
+			grabJumping = false;
+			// 若仍在拖，接上跑步；避免 playTransient 收尾强制 idle 闪一下
+			if (dragging && dragStart) {
+				animationState =
+					dragStart.facing === "right"
+						? "running-left"
+						: "running-right";
+			}
+		});
 	}
 
-	// 按瞬时水平位移转向；几乎静止时保持上一朝向
 	if (Math.abs(stepX) >= 1) {
 		dragStart.facing = stepX > 0 ? "right" : "left";
 	}
@@ -584,7 +1137,8 @@ function onWindowPointerMove(event: PointerEvent) {
 	);
 	posX = next.x;
 	posY = next.y;
-	// 图集朝向与屏幕拖拽方向相反，这里按视觉朝向映射
+	// 抓取跳跃播完前保持跳帧；之后才跟拖拽方向小跑
+	if (grabJumping) return;
 	animationState =
 		dragStart.facing === "right" ? "running-left" : "running-right";
 }
@@ -597,7 +1151,6 @@ function onPointerDown(event: PointerEvent) {
 	if (!draggable || event.button !== 0 || !rootEl) return;
 	if (!(event.currentTarget instanceof HTMLElement)) return;
 
-	// 按下即暂停视线跟随，避免和拖拽抢事件
 	pointerPressed = true;
 	pendingLook = null;
 	if (lookRaf) {
@@ -621,7 +1174,6 @@ function onPointerDown(event: PointerEvent) {
 		facing: "right",
 	};
 
-	// 捕获必须打在当前按钮上；打在父节点会导致 pointerup 收不到、拖拽卡死
 	captureEl = event.currentTarget;
 	try {
 		captureEl.setPointerCapture(event.pointerId);
@@ -650,8 +1202,8 @@ function onSitePointerDown(event: Event) {
 	if (rootEl?.contains(target)) return;
 	resetIdleTimer();
 
-	// 主题切换：思考 → 挥手
 	if (target.closest("#scheme-switch")) {
+		pulseForThemeChange();
 		if (canTriggerScenario("theme", 4_000)) {
 			playSequence([
 				{ state: "review", loops: 2 },
@@ -675,20 +1227,33 @@ $effect(() => {
 	void effectiveMotion;
 	void size;
 	void height;
-	void petId;
-	if (animationState === "idle" && gazeActive && stickyLook !== undefined) {
+	void activePetId;
+	void atlasUrl;
+	if (
+		animationState === "idle" &&
+		gazeActive &&
+		stickyLook !== undefined &&
+		effectiveLookFollow
+	) {
 		applyGazeFrame(stickyLook);
 		return;
 	}
 	startPlayback(animationState);
 });
 
-// hidden 切换后根节点会重建，需再次挂到 body
+// hidden 切换后根节点会重建：卡片模式挂回卡片，否则挂 body
 $effect(() => {
+	if (!rootEl || typeof document === "undefined") return;
+	if (dockMode === "card" && dockHost?.isConnected) {
+		if (rootEl.parentElement !== dockHost) {
+			dockHost.appendChild(rootEl);
+		}
+		return;
+	}
 	mountPetToBody(rootEl);
 });
 
-/** 挂到 body，避免被主栅格 transform / sticky 侧栏合成层盖住 */
+/** 挂到 body（自由拖拽 / 文章页 / 回退） */
 function mountPetToBody(el: HTMLElement | null) {
 	if (!el || typeof document === "undefined") return;
 	if (el.parentElement !== document.body) {
@@ -697,8 +1262,13 @@ function mountPetToBody(el: HTMLElement | null) {
 }
 
 onMount(() => {
-	updateHidden();
-	loadStoredPosition();
+	preloadPetSheets();
+	void syncPetFromPath();
+	const hadStored = loadStoredPosition();
+	if (!hadStored) {
+		applyBrowseDefaultPlacement();
+		scheduleBrowseDefaultPlacement();
+	}
 	mountPetToBody(rootEl);
 
 	const media = window.matchMedia(REDUCED_MOTION_QUERY);
@@ -708,26 +1278,59 @@ onMount(() => {
 	};
 	media.addEventListener("change", onMotion);
 
+	// 亮暗色切换：监听 html.dark，滤镜由 CSS 过渡，再给一次轻脉冲
+	let lastDark = document.documentElement.classList.contains("dark");
+	const themeObserver = new MutationObserver(() => {
+		const nextDark = document.documentElement.classList.contains("dark");
+		if (nextDark === lastDark) return;
+		lastDark = nextDark;
+		pulseForThemeChange();
+	});
+	themeObserver.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ["class"],
+	});
+
+	const systemScheme = window.matchMedia("(prefers-color-scheme: dark)");
+	const onSystemScheme = () => {
+		// system 主题模式下 localStorage 可能仍是 system，html.dark 会变
+		const nowDark = document.documentElement.classList.contains("dark");
+		if (nowDark !== lastDark) {
+			lastDark = nowDark;
+			pulseForThemeChange();
+		}
+	};
+	systemScheme.addEventListener("change", onSystemScheme);
+
 	const onResize = () => {
 		updateHidden();
-		if (posX !== null && posY !== null) {
-			const clamped = clampToViewport(posX, posY);
+		// free=文档坐标：只夹在页面范围内，勿按视口重算（否则一 resize 就飘）
+		if (dockMode === "free" && !dragging && posX !== null && posY !== null) {
+			const clamped = clampToDocument(posX, posY);
 			posX = clamped.x;
 			posY = clamped.y;
 		}
+		if (!userPinnedPosition && !isPostPath() && dockMode !== "card") {
+			if (placeNearDynamicsWidget()) {
+				startRoamLoop();
+				return;
+			}
+			placeOnAnyVisibleAnchor();
+		}
+		if (!hidden && !isPostPath()) startRoamLoop();
+		else stopRoamLoop();
 	};
 	window.addEventListener("resize", onResize);
 
-	// 捕获阶段：先于按钮自身逻辑感知「点了哪个控件」
 	document.addEventListener("pointerdown", onSitePointerDown, true);
 
 	const onUserActivity = () => resetIdleTimer();
 	window.addEventListener("keydown", onUserActivity);
 	window.addEventListener("pointermove", onUserActivity, { passive: true });
 
-	// 读文章时持续滚动一会儿 → waiting
 	const onScroll = () => {
 		resetIdleTimer();
+		onScrollRoamCheck();
 		if (!reactToSiteUi || !effectiveMotion || !isPostPath()) return;
 		if (readScrollTimer) return;
 		readScrollTimer = setTimeout(() => {
@@ -739,7 +1342,6 @@ onMount(() => {
 	};
 	window.addEventListener("scroll", onScroll, { passive: true });
 
-	// Swup 切页：离开时忙活，进入后按路由表态
 	type SwupLike = {
 		hooks?: {
 			on: (event: string, cb: () => void) => void;
@@ -755,18 +1357,54 @@ onMount(() => {
 	};
 	const onSwupArrive = () => {
 		observeFooter();
-		// 稍微晚一点，等 DOM 就绪
-		setTimeout(() => reactToRoute(), 80);
+		void (async () => {
+			await waitMs(80);
+			// 以钩子触发时的 pathname 为准，避免 await 期间又切页读到过期路径
+			const pathAtStart = window.location.pathname;
+			const swapped = await syncPetFromPath(pathAtStart);
+			if (window.location.pathname !== pathAtStart) return;
+			if (isPostPath()) {
+				stopRoamLoop();
+				// 文章页卸下侧栏挂载，回到视口自由位（OpenPet 不跟卡片滚）
+				if (dockMode === "card") {
+					undockToBodyAtCurrentScreenPos();
+				}
+				if (!userPinnedPosition) {
+					posX = null;
+					posY = null;
+				}
+			} else if (!userPinnedPosition) {
+				scheduleBrowseDefaultPlacement();
+				startRoamLoop();
+			}
+			if (swapped) {
+				// 换皮后：进文 review，回列表 waving（与淡入衔接）
+				if (isPostPath()) {
+					if (canTriggerScenario("post-open", 12_000)) {
+						playTransient("review", 3);
+					} else {
+						animationState = "idle";
+					}
+				} else if (canTriggerScenario("browse-return", 6_000)) {
+					playTransient("waving", 2);
+				} else {
+					animationState = "idle";
+				}
+			} else {
+				// 同皮也可能刚从 opacity:0 拉回；补一次可见性
+				skinOpacity = 1;
+				reactToRoute();
+			}
+		})();
 	};
 	const bindSwup = () => {
 		win.swup?.hooks?.on("animation:out:start", onSwupLeave);
+		// 只绑 page:view：再绑 content:replace 会同一趟导航跑两次换皮，易把 opacity 卡死
 		win.swup?.hooks?.on("page:view", onSwupArrive);
-		win.swup?.hooks?.on("content:replace", onSwupArrive);
 	};
 	bindSwup();
 	document.addEventListener("swup:enable", bindSwup);
 
-	// 抵达页脚 → 挥手再见
 	let footerObserver: IntersectionObserver | null = null;
 	const observeFooter = () => {
 		footerObserver?.disconnect();
@@ -785,7 +1423,6 @@ onMount(() => {
 	};
 	observeFooter();
 
-	// 背景视频/音乐开始播放
 	const onBgPlayer = (event: Event) => {
 		const detail = (event as CustomEvent<{ playing?: boolean }>).detail;
 		if (!detail?.playing) return;
@@ -795,7 +1432,6 @@ onMount(() => {
 	};
 	window.addEventListener("bg-player-state-change", onBgPlayer);
 
-	// 搜索无结果 / 显式 pet 场景事件
 	const onPetScenario = (event: Event) => {
 		const detail = (event as CustomEvent<{ scenario?: string }>).detail;
 		if (!detail?.scenario || !reactToSiteUi || !effectiveMotion) return;
@@ -823,13 +1459,11 @@ onMount(() => {
 	};
 	window.addEventListener("firefly:pet-scenario", onPetScenario);
 
-	// 表单校验失败
 	const onInvalid = () => {
 		if (canTriggerScenario("form-fail", 6_000)) playTransient("failed", 3);
 	};
 	document.addEventListener("invalid", onInvalid, true);
 
-	// 入场挥手，再按路由表态
 	if (effectiveMotion) {
 		playTransient("waving", 2, () => {
 			setTimeout(() => reactToRoute(), 120);
@@ -838,9 +1472,15 @@ onMount(() => {
 		reactToRoute();
 	}
 	resetIdleTimer();
+	if (!isPostPath() && !userPinnedPosition) {
+		startRoamLoop();
+	}
 
 	return () => {
+		stopRoamLoop();
 		media.removeEventListener("change", onMotion);
+		themeObserver.disconnect();
+		systemScheme.removeEventListener("change", onSystemScheme);
 		window.removeEventListener("resize", onResize);
 		document.removeEventListener("pointerdown", onSitePointerDown, true);
 		window.removeEventListener("keydown", onUserActivity);
@@ -849,7 +1489,6 @@ onMount(() => {
 		document.removeEventListener("swup:enable", bindSwup);
 		win.swup?.hooks?.off?.("animation:out:start", onSwupLeave);
 		win.swup?.hooks?.off?.("page:view", onSwupArrive);
-		win.swup?.hooks?.off?.("content:replace", onSwupArrive);
 		window.removeEventListener("bg-player-state-change", onBgPlayer);
 		window.removeEventListener("firefly:pet-scenario", onPetScenario);
 		document.removeEventListener("invalid", onInvalid, true);
@@ -860,6 +1499,7 @@ onMount(() => {
 });
 
 onDestroy(() => {
+	stopRoamLoop();
 	stopPlayback();
 	if (transientTimer) clearTimeout(transientTimer);
 	if (idleTimer) clearTimeout(idleTimer);
@@ -874,10 +1514,15 @@ onDestroy(() => {
 	<div
 		bind:this={rootEl}
 		class="sprite-pet-root"
+		class:is-card-docked={dockMode === "card"}
+		class:is-page-anchored={dockMode === "free" && !dragging && posX !== null && posY !== null}
+		class:is-face-left={dockMode === "card" && dockFacing === "left" && !animationState.startsWith("running")}
 		class:is-dragging={dragging}
+		class:is-theme-pulse={themePulse}
 		style={`z-index:${zIndex};${positionedStyle()}`}
 		data-swup-permanent
 		data-pet-id={pet.id}
+		data-pet-atlas={pet.atlasVariant}
 		onpointermove={onPointerMoveLook}
 		onpointerleave={onPointerLeaveLook}
 	>
@@ -893,7 +1538,7 @@ onDestroy(() => {
 		>
 			<div
 				class="pet-sprite-stage pet-sprite-stage--atlas"
-				style={`width:${size}px;height:${height}px;`}
+				style={`width:${size}px;height:${height}px;opacity:${skinOpacity};`}
 				data-pet-motion={effectiveMotion ? "enabled" : "disabled"}
 				data-pet-motion-state={animationState}
 			>
@@ -909,7 +1554,7 @@ onDestroy(() => {
 						height:${height}px;
 						background-image:url(${JSON.stringify(atlasUrl)});
 						background-repeat:no-repeat;
-						background-size:${size * PET_ATLAS_V2.columns}px ${height * PET_ATLAS_V2.rows}px;
+						background-size:${size * atlas.columns}px ${height * atlas.rows}px;
 					`}
 				></div>
 			</div>
@@ -925,6 +1570,38 @@ onDestroy(() => {
 		pointer-events: auto;
 		touch-action: none;
 		user-select: none;
+		/* 亮色：偏冷紫阴影，贴合壳层中性灰 + 紫点缀 */
+		--pet-shadow: drop-shadow(0 8px 14px rgba(45, 36, 72, 0.16))
+			drop-shadow(0 2px 4px rgba(45, 36, 72, 0.08));
+		--pet-grade: brightness(1.02) contrast(1.03) saturate(1.02);
+	}
+
+	/* 挂在侧栏卡片上：随卡片滚动/sticky，禁止再用视口 left/top 追窗口 */
+	.sprite-pet-root.is-card-docked {
+		position: absolute;
+		z-index: 40;
+	}
+
+	/* 拖放到页面某处：文档绝对坐标，滚动窗口时留在原落点，不贴视口跟着跑 */
+	.sprite-pet-root.is-page-anchored {
+		position: absolute;
+	}
+
+	:global(widget-layout.has-sprite-pet-anchor),
+	:global(.has-sprite-pet-anchor) {
+		position: relative !important;
+		overflow: visible !important;
+	}
+
+	:global(widget-layout.has-sprite-pet-anchor .collapse-wrapper) {
+		overflow: visible !important;
+	}
+
+	:global(html.dark) .sprite-pet-root {
+		/* 暗色：加深投影 + 略提亮，避免 Q 版角色发闷 */
+		--pet-shadow: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.48))
+			drop-shadow(0 0 10px rgba(94, 184, 255, 0.12));
+		--pet-grade: brightness(1.08) contrast(1.05) saturate(1.06);
 	}
 
 	.sprite-pet-hit {
@@ -954,18 +1631,73 @@ onDestroy(() => {
 		overflow: visible;
 		transform: scale(1.1);
 		transform-origin: 50% 88%;
+		/* 仅 opacity 过渡：换皮丝滑；勿过渡 background-position */
+		transition: opacity 200ms ease;
+	}
+
+	/* 右留白停靠：镜像朝左看向内容（idle 默认偏右脸；跑左右有专用帧不翻） */
+	.sprite-pet-root.is-face-left .pet-sprite-stage {
+		transform: scale(-1.1, 1.1);
 	}
 
 	.pet-sprite {
 		position: relative;
 		z-index: 1;
 		transform-origin: 50% 88%;
-		filter: drop-shadow(0 8px 12px rgba(35, 27, 54, 0.14));
-		/* 禁止 background-position 过渡：图集会被拖糊成残影 */
-		transition: none;
+		filter: var(--pet-shadow) var(--pet-grade);
+		/* filter 可跟主题走；禁止 background-position 过渡防残影 */
+		transition:
+			filter 280ms ease,
+			opacity 200ms ease;
+		will-change: filter, opacity;
 	}
 
-	:global(html.dark) .pet-sprite {
-		filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
+	.sprite-pet-root.is-theme-pulse .pet-sprite-stage {
+		animation: pet-theme-settle 420ms ease;
+	}
+
+	.sprite-pet-root.is-face-left.is-theme-pulse .pet-sprite-stage {
+		animation: pet-theme-settle-face-left 420ms ease;
+	}
+
+	@keyframes pet-theme-settle {
+		0% {
+			opacity: 0.78;
+			transform: scale(1.04);
+		}
+		55% {
+			opacity: 1;
+			transform: scale(1.12);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1.1);
+		}
+	}
+
+	@keyframes pet-theme-settle-face-left {
+		0% {
+			opacity: 0.78;
+			transform: scale(-1.04, 1.04);
+		}
+		55% {
+			opacity: 1;
+			transform: scale(-1.12, 1.12);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(-1.1, 1.1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pet-sprite-stage,
+		.pet-sprite {
+			transition: none;
+		}
+
+		.sprite-pet-root.is-theme-pulse .pet-sprite-stage {
+			animation: none;
+		}
 	}
 </style>

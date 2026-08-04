@@ -1,10 +1,38 @@
 import type { BuiltinPetId } from "@/lib/pets/builtinPets";
 
+export type SpritePetRoamConfig = {
+	/** 浏览态 Maid 是否在视口内侧栏卡之间游走 */
+	enable: boolean;
+	/** 卡片间正常停留时长（ms）；默认固定 5000，不随随机缩短 */
+	intervalMs: number;
+	/** 停留下限（ms）；与 intervalMs 对齐可关掉随机缩短 */
+	minIntervalMs: number;
+	/** 停留随机抖动（ms）；0 = 不抖动，严格用 intervalMs */
+	jitterMs: number;
+	/** 钻洞淡出/淡入单段时长（ms） */
+	fadeMs: number;
+	/** 淡出后、淡入前在「洞里」停顿（ms） */
+	portalHoldMs: number;
+	/** 当前卡滚出视口后，再等多久才换锚（ms）；避免狂滑闪跳 */
+	scrollLeaveDelayMs: number;
+	/** 用户松开拖拽后，多久再恢复卡片游走（ms）；快速倒计时，约 2s */
+	resumeAfterDragMs: number;
+	/** @deprecated 已改为钻洞换位，保留字段兼容旧配置 */
+	moveDurationMs?: number;
+	/**
+	 * 拖拽放下后是否永久停游走。
+	 * 现默认 false：松开后走 resumeAfterDragMs 快速倒计时再继续换卡。
+	 */
+	pauseWhenPinned: boolean;
+};
+
 export type SpritePetConfig = {
 	/** 是否启用站内桌宠（与 Spine / Live2D 互斥，三者最多开一个） */
 	enable: boolean;
-	/** 内置宠物 ID */
-	petId: BuiltinPetId;
+	/** 浏览态（非文章页）桌宠 */
+	defaultPetId: BuiltinPetId;
+	/** 文章页 `/posts/*` 桌宠 */
+	postPetId: BuiltinPetId;
 	/** 显示位置 */
 	position: "bottom-left" | "bottom-right";
 	/** 距离边缘偏移（px） */
@@ -17,13 +45,21 @@ export type SpritePetConfig = {
 	draggable: boolean;
 	/** 点击宠物本体时播放交互动作（分部位：头/身/脚） */
 	clickInteract: boolean;
-	/** 悬停是否视线跟随指针 */
+	/**
+	 * 悬停是否视线跟随指针。
+	 * 仅对 atlas v2（含 look 行）的当前宠生效；classic-8x9 运行时强制关闭。
+	 */
 	lookFollow: boolean;
 	/** 点击站点常用控件时，桌宠联动反应 */
 	reactToSiteUi: boolean;
 	responsive: {
-		hideOnMobile: boolean;
+		/** 浏览态（非文章）是否在窄屏隐藏 */
+		hideOnMobileBrowse: boolean;
+		/** 文章页是否在窄屏隐藏 */
+		hideOnMobilePost: boolean;
 		mobileBreakpoint: number;
 	};
+	/** 浏览态视口内卡片游走（仅 Maid） */
+	roam: SpritePetRoamConfig;
 	zIndex: number;
 };

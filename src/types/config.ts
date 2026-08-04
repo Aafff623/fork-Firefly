@@ -25,7 +25,7 @@ export type {
 	NavBarSearchConfig,
 	NavBarSearchMethod,
 } from "./navBarConfig";
-export type { SpritePetConfig } from "./petConfig";
+export type { SpritePetConfig, SpritePetRoamConfig } from "./petConfig";
 export type { Live2DWidgetConfig, SpineModelConfig } from "./pioConfig";
 export type { PlantUMLConfig } from "./plantumlConfig";
 export type { ProfileConfig } from "./profileConfig";

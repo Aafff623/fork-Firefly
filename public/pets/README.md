@@ -1,28 +1,26 @@
-# 站内桌宠资源（cc-haha）
+# 站内桌宠资源（双 DeepSeek）
 
-本目录 spritesheet 与引导图移植自 [NanmiCoder/cc-haha](https://github.com/NanmiCoder/cc-haha)（MIT License）。
+浏览态 **Maid-DeepSeek-Whale**（Atlas v2 · 8×11）+ 文章页 **OpenPet DeepSeek**（classic 8×9）。
+
+配置见 `src/config/petConfig.ts`；交互见 `docs/knowledge/dual-pet-deepseek.md`。
 
 ## 结构
 
 ```text
 pets/
-├── dada-code/spritesheet.webp
-├── huhu-plan/spritesheet.webp
-├── bubu-fix/spritesheet.webp
-├── huihui-build/spritesheet.webp
-└── guides/
-    ├── action-sheet-guide.zh.png
-    └── action-sheet-guide.en.png
+├── maid-deepseek-whale/spritesheet.webp   # 1536×2288 · v2
+└── openpet-deepseek/spritesheet.webp      # 1536×1872 · 8×9
 ```
+
+## 许可黄线
+
+| 包 | 说明 |
+|---|---|
+| Maid | 来源 codex-pets / aimcp；许可标注 **unknown**（作者线索 DeaDumB） |
+| OpenPet | 来自 AwesomeHou/openpet-ai-girls；仓内 **无 LICENSE** |
+
+本站站内试用接入；**公开再分发前须自行确认授权**。历史 cc-haha 四宠资源已移除（见 `docs/knowledge/cc-haha-pets.md` 归档说明）。
 
 ## 启用
 
-编辑 `src/config/petConfig.ts`，将 `enable` 设为 `true`，并用 `petId` 选择角色。
-
-与 Spine / Live2D（`pioConfig.ts`）互斥，三者最多开一个。
-
-## 说明
-
-- 这是**博客站内悬浮宠**，不是 Electron 系统桌面置顶窗。
-- 自定义动作表导入首期未接入；引导图仅供后续扩展参考。
-- 详见 `docs/knowledge/cc-haha-pets.md`。
+`spritePetConfig.enable = true`；与 Spine / Live2D（`pioConfig.ts`）互斥。
