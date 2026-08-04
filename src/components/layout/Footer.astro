@@ -1,12 +1,13 @@
 ---
 /**
- * 站点底栏 · V1 三栏产品站骨架
- * + V2「园丁浇水」状态胶囊
- * + V4 邮戳章与衬线 wordmark
+ * 站点底栏 · 专业四栏（品牌 / 漫步 / 园径 / 连结）
+ * + V2「园丁浇水」状态胶囊（水滴 + 羽毛）
+ * + 花园状态行 · V4 邮戳章与衬线 wordmark
  * 保留 RSS / Sitemap / Powered by Astro & Firefly；自定义 HTML 注入槽仍可用
  */
 import fs from "node:fs";
 import path from "node:path";
+import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import { footerConfig, profileConfig, siteConfig } from "@/config";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
@@ -15,7 +16,12 @@ import { url } from "@/utils/url-utils";
 const currentYear = new Date().getFullYear();
 const wordmark =
 	siteConfig.navbar?.title || profileConfig.name || siteConfig.title;
-const brandBlurb = `${profileConfig.name} 的数字花园。${profileConfig.bio}`;
+/* 数字花园话语；少网名自称（版权行仍用 name） */
+const brandBlurbCn =
+	"数字花园里，枝叶随写随长；余白留给路过的你。少写一点代码，多留一点可复用的架构。";
+const brandBlurbEn =
+	"A digital garden that grows with notes — grow slow, leave room for wanderers. Code less, architect more.";
+const showFriends = siteConfig.pages?.friends !== false;
 
 const startYear = Number(
 	String(siteConfig.siteStartDate || "").slice(0, 4) || currentYear,
@@ -35,6 +41,26 @@ const wateredOn = latestMs
 	? formatDateToYYYYMMDD(new Date(latestMs))
 	: String(siteConfig.siteStartDate || "").slice(0, 10) ||
 		formatDateToYYYYMMDD(new Date());
+
+const postCount = allPosts.length;
+const startDate = new Date(
+	`${String(siteConfig.siteStartDate || "2026-08-01").slice(0, 10)}T00:00:00`,
+);
+const gardenDays = Math.max(
+	1,
+	Math.floor((Date.now() - startDate.getTime()) / 86400000) + 1,
+);
+
+/** 花园状态轮换短文案（构建时取一条，免客户端 JS） */
+const gardenTips = [
+	"今日林间微风，亦宜浇水",
+	"少写一行代码，多种一棵念头",
+	"客来不妨坐下，落叶声里续一壶茶",
+	"枝叶未整齐，心意已先到",
+	"花园不怕慢，怕的是从不驻足",
+	"园门半开着，欢迎你慢慢逛",
+];
+const gardenTip = gardenTips[gardenDays % gardenTips.length];
 
 const githubLink = profileConfig.links.find((l) =>
 	/github/i.test(l.name + l.url),
@@ -69,15 +95,32 @@ if (footerConfig.enable) {
 />
 
 <footer class="site-footer">
+  <!-- 两侧树木装饰（不占交互层） -->
+  <div class="site-footer__tree site-footer__tree--left" aria-hidden="true"></div>
+  <div class="site-footer__tree site-footer__tree--right" aria-hidden="true"></div>
+  <div class="site-footer__mist" aria-hidden="true"></div>
   <div class="site-footer__inner">
     <div class="site-footer__grid">
       <div class="site-footer__brand">
         <div class="site-footer__wordmark">{wordmark}</div>
-        <p class="site-footer__blurb">{brandBlurb}</p>
+        <div class="site-footer__blurb-stack">
+          <p class="site-footer__blurb site-footer__blurb--cn">{brandBlurbCn}</p>
+          <p class="site-footer__blurb site-footer__blurb--en">{brandBlurbEn}</p>
+        </div>
+        <p class="site-footer__garden-status">
+          <span class="site-footer__garden-chip">建站第 {gardenDays} 天</span>
+          <span class="site-footer__garden-sep" aria-hidden="true">·</span>
+          <span class="site-footer__garden-chip">{postCount} 篇文章</span>
+          <span class="site-footer__garden-sep" aria-hidden="true">·</span>
+          <span class="site-footer__garden-tip">{gardenTip}</span>
+        </p>
       </div>
 
-      <nav class="site-footer__col" aria-label="Explore">
-        <h3 class="site-footer__col-title">Explore</h3>
+      <nav class="site-footer__col" aria-label="漫步">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">漫步</span>
+          <span class="site-footer__col-title-en">Explore</span>
+        </h3>
         <ul class="site-footer__list">
           <li><a href={url("/")}>首页</a></li>
           <li><a href={url("/archive/")}>归档</a></li>
@@ -86,8 +129,30 @@ if (footerConfig.enable) {
         </ul>
       </nav>
 
-      <nav class="site-footer__col" aria-label="Connect">
-        <h3 class="site-footer__col-title">Connect</h3>
+      <nav class="site-footer__col" aria-label="园径">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">园径</span>
+          <span class="site-footer__col-title-en">Paths</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li><a href={url("/dynamic/")}>动态</a></li>
+          <li><a href={url("/categories/")}>分类</a></li>
+          <li><a href={url("/archive/")}>年表</a></li>
+          {
+            showFriends ? (
+              <li><a href={url("/friends/")}>友链</a></li>
+            ) : (
+              <li><a href={url("/tags/")}>标签墙</a></li>
+            )
+          }
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="连结">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">连结</span>
+          <span class="site-footer__col-title-en">Connect</span>
+        </h3>
         <ul class="site-footer__list">
           <li>
             <a href={url("rss.xml")} target="_blank" rel="noopener noreferrer">RSS</a>
@@ -132,8 +197,11 @@ if (footerConfig.enable) {
           {profileConfig.name}
         </span>
         <div class="site-footer__water" title="以最新文章更新日计">
-          <span class="site-footer__water-dot" aria-hidden="true"></span>
-          <span>园丁上次浇水：{wateredOn}</span>
+          <span class="site-footer__water-icons" aria-hidden="true">
+            <Icon is:inline name="lucide:droplets" class="site-footer__icon-drop" />
+            <Icon is:inline name="lucide:feather" class="site-footer__icon-feather" />
+          </span>
+          <span>上次浇灌：{wateredOn}</span>
         </div>
       </div>
 
@@ -154,6 +222,10 @@ if (footerConfig.enable) {
             href="https://github.com/CuteLeaf/Firefly">Firefly</a
           >
         </div>
+        <span class="site-footer__garden-mark">
+          <span class="site-footer__garden-mark-cn">林间小站</span>
+          <span class="site-footer__garden-mark-en">A grove that grows with words</span>
+        </span>
         <span class="site-footer__stamp" aria-hidden="true">
           Est.<br />{startYear}<br />Firefly
         </span>
