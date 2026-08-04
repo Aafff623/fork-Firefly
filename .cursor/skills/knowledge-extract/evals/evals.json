@@ -1,0 +1,23 @@
+{
+  "skill_name": "knowledge-extract",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "回顾本会话，把刚才做的那轮 GPT 中转服务压测提炼成一篇知识笔记，重点要覆盖三个模型的数据、踩过的坑、能复用的测试方法，本机落盘到 Knowledge 目录。",
+      "expected_output": "产出 Markdown 笔记：三款模型数据分表但不堆砌；踩坑实录挑重点；无工具执行流程痕迹（不提 curl/脚本/子代理）；无样板话术（如'需要清理时说一声'）；标题像人起的不是'XX实录'式命名；详略得当；humanizer 去 AI 味；落盘 Knowledge 目录含文件树+section 设计",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我们刚才就是闲聊了几个 AI 工具的定价，帮我提炼一下要点。",
+      "expected_output": "Chat 模式：短平快要点，不过度结构化、不强行落盘，突出时效信息，详略得当",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把这次讨论整理成博客文章发到我的 blog 项目里。",
+      "expected_output": "识别为提炼+发布两段诉求；先按 knowledge-extract 提炼，提示发布交给 knowledge-output/ob2blog；不越权直接发布",
+      "files": []
+    }
+  ]
+}

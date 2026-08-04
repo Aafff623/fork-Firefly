@@ -68,6 +68,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 1. **默认 `draft: false`**：素材已过提炼关，除非用户明确要求草稿或素材含敏感/口令内容，否则直接发布进生产构建。
 2. **重建 frontmatter**：不沿用素材里的临时字段；`slug` 用英文 kebab（小写字母数字连字符）。主题目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
+2b. **首页可见性（必做）**：`pinned: false`（不要写成常驻置顶）；必须写带时分的 `updated: YYYY-MM-DDTHH:mm:ss`（落盘当下），让站内「默认自动置顶」选中这篇。仅写 `published: YYYY-MM-DD` 同日会与旧帖撞成同一时间戳，首页看起来像没顶上去。常驻置顶（`pinned: true`）只在用户明确要求时才开。
 3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。
 4. **不动 Knowledge 素材**：output 只读素材、写博客；素材目录留档不改写（除非用户要求回写）。
 5. **越权禁止**：只在 blog 仓库内落 posts + 级联索引；不碰站点布局/配置内核，不改其他文章。
