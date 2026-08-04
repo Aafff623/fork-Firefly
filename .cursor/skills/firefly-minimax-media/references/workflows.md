@@ -16,6 +16,20 @@
 7. 网格+瀑布看中心裁切；每 3～5 张复检额度
 ```
 
+## A2. 索引 / 章节信息图（小长条）
+
+与封面流分离。完整 checklist 见上级 `SKILL.md`；门禁摘要见 `docs/agents/workflow.md`。
+
+```
+0. check_quota.py --need image
+1. 按章节列主题元素 + 下载官网/素材参照（reference / subject-ref）
+2. 弱相关章 → 可合规网图直接落 images/；强相关 → 生图
+3. prompt：信息图构图、箭头/层级、多要素；要求底图无字（若后期叠中文）
+4. text_to_image / mmx → fetch_media → posts/<slug>/images/cite-*.jpg
+5. 可选后期叠清晰中文（分区，勿挡元素；勿复读 H2/章节名）
+6. 核对磁盘真源后再预览；understand_image 抽查尺度/对比/留白
+```
+
 ## B. 短视频
 
 ```

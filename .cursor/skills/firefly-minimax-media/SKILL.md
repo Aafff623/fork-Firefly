@@ -98,6 +98,25 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 [ ] 改 FM；可选 understand_image
 ```
 
+## 索引 / 章节信息图 checklist
+
+适用于教程索引帖、目录帖的章节小长条（非卡片封面）。流程摘要见 `docs/agents/workflow.md` →「正文配图 / 索引帖信息图」；成帖 Web 化见 `knowledge-output`「配图规范」。
+
+```
+[ ] 方向：水彩/信息图 + 主题元素；禁止「同款吉祥物只换姿势」
+[ ] 参照物：官网/素材库已下载，并用于 reference / subject-ref / 构图（禁止空捏）
+[ ] 按章节拆元素与指向（箭头/层级），一章一构图
+[ ] 附属主题元素够大、对比够、一眼可辨（平台/渠道/Node/设备等不可缩成色点）
+[ ] 主体（吉祥物+关键元素+信息）占画面主体；留白适度，忌大面积空镜
+[ ] 字与图分区：胶囊/标题不与图标插画重叠
+[ ] 图内文案写要点/元素说明；禁止复读章节名或 H2
+[ ] 中文策略：原生易糊则「底图无字 + 后期叠字」，叠字纳入排版
+[ ] 弱相关模块：可改用免广告合规网图，不必强行主题生图
+[ ] 落盘后核对磁盘真源再预览（防 data-store / OneDrive 旧稿）
+```
+
+**已知坑（简记）**：`image-01` 中文不稳；Windows mmx prompt 编码；Astro `data-store` / OneDrive 导致预览旧图。长工程可先落稿，不默认整组返工。
+
 ## 汇报模板
 
 门禁、视频槽（acquire/mark-submit/release）、工具、**本地路径**、接线、结束后额度、摩擦点。
