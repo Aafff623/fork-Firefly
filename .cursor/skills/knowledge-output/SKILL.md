@@ -59,17 +59,20 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 配图规范
 
-- **封面**：优先用素材 `assets/` 里的达标封面；没有或不合格，按 `knowledge-extract` 的配图规范用 MiniMax 生成（抽象主题用具象符号、克制配色、留白 ≥20% 给标题、生成后集中质检），不合格重生成。统一存 `cover.jpg`（模板示例的 `cover.webp` 不强制，实现以 `cover.jpg` 为准）。
+- **封面**：优先用素材 `assets/` 里的达标封面；没有或不合格，按 `knowledge-extract` 的配图规范 + `firefly-minimax-media`/`prompt-craft` **style-taste** 用 MiniMax 生成（未点名风格默认 03 编辑静物；抽象主题用具象符号、克制配色、留白 ≥20% 给标题、生成后集中质检），不合格重生成。统一存 `cover.jpg`（模板示例的 `cover.webp` 不强制，实现以 `cover.jpg` 为准）。
 - **小节图**：素材 `assets/` 图拷到 `images/` 并改写引用（`./images/fig-*.jpg`）；缺图不硬凑。
 - **Web 化**：所有图转 JPG；RGBA 先压平（贴深色底）；超 ~1.5MB 的大图降宽到 ~1600px 再存；像素图缩放用最近邻（ffmpeg `scale=...:flags=neighbor` 或 PIL `Image.NEAREST`）。封面只在 FM `image` 字段，不重复进正文。
 - **质检**：封面 / 配图逐张 review（布局错乱？对比度暗淡？主题一眼可读？图标可辨？），宁缺毋滥。
 
 ### 索引帖 / 章节信息图（补充）
 
-教程索引、目录帖的章节配图走信息图逻辑，不走「吉祥物换姿势」。生图操作与 checklist：**`firefly-minimax-media`**（「索引 / 章节信息图 checklist」）；流程摘要：**`docs/agents/workflow.md`** →「正文配图 / 索引帖信息图」。
+教程索引、目录帖的章节配图走信息图逻辑，不走「吉祥物换姿势」。**画风必须走 style-taste**（与封面同一套路由表），禁止整帖水彩/同材质套图。
+
+生图操作与 checklist：**`firefly-minimax-media`**（「索引 / 章节信息图 checklist」+ `prompt-craft` 风格路由）；流程摘要：**`docs/agents/workflow.md`** →「正文配图 / 索引帖信息图」。
 
 | 检查 | 要求 |
 |---|---|
+| 风格 | 每章（及封面）有明确 style-taste ID；内容适配（工具链≠插画默认）；同帖宜有差异 |
 | 元素尺度与对比 | 附属主题图标够大、够清楚，一眼能认出是什么 |
 | 留白 | 主体占画面主体；忌大面积空镜 |
 | 字图 | 分区排版，文字不压图标/插画 |

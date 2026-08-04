@@ -71,7 +71,7 @@ description: >-
 - **概念句模板**：`主题物件A + 物件B + 材质/工艺 + 光线 + 情绪 + 禁止项`。至少 2-3 个可辨要素，一图一概念，忌单物件居中空镜。
 - **高级感尾句**（英文可复用）：`editorial still life, museum catalog photography, tactile materials, controlled color grading, shallow depth of field, no text, no watermark, no generic AI cyber glow`。
 - **生成后集中 review**：布局错乱？文字对比度暗淡？主体贴边？能否一眼看出主题？图标是否可辨？不合格重生成，不硬用劣图。
-- **索引/章节信息图**：若笔记将做成教程索引帖，额外遵守 `firefly-minimax-media` 的「索引 / 章节信息图 checklist」与 `docs/agents/workflow.md` 同名小节（元素尺度、禁复读章节名、必须参照物等）；成帖侧见 `knowledge-output`「配图规范」。
+- **索引/章节信息图**：若笔记将做成教程索引帖，额外遵守 `firefly-minimax-media` 的「索引 / 章节信息图 checklist」与 `docs/agents/workflow.md` 同名小节（**style-taste 按章选风格**、元素尺度、禁复读章节名、必须参照物等）；成帖侧见 `knowledge-output`「配图规范」。禁止默认水彩整批套图。
 
 ## 风格化（务必执行）
 

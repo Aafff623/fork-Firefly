@@ -92,30 +92,32 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 
 ```
 [ ] check_quota --need image
-[ ] 读帖主题；查重
-[ ] 艺术 prompt（见 prompt-craft：创意/艺术现代感/贴题或高度抽象/多要素；禁蓝紫渐变与廉价 AI 味）→ text_to_image
+[ ] 读帖主题；查重；选定 style-taste ID（未点名默认 03；见 prompt-craft）
+[ ] 艺术 prompt（该 ID 材质/光线 + 创意/贴题或高度抽象/多要素；禁蓝紫渐变与廉价 AI 味）→ text_to_image
 [ ] fetch_media 落到 cover.*
 [ ] 改 FM；可选 understand_image
 ```
 
 ## 索引 / 章节信息图 checklist
 
-适用于教程索引帖、目录帖的章节小长条（非卡片封面）。流程摘要见 `docs/agents/workflow.md` →「正文配图 / 索引帖信息图」；成帖 Web 化见 `knowledge-output`「配图规范」。
+适用于教程索引帖、目录帖的章节小长条（非卡片封面）。流程摘要见 `docs/agents/workflow.md` →「正文配图 / 索引帖信息图」；风格表见 `references/prompt-craft.md`（style-taste）；成帖 Web 化见 `knowledge-output`「配图规范」。
 
 ```
-[ ] 方向：水彩/信息图 + 主题元素；禁止「同款吉祥物只换姿势」
+[ ] 风格：已按章选定 style-taste ID（写进本帖风格表）；禁止默认水彩/整批同材质；并发不得抄兄弟帖模板
+[ ] 构图：信息图 + 主题元素；禁止「同款吉祥物只换姿势」
 [ ] 参照物：官网/素材库已下载，并用于 reference / subject-ref / 构图（禁止空捏）
 [ ] 按章节拆元素与指向（箭头/层级），一章一构图
 [ ] 附属主题元素够大、对比够、一眼可辨（平台/渠道/Node/设备等不可缩成色点）
-[ ] 主体（吉祥物+关键元素+信息）占画面主体；留白适度，忌大面积空镜
+[ ] 主体（关键元素+信息，±吉祥物）占画面主体；留白适度，忌大面积空镜
 [ ] 字与图分区：胶囊/标题不与图标插画重叠
 [ ] 图内文案写要点/元素说明；禁止复读章节名或 H2
 [ ] 中文策略：原生易糊则「底图无字 + 后期叠字」，叠字纳入排版
 [ ] 弱相关模块：可改用免广告合规网图，不必强行主题生图
+[ ] 同帖差异：封面与章节图 / 相邻章风格或色板有区分（抽查）
 [ ] 落盘后核对磁盘真源再预览（防 data-store / OneDrive 旧稿）
 ```
 
-**已知坑（简记）**：`image-01` 中文不稳；Windows mmx prompt 编码；Astro `data-store` / OneDrive 导致预览旧图。长工程可先落稿，不默认整组返工。
+**已知坑（简记）**：锁死水彩导致套图（已废止，走 style-taste）；`image-01` 中文不稳；Windows mmx prompt 编码；Astro `data-store` / OneDrive 旧预览。长工程可先落稿，不默认整组返工。
 
 ## 汇报模板
 

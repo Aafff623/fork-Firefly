@@ -9,7 +9,7 @@
 0. check_quota.py --need image --min-percent 5
 1. 列 slug / title / 现有 image
 2. 新帖 → posts/<slug>/cover.*；演示批量 → images/minimax/v2-*
-3. 独立艺术 prompt（prompt-craft）；默认 aspect_ratio=16:9；n=1
+3. 选定 style-taste ID（未点名默认 03）；独立艺术 prompt（prompt-craft）；默认 aspect_ratio=16:9；n=1
 4. text_to_image（可带 output_directory，但不要信任它落盘）
 5. 若响应含 URL → fetch_media.py → cover 路径
 6. 改 FM image:；可选 understand_image
@@ -18,16 +18,17 @@
 
 ## A2. 索引 / 章节信息图（小长条）
 
-与封面流分离。完整 checklist 见上级 `SKILL.md`；门禁摘要见 `docs/agents/workflow.md`。
+与封面流分离。完整 checklist 见上级 `SKILL.md`；风格路由见 `prompt-craft.md`（style-taste）；门禁摘要见 `docs/agents/workflow.md`。
 
 ```
 0. check_quota.py --need image
-1. 按章节列主题元素 + 下载官网/素材参照（reference / subject-ref）
-2. 弱相关章 → 可合规网图直接落 images/；强相关 → 生图
-3. prompt：信息图构图、箭头/层级、多要素；要求底图无字（若后期叠中文）
-4. text_to_image / mmx → fetch_media → posts/<slug>/images/cite-*.jpg
-5. 可选后期叠清晰中文（分区，勿挡元素；勿复读 H2/章节名）
-6. 核对磁盘真源后再预览；understand_image 抽查尺度/对比/留白
+1. 起草「本帖风格表」：每章（+封面）选定 style-taste ID；禁止整帖/整批同一材质（含水彩默认）
+2. 按章节列主题元素 + 下载官网/素材参照（reference / subject-ref）
+3. 弱相关章 → 可合规网图直接落 images/；强相关 → 生图
+4. prompt = 该章 style ID 材质/光线 + 信息图构图（箭头/层级/多要素）+ 贴题物件；底图无字（若后期叠中文）
+5. text_to_image / mmx → fetch_media → posts/<slug>/images/cite-*.jpg
+6. 可选后期叠清晰中文（分区，勿挡元素；勿复读 H2/章节名）
+7. 核对磁盘真源后再预览；understand_image 抽查尺度/对比/留白/风格是否串台
 ```
 
 ## B. 短视频
