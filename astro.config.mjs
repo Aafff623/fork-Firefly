@@ -111,6 +111,11 @@ export default defineConfig({
 
 	adapter,
 
+	// 本地 dev 绑定 IPv4：Node 默认仅监听 [::1]，浏览器 localhost(IPv4) 会拒连
+	server: {
+		host: "127.0.0.1",
+	},
+
 	// 图像优化配置
 	image: {
 		// 组件可自行传入 layout/widths；这里只控制 Markdown 正文图片
