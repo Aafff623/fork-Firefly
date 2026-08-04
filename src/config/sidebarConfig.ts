@@ -59,6 +59,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
+			// 园径便签：礼盒淡出后补密度
+			type: "gardenNote",
+			enable: true,
+			position: "top",
+			showOnPostPage: true,
+		},
+		{
 			// 组件类型：音乐播放器（已有顶栏 #music-player-switch，侧栏不再重复）
 			type: "music",
 			// 是否启用该组件
@@ -123,6 +130,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	// 右侧边栏组件配置列表
 	rightComponents: [
 		{
+			// 时钟角区：仅惊喜数字钟（透明无卡）；分层时钟已并入 stats
+			type: "clockCorner",
+			enable: true,
+			showTitle: false,
+			position: "top",
+			showOnPostPage: false,
+		},
+		{
 			// 组件类型：最新动态组件
 			type: "dynamic",
 			// 是否启用该组件
@@ -138,14 +153,6 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 					limit: 2,
 				},
 			},
-		},
-		{
-			// 时钟角区：仅惊喜数字钟（透明无卡）；分层时钟已并入 stats
-			type: "clockCorner",
-			enable: true,
-			showTitle: false,
-			position: "top",
-			showOnPostPage: false,
 		},
 		{
 			// 已并入 clockCorner
