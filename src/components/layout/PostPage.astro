@@ -372,8 +372,8 @@ const initialLayoutClass =
   setTimeout(initLayout, 0);
 
   /**
-   * grid 卡片标题荧光笔：每次鼠标进入卡片时随机抽色。
-   * 排除上一次颜色，连刷同一张也大概率变色。
+   * 卡片标题荧光笔：每次鼠标进入卡片时随机抽色（grid / waterfall / list）。
+   * Letter 皮肤跳过；排除上一次颜色，连刷同一张也大概率变色。
    */
   const CARD_HL_PALETTE = [
     "--hl-amber",
@@ -404,11 +404,14 @@ const initialLayoutClass =
     const container = document.getElementById("post-list-container");
     if (
       !container?.classList.contains("grid-mode") &&
-      !container?.classList.contains("waterfall-mode")
+      !container?.classList.contains("waterfall-mode") &&
+      !container?.classList.contains("list-mode")
     ) return;
     const target = e.target as Element | null;
     const card = target?.closest?.(".post-card-wrapper") as HTMLElement | null;
     if (!card || !container.contains(card)) return;
+    // Letter 皮肤自有悬停色，不用荧光笔
+    if (card.classList.contains("post-card-wrapper--letter")) return;
     const related = e.relatedTarget as Node | null;
     if (related && card.contains(related)) return; // 仍在同一张卡内移动
     pickRandomCardHl(card);

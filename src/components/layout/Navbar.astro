@@ -11,7 +11,9 @@ import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	navBarConfig,
+	sakuraConfig,
 	siteConfig,
+	spritePetConfig,
 } from "@/config";
 import { musicPlayerConfig } from "@/config/musicConfig";
 import I18nKey from "@/i18n/i18nKey";
@@ -61,18 +63,32 @@ const isHomePageCheck = isHomePage(Astro.url.pathname);
 const showThemeColor = displaySettingsConfig.themeColorSwitchable;
 const isWallpaperSwitchable = displaySettingsConfig.wallpaperModeSwitchable;
 const allowLayoutSwitch = displaySettingsConfig.layoutSwitchable;
+const overlaySwitchableCfg = displaySettingsConfig.overlaySwitchable;
+const hasOverlayUi =
+	overlaySwitchableCfg === true ||
+	(typeof overlaySwitchableCfg === "object" &&
+		!!(
+			overlaySwitchableCfg.opacity ||
+			overlaySwitchableCfg.blur ||
+			overlaySwitchableCfg.cardOpacity
+		));
 const hasWallpaperPanel =
 	isWallpaperSwitchable ||
 	displaySettingsConfig.wavesSwitchable ||
 	displaySettingsConfig.gradientSwitchable ||
 	displaySettingsConfig.bannerTitleSwitchable ||
 	displaySettingsConfig.bannerCarouselSwitchable ||
-	displaySettingsConfig.overlaySwitchable !== false;
+	hasOverlayUi;
 const hasDisplaySettings =
 	showThemeColor ||
 	allowLayoutSwitch ||
 	hasWallpaperPanel ||
-	displaySettingsConfig.sakuraSwitchable;
+	displaySettingsConfig.sakuraSwitchable ||
+	(displaySettingsConfig.petPickerSwitchable &&
+		spritePetConfig.enable &&
+		spritePetConfig.pickerEnabled);
+/** 樱花迁顶栏：管线开启即显示粉色图标 */
+const showSakuraNavToggle = sakuraConfig.enable;
 
 // 根据 siteConfig.pages 过滤导航栏链接
 const pages = siteConfig.pages;
@@ -171,11 +187,16 @@ const logoVariants = await Promise.all(
         "overflow-visible! h-18 px-4"
     ]}>
         <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
+            {/* 品牌名：与标签墙同系手写体 */}
+            <link
+              rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Ma+Shan+Zheng&display=swap"
+            />
             <a href={url('/')} class="btn-plain scale-animation rounded-full h-13 px-3 md:px-5 font-bold active:scale-95 navbar-brand-ripple">
                 <div class:list={[
                     "flex flex-row items-center text-md relative z-[1]",
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
-                ]} style="font-family: var(--font-navbar-title, inherit)">
+                ]}>
                                     {logoConfig?.type === "icon" ? (
                                         <Icon is:inline name={logoConfig.value || "lucide:house"} class="navbar-logo text-[1.75rem] mb-1 mr-2" />
                                     ) : logoIsImage && logoVariants.length > 0 ? (
@@ -197,7 +218,7 @@ const logoVariants = await Promise.all(
                                     ) : (
                                         <Icon is:inline name="lucide:house" class="navbar-logo text-[1.75rem] mb-1 mr-2" />
                                     )}
-                    {navbarTitle}
+                    <span class="navbar-brand-title">{navbarTitle}</span>
                 </div>
             </a>
             <div class:list={[
@@ -250,6 +271,18 @@ const logoVariants = await Promise.all(
                         <span class="bg-player-icon-pause hidden"><Icon is:inline name="lucide:pause" class="text-[1.5rem]" /></span>
                     </button>
                 )}
+                {showSakuraNavToggle && (
+                    <button
+                        type="button"
+                        id="sakura-nav-toggle"
+                        aria-label={i18n(I18nKey.sakuraEffect)}
+                        title={i18n(I18nKey.sakuraEffect)}
+                        aria-pressed="false"
+                        class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 sakura-nav-btn"
+                    >
+                        <Icon is:inline name="lucide:flower-2" class="text-[1.25rem] sakura-nav-icon" />
+                    </button>
+                )}
                 {hasDisplaySettings && (
                         <button aria-label={i18n(I18nKey.settingsTabWallpaper)} title={i18n(I18nKey.settingsTabWallpaper)} class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90" id="display-settings-switch">
                             <Icon is:inline name="lucide:sliders-horizontal" class="text-[1.25rem]"></Icon>
@@ -273,6 +306,26 @@ const logoVariants = await Promise.all(
 </div>
 
 <style>
+	/* 品牌名：标签墙同系手写体 */
+	.navbar-brand-title {
+		font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive;
+		font-weight: 700;
+		font-size: 1.35rem;
+		letter-spacing: 0.02em;
+		line-height: 1.1;
+	}
+
+	/* 顶栏樱花：默认粉色，开启时略提亮 */
+	.sakura-nav-btn .sakura-nav-icon {
+		color: #f6b3c9; /* 浅粉，比品牌粉更淡 */
+	}
+
+	.sakura-nav-btn[aria-pressed="true"] .sakura-nav-icon,
+	.sakura-nav-btn.is-sakura-on .sakura-nav-icon {
+		color: #f9c4d4;
+		filter: drop-shadow(0 0 0.28rem rgb(246 179 201 / 0.28));
+	}
+
 	/* 导航栏音乐钮：播放中显示主题色小圆点 */
 	#music-player-switch[data-music-playing] .music-playing-dot {
 		opacity: 1;
@@ -404,7 +457,54 @@ function loadButtonScript() {
 }
 
 loadButtonScript();
+</script>
 
+<script>
+import {
+	getSakuraPinned,
+	getStoredSakuraEnabled,
+	setSakuraEnabled,
+} from "@/utils/setting-utils";
+
+/** 顶栏樱花开关：与设置面板同一套 persist / 事件 */
+let sakuraNavToggleBound = false;
+
+function syncSakuraNavBtn(enabled: boolean) {
+	const btn = document.getElementById("sakura-nav-toggle");
+	if (!btn) return;
+	btn.setAttribute("aria-pressed", String(enabled));
+	btn.classList.toggle("is-sakura-on", enabled);
+}
+
+function initSakuraNavToggle() {
+	const btn = document.getElementById("sakura-nav-toggle");
+	if (!btn) return;
+
+	const initial =
+		getSakuraPinned() ||
+		getStoredSakuraEnabled() ||
+		document.documentElement.getAttribute("data-sakura-enabled") === "true";
+	syncSakuraNavBtn(initial);
+
+	btn.onclick = () => {
+		const next = btn.getAttribute("aria-pressed") !== "true";
+		setSakuraEnabled(next);
+		syncSakuraNavBtn(next);
+	};
+
+	if (!sakuraNavToggleBound) {
+		sakuraNavToggleBound = true;
+		window.addEventListener("sakuraToggle", (e) => {
+			const ce = e as CustomEvent<{ enabled?: boolean }>;
+			syncSakuraNavBtn(!!ce.detail?.enabled);
+		});
+	}
+}
+
+initSakuraNavToggle();
+</script>
+
+<script>
 // 为semifull模式添加滚动检测逻辑
 function initSemifullScrollDetection() {
     const navbar = document.getElementById('navbar');

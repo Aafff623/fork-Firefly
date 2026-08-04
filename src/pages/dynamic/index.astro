@@ -36,7 +36,14 @@ const memos = dynamicConfig.memos;
 	<section class="dynamic-page" aria-labelledby="dynamic-page-title">
 		<header class="dynamic-page-header card-base">
 			<p class="dynamic-mast-meta">
-				<span>DYNAMIC · FEED</span>
+				<span class="dynamic-mast-left">
+					<span>DYNAMIC · FEED</span>
+					{/* 页头音浪点缀：此刻广播气质 */}
+					<span class="dynamic-wave" aria-hidden="true">
+						<span></span><span></span><span></span><span></span><span></span>
+						<span></span><span></span>
+					</span>
+				</span>
 				<span class="dynamic-count" aria-label={i18n(I18nKey.dynamic)}>
 					<strong data-dynamic-page-count>0</strong>
 					<span>{i18n(I18nKey.dynamic)}</span>

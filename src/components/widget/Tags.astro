@@ -1,9 +1,10 @@
 ---
 /**
- * 标签墙：立体标签球（TagChalkSphere）。
+ * 标签墙：立体标签球（TagChalkSphere）+ 标题右侧球/列表切换。
  * 浏览态按 collapseThreshold 进球，多余走「… +N」→ /tags/；
- * 文章页聚焦：一级 tags（进统计、可点）+ 二级 themeTags（Agent 主题、另色、不计统计）。
+ * 文章页聚焦：一级 tags + 二级 themeTags。
  */
+import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import TagChalkSphere from "@/components/widget/TagChalkSphere.astro";
 import I18nKey from "@/i18n/i18nKey";
@@ -105,6 +106,28 @@ const catalogJson = JSON.stringify(
   class:list={["tags-widget", { "tags-widget--focus": isFocusMode }, className]}
   style={style}
 >
+  <div slot="title-icon" class="tags-widget__mode" data-tag-wall-mode-toggle>
+    <button
+      type="button"
+      class="tags-widget__mode-btn"
+      data-tag-wall-mode="sphere"
+      aria-label="立体球模式"
+      title="立体球"
+      aria-pressed="true"
+    >
+      <Icon is:inline name="lucide:globe" class="tags-widget__mode-icon tags-widget__mode-icon--globe" />
+    </button>
+    <button
+      type="button"
+      class="tags-widget__mode-btn"
+      data-tag-wall-mode="list"
+      aria-label="列表模式"
+      title="列表"
+      aria-pressed="false"
+    >
+      <Icon is:inline name="lucide:list" class="tags-widget__mode-icon" />
+    </button>
+  </div>
   <div
     class="tags-widget__body"
     data-tag-wall
@@ -158,10 +181,63 @@ const catalogJson = JSON.stringify(
   .tags-widget.tags-widget--focus .tag-sphere__more {
     display: none !important;
   }
+
+  .tags-widget__mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    /* 离开卡片右缘，避免贴边 */
+    margin-right: 1.35rem;
+    padding: 0.12rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 55%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+  }
+
+  .tags-widget__mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.55rem;
+    height: 1.55rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: color-mix(in oklch, var(--content-meta, #666) 90%, transparent);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .tags-widget__mode-btn:hover {
+    color: var(--primary);
+  }
+
+  .tags-widget__mode-btn[aria-pressed="true"] {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+  }
+
+  .tags-widget__mode-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /* 地球图标略放大，更接近 3D 球体观感 */
+  .tags-widget__mode-icon--globe {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .tags-widget__mode-btn[data-tag-wall-mode="sphere"][aria-pressed="true"] {
+    background: color-mix(in oklch, var(--primary) 18%, transparent);
+  }
 </style>
 
 <script is:inline data-swup-ignore-script>
   (function () {
+    var MODE_KEY = "firefly-tag-wall-mode";
+
     function isPostPath(pathname) {
       return /\/posts\//.test(pathname || "");
     }
@@ -200,6 +276,101 @@ const catalogJson = JSON.stringify(
         out.push(n);
       });
       return out;
+    }
+
+    function readStoredMode() {
+      try {
+        var m = localStorage.getItem(MODE_KEY);
+        return m === "list" ? "list" : "sphere";
+      } catch (e) {
+        return "sphere";
+      }
+    }
+
+    function writeStoredMode(mode) {
+      try {
+        localStorage.setItem(MODE_KEY, mode);
+      } catch (e) {}
+    }
+
+    function syncModeButtons(widget, mode) {
+      var btns = widget.querySelectorAll("[data-tag-wall-mode]");
+      btns.forEach(function (btn) {
+        var on = btn.getAttribute("data-tag-wall-mode") === mode;
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function currentItemsForWall(body) {
+      var payload = readFocusPayload();
+      var focusMode = payload !== null;
+      var catalog = [];
+      try {
+        catalog = JSON.parse(body.getAttribute("data-tags-catalog") || "[]");
+      } catch (e) {
+        catalog = [];
+      }
+      var maxVisible = Number(body.getAttribute("data-max-visible") || 12);
+      if (focusMode) {
+        var primaryNames = uniq(payload.primary);
+        var primarySet = new Set(primaryNames);
+        var themeNames = uniq(payload.theme).filter(function (n) {
+          return !primarySet.has(n);
+        });
+        return primaryNames
+          .map(function (n) {
+            return { name: n, kind: "primary" };
+          })
+          .concat(
+            themeNames.map(function (n) {
+              return { name: n, kind: "theme" };
+            }),
+          );
+      }
+      return catalog.slice(0, maxVisible).map(function (t) {
+        return { name: t.name, kind: "primary" };
+      });
+    }
+
+    function applyWallMode(widget, mode) {
+      var body = widget.querySelector("[data-tag-wall]");
+      var sphere = body && body.querySelector("[data-tag-chalk-sphere]");
+      if (!sphere) return;
+      var next = mode === "list" ? "list" : "sphere";
+      sphere.setAttribute("data-view-mode", next);
+      syncModeButtons(widget, next);
+      writeStoredMode(next);
+
+      if (typeof window.__setTagChalkSphereMode === "function") {
+        window.__setTagChalkSphereMode(sphere, next);
+      }
+
+      // 切回球模式时重挂，避免列表态未创建实例
+      if (next === "sphere" && body) {
+        var cloud = sphere.querySelector(".tag-sphere__cloud");
+        var cloudId = cloud && cloud.id;
+        if (cloudId && typeof window.__remountTagChalkSphere === "function") {
+          window.__remountTagChalkSphere(cloudId, currentItemsForWall(body));
+        }
+      }
+    }
+
+    function bindModeToggles() {
+      document.querySelectorAll("widget-layout.tags-widget").forEach(function (widget) {
+        if (widget._tagWallModeBound) return;
+        widget._tagWallModeBound = true;
+        var toggle = widget.querySelector("[data-tag-wall-mode-toggle]");
+        if (!toggle) return;
+        var initial = readStoredMode();
+        applyWallMode(widget, initial);
+        toggle.addEventListener("click", function (ev) {
+          var btn = ev.target && ev.target.closest
+            ? ev.target.closest("[data-tag-wall-mode]")
+            : null;
+          if (!btn || !toggle.contains(btn)) return;
+          applyWallMode(widget, btn.getAttribute("data-tag-wall-mode") || "sphere");
+        });
+      });
     }
 
     function applyTagWallFocus() {
@@ -268,11 +439,19 @@ const catalogJson = JSON.stringify(
         }
         if (sphere) sphere.style.display = "";
 
+        var mode = readStoredMode();
+        if (sphere) sphere.setAttribute("data-view-mode", mode);
+
         var cloud = sphere && sphere.querySelector(".tag-chalk-sphere__cloud, .tag-sphere__cloud");
         var cloudId = cloud && cloud.id;
         if (cloudId && typeof window.__remountTagChalkSphere === "function") {
           window.__remountTagChalkSphere(cloudId, items);
         }
+
+        if (sphere && typeof window.__setTagChalkSphereMode === "function") {
+          window.__setTagChalkSphereMode(sphere, mode);
+        }
+        syncModeButtons(widget, mode);
 
         if (more) {
           more.style.display = focusMode ? "none" : "";
@@ -281,6 +460,7 @@ const catalogJson = JSON.stringify(
     }
 
     function boot() {
+      bindModeToggles();
       applyTagWallFocus();
     }
 
@@ -290,15 +470,15 @@ const catalogJson = JSON.stringify(
       boot();
     }
 
-    document.addEventListener("swup:contentReplaced", applyTagWallFocus);
-    document.addEventListener("swup:page:view", applyTagWallFocus);
+    document.addEventListener("swup:contentReplaced", boot);
+    document.addEventListener("swup:page:view", boot);
 
     function bindSwup() {
       if (!window.swup || !window.swup.hooks) return;
       window.swup.hooks.on("content:replace", function () {
-        setTimeout(applyTagWallFocus, 0);
+        setTimeout(boot, 0);
       });
-      window.swup.hooks.on("page:view", applyTagWallFocus);
+      window.swup.hooks.on("page:view", boot);
     }
     if (window.swup && window.swup.hooks) bindSwup();
     else document.addEventListener("swup:enable", bindSwup);

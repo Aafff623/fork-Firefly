@@ -42,7 +42,7 @@
 .dynamic-mast-meta {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
+	align-items: center;
 	gap: 1rem;
 	margin: 0;
 	padding-bottom: 0.6rem;
@@ -52,6 +52,58 @@
 	letter-spacing: 0.11em;
 	text-transform: uppercase;
 	color: color-mix(in oklab, var(--content-meta) 82%, transparent);
+}
+
+.dynamic-mast-left {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	min-width: 0;
+}
+
+/* 页头音浪：矮条节奏，减动效时静态 */
+.dynamic-wave {
+	display: inline-flex;
+	align-items: flex-end;
+	gap: 2px;
+	height: 0.85rem;
+	flex: 0 0 auto;
+}
+
+.dynamic-wave span {
+	display: block;
+	width: 2px;
+	border-radius: 999px;
+	background: color-mix(in oklab, var(--primary) 72%, transparent);
+	transform-origin: center bottom;
+	animation: dyn-wave 1.05s ease-in-out infinite;
+}
+
+.dynamic-wave span:nth-child(1) { height: 35%; animation-delay: 0s; }
+.dynamic-wave span:nth-child(2) { height: 70%; animation-delay: 0.08s; }
+.dynamic-wave span:nth-child(3) { height: 45%; animation-delay: 0.16s; }
+.dynamic-wave span:nth-child(4) { height: 90%; animation-delay: 0.24s; }
+.dynamic-wave span:nth-child(5) { height: 55%; animation-delay: 0.32s; }
+.dynamic-wave span:nth-child(6) { height: 75%; animation-delay: 0.4s; }
+.dynamic-wave span:nth-child(7) { height: 40%; animation-delay: 0.48s; }
+
+@keyframes dyn-wave {
+	0%,
+	100% {
+		transform: scaleY(0.55);
+		opacity: 0.55;
+	}
+	50% {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dynamic-wave span {
+		animation: none;
+		opacity: 0.7;
+	}
 }
 
 .dynamic-page-heading {
@@ -244,14 +296,17 @@ dynamic-feed {
 	top: 0.35rem;
 	bottom: 0.35rem;
 	width: 1px;
+	/* 轻节奏竖轨：主色淡入淡出，不抢卡片 */
 	background: linear-gradient(
 		180deg,
-		color-mix(in oklab, var(--primary) 45%, transparent),
-		var(--dyn-line) 12%,
-		var(--dyn-line) 88%,
+		transparent,
+		color-mix(in oklab, var(--primary) 38%, transparent) 10%,
+		var(--dyn-line) 42%,
+		var(--dyn-line) 78%,
 		transparent
 	);
 	pointer-events: none;
+	z-index: 0;
 }
 
 .dynamic-entry {
@@ -360,6 +415,36 @@ dynamic-feed {
 	align-items: center;
 	gap: 0.45rem;
 	min-width: 0;
+}
+
+/* 类型胶囊：笔记 / 图集 / 动态 */
+.dynamic-kind {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	padding: 0.08rem 0.42rem;
+	border-radius: 999px;
+	border: 1px solid color-mix(in oklab, var(--primary) 28%, var(--dyn-line));
+	background: color-mix(in oklab, var(--primary) 8%, var(--card-bg, #fff));
+	color: color-mix(in oklab, var(--primary) 88%, var(--content-meta));
+	font-size: 0.62rem;
+	font-weight: 650;
+	letter-spacing: 0.04em;
+	line-height: 1.35;
+	text-transform: none;
+}
+
+.dynamic-kind[hidden] {
+	display: none !important;
+}
+
+.dynamic-kind[data-kind="gallery"] {
+	border-color: color-mix(in oklab, var(--primary) 22%, oklch(0.65 0.08 250));
+	background: color-mix(in oklab, oklch(0.7 0.06 250) 12%, var(--card-bg, #fff));
+}
+
+.dynamic-kind[data-kind="note"] {
+	border-color: color-mix(in oklab, var(--primary) 34%, transparent);
 }
 
 .dynamic-author {

@@ -21,16 +21,38 @@ if (!link) {
 const processedLink = link;
 
 const hasChildren = processedLink.children && processedLink.children.length > 0;
+
+/** 顶栏六项各自点缀色 */
+function navKey(name: string): string {
+	const map: Record<string, string> = {
+		主页: "home",
+		文章: "articles",
+		社交: "social",
+		我的: "mine",
+		关于: "about",
+		链接: "links",
+		Home: "home",
+		Articles: "articles",
+		Social: "social",
+		About: "about",
+		Links: "links",
+	};
+	return map[name] || "default";
+}
+
+const accentKey = navKey(processedLink.name);
 ---
 
-<div class:list={["dropdown-container", className]} data-dropdown>
+<div
+	class:list={["dropdown-container", className]}
+	data-dropdown
+	data-nav-key={accentKey}
+>
 	{hasChildren ? (
 		<button
 			class:list={[
-				"relative block px-3 py-2 pr-7 text-sm font-medium transition dropdown-trigger",
-				isActive
-					? "text-(--primary)"
-					: "text-black/70 dark:text-white/80 hover:text-(--primary)",
+				"relative block px-3 py-2 pr-7 text-sm font-medium transition dropdown-trigger nav-accent-link",
+				isActive ? "is-active" : "",
 			]}
 			aria-expanded="false"
 			aria-haspopup="true"
@@ -42,7 +64,7 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			</div>
 			<Icon is:inline name="lucide:chevron-down" class="text-[1.2rem] transition-transform duration-200 dropdown-arrow absolute right-2 top-1/2 -translate-y-1/2" />
 			{isActive && (
-				<span class="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-transparent via-(--accent-rose)/50 to-transparent" />
+				<span class="nav-accent-underline absolute inset-x-1 -bottom-px h-px" />
 			)}
 		</button>
 		<div class="dropdown-menu" data-dropdown-menu>
@@ -69,10 +91,8 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			href={processedLink.external ? processedLink.url : url(processedLink.url)}
 			target={processedLink.external ? "_blank" : null}
 			class:list={[
-				"relative block px-3 py-2 text-sm font-medium transition",
-				isActive
-					? "text-(--primary)"
-					: "text-black/70 dark:text-white/80 hover:text-(--primary)",
+				"relative block px-3 py-2 text-sm font-medium transition nav-accent-link",
+				isActive ? "is-active" : "",
 			]}
 		>
 			<div class="flex items-center gap-1.5">
@@ -81,7 +101,7 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 				{processedLink.external && <Icon is:inline name="lucide:square-arrow-out-up-right" class="text-[0.875rem] transition -translate-y-px ml-1 text-black/20 dark:text-white/20" />}
 			</div>
 			{isActive && (
-				<span class="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-transparent via-(--accent-rose)/50 to-transparent" />
+				<span class="nav-accent-underline absolute inset-x-1 -bottom-px h-px" />
 			)}
 		</a>
 	)}
@@ -92,6 +112,49 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 
 	.dropdown-container {
 		@apply relative;
+		--nav-accent: var(--primary);
+	}
+
+	.dropdown-container[data-nav-key="home"] {
+		--nav-accent: oklch(0.55 0.12 165);
+	}
+	.dropdown-container[data-nav-key="articles"] {
+		--nav-accent: oklch(0.52 0.14 265);
+	}
+	.dropdown-container[data-nav-key="social"] {
+		--nav-accent: oklch(0.58 0.16 12);
+	}
+	.dropdown-container[data-nav-key="mine"] {
+		--nav-accent: oklch(0.62 0.14 75);
+	}
+	.dropdown-container[data-nav-key="about"] {
+		--nav-accent: oklch(0.55 0.12 300);
+	}
+	.dropdown-container[data-nav-key="links"] {
+		--nav-accent: oklch(0.58 0.12 230);
+	}
+
+	.nav-accent-link {
+		color: rgb(0 0 0 / 0.7);
+	}
+
+	:global(html.dark) .nav-accent-link {
+		color: rgb(255 255 255 / 0.8);
+	}
+
+	.nav-accent-link:hover,
+	.nav-accent-link:focus-visible,
+	.nav-accent-link.is-active {
+		color: var(--nav-accent);
+	}
+
+	.nav-accent-underline {
+		background: linear-gradient(
+			to right,
+			transparent,
+			color-mix(in oklch, var(--nav-accent) 55%, transparent),
+			transparent
+		);
 	}
 
 	.dropdown-menu {

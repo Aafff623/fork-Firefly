@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import { commentConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
+import { tagAccentStyle } from "@/utils/accent-from-label";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "@/utils/url-utils";
 
@@ -62,6 +63,8 @@ const {
 const path = customPath || (id ? `/posts/${id}` : "");
 const visibleTags =
 	typeof maxTags === "number" ? tags?.slice(0, maxTags) : tags;
+const categoryLabel = (category || i18n(I18nKey.uncategorized)).trim();
+const categoryAccent = tagAccentStyle(categoryLabel);
 ---
 
 <div
@@ -84,9 +87,15 @@ const visibleTags =
   }
   {
     pinKind === "auto" && (
-      <div class="pinned-btn pinned-btn--auto flex items-center gap-1 rounded-md px-2 py-1.5 font-bold">
-        <Icon is:inline name="lucide:bookmark" class="text-xl" />
-        <span class="text-sm">{i18n(I18nKey.pinnedAuto)}</span>
+      <div class="pinned-auto-meta flex items-center">
+        <div class="meta-icon pinned-auto-meta__icon">
+          <Icon
+            is:inline
+            name="lucide:bookmark"
+            class="text-xl pinned-auto-meta__glyph"
+          />
+        </div>
+        <span class="text-50 text-sm font-medium">{i18n(I18nKey.pinnedAuto)}</span>
       </div>
     )
   }
@@ -138,10 +147,10 @@ const visibleTags =
           <a
             href={getCategoryUrl(category || "")}
             aria-label={`View all posts in the ${category} category`}
-            class="link-lg transition text-50 text-sm font-medium
-              hover:text-(--primary) dark:hover:text-(--primary) whitespace-nowrap"
+            class="link-lg transition text-sm font-medium whitespace-nowrap meta-accent-link"
+            style={categoryAccent}
           >
-            {category || i18n(I18nKey.uncategorized)}
+            {categoryLabel}
           </a>
         </div>
       </div>
@@ -175,8 +184,8 @@ const visibleTags =
                 <a
                   href={getTagUrl(tag)}
                   aria-label={`View all posts with the ${tag.trim()} tag`}
-                  class="link-lg transition text-50 text-sm font-medium
-                    hover:text-(--primary) dark:hover:text-(--primary) whitespace-nowrap"
+                  class="link-lg transition text-sm font-medium whitespace-nowrap meta-accent-link"
+                  style={tagAccentStyle(tag)}
                 >
                   {tag.trim()}
                 </a>
@@ -317,20 +326,26 @@ const visibleTags =
     background: color-mix(in srgb, var(--primary) 10%, var(--btn-regular-bg));
   }
 
-  .pinned-btn--auto {
-    gap: 0.35rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 0.45rem;
-    color: var(--content-meta);
-    background: transparent;
-    border: 1px dashed color-mix(in srgb, var(--primary) 42%, var(--line-color));
+  /* 默认置顶：与日期/分类同级，无胶囊；实心黄标 */
+  .pinned-auto-meta__icon {
+    background: transparent !important;
+    color: oklch(0.78 0.14 95);
   }
 
-  .post-meta-cover .pinned-btn--sticky,
-  .post-meta-cover .pinned-btn--auto {
+  .pinned-auto-meta__glyph {
+    fill: currentColor;
+    color: oklch(0.78 0.14 95);
+  }
+
+  .post-meta-cover .pinned-btn--sticky {
     color: white;
     border-color: rgb(255 255 255 / 0.45);
     background: rgb(255 255 255 / 0.14);
+  }
+
+  .post-meta-cover .pinned-auto-meta__icon,
+  .post-meta-cover .pinned-auto-meta__glyph {
+    color: oklch(0.88 0.12 95);
   }
 
   .post-meta-cover .text-50,

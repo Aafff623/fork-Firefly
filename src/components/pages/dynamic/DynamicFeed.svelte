@@ -214,6 +214,33 @@ function createItem(entry: DynamicData) {
 		if (gallery) gallery.dataset.sourceId = content.id;
 	}
 
+	// 类型胶囊：图集 / 笔记 / 动态（启发式，不改 schema）
+	const kindEl = root.querySelector<HTMLElement>("[data-dynamic-kind]");
+	const kindText = root.querySelector<HTMLElement>("[data-dynamic-kind-text]");
+	if (kindEl && kindText) {
+		const html = entry.html || "";
+		const imageCount = entry.images?.length ?? 0;
+		let kind: "gallery" | "note" | "status" = "status";
+		let label = "动态";
+		if (
+			imageCount > 1 ||
+			/\bdynamic-gallery\b/i.test(html) ||
+			(html.match(/<img\b/gi) || []).length > 1
+		) {
+			kind = "gallery";
+			label = "图集";
+		} else if (
+			/发布了新笔记/.test(html) ||
+			/\/posts\//.test(html)
+		) {
+			kind = "note";
+			label = "笔记";
+		}
+		kindEl.dataset.kind = kind;
+		kindText.textContent = label;
+		kindEl.removeAttribute("hidden");
+	}
+
 	// 置顶标识
 	const pinned = root.querySelector<HTMLElement>("[data-dynamic-pinned]");
 	if (pinned) {

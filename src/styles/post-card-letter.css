@@ -176,7 +176,12 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	gap: 0.55rem 0.85rem !important;
 }
 
-.post-card-wrapper--letter .card-header-meta .meta-icon,
+/* 默认置顶黄标在 Letter 下仍显示；其它 meta 图标可藏 */
+.post-card-wrapper--letter .card-header-meta .pinned-auto-meta .meta-icon {
+	display: inline-flex !important;
+}
+
+.post-card-wrapper--letter .card-header-meta .meta-icon:not(.pinned-auto-meta__icon),
 .post-card-wrapper--letter .card-header-meta .meta-divider {
 	display: none !important;
 }
@@ -227,12 +232,25 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: baseline;
+	gap: 0.45rem;
+}
+
+.post-card-wrapper--letter .card-rail > .meta-accent-link {
+	color: var(--tag-accent, var(--letter-accent));
+	font-weight: 600;
 }
 
 .post-card-wrapper--letter .card-rail .tags a,
 .post-card-wrapper--letter .card-rail .tags b {
-	color: var(--letter-accent);
+	color: var(--tag-accent, var(--letter-accent));
 	font-weight: 500;
+}
+
+.post-card-wrapper--letter .card-rail .tags .rail-tag-gap {
+	display: none; /* 间距由 flex gap 承担 */
 }
 
 .post-card-wrapper--letter .card-rail .tags a:hover {
@@ -356,16 +374,20 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	pointer-events: none;
 }
 
-.post-card-wrapper--letter .pinned-btn--auto,
 .post-card-wrapper--letter .pinned-btn--sticky {
 	color: var(--letter-accent) !important;
 	background: var(--letter-accent-soft) !important;
-	border: 1px dashed
+	border: 1px solid
 		color-mix(in oklch, var(--letter-accent) 48%, var(--letter-rule)) !important;
 }
 
-.post-card-wrapper--letter .pinned-btn--sticky {
-	border-style: solid !important;
+/* 默认置顶：Letter 下仍无胶囊，仅黄标 */
+.post-card-wrapper--letter .pinned-auto-meta__icon,
+.post-card-wrapper--letter .pinned-auto-meta__glyph {
+	background: transparent !important;
+	border: none !important;
+	color: oklch(0.72 0.14 95) !important;
+	fill: currentColor;
 }
 
 .post-card-wrapper--letter .post-card-image-ring {
@@ -540,12 +562,15 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	font-size: inherit !important;
 }
 
-.grid-mode .post-card-wrapper--letter.has-cover .pinned-btn--auto,
 .grid-mode .post-card-wrapper--letter.has-cover .pinned-btn--sticky {
 	color: oklch(98% 0.01 90) !important;
 	background: oklch(0% 0 0 / 0.28) !important;
 	border-color: oklch(100% 0 0 / 0.28) !important;
 	backdrop-filter: blur(6px);
+}
+
+.grid-mode .post-card-wrapper--letter.has-cover .pinned-auto-meta__glyph {
+	color: oklch(0.9 0.12 95) !important;
 }
 
 /* grid 无封面 letter：保持奶油纸，不套背景图规则 */

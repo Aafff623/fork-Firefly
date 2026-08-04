@@ -35,6 +35,9 @@ const profileUrl = url(dynamicConfig.profileUrl || "/about/");
 						<a href={profileUrl} class="dynamic-author" aria-label={profileLabel}>
 							<strong data-dynamic-author>{profileConfig.name}</strong>
 						</a>
+						<span class="dynamic-kind" data-dynamic-kind hidden>
+							<span data-dynamic-kind-text></span>
+						</span>
 						<span class="dynamic-pinned-badge" data-dynamic-pinned hidden>
 							<Icon is:inline name="lucide:pin" class="size-3" />
 							{i18n(I18nKey.pinned)}

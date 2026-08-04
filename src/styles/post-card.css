@@ -106,7 +106,7 @@
 	margin-top: 0.15rem;
 }
 
-/* 荧光笔：仅 grid hover 展开（原语 C）；list-row 禁用 */
+/* 荧光笔：grid / waterfall / list（非 Letter）悬停展开 */
 /* --card-hl 由 JS 在 pointerenter 时随机写入，避免同卡连刷撞色 */
 .post-card-title-hl {
 	background-image: var(--card-hl, var(--hl-primary));
@@ -119,19 +119,18 @@
 }
 
 @media (hover: hover) {
-	:is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover .post-card-title-hl {
+	:is(.grid-mode, .waterfall-mode, .list-mode)
+		.post-card-wrapper:not(.post-card-wrapper--letter):hover
+		.post-card-title-hl {
 		background-size: 100% 10px;
 	}
 
-	:is(.grid-mode, .waterfall-mode) .post-card-wrapper .post-card-title:hover .post-card-title-hl {
+	:is(.grid-mode, .waterfall-mode, .list-mode)
+		.post-card-wrapper:not(.post-card-wrapper--letter)
+		.post-card-title:hover
+		.post-card-title-hl {
 		background-size: 100% 3px;
 	}
-}
-
-.list-mode .post-card-wrapper .post-card-title-hl,
-.list-mode .post-card-wrapper:hover .post-card-title-hl {
-	background-size: 0 0;
-	background-image: none;
 }
 
 .post-card-wrapper .card-header-meta .meta-icon {
@@ -164,7 +163,7 @@
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: baseline;
-	gap: 0;
+	gap: 0.45rem;
 	margin-top: auto;
 	padding-top: 0.55rem;
 	border-top: 1px solid color-mix(in oklab, var(--line-color, currentColor) 14%, transparent);
@@ -179,7 +178,7 @@
 .post-card-wrapper .post-card-bottom-tags a,
 .post-card-wrapper .post-card-tag {
 	background: transparent !important;
-	color: var(--primary) !important;
+	color: var(--tag-accent, var(--primary)) !important;
 	padding: 0 !important;
 	border-radius: 0 !important;
 	font-size: inherit !important;
@@ -193,24 +192,22 @@
 
 .post-card-wrapper .post-card-bottom-tags a:not(:last-child)::after,
 .post-card-wrapper .post-card-tag:not(:last-child)::after {
-	content: " · ";
-	color: color-mix(in oklab, var(--content-meta, currentColor) 55%, transparent);
-	font-weight: 400;
-	pointer-events: none;
+	content: none; /* 间距改由 flex gap */
 }
 
 :root.dark .post-card-wrapper .post-card-bottom-tags a,
 :root.dark .post-card-wrapper .post-card-tag {
 	background: transparent !important;
-	color: color-mix(in oklab, var(--primary) 88%, white) !important;
+	color: var(--tag-accent, var(--primary)) !important;
 }
 
 .post-card-wrapper .post-card-bottom-tags a:hover,
 .post-card-wrapper .post-card-tag:hover {
 	background: transparent !important;
-	color: var(--primary) !important;
+	color: var(--tag-accent, var(--primary)) !important;
 	text-decoration: underline;
 	text-underline-offset: 0.12em;
+	filter: brightness(1.08);
 }
 
 /* 卡片 / 瀑布：与列表 rail 同尺度，禁止大号换行堆叠 */
@@ -304,6 +301,11 @@
 	gap: 0 !important;
 }
 
+/* 列表模式：简介统一斜体（featured / row / letter） */
+.list-mode .description {
+	font-style: italic;
+}
+
 /* ========== list · Featured ========== */
 .list-mode .post-card-wrapper--featured {
 	border-radius: 0.35rem !important;
@@ -348,7 +350,8 @@
 .list-mode .post-card-wrapper--row:active {
 	transform: none !important;
 	box-shadow: none !important;
-	padding-left: 0.35rem;
+	/* 内容已有内边距，hover 只微移，避免叠加重叠 */
+	padding-left: 0.15rem;
 }
 
 .list-mode .post-card-wrapper--row::after {
@@ -362,7 +365,8 @@
 
 .list-mode .post-card-wrapper--row .post-card-content {
 	width: 100% !important;
-	padding: 0.85rem 0.15rem !important;
+	/* 接近置顶卡呼吸感：上下约 0.9、左右约 1.1 */
+	padding: 0.9rem 1.1rem !important;
 }
 
 .list-mode .post-card-wrapper--row .post-card-title {
@@ -393,6 +397,55 @@
 	margin-bottom: 0.25rem !important;
 	font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 	font-size: 0.72rem;
+}
+
+/* 分类/标签：按 --tag-accent 分色（哈希写入） */
+.meta-accent-link {
+	color: var(--tag-accent, var(--primary));
+}
+
+.meta-accent-link:hover {
+	color: var(--tag-accent, var(--primary));
+	filter: brightness(1.08);
+}
+
+/* 行卡：分类右侧紧凑标签按钮 */
+.list-mode .post-card-wrapper--row .post-meta-tags {
+	display: flex !important;
+	gap: 0.45rem;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.list-mode .post-card-wrapper--row .post-meta-tags .meta-icon {
+	display: none;
+}
+
+.list-mode .post-card-wrapper--row .post-meta-tags .meta-divider {
+	display: none;
+}
+
+.list-mode .post-card-wrapper--row .post-meta-tags a {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.05rem 0.45rem;
+	border-radius: 999px;
+	font-size: 0.68rem;
+	font-weight: 500;
+	line-height: 1.35;
+	color: var(--tag-accent, var(--primary));
+	background: color-mix(in oklch, var(--tag-accent, var(--primary)) 14%, transparent);
+	white-space: nowrap;
+	margin-inline-end: 0.1rem;
+}
+
+.list-mode .post-card-wrapper--row .post-meta-tags a:hover {
+	background: color-mix(in oklch, var(--tag-accent, var(--primary)) 24%, transparent);
+	filter: none;
+}
+
+.list-mode .post-card-wrapper--row .card-header-meta .meta-accent-link {
+	color: var(--tag-accent, var(--primary));
 }
 
 .list-mode .post-card-wrapper--row .stats {

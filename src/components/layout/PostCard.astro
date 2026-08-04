@@ -10,6 +10,7 @@ import { siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { PinKind } from "@/utils/content-utils";
+import { tagAccentStyle } from "@/utils/accent-from-label";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
 import { getFileDirFromPath, getTagUrl } from "@/utils/url-utils";
@@ -108,6 +109,14 @@ const statsShowReadingTime = statsConfig.showReadingTime ?? true;
 const tagsPosition = siteConfig.postListLayout.tagsPosition ?? "meta";
 const showTagsInMeta = metaShowTags && tagsPosition === "meta";
 const showTagsAtBottom = metaShowTags && tagsPosition === "bottom";
+// 行卡底部标签被 CSS 隐藏：改在 meta（时间/分类旁）补标签
+const showTagsInRowMeta =
+	metaShowTags && listVariant === "row" && !useLetterSkin;
+const metaMaxTags = showTagsInRowMeta
+	? 2
+	: metaTagCount > 0
+		? metaTagCount
+		: undefined;
 const descriptionClampLines = String(descriptionLines);
 const shouldClampDescription = descriptionLines > 0;
 
@@ -194,9 +203,9 @@ const publishedLabel = formatDateToYYYYMMDD(published);
       tags={tags}
       showPublished={metaShowPublished}
       showCategory={showCategory}
-      showTags={useLetterSkin ? false : showTagsInMeta}
-      maxTags={metaTagCount > 0 ? metaTagCount : undefined}
-      showNoTags={!useLetterSkin}
+      showTags={useLetterSkin ? false : showTagsInMeta || showTagsInRowMeta}
+      maxTags={metaMaxTags}
+      showNoTags={!useLetterSkin && !showTagsInRowMeta}
       hideUpdateDate={true}
       category={category || undefined}
       pinned={pinned}
@@ -222,15 +231,21 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     {
       useLetterSkin ? (
         <div class="card-rail" aria-label="post index">
-          <span>{railSection}</span>
+          <span class="meta-accent-link" style={tagAccentStyle(railSection)}
+            >{railSection}</span
+          >
           <span class="tags">
             {railTags.length > 0 ? (
               railTags
                 .slice(0, metaTagCount > 0 ? metaTagCount : railTags.length)
                 .map((tag, i) => (
                   <>
-                    {i > 0 && <span aria-hidden="true"> · </span>}
-                    <a href={getTagUrl(tag)}>#{tag}</a>
+                    {i > 0 && <span class="rail-tag-gap" aria-hidden="true" />}
+                    <a
+                      href={getTagUrl(tag)}
+                      class="meta-accent-link"
+                      style={tagAccentStyle(tag)}>#{tag}</a
+                    >
                   </>
                 ))
             ) : (
@@ -248,7 +263,8 @@ const publishedLabel = formatDateToYYYYMMDD(published);
                   <a
                     href={getTagUrl(tag)}
                     aria-label={`View all posts with the ${tag.trim()} tag`}
-                    class="post-card-tag transition"
+                    class="post-card-tag transition meta-accent-link"
+                    style={tagAccentStyle(tag)}
                   >
                     #{tag.trim()}
                   </a>
