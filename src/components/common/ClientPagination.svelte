@@ -1,4 +1,7 @@
 <script lang="ts">
+/**
+ * 客户端分页 · Lucide 导航图标 + 中性灰黑（去粉紫 AI 壳）
+ */
 import Icon from "./Icon.svelte";
 
 interface Props {
@@ -44,59 +47,72 @@ function goToPage(page: number) {
 
 {#if totalPages > 1}
   <div class="responsive-pagination flex justify-center items-center mt-8">
-    <!-- 移动端简化版分页 -->
     <div class="mobile-pagination items-center gap-3">
       <button
         type="button"
-        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="上一页"
       >
-        <Icon icon="lucide:chevron-left" class="w-5 h-5" aria-hidden="true" />
+        <Icon icon="lucide:chevron-left" class="pagination-icon" aria-hidden="true" />
       </button>
 
-      <div class="pagination-summary btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
-        <span class="text-base font-bold text-(--primary)">{currentPage}</span>
-        <span class="text-sm text-neutral-500 dark:text-neutral-500">/</span>
-        <span class="text-base font-bold text-neutral-700 dark:text-neutral-300">{totalPages}</span>
+      <div class="pagination-summary flex items-center px-3.5 h-11 gap-2">
+        <Icon icon="lucide:book-open" class="pagination-icon pagination-icon--muted" aria-hidden="true" />
+        <span class="pagination-summary__cur">{currentPage}</span>
+        <span class="pagination-summary__sep">/</span>
+        <span class="pagination-summary__total">{totalPages}</span>
       </div>
 
       <button
         type="button"
-        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="下一页"
       >
-        <Icon icon="lucide:chevron-right" class="w-5 h-5" aria-hidden="true" />
+        <Icon icon="lucide:chevron-right" class="pagination-icon" aria-hidden="true" />
       </button>
     </div>
 
-    <!-- 桌面端完整版分页 -->
-    <div class="desktop-pagination items-center gap-3">
+    <div class="desktop-pagination items-center gap-2.5">
       <button
         type="button"
-        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        onclick={() => goToPage(1)}
+        disabled={currentPage === 1}
+        aria-label="首页"
+        title="首页"
+      >
+        <Icon icon="lucide:chevrons-left" class="pagination-icon" aria-hidden="true" />
+      </button>
+
+      <button
+        type="button"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="上一页"
+        title="上一页"
       >
-        <Icon icon="lucide:chevron-left" class="w-5 h-5" aria-hidden="true" />
+        <Icon icon="lucide:chevron-left" class="pagination-icon" aria-hidden="true" />
       </button>
 
       {#each pageNumbers as pageItem}
         {#if pageItem === "..."}
-          <Icon icon="lucide:ellipsis" class="w-11 h-11 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />
+          <span class="pagination-ellipsis" aria-hidden="true">
+            <Icon icon="lucide:ellipsis" class="pagination-icon pagination-icon--muted" />
+          </span>
         {:else}
           <button
             type="button"
-            class="pagination-button rounded-(--radius-large) overflow-hidden w-11 h-11 flex items-center justify-center font-bold {pageItem === currentPage
-              ? 'bg-(--primary) text-white dark:text-black/70'
-              : 'btn-card active:scale-[0.85] text-neutral-700 dark:text-neutral-300'}"
+            class="pagination-button w-11 h-11 font-medium {pageItem === currentPage
+              ? 'pagination-button--active font-semibold'
+              : ''}"
             onclick={() => goToPage(pageItem as number)}
-            aria-label="{String(pageItem)}"
-            aria-current={pageItem === currentPage ? 'page' : undefined}
+            aria-label={String(pageItem)}
+            aria-current={pageItem === currentPage ? "page" : undefined}
           >
             {pageItem}
           </button>
@@ -105,12 +121,24 @@ function goToPage(page: number) {
 
       <button
         type="button"
-        class="pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="下一页"
+        title="下一页"
       >
-        <Icon icon="lucide:chevron-right" class="w-5 h-5" aria-hidden="true" />
+        <Icon icon="lucide:chevron-right" class="pagination-icon" aria-hidden="true" />
+      </button>
+
+      <button
+        type="button"
+        class="pagination-button pagination-button--nav w-11 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        onclick={() => goToPage(totalPages)}
+        disabled={currentPage === totalPages}
+        aria-label="末页"
+        title="末页"
+      >
+        <Icon icon="lucide:chevrons-right" class="pagination-icon" aria-hidden="true" />
       </button>
     </div>
   </div>
@@ -121,11 +149,11 @@ function goToPage(page: number) {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 0.35rem;
-    border: 1px solid color-mix(in oklch, var(--line-divider) 80%, transparent);
-    border-radius: calc(var(--radius-large) + 0.35rem);
-    background: color-mix(in oklch, var(--card-bg) 92%, var(--primary));
-    box-shadow: 0 0.45rem 1.2rem rgb(44 38 31 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.3);
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .mobile-pagination {
@@ -158,24 +186,93 @@ function goToPage(page: number) {
     }
   }
 
-  .responsive-pagination button {
-    border: 1px solid color-mix(in oklch, var(--line-divider) 76%, transparent);
-    transition: all 0.2s ease-in-out;
+  .pagination-button,
+  .pagination-summary {
+    border: 1px solid oklch(0.82 0.01 70 / 0.7);
+    border-radius: 0.55rem;
+    background: oklch(100% 0 0 / 0.35);
+    color: oklch(0.32 0.015 70);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      color 0.18s ease;
   }
 
-  .responsive-pagination button:not(:disabled):hover {
-    border-color: color-mix(in oklch, var(--primary) 42%, var(--line-divider));
-    transform: translateY(-1px);
+  :global(html.dark) .pagination-button,
+  :global(html.dark) .pagination-summary {
+    border-color: oklch(0.45 0.015 70 / 0.55);
+    background: oklch(100% 0 0 / 0.04);
+    color: oklch(0.88 0.01 70);
   }
 
-  @media (prefers-contrast: high) {
-    .responsive-pagination button {
-      border: 1px solid currentColor;
-    }
+  .pagination-button:not(:disabled):hover {
+    border-color: oklch(0.55 0.02 70 / 0.75);
+    background: oklch(0.96 0.01 70 / 0.85);
+    color: oklch(0.18 0.015 70);
+  }
+
+  :global(html.dark) .pagination-button:not(:disabled):hover {
+    border-color: oklch(0.62 0.015 70 / 0.65);
+    background: oklch(100% 0 0 / 0.08);
+    color: oklch(0.96 0.005 70);
+  }
+
+  .pagination-button--active {
+    border-color: oklch(0.28 0.02 70) !important;
+    background: oklch(0.28 0.02 70) !important;
+    color: oklch(0.98 0.005 70) !important;
+    box-shadow: none !important;
+  }
+
+  :global(html.dark) .pagination-button--active {
+    border-color: oklch(0.9 0.01 70) !important;
+    background: oklch(0.9 0.01 70) !important;
+    color: oklch(0.2 0.015 70) !important;
+  }
+
+  .pagination-summary__cur {
+    font-weight: 700;
+    color: oklch(0.28 0.02 70);
+  }
+
+  :global(html.dark) .pagination-summary__cur {
+    color: oklch(0.92 0.01 70);
+  }
+
+  .pagination-summary__sep {
+    font-size: 0.85rem;
+    opacity: 0.45;
+  }
+
+  .pagination-summary__total {
+    font-weight: 600;
+    opacity: 0.75;
+  }
+
+  .pagination-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .pagination-icon--muted {
+    opacity: 0.45;
+  }
+
+  .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2.75rem;
+    color: oklch(0.55 0.01 70);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .responsive-pagination button {
+    .pagination-button {
       transition: none;
     }
   }
@@ -184,16 +281,6 @@ function goToPage(page: number) {
     .responsive-pagination button {
       min-height: 44px;
       min-width: 44px;
-    }
-    .mobile-pagination button {
-      min-height: 40px;
-      min-width: 40px;
-    }
-  }
-
-  @media (max-width: 1024px) and (orientation: landscape) {
-    .mobile-pagination {
-      padding: 0 0.5rem;
     }
   }
 </style>

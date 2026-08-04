@@ -1,4 +1,8 @@
 ---
+/**
+ * 文章列表分页 · Lucide 图标增强
+ * 桌面：首页 / 上一页 / 页码 / 下一页 / 末页
+ */
 import type { Page } from "astro";
 import { Icon } from "astro-icon/components";
 import I18nKey from "@/i18n/i18nKey";
@@ -20,7 +24,6 @@ const className = Astro.props.class;
 const ADJ_DIST = 2;
 const VISIBLE = ADJ_DIST * 2 + 1;
 
-// for test
 let count = 1;
 let l = page.currentPage;
 let r = page.currentPage;
@@ -38,7 +41,7 @@ while (r + 1 <= page.lastPage && count < VISIBLE) {
 	r++;
 }
 
-let pages: number[] = [];
+const pages: number[] = [];
 if (l > 1) pages.push(1);
 if (l === 3) pages.push(2);
 if (l > 3) pages.push(HIDDEN);
@@ -51,93 +54,109 @@ const getPageUrl = (p: number) => {
 	if (p === 1) return "/";
 	return `/${p}/`;
 };
+
+const hasPrev = Boolean(page.url.prev);
+const hasNext = Boolean(page.url.next);
+const isFirst = page.currentPage <= 1;
+const isLast = page.currentPage >= page.lastPage;
 ---
 
 <div class:list={[className, "pagination-wrapper flex flex-col gap-4 items-center"]} style={style}>
-  <!-- 分页控件 -->
   <div class="pagination-shell flex flex-row gap-3 justify-center" role="navigation" aria-label={i18n(I18nKey.postList)}>
-    <!-- 移动端简化版分页 -->
+    <!-- 移动端：上一页 / 当前 / 下一页 -->
     <div class="mobile-pagination flex items-center gap-3">
       <a
         href={page.url.prev || "#"}
         aria-label={i18n(I18nKey.paginationPrev)}
-        aria-disabled={!page.url.prev ? "true" : "false"}
-        tabindex={!page.url.prev ? "-1" : "0"}
+        aria-disabled={!hasPrev ? "true" : "false"}
+        tabindex={!hasPrev ? "-1" : "0"}
         class:list={[
-          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav w-11 h-11",
           {
-            disabled: !page.url.prev,
-            "opacity-50": !page.url.prev,
-            "cursor-not-allowed": !page.url.prev,
+            disabled: !hasPrev,
+            "opacity-50": !hasPrev,
+            "cursor-not-allowed": !hasPrev,
           },
         ]}
       >
-        <Icon is:inline
-          name="lucide:chevron-left"
-          class="text-[1.75rem]"
-          aria-hidden="true"
-        />
+        <Icon is:inline name="lucide:chevron-left" class="pagination-icon" aria-hidden="true" />
       </a>
 
-      <div class="pagination-summary btn-card flex items-center rounded-(--radius-large) px-4 h-11 gap-1.5">
-        <span class="text-base font-bold text-(--primary)">{page.currentPage}</span>
-        <span class="text-sm text-neutral-500 dark:text-neutral-500">/</span>
-        <span class="text-base font-bold text-neutral-700 dark:text-neutral-300">{page.lastPage}</span>
+      <div class="pagination-summary flex items-center px-3.5 h-11 gap-2">
+        <Icon is:inline name="lucide:book-open" class="pagination-icon pagination-icon--muted" aria-hidden="true" />
+        <span class="pagination-summary__cur">{page.currentPage}</span>
+        <span class="pagination-summary__sep">/</span>
+        <span class="pagination-summary__total">{page.lastPage}</span>
       </div>
 
       <a
         href={page.url.next || "#"}
         aria-label={i18n(I18nKey.paginationNext)}
-        aria-disabled={!page.url.next ? "true" : "false"}
-        tabindex={!page.url.next ? "-1" : "0"}
+        aria-disabled={!hasNext ? "true" : "false"}
+        tabindex={!hasNext ? "-1" : "0"}
         class:list={[
-          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav w-11 h-11",
           {
-            disabled: !page.url.next,
-            "opacity-50": !page.url.next,
-            "cursor-not-allowed": !page.url.next,
+            disabled: !hasNext,
+            "opacity-50": !hasNext,
+            "cursor-not-allowed": !hasNext,
           },
         ]}
       >
-        <Icon is:inline
-          name="lucide:chevron-right"
-          class="text-[1.75rem]"
-          aria-hidden="true"
-        />
+        <Icon is:inline name="lucide:chevron-right" class="pagination-icon" aria-hidden="true" />
       </a>
     </div>
 
-    <!-- 桌面端完整版分页 -->
-    <div class="desktop-pagination flex items-center gap-3">
+    <!-- 桌面端：首页 · 上一页 · 页码 · 下一页 · 末页 -->
+    <div class="desktop-pagination flex items-center gap-2.5">
       <a
-        href={page.url.prev || "#"}
-        aria-label={i18n(I18nKey.paginationPrev)}
-        aria-disabled={!page.url.prev ? "true" : "false"}
-        tabindex={!page.url.prev ? "-1" : "0"}
+        href={isFirst ? "#" : url(getPageUrl(1))}
+        aria-label={`${i18n(I18nKey.paginationPage)} 1`}
+        aria-disabled={isFirst ? "true" : "false"}
+        tabindex={isFirst ? "-1" : "0"}
+        title="首页"
         class:list={[
-          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav w-11 h-11",
           {
-            disabled: !page.url.prev,
-            "opacity-50": !page.url.prev,
-            "cursor-not-allowed": !page.url.prev,
+            disabled: isFirst,
+            "opacity-50": isFirst,
+            "cursor-not-allowed": isFirst,
           },
         ]}
       >
-        <Icon is:inline
-          name="lucide:chevron-left"
-          class="text-[1.75rem]"
-          aria-hidden="true"
-        />
+        <Icon is:inline name="lucide:chevrons-left" class="pagination-icon" aria-hidden="true" />
       </a>
+
+      <a
+        href={page.url.prev || "#"}
+        aria-label={i18n(I18nKey.paginationPrev)}
+        aria-disabled={!hasPrev ? "true" : "false"}
+        tabindex={!hasPrev ? "-1" : "0"}
+        title="上一页"
+        class:list={[
+          "pagination-button pagination-button--nav w-11 h-11",
+          {
+            disabled: !hasPrev,
+            "opacity-50": !hasPrev,
+            "cursor-not-allowed": !hasPrev,
+          },
+        ]}
+      >
+        <Icon is:inline name="lucide:chevron-left" class="pagination-icon" aria-hidden="true" />
+      </a>
+
       {
         pages.map((p) => {
-          if (p == HIDDEN)
-            return <Icon is:inline name="lucide:ellipsis" class="w-11 h-11 flex items-center justify-center text-neutral-700 dark:text-neutral-300" aria-hidden="true" />;
-          if (p == page.currentPage)
+          if (p === HIDDEN)
+            return (
+              <span class="pagination-ellipsis" aria-hidden="true">
+                <Icon is:inline name="lucide:ellipsis" class="pagination-icon pagination-icon--muted" />
+              </span>
+            );
+          if (p === page.currentPage)
             return (
               <div
-                class="pagination-button pagination-button--active h-11 w-11 rounded-(--radius-large) bg-(--primary) flex items-center justify-center
-                        font-bold text-white dark:text-black/70"
+                class="pagination-button pagination-button--active h-11 w-11 font-semibold"
                 aria-current="page"
               >
                 {p}
@@ -147,32 +166,48 @@ const getPageUrl = (p: number) => {
             <a
               href={url(getPageUrl(p))}
               aria-label={`${i18n(I18nKey.paginationPage)} ${p}`}
-              class="pagination-button btn-card w-11 h-11 rounded-(--radius-large) overflow-hidden active:scale-[0.85] font-bold text-neutral-700 dark:text-neutral-300"
+              class="pagination-button w-11 h-11 font-medium"
             >
               {p}
             </a>
           );
         })
       }
+
       <a
         href={page.url.next || "#"}
         aria-label={i18n(I18nKey.paginationNext)}
-        aria-disabled={!page.url.next ? "true" : "false"}
-        tabindex={!page.url.next ? "-1" : "0"}
+        aria-disabled={!hasNext ? "true" : "false"}
+        tabindex={!hasNext ? "-1" : "0"}
+        title="下一页"
         class:list={[
-          "pagination-button pagination-button--nav btn-card overflow-hidden rounded-(--radius-large) text-(--primary) w-11 h-11",
+          "pagination-button pagination-button--nav w-11 h-11",
           {
-            disabled: !page.url.next,
-            "opacity-50": !page.url.next,
-            "cursor-not-allowed": !page.url.next,
+            disabled: !hasNext,
+            "opacity-50": !hasNext,
+            "cursor-not-allowed": !hasNext,
           },
         ]}
       >
-        <Icon is:inline
-          name="lucide:chevron-right"
-          class="text-[1.75rem]"
-          aria-hidden="true"
-        />
+        <Icon is:inline name="lucide:chevron-right" class="pagination-icon" aria-hidden="true" />
+      </a>
+
+      <a
+        href={isLast ? "#" : url(getPageUrl(page.lastPage))}
+        aria-label={`${i18n(I18nKey.paginationPage)} ${page.lastPage}`}
+        aria-disabled={isLast ? "true" : "false"}
+        tabindex={isLast ? "-1" : "0"}
+        title="末页"
+        class:list={[
+          "pagination-button pagination-button--nav w-11 h-11",
+          {
+            disabled: isLast,
+            "opacity-50": isLast,
+            "cursor-not-allowed": isLast,
+          },
+        ]}
+      >
+        <Icon is:inline name="lucide:chevrons-right" class="pagination-icon" aria-hidden="true" />
       </a>
     </div>
   </div>
@@ -183,27 +218,105 @@ const getPageUrl = (p: number) => {
     max-width: 100%;
   }
 
+  /* 去粉紫外壳：无边框、无主色混底、无投影 */
   .pagination-shell {
-    padding: 0.35rem;
-    border: 1px solid color-mix(in oklch, var(--line-divider) 80%, transparent);
-    border-radius: calc(var(--radius-large) + 0.35rem);
-    background: color-mix(in oklch, var(--card-bg) 92%, var(--primary));
-    box-shadow: 0 0.45rem 1.2rem rgb(44 38 31 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.3);
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .pagination-button,
   .pagination-summary {
-    border: 1px solid color-mix(in oklch, var(--line-divider) 76%, transparent);
+    border: 1px solid oklch(0.82 0.01 70 / 0.7);
+    border-radius: 0.55rem;
+    background: oklch(100% 0 0 / 0.35);
+    color: oklch(0.32 0.015 70);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      color 0.18s ease;
+  }
+
+  html.dark .pagination-button,
+  html.dark .pagination-summary {
+    border-color: oklch(0.45 0.015 70 / 0.55);
+    background: oklch(100% 0 0 / 0.04);
+    color: oklch(0.88 0.01 70);
   }
 
   .pagination-button:hover:not(.disabled) {
-    border-color: color-mix(in oklch, var(--primary) 42%, var(--line-divider));
-    transform: translateY(-1px);
+    border-color: oklch(0.55 0.02 70 / 0.75);
+    background: oklch(0.96 0.01 70 / 0.85);
+    color: oklch(0.18 0.015 70);
+    transform: none;
   }
 
+  html.dark .pagination-button:hover:not(.disabled) {
+    border-color: oklch(0.62 0.015 70 / 0.65);
+    background: oklch(100% 0 0 / 0.08);
+    color: oklch(0.96 0.005 70);
+  }
+
+  /* 当前页：墨色块，不用站点粉紫主色 */
   .pagination-button--active {
-    border-color: color-mix(in oklch, var(--primary) 62%, transparent);
-    box-shadow: 0 3px 7px color-mix(in oklch, var(--primary) 20%, transparent);
+    border-color: oklch(0.28 0.02 70);
+    background: oklch(0.28 0.02 70);
+    color: oklch(0.98 0.005 70);
+    box-shadow: none;
+  }
+
+  html.dark .pagination-button--active {
+    border-color: oklch(0.9 0.01 70);
+    background: oklch(0.9 0.01 70);
+    color: oklch(0.2 0.015 70);
+  }
+
+  .pagination-summary__cur {
+    font-weight: 700;
+    color: oklch(0.28 0.02 70);
+  }
+
+  html.dark .pagination-summary__cur {
+    color: oklch(0.92 0.01 70);
+  }
+
+  .pagination-summary__sep {
+    font-size: 0.85rem;
+    opacity: 0.45;
+  }
+
+  .pagination-summary__total {
+    font-weight: 600;
+    opacity: 0.75;
+  }
+
+  .pagination-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .pagination-icon--muted {
+    opacity: 0.45;
+  }
+
+  .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2.75rem;
+    color: oklch(0.55 0.01 70);
+  }
+
+  html.dark .pagination-ellipsis {
+    color: oklch(0.65 0.01 70);
   }
 
   .mobile-pagination {
@@ -241,6 +354,15 @@ const getPageUrl = (p: number) => {
     .mobile-pagination div {
       min-height: 44px;
       min-width: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pagination-button {
+      transition: none;
+    }
+    .pagination-button:hover:not(.disabled) {
+      transform: none;
     }
   }
 </style>
