@@ -1,7 +1,8 @@
 """Capture showcase screenshots from local Firefly blog (Playwright).
 
-前置：`pnpm dev` 已在 http://127.0.0.1:4321 跑着。
-用法：`python scripts/capture-readme-showcase.py`
+前置：`pnpm dev` 已在 http://localhost:4321 跑着（本机多为 [::1]）。
+用法：完整路径调用 python，例如：
+`& "$env:LOCALAPPDATA\Programs\Python\Python313\python.exe" scripts\capture-readme-showcase.py`
 """
 from __future__ import annotations
 
@@ -9,7 +10,8 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-BASE = "http://127.0.0.1:4321"
+# Astro 在本机常只监听 [::1]；127.0.0.1 会连不上
+BASE = "http://localhost:4321"
 OUT = Path(__file__).resolve().parent.parent / "assets" / "images" / "readme"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -19,7 +21,7 @@ SHOTS: list[tuple[str, str, dict[str, str] | None, str | None]] = [
     # 滚过英雄横幅，露出正文 + Index-First TOC
     (
         "showcase-post.png",
-        "/posts/guide/firefly-layout-system/",
+        "/posts/claude-code-windows-beautify/",
         None,
         "#post-container",
     ),

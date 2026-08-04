@@ -117,7 +117,7 @@ UI 大改后可以使用 `scripts/capture-readme-showcase.py` 重新截取展示
       <a href="assets/images/readme/showcase-post.png"><img alt="Post" src="assets/images/readme/showcase-post.png" width="100%"></a>
       <br><strong>Post</strong><br>
       <sub>Index-First TOC · 封面 · Markdown 扩展</sub><br>
-      <a href="https://fork-firefly.vercel.app/posts/guide/firefly-layout-system/">Open</a>
+      <a href="https://fork-firefly.vercel.app/posts/claude-code-windows-beautify/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-dynamic.png"><img alt="Dynamic" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
