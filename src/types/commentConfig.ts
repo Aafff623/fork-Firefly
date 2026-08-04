@@ -26,6 +26,21 @@ export type CommentConfig = {
 		emoji: string[];
 		login?: "enable" | "force" | "disable";
 		visitorCount?: boolean; // 是否统计访问量，true 启用访问量，false 关闭
+		/** 边打字边推梗图（旁挂 type-ahead）；见 docs/outputs/prd/comment-sticker-suggest */
+		stickerSuggest?: {
+			/** 总开关；默认 false */
+			enabled: boolean;
+			/** 防抖 ms，建议 280～400 */
+			debounceMs?: number;
+			/** 最少触发字数，建议 2 */
+			minChars?: number;
+			/** 最多展示条数，建议 6 */
+			maxResults?: number;
+			/** 未命中是否走 Agent；P0 必须 false */
+			agentEnabled?: boolean;
+			/** API 路径，默认 /api/comment-sticker-suggest/ */
+			endpoint?: string;
+		};
 	};
 	artalk?: {
 		// 后端程序 API 地址

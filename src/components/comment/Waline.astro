@@ -1,12 +1,26 @@
 ---
 import { commentConfig } from "@/config";
 import { url as siteUrl } from "@/utils/url-utils";
+import stickerSuggestStyles from "./sticker-suggest/sticker-suggest.css?url";
 
 interface Props {
 	path: string;
 }
 
 const uploadApi = siteUrl("/api/comment-image/");
+
+const stickerCfg = commentConfig.waline?.stickerSuggest;
+const stickerSuggestEnabled = stickerCfg?.enabled === true;
+const stickerSuggestBoot = stickerSuggestEnabled
+	? {
+			endpoint: siteUrl(
+				stickerCfg?.endpoint || "/api/comment-sticker-suggest/",
+			),
+			debounceMs: stickerCfg?.debounceMs ?? 300,
+			minChars: stickerCfg?.minChars ?? 2,
+			maxResults: stickerCfg?.maxResults ?? 6,
+		}
+	: null;
 
 const config = {
 	...commentConfig.waline,
@@ -16,24 +30,30 @@ const config = {
 	// 默认开启表情搜索（Giphy）；勿设 search: false
 	...(commentConfig.waline?.visitorCount ? { pageview: true } : {}),
 };
+// stickerSuggest 仅给旁挂用，勿传入 Waline.init
+delete (config as { stickerSuggest?: unknown }).stickerSuggest;
 ---
 <!--
   微信式单框：不默认开预览、并隐藏预览按钮。
   原因：Waline 客户端预览用轻量 marked，自定义表情短码/部分语法预览不渲染；
   提交后由服务端 markdown-it 才正确出图（官方文档「有限的预览支持」）。
 -->
-<div class="relative w-full waline-shell">
+<div
+  class="relative w-full waline-shell"
+  data-sticker-suggest={stickerSuggestBoot ? JSON.stringify(stickerSuggestBoot) : undefined}
+>
   <p class="waline-hint">
     像发消息一样写就好：点工具栏插入表情 / 图片，表情会直接显示。插图 ≤5MB。
   </p>
   <div id="waline"></div>
   <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+  {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script type="module" is:inline define:vars={{ config, uploadApi }}>
     import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
 
     const MAX_BYTES = 5 * 1024 * 1024;
 
-    /** 清掉本地草稿里的巨型 Base64（Ctrl+F5 清不掉 localStorage） */
+    /** 清掉本地草稿里的巨型 Base64；并把历史 sticker Markdown 迁成短码 */
     function scrubBase64Drafts() {
       try {
         const keys = [];
@@ -45,9 +65,39 @@ const config = {
           const low = k.toLowerCase();
           if (!low.includes("waline") && !low.includes("wl_")) continue;
           const v = localStorage.getItem(k);
-          if (v && v.includes("data:image")) {
+          if (!v) continue;
+          if (v.includes("data:image")) {
             localStorage.removeItem(k);
             console.info("[Waline] cleared base64 draft:", k);
+            continue;
+          }
+          if (v.includes("![sticker:")) {
+            const migrated = v.replace(
+              /!\[sticker:[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi,
+              (full, url) => {
+                const m = String(url).match(
+                  /\/([a-z0-9_]+)\.(?:png|gif|webp|jpe?g)(?:\?|#|$)/i,
+                );
+                return m ? `:${m[1]}:` : full;
+              },
+            );
+            if (migrated !== v) {
+              localStorage.setItem(k, migrated);
+              console.info("[Waline] migrated sticker draft:", k);
+            }
+          }
+          // 调试期常见：连续短码叠在开头，清掉评论草稿避免一进来就「团在一起」 // 中文注释
+          if (/:[a-z0-9_+-]+:\s*:[a-z0-9_+-]+:/i.test(v)) {
+            try {
+              const parsed = JSON.parse(v);
+              if (parsed && typeof parsed === "object" && "comment" in parsed) {
+                parsed.comment = "";
+                localStorage.setItem(k, JSON.stringify(parsed));
+                console.info("[Waline] cleared clumped shortcode draft:", k);
+              }
+            } catch {
+              localStorage.removeItem(k);
+            }
           }
         }
       } catch {
@@ -287,6 +337,9 @@ const config = {
 
         attachCollapsibleEditor(root, editor);
         host.classList.add("waline-editor-visual-host");
+        // 绑定时清掉多余镜像，只留一层 // 中文注释
+        const existingMirrors = [...host.querySelectorAll(".waline-editor-visual")];
+        existingMirrors.slice(1).forEach((node) => node.remove());
         let mirror = host.querySelector(".waline-editor-visual");
         if (!mirror) {
           mirror = document.createElement("div");
@@ -335,7 +388,8 @@ const config = {
           const tokenPattern = /!\[([^\]]*)\]\(([^)\s]*)\)|:([a-z0-9_+-]+):/gi;
           const matches = [...value.matchAll(tokenPattern)];
           const visualMatches = matches.filter((match) => {
-            if (match[3]) return emojiMap.has(match[3]);
+            // 短码一律走视觉层；map 未就绪时用占位，避免露出 :bb_xxx: 原文 // 中文注释
+            if (match[3]) return true;
             const alt = match[1] || "";
             const source = match[2] || "";
             return imagePattern.test(source) || /^正在上传(?:\s|$)/.test(alt);
@@ -345,6 +399,7 @@ const config = {
           if (!visualMatches.length) {
             host.classList.remove("waline-editor-visual-active");
             mirror.hidden = true;
+            mirror.replaceChildren();
             fitEditorHeight(false);
             return;
           }
@@ -430,42 +485,53 @@ const config = {
             const tokenEnd = start + match[0].length;
             const source = match[3] ? emojiMap.get(match[3]) : match[2];
             if (source) {
-              const imageKey = `${match[3] ? "emoji" : "image"}:${start}:${source}`;
-              let image = visualImageCache.get(imageKey);
+              const imageKey = `${match[3] ? "emoji" : "image"}:${source}`;
+              let template = visualImageCache.get(imageKey);
               let imageNeedsSource = false;
-              if (!image) {
-                image = document.createElement("img");
-                image.className = match[3]
+              // 联想插入用 sticker: 前缀；Waline 表情 CDN 也按行内小图，避免光标被顶到大图下面 // 中文注释
+              const altText = match[1] || "";
+              const inlineSticker =
+                !match[3] &&
+                (/^sticker:/i.test(altText) ||
+                  /@waline\/emojis/i.test(source) ||
+                  /unpkg\.com\/@waline\/emojis/i.test(source));
+              if (!template) {
+                template = document.createElement("img");
+                template.className = match[3] || inlineSticker
                   ? "waline-editor-visual-emoji"
                   : "waline-editor-visual-image";
-                image.alt = match[1] || match[0];
-                image.draggable = false;
-                image.decoding = "async";
+                template.alt = altText.replace(/^sticker:/i, "") || match[0];
+                template.draggable = false;
+                template.decoding = "async";
                 imageNeedsSource = true;
-                if (match[3]) {
-                  image.style.display = "inline-block";
-                  image.style.width = "1.45em";
-                  image.style.height = "1.45em";
-                  image.style.margin = "-0.15em 0.08em";
-                  image.style.verticalAlign = "middle";
-                  image.style.objectFit = "contain";
+                if (match[3] || inlineSticker) {
+                  template.style.display = "inline-block";
+                  template.style.width = "1.45em";
+                  template.style.height = "1.45em";
+                  template.style.margin = "-0.15em 0.08em";
+                  template.style.verticalAlign = "middle";
+                  template.style.objectFit = "contain";
                 } else {
-                  image.style.display = "block";
-                  image.style.maxWidth = "min(100%, 20rem)";
-                  image.style.maxHeight = "12rem";
-                  image.style.width = "auto";
-                  image.style.height = "auto";
-                  image.style.margin = "0.75em 0 0.9em";
-                  image.style.objectFit = "contain";
+                  template.style.display = "block";
+                  template.style.maxWidth = "min(100%, 20rem)";
+                  template.style.maxHeight = "12rem";
+                  template.style.width = "auto";
+                  template.style.height = "auto";
+                  template.style.margin = "0.75em 0 0.9em";
+                  template.style.objectFit = "contain";
                 }
-                image.addEventListener("load", () => {
+                template.addEventListener("load", () => {
                   fitEditorHeight(true);
                   syncPosition();
-                }, { once: true });
-                visualImageCache.set(imageKey, image);
+                });
+                visualImageCache.set(imageKey, template);
+              }
+              // 每次克隆，避免同一节点被二次 append 时挪走导致叠在开头 // 中文注释
+              const image = template.cloneNode(true);
+              if (imageNeedsSource || !image.getAttribute("src")) {
+                image.src = source;
               }
               appendVisualNode(image, start, tokenEnd);
-              if (imageNeedsSource) image.src = source;
             } else if (!match[3] && /^正在上传(?:\s|$)/.test(match[1] || "")) {
               const uploading = document.createElement("span");
               uploading.className = "waline-editor-visual-uploading";
@@ -483,6 +549,17 @@ const config = {
               spinner.style.animation = "waline-upload-spin 0.8s linear infinite";
               uploading.append(spinner, document.createTextNode(match[1]));
               appendVisualNode(uploading, start, tokenEnd);
+            } else if (match[3]) {
+              // emojiMap 尚未加载：占位同尺寸，保持透明 textarea，不露出短码原文 // 中文注释
+              const ph = document.createElement("span");
+              ph.className = "waline-editor-visual-emoji";
+              ph.setAttribute("aria-hidden", "true");
+              ph.style.display = "inline-block";
+              ph.style.width = "1.45em";
+              ph.style.height = "1.45em";
+              ph.style.margin = "-0.15em 0.08em";
+              ph.style.verticalAlign = "middle";
+              appendVisualNode(ph, start, tokenEnd);
             } else {
               appendText(match[0], start);
             }
@@ -507,6 +584,10 @@ const config = {
           editor.addEventListener("blur", syncContent);
           editor.addEventListener("select", syncContent);
           editor.addEventListener("scroll", syncPosition, { passive: true });
+          // 联想浮层显隐后重定位镜像，避免 offset 漂移 // 中文注释
+          editor.addEventListener("waline-sticker-suggest-layout", () => {
+            syncPosition();
+          });
           editor.setAttribute("spellcheck", "false");
           document.addEventListener("selectionchange", () => {
             if (document.activeElement === editor) syncContent();
@@ -542,6 +623,22 @@ const config = {
       console.error("[Waline] Failed to initialize:", error);
     }
   </script>
+  {
+    stickerSuggestEnabled && (
+      <script>
+        import { attachStickerSuggestFromShell } from "./sticker-suggest/attach";
+        // 等 Waline init 旁挂编辑器后再挂联想层 // 中文注释
+        const boot = () => attachStickerSuggestFromShell();
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", () => setTimeout(boot, 0));
+        } else {
+          setTimeout(boot, 0);
+        }
+        // Swup 等软导航后可能重建评论区 // 中文注释
+        document.addEventListener("swup:page:view", () => setTimeout(boot, 50));
+      </script>
+    )
+  }
 </div>
 
 <style is:global>

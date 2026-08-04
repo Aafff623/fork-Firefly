@@ -9,6 +9,7 @@
     "strictNullChecks": true,
     "allowJs": false,
     "declaration": true,
+    "resolveJsonModule": true,
     "noUncheckedSideEffectImports": false,
     "plugins": [
       {

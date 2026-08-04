@@ -1,0 +1,83 @@
+/* 评论梗图联想浮层：限定在 .waline-shell 内 */ /* 中文注释：勿污染全局 */
+
+.waline-shell .waline-sticker-suggest-host {
+	position: relative;
+	/* 浮层用负 top 贴在 textarea 上方，避免被宿主裁切 */ /* 中文注释 */
+	overflow: visible;
+}
+
+.waline-shell .waline-sticker-suggest {
+	/* 绝对定位；top/left/width 由 JS 相对 textarea 写入，勿用 bottom:100% */ /* 中文注释 */
+	position: absolute;
+	box-sizing: border-box;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	align-items: center;
+	margin: 0;
+	padding: 0.35rem 0.4rem;
+	border: 1px solid color-mix(in srgb, var(--primary, #8b5cf6) 18%, transparent);
+	border-radius: 0.45rem;
+	background: color-mix(in srgb, var(--card-bg, #fff) 96%, transparent);
+	box-shadow: 0 4px 14px color-mix(in srgb, #000 8%, transparent);
+	/* 高于视觉镜像(1)，低于 Waline popup；且 JS 把整层放在 textarea 上方 */ /* 中文注释 */
+	z-index: 5;
+	pointer-events: auto;
+}
+
+.waline-shell .waline-sticker-suggest[hidden] {
+	display: none !important;
+}
+
+.waline-shell .waline-sticker-suggest__hint {
+	font-size: 0.78rem;
+	color: var(--content-meta, #888);
+}
+
+/* Tab 快捷键提示：小括号 + 更小字号 */ /* 中文注释 */
+.waline-shell .waline-sticker-suggest__kbd {
+	margin-left: 0.2rem;
+	font-size: 0.62rem;
+	line-height: 1.2;
+	letter-spacing: 0.01em;
+	color: var(--content-meta, #888);
+	user-select: none;
+	pointer-events: none;
+	opacity: 0.9;
+	white-space: nowrap;
+}
+
+.waline-shell .waline-sticker-suggest__item {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.4rem;
+	height: 2.4rem;
+	padding: 0.15rem;
+	border: 1px solid transparent;
+	border-radius: 0.35rem;
+	background: transparent;
+	cursor: pointer;
+}
+
+/* 首选（Tab 目标）轻微描边，方便辨认 */ /* 中文注释 */
+.waline-shell .waline-sticker-suggest__item--active {
+	border-color: color-mix(in srgb, var(--primary, #8b5cf6) 40%, transparent);
+	background: color-mix(in srgb, var(--primary, #8b5cf6) 8%, transparent);
+}
+
+.waline-shell .waline-sticker-suggest__item:hover,
+.waline-shell .waline-sticker-suggest__item:focus-visible {
+	border-color: color-mix(in srgb, var(--primary, #8b5cf6) 35%, transparent);
+	background: color-mix(in srgb, var(--primary, #8b5cf6) 10%, transparent);
+	outline: none;
+}
+
+.waline-shell .waline-sticker-suggest__item img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	pointer-events: none;
+}

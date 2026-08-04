@@ -41,6 +41,16 @@ export const commentConfig: CommentConfig = {
 		login: "enable",
 		// 是否启用文章访问量统计功能
 		visitorCount: true,
+		// 边打字边推梗图（L1 词表；Agent=DeepSeek 官网，默认关） // 中文注释
+		stickerSuggest: {
+			enabled: false,
+			debounceMs: 300,
+			minChars: 2,
+			maxResults: 6,
+			// true 时未命中走 DeepSeek（需 DEEPSEEK_API_KEY） // 中文注释
+			agentEnabled: false,
+			endpoint: "/api/comment-sticker-suggest/",
+		},
 	},
 
 	// artalk评论系统配置
