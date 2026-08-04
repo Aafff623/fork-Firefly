@@ -1,8 +1,8 @@
 ﻿---
-title: OpenClaw 保姆级教程，我只帮你理目录和摘重点
+title: 数字员工与权限边界：OpenClaw 索引
 published: 2026-08-04
-updated: 2026-08-04T19:40:00
-description: 鱼皮 OpenClaw 系列不整本搬进博客：按原目录立标题，每章精炼摘要，小长条配图挂回原文链接。
+updated: 2026-08-04T21:30:00
+description: OpenClaw 系列按目录摘重点：安装、IM、Skills、自动化与安全红线；小长条配图挂回原文。
 image: ./cover.jpg
 tags: [OpenClaw, 教程索引, Agent]
 themeTags: [索引摘要, 鱼皮, ai-guide]
@@ -177,5 +177,6 @@ Skills = 能力扩展包；从发现到安装到自己写。第三方市场有�
 | 呈现 | 每章小长条配图 + 原文链接（图可点）；封面另用 `cover.jpg` |
 | 吉祥物参考 | OpenClaw 官方矢量龙虾：[GitHub favicon.svg](https://github.com/openclaw/openclaw/blob/main/ui/public/favicon.svg) · [openclaw.ai/favicon.svg](https://openclaw.ai/favicon.svg) |
 | 未做 | 不镜像全文、不搬运图床整包 |
+| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [工具栈三岔](/posts/vibe-coding-tools-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) |
 
 部分章节网站单篇 `library` ID 未对齐时，同时挂 GitHub 深链与系列总览。
