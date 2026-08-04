@@ -66,7 +66,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 硬规则
 
-1. **默认 `draft: true`（预览后发布）**：落盘先草稿，本地预览确认后再转 `draft: false`；用户明确要求直接发布、或素材属公开内容时可一步到位。素材含敏感/口令内容一律 `true`。
+1. **默认 `draft: false`**：素材已过提炼关，除非用户明确要求草稿或素材含敏感/口令内容，否则直接发布进生产构建。
 2. **重建 frontmatter**：不沿用素材里的临时字段；`slug` 用英文 kebab（小写字母数字连字符）。主题目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
 3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。
 4. **不动 Knowledge 素材**：output 只读素材、写博客；素材目录留档不改写（除非用户要求回写）。
