@@ -1,24 +1,29 @@
-<img
-  class="about-hero-img"
-  src="/assets/images/about/hero-knight.webp"
-  alt="threetwoa hero"
-  loading="lazy"
-  decoding="async"
-/>
-
-我是 **threetwoa**（GitHub: [Aafff623](https://github.com/Aafff623)）。中北大学软件工程**即将升入三年级**。
-
-这个夏天主要在做：Java 微服务、Python / Python AI，以及 Harness Engineering 语境下的 AI Coding。没有硬约束的纯 vibe coding 上手快、难养；我更在意架构、系统工作，以及**还能被 review 的代码**——少写一次性的行，多留判断与工作流。
-
-<p class="about-reach">
-  <a href="mailto:laiyif68@gmail.com">Email</a>
-  <a href="https://github.com/Aafff623">GitHub</a>
-  <a href="/">Blog</a>
-  <a href="https://threetwoa-digital-garden.vercel.app/">Digital Garden</a>
-  <a href="https://x.com/FanLaiyi26341">X</a>
-  <a href="https://space.bilibili.com/549916339">Bilibili</a>
-  <a href="https://t.me/threetwoa">Telegram</a>
-</p>
+<div class="about-bio">
+  <div class="about-bio__copy">
+    <p>我是 <strong>threetwoa</strong>（GitHub: <a href="https://github.com/Aafff623">Aafff623</a>）。中北大学软件工程<strong>即将升入三年级</strong>。</p>
+    <p>这个夏天主要在做：Java 微服务、Python / Python AI，以及 Harness Engineering 语境下的 AI Coding。没有硬约束的纯 vibe coding 上手快、难养；我更在意架构、系统工作，以及<strong>还能被 review 的代码</strong>——少写一次性的行，多留判断与工作流。</p>
+    <p class="about-reach">
+      <a href="mailto:laiyif68@gmail.com">Email</a>
+      <a href="https://github.com/Aafff623">GitHub</a>
+      <a href="/">Blog</a>
+      <a href="https://threetwoa-digital-garden.vercel.app/">Digital Garden</a>
+      <a href="https://x.com/FanLaiyi26341">X</a>
+      <a href="https://space.bilibili.com/549916339">Bilibili</a>
+      <a href="https://t.me/threetwoa">Telegram</a>
+    </p>
+  </div>
+  <figure class="about-bio__figure">
+    <img
+      class="about-bio__photo"
+      src="/assets/images/about/hero-knight.webp"
+      alt="threetwoa"
+      loading="lazy"
+      decoding="async"
+      width="528"
+      height="720"
+    />
+  </figure>
+</div>
 
 ## 01 · Now
 

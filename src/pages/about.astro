@@ -4,7 +4,6 @@ import Markdown from "@components/common/Markdown.astro";
 import AboutWaves from "@/components/pages/about/AboutWaves.astro";
 import FlipComicBook from "@/components/pages/about/FlipComicBook.astro";
 import RotatingPopCard from "@/components/pages/about/RotatingPopCard.astro";
-import VisualPrism from "@/components/pages/about/VisualPrism.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
@@ -32,10 +31,7 @@ const SiteContent = siteRendered?.Content;
                   Code less, architect more.<br />
                   <span class="about-strike">把工具当玩具</span> · 把 AI 锻成可复用、可上线的工作流。
                 </blockquote>
-                <div class="about-intro-row">
-                  <RotatingPopCard />
-                  <VisualPrism />
-                </div>
+                <RotatingPopCard />
               </div>
             </div>
 
@@ -89,16 +85,17 @@ const SiteContent = siteRendered?.Content;
     color: color-mix(in oklab, var(--content-meta) 80%, transparent);
   }
 
+  /* 一层氛围带：海浪底 + 文案，不再套第二层描边卡片 */
   .about-intro {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    margin: 0 0 1.35rem;
-    padding: 1rem 1rem 1.15rem;
-    border-radius: 0.75rem;
-    border: 1px solid color-mix(in oklab, var(--primary) 18%, var(--line-color));
-    border-bottom: 3px solid var(--primary);
+    margin: 0 0 1.5rem;
+    padding: 1.1rem 0.15rem 1.25rem;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--primary) 35%, var(--line-color));
     overflow: hidden;
     isolation: isolate;
   }
@@ -108,25 +105,12 @@ const SiteContent = siteRendered?.Content;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    align-items: flex-start;
+    gap: 0.9rem;
   }
 
-  .about-intro-row {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 0.65rem 0.75rem;
-    width: 100%;
-    min-width: 0;
-  }
-
-  /* 名片少占一点宽，把右侧留白让给 130 行特效 */
-  .about-intro-row :global(.about-pop-card) {
-    flex: 0 1 auto;
-    width: min(100%, 17.5rem);
-    max-width: 17.5rem;
-    padding-right: 0.25rem;
-    min-width: 0;
+  .about-intro-body :global(.about-pop-card) {
+    margin-left: -0.35rem;
   }
 
   .about-pull {
@@ -176,54 +160,64 @@ const SiteContent = siteRendered?.Content;
     color: var(--deep-text);
   }
 
-  /* 文字环绕图片 — bilibili-goat effects/文字环绕图片（shape-outside）
-     原 demo 用透明 PNG 轮廓；英雄图为实底，用椭圆轮廓实现同样环绕感 */
-  :global(.about-md .about-hero-img) {
-    float: right;
-    width: min(46%, 16.5rem);
-    max-width: 16.5rem;
-    height: auto;
-    margin: 0.15rem 0 1rem 1.25rem;
-    border-radius: 0.75rem;
-    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
-    box-shadow: 0 10px 28px color-mix(in oklab, var(--deep-text) 8%, transparent);
-    object-fit: cover;
-    shape-outside: ellipse(48% 50% at 50% 50%);
-    shape-margin: 1.05rem;
+  /* 简介：网格分栏，禁止 float 压图 */
+  :global(.about-md .about-bio) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(15.5rem, 36%);
+    gap: 1.25rem 1.5rem;
+    align-items: start;
+    margin: 0 0 0.5rem;
   }
 
-  :global(.about-md .about-hero-img ~ p:not(.about-reach)) {
-    text-align: justify;
-    text-justify: inter-ideograph;
+  :global(.about-md .about-bio__copy) {
+    min-width: 0;
+  }
+
+  :global(.about-md .about-bio__copy > p) {
+    margin: 0 0 0.85rem;
     line-height: 1.75;
+    text-align: start;
   }
 
-  @media (max-width: 640px) {
-    .about-intro-row {
-      flex-direction: column;
-      align-items: stretch;
+  :global(.about-md .about-bio__copy > p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.about-md .about-bio__figure) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  :global(.about-md .about-bio__photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.65rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    box-shadow: 0 8px 22px color-mix(in oklab, var(--deep-text) 7%, transparent);
+    object-fit: cover;
+    cursor: zoom-in;
+  }
+
+  @media (max-width: 720px) {
+    :global(.about-md .about-bio) {
+      grid-template-columns: 1fr;
     }
 
-    :global(.about-md .about-hero-img) {
-      float: none;
-      display: block;
-      width: min(100%, 16rem);
-      max-width: 16rem;
-      margin: 0 auto 1rem;
-      shape-outside: none;
-    }
-
-    :global(.about-md .about-hero-img ~ p:not(.about-reach)) {
-      text-align: start;
+    :global(.about-md .about-bio__figure) {
+      order: -1;
+      max-width: 14rem;
+      justify-self: center;
     }
   }
 
   :global(.about-md .about-reach) {
-    clear: both;
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
-    margin: 0 0 0.35rem;
+    margin: 0.15rem 0 0;
   }
 
   :global(.about-md .about-reach a) {
