@@ -1,0 +1,577 @@
+---
+/**
+ * 卡片质感立体标签球（TagCloud.js）。
+ * 鼠标移入/拖动可转动；点击标签跳转。侧栏标签墙与 /tags/ 复用。
+ */
+import { getTagList } from "@/utils/content-utils";
+import { getTagUrl } from "@/utils/url-utils";
+
+interface Props {
+	class?: string;
+	/** 球半径（TagCloud radius） */
+	radius?: number;
+	/** 最多进球标签数；默认 12 */
+	limit?: number;
+	/** 外框上方标题；空字符串则不显示 */
+	title?: string;
+	/** 自定义标签；不传则用全站列表。kind=theme 为二级主题（另色、不可点） */
+	tags?: { name: string; count: number; kind?: "primary" | "theme" }[];
+	/** 「还有 N 个」链到全站标签页 */
+	moreHref?: string;
+	moreCount?: number;
+	/** 侧栏紧凑尺寸 */
+	compact?: boolean;
+}
+
+const {
+	class: className,
+	radius = 72,
+	limit = 12,
+	title = "",
+	tags: tagsProp,
+	moreHref,
+	moreCount = 0,
+	compact = false,
+} = Astro.props;
+
+const source = tagsProp ?? (await getTagList());
+const ranked = [...source]
+	.map((t) => {
+		const rawKind =
+			"kind" in t ? (t as { kind?: string }).kind : undefined;
+		return {
+			name: String(t.name).trim(),
+			count: Number(t.count) || 0,
+			kind: (rawKind === "theme" ? "theme" : "primary") as
+				| "primary"
+				| "theme",
+		};
+	})
+	.filter((t) => t.name)
+	.sort((a, b) => {
+		// 聚焦态：保持传入顺序；浏览态仍按热度
+		if (!tagsProp) {
+			if (b.count !== a.count) return b.count - a.count;
+			return a.name.localeCompare(b.name, "zh-CN");
+		}
+		return 0;
+	});
+
+const shown = ranked.slice(0, Math.max(1, limit));
+const cloudId = `tag-sphere-${Math.random().toString(36).slice(2, 9)}`;
+/** 进球条目（含 kind，供 remount / 首挂） */
+const sphereItems = shown.map((t) => ({ name: t.name, kind: t.kind }));
+const hrefByName = Object.fromEntries(
+	ranked
+		.filter((t) => t.kind !== "theme")
+		.map((t) => [t.name, getTagUrl(t.name)]),
+);
+const showMore = Boolean(moreHref && moreCount > 0);
+---
+
+{/* Caveat：英文标签手写体（画廊初版同款）；马善政补中文 */}
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Ma+Shan+Zheng&display=swap"
+/>
+
+<section
+  class:list={[
+    "tag-sphere",
+    compact && "tag-sphere--compact",
+    className,
+  ]}
+  data-tag-chalk-sphere
+  data-tag-sphere
+  data-cloud-id={cloudId}
+  data-radius={radius}
+  data-href-map={JSON.stringify(hrefByName)}
+  style={`--tag-sphere-d: ${Math.max(8, radius * 2)}px;`}
+  aria-label={title || "标签立体球"}
+>
+  {title ? <h3 class="tag-sphere__title">{title}</h3> : null}
+  <div class="tag-sphere__frame" data-tag-sphere-frame>
+    <div class="tag-sphere__stage">
+      <div class="tag-sphere__cloud" id={cloudId}></div>
+    </div>
+  </div>
+  <ul class="tag-sphere__fallback" data-tag-chalk-fallback>
+    {
+      shown.map((t) => (
+        <li>
+          {t.kind === "theme" ? (
+            <span class="tag-sphere__fallback-theme" title="主题标签（不计入统计）">
+              #{t.name}
+            </span>
+          ) : (
+            <a href={getTagUrl(t.name)}>
+              #{t.name}
+              <span>({t.count})</span>
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+  {
+    showMore && (
+      <a class="tag-sphere__more" href={moreHref} data-tag-chalk-more>
+        … +{moreCount}
+      </a>
+    )
+  }
+</section>
+
+<script
+  is:inline
+  define:vars={{ cloudId, sphereItems, hrefByName, radius }}
+  data-swup-ignore-script
+>
+  (function () {
+    var SCRIPT_SRC =
+      "https://cdn.jsdelivr.net/npm/TagCloud@2.5.0/dist/TagCloud.min.js";
+    var DRAG_PX = 6;
+
+    function reducedMotion() {
+      return (
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      );
+    }
+
+    function loadTagCloud(cb) {
+      if (window.TagCloud) {
+        cb();
+        return;
+      }
+      var existed = document.querySelector('script[data-tagcloud-cdn="1"]');
+      if (existed) {
+        existed.addEventListener("load", cb, { once: true });
+        return;
+      }
+      var s = document.createElement("script");
+      s.src = SCRIPT_SRC;
+      s.async = true;
+      s.dataset.tagcloudCdn = "1";
+      s.onload = cb;
+      document.head.appendChild(s);
+    }
+
+    function destroyCloud(el) {
+      if (el && el._tagCloudDestroy) {
+        try {
+          el._tagCloudDestroy();
+        } catch (e) {}
+        el._tagCloudDestroy = null;
+      }
+      if (el) el.innerHTML = "";
+    }
+
+    /** 规范化：string[] 或 {name,kind}[] → {name,kind}[] */
+    function normalizeItems(list) {
+      return (list || []).map(function (item) {
+        if (typeof item === "string") {
+          return { name: item, kind: "primary" };
+        }
+        return {
+          name: String(item.name || "").trim(),
+          kind: item.kind === "theme" ? "theme" : "primary",
+        };
+      }).filter(function (it) {
+        return it.name;
+      });
+    }
+
+    /** 与 getTagUrl 一致：/archive/?tag=… */
+    function fallbackTagHref(name) {
+      return (
+        "/archive/?tag=" + encodeURIComponent(String(name).trim())
+      );
+    }
+
+    /** 一级可点跳转；二级主题仅展示（不计统计、无归档筛选） */
+    function toHtmlItems(itemList, map) {
+      return normalizeItems(itemList).map(function (it) {
+        var safe = String(it.name)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/"/g, "&quot;");
+        if (it.kind === "theme") {
+          return (
+            '<span class="tag-sphere__link tag-sphere__link--theme" title="主题标签（不计入统计）">#' +
+            safe +
+            "</span>"
+          );
+        }
+        var href = (map && map[it.name]) || fallbackTagHref(it.name);
+        return (
+          '<a class="tag-sphere__link tag-sphere__link--primary" href="' +
+          href +
+          '">#' +
+          safe +
+          "</a>"
+        );
+      });
+    }
+
+    function bindDragAndClick(el, root) {
+      if (!el || el._tagSphereInteractBound) return;
+      el._tagSphereInteractBound = true;
+
+      var frame = root && root.querySelector("[data-tag-sphere-frame]");
+      var pressed = false;
+      var dragged = false;
+      var sx = 0;
+      var sy = 0;
+
+      function onDown(ev) {
+        if (ev.button != null && ev.button !== 0) return;
+        pressed = true;
+        dragged = false;
+        sx = ev.clientX;
+        sy = ev.clientY;
+        if (frame) frame.classList.add("is-dragging");
+      }
+
+      function onMove(ev) {
+        if (!pressed) return;
+        var dx = ev.clientX - sx;
+        var dy = ev.clientY - sy;
+        if (dx * dx + dy * dy > DRAG_PX * DRAG_PX) {
+          dragged = true;
+        }
+      }
+
+      function onUp() {
+        pressed = false;
+        if (frame) frame.classList.remove("is-dragging");
+        // 下一帧再清 dragged，让随后的 click 能读到
+        setTimeout(function () {
+          dragged = false;
+        }, 0);
+      }
+
+      el.addEventListener("pointerdown", onDown);
+      window.addEventListener("pointermove", onMove, { passive: true });
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
+
+      // 拖过就别跳；轻点走 <a> 原生跳转
+      el.addEventListener(
+        "click",
+        function (ev) {
+          if (!dragged) return;
+          ev.preventDefault();
+          ev.stopPropagation();
+        },
+        true,
+      );
+    }
+
+    function mountWith(el, nextItems, nextHrefMap, nextRadius) {
+      if (!el || !window.TagCloud) return;
+      destroyCloud(el);
+      var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
+      var fallback = root && root.querySelector("[data-tag-chalk-fallback]");
+      var normalized = normalizeItems(nextItems);
+
+      if (reducedMotion() || !normalized.length) {
+        if (fallback) fallback.hidden = false;
+        return;
+      }
+
+      var htmlItems = toHtmlItems(normalized, nextHrefMap);
+      var r = Number(nextRadius) || 72;
+      var instance = window.TagCloud("#" + el.id, htmlItems, {
+        radius: r,
+        maxSpeed: "normal",
+        initSpeed: "slow",
+        direction: 135,
+        keep: true,
+        useHTML: true,
+      });
+      el._tagCloudDestroy = function () {
+        if (el._tagColorWatch) {
+          cancelAnimationFrame(el._tagColorWatch);
+          el._tagColorWatch = 0;
+        }
+        if (instance && typeof instance.destroy === "function") {
+          instance.destroy();
+        }
+      };
+
+      /**
+       * TagCloud 只写 opacity/scale，不按深度改 z-index → 后层会盖前层。
+       * 每帧按 scale 重排层级，并略加重淡对比（网页端与内置浏览对齐）。
+       */
+      function enhanceDepthStack() {
+        var nodes = el.querySelectorAll(".tagcloud--item");
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          if (node.style && node.style.color) node.style.color = "";
+          var tr = node.style.transform || node.style.webkitTransform || "";
+          var m = tr.match(/scale\(([\d.]+)\)/);
+          if (!m) continue;
+          var per = parseFloat(m[1]);
+          if (isNaN(per)) continue;
+          // 与库公式一致，再 ^1.55 拉大前后浓度差
+          var alpha = Math.max(0, Math.min(1, per * per - 0.25));
+          alpha = Math.pow(alpha, 1.55);
+          node.style.opacity = String(alpha);
+          node.style.filter = "alpha(opacity=" + Math.round(alpha * 100) + ")";
+          // 近大远小：前面永远压在上面
+          node.style.zIndex = String(Math.round(per * 1000));
+        }
+        el._tagColorWatch = requestAnimationFrame(enhanceDepthStack);
+      }
+      enhanceDepthStack();
+
+      // TagCloud 会把容器写成 2*radius；强制在舞台内水平垂直居中
+      var d = r * 2 + "px";
+      el.style.width = d;
+      el.style.height = d;
+      el.style.margin = "0 auto";
+      el.style.position = "relative";
+      el.style.left = "0";
+      el.style.right = "0";
+      el.style.display = "block";
+      if (root) root.style.setProperty("--tag-sphere-d", d);
+
+      bindDragAndClick(el, root);
+      if (fallback) fallback.hidden = true;
+    }
+
+    function mount() {
+      var el = document.getElementById(cloudId);
+      if (!el) return;
+      mountWith(el, sphereItems, hrefByName, radius);
+    }
+
+    function boot() {
+      loadTagCloud(mount);
+    }
+
+    /** nextItems: string[] 或 {name, kind}[] */
+    window.__remountTagChalkSphere = function (id, nextItems) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
+      var r = Number((root && root.getAttribute("data-radius")) || radius);
+      var map = hrefByName;
+      try {
+        var raw = root && root.getAttribute("data-href-map");
+        if (raw) map = JSON.parse(raw);
+      } catch (e) {}
+      loadTagCloud(function () {
+        mountWith(el, nextItems, map, r);
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+
+    document.addEventListener("swup:page:view", boot);
+    document.addEventListener("swup:enable", function () {
+      if (window.swup && window.swup.hooks) {
+        window.swup.hooks.on("page:view", boot);
+      }
+    });
+  })();
+</script>
+
+<style>
+  .tag-sphere {
+    width: 100%;
+  }
+
+  .tag-sphere__title {
+    margin: 0 0 0.55rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  /* 跟站内 card-base 同系：浅底、细边、柔和投影 */
+  .tag-sphere__frame {
+    position: relative;
+    border-radius: var(--radius-large, 0.75rem);
+    background:
+      radial-gradient(
+        ellipse 90% 80% at 50% 40%,
+        color-mix(in oklch, var(--card-bg, #fff) 92%, white) 0%,
+        var(--card-bg, #fff) 72%
+      );
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 70%, transparent);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.55) inset,
+      0 8px 22px rgb(40 30 20 / 0.06);
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .tag-sphere__frame.is-dragging {
+    cursor: grabbing;
+  }
+
+  :global(html.dark) .tag-sphere__frame {
+    background:
+      radial-gradient(
+        ellipse 90% 80% at 50% 38%,
+        color-mix(in oklch, var(--card-bg) 88%, white) 0%,
+        var(--card-bg) 75%
+      );
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.06) inset,
+      0 10px 26px rgb(0 0 0 / 0.28);
+  }
+
+  .tag-sphere--compact .tag-sphere__frame {
+    min-height: 200px;
+  }
+
+  /* 舞台：固定直径并绝对居中，避免 TagCloud 容器贴左 */
+  .tag-sphere__stage {
+    width: var(--tag-sphere-d, 140px);
+    height: var(--tag-sphere-d, 140px);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .tag-sphere__cloud,
+  .tag-sphere :global(.tagcloud) {
+    width: var(--tag-sphere-d, 140px) !important;
+    height: var(--tag-sphere-d, 140px) !important;
+    max-width: 100%;
+    margin: 0 auto !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    inset-inline: auto !important;
+  }
+
+  /* 标签球：淡灰黑 + Caveat；层级靠 JS z-index，浓度靠父级 opacity */
+  .tag-sphere :global(.tagcloud--item) {
+    /* 保证可按 z-index 叠层（库默认 absolute，这里钉死） */
+    position: absolute !important;
+    isolation: isolate;
+  }
+
+  .tag-sphere :global(.tagcloud--item),
+  .tag-sphere :global(.tag-sphere__link) {
+    font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive !important;
+    letter-spacing: 0.02em;
+    text-decoration: none !important;
+    text-shadow: none !important;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 1.28em !important;
+    line-height: 1.15;
+  }
+
+  /* 一级：深灰黑；浓度交给球的远近 opacity，不再自己叠一层 opacity */
+  .tag-sphere :global(.tag-sphere__link--primary) {
+    color: oklch(0.28 0.01 70) !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  :global(html.dark) .tag-sphere :global(.tag-sphere__link--primary) {
+    color: oklch(0.92 0.01 70) !important;
+  }
+
+  .tag-sphere :global(.tag-sphere__link--primary:hover) {
+    color: oklch(0.12 0.01 70) !important;
+  }
+
+  :global(html.dark) .tag-sphere :global(.tag-sphere__link--primary:hover) {
+    color: oklch(0.99 0.005 70) !important;
+  }
+
+  /* 二级：固有更淡一档灰（不用 background-clip，避免跨浏览器浓度不一致） */
+  .tag-sphere :global(.tag-sphere__link--theme) {
+    color: oklch(0.55 0.01 70) !important;
+    font-weight: 500 !important;
+    font-size: 1.18em !important;
+    cursor: default;
+  }
+
+  :global(html.dark) .tag-sphere :global(.tag-sphere__link--theme) {
+    color: oklch(0.68 0.01 70) !important;
+  }
+
+  .tag-sphere__fallback {
+    margin: 0.55rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.5rem;
+    font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive;
+    font-size: 1.05rem;
+  }
+
+  .tag-sphere__fallback[hidden] {
+    display: none !important;
+  }
+
+  .tag-sphere__fallback a {
+    color: oklch(0.32 0.01 70);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .tag-sphere__fallback a:hover {
+    text-decoration: underline;
+    color: oklch(0.18 0.01 70);
+  }
+
+  :global(html.dark) .tag-sphere__fallback a {
+    color: oklch(0.9 0.01 70);
+  }
+
+  .tag-sphere__fallback a span {
+    opacity: 0.55;
+    margin-left: 0.12rem;
+    font-weight: 400;
+  }
+
+  .tag-sphere__fallback-theme {
+    color: oklch(0.52 0.01 70);
+    font-weight: 450;
+  }
+
+  :global(html.dark) .tag-sphere__fallback-theme {
+    color: oklch(0.68 0.01 70);
+  }
+
+  .tag-sphere__more {
+    display: block;
+    margin-top: 0.55rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 0.35rem 0.5rem;
+    border-radius: 999px;
+    border: 1px dashed color-mix(in oklch, var(--primary) 35%, transparent);
+  }
+
+  .tag-sphere__more:hover {
+    background: color-mix(in oklch, var(--primary) 10%, transparent);
+  }
+</style>

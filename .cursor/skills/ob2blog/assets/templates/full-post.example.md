@@ -4,6 +4,8 @@ published: 2026-08-01
 description: Obsidian→博客模板示例（draft）。复制结构到 src/content/posts/<slug>/index.md。
 image: ../placeholders/cover-placeholder.svg
 tags: [Firefly, Obsidian]
+# 二级主题标签（Agent 提炼）：仅文章侧栏分色展示，不进 /tags 统计
+themeTags: [Wiki-Link, 迁移]
 category: 指南
 draft: false
 slug: skill-full-post-example

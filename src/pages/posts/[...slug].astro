@@ -114,6 +114,7 @@ const relatedPosts = await getRelatedPosts(entry, 3);
   postSlug={entry.id}
   postCategory={entry.data.category || undefined}
   postTags={entry.data.tags || []}
+  postThemeTags={entry.data.themeTags || []}
   relatedPosts={relatedPosts}
   currentPostId={entry.id}
   headings={headings}

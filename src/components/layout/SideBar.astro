@@ -26,8 +26,10 @@ interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
 	encrypted?: boolean;
-	/** 文章页当前文标签；传给 Tags 做聚焦（非文章页勿传） */
+	/** 文章页一级标签；传给 Tags 做聚焦（非文章页勿传） */
 	postTags?: string[];
+	/** 文章页二级主题标签；侧栏分色展示，不进统计 */
+	postThemeTags?: string[];
 	/** 文章页相关推荐；传给 Recommend */
 	relatedPosts?: import("@/utils/content-utils").PostForList[];
 	currentPostId?: string;
@@ -176,11 +178,16 @@ const getComponentProps = (
 		};
 	}
 
-	// 文章页：标签墙聚焦当前文标签
-	if (config.type === "tags" && Array.isArray(Astro.props.postTags)) {
+	// 文章页：标签墙聚焦一级 + 二级主题标签
+	if (
+		config.type === "tags" &&
+		(Array.isArray(Astro.props.postTags) ||
+			Array.isArray(Astro.props.postThemeTags))
+	) {
 		return {
 			...baseProps,
-			focusTags: Astro.props.postTags,
+			focusTags: Astro.props.postTags ?? [],
+			focusThemeTags: Astro.props.postThemeTags ?? [],
 		};
 	}
 

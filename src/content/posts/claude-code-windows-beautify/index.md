@@ -3,7 +3,8 @@ title: Windows 上把 Claude Code 调成赛博朋克风，也就五层配置的�
 published: 2026-08-04
 description: Windows 上把 Claude Code 调成赛博朋克风，其实是五层配置叠出来的：CC Switch 换 provider / tweakcc 改 cli.js / settings.json 管主题 HUD 快捷键 / Windows Terminal 做毛玻璃壁纸 / Maple Mono 字体。从安装到权限放权一次讲清，附踩坑速查。
 image: ./cover.jpg
-tags: [Claude, tweakcc, Windows, 美化配置, AI Coding]
+tags: [Claude, 美化配置]
+themeTags: [tweakcc, Windows, AI Coding, CC Switch, claude-hud, Dracula]
 category: Agentic Coding
 draft: true
 slug: claude-code-windows-beautify

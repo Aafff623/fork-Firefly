@@ -11,6 +11,8 @@ type PostData = {
 	description: string;
 	image: string;
 	tags: string[];
+	/** Agent 提取的二级主题标签；仅文章侧栏展示，不进全站标签统计 */
+	themeTags: string[];
 	category: string | null;
 	lang: string;
 	pinned: boolean;
@@ -48,6 +50,8 @@ const postsCollection: ContentCollection<PostData> = defineCollection({
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
+		/** 二级主题标签（Agent 提炼）；不计 getTagList /tags 统计 */
+		themeTags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),
 		pinned: z.boolean().optional().default(false),

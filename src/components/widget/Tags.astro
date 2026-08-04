@@ -1,15 +1,16 @@
 ---
 /**
- * 标签墙：砖石错落嵌砖（对照文章 brick dense）+ 青灰/红褐棋盘色。
- * 浏览态只展示固定数量（按篇数优先），末砖「…」链到 /tags/；
- * 文章页聚焦当前文标签（侧栏常为静态，靠 data-current-post-tags + 脚本同步）。
+ * 标签墙：立体标签球（TagChalkSphere）。
+ * 浏览态按 collapseThreshold 进球，多余走「… +N」→ /tags/；
+ * 文章页聚焦：一级 tags（进统计、可点）+ 二级 themeTags（Agent 主题、另色、不计统计）。
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import TagChalkSphere from "@/components/widget/TagChalkSphere.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
 import { getTagList } from "@/utils/content-utils";
-import { getTagUrl, url } from "@/utils/url-utils";
+import { url } from "@/utils/url-utils";
 
 const allTags = await getTagList();
 
@@ -19,39 +20,81 @@ interface Props {
 	widgetConfig?: WidgetComponentConfig;
 	/** 传入则进入「本文标签」聚焦（即使为空数组） */
 	focusTags?: string[];
+	/** 二级主题标签（Agent）；仅聚焦态展示 */
+	focusThemeTags?: string[];
 }
-const { class: className, style, widgetConfig, focusTags } = Astro.props;
+const { class: className, style, widgetConfig, focusTags, focusThemeTags } =
+	Astro.props;
 
-/** 浏览态最多露几块砖（不含「…」）；沿用 collapseThreshold 配置 */
 const maxVisible = Math.max(
 	1,
-	Number(widgetConfig?.specificConfig?.collapseThreshold ?? 10),
+	Number(widgetConfig?.specificConfig?.collapseThreshold ?? 12),
 );
 const showTitle = widgetConfig?.showTitle !== false;
 
-const isFocusMode = Array.isArray(focusTags);
-const focusSet = new Set(
-	(focusTags ?? []).map((t) => t.trim()).filter(Boolean),
+/** 一级或二级任一数组传入即聚焦（文章页） */
+const isFocusMode =
+	Array.isArray(focusTags) || Array.isArray(focusThemeTags);
+
+const normalize = (list?: string[]) =>
+	[...new Set((list ?? []).map((t) => t.trim()).filter(Boolean))];
+
+const primaryNames = normalize(focusTags);
+const themeNames = normalize(focusThemeTags).filter(
+	(n) => !primaryNames.includes(n),
 );
 
-/** 篇数多的优先，同数按名 */
-const rankedTags = [...allTags].sort((a, b) => {
-	if (b.count !== a.count) return b.count - a.count;
-	return a.name.localeCompare(b.name, "zh-CN");
-});
+const rankedTags = [...allTags]
+	.map((t) => ({ name: t.name.trim(), count: t.count }))
+	.filter((t) => t.name)
+	.sort((a, b) => {
+		if (b.count !== a.count) return b.count - a.count;
+		return a.name.localeCompare(b.name, "zh-CN");
+	});
 
-const browseTags = rankedTags.slice(0, maxVisible);
-const hiddenCount = Math.max(0, rankedTags.length - browseTags.length);
-const showMoreBrick = !isFocusMode && hiddenCount > 0;
+const countByName = new Map(rankedTags.map((t) => [t.name, t.count]));
 
-const visibleCount = isFocusMode
-	? rankedTags.filter((t) => focusSet.has(t.name.trim())).length
-	: browseTags.length;
+type SphereItem = {
+	name: string;
+	count: number;
+	kind: "primary" | "theme";
+};
+
+const focusList: SphereItem[] = isFocusMode
+	? [
+			...primaryNames.map((name) => ({
+				name,
+				count: countByName.get(name) ?? 1,
+				kind: "primary" as const,
+			})),
+			...themeNames.map((name) => ({
+				name,
+				count: 0,
+				kind: "theme" as const,
+			})),
+		]
+	: [];
+
+const sphereTags: SphereItem[] = isFocusMode
+	? focusList
+	: rankedTags.slice(0, maxVisible).map((t) => ({
+			name: t.name,
+			count: t.count,
+			kind: "primary" as const,
+		}));
+
+const hiddenCount = Math.max(0, rankedTags.length - maxVisible);
+const showMore = !isFocusMode && hiddenCount > 0;
+const emptyFocus = isFocusMode && focusList.length === 0;
 
 const emptyLabel = i18n(I18nKey.noTags);
 const titleAll = i18n(I18nKey.tagWall);
-const moreLabel = i18n(I18nKey.more);
 const tagsIndexUrl = url("/tags/");
+
+/** 全量列表给客户端浏览态重挂用 */
+const catalogJson = JSON.stringify(
+	rankedTags.map((t) => ({ name: t.name, count: t.count })),
+);
 ---
 <WidgetLayout
   name={titleAll}
@@ -63,91 +106,56 @@ const tagsIndexUrl = url("/tags/");
   style={style}
 >
   <div
-    class="tag-wall"
-    role="list"
-    aria-label={titleAll}
-    data-max-visible={maxVisible}
+    class="tags-widget__body"
+    data-tag-wall
     data-tag-wall-focus={isFocusMode ? "1" : "0"}
+    data-tags-catalog={catalogJson}
+    data-max-visible={String(maxVisible)}
   >
     <p
-      class:list={["tag-wall__empty", { "is-visible": isFocusMode && visibleCount === 0 }]}
+      class:list={["tags-widget__empty", { "is-visible": emptyFocus }]}
       data-tag-wall-empty
-      hidden={!(isFocusMode && visibleCount === 0)}
+      hidden={!emptyFocus}
     >
       {emptyLabel}
     </p>
     {
-      rankedTags.map((t, index) => {
-        const name = t.name.trim();
-        const beyondCap = !isFocusMode && index >= maxVisible;
-        const filteredOut = isFocusMode && !focusSet.has(name);
-        const hide = beyondCap || filteredOut;
-        return (
-          <a
-            role="listitem"
-            href={getTagUrl(name)}
-            class:list={[
-              "tag-wall__brick",
-              { "is-filtered-out": hide },
-            ]}
-            data-tag={name}
-            data-rank={index}
-            aria-label={`${name}，${t.count} 篇`}
-            title={`${name} · ${t.count}`}
-            aria-hidden={hide ? "true" : undefined}
-          >
-            <span class="tag-wall__name">#{name}</span>
-            <span class="tag-wall__count">{t.count}</span>
-          </a>
-        );
-      })
-    }
-    {
-      showMoreBrick && (
-        <a
-          role="listitem"
-          href={tagsIndexUrl}
-          class="tag-wall__brick tag-wall__brick--more"
-          data-tag-more
-          aria-label={`${moreLabel}，还有 ${hiddenCount} 个标签`}
-          title={`${moreLabel} · +${hiddenCount}`}
-        >
-          <span class="tag-wall__name">…</span>
-          <span class="tag-wall__count">+{hiddenCount}</span>
-        </a>
+      !emptyFocus && (
+        <TagChalkSphere
+          class="tags-widget__sphere"
+          compact
+          title=""
+          tags={sphereTags}
+          limit={Math.max(sphereTags.length, 1)}
+          radius={70}
+          moreHref={showMore ? tagsIndexUrl : undefined}
+          moreCount={showMore ? hiddenCount : 0}
+        />
       )
     }
   </div>
 </WidgetLayout>
 
-{/* 结构/聚焦兜底；砖面材质与配色以 tags.css 为准，勿在此覆盖 background */}
 <style is:global>
-  .tag-wall__empty {
+  .tags-widget__empty {
     display: none;
-    grid-column: 1 / -1;
     margin: 0;
-    padding: 0.65rem 0.5rem;
+    padding: 0.75rem 0.5rem;
     font-size: 0.78rem;
     color: oklch(0.45 0.02 70);
     text-align: center;
   }
 
-  .tag-wall__empty.is-visible {
+  .tags-widget__empty.is-visible {
     display: block;
   }
 
-  html.dark .tag-wall__empty {
+  html.dark .tags-widget__empty {
     color: oklch(0.7 0.02 70);
   }
 
-  .tag-wall__brick--more .tag-wall__name {
-    font-size: 1.15rem;
-    letter-spacing: 0.12em;
-    line-height: 1;
-  }
-
-  widget-layout.tags-widget.tags-widget--focus .tag-wall__brick--more,
-  .tags-widget.tags-widget--focus .tag-wall__brick--more {
+  widget-layout.tags-widget.tags-widget--focus .tag-sphere__more,
+  .tags-widget.tags-widget--focus .tag-sphere__more {
     display: none !important;
   }
 </style>
@@ -158,64 +166,116 @@ const tagsIndexUrl = url("/tags/");
       return /\/posts\//.test(pathname || "");
     }
 
-    function readFocusTags() {
-      if (!isPostPath(location.pathname)) return null;
-      const host = document.getElementById("swup-container");
-      const raw = host?.getAttribute("data-current-post-tags");
+    function parseTagList(raw) {
       if (raw == null || raw === "") return [];
       try {
-        const parsed = JSON.parse(raw);
+        var parsed = JSON.parse(raw);
         return Array.isArray(parsed)
           ? parsed.map(function (t) { return String(t).trim(); }).filter(Boolean)
           : [];
-      } catch {
+      } catch (e) {
         return [];
       }
     }
 
+    /** @returns {{ primary: string[], theme: string[] } | null} */
+    function readFocusPayload() {
+      if (!isPostPath(location.pathname)) return null;
+      var host = document.getElementById("swup-container");
+      var primary = parseTagList(
+        host && host.getAttribute("data-current-post-tags"),
+      );
+      var theme = parseTagList(
+        host && host.getAttribute("data-current-post-theme-tags"),
+      );
+      return { primary: primary, theme: theme };
+    }
+
+    function uniq(list) {
+      var seen = new Set();
+      var out = [];
+      (list || []).forEach(function (n) {
+        if (!n || seen.has(n)) return;
+        seen.add(n);
+        out.push(n);
+      });
+      return out;
+    }
+
     function applyTagWallFocus() {
-      const widgets = document.querySelectorAll("widget-layout.tags-widget");
+      var widgets = document.querySelectorAll("widget-layout.tags-widget");
       if (!widgets.length) return;
 
-      const focusTags = readFocusTags();
-      const focusMode = focusTags !== null;
-      const focusSet = focusMode ? new Set(focusTags) : null;
+      var payload = readFocusPayload();
+      var focusMode = payload !== null;
+      var primaryNames = focusMode ? uniq(payload.primary) : [];
+      var primarySet = new Set(primaryNames);
+      var themeNames = focusMode
+        ? uniq(payload.theme).filter(function (n) {
+            return !primarySet.has(n);
+          })
+        : [];
 
       widgets.forEach(function (widget) {
-        const wall = widget.querySelector(".tag-wall");
-        if (!wall) return;
+        var body = widget.querySelector("[data-tag-wall]");
+        if (!body) return;
 
         widget.classList.toggle("tags-widget--focus", focusMode);
-        wall.setAttribute("data-tag-wall-focus", focusMode ? "1" : "0");
+        body.setAttribute("data-tag-wall-focus", focusMode ? "1" : "0");
 
-        const maxVisible = Number(wall.getAttribute("data-max-visible") || 10);
-        let visible = 0;
+        var catalog = [];
+        try {
+          catalog = JSON.parse(body.getAttribute("data-tags-catalog") || "[]");
+        } catch (e) {
+          catalog = [];
+        }
+        var maxVisible = Number(body.getAttribute("data-max-visible") || 12);
 
-        wall.querySelectorAll(".tag-wall__brick[data-tag]").forEach(function (brick) {
-          const name = brick.getAttribute("data-tag") || "";
-          const rank = Number(brick.getAttribute("data-rank") || 0);
-          var hide = false;
-          if (focusMode) {
-            hide = !focusSet || !focusSet.has(name);
-          } else {
-            hide = rank >= maxVisible;
-          }
-          brick.classList.toggle("is-filtered-out", hide);
-          brick.setAttribute("aria-hidden", hide ? "true" : "false");
-          if (!hide) visible += 1;
-        });
-
-        const more = wall.querySelector("[data-tag-more]");
-        if (more) {
-          more.style.display = focusMode ? "none" : "";
-          more.setAttribute("aria-hidden", focusMode ? "true" : "false");
+        /** @type {{ name: string, kind: string }[]} */
+        var items;
+        if (focusMode) {
+          items = primaryNames
+            .map(function (n) {
+              return { name: n, kind: "primary" };
+            })
+            .concat(
+              themeNames.map(function (n) {
+                return { name: n, kind: "theme" };
+              }),
+            );
+        } else {
+          items = catalog.slice(0, maxVisible).map(function (t) {
+            return { name: t.name, kind: "primary" };
+          });
         }
 
-        const empty = wall.querySelector("[data-tag-wall-empty]");
+        var empty = body.querySelector("[data-tag-wall-empty]");
+        var sphere = body.querySelector("[data-tag-chalk-sphere]");
+        var more = body.querySelector("[data-tag-chalk-more]");
+
+        if (focusMode && items.length === 0) {
+          if (empty) {
+            empty.classList.add("is-visible");
+            empty.hidden = false;
+          }
+          if (sphere) sphere.style.display = "none";
+          return;
+        }
+
         if (empty) {
-          const showEmpty = focusMode && visible === 0;
-          empty.classList.toggle("is-visible", showEmpty);
-          empty.hidden = !showEmpty;
+          empty.classList.remove("is-visible");
+          empty.hidden = true;
+        }
+        if (sphere) sphere.style.display = "";
+
+        var cloud = sphere && sphere.querySelector(".tag-chalk-sphere__cloud, .tag-sphere__cloud");
+        var cloudId = cloud && cloud.id;
+        if (cloudId && typeof window.__remountTagChalkSphere === "function") {
+          window.__remountTagChalkSphere(cloudId, items);
+        }
+
+        if (more) {
+          more.style.display = focusMode ? "none" : "";
         }
       });
     }

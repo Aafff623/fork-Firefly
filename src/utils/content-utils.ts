@@ -107,6 +107,7 @@ export type Tag = {
 	count: number;
 };
 
+/** 全站一级标签统计；不含 themeTags（二级主题，仅文章侧栏展示） */
 export async function getTagList(): Promise<Tag[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
@@ -216,7 +217,7 @@ function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
  *     · 常驻置顶 +12
  *     · 近 30 天有更新 +6
  *
- * 注：站点评论为 Giscus，暂无全站点赞/浏览量 API；有数据源时可把真实 likes/views 并入 heatScore。
+ * 注：站点评论为 Waline，暂无全站点赞/浏览量 API；有数据源时可把真实 likes/views 并入 heatScore。
  */
 export async function getRelatedPosts(
 	currentPost: CollectionEntry<"posts">,

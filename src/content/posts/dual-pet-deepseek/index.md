@@ -4,7 +4,8 @@ published: 2026-08-04
 updated: 2026-08-04T14:47:40
 description: Firefly 站内桌宠从 cc-haha 换成 Maid + OpenPet 双 DeepSeek：浏览态与文章页路由换皮，atlas 行数别搞错。
 image: ./cover.jpg
-tags: [Firefly, 桌宠, DeepSeek, SpritePet]
+tags: [Firefly, 桌宠]
+themeTags: [DeepSeek, SpritePet, Maid, OpenPet, atlas]
 category: 指南
 draft: false
 lang: ''

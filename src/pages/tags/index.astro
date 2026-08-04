@@ -1,26 +1,22 @@
 ---
 /**
- * 全站标签页：与侧栏同一套砖墙材质，按篇数排；热门砖加宽。
- * 不再用胶囊渐变 pill（旧 tag-item）。
+ * 全站标签页：黑板立体球 + 粉笔色兜底列表。
  */
 import { Icon } from "astro-icon/components";
+import TagChalkSphere from "@/components/widget/TagChalkSphere.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getTagList } from "@/utils/content-utils";
-import { getTagUrl } from "@/utils/url-utils";
 
 const tags = await getTagList();
-const ranked = [...tags].sort((a, b) => {
-	if (b.count !== a.count) return b.count - a.count;
-	return a.name.localeCompare(b.name, "zh-CN");
-});
-const maxCount = ranked[0]?.count ?? 1;
-
-function brickSpan(count: number): 1 | 2 {
-	if (maxCount <= 1) return 1;
-	return count / maxCount >= 0.45 ? 2 : 1;
-}
+const ranked = [...tags]
+	.map((t) => ({ name: t.name.trim(), count: t.count }))
+	.filter((t) => t.name)
+	.sort((a, b) => {
+		if (b.count !== a.count) return b.count - a.count;
+		return a.name.localeCompare(b.name, "zh-CN");
+	});
 ---
 
 <MainGridLayout title={i18n(I18nKey.tags)} description={i18n(I18nKey.allTags)}>
@@ -34,31 +30,13 @@ function brickSpan(count: number): 1 | 2 {
 
     {
       ranked.length > 0 ? (
-        <div
-          class="tag-wall tag-wall--page"
-          role="list"
-          aria-label={i18n(I18nKey.tagWall)}
-        >
-          {ranked.map((t) => {
-            const name = t.name.trim();
-            const span = brickSpan(t.count);
-            return (
-              <a
-                role="listitem"
-                href={getTagUrl(name)}
-                class:list={[
-                  "tag-wall__brick",
-                  span === 2 && "tag-wall__brick--wide",
-                ]}
-                data-tag={name}
-                aria-label={`${name}，${t.count} 篇`}
-                title={`${name} · ${t.count}`}
-              >
-                <span class="tag-wall__name">#{name}</span>
-                <span class="tag-wall__count">{t.count}</span>
-              </a>
-            );
-          })}
+        <div class="tags-page__sphere">
+          <TagChalkSphere
+            title=""
+            tags={ranked}
+            limit={Math.min(36, ranked.length)}
+            radius={120}
+          />
         </div>
       ) : (
         <div class="tags-page__empty">
@@ -103,6 +81,21 @@ function brickSpan(count: number): 1 | 2 {
     color: var(--text-color-muted, oklch(0.5 0.02 70));
   }
 
+  .tags-page__sphere {
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .tags-page__sphere :global(.tag-sphere__frame) {
+    min-height: 300px;
+  }
+
+  .tags-page__sphere :global(.tag-sphere__stage),
+  .tags-page__sphere :global(.tag-sphere__cloud) {
+    width: 240px !important;
+    height: 240px !important;
+  }
+
   .tags-page__empty {
     padding: 3rem 1rem;
     text-align: center;
@@ -114,38 +107,5 @@ function brickSpan(count: number): 1 | 2 {
     margin: 0 auto 0.75rem;
     font-size: 2.5rem;
     opacity: 0.55;
-  }
-
-  /* 全页墙：比侧栏更宽、行更高；热门砖横跨两格 */
-  :global(.tag-wall.tag-wall--page) {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: 2.75rem !important;
-    gap: 4px !important;
-    padding: 6px !important;
-  }
-
-  @media (min-width: 640px) {
-    :global(.tag-wall.tag-wall--page) {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      grid-auto-rows: 3rem !important;
-    }
-  }
-
-  @media (min-width: 900px) {
-    :global(.tag-wall.tag-wall--page) {
-      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
-  }
-
-  :global(.tag-wall.tag-wall--page .tag-wall__brick--wide) {
-    grid-column: span 2;
-  }
-
-  :global(.tag-wall.tag-wall--page .tag-wall__name) {
-    font-size: 0.78rem;
-  }
-
-  :global(.tag-wall.tag-wall--page .tag-wall__count) {
-    font-size: 0.62rem;
   }
 </style>

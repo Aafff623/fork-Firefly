@@ -54,8 +54,10 @@ interface Props {
 	setOGTypeArticle?: boolean;
 	postSlug?: string;
 	postCategory?: string;
-	/** 文章页标签；供侧栏标签墙聚焦当前文（Swup 静态侧栏靠 data 属性同步） */
+	/** 文章页一级标签；供侧栏标签墙聚焦（Swup 靠 data 属性同步） */
 	postTags?: string[];
+	/** 文章页二级主题标签（Agent）；仅侧栏展示，不进全站统计 */
+	postThemeTags?: string[];
 	/** 文章页相关推荐；供侧栏「推荐文章」 */
 	relatedPosts?: import("@/utils/content-utils").PostForList[];
 	currentPostId?: string;
@@ -82,6 +84,7 @@ const {
 	postSlug,
 	postCategory,
 	postTags,
+	postThemeTags,
 	relatedPosts,
 	currentPostId,
 	headings = [],
@@ -90,6 +93,9 @@ const {
 } = Astro.props;
 
 const postTagsJson = Array.isArray(postTags) ? JSON.stringify(postTags) : "";
+const postThemeTagsJson = Array.isArray(postThemeTags)
+	? JSON.stringify(postThemeTags)
+	: "";
 const relatedPostsJson = Array.isArray(relatedPosts)
 	? JSON.stringify(
 			relatedPosts.map((p) => ({
@@ -892,6 +898,7 @@ const hasMultipleImages =
                                     headings={headings}
                                     encrypted={encrypted}
                                     postTags={postTags}
+                                    postThemeTags={postThemeTags}
                                     relatedPosts={relatedPosts}
                                     currentPostId={currentPostId}
                                 />
@@ -905,7 +912,7 @@ const hasMultipleImages =
             ) : (
                 <div id="left-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasLeftComponents && (
-						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
@@ -920,6 +927,7 @@ const hasMultipleImages =
                     class="transition-main"
                     data-current-post-category={postCategory || ""}
                     data-current-post-tags={postTagsJson}
+                    data-current-post-theme-tags={postThemeTagsJson}
                     data-current-post-id={currentPostId || postSlug || ""}
                     data-current-post-title={bannerPostMeta?.title || title || ""}
                     data-related-posts={relatedPostsJson}
@@ -946,7 +954,7 @@ const hasMultipleImages =
                     {sidebarLayoutConfig.enable ? (
                         <div id="right-sidebar-static" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
                             {(effectiveIsBothSidebars || sidebarLayoutConfig.position === "right") && effectiveHasRightComponents && (
-								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                             )}
                         </div>
                     ) : (
@@ -957,7 +965,7 @@ const hasMultipleImages =
             ) : (
                 <div id="right-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasRightComponents && (
-						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
@@ -965,7 +973,7 @@ const hasMultipleImages =
             {/* 移动端底部组件 - 768px及以下显示 */}
             {sidebarLayoutConfig.mobileBottomComponents && sidebarLayoutConfig.mobileBottomComponents.length > 0 && (
                 <div id="mobile-bottom-sidebar" class="col-span-1 block md:hidden mt-4">
-					<SideBar side="bottom" headings={headings} encrypted={encrypted} postTags={postTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+					<SideBar side="bottom" headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                 </div>
             )}
 
