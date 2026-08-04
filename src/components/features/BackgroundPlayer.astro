@@ -139,6 +139,17 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.dispatchEvent(new CustomEvent("bg-player-state-change", { detail: { playing: isPlaying } }));
 		}
 
+		/** 音乐起播时暂停视频（只停，不反向起播音乐） */
+		function pauseDueToMusic() {
+			if (!isPlaying && !isStarting) return;
+			isPlaying = false;
+			isStarting = false;
+			video.pause();
+			hideOverlay();
+			setLoading(false);
+			syncAttr();
+		}
+
 		function revealOverlay() {
 			if (!overlay) return;
 			overlay.classList.remove("opacity-0");
@@ -304,6 +315,11 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		}
 
 		window.addEventListener("bg-player-toggle", toggle);
+		// 音乐起播 → 停视频（fm:play-state false 忽略，避免乒乓）
+		window.addEventListener("fm:play-state", function (e) {
+			var detail = (e && e.detail) || {};
+			if (detail.isPlaying) pauseDueToMusic();
+		});
 		video.addEventListener("ended", onEnded);
 		video.addEventListener("error", onError);
 		video.addEventListener("playing", function () {

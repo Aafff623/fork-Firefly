@@ -38,13 +38,19 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	src: {
 		// 桌面背景图片（支持单张或多张随机）
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
+		// 自选 Banner 轮播（Saber/Fate + 其他横版，见 temp/wallpaper-candidates/selected.json）
 		desktop: [
-			"assets/images/DesktopWallpaper/d1.avif",
-			"assets/images/DesktopWallpaper/d2.avif",
-			"assets/images/DesktopWallpaper/d3.avif",
-			"assets/images/DesktopWallpaper/d4.avif",
-			"assets/images/DesktopWallpaper/d5.avif",
-			"assets/images/DesktopWallpaper/d6.avif",
+			"assets/images/DesktopWallpaper/banner-01.avif",
+			"assets/images/DesktopWallpaper/banner-02.avif",
+			"assets/images/DesktopWallpaper/banner-03.avif",
+			"assets/images/DesktopWallpaper/banner-04.avif",
+			"assets/images/DesktopWallpaper/banner-05.avif",
+			"assets/images/DesktopWallpaper/banner-06.avif",
+			"assets/images/DesktopWallpaper/banner-07.avif",
+			"assets/images/DesktopWallpaper/banner-08.avif",
+			"assets/images/DesktopWallpaper/banner-09.avif",
+			"assets/images/DesktopWallpaper/banner-10.avif",
+			"assets/images/DesktopWallpaper/banner-11.avif",
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "assets/images/MobileWallpaper/m1.avif",
@@ -56,18 +62,21 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"assets/images/MobileWallpaper/m5.avif",
 			"assets/images/MobileWallpaper/m6.avif",
 		],
-		// 背景视频播放地址
-		// 支持单个视频路径（字符串）或多个视频循环（数组）
-		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
-		// 已本地化 + faststart，避免远端 CDN 慢与切换白边
-		playerUrl: "/assets/videos/firefly.mp4",
+		// 背景视频播放地址（数组 = 播完切下一首；导航栏可上一首/下一首）
+		// 本地自备片 · 720p 无声 faststart（源文件在 D:\cache\chrome-cache）
+		playerUrl: [
+			"/assets/videos/bg-benben.mp4", // 九十九弁弁 · 东方
+			"/assets/videos/bg-plana.mp4", // Plana · 碧蓝档案
+			"/assets/videos/bg-hina.mp4", // 空崎日奈 · 碧蓝档案
+			"/assets/videos/bg-fangyi.mp4", // 庄方宜 · 明日方舟终末地
+		],
 	},
 	// 横幅壁纸和全屏壁纸共享配置
 	common: {
 		// 壁纸遮罩暗度，让横幅文字显示更清晰，0-1之间，值越大越暗
 		dimOpacity: 0.2,
 		// 多视频播放模式："order" 顺序循环，"random" 随机切换（仅当 playerUrl 为数组时生效）
-		playerMode: "random",
+		playerMode: "order",
 		// 主页横幅文字
 		homeText: {
 			// 是否启用主页横幅文字
@@ -130,7 +139,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 壁纸轮播配置，横幅壁纸和全屏壁纸共享，仅在配置多张图片时生效
 		carousel: {
 			// 是否启用壁纸轮播；关闭时保持每次刷新随机显示一张
-			enable: false,
+			enable: true,
 			// 轮播切换间隔（毫秒）
 			interval: 5000,
 			// 过渡效果: 'fade' 渐变 | 'zoom' 缩放 | 'slide' 滑动 | 'kenburns' 旋转木马
