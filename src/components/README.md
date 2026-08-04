@@ -102,7 +102,7 @@ Firefly 项目中所有可复用组件的集中管理。组件按照功能和职
 - `EncryptedContent.astro` - 加密内容组件
 - `EncryptedPost.astro` - 加密文章组件
 - `Live2DWidget.astro` - Live2D 看板娘组件
-- `SpritePet.svelte` - 站内桌宠（cc-haha spritesheet，配置见 `petConfig.ts`）
+- `SpritePet.svelte` - 站内桌宠（双 DeepSeek 路由换皮，配置见 `petConfig.ts`）
 - `MusicPlayer.astro` - 音乐播放器 UI 视图控制器（纯 UI，委托 MusicManager 进行播放控制）
 - `SakuraEffect.astro` - 樱花飘落特效
 - `SpineModel.astro` - Spine 看板娘组件

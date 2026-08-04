@@ -24,7 +24,7 @@ src/config/
 ├── licenseConfig.ts          # 许可证配置
 ├── musicConfig.ts            # 音乐播放器配置
 ├── navBarConfig.ts           # 导航栏配置（含 LinkPresets 链接预设）
-├── petConfig.ts              # 站内桌宠配置（cc-haha spritesheet）
+├── petConfig.ts              # 站内桌宠配置（双 DeepSeek spritesheet）
 ├── pioConfig.ts              # 看板娘配置（Spine、Live2D）
 ├── mermaidConfig.ts          # Mermaid 图表配置
 ├── plantumlConfig.ts         # PlantUML 图表配置

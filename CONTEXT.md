@@ -90,7 +90,7 @@ Content Collections（`src/content.config.ts`）：
 | Firefly | 上游主题名；本仓为其独立二次开发站（非 fork） |
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
-| 站内桌宠 | cc-haha spritesheet 悬浮宠（`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |
+| 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
 | Digital Garden | 作者另一站点：https://threetwoa-digital-garden.vercel.app |
@@ -98,7 +98,7 @@ Content Collections（`src/content.config.ts`）：
 ## 已知缺口（非阻塞）
 
 - demo 文章 / 原作者 Bangumi·追番 ID 仍在配置中，后续可关页面或改 ID
-- 评论系统 `type: "none"`
+- 评论系统现行 `type: "waline"`（ADR-0001）；勿再按 `none` 理解
 - 本地 pnpm 若走 npmmirror，部分包可能 404；安装可用官方 registry
 - 主题氛围：页面/卡片/按钮底为中性灰；紫与邻近色只出现在链接、高亮、图标、竖条等点缀位
 

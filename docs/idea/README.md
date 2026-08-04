@@ -56,3 +56,8 @@ docs/idea/{theme}/          # 灵感沉淀（本目录）
 |---|---|---|
 | `hallmark-gsap-ui` | Hallmark×GSAP（+MiniMax）组件动效编排 skill 构想 | step-1 分析完成 |
 | `calendar-cover` | 侧栏日历封面 GIF：像素/软绘人物 · idle 闭环 · 轮询 | 已认可截图 + mood 沉淀（2026-08-03） |
+| `zhuzhiliao-toy` | 竹知了玩具模拟器 → 角落互动彩蛋（画圈甩动 + 真实竹叫采样） | step-1 + clone 补记（2026-08-04） |
+| `interface-lab` | Interface Lab：视频懒播 · 折纸信封 Motion · 橱窗注册表；Desktop-only 作反模式 | step-1 分析完成（2026-08-04） |
+| `codex-pet-deepseek` | 双桌宠：浏览 Maid（v2）/ 文章 OpenPet（8×9）；PRD 已落地 | step-3 shipped（2026-08-04） |
+
+探针类（`temp/_cdn_probe` · `_page.html` · `_probe.bin`）不建 theme。本地素材仍在 `temp/maid-deepseek-whale*` · `temp/openpet-ai-girls*`，**未**拷入 `public/pets`。
