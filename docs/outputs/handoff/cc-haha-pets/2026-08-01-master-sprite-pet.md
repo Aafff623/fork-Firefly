@@ -1,8 +1,11 @@
 # Handoff：cc-haha 站内桌宠（终态）
 
+> **已废（2026-08-04）**：产品已切双 DeepSeek。接续请读  
+> `docs/outputs/handoff/dual-pet-deepseek/2026-08-04-master-dual-pet.md`
+
 ## Status
 
-done（交互打磨 + 场景联动已提交；未 push）
+superseded（旧四宠已下线；勿再按 `petId` / `dada-code` 操作）
 
 ## Decisions（已定）
 
