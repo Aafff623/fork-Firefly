@@ -1,0 +1,173 @@
+---
+/**
+ * Banner 模式下的正文氛围全屏层：fixed 垫底，与横幅并存。
+ * syncWithBanner：听 firefly:banner-slide 同帧换图；否则独立 interval 轮播。
+ */
+import { backgroundWallpaper } from "@/config";
+
+const atmo = backgroundWallpaper.atmosphere;
+const enabled = atmo?.enable === true && (atmo.slides?.length ?? 0) > 0;
+const slides = atmo?.slides ?? [];
+const previewBadge = atmo?.previewBadge === true;
+const opacity = atmo?.opacity ?? 0.55;
+const veil = atmo?.veil ?? 0.65;
+const carouselEnable = atmo?.carousel?.enable === true && slides.length > 1;
+const syncWithBanner = atmo?.carousel?.syncWithBanner === true;
+const interval = Math.max(atmo?.carousel?.interval ?? 5000, 3000);
+
+const slideMeta = slides.map((s, i) => ({
+	id: s.id,
+	label: s.label,
+	pairBannerIndex: s.pairBannerIndex ?? i, // 默认按下标配对
+}));
+---
+
+{enabled && (
+	<>
+		<div
+			id="atmosphere-layer"
+			aria-hidden="true"
+			data-carousel={carouselEnable ? "true" : "false"}
+			data-sync-banner={syncWithBanner ? "true" : "false"}
+			data-interval={String(interval)}
+			style={`--atmo-opacity: ${opacity}; --atmo-veil: ${veil};`}
+		>
+			{slides.map((slide, i) => (
+				<div
+					class:list={["atmo-slide", i === 0 && "active"]}
+					data-id={slide.id}
+					data-label={slide.label}
+					data-pair={String(slide.pairBannerIndex ?? i)}
+					data-tile={slide.tile ? "true" : "false"}
+					style={
+						slide.tile
+							? `background-image: url('${slide.src}'); background-color: #f3f4f6;`
+							: `background-image: url('${slide.src}');`
+					}
+				/>
+			))}
+			<div class="atmo-veil"></div>
+		</div>
+
+		{previewBadge && (
+			<div id="atmosphere-badge" role="status" aria-live="polite">
+				<span class="atmo-badge-id" id="atmosphere-badge-text">
+					{slides[0]?.id} · {slides[0]?.label}
+				</span>
+				<span class="atmo-badge-hint">
+					{syncWithBanner ? "跟横幅同步 · 看中请报编号" : "每 5 秒切换 · 看中请报编号"}
+				</span>
+				<div class="atmo-badge-dots" id="atmosphere-badge-dots">
+					{slides.map((_, i) => (
+						<span class:list={["dot", i === 0 && "on"]} data-i={i}></span>
+					))}
+				</div>
+			</div>
+		)}
+
+		<script
+			is:inline
+			define:vars={{ slideMeta, carouselEnable, syncWithBanner, interval }}
+		>
+			(function () {
+				var layer = document.getElementById("atmosphere-layer");
+				if (!layer) return;
+
+				var slides = layer.querySelectorAll(".atmo-slide");
+				if (!slides.length) return;
+
+				var badgeText = document.getElementById("atmosphere-badge-text");
+				var dots = document.querySelectorAll("#atmosphere-badge-dots .dot");
+				var index = 0;
+				var timer = null;
+				var reduceMotion =
+					typeof window.matchMedia === "function" &&
+					window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+				function showBySlideIndex(i) {
+					index = ((i % slides.length) + slides.length) % slides.length;
+					for (var k = 0; k < slides.length; k++) {
+						slides[k].classList.toggle("active", k === index);
+					}
+					for (var d = 0; d < dots.length; d++) {
+						dots[d].classList.toggle("on", d === index);
+					}
+					var meta = slideMeta[index];
+					if (badgeText && meta) {
+						badgeText.textContent = meta.id + " · " + meta.label;
+					}
+				}
+
+				/** 按横幅下标找配对 slide；找不到则 clamp */
+				function showByBannerIndex(bannerIndex) {
+					var found = -1;
+					for (var i = 0; i < slideMeta.length; i++) {
+						if (slideMeta[i].pairBannerIndex === bannerIndex) {
+							found = i;
+							break;
+						}
+					}
+					if (found < 0) {
+						found = Math.max(0, Math.min(bannerIndex, slides.length - 1));
+					}
+					showBySlideIndex(found);
+				}
+
+				function next() {
+					showBySlideIndex(index + 1);
+				}
+
+				function startIndependent() {
+					if (syncWithBanner) return;
+					if (!carouselEnable || reduceMotion || slides.length < 2) return;
+					stopIndependent();
+					timer = window.setInterval(next, interval);
+				}
+
+				function stopIndependent() {
+					if (timer !== null) {
+						window.clearInterval(timer);
+						timer = null;
+					}
+				}
+
+				function onBannerSlide(e) {
+					var detail = e && e.detail;
+					if (!detail || typeof detail.index !== "number") return;
+					showByBannerIndex(detail.index);
+				}
+
+				function rebindDom() {
+					layer = document.getElementById("atmosphere-layer");
+					if (!layer) return false;
+					slides = layer.querySelectorAll(".atmo-slide");
+					badgeText = document.getElementById("atmosphere-badge-text");
+					dots = document.querySelectorAll("#atmosphere-badge-dots .dot");
+					return slides.length > 0;
+				}
+
+				showBySlideIndex(0);
+
+				if (syncWithBanner) {
+					window.addEventListener("firefly:banner-slide", onBannerSlide);
+				} else {
+					startIndependent();
+					document.addEventListener("visibilitychange", function () {
+						if (document.hidden) stopIndependent();
+						else startIndependent();
+					});
+				}
+
+				document.addEventListener("swup:page:view", function () {
+					if (!rebindDom()) return;
+					if (syncWithBanner) {
+						showBySlideIndex(index);
+					} else {
+						showBySlideIndex(index);
+						startIndependent();
+					}
+				});
+			})();
+		</script>
+	</>
+)}

@@ -12,6 +12,7 @@ import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
 import ScrollDownIndicator from "@/components/controls/ScrollDownIndicator.astro";
 import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
+import AtmosphereLayer from "@/components/features/AtmosphereLayer.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
 import CategoryBar from "@/components/layout/CategoryBar.astro";
 import {
@@ -331,6 +332,10 @@ const bannerCarouselEffect =
 	backgroundWallpaper.common?.carousel?.transitionEffect ?? "fade";
 const hasMultipleImages =
 	backgroundImages.desktop.length > 1 || backgroundImages.mobile.length > 1;
+/** Banner 模式下启用正文氛围全屏层（选型轮播 / 定稿单图） */
+const showAtmosphereLayer =
+	backgroundWallpaper.atmosphere?.enable === true &&
+	(backgroundWallpaper.atmosphere.slides?.length ?? 0) > 0;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
@@ -363,6 +368,9 @@ const hasMultipleImages =
         <Navbar></Navbar>
     </div>
 </div>
+
+{/* 氛围层：在横幅之前挂载，fixed 垫底，仅 banner 布局可见 */}
+{showAtmosphereLayer && <AtmosphereLayer />}
 
 <!-- Wallpaper - 如果允许切换则始终渲染，否则只渲染当前模式 -->
 {(isWallpaperSwitchable || isBannerMode || isFullscreenMode || isOverlayMode) && (
@@ -507,6 +515,15 @@ const hasMultipleImages =
                 return 0;
             }
 
+            function emitBannerSlide(index, total) {
+                // 氛围层等同频跟图：广播当前可见横幅下标
+                try {
+                    window.dispatchEvent(new CustomEvent('firefly:banner-slide', {
+                        detail: { index: index, total: total }
+                    }));
+                } catch (err) { /* ignore */ }
+            }
+
             function applySlideChange(slides, nextIndex) {
                 // Slide 效果需要 prev-waiting 辅助类
                 if (effect === 'slide') {
@@ -529,6 +546,7 @@ const hasMultipleImages =
                         else slides[j].classList.remove('active');
                     }
                 }
+                emitBannerSlide(nextIndex, slides.length);
             }
 
             function changeToSlide(targetIndex, resetProgress) {
@@ -622,14 +640,20 @@ const hasMultipleImages =
                 }
             });
 
-            // 随机首张
+            // 随机首张，并立刻同步氛围层
             var slides = getVisibleSlides();
+            var bootIdx = 0;
             if (slides.length > 1) {
-                var randomIdx = Math.floor(Math.random() * slides.length);
+                bootIdx = Math.floor(Math.random() * slides.length);
                 for (var k = 0; k < slides.length; k++) {
-                    if (k === randomIdx) slides[k].classList.add('active');
+                    if (k === bootIdx) slides[k].classList.add('active');
                     else slides[k].classList.remove('active');
                 }
+            } else if (slides.length === 1) {
+                bootIdx = 0;
+            }
+            if (slides.length > 0) {
+                emitBannerSlide(bootIdx, slides.length);
             }
 
             // 启动

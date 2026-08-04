@@ -85,8 +85,15 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			title: "threetwoa's digital garden",
 			// 主页横幅主标题字体大小
 			titleSize: "4.5rem",
-			// 主页横幅副标题
-			subtitle: ["🌲 🌿 ୧( ˵ ° ~ ° ˵ )୨ 🌿 🌳"],
+			// 主页横幅副标题（多套轮播；打字机打完后停留 pauseTime）
+			subtitle: [
+				"🌲 🌿 ୧( ˵ ° ~ ° ˵ )୨ 🌿 🌳",
+				"🪴 ✨ (￣▽￣)ノ grow slow ✨ 🌱",
+				"🍃 ☕ (´∀｀)∩ tea & code ☕ 🍃",
+				"🌳 📖 (๑>◡<๑) read under trees 📖 🌳",
+				"🌸 🎐 ♪(´ε｀ ) soft breeze 🎐 🌸",
+				"🌿 🏡 (◕‿◕)✿ come sit awhile 🏡 🌿",
+			],
 			// 主页横幅副标题字体大小
 			subtitleSize: "1.5rem",
 			typewriter: {
@@ -98,8 +105,8 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 				speed: 100,
 				// 删除速度（毫秒）
 				deleteSpeed: 50,
-				// 完全显示后的暂停时间（毫秒）
-				pauseTime: 2000,
+				// 完全显示后的暂停时间（毫秒）≈ 5 秒再切下一套
+				pauseTime: 5000,
 			},
 		},
 		// 文章横幅信息："description" 显示描述，"meta" 显示日期、字数和阅读时长
@@ -140,8 +147,8 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		carousel: {
 			// 是否启用壁纸轮播；关闭时保持每次刷新随机显示一张
 			enable: true,
-			// 轮播切换间隔（毫秒）
-			interval: 5000,
+			// 轮播切换间隔（毫秒）· 30 秒一换，给访客看清上下同色
+			interval: 30000,
 			// 过渡效果: 'fade' 渐变 | 'zoom' 缩放 | 'slide' 滑动 | 'kenburns' 旋转木马
 			transitionEffect: "zoom",
 		},
@@ -168,5 +175,90 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	fullscreen: {
 		// 图片位置
 		position: "center",
+	},
+	/**
+	 * Banner + 正文氛围层 · 与横幅同色同频（BA-01～11 配对 banner-01～11）
+	 * 旧 PC 文件保留不删；色调可对上的已复制为 ba-*-paired.jpg
+	 */
+	atmosphere: {
+		enable: true,
+		previewBadge: true,
+		opacity: 0.52,
+		veil: 0.72,
+		cardOpacity: 0.84,
+		slides: [
+			{
+				id: "BA-01",
+				label: "蓝调夜城（跟 banner-01）",
+				src: "/assets/atmosphere/ba-01-paired.jpg",
+				pairBannerIndex: 0,
+			},
+			{
+				id: "BA-02",
+				label: "暖褐夜景（跟 banner-02）",
+				src: "/assets/atmosphere/ba-02-paired.jpg",
+				pairBannerIndex: 1,
+			},
+			{
+				id: "BA-03",
+				label: "灰青远山（跟 banner-03）",
+				src: "/assets/atmosphere/ba-03-paired.jpg",
+				pairBannerIndex: 2,
+			},
+			{
+				id: "BA-04",
+				label: "雾绿草原（跟 banner-04）",
+				src: "/assets/atmosphere/ba-04-minimax-sage.jpg",
+				pairBannerIndex: 3,
+			},
+			{
+				id: "BA-05",
+				label: "暖橙晨曦（跟 banner-05）",
+				src: "/assets/atmosphere/ba-05-paired.jpg",
+				pairBannerIndex: 4,
+			},
+			{
+				id: "BA-06",
+				label: "玫紫花田（跟 banner-06）",
+				src: "/assets/atmosphere/ba-06-paired.jpg",
+				pairBannerIndex: 5,
+			},
+			{
+				id: "BA-07",
+				label: "暖灰暮色（跟 banner-07）",
+				src: "/assets/atmosphere/ba-07-minimax-dusk.jpg",
+				pairBannerIndex: 6,
+			},
+			{
+				id: "BA-08",
+				label: "粉灰暮空（跟 banner-08）",
+				src: "/assets/atmosphere/ba-08-paired.jpg",
+				pairBannerIndex: 7,
+			},
+			{
+				id: "BA-09",
+				label: "琥珀街景（跟 banner-09）",
+				src: "/assets/atmosphere/ba-09-paired.jpg",
+				pairBannerIndex: 8,
+			},
+			{
+				id: "BA-10",
+				label: "浅暖雾空（跟 banner-10）",
+				src: "/assets/atmosphere/ba-10-paired.jpg",
+				pairBannerIndex: 9,
+			},
+			{
+				id: "BA-11",
+				label: "紫调花野（跟 banner-11）",
+				src: "/assets/atmosphere/ba-11-paired.jpg",
+				pairBannerIndex: 10,
+			},
+		],
+		carousel: {
+			enable: true,
+			interval: 30000, // 备用；syncWithBanner 时跟横幅事件，实际由 common.carousel 驱动
+			transitionEffect: "fade",
+			syncWithBanner: true,
+		},
 	},
 };

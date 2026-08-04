@@ -91,7 +91,12 @@ const siteLang = lang.replace("_", "-");
 ---
 
 <!doctype html>
-<html lang={siteLang} class="bg-(--page-bg) text-[14px] md:text-[16px]" data-wallpaper-mode={backgroundWallpaper.mode}>
+<html
+	lang={siteLang}
+	class="bg-(--page-bg) text-[14px] md:text-[16px]"
+	data-wallpaper-mode={backgroundWallpaper.mode}
+	data-atmosphere-enabled={backgroundWallpaper.atmosphere?.enable === true ? "true" : "false"}
+>
   <head>
     <meta charset="UTF-8" />
     {analyticsConfig?.googleAnalyticsId && (
@@ -250,7 +255,10 @@ const siteLang = lang.replace("_", "-");
         darkTheme: expressiveCodeConfig.darkTheme,
         lightTheme: expressiveCodeConfig.lightTheme,
         baseUrl: import.meta.env.BASE_URL,
-        cardTransparentOpacity: backgroundWallpaper.overlay?.cardOpacity ?? 0.6,
+        cardTransparentOpacity:
+          backgroundWallpaper.atmosphere?.enable === true
+            ? (backgroundWallpaper.atmosphere.cardOpacity ?? 0.78)
+            : (backgroundWallpaper.overlay?.cardOpacity ?? 0.6),
       }}
     >
       // 主题初始化 - 与setting-utils.ts保持一致

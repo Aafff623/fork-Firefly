@@ -94,4 +94,31 @@ export type BackgroundWallpaperConfig = {
 	fullscreen?: {
 		position?: string; // 壁纸位置，支持CSS object-position的所有值
 	};
+	/**
+	 * Banner 模式下的正文氛围全屏层（fixed 垫底，与横幅并存）
+	 * 用于铺满横幅以下白屏；与 mode 四选一互斥无关
+	 */
+	atmosphere?: {
+		enable: boolean; // 是否启用氛围层
+		previewBadge?: boolean; // 选型期右下角编号浮标
+		opacity?: number; // 氛围图本身透明度 0-1，建议 0.45–0.65
+		veil?: number; // 白雾遮罩强度 0-1，建议 0.55–0.75
+		cardOpacity?: number; // 露出氛围时卡片不透明度 0-1
+		/** 轮播/定稿素材；编号与浮标文案由此决定 */
+		slides: Array<{
+			id: string; // 如 BA-01 / PC-12
+			label: string; // 如 粉紫夜城全景
+			src: string; // public 路径，如 /assets/atmosphere/ba-01-*.jpg
+			tile?: boolean; // 纸纹等可平铺纹理
+			/** 配对桌面横幅下标（0-based）；syncWithBanner 时按此跟横幅 */
+			pairBannerIndex?: number;
+		}>;
+		carousel: {
+			enable: boolean; // 选型期 true；定稿后 false
+			interval?: number; // 默认 5000；syncWithBanner 时仅作备用
+			transitionEffect?: "fade"; // 氛围层仅支持淡入淡出
+			/** true：听横幅 firefly:banner-slide，关掉独立计时 */
+			syncWithBanner?: boolean;
+		};
+	};
 };

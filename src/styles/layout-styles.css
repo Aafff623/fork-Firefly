@@ -856,3 +856,143 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
         transition: top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s !important;
     }
 }
+
+/* ============================================
+ * Atmosphere 层 — Banner 正文氛围全屏垫底
+ * 与 #wallpaper-wrapper 横幅并存；选型期轮播 + 编号浮标
+ * ============================================ */
+#atmosphere-layer {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	overflow: hidden;
+	opacity: var(--atmo-opacity, 0.55);
+}
+
+#atmosphere-layer .atmo-slide {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	opacity: 0;
+	transition: opacity 1s ease;
+	will-change: opacity;
+}
+
+#atmosphere-layer .atmo-slide[data-tile="true"] {
+	background-size: 180px;
+	background-repeat: repeat;
+}
+
+#atmosphere-layer .atmo-slide.active {
+	opacity: 1;
+}
+
+#atmosphere-layer .atmo-veil {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	/* 白雾遮罩：顶部略淡，避免与 Banner 淡出区叠成第二条亮带 */
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, calc(var(--atmo-veil, 0.65) * 0.2)) 0%,
+		rgba(255, 255, 255, var(--atmo-veil, 0.65)) 42%,
+		rgba(255, 255, 255, calc(var(--atmo-veil, 0.65) + 0.12)) 100%
+	);
+}
+
+:root.dark #atmosphere-layer .atmo-veil {
+	background: linear-gradient(
+		180deg,
+		rgba(18, 18, 22, calc(var(--atmo-veil, 0.65) * 0.2)) 0%,
+		rgba(18, 18, 22, var(--atmo-veil, 0.65)) 42%,
+		rgba(18, 18, 22, calc(var(--atmo-veil, 0.65) + 0.1)) 100%
+	);
+}
+
+/* 非 banner 模式隐藏氛围层与浮标（运行时切换壁纸模式时） */
+html:not([data-wallpaper-mode="banner"]) #atmosphere-layer,
+html:not([data-wallpaper-mode="banner"]) #atmosphere-badge {
+	display: none !important;
+}
+
+#atmosphere-badge {
+	position: fixed;
+	right: 1rem;
+	bottom: 1rem;
+	z-index: 90;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 10px 14px;
+	border-radius: 12px;
+	background: rgba(28, 28, 34, 0.78);
+	color: #f8fafc;
+	font-size: 0.82rem;
+	line-height: 1.35;
+	backdrop-filter: blur(8px);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+	max-width: min(260px, calc(100vw - 2rem));
+}
+
+#atmosphere-badge .atmo-badge-id {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+#atmosphere-badge .atmo-badge-hint {
+	font-size: 0.7rem;
+	opacity: 0.75;
+}
+
+#atmosphere-badge .atmo-badge-dots {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 4px;
+}
+
+#atmosphere-badge .atmo-badge-dots .dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.28);
+}
+
+#atmosphere-badge .atmo-badge-dots .dot.on {
+	background: #c4b5fd;
+	width: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#atmosphere-layer .atmo-slide {
+		transition: none;
+	}
+}
+
+/* 氛围开启：去掉近白水波纹硬缝，横幅底边淡出溶入氛围 */
+html[data-atmosphere-enabled="true"] #header-waves {
+	display: none !important;
+}
+
+html[data-atmosphere-enabled="true"] #wallpaper-gradient {
+	display: none !important; /* 避免再淡到 page-bg 造第二道白边 */
+}
+
+html[data-atmosphere-enabled="true"] #wallpaper-wrapper {
+	-webkit-mask-image: linear-gradient(
+		to bottom,
+		#000 0%,
+		#000 calc(100% - 14vh),
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		to bottom,
+		#000 0%,
+		#000 calc(100% - 14vh),
+		transparent 100%
+	);
+}
