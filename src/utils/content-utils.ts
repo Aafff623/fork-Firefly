@@ -16,11 +16,25 @@ export function getEffectivePostTime(data: {
 
 /** 在非常驻文章中选出默认置顶（时间戳最新的一篇） */
 export function getAutoPinnedPostId(
-	_posts: CollectionEntry<"posts">[],
+	posts: CollectionEntry<"posts">[],
 ): string | null {
-	// 暂时禁用「自动置顶」(2026-08-04)：帖子一律按有效时间倒序，不再自动顶一篇。
-	// 恢复时把下面的 return null 换回原逻辑（遍历取有效时间最新的一篇）。
-	return null;
+	let bestId: string | null = null;
+	let bestTime = Number.NEGATIVE_INFINITY;
+	for (const post of posts) {
+		// 草稿永不参与默认置顶（本地 DEV 也会列出草稿，但不能抢置顶）
+		if (post.data.pinned || post.data.draft) continue;
+		const time = getEffectivePostTime(post.data);
+		// 时间相同则 id 字典序更大者胜，保证结果稳定
+		if (
+			bestId === null ||
+			time > bestTime ||
+			(time === bestTime && post.id.localeCompare(bestId) > 0)
+		) {
+			bestTime = time;
+			bestId = post.id;
+		}
+	}
+	return bestId;
 }
 
 export function getPostPinKind(
