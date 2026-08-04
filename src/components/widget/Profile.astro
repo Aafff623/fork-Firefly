@@ -1,9 +1,14 @@
 ---
+/**
+ * 侧栏名片：头像点击 → 晃动 + 招手 + 文言问候气泡（不跳转）
+ * 名字链到 /about/，外链仍走下方 icons
+ */
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
 import { announcementConfig } from "@/config/announcementConfig";
 import { profileConfig } from "@/config/profileConfig";
+import { avatarGreetings } from "@/data/avatar-greetings";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -15,43 +20,63 @@ const className = Astro.props.class;
 
 const voiceBio = profileConfig.bio;
 const noticeText = announcementConfig.content;
+const greetingsJson = JSON.stringify(avatarGreetings.map((g) => g.text));
+const aboutUrl = url("/about/");
+
+/** 社交图标悬停品牌色 key */
+function socialBrandKey(name: string, icon: string): string {
+	const n = `${name} ${icon}`.toLowerCase();
+	if (n.includes("github")) return "github";
+	if (n.includes("bilibili")) return "bilibili";
+	if (n.includes("mail") || n.includes("email")) return "email";
+	if (n.includes("twitter") || n.includes("x-twitter") || /(^|\s)x(\s|$)/.test(n))
+		return "x";
+	if (n.includes("telegram")) return "telegram";
+	return "default";
+}
 ---
 
 <div class:list={["card-base", "profile-widget", "p-2.5", className]} style={style}>
-  <a
-    aria-label="Go to About Page"
-    href={url("/about/")}
-    class="profile-avatar-shell group block relative mx-auto mt-0.5 lg:mt-0 mb-2
-       aspect-square w-[58%] max-w-28 lg:w-[60%] lg:max-w-32 overflow-hidden rounded-full active:scale-95"
-  >
-    <div
-      class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
-        w-full h-full z-50 flex items-center justify-center rounded-full"
+  <div class="profile-avatar-stage relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32">
+    <button
+      type="button"
+      aria-label="向园主问好"
+      class="profile-avatar-shell group relative block w-full aspect-square overflow-visible rounded-full"
+      data-avatar-greet
+      data-greetings={greetingsJson}
     >
-      <Icon is:inline
-        name="lucide:id-card"
-        class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl"
-      />
-    </div>
-    <ImageWrapper
-      src={profileConfig.avatar || ""}
-      alt="Profile Image of the Author"
-      class="profile-avatar-image mx-auto lg:w-full h-full lg:mt-0 object-cover"
-      loading="eager"
-      fetchpriority="high"
-      widths={[350]}
-      sizes="350px"
-      fadeIn={false}
-      showLqip={false}
-      showOverlay={false}
-    />
-  </a>
+      <span class="profile-avatar-clip absolute inset-0 overflow-hidden rounded-full pointer-events-none">
+        <ImageWrapper
+          src={profileConfig.avatar || ""}
+          alt="Profile Image of the Author"
+          class="profile-avatar-image mx-auto lg:w-full h-full lg:mt-0 object-cover"
+          loading="eager"
+          fetchpriority="high"
+          widths={[350]}
+          sizes="350px"
+          fadeIn={false}
+          showLqip={false}
+          showOverlay={false}
+        />
+      </span>
+      <span class="profile-avatar-wave" data-avatar-wave aria-hidden="true">👋</span>
+      <span
+        class="profile-avatar-bubble"
+        data-avatar-bubble
+        role="status"
+        aria-live="polite"
+        hidden
+      ></span>
+    </button>
+  </div>
   <div class="px-2">
-    <div
-      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition"
+    <a
+      href={aboutUrl}
+      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition block hover:text-(--primary)"
+      aria-label="前往关于页"
     >
       {profileConfig.name}
-    </div>
+    </a>
     <div
       class="accent-bar-grad h-0.5 w-4 mx-auto rounded-full mb-1.5 transition"
     >
@@ -78,18 +103,18 @@ const noticeText = announcementConfig.content;
         />
       </div>
     </div>
-        <div class="flex flex-wrap gap-x-4 gap-y-1.5 justify-center mb-0.5">
-            {profileConfig.links.length > 1 && profileConfig.links.map(item =>
-                    {
+        <div class="profile-social flex flex-wrap gap-x-4 gap-y-1.5 justify-center mb-0.5">
+            {profileConfig.links.map((item) => {
                     const showName = item.showName;
-                    // Spotlight 风格：无底座图标行，灰色 → hover 主题色
-                    const className = showName
-                        ? "flex items-center gap-1.5 text-(--content-meta) transition hover:text-(--primary)"
-                        : "flex items-center text-(--content-meta) transition hover:text-(--primary)";
+                    const brand = socialBrandKey(item.name, item.icon);
+                    const linkClass = showName || profileConfig.links.length === 1
+                        ? "profile-social__link flex items-center gap-1.5 text-(--content-meta) transition"
+                        : "profile-social__link flex items-center text-(--content-meta) transition";
+                    const showLabel = showName || profileConfig.links.length === 1;
 
                     if (item.url.startsWith("mailto:")) {
                         const encodedEmail = Buffer.from(item.url.replace("mailto:", "")).toString("base64");
-                        return <a rel="me" aria-label={item.name} href="#" data-encoded-email={encodedEmail} onclick={`
+                        return <a rel="me" aria-label={item.name} href="#" data-brand={brand} data-encoded-email={encodedEmail} onclick={`
                                             (function() {
                                                 const encodedEmail = this.getAttribute('data-encoded-email');
                                                 const decodedEmail = atob(encodedEmail);
@@ -101,46 +126,16 @@ const noticeText = announcementConfig.content;
                                             }).call(this);
                                         `.replace(/\s+/g, " ").trim()
                                     },
-                                    class={className}>
+                                    class={linkClass}>
                             <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
-                            {showName && <span class="text-sm">{item.name}</span>}
-                        </a>
-                    } else {
-                        return <a rel="me" aria-label={item.name} href={item.url} target="_blank" class={className}>
-                            <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
-                            {showName && <span class="text-sm">{item.name}</span>}
+                            {showLabel && <span class="text-sm">{item.name}</span>}
                         </a>
                     }
-                    }
-            )}
-            {profileConfig.links.length == 1 && (function(item){
-                const singleClass = "flex items-center gap-1.5 text-(--content-meta) transition hover:text-(--primary)";
-                if (item.url.startsWith("mailto:")) {
-                        const encodedEmail = Buffer.from(item.url.replace("mailto:", "")).toString("base64");
-                        return <a rel="me" aria-label={item.name} href="#" data-encoded-email={encodedEmail} onclick={`
-                                            (function() {
-                                                const encodedEmail = this.getAttribute('data-encoded-email');
-                                                const decodedEmail = atob(encodedEmail);
-                                                this.href = 'mailto:' + decodedEmail;
-                                                this.removeAttribute('data-encoded-email');
-                                                this.removeAttribute('onclick');
-                                                this.click();
-                                                return false;
-                                            }).call(this);
-                                        `.replace(/\s+/g, " ").trim()
-                                    },
-                                    class={singleClass}>
+                    return <a rel="me" aria-label={item.name} href={item.url} target="_blank" data-brand={brand} class={linkClass}>
                             <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
-                            <span class="text-sm">{item.name}</span>
+                            {showLabel && <span class="text-sm">{item.name}</span>}
                         </a>
-                    } else {
-                        return <a rel="me" aria-label={item.name} href={item.url} target="_blank"
-                                            class={singleClass}>
-                                <Icon is:inline name={item.icon} class="text-[1.375rem]"></Icon>
-                                <span class="text-sm">{item.name}</span>
-                            </a>
-                    }
-            })(profileConfig.links[0])}
+            })}
         </div>
   </div>
 </div>
@@ -194,19 +189,138 @@ const noticeText = announcementConfig.content;
     initVoiceNoticeRotate();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootVoiceNoticeRotate);
-  } else {
-    bootVoiceNoticeRotate();
+  type GreetBtn = HTMLButtonElement & {
+    __greetTimer?: number;
+    __lastGreet?: string;
+  };
+
+  function pickGreeting(list: string[], exclude?: string) {
+    const pool = exclude ? list.filter((t) => t !== exclude) : list;
+    const src = pool.length ? pool : list;
+    return src[Math.floor(Math.random() * src.length)] || "客至，敢不肃容以迎。";
   }
-  document.addEventListener("swup:contentReplaced", bootVoiceNoticeRotate);
-  document.addEventListener("swup:content:replace", bootVoiceNoticeRotate);
-  document.addEventListener("swup:page:view", bootVoiceNoticeRotate);
+
+  function initAvatarGreet(root?: ParentNode) {
+    const scope = root ?? document;
+    scope.querySelectorAll<GreetBtn>("[data-avatar-greet]").forEach((btn) => {
+      if (btn.dataset.greetBound === "1") return;
+      btn.dataset.greetBound = "1";
+
+      let greetings: string[] = [];
+      try {
+        greetings = JSON.parse(btn.getAttribute("data-greetings") || "[]");
+      } catch {
+        greetings = [];
+      }
+      if (!greetings.length) {
+        greetings = ["客至，敢不肃容以迎。", "花园有客，今日亦宜浇水。"];
+      }
+
+      const wave = btn.querySelector<HTMLElement>("[data-avatar-wave]");
+      const bubble = btn.querySelector<HTMLElement>("[data-avatar-bubble]");
+
+      const dismiss = () => {
+        btn.classList.remove("is-greeting");
+        if (bubble) {
+          bubble.hidden = true;
+          bubble.textContent = "";
+        }
+        if (btn.__greetTimer) {
+          window.clearTimeout(btn.__greetTimer);
+          btn.__greetTimer = undefined;
+        }
+      };
+
+      btn.addEventListener("click", () => {
+        const text = pickGreeting(greetings, btn.__lastGreet);
+        btn.__lastGreet = text;
+        btn.classList.remove("is-greeting");
+        // 强制重启动画
+        void btn.offsetWidth;
+        btn.classList.add("is-greeting");
+        if (bubble) {
+          bubble.hidden = false;
+          bubble.textContent = text;
+        }
+        if (wave) wave.setAttribute("aria-hidden", "false");
+        if (btn.__greetTimer) window.clearTimeout(btn.__greetTimer);
+        btn.__greetTimer = window.setTimeout(dismiss, 4200);
+      });
+    });
+  }
+
+  function bootProfileWidget() {
+    bootVoiceNoticeRotate();
+    document.querySelectorAll("[data-avatar-greet]").forEach((node) => {
+      delete (node as HTMLElement).dataset.greetBound;
+    });
+    initAvatarGreet();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootProfileWidget);
+  } else {
+    bootProfileWidget();
+  }
+  document.addEventListener("swup:contentReplaced", bootProfileWidget);
+  document.addEventListener("swup:content:replace", bootProfileWidget);
+  document.addEventListener("swup:page:view", bootProfileWidget);
 </script>
 
 <style>
   .profile-widget {
+    position: relative;
     border-radius: calc(var(--radius-large) + 0.3rem);
+    isolation: isolate; /* 顶缘伪元素与内容分层 */
+  }
+
+  /* 顶缘对壁纸的柔和过渡：内洗渐隐，不改全局 card-base */
+  .profile-widget::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2rem;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in oklch, var(--card-bg) 48%, transparent) 100%
+    );
+  }
+
+  /* 壁纸透明模式：轻毛玻璃 + 顶缘 alpha 略抬高（强度低于顶栏） */
+  :global(body.wallpaper-transparent) .profile-widget {
+    backdrop-filter: blur(12px) saturate(1.05);
+    -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  }
+
+  :global(body.wallpaper-transparent) .profile-widget::before {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--card-bg) 12%, transparent) 0%,
+      color-mix(in oklch, var(--card-bg) 62%, transparent) 100%
+    );
+  }
+
+  /* 内容压在伪元素之上，避免头像/文字被盖住 */
+  .profile-widget > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .profile-avatar-stage {
+    /* 给招手与气泡留出溢出空间 */
+    overflow: visible;
+  }
+
+  .profile-avatar-stage:has(.is-greeting) {
+    margin-bottom: 3.25rem;
   }
 
   .profile-avatar-shell {
@@ -217,6 +331,11 @@ const noticeText = announcementConfig.content;
       0 0 0 1px color-mix(in oklch, var(--card-bg) 68%, white),
       0 0.28rem 0.7rem rgb(69 58 45 / 0.1);
     animation: profile-avatar-breathe 4.8s ease-in-out infinite;
+    cursor: pointer;
+  }
+
+  .profile-avatar-clip {
+    z-index: 1;
   }
 
   .profile-avatar-shell :global(.profile-avatar-image),
@@ -225,6 +344,103 @@ const noticeText = announcementConfig.content;
     width: 100%;
     height: 100%;
     border-radius: inherit;
+  }
+
+  .profile-avatar-wave {
+    position: absolute;
+    right: -0.15rem;
+    bottom: -0.1rem;
+    z-index: 3;
+    font-size: 1.35rem;
+    line-height: 1;
+    opacity: 0;
+    transform: scale(0.6) rotate(-12deg);
+    pointer-events: none;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.18));
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  /* 头像下方横排气泡，避免侧栏窄宽导致一字一行 */
+  .profile-avatar-bubble {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 0.4rem);
+    bottom: auto;
+    z-index: 4;
+    min-width: 8.5rem;
+    max-width: min(12rem, 70vw);
+    width: max-content;
+    padding: 0.45rem 0.65rem;
+    border-radius: 0.65rem;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent);
+    background: color-mix(in oklch, var(--card-bg) 94%, white);
+    box-shadow: 0 4px 14px rgb(40 30 20 / 0.1);
+    color: color-mix(in oklch, var(--content-meta, #444) 40%, var(--primary));
+    font-size: 0.72rem;
+    line-height: 1.5;
+    text-align: center;
+    writing-mode: horizontal-tb;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .profile-avatar-bubble[hidden] {
+    display: none !important;
+  }
+
+  .profile-avatar-bubble::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    bottom: auto;
+    width: 8px;
+    height: 8px;
+    border-left: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent);
+    border-bottom: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent);
+    background: color-mix(in oklch, var(--card-bg) 94%, white);
+    transform: translateX(-50%) rotate(135deg);
+  }
+
+  /* 社交：默认灰，悬停品牌色 */
+  .profile-social__link:hover,
+  .profile-social__link:focus-visible {
+    color: var(--brand, var(--primary));
+  }
+
+  .profile-social__link[data-brand="github"] {
+    --brand: #24292f;
+  }
+  :global(html.dark) .profile-social__link[data-brand="github"] {
+    --brand: #f0f6fc;
+  }
+  .profile-social__link[data-brand="bilibili"] {
+    --brand: #fb7299;
+  }
+  .profile-social__link[data-brand="email"] {
+    --brand: #5b8def;
+  }
+  .profile-social__link[data-brand="x"] {
+    --brand: #24292f;
+  }
+  :global(html.dark) .profile-social__link[data-brand="x"] {
+    --brand: #f0f6fc;
+  }
+  .profile-social__link[data-brand="telegram"] {
+    --brand: #26a5e4;
+  }
+
+  .profile-avatar-shell.is-greeting {
+    animation: profile-avatar-shake 0.55s ease;
+  }
+
+  .profile-avatar-shell.is-greeting .profile-avatar-wave {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    animation: profile-wave-hand 0.9s ease-in-out infinite;
   }
 
   @keyframes profile-avatar-breathe {
@@ -237,7 +453,25 @@ const noticeText = announcementConfig.content;
     }
   }
 
+  @keyframes profile-avatar-shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    20% { transform: translateX(-3px) rotate(-2.5deg); }
+    40% { transform: translateX(3px) rotate(2deg); }
+    60% { transform: translateX(-2px) rotate(-1.5deg); }
+    80% { transform: translateX(2px) rotate(1deg); }
+  }
+
+  @keyframes profile-wave-hand {
+    0%, 100% { transform: scale(1) rotate(-8deg); }
+    50% { transform: scale(1.08) rotate(14deg); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .profile-avatar-shell { animation: none; }
+    .profile-avatar-shell.is-greeting { animation: none; }
+    .profile-avatar-shell.is-greeting .profile-avatar-wave {
+      animation: none;
+    }
   }
+
 </style>
