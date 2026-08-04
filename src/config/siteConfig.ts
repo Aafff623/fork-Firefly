@@ -89,7 +89,7 @@ export const siteConfig: SiteConfig = {
 		menuAlign: "center",
 		// 导航栏图标和标题是否跟随主题色
 		followTheme: false,
-		// 导航栏是否固定在顶部并始终可见
+		// 导航栏是否固定在顶部（下滑自动藏起、上滑再滑出）
 		stickyNavbar: true,
 	},
 

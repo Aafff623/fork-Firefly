@@ -698,6 +698,20 @@ const siteLang = lang.replace("_", "-");
       right: 0 !important;
       z-index: 80 !important;
       height: 4.5rem !important;
+      /* 覆盖 transition-all duration-700，保证下滑隐藏手感干脆 */
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
+      will-change: transform;
+    }
+
+    body.sticky-navbar #top-row.navbar-scroll-hidden {
+      transform: translate3d(0, -100%, 0) !important;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.sticky-navbar #top-row {
+        transition-duration: 0.01ms !important;
+      }
     }
 
     body.sticky-navbar #navbar-wrapper {
@@ -983,8 +997,9 @@ function disableAnimation() {
       }
 
       const navbar = document.getElementById("navbar-wrapper");
-      if (navbar && stickyNavbar) {
-        navbar.classList.remove("navbar-hidden");
+      const topRow = document.getElementById("top-row");
+      if (stickyNavbar && topRow) {
+        topRow.classList.remove("navbar-scroll-hidden");
       } else if (bannerEnabled && navbar) {
         const threshold = window.innerHeight * (BANNER_HEIGHT_HOME / 100) - 88;
         if (document.documentElement.scrollTop >= threshold) {
@@ -1412,6 +1427,9 @@ function disableAnimation() {
   let backToTopBtn = document.getElementById("back-to-top-btn");
   let toc = document.getElementById("toc-wrapper");
   let navbar = document.getElementById("navbar-wrapper");
+  let lastStickyNavbarScrollTop = 0;
+  const STICKY_NAVBAR_SCROLL_DELTA = 6;
+  const STICKY_NAVBAR_SHOW_AT_TOP = 48;
   const sidebarStickyState: Record<
     "left" | "right",
     { topClass: "top-0" | "top-4"; hasVisibleTop: boolean }
@@ -1434,6 +1452,7 @@ function disableAnimation() {
     const scrollTop = document.documentElement.scrollTop;
     const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
     const navbarElement = document.getElementById("navbar");
+    const topRow = document.getElementById("top-row");
 
     // 根据滚动位置动态更新侧边栏 sticky 间距
     updateSidebarStickySpacing();
@@ -1461,9 +1480,17 @@ function disableAnimation() {
       });
     }
 
-    if (stickyNavbar && navbar) {
+    // sticky 顶栏：下滑隐藏、上滑再出现（带 CSS transform 过渡）
+    if (stickyNavbar && topRow) {
       operations.push(() => {
-        navbar.classList.remove("navbar-hidden");
+        if (scrollTop <= STICKY_NAVBAR_SHOW_AT_TOP) {
+          topRow.classList.remove("navbar-scroll-hidden");
+        } else if (scrollTop > lastStickyNavbarScrollTop + STICKY_NAVBAR_SCROLL_DELTA) {
+          topRow.classList.add("navbar-scroll-hidden");
+        } else if (scrollTop < lastStickyNavbarScrollTop - STICKY_NAVBAR_SCROLL_DELTA) {
+          topRow.classList.remove("navbar-scroll-hidden");
+        }
+        lastStickyNavbarScrollTop = scrollTop;
       });
     } else if (bannerEnabled && navbar) {
       operations.push(() => {
