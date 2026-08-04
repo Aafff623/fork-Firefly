@@ -46,7 +46,7 @@
 
 几乎所有开关在 `src/config/*.ts`，经 `@/config` barrel 导出；类型在 `src/types/`。改站优先改配置，不改布局内核。
 
-核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper` · `commentConfig` …
+核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` …
 
 ## 内容模型
 
@@ -104,6 +104,7 @@ Content Collections（`src/content.config.ts`）：
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
 | Digital Garden | 作者另一站点：https://threetwoa-digital-garden.vercel.app |
+| Banner 氛围层 | `backgroundWallpaper.atmosphere`：banner 模式下正文区 fixed 垫底图；可与横幅 `firefly:banner-slide` 同色同频（`syncWithBanner`）；软过渡靠 mask，不靠近白水波纹 |
 
 ## 已知缺口（非阻塞）
 
