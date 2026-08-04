@@ -1,7 +1,8 @@
 ---
 /**
  * 标签墙：砖石错落嵌砖（对照文章 brick dense）+ 青灰/红褐棋盘色。
- * 文章页聚焦当前文标签；侧栏常为静态，靠 #swup-container[data-current-post-tags] + 脚本同步。
+ * 浏览态只展示固定数量（按篇数优先），末砖「…」链到 /tags/；
+ * 文章页聚焦当前文标签（侧栏常为静态，靠 data-current-post-tags + 脚本同步）。
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
@@ -12,8 +13,6 @@ import { getTagUrl, url } from "@/utils/url-utils";
 
 const allTags = await getTagList();
 
-const COLLAPSED_HEIGHT = "9.25rem";
-
 interface Props {
 	class?: string;
 	style?: string;
@@ -23,7 +22,11 @@ interface Props {
 }
 const { class: className, style, widgetConfig, focusTags } = Astro.props;
 
-const collapseThreshold = widgetConfig?.specificConfig?.collapseThreshold;
+/** 浏览态最多露几块砖（不含「…」）；沿用 collapseThreshold 配置 */
+const maxVisible = Math.max(
+	1,
+	Number(widgetConfig?.specificConfig?.collapseThreshold ?? 10),
+);
 const showTitle = widgetConfig?.showTitle !== false;
 
 const isFocusMode = Array.isArray(focusTags);
@@ -31,24 +34,31 @@ const focusSet = new Set(
 	(focusTags ?? []).map((t) => t.trim()).filter(Boolean),
 );
 
-const visibleCount = isFocusMode
-	? allTags.filter((t) => focusSet.has(t.name.trim())).length
-	: allTags.length;
+/** 篇数多的优先，同数按名 */
+const rankedTags = [...allTags].sort((a, b) => {
+	if (b.count !== a.count) return b.count - a.count;
+	return a.name.localeCompare(b.name, "zh-CN");
+});
 
-const isCollapsed =
-	!isFocusMode && collapseThreshold ? allTags.length > collapseThreshold : false;
+const browseTags = rankedTags.slice(0, maxVisible);
+const hiddenCount = Math.max(0, rankedTags.length - browseTags.length);
+const showMoreBrick = !isFocusMode && hiddenCount > 0;
+
+const visibleCount = isFocusMode
+	? rankedTags.filter((t) => focusSet.has(t.name.trim())).length
+	: browseTags.length;
 
 const emptyLabel = i18n(I18nKey.noTags);
 const titleAll = i18n(I18nKey.tagWall);
+const moreLabel = i18n(I18nKey.more);
+const tagsIndexUrl = url("/tags/");
 ---
 <WidgetLayout
   name={titleAll}
   showTitle={showTitle}
   id="tags"
-  isCollapsed={isCollapsed}
-  collapsedHeight={COLLAPSED_HEIGHT}
-  useExpandedButtonSpacing={true}
-  moreUrl={url("/tags/")}
+  isCollapsed={false}
+  moreUrl={tagsIndexUrl}
   class:list={["tags-widget", { "tags-widget--focus": isFocusMode }, className]}
   style={style}
 >
@@ -56,7 +66,7 @@ const titleAll = i18n(I18nKey.tagWall);
     class="tag-wall"
     role="list"
     aria-label={titleAll}
-    data-collapse-threshold={collapseThreshold ?? ""}
+    data-max-visible={maxVisible}
     data-tag-wall-focus={isFocusMode ? "1" : "0"}
   >
     <p
@@ -67,27 +77,45 @@ const titleAll = i18n(I18nKey.tagWall);
       {emptyLabel}
     </p>
     {
-      allTags.map((t) => {
+      rankedTags.map((t, index) => {
         const name = t.name.trim();
+        const beyondCap = !isFocusMode && index >= maxVisible;
         const filteredOut = isFocusMode && !focusSet.has(name);
+        const hide = beyondCap || filteredOut;
         return (
           <a
             role="listitem"
             href={getTagUrl(name)}
             class:list={[
               "tag-wall__brick",
-              { "is-filtered-out": filteredOut },
+              { "is-filtered-out": hide },
             ]}
             data-tag={name}
+            data-rank={index}
             aria-label={`${name}，${t.count} 篇`}
             title={`${name} · ${t.count}`}
-            aria-hidden={filteredOut ? "true" : undefined}
+            aria-hidden={hide ? "true" : undefined}
           >
             <span class="tag-wall__name">#{name}</span>
             <span class="tag-wall__count">{t.count}</span>
           </a>
         );
       })
+    }
+    {
+      showMoreBrick && (
+        <a
+          role="listitem"
+          href={tagsIndexUrl}
+          class="tag-wall__brick tag-wall__brick--more"
+          data-tag-more
+          aria-label={`${moreLabel}，还有 ${hiddenCount} 个标签`}
+          title={`${moreLabel} · +${hiddenCount}`}
+        >
+          <span class="tag-wall__name">…</span>
+          <span class="tag-wall__count">+{hiddenCount}</span>
+        </a>
+      )
     }
   </div>
 </WidgetLayout>
@@ -112,8 +140,14 @@ const titleAll = i18n(I18nKey.tagWall);
     color: oklch(0.7 0.02 70);
   }
 
-  widget-layout.tags-widget.tags-widget--focus .expand-btn,
-  .tags-widget.tags-widget--focus .expand-btn {
+  .tag-wall__brick--more .tag-wall__name {
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  widget-layout.tags-widget.tags-widget--focus .tag-wall__brick--more,
+  .tags-widget.tags-widget--focus .tag-wall__brick--more {
     display: none !important;
   }
 </style>
@@ -154,36 +188,34 @@ const titleAll = i18n(I18nKey.tagWall);
         widget.classList.toggle("tags-widget--focus", focusMode);
         wall.setAttribute("data-tag-wall-focus", focusMode ? "1" : "0");
 
+        const maxVisible = Number(wall.getAttribute("data-max-visible") || 10);
         let visible = 0;
+
         wall.querySelectorAll(".tag-wall__brick[data-tag]").forEach(function (brick) {
           const name = brick.getAttribute("data-tag") || "";
-          const out = focusMode && focusSet && !focusSet.has(name);
-          brick.classList.toggle("is-filtered-out", !!out);
-          brick.setAttribute("aria-hidden", out ? "true" : "false");
-          if (!out) visible += 1;
+          const rank = Number(brick.getAttribute("data-rank") || 0);
+          var hide = false;
+          if (focusMode) {
+            hide = !focusSet || !focusSet.has(name);
+          } else {
+            hide = rank >= maxVisible;
+          }
+          brick.classList.toggle("is-filtered-out", hide);
+          brick.setAttribute("aria-hidden", hide ? "true" : "false");
+          if (!hide) visible += 1;
         });
+
+        const more = wall.querySelector("[data-tag-more]");
+        if (more) {
+          more.style.display = focusMode ? "none" : "";
+          more.setAttribute("aria-hidden", focusMode ? "true" : "false");
+        }
 
         const empty = wall.querySelector("[data-tag-wall-empty]");
         if (empty) {
           const showEmpty = focusMode && visible === 0;
           empty.classList.toggle("is-visible", showEmpty);
           empty.hidden = !showEmpty;
-        }
-
-        const wrapper = widget.querySelector("#tags");
-        const expandBtn = widget.querySelector(".expand-btn");
-        if (focusMode) {
-          if (wrapper) wrapper.classList.remove("collapsed");
-          if (expandBtn) expandBtn.style.display = "none";
-        } else {
-          if (expandBtn) expandBtn.style.display = "";
-          const threshold = Number(wall.getAttribute("data-collapse-threshold") || 0);
-          const total = wall.querySelectorAll(".tag-wall__brick[data-tag]").length;
-          if (threshold > 0 && total > threshold && widget.dataset.isCollapsed === "true") {
-            if (widget.dataset.expanded !== "true" && wrapper) {
-              wrapper.classList.add("collapsed");
-            }
-          }
         }
       });
     }

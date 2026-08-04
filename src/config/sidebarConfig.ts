@@ -114,8 +114,8 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 			// 组件专属配置
 			specificConfig: {
-				// 折叠阈值：当标签数量超过>10个时自动折叠
-				collapseThreshold: 10,
+				// 浏览态标签墙最多显示砖数（不含「…」更多砖）；超出进 /tags/
+				collapseThreshold: 12,
 			},
 		},
 	],
@@ -338,8 +338,8 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 			// 组件专属配置
 			specificConfig: {
-				// 折叠阈值：当标签数量超过20个时自动折叠
-				collapseThreshold: 10,
+				// 浏览态标签墙最多显示砖数（不含「…」更多砖）；超出进 /tags/
+				collapseThreshold: 12,
 			},
 		},
 		{

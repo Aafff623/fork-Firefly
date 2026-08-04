@@ -589,37 +589,3 @@ html.dark .tag-wall__name {
 	}
 }
 
-/* /tags 全站页 */
-.tag-item {
-	background-color: #8fa3b0;
-	background-image:
-		url("/assets/images/widgets/tag-wall/brick-grain.webp"),
-		radial-gradient(ellipse 80% 60% at 20% 15%, #b4c5d0 0%, transparent 55%),
-		linear-gradient(145deg, #8fa3b0 0%, #7a6a5e 48%, #a85d42 100%);
-	background-size: 64px 64px, auto, auto;
-	background-blend-mode: soft-light, soft-light, normal;
-	color: #1f1712;
-	border: 1px solid rgb(0 0 0 / 0.18);
-	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
-}
-
-.tag-item:hover {
-	filter: brightness(1.06);
-}
-
-html.dark .tag-item {
-	background-color: #445968;
-	background-image:
-		url("/assets/images/widgets/tag-wall/brick-grain.webp"),
-		radial-gradient(ellipse 80% 60% at 20% 15%, #5c7384 0%, transparent 55%),
-		linear-gradient(145deg, #445968 0%, #5a4038 48%, #7a4030 100%);
-	background-size: 64px 64px, auto, auto;
-	background-blend-mode: soft-light, soft-light, normal;
-	color: #f0e6de;
-	border-color: rgb(255 255 255 / 0.1);
-}
-
-.tag-item .tag-count-badge {
-	background: color-mix(in srgb, currentColor 14%, transparent);
-	color: inherit;
-}
