@@ -1,133 +1,371 @@
-/* 站点 Footer · Hallmark Index Garden colophon
- * 对照 tmp/hallmark-style-lab/blog-mock.html · .site-footer / .colophon
- * 链接高亮保留 --primary
+/* 站点 Footer · V1 三栏 + V2 浇水胶囊 + V4 邮戳
+ * 透明全宽底栏；细节拉高一点「高级感」，仍不做浮卡片
  */
 
 .site-footer {
-	--sf-ink: oklch(22% 0.02 var(--hue));
-	--sf-muted: oklch(48% 0.02 var(--hue));
-	--sf-rule: oklch(88% 0.012 var(--hue));
+	--sf-ink: oklch(20% 0.018 var(--hue));
+	--sf-muted: oklch(48% 0.018 var(--hue));
+	--sf-faint: oklch(88% 0.01 var(--hue) / 0.7);
+	--sf-rule: oklch(86% 0.012 var(--hue) / 0.65);
 	--sf-accent: var(--primary);
+	--sf-water-dot: oklch(52% 0.1 145);
+	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
+	--sf-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+	--sf-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-	margin: 2.2rem 0 2.5rem;
-	padding-top: 1rem;
-	border-top: 2px solid var(--sf-ink);
+	position: relative;
+	margin: 2.75rem 0 0;
+	padding: 2.85rem 0 1.75rem;
+	width: 100%;
 	min-width: 0;
+	background: transparent;
+	color: var(--sf-ink);
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	/* 顶部分隔：双线感（细实线 + 淡渐隐），比单线更精致 */
+	border-top: none;
+}
+
+.site-footer::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		var(--sf-rule) 8%,
+		var(--sf-rule) 92%,
+		transparent 100%
+	);
+	pointer-events: none;
+}
+
+.site-footer::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	left: 12%;
+	right: 12%;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		oklch(80% 0.01 var(--hue) / 0.35),
+		transparent
+	);
+	pointer-events: none;
 }
 
 html.dark .site-footer {
-	--sf-ink: oklch(92% 0.01 var(--hue));
-	--sf-muted: oklch(72% 0.02 var(--hue));
-	--sf-rule: oklch(32% 0.02 var(--hue));
+	--sf-ink: oklch(93% 0.01 var(--hue));
+	--sf-muted: oklch(72% 0.018 var(--hue));
+	--sf-faint: oklch(45% 0.015 var(--hue) / 0.55);
+	--sf-rule: oklch(48% 0.015 var(--hue) / 0.5);
+	--sf-water-dot: oklch(74% 0.09 145);
+	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 26%, transparent);
 }
 
-.site-footer__mast {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 0.75rem 1rem;
-	flex-wrap: wrap;
-	margin-bottom: 0.75rem;
+.site-footer__inner {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.site-footer__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr) minmax(0, 1fr);
+	gap: 2.25rem clamp(1.75rem, 3.5vw, 3.5rem);
+	padding-bottom: 2.15rem;
+	border-bottom: 1px solid var(--sf-faint);
+	width: 100%;
+}
+
+.site-footer__brand {
+	min-width: 0;
 }
 
 .site-footer__wordmark {
-	font-family: "Zen Maru Gothic", "PingFang SC", var(--font-family), sans-serif;
-	font-weight: 700;
-	font-size: 1.2rem;
-	line-height: 1.2;
+	font-family: var(--sf-serif);
+	font-weight: 600;
+	font-size: clamp(1.4rem, 1.2rem + 0.4vw, 1.65rem);
+	letter-spacing: -0.015em;
+	line-height: 1.15;
 	color: var(--sf-ink);
 }
 
-html.dark .site-footer__wordmark {
-	font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
-	font-weight: 400;
-	font-size: 1.3rem;
+.site-footer__blurb {
+	margin: 0.85rem 0 0;
+	max-width: min(30rem, 100%);
+	font-size: 0.84rem;
+	line-height: 1.65;
+	letter-spacing: 0.01em;
+	color: var(--sf-muted);
 }
 
-.site-footer__issue {
-	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-	font-size: 0.66rem;
-	letter-spacing: 0.08em;
+.site-footer__col-title {
+	position: relative;
+	display: inline-block;
+	margin: 0.15rem 0 1rem;
+	padding-bottom: 0.45rem;
+	font-family: var(--sf-mono);
+	font-size: 0.64rem;
+	font-weight: 500;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--sf-muted);
 }
 
-.site-footer__custom {
-	margin-bottom: 0.65rem;
-	font-size: 0.85rem;
-	color: var(--sf-muted);
-	text-align: center;
+.site-footer__col-title::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 1.35rem;
+	height: 1px;
+	background: color-mix(in oklch, var(--sf-accent) 55%, var(--sf-muted));
+	opacity: 0.7;
 }
 
-.site-footer__colophon {
-	margin-top: 0.35rem;
-	padding-top: 0.75rem;
-	border-top: 1px solid var(--sf-rule);
+.site-footer__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	gap: 0.45rem;
-	text-align: center;
-	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-	font-size: 0.7rem;
-	letter-spacing: 0.04em;
-	line-height: 1.55;
-	color: var(--sf-muted);
+	gap: 0.62rem;
 }
 
-.site-footer__line {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: baseline;
-	gap: 0.35rem 0.55rem;
-	max-width: 48rem;
-}
-
-.site-footer__sep {
-	opacity: 0.55;
-	user-select: none;
-}
-
-.site-footer__icon-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.28rem;
-}
-
-.site-footer__icon {
-	width: 0.85em;
-	height: 0.85em;
-	flex-shrink: 0;
-}
-
-.site-footer__colophon a {
-	color: var(--sf-accent);
-	font-weight: 600;
+.site-footer__list a {
+	position: relative;
+	display: inline-block;
+	width: fit-content;
+	color: var(--sf-ink);
+	font-size: 0.9rem;
+	font-weight: 450;
+	letter-spacing: 0.01em;
 	text-decoration: none;
-	transition: opacity 0.15s ease, color 0.15s ease;
+	transition:
+		color 0.22s var(--sf-ease),
+		transform 0.22s var(--sf-ease),
+		opacity 0.22s var(--sf-ease);
 }
 
-.site-footer__colophon a:hover {
-	opacity: 0.82;
-	text-decoration: underline;
-	text-underline-offset: 0.14em;
+.site-footer__list a::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 100%;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: left;
+	opacity: 0.45;
+	transition: transform 0.28s var(--sf-ease);
 }
 
-.site-footer__colophon a:focus-visible {
+.site-footer__list a:hover {
+	color: var(--sf-accent);
+	transform: translateX(2px);
+	text-decoration: none;
+}
+
+.site-footer__list a:hover::after {
+	transform: scaleX(1);
+}
+
+.site-footer__list a:focus-visible {
 	outline: 2px solid var(--sf-accent);
 	outline-offset: 3px;
 	border-radius: 2px;
 }
 
-@media (max-width: 640px) {
-	.site-footer {
-		margin-left: 0.25rem;
-		margin-right: 0.25rem;
+.site-footer__custom {
+	margin: 1rem 0 0;
+	padding: 0.65rem 0;
+	font-size: 0.8rem;
+	letter-spacing: 0.02em;
+	color: var(--sf-muted);
+	text-align: center;
+}
+
+.site-footer__legal {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1.1rem 1.75rem;
+	padding-top: 1.4rem;
+	width: 100%;
+}
+
+.site-footer__legal-left {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1rem;
+	min-width: 0;
+}
+
+.site-footer__copy {
+	font-family: var(--sf-mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sf-muted);
+	opacity: 0.9;
+}
+
+/* V2 浇水胶囊 —— 细实线 + 轻玻璃，略高级 */
+.site-footer__water {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.76rem;
+	letter-spacing: 0.02em;
+	color: var(--sf-muted);
+	padding: 0.38rem 0.9rem;
+	border: 1px solid color-mix(in oklch, var(--sf-muted) 28%, transparent);
+	border-radius: 999px;
+	background: oklch(100% 0 0 / 0.22);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	transition: border-color 0.2s var(--sf-ease), background 0.2s var(--sf-ease);
+}
+
+.site-footer__water:hover {
+	border-color: color-mix(in oklch, var(--sf-muted) 42%, transparent);
+	background: oklch(100% 0 0 / 0.32);
+}
+
+html.dark .site-footer__water {
+	background: oklch(100% 0 0 / 0.05);
+	border-color: color-mix(in oklch, var(--sf-muted) 35%, transparent);
+}
+
+html.dark .site-footer__water:hover {
+	background: oklch(100% 0 0 / 0.08);
+}
+
+.site-footer__water-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	background: var(--sf-water-dot);
+	box-shadow: 0 0 0 3px var(--sf-water-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.site-footer__list a,
+	.site-footer__list a::after,
+	.site-footer__water {
+		transition: none;
 	}
 
-	.site-footer__colophon {
-		font-size: 0.66rem;
-		letter-spacing: 0.03em;
+	.site-footer__list a:hover {
+		transform: none;
+	}
+}
+
+.site-footer__legal-right {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 1rem 1.15rem;
+}
+
+.site-footer__powered {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.3rem 0.4rem;
+	font-family: var(--sf-mono);
+	font-size: 0.66rem;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--sf-muted);
+}
+
+.site-footer__powered a {
+	color: var(--sf-accent);
+	font-weight: 600;
+	text-decoration: none;
+	transition: opacity 0.2s var(--sf-ease);
+}
+
+.site-footer__powered a:hover {
+	opacity: 0.78;
+	text-decoration: none;
+}
+
+.site-footer__powered a:focus-visible {
+	outline: 2px solid var(--sf-accent);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+.site-footer__sep {
+	opacity: 0.45;
+	user-select: none;
+}
+
+/* V4 邮戳 —— 双环印章 */
+.site-footer__stamp {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 3.55rem;
+	height: 3.55rem;
+	border: 1px solid color-mix(in oklch, var(--sf-muted) 55%, transparent);
+	border-radius: 50%;
+	font-family: var(--sf-mono);
+	font-size: 0.46rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-align: center;
+	line-height: 1.25;
+	color: color-mix(in oklch, var(--sf-muted) 88%, var(--sf-ink));
+	transform: rotate(-9deg);
+	opacity: 0.82;
+	flex-shrink: 0;
+	user-select: none;
+	box-shadow: inset 0 0 0 3px color-mix(in oklch, var(--sf-muted) 18%, transparent);
+}
+
+@media (max-width: 720px) {
+	.site-footer {
+		padding: 2.15rem 0 1.35rem;
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.site-footer::after {
+		left: 6%;
+		right: 6%;
+	}
+
+	.site-footer__grid {
+		grid-template-columns: 1fr;
+		gap: 1.65rem;
+		padding-bottom: 1.65rem;
+	}
+
+	.site-footer__legal {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.site-footer__legal-right {
+		width: 100%;
+		justify-content: space-between;
 	}
 }
