@@ -29,7 +29,7 @@
 | Issue（本地） | `.scratch/<feature>/` |
 | 灵感库 | `docs/idea/{theme}/`（有构想再建；只存构想不写代码） |
 | PRD / handoff / commit-history | `docs/outputs/{prd,handoff,commit-history}/`（有产物再建） |
-| 上游 AGENTS 备份 | `.scratch/project-init-backup/` |
+| 上游 AGENTS 备份 | 若需要再本地建 `.scratch/project-init-backup/`（目录当前不存在且多在 gitignore） |
 
 ## 硬约束
 
@@ -53,18 +53,24 @@ pnpm new-d <content>
 
 ## Agent skills
 
-项目级 Skill **正文**在 `Firefly/.cursor/skills/`。若 Cursor 工作区根是上一级 `blog/`，须在 `blog/.cursor/skills/<name>` 建 **目录联接（junction）** 指向 Firefly 内同名 skill，斜杠命令/`/` 技能列表才能发现；不要在工作区根再复制一份正文。
+项目级 Skill **正文**在 `Firefly/.cursor/skills/`（**唯一真源**）。若 Cursor 工作区根是上一级 `blog/`，须在 `blog/.cursor/skills/<name>` 建 **目录联接（junction）** 指向 Firefly 内同名 skill；`Firefly/.agents/skills/` 与全局 `~/.agents` / `~/.cursor` 下同名目录亦应是 junction，**不要物理复制正文**（防漂移）。
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
 | `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian→本仓帖 + 双边一致性（`prep_convert` / `sync_check` / manifest）；旧名 `firefly-md-to-post` |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研→Knowledge 素材笔记（`D:\OneDrive\Desktop\Knowledge\`）；不直接发帖 |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge 素材→`src/content/posts/<slug>`；收尾接 `site-cascade` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
 | `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画；源：[greensock/gsap-skills](https://github.com/greensock/gsap-skills)；`skills-lock.json` 可 `npx skills update` |
 
-分工：Obsidian/MD 发文走 `ob2blog` → 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。
+分工：按源类型选路径（见下）→ 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。工作区根若为上一级 `blog/`，须为上述 skill 建 **junction**（与 `ob2blog` 同做法），否则斜杠命令发现不到。
 
-### Obsidian → 博客（默认 workflow）
+### 发文双路径（默认 workflow）
+
+按**素材来源**分支；两条路收尾都是 `site-cascade`。
+
+**甲 · Obsidian vault → 帖**
 
 固定 vault（见 `CONTEXT.md`）：`D:\OneDrive\Desktop\Notes\threetwoa_ob`。
 
@@ -77,6 +83,18 @@ pnpm new-d <content>
 ```
 
 Agent 不得假定其它 vault 根路径；用户显式给出新路径时再更新 `CONTEXT.md` + `.ob2blog/manifest.json`。
+
+**乙 · 会话/调研 → Knowledge → 帖**
+
+```text
+用户：整理会话 / 写篇博客（非 Obsidian）
+  → knowledge-extract（落盘 Knowledge/{日期_主题}/）
+  → knowledge-output（转正文 + frontmatter → posts/<slug>）
+  → 收尾调用 site-cascade
+  → 本地预览刷新（pnpm dev）
+```
+
+仅当素材**已入** Obsidian vault、需要双边同步时，才改走甲路 `ob2blog`；默认会话产出不经 `ob2blog`。
 
 ### Issue tracker
 

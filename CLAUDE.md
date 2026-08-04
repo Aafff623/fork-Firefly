@@ -13,7 +13,7 @@
 
 ## 本仓是什么
 
-CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。线上：https://fork-firefly.vercel.app
+基于 CuteLeaf/Firefly 主题的 **standalone** 个人博客二次开发（已脱离 fork 网络；仓库名仍可能带 `fork-` 历史前缀）。作者 **Aafff623 / threetwoa**。线上：https://fork-firefly.vercel.app
 
 ## 偏好归档
 
@@ -21,7 +21,7 @@ CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。�
 - 配置优先于改布局；大文件（`Layout.astro` 等）非必要不拆。
 - 中文沟通；代码与提交 Conventional Commits。
 - project-init 与上游文档冲突时：**覆盖式更新**本仓治理文件，并在对话里声明冲突点。
-- **README 本地预览壳**：根目录 `preview-readme.html`，端口 **8090**（`python -m http.server 8090`）。
+- **README 本地预览壳**：本仓**未提供**根目录 `preview-readme.html`；需要时再本地自建。
 - **交付闭环**：本地预览 → 校验 → push → 核线上（见 `docs/agents/workflow.md`）。
 
 ## Agent skills
@@ -31,10 +31,13 @@ CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。�
 | Skill | 用途 |
 |---|---|
 | `ob2blog` | Obsidian/MD → 本仓帖（vault 附件、结构 / FM / 媒体） |
+| `knowledge-extract` | 会话/调研 → Knowledge 素材笔记（不直接发帖） |
+| `knowledge-output` | Knowledge 素材 → `posts/<slug>`；收尾接 `site-cascade` |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |
 | `firefly-minimax-media` | MiniMax 出图·配音·音乐·短视频（额度门禁 + 落盘脚本） |
 
-出封面/语音/BGM/短片前读 `firefly-minimax-media/SKILL.md`；先跑 `scripts/check_quota.py`。
+出封面/语音/BGM/短片前读 `firefly-minimax-media/SKILL.md`；先跑 `scripts/check_quota.py`。  
+工作区根若为上一级 `blog/`，须在 `blog/.cursor/skills/` 建 junction 指向本表 skill（见 `AGENTS.md`）。
 
 ### Issue tracker
 
@@ -63,4 +66,4 @@ CuteLeaf/Firefly 的 fork，作者 **Aafff623 / threetwoa** 的个人博客。�
 - 配置：`src/config`；内容：`posts` / `dynamic` / `spec`
 - 布局：`Layout.astro` 壳 + `MainGridLayout.astro` 网格
 
-上游贡献者指南原文备份：`.scratch/project-init-backup/`。
+上游贡献者指南原文备份：目录 `.scratch/project-init-backup/` **当前不存在**（且 `.scratch/` 多在 gitignore）；若需要再本地建，勿在文档里当成已有路径。

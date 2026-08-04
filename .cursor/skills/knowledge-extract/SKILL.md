@@ -5,7 +5,7 @@ description: >-
   触发词：知识提炼、整理成笔记/文章、归档会话、博客园文章、沉淀经验、把这次讨论写成文章、
   提取要点、总结成 md、"knowledge extract"、"extract"、"写篇博客"、"记录下来"、回顾本会话。
   本机环境产出到 D:\OneDrive\Desktop\Knowledge\{时间戳_主题}\（含 assets 图），并输出文件树 + section 设计，
-  便于后续交接给博客流水线(ob2blog)。任何"把这段对话/这次调研变成可复用知识资产"的诉求都该触发本技能。
+  便于后续交接 knowledge-output → site-cascade。任何"把这段对话/这次调研变成可复用知识资产"的诉求都该触发本技能。
 ---
 
 # knowledge-extract — 会话 → 知识笔记
@@ -71,6 +71,7 @@ description: >-
 - **概念句模板**：`主题物件A + 物件B + 材质/工艺 + 光线 + 情绪 + 禁止项`。至少 2-3 个可辨要素，一图一概念，忌单物件居中空镜。
 - **高级感尾句**（英文可复用）：`editorial still life, museum catalog photography, tactile materials, controlled color grading, shallow depth of field, no text, no watermark, no generic AI cyber glow`。
 - **生成后集中 review**：布局错乱？文字对比度暗淡？主体贴边？能否一眼看出主题？图标是否可辨？不合格重生成，不硬用劣图。
+- **索引/章节信息图**：若笔记将做成教程索引帖，额外遵守 `firefly-minimax-media` 的「索引 / 章节信息图 checklist」与 `docs/agents/workflow.md` 同名小节（元素尺度、禁复读章节名、必须参照物等）；成帖侧见 `knowledge-output`「配图规范」。
 
 ## 风格化（务必执行）
 
@@ -102,4 +103,6 @@ D:\OneDrive\Desktop\Knowledge\{时间戳}_{中文主题}\
 
 ## 与博客流水线的关系
 
-本技能产出 **Knowledge 笔记**(草稿级，`D:\OneDrive\Desktop\Knowledge\`)，不是 blog 成品。发布走 `knowledge-output`(转正文/换 frontmatter/落 posts) → `ob2blog` / `site-cascade`。本技能不做发布。
+本技能产出 **Knowledge 笔记**(草稿级，`D:\OneDrive\Desktop\Knowledge\`)，不是 blog 成品。交接与发布走 **`knowledge-output` → `site-cascade`**（转正文/换 frontmatter/落 posts，再级联首页索引）。本技能不做发布。
+
+`ob2blog` **仅当**素材已入 Obsidian vault、需要 vault↔帖双边同步时再走；默认会话/调研产出不经 `ob2blog`。

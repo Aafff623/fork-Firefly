@@ -1,7 +1,8 @@
 # 双桌宠 DeepSeek（Maid + OpenPet）
 
 > 配置：`src/config/petConfig.ts` · 组件：`SpritePet.svelte` · 锚点：`src/lib/pets/petRoamAnchors.ts`  
-> PRD：`docs/outputs/prd/dual-pet-deepseek/prd.md`
+> PRD：`docs/outputs/prd/dual-pet-deepseek/prd.md`  
+> Handoff（shipped）：`docs/outputs/handoff/dual-pet-deepseek/2026-08-04-master-dual-pet.md`
 
 ## 映射
 
@@ -12,21 +13,22 @@
 
 手机：`hideOnMobileBrowse: false` · `hideOnMobilePost: true`。
 
-## 视口内卡片角游走（仅 Maid）
+## 视口内卡片外侧留白游走（仅 Maid）
 
 | 规则 | 说明 |
 |---|---|
-| 落点 | **DOM 挂到侧栏卡片角**（`position:absolute` 随卡片走）；滚动时不改视口坐标，禁止跟着窗口实时挪 |
-| 起始 | 优先贴「最新动态」卡片角（须在视口内可见） |
+| 落点 | **挂到侧栏卡片外侧留白**（左卡→左缘、右卡→右缘；`position:absolute` 随卡片走）；不压正文区 |
+| 朝向 | 朝向内容：左留白→右脸，右留白→左脸（镜像） |
+| 起始 | 优先贴「最新动态」卡片外侧（须在视口内可见） |
 | 候选 | `dynamics` · `announcement` · `hotPosts` · `stats` · `profile` · `tags` · `calendar` · `clock` |
 | 硬约束 | **只选当前窗口内可见**的侧栏卡；滚出视口的卡永不落点 |
-| 停留 | 每张卡停约 **2–5s** 再换 |
-| 迁移 | 钻洞：淡出 → 瞬移到目标卡角 → 淡入跑步「爬出」；抵达再播一次短动作 |
-| 滚动 | 当前卡滚出后 **先等 ~2.4s**（还在滑就不急），再钻洞挪到仍可见的卡 |
-| 拖拽 | 只有拖拽才改自由坐标；松开后约 **2s** 快速倒计时，再钻洞回卡片游走（计时在按下拖动时清零） |
+| 停留 | 卡间固定约 **5s** 再换（`intervalMs` / `minIntervalMs` = 5000，`jitterMs` = 0） |
+| 迁移 | 钻洞：淡出 → 瞬移到目标外侧 → 淡入跑步「爬出」；抵达再播一次短动作 |
+| 滚动 | 当前卡滚出后 **先等 ~2.4s**（`scrollLeaveDelayMs`；还在滑就不急），再钻洞挪到仍可见的卡 |
+| 拖拽 | 只有拖拽才改自由坐标；松手后为**文档绝对坐标**（滚窗口不跟视口跑）；约 **2s**（`resumeAfterDragMs`）后作废原计划目标，在视口可见卡里重随机并钻洞回游走 |
 | 文章页 | OpenPet，不游走 |
 
-配置：`spritePetConfig.roam`（`enable` / `intervalMs` / `minIntervalMs` / `jitterMs` / `moveDurationMs` / `pauseWhenPinned`）。
+配置：`spritePetConfig.roam`（`enable` / `intervalMs` / `minIntervalMs` / `jitterMs` / `fadeMs` / `scrollLeaveDelayMs` / `resumeAfterDragMs` / `pauseWhenPinned`）。
 
 ## 怎么开
 

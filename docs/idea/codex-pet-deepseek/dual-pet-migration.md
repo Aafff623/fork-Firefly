@@ -217,7 +217,7 @@ A 走现有 `PET_ATLAS_V2`，可保留 `lookFollow: true`。
 |---|---|---|
 | `docs/knowledge/cc-haha-pets.md` | 归档或改写为「历史：cc-haha」并链到新 knowledge | 现行知识不以四宠为默认 |
 | 新建 `docs/knowledge/dual-pet-deepseek.md`（实施期） | 交互、映射、atlas、许可 | 与线上一致 |
-| `docs/outputs/prd/cc-haha-pets/` · `handoff/cc-haha-pets/` · `report/cc-haha-pets/` | **保留作史**；新主题另建 `dual-pet-deepseek` | 不覆盖旧 PRD |
+| `docs/outputs/prd/archive/cc-haha-pets/` · `handoff/archive/cc-haha-pets/` · `report/archive/cc-haha-pets/` | **保留作史（已归档）**；新主题另建 `dual-pet-deepseek` | 不覆盖旧 PRD |
 | `docs/outputs/commit-history/master/2026-08-01-sprite-pet-plan.md` | 不改历史；新变更另记 | — |
 | `docs/idea/codex-pet-deepseek/*` | 灵感保留；本文为主方案 | — |
 | `.cursor/skills/firefly-minimax-media/**` | 若示例写死 `public/pets/<旧 id>`，实施时改示例 | 无旧 ID 示例 |

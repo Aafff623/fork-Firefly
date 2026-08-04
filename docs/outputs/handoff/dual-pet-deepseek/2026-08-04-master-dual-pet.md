@@ -5,7 +5,7 @@
 **shipped + pushed**（`origin/master` @ `8384c322`）  
 旧 handoff「ready-for-implement」已过期；本文件为接续真源。
 
-旧四宠手递：`docs/outputs/handoff/cc-haha-pets/2026-08-01-master-sprite-pet.md`（已废，勿按 `petId`/`dada-code` 操作）。
+旧四宠手递：`docs/outputs/handoff/archive/cc-haha-pets/2026-08-01-master-sprite-pet.md`（已废，勿按 `petId`/`dada-code` 操作）。
 
 ## Scope（已交付）
 

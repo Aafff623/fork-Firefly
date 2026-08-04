@@ -3,9 +3,10 @@ name: site-cascade
 description: >-
   Cascades homepage/sidebar site indices after new blog content: latest
   dynamics (including "published a new note"), site stats, category/tag bars,
-  and calendar heatmap. Use after ob2blog or any new/updated post under
-  src/content/posts/, when the user mentions 最新动态 / 站点统计 / 分类标签 /
-  热力图 / 级联索引, or when the site-cascade MDC rule fires.
+  and calendar heatmap. Use after ob2blog, knowledge-output, or any new/updated
+  post under src/content/posts/ (including hand-written posts), when the user
+  mentions 最新动态 / 站点统计 / 分类标签 / 热力图 / 级联索引, or when the
+  site-cascade MDC rule fires.
 compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 ---
 
@@ -31,7 +32,7 @@ compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 
 ## 触发
 
-- **默认：** 任意帖子 `src/content/posts/**` 新增/实质更新且准备收尾时（尤其 `ob2blog` 完成后）。  
+- **默认：** 任意帖子 `src/content/posts/**` 新增/实质更新且准备收尾时（上游可为 `ob2blog`、`knowledge-output` 或手写 posts）。  
 - **MDC：** `.cursor/rules/site-cascade-after-content.mdc`（编辑 posts/dynamic 时提醒）。  
 - **口令：** 「更新最新动态 / 刷一下统计 / 热力图 / 级联索引」。
 
@@ -87,7 +88,7 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 1. 级联在 **内容落盘之后** 跑；未获准不 commit。  
 2. 统计数字以脚本/站点聚合为准，禁止硬编码进组件。  
 3. 动态文案简短；链到本站帖用 `/posts/<slug>/`。  
-4. 与 `ob2blog` 分工：ob2blog 负责 Obsidian→帖；**本 skill 负责发文后的站点表面**。  
+4. 与上游分工：`ob2blog`（Obsidian→帖）/ `knowledge-output`（Knowledge→帖）/ 手写 posts 负责正文落盘；**本 skill 负责发文后的站点表面**。  
 5. 侧栏大改（挪组件顺序）需用户确认，默认只修误关的 enable。
 
 ## 汇报模板
@@ -103,4 +104,5 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 - 侧栏：`src/config/sidebarConfig.ts`  
 - 动态配置：`src/config/dynamicConfig.ts`  
 - API：`src/pages/api/allPostMeta.json.ts`、`dynamic.json.ts`  
-- 联用：`ob2blog` 收尾必须引用本 skill  
+- 联用：上游可为 `ob2blog` **或** `knowledge-output` **或** 手写 posts；任一路径落盘后收尾必须引用本 skill  
+

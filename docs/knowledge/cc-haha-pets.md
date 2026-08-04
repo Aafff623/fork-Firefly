@@ -6,4 +6,7 @@
 原适配来源：[NanmiCoder/cc-haha](https://github.com/NanmiCoder/cc-haha)（MIT）。  
 曾内置 `dada-code` / `huhu-plan` / `bubu-fix` / `huihui-build`，资源与产品配置已从本仓移除。
 
-相关史档：`docs/outputs/prd/cc-haha-pets/` · `docs/outputs/handoff/cc-haha-pets/`。
+相关史档（已归档，勿当现行操作手册）：
+- `docs/outputs/prd/archive/cc-haha-pets/`
+- `docs/outputs/handoff/archive/cc-haha-pets/`
+- `docs/outputs/report/archive/cc-haha-pets/`

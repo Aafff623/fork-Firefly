@@ -195,7 +195,7 @@ If the cache is re-used, emit a one-line note instead of the full block: *"Pre-f
 > *Pre-flight findings: vanilla HTML, no framework detected. No motion library, no Tailwind, no design tokens. Hallmark will introduce: full token system, macrostructure, microinteraction discipline, slop-test gates. Nothing to preserve.*
 
 *Astro + Tailwind + DTCG tokens already present:*
-> *Pre-flight findings: Astro 5 (astro.config.mjs L1) · Tailwind v4 with @theme inline tokens (src/styles/global.css L3) · `tokens.json` at project root (DTCG format, 12 colour tokens, 6 font tokens). No motion library detected.*
+> *Pre-flight findings: Astro 7 (astro.config.mjs / package.json) · Tailwind v4 with @theme inline tokens (src/styles/global.css) · No motion library detected as default dependency (GSAP skills available when needed).*
 > *Hallmark will preserve: Tailwind tokens, the `tokens.json` file (won't overwrite). Hallmark will introduce: macrostructure, microinteraction discipline, slop-test gates. Motion stance: motion-cut (no framer-motion / motion / gsap detected).*
 
 The pre-flight block is the user's accountability line: *"here's what I noticed about your project before I touched anything."* Skipping it is the fastest way to lose the user's trust.

@@ -2,7 +2,7 @@
 
 > 状态：**approved**（2026-08-01）  
 > 主题：`cc-haha-pets`  
-> 依据：`docs/outputs/report/cc-haha-pets/research.md`
+> 依据：`docs/outputs/report/archive/cc-haha-pets/research.md`
 
 ## 已拍板
 

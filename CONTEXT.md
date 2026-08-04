@@ -40,6 +40,8 @@
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
 
+**官方默认 ≠ 本站**：`docs/official` 记载的是主题出厂默认（例如评论 `type: "none"`）。本站现行以 `src/config/*` 与 ADR 为准（评论为 Waline，见 ADR-0001）；勿把官方默认抄回本站配置或知识文。
+
 ## 配置驱动模型
 
 几乎所有开关在 `src/config/*.ts`，经 `@/config` barrel 导出；类型在 `src/types/`。改站优先改配置，不改布局内核。
@@ -64,7 +66,14 @@ Content Collections（`src/content.config.ts`）：
 
 一般不变更；变更时先改 `CONTEXT.md` 与 manifest 的 `vaultRoot`，再改 skill 文档。
 
-发文流水线：`/ob2blog`（笔记→帖）→ **`site-cascade`**（动态/统计/分类标签/热力图）。细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。
+发文流水线（双路径，按源分支）：
+
+| 路径 | 源 | 技能链 |
+|---|---|---|
+| 甲 | Obsidian vault | `ob2blog` → **`site-cascade`** |
+| 乙 | 会话/调研素材 | `knowledge-extract` → `knowledge-output` → **`site-cascade`** |
+
+勿再写成单一 `/ob2blog`。细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。
 
 ## 部署事实
 
@@ -91,6 +100,7 @@ Content Collections（`src/content.config.ts`）：
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
 | 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |
+| 站点音乐 | 默认 `musicConfig.mode=local`（ADR-0002）；导航栏音符=音频面板，三角播放=横幅背景视频，二者互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
 | Digital Garden | 作者另一站点：https://threetwoa-digital-garden.vercel.app |
@@ -99,6 +109,7 @@ Content Collections（`src/content.config.ts`）：
 
 - demo 文章 / 原作者 Bangumi·追番 ID 仍在配置中，后续可关页面或改 ID
 - 评论系统现行 `type: "waline"`（ADR-0001）；勿再按 `none` 理解
+- 音乐默认 `local`（ADR-0002）；勿再默认假定公共 Meting 在线
 - 本地 pnpm 若走 npmmirror，部分包可能 404；安装可用官方 registry
 - 主题氛围：页面/卡片/按钮底为中性灰；紫与邻近色只出现在链接、高亮、图标、竖条等点缀位
 

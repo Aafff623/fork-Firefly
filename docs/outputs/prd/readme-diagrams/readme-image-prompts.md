@@ -1,6 +1,7 @@
 # Firefly README · GPT 生图 Prompt（唯一入口）
 
-> 用法：在对话里按模块整块复制 Prompt → GPT Image。落盘 `assets/images/readme/`。  
+> **史档**：Banner / 架构图实盘已是 `banner-pixel-garden.png` · `architecture.svg` · `tech-stack.svg`（见 `readme-diagram-brief.md`）。下文 Prompt 里的 `banner.png` / `architecture.png` 为 Phase B 起草文件名，**勿再当缺失资产去补画**。  
+> 用法：若仍需补 features/workflow 说明图，可复制 Prompt → 生图。落盘 `assets/images/readme/`。  
 > Showcase 已截图，勿生图。可选参考：`_skill-references/`。
 
 色板：`#0D9488` · `#0F172A` · `#FFFFFF` · `#F1F5F9` · `#94A3B8`

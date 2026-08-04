@@ -1,31 +1,40 @@
 # Firefly 运维备忘（fork-Firefly / threetwoa's blog）
 
 > 主题配置语义以 docs/official/ 为准（路由：docs/knowledge/official-docs.tree.json）；领域事实以 CONTEXT.md 为准。  
+> **官方默认 ≠ 本站**：`docs/official` 里评论默认 `type: "none"` 等是主题出厂值；本站现行以 `src/config/commentConfig.ts` + ADR-0001（Waline）为准。  
 > 线上：https://fork-firefly.vercel.app · 仓库：https://github.com/Aafff623/fork-Firefly
 
 ## 1. Day-2 日常
 
 ### 改站点标题 / 资料
-编辑 src/config/siteConfig.ts（	itle / subtitle / 
-avbar.title / site_url / description / keywords）。  
+编辑 src/config/siteConfig.ts（title / subtitle / navbar.title / site_url / description / keywords）。  
 个人资料：src/config/profileConfig.ts。  
 文档：docs/official/02-基础配置/站点配置.md · 个人资料.md
 
 ### 写文章
-\\\ash
+日常入口按**素材来源**分支（勿当成只有 `pnpm new-post`）：
+
+| 路径 | 何时 | 技能链 |
+|---|---|---|
+| 甲 | 笔记已在固定 Obsidian vault | `ob2blog` → `site-cascade` |
+| 乙 | 会话 / 调研成帖 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+
+空壳脚手架仍可用：
+
+```bash
 pnpm new-post <slug>
 pnpm dev
-\\\
-Frontmatter 必填 title、published。详解：docs/official/01-入门/编写文章.md
+```
+
+Frontmatter 必填 title、published。详解：docs/official/01-入门/编写文章.md；双路径细则：`AGENTS.md` · `docs/agents/workflow.md`。
 
 ### 关闭页面
-siteConfig.pages.* = false → 路由 404 + 导航自动隐藏。不必先改 
-avBarConfig。
+siteConfig.pages.* = false → 路由 404 + 导航自动隐藏。不必先改 navBarConfig。
 
 ### 部署
 | 项 | 事实 |
 |---|---|
-| 平台 | Vercel 项目 ork-firefly |
+| 平台 | Vercel 项目 fork-firefly |
 | 构建 | pnpm build → dist（LQIP → Astro → 字体子集 → Pagefind） |
 | 模式 | 默认 static；仅 CF_WORKERS 启用 CF adapter |
 | Node | ≥ 22（建议部署 22.x） |
@@ -51,7 +60,7 @@ avBarConfig。
 3. **Node < 22**：构建易失败
 4. **勿乱开 CF_WORKERS**：本仓是静态站
 5. **demo 残留**：Bangumi/追番示例 ID、demo 文；可关页面或改 ID
-6. **留言板**：guestbook 开着但评论 	ype: none 时无实际留言能力
+6. **留言板**：`siteConfig.pages.guestbook` 开启；评论为 **Waline**（`commentConfig.type: "waline"`，见 ADR-0001）。留言能力依赖 Waline `serverURL` 与后端可用；勿再写成评论关闭
 7. **仅 pnpm**：npm/yarn 会被 preinstall 拦截
 
 ## 4. 不要随便改
@@ -59,7 +68,7 @@ avBarConfig。
 | 对象 | 原因 |
 |---|---|
 | Layout.astro / MainGridLayout.astro | 上帝文件，非必要不拆 |
-| stro.config.mjs / src/plugins/* | 构建与 Markdown 管线 |
+| astro.config.mjs / src/plugins/* | 构建与 Markdown 管线 |
 | package.json 的 preinstall / packageManager | 强制 pnpm |
 | 密钥进 *Config.ts | 硬约束 |
 
@@ -67,14 +76,14 @@ avBarConfig。
 
 ## 5. 命令
 
-\\\ash
+```bash
 pnpm install
 pnpm dev
 pnpm check && pnpm type-check
 pnpm build && pnpm preview
 pnpm new-post <slug>
 pnpm new-d <content>
-\\\
+```
 
 ## 6. 远程
 

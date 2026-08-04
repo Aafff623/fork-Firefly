@@ -12,6 +12,7 @@
 | 品牌昵称 | threetwoa |
 | 主题上游 | Firefly（勿称本仓为「官方 Firefly」） |
 | 本仓 | fork-Firefly / threetwoa 的 Firefly 二次开发 |
+| 仓名说明 | 仓库名 `fork-Firefly` 是历史前缀；**已脱离 fork 网络，是 standalone**（≠ 仍在上游 fork 树上） |
 
 ## Issue / 任务流
 

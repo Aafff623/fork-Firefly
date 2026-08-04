@@ -2,6 +2,8 @@
 
 日期：2026-07-30
 
+> **过时快照（勿当现行验收）**：本文固定在 2026-07-30 init 完成态。其后已被 **Waline 评论（ADR-0001）**、**双 DeepSeek 桌宠**、**发文双路径（ob2blog / knowledge-*）** 等事实取代。现行请读 `CONTEXT.md` · `AGENTS.md` · `docs/knowledge/firefly-ops.md`。
+
 ## 结论
 
 治理资产已填充，非空壳。站点身份已切到 threetwoa；交付闭环已写入 workflow/AGENTS。
