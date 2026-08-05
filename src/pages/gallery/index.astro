@@ -4,6 +4,7 @@ import path from "node:path";
 import { Icon } from "astro-icon/components";
 import AlbumCard from "@/components/pages/gallery/AlbumCard.astro";
 import GalleryExplorer from "@/components/pages/gallery/GalleryExplorer.svelte";
+import PhotoCard from "@/components/pages/gallery/PhotoCard.astro";
 import { galleryConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -88,9 +89,40 @@ const explorerPhotos =
 		? [...localAlbumPhotos, ...demoArtworks]
 		: demoPlaceholders;
 const defaultViewMode = galleryConfig.defaultViewMode || "portfolio";
+const columnWidth = galleryConfig.columnWidth || 240;
+const homeMasonryEnabled = galleryConfig.homeMasonry?.enabled !== false;
+const homeMasonryMax = galleryConfig.homeMasonry?.maxItems ?? 48;
+
+/** 照片墙：带相册/分类元数据，供分类筛选 */
+type WallPhoto = { src: string; albumId: string; category: string };
+const wallPhotos: WallPhoto[] = homeMasonryEnabled
+	? albums
+			.flatMap((a) =>
+				a.photos
+					.filter((p) => !/^https?:\/\//i.test(p))
+					.map((src) => ({
+						src,
+						albumId: a.id,
+						category: a.category || "",
+					})),
+			)
+			.slice(0, homeMasonryMax)
+	: [];
 
 // 收集所有标签用于筛选
 const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
+
+/** 首页分类栏：配置顺序优先，未出现在相册中的项不显示 */
+const usedCategories = new Set(
+	albums.map((a) => a.category).filter((c): c is string => !!c),
+);
+const orderedCategories = (galleryConfig.categories || []).filter((c) =>
+	usedCategories.has(c),
+);
+const extraCategories = [...usedCategories]
+	.filter((c) => !orderedCategories.includes(c))
+	.sort();
+const galleryCategories = [...orderedCategories, ...extraCategories];
 ---
 
 <MainGridLayout title={title} description={description}>
@@ -133,7 +165,34 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         }}
       />
 
-      <!-- 搜索框 + 标签筛选 -->
+      <!-- Explorer 下方：本地相册照片 CSS columns 瀑布墙 -->
+      {wallPhotos.length > 0 && (
+        <section class="gallery-home-masonry mt-6" aria-labelledby="gallery-photo-wall-title">
+          <h2
+            id="gallery-photo-wall-title"
+            class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-3"
+          >
+            {i18n(I18nKey.galleryPhotoWall)}
+          </h2>
+          <div
+            class="gallery-masonry"
+            data-gallery-photo-wall
+            style={`column-count: 1; column-gap: 0.75rem; --col-width: ${columnWidth}px;`}
+          >
+            {wallPhotos.map((photo) => (
+              <div
+                class="gallery-photo-wrap"
+                data-gallery-photo
+                data-category={photo.category}
+              >
+                <PhotoCard src={photo.src} albumId="home" />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- 搜索 + 分类栏（右侧图标对齐标签墙）+ 标签筛选 -->
       {albums.length > 0 && (
         <gallery-filter class="mb-6 mt-6 block">
           <div class="relative mb-3">
@@ -148,9 +207,112 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
             />
           </div>
+
+          {galleryCategories.length > 0 && (
+            <section
+              class="gallery-categories mb-4"
+              aria-labelledby="gallery-categories-title"
+            >
+              <div class="gallery-categories__head">
+                <h2
+                  id="gallery-categories-title"
+                  class="gallery-categories__title"
+                >
+                  {i18n(I18nKey.galleryCategories)}
+                </h2>
+                {/* 样式对齐 Tags.astro 标题右侧 globe/list 切换胶囊 */}
+                <div
+                  class="gallery-categories__mode"
+                  data-gallery-category-mode-toggle
+                >
+                  <button
+                    type="button"
+                    class="gallery-categories__mode-btn"
+                    data-gallery-category-mode="pills"
+                    aria-label={i18n(I18nKey.galleryCategoryPills)}
+                    title={i18n(I18nKey.galleryCategoryPills)}
+                    aria-pressed="true"
+                  >
+                    <Icon
+                      is:inline
+                      name="lucide:globe"
+                      class="gallery-categories__mode-icon gallery-categories__mode-icon--globe"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    class="gallery-categories__mode-btn"
+                    data-gallery-category-mode="list"
+                    aria-label={i18n(I18nKey.galleryCategoryList)}
+                    title={i18n(I18nKey.galleryCategoryList)}
+                    aria-pressed="false"
+                  >
+                    <Icon
+                      is:inline
+                      name="lucide:list"
+                      class="gallery-categories__mode-icon"
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="gallery-categories__pills flex flex-wrap gap-2"
+                data-gallery-category-view="pills"
+              >
+                <button
+                  type="button"
+                  data-category="all"
+                  class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
+                  data-active
+                >
+                  {i18n(I18nKey.all)}
+                </button>
+                {galleryCategories.map((cat) => (
+                  <button
+                    type="button"
+                    data-category={cat}
+                    class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <ul
+                class="gallery-categories__list hidden"
+                data-gallery-category-view="list"
+                hidden
+              >
+                <li>
+                  <button
+                    type="button"
+                    data-category="all"
+                    class="gallery-categories__list-btn"
+                    data-active
+                  >
+                    {i18n(I18nKey.all)}
+                  </button>
+                </li>
+                {galleryCategories.map((cat) => (
+                  <li>
+                    <button
+                      type="button"
+                      data-category={cat}
+                      class="gallery-categories__list-btn"
+                    >
+                      {cat}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {allTags.length > 0 && (
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2" data-gallery-tag-filters>
               <button
+                type="button"
                 data-tag="all"
                 class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
                 data-active
@@ -159,6 +321,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               </button>
               {allTags.map((tag) => (
                 <button
+                  type="button"
                   data-tag={tag}
                   class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
                 >
@@ -183,6 +346,7 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
                 date={album.date}
                 location={album.location}
                 tags={album.tags}
+                category={album.category}
                 photoCount={album.photoCount}
                 encrypted={!!album.password}
               />
@@ -202,6 +366,8 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
     if (!customElements.get("gallery-filter")) {
       class GalleryFilter extends HTMLElement {
         selectedTag = "all";
+        selectedCategory = "all";
+        categoryMode = "pills";
 
         constructor() {
           super();
@@ -220,19 +386,52 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         }
 
         handleClick(e) {
-          const target = e.target;
-          const button = target.closest("button");
-          if (!button) return;
+          const button = e.target.closest("button");
+          if (!button || !this.contains(button)) return;
 
-          this.selectedTag = button.dataset.tag;
-          const filters = this.querySelectorAll("button");
+          // 分类展示模式：胶囊 / 列表（对齐标签墙右侧图标）
+          const mode = button.dataset.galleryCategoryMode;
+          if (mode) {
+            this.setCategoryMode(mode);
+            return;
+          }
 
-          filters.forEach((f) => {
-            f.removeAttribute("data-active");
+          if (button.hasAttribute("data-category")) {
+            this.selectedCategory = button.dataset.category || "all";
+            this.querySelectorAll("[data-category]").forEach((f) => {
+              f.removeAttribute("data-active");
+            });
+            this.querySelectorAll(
+              `[data-category="${this.selectedCategory}"]`,
+            ).forEach((f) => {
+              f.setAttribute("data-active", "");
+            });
+            this.applyFilters();
+            return;
+          }
+
+          if (button.hasAttribute("data-tag")) {
+            this.selectedTag = button.dataset.tag || "all";
+            this.querySelectorAll("[data-tag]").forEach((f) => {
+              f.removeAttribute("data-active");
+            });
+            button.setAttribute("data-active", "");
+            this.applyFilters();
+          }
+        }
+
+        setCategoryMode(mode) {
+          this.categoryMode = mode === "list" ? "list" : "pills";
+          this.querySelectorAll("[data-gallery-category-mode]").forEach((btn) => {
+            const on = btn.dataset.galleryCategoryMode === this.categoryMode;
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
           });
-          button.setAttribute("data-active", "");
-
-          this.applyFilters();
+          this.querySelectorAll("[data-gallery-category-view]").forEach((view) => {
+            const show = view.dataset.galleryCategoryView === this.categoryMode;
+            view.classList.toggle("hidden", !show);
+            if (show) view.removeAttribute("hidden");
+            else view.setAttribute("hidden", "");
+          });
         }
 
         applyFilters() {
@@ -248,10 +447,20 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
           cards.forEach((card) => {
             const cardEl = card;
             const tags = (cardEl.dataset.tags || "").split(",");
-            const name = (cardEl.querySelector("h3")?.textContent || "").toLowerCase();
-            const desc = (cardEl.querySelector("p")?.textContent || "").toLowerCase();
-            const location = (cardEl.querySelector(".inline-flex")?.textContent || "").toLowerCase();
+            const category = cardEl.dataset.category || "";
+            const name = (
+              cardEl.querySelector("h3")?.textContent || ""
+            ).toLowerCase();
+            const desc = (
+              cardEl.querySelector("p")?.textContent || ""
+            ).toLowerCase();
+            const location = (
+              cardEl.querySelector(".inline-flex")?.textContent || ""
+            ).toLowerCase();
 
+            const categoryMatch =
+              this.selectedCategory === "all" ||
+              category === this.selectedCategory;
             const tagMatch =
               this.selectedTag === "all" ||
               (this.selectedTag && tags.includes(this.selectedTag));
@@ -260,9 +469,10 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               name.includes(query) ||
               desc.includes(query) ||
               location.includes(query) ||
+              category.toLowerCase().includes(query) ||
               tags.some((t) => t.toLowerCase().includes(query));
 
-            if (tagMatch && searchMatch) {
+            if (categoryMatch && tagMatch && searchMatch) {
               cardEl.style.display = "";
               cardEl.classList.add("animate-fade-in-up");
               hasVisible = true;
@@ -270,6 +480,14 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               cardEl.style.display = "none";
               cardEl.classList.remove("animate-fade-in-up");
             }
+          });
+
+          // 照片墙随分类同步显隐
+          container.querySelectorAll("[data-gallery-photo]").forEach((wrap) => {
+            const cat = wrap.dataset.category || "";
+            const show =
+              this.selectedCategory === "all" || cat === this.selectedCategory;
+            wrap.style.display = show ? "" : "none";
           });
 
           const emptyEl = container.querySelector(".albums-empty");

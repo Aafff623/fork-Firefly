@@ -445,6 +445,9 @@ export const ja: Translation = {
 	[Key.galleryDragHint]: "クリックで寄る · ドラッグ · ホイール · WASD / QE",
 	[Key.galleryDemoHint]: "デモループ中 · 画をクリックまたは Esc",
 	[Key.galleryPhotoWall]: "フォトウォール",
+	[Key.galleryCategories]: "アルバム分類",
+	[Key.galleryCategoryPills]: "ピル表示",
+	[Key.galleryCategoryList]: "リスト表示",
 
 	// パスワード保護
 	[Key.passwordProtected]: "パスワード保護",

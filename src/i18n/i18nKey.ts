@@ -437,6 +437,9 @@ enum I18nKey {
 	galleryDragHint = "galleryDragHint",
 	galleryDemoHint = "galleryDemoHint",
 	galleryPhotoWall = "galleryPhotoWall",
+	galleryCategories = "galleryCategories",
+	galleryCategoryPills = "galleryCategoryPills",
+	galleryCategoryList = "galleryCategoryList",
 
 	// 密码保护
 	passwordProtected = "passwordProtected",

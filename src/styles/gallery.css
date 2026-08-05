@@ -1,9 +1,126 @@
-/* Gallery masonry responsive layout */
+/* Gallery masonry：首页照片墙 + 相册内页共用 */
+.gallery-masonry {
+  column-count: 1;
+  column-gap: 0.75rem;
+}
+
 @media (min-width: 640px) {
   .gallery-masonry {
     column-width: var(--col-width, 240px) !important;
     column-count: auto !important;
   }
+}
+
+/* 首页 Explorer 下方照片墙区块 */
+.gallery-home-masonry {
+  width: 100%;
+}
+
+.gallery-home-masonry .gallery-photo-card,
+.gallery-masonry .gallery-photo-card {
+  margin-bottom: 0.75rem;
+}
+
+.gallery-photo-wrap {
+  break-inside: avoid;
+}
+
+/* ── 相册分类栏（右侧图标对齐标签墙 Tags.astro）── */
+.gallery-categories__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.gallery-categories__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.gallery-categories__mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.12rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--line-divider, #000) 55%, transparent);
+  background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+}
+
+.gallery-categories__mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in oklch, var(--content-meta, #666) 90%, transparent);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.gallery-categories__mode-btn:hover {
+  color: var(--primary);
+}
+
+.gallery-categories__mode-btn[aria-pressed="true"] {
+  background: color-mix(in oklch, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
+
+.gallery-categories__mode-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.gallery-categories__mode-icon--globe {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.gallery-categories__mode-btn[data-gallery-category-mode="pills"][aria-pressed="true"] {
+  background: color-mix(in oklch, var(--primary) 18%, transparent);
+}
+
+.gallery-categories__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gallery-categories__list-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: transparent;
+  color: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.gallery-categories__list-btn:hover {
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  color: var(--primary);
+}
+
+.gallery-categories__list-btn[data-active] {
+  background: color-mix(in oklch, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 /* ── Gallery explorer（作品集手风琴 / 普通无限画布）── */

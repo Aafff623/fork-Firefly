@@ -448,6 +448,9 @@ export const ru: Translation = {
 	[Key.galleryDragHint]: "Клик — фокус · перетаскивание · колесо · WASD / QE",
 	[Key.galleryDemoHint]: "Демо · клик по кадру или Esc",
 	[Key.galleryPhotoWall]: "Стена фото",
+	[Key.galleryCategories]: "Категории альбомов",
+	[Key.galleryCategoryPills]: "Категории-пилюли",
+	[Key.galleryCategoryList]: "Категории-список",
 
 	// Защита паролем
 	[Key.passwordProtected]: "Защищено паролем",

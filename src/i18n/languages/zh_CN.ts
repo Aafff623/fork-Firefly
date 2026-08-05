@@ -438,6 +438,9 @@ export const zh_CN: Translation = {
 	[Key.galleryDragHint]: "点击聚焦 · 拖拽平移 · 滚轮缩放 · WASD / QE",
 	[Key.galleryDemoHint]: "演示循环中 · 点击画幅或按 Esc 接管",
 	[Key.galleryPhotoWall]: "照片墙",
+	[Key.galleryCategories]: "相册分类",
+	[Key.galleryCategoryPills]: "胶囊分类",
+	[Key.galleryCategoryList]: "列表分类",
 
 	// 密码保护
 	[Key.passwordProtected]: "密码保护",

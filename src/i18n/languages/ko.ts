@@ -444,6 +444,9 @@ export const ko: Translation = {
 	[Key.galleryDragHint]: "클릭 포커스 · 드래그 · 스크롤 · WASD / QE",
 	[Key.galleryDemoHint]: "데모 루프 · 프레임 클릭 또는 Esc",
 	[Key.galleryPhotoWall]: "포토 월",
+	[Key.galleryCategories]: "앨범 분류",
+	[Key.galleryCategoryPills]: "알약형 분류",
+	[Key.galleryCategoryList]: "목록형 분류",
 
 	// Password Protection
 	[Key.passwordProtected]: "비밀번호로 보호됨",

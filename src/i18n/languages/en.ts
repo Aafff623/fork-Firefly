@@ -447,6 +447,9 @@ export const en: Translation = {
 	[Key.galleryDragHint]: "Click to focus · drag · scroll · WASD / QE",
 	[Key.galleryDemoHint]: "Demo loop · click a frame or Esc",
 	[Key.galleryPhotoWall]: "Photo wall",
+	[Key.galleryCategories]: "Album categories",
+	[Key.galleryCategoryPills]: "Pill categories",
+	[Key.galleryCategoryList]: "List categories",
 
 	// Password Protection
 	[Key.passwordProtected]: "Password Protected",

@@ -15,6 +15,7 @@ interface Props {
 	tags?: string[];
 	photoCount: number;
 	encrypted?: boolean;
+	category?: string;
 }
 
 const {
@@ -27,6 +28,7 @@ const {
 	tags,
 	photoCount,
 	encrypted,
+	category,
 } = Astro.props;
 
 // LQIP 渐变占位
@@ -36,6 +38,7 @@ const lqipProps = cover ? getLqipProps(cover, undefined, true) : { style: "" };
 <a
   href={url(`/gallery/${id}/`)}
   data-tags={tags?.join(",") || ""}
+  data-category={category || ""}
   class="album-card group relative block overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
 >
   <!-- Cover Image -->

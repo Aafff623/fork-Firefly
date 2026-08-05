@@ -439,6 +439,9 @@ export const zh_TW: Translation = {
 	[Key.galleryDragHint]: "點擊聚焦 · 拖曳平移 · 滾輪縮放 · WASD / QE",
 	[Key.galleryDemoHint]: "示範循環中 · 點擊畫幅或按 Esc 接管",
 	[Key.galleryPhotoWall]: "照片牆",
+	[Key.galleryCategories]: "相簿分類",
+	[Key.galleryCategoryPills]: "膠囊分類",
+	[Key.galleryCategoryList]: "列表分類",
 
 	// 密碼保護
 	[Key.passwordProtected]: "密碼保護",
