@@ -54,6 +54,7 @@ export { footerConfig } from "./footerConfig"; // 页脚配置
 export { friendsPageConfig, getEnabledFriends } from "./friendsConfig"; // 友链配置
 export { galleryConfig } from "./galleryConfig"; // 相册配置
 export { licenseConfig } from "./licenseConfig"; // 许可证配置
+export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
 // 组件配置
 export { mermaidConfig } from "./mermaidConfig"; // Mermaid 图表配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置
