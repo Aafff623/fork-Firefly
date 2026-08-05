@@ -4,8 +4,9 @@ description: >-
   把会话/讨论/调研成果提炼成高密度、符合人味、可直接归档的知识笔记(Markdown)。
   触发词：知识提炼、整理成笔记/文章、归档会话、博客园文章、沉淀经验、把这次讨论写成文章、
   提取要点、总结成 md、"knowledge extract"、"extract"、"写篇博客"、"记录下来"、回顾本会话。
-  本机环境产出到 D:\OneDrive\Desktop\Knowledge\{时间戳_主题}\（含 assets 图），并输出文件树 + section 设计，
-  便于后续交接 knowledge-output → site-cascade。任何"把这段对话/这次调研变成可复用知识资产"的诉求都该触发本技能。
+  本机环境产出到 D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\（含 assets 图），并输出文件树 + section 设计，
+  便于后续交接 knowledge-output → site-cascade；发布后由 knowledge-output 移入 Knowledge\Archive\ 留档。
+  任何"把这段对话/这次调研变成可复用知识资产"的诉求都该触发本技能。
 ---
 
 # knowledge-extract — 会话 → 知识笔记
@@ -51,6 +52,7 @@ description: >-
 **像真人博主那样写**：
 - 标题口语化、有情绪、有钩子，像在跟读者说话，而不是给系统交作业。
 - 参考风格（鱼皮 / 程序员博客）：「把 Claude 的规矩搬去 Cursor，真不是复制个文件那么简单」「双 Pro 拼池的 GPT 中转，实测下来到底什么水平」。数字、冲突、疑问、情绪都是好钩子。
+- 列表卡上的 emoji / 颜文字由站点展示层 `title-mood` 按情绪词偶发挂载；**不要**写进笔记/frontmatter 标题。
 - 拿不准时，标题就用「人话讲清这篇干了啥」，宁直白勿口号。
 
 **结构**：
@@ -84,13 +86,14 @@ description: >-
 **本机环境**（有文件系统）：
 
 ```
-D:\OneDrive\Desktop\Knowledge\{时间戳}_{中文主题}\
+D:\OneDrive\Desktop\Knowledge\todo\{时间戳}_{中文主题}\
 ├── {中文主题}.md          # 主体笔记(标题按"标题优化"规范起)
 └── assets\                 # 配套图片(封面/示意图，如有)
 ```
 
 - 时间戳格式 `YYYY-MM-DD`；主题目录名用中文，简洁达意。
-- 建目录前先确认父目录 `D:\OneDrive\Desktop\Knowledge\` 存在。
+- **todo\ = 待发布队列**：extract 产出默认落这里；建目录前确认 `D:\OneDrive\Desktop\Knowledge\todo\` 存在（不存在则创建）。
+- **发布与归档**：素材经 `knowledge-output` 发布成功后，由 output 移入 `Knowledge\Archive\` 留档；extract 侧不负责归档。
 
 **云端环境**（网页/chat，无本地盘）：直接输出完整 Markdown 笔记，不落盘。
 

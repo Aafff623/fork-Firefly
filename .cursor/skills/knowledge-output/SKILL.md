@@ -1,9 +1,10 @@
 ---
 name: knowledge-output
 description: >-
-  把 knowledge-extract 提炼出的素材笔记(位于 D:\OneDrive\Desktop\Knowledge\{时间戳_主题}\)
-  输出成 Firefly 博客文章，落盘到 src/content/posts/{slug}/。触发词：发布笔记、把知识笔记发到博客、
-  knowledge output、素材转博客、提取完发出去、把 {Knowledge 目录} 的笔记写成博客文章。
+  把 knowledge-extract 提炼出的素材笔记(位于 D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\)
+  输出成 Firefly 博客文章，落盘到 src/content/posts/{slug}/，发布成功后将素材移入 Knowledge\Archive\ 留档。
+  触发词：发布笔记、把知识笔记发到博客、knowledge output、素材转博客、提取完发出去、把 todo 里的笔记写成博客文章。
+  调用方式：无参数 = 处理 todo 全部主题；带参数(/knowledge-output {主题A} {主题B}) = 只处理指定主题。
   区别于 ob2blog(Obsidian vault → 博客)：本技能源是 Agent 自行总结的素材笔记(非 Obsidian vault，
   无 wiki 链接/附件映射/manifest 一致性)。任何「把 Knowledge 素材笔记变成博客成品帖」的诉求触发本技能。
 compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Python 3 stdlib；复用 ob2blog 的
@@ -27,14 +28,22 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 输入 / 输出
 
-- 输入：`D:\OneDrive\Desktop\Knowledge\{时间戳_主题}\{主题}.md`（素材笔记）+ `assets/`（可选配图）
+- 输入：`D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\{主题}.md`（素材笔记）+ `assets/`（可选配图）
 - 输出：`src/content/posts/{slug}/index.md` + `cover.*`(可选) + 附件拷贝
 - 收尾：`site-cascade`（最新动态/统计/分类标签/热力图）
+- 归档：每发布成功一个主题，将该目录从 `todo\` 移入 `Knowledge\Archive\` 留档（内容不改写）
+
+## 调用方式
+
+- `knowledge-output`（无参数）：遍历 `Knowledge\todo\` 下**全部**主题，逐个发布
+- `knowledge-output {主题}`（带一个或多个主题名）：只处理匹配的主题
+
+匹配规则：参数可以是完整目录名（如 `2026-08-05_Matt-Pocock-工程方法论`）或主题名子串（如 `Matt-Pocock`）；多个参数逐个匹配。无匹配时列出 todo 现有主题供用户确认。批量处理按目录序逐个执行，单个失败不阻断其余。
 
 ## 工作流（六步）
 
 ```
-1 选材    → 从 Knowledge 目录定位素材笔记，确认主题与内容完整度(缺关键结论先回 extract 补齐)
+1 选材    → 按调用方式从 Knowledge\todo\ 定位素材（无参数=全部；有参数=仅匹配的主题），确认内容完整度(缺关键结论先回 extract 补齐)
 2 定稿    → 读素材，按 humanizer-output-style 校准语气；过一遍「成帖红线」(见下)；拆长文为可读章节
 3 成帖    → 补 frontmatter(参考 ob2blog/assets/templates/frontmatter.yaml)：
             title/published/description/tags/category/slug/image/draft/lang/pinned/comment
@@ -44,14 +53,17 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
             跳过 prep_convert/sync_check(它们强依赖
             Obsidian vault，本场景无 manifest)
 5 校验    → python .cursor/skills/ob2blog/scripts/validate_post.py src/content/posts/{slug}/index.md
-6 收尾    → 调 site-cascade；提示用户 pnpm dev 预览；未获准不 commit/push
+6 收尾    → 调 site-cascade（公开帖 `--emit-dynamic`，推荐 `--blurb "作者批注"`；未传则用 description）；提示用户 pnpm dev 预览；未获准不 commit/push
+7 归档    → 每发布成功一个主题，将其目录从 Knowledge\todo\ 移入 Knowledge\Archive\（原样留档，不改内容；失败/未发布不移动）
 ```
+
+笔记型动态正文须含 `>` 批注块（见 `site-cascade`）；勿只 emit 单行「发布了新笔记」。
 
 ## 成帖红线（素材进博客前最后一道）
 
 素材经过 extract 提炼，但成帖前再扫一遍，别把 AI 味带上线：
 
-1. **标题像人起的**：口语化、有钩子；禁「XX 实录 / XX 清单 / 这篇在讲什么」类手册腔。
+1. **标题像人起的**：口语化、有钩子；禁「XX 实录 / XX 清单 / 这篇在讲什么」类手册腔。列表卡情绪点缀（emoji / 颜文字）由站点 `title-mood` **仅展示层**动态挂；**禁止**写入 frontmatter `title`（正文 H1 / RSS / OG 保持干净）。中立标题不装饰；同批邻帖应错开 emoji 与颜文字（实现按 post id 哈希）。
 2. **无「一句话 X」句式**：「一句话结论 / 一句话总结」这类标签清零。
 3. **无工具流程痕迹**：不提「调用了 skill / 脚本 / 子代理」，不留「需要清理时说一声」样板话术。
 4. **详略得当**：正文服务博客读者，删过程性信息，只留可带走的判断和数据。
@@ -88,7 +100,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 2. **重建 frontmatter**：不沿用素材里的临时字段；`slug` 用英文 kebab（小写字母数字连字符）。主题目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
 2b. **首页可见性（必做）**：`pinned: false`（不要写成常驻置顶）；必须写带时分的 `updated: YYYY-MM-DDTHH:mm:ss`（落盘当下），让站内「默认自动置顶」选中这篇。仅写 `published: YYYY-MM-DD` 同日会与旧帖撞成同一时间戳，首页看起来像没顶上去。常驻置顶（`pinned: true`）只在用户明确要求时才开。
 3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。
-4. **不动 Knowledge 素材**：output 只读素材、写博客；素材目录留档不改写（除非用户要求回写）。
+4. **素材只读 + 发布后归档**：output 只读素材、写博客；发布成功后把该主题目录从 `Knowledge\todo\` **移入 `Knowledge\Archive\`**（原样留档，不改写内容）。失败 / 未发布则不移动。
 5. **越权禁止**：只在 blog 仓库内落 posts + 级联索引；不碰站点布局/配置内核，不改其他文章。
 6. **发布闭环**：本地校验通过 → 用户确认 → push → 核线上（遵循 `docs/agents/workflow.md`）。
 
@@ -97,7 +109,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 成帖时扫描正文提到的其他文章 / 主题 / 参考，自动补上可跳转的链接：
 
 1. **站内已有帖**：正文提到本仓其他文章（标题或 slug 可对上 `src/content/posts/`）时，自动加超链接到该帖 URL；主题支持链接卡片 / 跳转按钮（如 `::github` 卡、引用卡片）就顺手加上。
-2. **Knowledge 内其他主题**：提到 `D:\OneDrive\Desktop\Knowledge\` 下别的主题时，若该主题已发布 → 链到帖子；未发布 → 标注「待发布，链接后补」，不臆造 URL。
+2. **Knowledge 内其他主题**：提到 `D:\OneDrive\Desktop\Knowledge\`（todo 与 Archive）下别的主题时，若该主题已发布 → 链到帖子；未发布（仍在 todo）→ 标注「待发布，链接后补」，不臆造 URL。
 3. **不编链接**：只有确认目标存在（在 posts 目录或已知有效 URL）才加，绝不猜 slug 拼 URL。
 4. **成对互链**：Knowledge 里成上下篇的主题（如 Cursor 迁移 / OpenCode-Kimi 迁移），落帖后互相加「相关阅读」链接。
 

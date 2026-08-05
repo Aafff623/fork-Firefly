@@ -53,25 +53,30 @@ Issue(.scratch/<feature>/)
 ```text
 Obsidian 笔记（固定 vault，见 CONTEXT.md）
   → /ob2blog（图文→ src/content/posts/<slug>）
-  → site-cascade（动态 / 统计 / 分类标签 / 热力图）
+  → site-cascade（动态 / 统计 / 分类标签 / 热力图；笔记动态带 `>` 批注，可用 `--blurb`）
   → 本地预览 →（你确认后）commit / push → 核线上
 ```
 
 - Skill：`.cursor/skills/ob2blog/`、`.cursor/skills/site-cascade/`
 - 笔记↔帖映射：`.ob2blog/manifest.json`
+- 列表卡标题情绪点缀（emoji/颜文字）：仅 `PostCard` 展示层 `src/utils/title-mood.ts`；**勿**写入 frontmatter `title`
+- 笔记型动态：标题链 + Markdown `>` 作者批注（`--blurb` 或帖子 description）
 
 ### 乙 · 会话/调研 → Knowledge → 帖
 
 ```text
 会话 / 调研结论
-  → knowledge-extract（→ D:\OneDrive\Desktop\Knowledge\{日期_主题}\）
-  → knowledge-output（→ src/content/posts/<slug>）
-  → site-cascade
+  → knowledge-extract（→ D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
+  → knowledge-output（→ src/content/posts/<slug>；无参数=todo 全部，带主题=仅指定）
+  → site-cascade（同上；emit 须带批注）
+  → 发布成功后素材移入 Knowledge\Archive\ 留档
   → 本地预览 →（你确认后）commit / push → 核线上
 ```
 
 - Skill：`.cursor/skills/knowledge-extract/`、`.cursor/skills/knowledge-output/`、`.cursor/skills/site-cascade/`
 - 与甲互补：素材未进 Obsidian 时走乙；已进 vault 需双边同步时再走甲
+- 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
+- 笔记型动态批注约定：同甲
 
 ### 正文配图 / 索引帖信息图（MiniMax）
 
