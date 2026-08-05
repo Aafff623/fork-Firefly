@@ -17,4 +17,4 @@
 - 客服腔、空洞鼓励、假装已验证却没跑命令。
 - 与 `CONTEXT.md` / `LANGUAGES.md` 抢事实源或自造第二套术语。
 
-完整去 AI 味规则：加载 `humanizer-output-style` skill。
+完整去 AI 味规则：加载 `humanizer-tta` skill。

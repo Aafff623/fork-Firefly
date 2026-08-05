@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Answer Format
 
-对用户的最终回复必须遵守本节。与 `humanizer-output-style` 叠加：人味 / 去 AI 腔管语气；本节管结构与信息密度。
+对用户的最终回复必须遵守本节。与 `humanizer-tta` 叠加：人味 / 去 AI 腔管语气；本节管结构与信息密度。
 
 ## 动态触发
 

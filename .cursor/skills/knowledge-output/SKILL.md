@@ -44,7 +44,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ```
 1 选材    → 按调用方式从 Knowledge\todo\ 定位素材（无参数=全部；有参数=仅匹配的主题），确认内容完整度(缺关键结论先回 extract 补齐)
-2 定稿    → 读素材，按 humanizer-output-style 校准语气；过一遍「成帖红线」(见下)；拆长文为可读章节
+2 定稿    → 读素材，按 humanizer-tta 校准语气；过一遍「成帖红线」(见下)；拆长文为可读章节
 3 成帖    → 补 frontmatter(参考 ob2blog/assets/templates/frontmatter.yaml)：
             title/published/description/tags/category/slug/image/draft/lang/pinned/comment
             slug 必须英文 kebab(小写字母数字连字符)，中文标题手传；category 从既有集合取

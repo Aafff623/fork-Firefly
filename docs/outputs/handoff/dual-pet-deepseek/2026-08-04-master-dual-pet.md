@@ -65,7 +65,7 @@
 
 ## Suggested skills
 
-- `humanizer-output-style` — 对园主回复语气
+- `humanizer-tta` — 对园主回复语气
 - `site-cascade` — 若再发文/改动态
 - `ob2blog` — Obsidian → 帖
 - `knowledge-extract` / `knowledge-output` — 知识成帖

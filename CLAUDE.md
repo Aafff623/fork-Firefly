@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> **Output Style**: `humanizer-output-style` — `~/.claude/skills/humanizer-output-style/SKILL.md`  
+> **Output Style**: `humanizer-tta` — `~/.claude/skills/humanizer-tta/SKILL.md`  
 > **Session Init**: `windows-agent-discipline` — 会话启动先读（见 AGENTS.md）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
 > **Windows / Answer / Commit / Karpathy rules**: `.cursor/rules/*.mdc`（alwaysApply）
 
