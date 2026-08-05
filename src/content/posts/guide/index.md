@@ -7,6 +7,7 @@ description: "如何使用 Firefly 博客模板。"
 image: ../images/minimax/v2-guide.jpg
 tags: [Firefly, Markdown]
 category: 指南
+collections: [firefly-guide]
 ---
 
 

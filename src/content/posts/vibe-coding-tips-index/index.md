@@ -6,6 +6,7 @@ description: Vibe「30 经验技巧」方法论索引：心法、上下文、Har
 tags: [Vibe Coding, 教程索引, Harness, Loop Engineering]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
+collections: [vibe-coding]
 draft: false
 lang: ""
 slug: vibe-coding-tips-index

@@ -5,6 +5,7 @@ description: 咸鱼租号、中转倍率、已知羊毛与订阅号池管理—�
 image: ./cover.jpg
 tags: [AI Coding, Cursor, 省钱]
 category: Agentic Coding
+collections: [agentic-coding]
 draft: false
 slug: ai-coding-save-money
 pinned: false

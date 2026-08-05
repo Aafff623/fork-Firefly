@@ -5,6 +5,7 @@ description: 把 Claude 那套工具生态（CLAUDE.md 规范、能力路由、M
 image: ./cover.jpg
 tags: [Claude, OpenCode, Kimi, 迁移, AI Coding]
 category: Agentic Coding
+collections: [agentic-coding]
 draft: true
 slug: claude-migration-opencode-kimi
 lang: ''

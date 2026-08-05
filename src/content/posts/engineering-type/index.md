@@ -5,6 +5,8 @@ description: Prompt / Context / Harness / Loop / Graph——把模型外壳当�
 image: ./cover.jpg
 tags: [Harness, Agent, Prompt, Context]
 category: Agentic Coding
+
+collections: [agentic-coding]
 draft: false
 slug: engineering-type
 pinned: false

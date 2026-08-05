@@ -6,6 +6,7 @@ image: ./cover.jpg
 tags: [Claude, 美化配置]
 themeTags: [tweakcc, Windows, AI Coding, CC Switch, claude-hud, Dracula]
 category: Agentic Coding
+collections: [windows-discipline, agentic-coding]
 draft: true
 slug: claude-code-windows-beautify
 lang: ''

@@ -6,6 +6,8 @@ description: 40 个 agent 技能拆开看是同一套工程方法论：grilling 
 image: ./cover.jpg
 tags: [Matt Pocock, AI Agent, 方法论, 工作流, TypeScript]
 category: Agentic Coding
+
+collections: [agentic-coding]
 draft: false
 lang: ''
 slug: matt-pocock-engineering-method

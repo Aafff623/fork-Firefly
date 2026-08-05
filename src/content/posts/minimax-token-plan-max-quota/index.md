@@ -5,6 +5,7 @@ description: Max 档的文本 / 生图 / 语音 / 音乐共用同一条额度进
 image: ./cover.jpg
 tags: [MiniMax, TokenPlan, 额度, 拼车]
 category: 指南
+collections: [media-workflow]
 draft: true
 slug: minimax-token-plan-max-quota
 lang: ''

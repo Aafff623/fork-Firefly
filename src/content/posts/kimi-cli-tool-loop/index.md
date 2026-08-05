@@ -7,6 +7,7 @@ image: ./cover.jpg
 tags: [Kimi, CLI, 死循环, Agent, 工具调用]
 themeTags: [循环控制, 截图验证, 失败即停]
 category: Agentic Coding
+collections: [agentic-coding]
 draft: false
 lang: ""
 slug: kimi-cli-tool-loop

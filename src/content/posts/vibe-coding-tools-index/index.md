@@ -6,6 +6,7 @@ description: Vibe「10 编程工具」选型地图：零代码 / AI 编辑器 / 
 tags: [Vibe Coding, 教程索引, 编程工具, Cursor]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
+collections: [vibe-coding]
 draft: false
 lang: ""
 slug: vibe-coding-tools-index
