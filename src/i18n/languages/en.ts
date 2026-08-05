@@ -323,6 +323,15 @@ export const en: Translation = {
 	[Key.settingsTabAppearance]: "Appearance",
 	[Key.settingsTabWallpaper]: "Wallpaper",
 	[Key.settingsTabEffects]: "Effects",
+	[Key.settingsTabPets]: "Pets",
+
+	// Pet picker
+	[Key.petPickerTitle]: "Desktop pet",
+	[Key.petPickerDefault]: "Default · DeepSeek",
+	[Key.petPickerDefaultHint]: "Browse Maid · Post OpenPet",
+	[Key.petPickerLicenseUnknown]: "License unclear",
+	[Key.petPickerCurrent]: "Current",
+	[Key.petPickerAttribution]: "Assets from awesome-codex-pet; attribute authors for non-commercial display.",
 
 	// Card Style
 	[Key.cardSettings]: "Card Style",
@@ -437,6 +446,7 @@ export const en: Translation = {
 	[Key.galleryViewWork]: "Open album",
 	[Key.galleryDragHint]: "Click to focus · drag · scroll · WASD / QE",
 	[Key.galleryDemoHint]: "Demo loop · click a frame or Esc",
+	[Key.galleryPhotoWall]: "Photo wall",
 
 	// Password Protection
 	[Key.passwordProtected]: "Password Protected",

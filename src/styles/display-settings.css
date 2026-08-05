@@ -155,6 +155,21 @@
 	height: 1.5rem;
 }
 
+/* 壁纸 Tab：压低分区标题与区块间距 */
+#display-setting .section-title--dense {
+	margin-top: 0.35rem;
+	margin-bottom: 0.35rem;
+	font-size: 0.875rem;
+}
+
+#display-setting .section-title--dense::before {
+	height: 0.85rem;
+}
+
+#display-setting .wallpaper-dense + .wallpaper-dense {
+	margin-top: 0.25rem;
+}
+
 #display-setting .section-title #hueValue {
 	margin-left: auto;
 	width: 2.25rem;
@@ -164,4 +179,97 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+/* 桌宠选择：选中用主题色高亮；正文加深，告别灰蒙蒙 */
+#display-setting .pet-picker-item {
+	opacity: 1;
+	border: 1.5px solid transparent;
+	background: var(--btn-regular-bg);
+	color: oklch(0.28 0.02 260);
+}
+
+#display-setting .pet-picker-item__title {
+	color: oklch(0.22 0.02 260);
+	font-weight: 600;
+}
+
+#display-setting .pet-picker-item__sub {
+	color: oklch(0.42 0.02 260);
+}
+
+#display-setting .pet-picker-item:not(.pet-picker-item--active) {
+	opacity: 0.92;
+}
+
+#display-setting .pet-picker-item--active {
+	opacity: 1;
+	background: color-mix(in oklch, var(--primary) 16%, var(--btn-regular-bg));
+	border-color: color-mix(in oklch, var(--primary) 55%, transparent);
+	box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 22%, transparent);
+}
+
+#display-setting .pet-picker-item--active:hover,
+#display-setting .pet-picker-item--active:active {
+	background: color-mix(in oklch, var(--primary) 22%, var(--btn-regular-bg));
+}
+
+#display-setting .pet-picker-item--active .pet-picker-item__title {
+	color: var(--primary);
+}
+
+#display-setting .pet-picker-item__badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.05rem 0.35rem;
+	border-radius: 999px;
+	font-size: 0.6rem;
+	font-weight: 600;
+	line-height: 1.25;
+	letter-spacing: 0.02em;
+	color: var(--primary);
+	background: color-mix(in oklch, var(--primary) 16%, transparent);
+	border: 1px solid color-mix(in oklch, var(--primary) 40%, transparent);
+}
+
+#display-setting .pet-picker-item--active .pet-picker-item__sub {
+	color: color-mix(in oklch, var(--primary) 55%, oklch(0.35 0.02 260));
+}
+
+#display-setting .pet-picker-footnote {
+	color: oklch(0.45 0.02 260);
+}
+
+html.dark #display-setting .pet-picker-item {
+	color: oklch(0.92 0.02 260);
+}
+
+html.dark #display-setting .pet-picker-item__title {
+	color: oklch(0.96 0.02 260);
+}
+
+html.dark #display-setting .pet-picker-item__sub {
+	color: oklch(0.78 0.02 260);
+}
+
+html.dark #display-setting .pet-picker-item--active {
+	background: color-mix(in oklch, var(--primary) 22%, var(--btn-regular-bg));
+	border-color: color-mix(in oklch, var(--primary) 60%, transparent);
+}
+
+html.dark #display-setting .pet-picker-item--active:hover,
+html.dark #display-setting .pet-picker-item--active:active {
+	background: color-mix(in oklch, var(--primary) 28%, var(--btn-regular-bg));
+}
+
+html.dark #display-setting .pet-picker-item--active .pet-picker-item__title {
+	color: var(--primary);
+}
+
+html.dark #display-setting .pet-picker-item--active .pet-picker-item__sub {
+	color: color-mix(in oklch, var(--primary) 45%, oklch(0.85 0.02 260));
+}
+
+html.dark #display-setting .pet-picker-footnote {
+	color: oklch(0.72 0.02 260);
 }

@@ -322,6 +322,14 @@ export const ko: Translation = {
 	[Key.settingsTabAppearance]: "외형",
 	[Key.settingsTabWallpaper]: "배경화면",
 	[Key.settingsTabEffects]: "효과",
+	[Key.settingsTabPets]: "펫",
+
+	[Key.petPickerTitle]: "데스크톱 펫",
+	[Key.petPickerDefault]: "기본 · DeepSeek",
+	[Key.petPickerDefaultHint]: "목록 Maid · 글 OpenPet",
+	[Key.petPickerLicenseUnknown]: "라이선스 불명확",
+	[Key.petPickerCurrent]: "현재",
+	[Key.petPickerAttribution]: "소재: awesome-codex-pet. 비상업 표시 시 저작자 표기.",
 
 	// 카드 스타일
 	[Key.cardSettings]: "카드 스타일",
@@ -435,6 +443,7 @@ export const ko: Translation = {
 	[Key.galleryViewWork]: "앨범 보기",
 	[Key.galleryDragHint]: "클릭 포커스 · 드래그 · 스크롤 · WASD / QE",
 	[Key.galleryDemoHint]: "데모 루프 · 프레임 클릭 또는 Esc",
+	[Key.galleryPhotoWall]: "포토 월",
 
 	// Password Protection
 	[Key.passwordProtected]: "비밀번호로 보호됨",

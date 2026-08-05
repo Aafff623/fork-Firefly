@@ -48,4 +48,9 @@ export type DisplaySettingsConfig = {
 
 	// 樱花特效开关
 	sakuraSwitchable: boolean;
+
+	// ── 桌宠 (Pets) ──────────────────────────────────────
+
+	/** 桌宠换皮 Tab 是否在显示设置中出现（还受 spritePetConfig 约束） */
+	petPickerSwitchable: boolean;
 };

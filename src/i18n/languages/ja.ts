@@ -322,6 +322,14 @@ export const ja: Translation = {
 	[Key.settingsTabAppearance]: "外観",
 	[Key.settingsTabWallpaper]: "壁紙",
 	[Key.settingsTabEffects]: "エフェクト",
+	[Key.settingsTabPets]: "ペット",
+
+	[Key.petPickerTitle]: "デスクトップペット",
+	[Key.petPickerDefault]: "デフォルト · DeepSeek",
+	[Key.petPickerDefaultHint]: "閲覧 Maid · 記事 OpenPet",
+	[Key.petPickerLicenseUnknown]: "ライセンス不明",
+	[Key.petPickerCurrent]: "選択中",
+	[Key.petPickerAttribution]: "素材は awesome-codex-pet より。非商用表示時は作者表記をお願いします。",
 
 	// カードスタイル
 	[Key.cardSettings]: "カードスタイル",
@@ -436,6 +444,7 @@ export const ja: Translation = {
 	[Key.galleryViewWork]: "アルバムを見る",
 	[Key.galleryDragHint]: "クリックで寄る · ドラッグ · ホイール · WASD / QE",
 	[Key.galleryDemoHint]: "デモループ中 · 画をクリックまたは Esc",
+	[Key.galleryPhotoWall]: "フォトウォール",
 
 	// パスワード保護
 	[Key.passwordProtected]: "パスワード保護",

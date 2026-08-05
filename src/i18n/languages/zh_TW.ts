@@ -317,6 +317,14 @@ export const zh_TW: Translation = {
 	[Key.settingsTabAppearance]: "外觀",
 	[Key.settingsTabWallpaper]: "壁紙",
 	[Key.settingsTabEffects]: "特效",
+	[Key.settingsTabPets]: "桌寵",
+
+	[Key.petPickerTitle]: "選擇桌寵",
+	[Key.petPickerDefault]: "預設 · DeepSeek",
+	[Key.petPickerDefaultHint]: "瀏覽 Maid · 文章 OpenPet",
+	[Key.petPickerLicenseUnknown]: "授權未明確",
+	[Key.petPickerCurrent]: "目前",
+	[Key.petPickerAttribution]: "素材來自 awesome-codex-pet；非商業展示請署名作者。",
 
 	// 卡片樣式
 	[Key.cardSettings]: "卡片樣式",
@@ -430,6 +438,7 @@ export const zh_TW: Translation = {
 	[Key.galleryViewWork]: "查看相簿",
 	[Key.galleryDragHint]: "點擊聚焦 · 拖曳平移 · 滾輪縮放 · WASD / QE",
 	[Key.galleryDemoHint]: "示範循環中 · 點擊畫幅或按 Esc 接管",
+	[Key.galleryPhotoWall]: "照片牆",
 
 	// 密碼保護
 	[Key.passwordProtected]: "密碼保護",

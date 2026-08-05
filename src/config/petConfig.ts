@@ -2,8 +2,9 @@ import type { SpritePetConfig } from "../types/petConfig";
 
 /**
  * 站内桌宠（spritesheet）配置。
- * 双 DeepSeek：浏览态 Maid · 文章页 OpenPet。
- * 素材许可见 `public/pets/README.md` / `docs/knowledge/dual-pet-deepseek.md`。
+ * 默认双 DeepSeek：浏览态 Maid · 文章页 OpenPet。
+ * 访客可在设置里换为 Codex v1 单皮（全站同皮）。
+ * 素材许可见 `public/pets/README.md` / `docs/knowledge/codex-pet-picker.md`。
  *
  * 与 Spine / Live2D 互斥：三者最多同时启用一个。
  * 若多个 enable=true，运行时优先桌宠 → Spine → Live2D。
@@ -13,6 +14,15 @@ export const spritePetConfig: SpritePetConfig = {
 
 	defaultPetId: "maid-deepseek-whale",
 	postPetId: "openpet-deepseek",
+
+	pickerEnabled: true,
+	pickerPetIds: [
+		"diandian--lllucasxu",
+		"claude--xiangking",
+		"elaina--nyakku-shigure",
+		"gpt-muse--opask",
+		"gojo--lilokhalikfa",
+	],
 
 	// 回退锚点：侧栏「最新动态」不可见时用右下；首页优先贴动态卡（见 SpritePet）
 	position: "bottom-right",
@@ -24,7 +34,7 @@ export const spritePetConfig: SpritePetConfig = {
 	motionEnabled: true,
 	draggable: true,
 	clickInteract: true,
-	// 仅 Maid（v2）生效；OpenPet（8×9）运行时强制关
+	// 仅 Maid（v2）生效；classic-8x9 运行时强制关
 	lookFollow: true,
 	// 点主题切换 / 搜索 / 回顶等控件时，桌宠跟着做对应动作
 	reactToSiteUi: true,
@@ -37,12 +47,12 @@ export const spritePetConfig: SpritePetConfig = {
 		mobileBreakpoint: 768,
 	},
 
-	// 浏览态 Maid：侧栏卡片外侧留白游走（左留白朝右 / 右留白朝左；固定 5s）
+	// 浏览态：侧栏卡片外侧留白游走（左留白朝右 / 右留白朝左；固定 7.5s）
 	// 仅拖拽改坐标后：作废原目标 → 松开后 2s → 在当前视口卡里重新随机
 	roam: {
 		enable: true,
-		intervalMs: 5_000,
-		minIntervalMs: 5_000,
+		intervalMs: 7_500,
+		minIntervalMs: 7_500,
 		jitterMs: 0,
 		fadeMs: 380,
 		portalHoldMs: 160,

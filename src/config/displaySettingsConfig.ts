@@ -37,16 +37,17 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 	// 壁纸轮播开关
 	bannerCarouselSwitchable: true,
 
-	// 全屏透明模式参数调节开关
+	// 全屏透明模式参数调节开关（固定配置值，面板不暴露滑块）
 	// 设为 false 关闭所有滑块，或用对象形式单独控制每个滑块
-	overlaySwitchable: {
-		opacity: true,
-		blur: true,
-		cardOpacity: true,
-	},
+	overlaySwitchable: false,
 
 	// ── 特效 (Effects) ────────────────────────────────────
 
-	// 樱花特效开关
-	sakuraSwitchable: true,
+	// 樱花特效开关（迁至顶栏粉色图标，面板不再暴露）
+	sakuraSwitchable: false,
+
+	// ── 桌宠 (Pets) ──────────────────────────────────────
+
+	// 桌宠换皮 Tab（内容列表以 spritePetConfig.pickerPetIds 为准）
+	petPickerSwitchable: true,
 };

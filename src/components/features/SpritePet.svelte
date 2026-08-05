@@ -1,12 +1,16 @@
 <script lang="ts">
 /**
  * 站内桌宠：spritesheet 渲染核。
- * 双宠：浏览态 defaultPetId · 文章页 postPetId（单实例路由换皮）。
+ * 默认：浏览 defaultPetId · 文章 postPetId（路由换皮）。
+ * 访客覆盖：设置里选 Codex 单皮 → 全站同皮（localStorage）。
  */
 import { onDestroy, onMount } from "svelte";
 import {
 	type BuiltinPetId,
+	type DualRoutePetId,
+	type StoredPetSelection,
 	findBuiltinPet,
+	isPickerPetId,
 	resolvePetIdForPath,
 } from "@/lib/pets/builtinPets";
 import {
@@ -35,8 +39,8 @@ import type { SpritePetRoamConfig } from "@/types/petConfig";
 import { url } from "@/utils/url-utils";
 
 interface Props {
-	defaultPetId: BuiltinPetId;
-	postPetId: BuiltinPetId;
+	defaultPetId: DualRoutePetId;
+	postPetId: DualRoutePetId;
 	position?: "bottom-left" | "bottom-right";
 	offsetX?: number;
 	offsetY?: number;
@@ -70,8 +74,8 @@ let {
 	mobileBreakpoint = 768,
 	roam = {
 		enable: true,
-		intervalMs: 5_000,
-		minIntervalMs: 5_000,
+		intervalMs: 7_500,
+		minIntervalMs: 7_500,
 		jitterMs: 0,
 		fadeMs: 380,
 		portalHoldMs: 160,
@@ -85,6 +89,8 @@ let {
 /** v3：默认锚到「最新动态」旁，废弃旧左下角记忆 */
 /** v4：位置必须相对侧栏卡片角；丢弃旧版贴视口右下的坐标 */
 const STORAGE_KEY = "firefly-sprite-pet-pos-v4";
+/** 访客选宠：default = 双 DeepSeek 路由；否则为 PickerPetId */
+const PET_ID_STORAGE_KEY = "firefly-sprite-pet-id-v1";
 const DRAG_THRESHOLD_PX = 4;
 /** 进入视线跟随的距离；略大一点，避免边缘抖帧 */
 const LOOK_DEADZONE_PX = 28;
@@ -142,25 +148,67 @@ function isPostPath(pathname = window.location.pathname) {
 	return /\/posts\//.test(pathname);
 }
 
-function initialPetId(): BuiltinPetId {
-	if (typeof window === "undefined") return defaultPetId;
-	return resolvePetIdForPath(
-		window.location.pathname,
-		defaultPetId,
-		postPetId,
-	);
+function readStoredPetSelection(): StoredPetSelection {
+	if (typeof window === "undefined") return "default";
+	try {
+		const raw = localStorage.getItem(PET_ID_STORAGE_KEY);
+		if (!raw || raw === "default") return "default";
+		if (isPickerPetId(raw)) return raw;
+	} catch {
+		/* ignore */
+	}
+	return "default";
 }
+
+function resolveActivePetId(
+	selection: StoredPetSelection,
+	pathname = typeof window !== "undefined" ? window.location.pathname : "/",
+): BuiltinPetId {
+	if (selection !== "default") return selection;
+	return resolvePetIdForPath(pathname, defaultPetId, postPetId);
+}
+
+function initialPetId(): BuiltinPetId {
+	return resolveActivePetId(readStoredPetSelection());
+}
+
+/** 访客覆盖：非 default 时全站同一张皮 */
+let visitorSelection: StoredPetSelection = $state(
+	typeof window === "undefined" ? "default" : readStoredPetSelection(),
+);
+const isOverrideMode = $derived(visitorSelection !== "default");
 
 let activePetId: BuiltinPetId = $state(initialPetId());
 
 const pet = $derived(findBuiltinPet(activePetId));
 const atlas = $derived(getAtlas(pet.atlasVariant));
-const height = $derived((size * atlas.cellHeight) / atlas.cellWidth);
-const atlasUrl = $derived(url(pet.spritesheetPath));
-/** classic-8x9 无 look 行，强制关闭视线跟随 */
-const effectiveLookFollow = $derived(
-	lookFollow && pet.atlasVariant === "v2",
+/** 按宠尺寸覆盖；缺省用布局传入的全局 size */
+const effectiveSize = $derived(pet.sizePx ?? size);
+const height = $derived(
+	(effectiveSize * atlas.cellHeight) / atlas.cellWidth,
 );
+const atlasUrl = $derived(url(pet.spritesheetPath));
+/** classic-8x9 无 look 行，强制关闭；覆盖模式也关（首批均为 v1） */
+const effectiveLookFollow = $derived(
+	lookFollow && !isOverrideMode && pet.atlasVariant === "v2",
+);
+/** 卡间停留：按宠覆盖；拖后恢复仍用 roam.resumeAfterDragMs */
+const effectiveRoamIntervalMs = $derived(
+	pet.roamIntervalMs ?? roam.intervalMs,
+);
+/** idle/ambient 变慢倍数；瞬态动作不乘 */
+const effectiveIdlePace = $derived(
+	pet.idlePaceMultiplier && pet.idlePaceMultiplier > 0
+		? pet.idlePaceMultiplier
+		: 1,
+);
+
+/** 浏览态可游走：默认模式下的 Maid，或访客覆盖皮 */
+function canRoamOnBrowse(): boolean {
+	if (isPostPath()) return false;
+	if (isOverrideMode) return true;
+	return activePetId === defaultPetId;
+}
 
 let rootEl: HTMLDivElement | undefined = $state();
 let spriteEl: HTMLDivElement | undefined = $state();
@@ -176,12 +224,15 @@ let lookDirection: PetLookDirection | null | undefined = $state(undefined);
 let posX = $state<number | null>(null);
 let posY = $state<number | null>(null);
 let dragging = $state(false);
-/** card=挂在侧栏卡片上随卡片走；free=页面绝对坐标（拖放后不跟视口滚） */
+/** card=锚定侧栏卡片外侧（仍挂 body + fixed，避免卡片 overflow 裁切）；free=页面绝对坐标 */
 let dockMode = $state<"card" | "free">("free");
 let dockCorner = $state<PetRoamCorner>("bottom-right");
 /** 停靠时面朝内容：左留白朝右、右留白朝左 */
 let dockFacing = $state<PetRoamFacing>("right");
 let dockHost: HTMLElement | null = null;
+/** 卡片锚定的视口坐标（fixed）；随滚动/resize 重算 */
+let dockFixedX = $state(0);
+let dockFixedY = $state(0);
 /** 当前贴着的侧栏锚点（浏览态游走） */
 let currentAnchorId: PetRoamAnchorId | null = null;
 let roamTimer: ReturnType<typeof setTimeout> | null = null;
@@ -282,7 +333,7 @@ function pick<T>(items: readonly T[]): T {
 }
 
 function atlasBackgroundPosition(frame: PetAtlasFrame): string {
-	return `${-frame.columnIndex * size}px ${-frame.rowIndex * height}px`;
+	return `${-frame.columnIndex * effectiveSize}px ${-frame.rowIndex * height}px`;
 }
 
 function applyFrame(
@@ -322,15 +373,17 @@ function startPlayback(state: PetAnimationState) {
 	}
 
 	const startedAt = performance.now();
+	// 仅 idle 环境动作变慢；点击/拖拽等瞬态仍原速
+	const pace = state === "idle" ? effectiveIdlePace : 1;
 	const tick = () => {
 		const next = getPetAnimationPlaybackTickAtElapsedMs(
 			state,
-			Math.max(0, performance.now() - startedAt),
+			Math.max(0, (performance.now() - startedAt) / pace),
 		);
 		applyFrame(next.frame, next.motionState, next.phase);
 		playbackTimer = setTimeout(
 			tick,
-			Math.max(1, Math.ceil(next.remainingDurationMs)),
+			Math.max(1, Math.ceil(next.remainingDurationMs * pace)),
 		);
 	};
 	tick();
@@ -390,7 +443,7 @@ function updateHidden() {
 	if (!hidden && skinOpacity < 1) {
 		skinOpacity = 1;
 	}
-	if (hidden || isPostPath()) {
+	if (hidden || !canRoamOnBrowse()) {
 		stopRoamLoop();
 	} else if (!userPinnedPosition || !roam.pauseWhenPinned) {
 		startRoamLoop();
@@ -404,7 +457,10 @@ function waitMs(ms: number) {
 }
 
 function preloadPetSheets() {
-	const ids: BuiltinPetId[] = [defaultPetId, postPetId];
+	const ids = new Set<BuiltinPetId>([defaultPetId, postPetId]);
+	if (isOverrideMode && isPickerPetId(visitorSelection)) {
+		ids.add(visitorSelection);
+	}
 	for (const id of ids) {
 		const sheet = findBuiltinPet(id);
 		const img = new Image();
@@ -425,15 +481,15 @@ function clearTransientAndGaze() {
 }
 
 /**
- * 按路由换皮；交叉淡化后切换 spritesheet。
+ * 按路由（或访客覆盖）换皮；交叉淡化后切换 spritesheet。
  * 返回是否发生了切换（Promise，供 Swup 钩子 await）。
  */
 async function syncPetFromPath(
 	pathname = window.location.pathname,
 ): Promise<boolean> {
-	const next = resolvePetIdForPath(pathname, defaultPetId, postPetId);
+	const next = resolveActivePetId(visitorSelection, pathname);
 	updateHidden();
-	if (next !== defaultPetId || /\/posts\//.test(pathname)) {
+	if (!canRoamOnBrowse()) {
 		stopRoamLoop();
 	}
 	// 同皮也强制可见，避免上次淡出被并发打断后卡在 opacity:0
@@ -462,6 +518,27 @@ async function syncPetFromPath(
 		await waitMs(SKIN_CROSSFADE_MS);
 	}
 	return gen === skinSwapGen;
+}
+
+/** 设置面板改选后：更新覆盖态并换皮 */
+async function applyVisitorSelection(next: StoredPetSelection) {
+	visitorSelection = next;
+	preloadPetSheets();
+	const swapped = await syncPetFromPath(window.location.pathname);
+	if (isPostPath()) {
+		stopRoamLoop();
+		if (dockMode === "card") {
+			undockToBodyAtCurrentScreenPos();
+		}
+	} else if (!userPinnedPosition) {
+		scheduleBrowseDefaultPlacement();
+		// 换宠后尺寸/轮询可能变：先停再开，避免仍用旧 interval
+		stopRoamLoop();
+		startRoamLoop();
+	}
+	if (swapped && effectiveMotion) {
+		playTransient(isOverrideMode ? "waving" : "review", 2);
+	}
 }
 
 function pulseForThemeChange() {
@@ -535,7 +612,7 @@ function loadStoredPosition(): boolean {
 			Number.isFinite(parsed.x) &&
 			Number.isFinite(parsed.y)
 		) {
-			if (isViewportCornerPark(parsed.x, parsed.y, size, height)) {
+			if (isViewportCornerPark(parsed.x, parsed.y, effectiveSize, height)) {
 				localStorage.removeItem(STORAGE_KEY);
 				return false;
 			}
@@ -571,7 +648,33 @@ function clearDockHost() {
 	}
 }
 
-/** 从卡片卸下，按当前屏幕坐标挂回 body（拖拽 / 自由停靠用） */
+/**
+ * 按锚点卡片算 fixed 落点：大半身子在页边留白，不被卡片 overflow 裁进框内。
+ * 左栏 → 卡左侧外；右栏 → 卡右侧外；并夹进视口以免整只消失。
+ */
+function syncCardDockFixedPos() {
+	if (dockMode !== "card" || !dockHost?.isConnected) return;
+	if (typeof window === "undefined") return;
+	const r = dockHost.getBoundingClientRect();
+	const hang = Math.round(effectiveSize * 0.72);
+	const sink = Math.round(height * 0.08);
+	let x: number;
+	let y = r.bottom - height + sink;
+	if (dockCorner === "bottom-left") {
+		// 左栏：身子主要在卡片左边的页边
+		x = r.left - hang;
+	} else {
+		// 右栏：身子主要在卡片右边的页边
+		x = r.right - effectiveSize + hang;
+	}
+	const pad = 4;
+	const maxX = Math.max(pad, window.innerWidth - effectiveSize - pad);
+	const maxY = Math.max(pad, window.innerHeight - height - pad);
+	dockFixedX = Math.round(Math.min(maxX, Math.max(pad, x)));
+	dockFixedY = Math.round(Math.min(maxY, Math.max(pad, y)));
+}
+
+/** 从卡片锚定卸下，按当前屏幕坐标挂回 body（拖拽 / 自由停靠用） */
 function undockToBodyAtCurrentScreenPos() {
 	if (!rootEl || typeof document === "undefined") return;
 	const r = rootEl.getBoundingClientRect();
@@ -579,12 +682,13 @@ function undockToBodyAtCurrentScreenPos() {
 	posY = r.top;
 	clearDockHost();
 	dockMode = "free";
-	if (rootEl.parentElement !== document.body) {
-		document.body.appendChild(rootEl);
-	}
+	mountPetToBody(rootEl);
 }
 
-/** 挂到侧栏卡片外侧留白：随卡片滚动/sticky，朝向内容，不挡正文 */
+/**
+ * 锚定侧栏卡片外侧留白：宠物始终挂在 body + position:fixed，
+ * 只记录宿主用于滚动态同步坐标（不再 append 进卡片，避免 overflow 裁成「钻进卡里」）。
+ */
 function dockToCard(
 	host: HTMLElement,
 	corner: PetRoamCorner,
@@ -595,7 +699,6 @@ function dockToCard(
 	const mountEl = resolveDockHost(host);
 	clearDockHost();
 	mountEl.classList.add("has-sprite-pet-anchor");
-	mountEl.appendChild(rootEl);
 	dockHost = mountEl;
 	dockCorner = corner;
 	dockFacing = facing;
@@ -603,6 +706,8 @@ function dockToCard(
 	posX = null;
 	posY = null;
 	currentAnchorId = anchorId;
+	mountPetToBody(rootEl);
+	syncCardDockFixedPos();
 }
 
 /**
@@ -610,14 +715,14 @@ function dockToCard(
  * 失败则尝试任意可见侧栏卡角；禁止用视口右下当长期落点。
  */
 function placeNearDynamicsWidget(): boolean {
-	const dynamics = findVisibleAnchorById("dynamics", size, height);
+	const dynamics = findVisibleAnchorById("dynamics", effectiveSize, height);
 	if (!dynamics) return false;
 	dockToCard(dynamics.el, dynamics.corner, dynamics.id, dynamics.facing);
 	return true;
 }
 
 function placeOnAnyVisibleAnchor(): boolean {
-	const visible = listVisibleRoamAnchors(size, height);
+	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	const pick =
 		visible.find((a) => a.id === "dynamics") ??
 		pickNextRoamAnchor(visible, null);
@@ -653,8 +758,7 @@ function scheduleBrowseDefaultPlacement() {
 
 function canRoamNow(): boolean {
 	if (!roam.enable || hidden) return false;
-	if (isPostPath()) return false;
-	if (activePetId !== defaultPetId) return false;
+	if (!canRoamOnBrowse()) return false;
 	if (roam.pauseWhenPinned && userPinnedPosition) return false;
 	if (dragging || roamMoving) return false;
 	return true;
@@ -699,7 +803,7 @@ function stopRoamLoop() {
  * 拖拽期间不计时；只有松开才开表。
  */
 function scheduleResumeRoamAfterDrag() {
-	if (!roam.enable || isPostPath() || hidden) return;
+	if (!roam.enable || !canRoamOnBrowse() || hidden) return;
 	if (roam.pauseWhenPinned) return;
 	clearResumeAfterDragTimer();
 	clearScrollLeaveTimer();
@@ -721,7 +825,7 @@ function scheduleResumeRoamAfterDrag() {
 			/* ignore */
 		}
 		void (async () => {
-			const visible = listVisibleRoamAnchors(size, height);
+			const visible = listVisibleRoamAnchors(effectiveSize, height);
 			// 拖后目标与原先计划无关：视口内重新随机（可含拖前那张卡）
 			const target =
 				pickNextRoamAnchor(visible, null) ?? visible[0] ?? null;
@@ -735,23 +839,39 @@ function scheduleResumeRoamAfterDrag() {
 	}, delay);
 }
 
-/** 正常换卡：固定 intervalMs；仅 jitterMs>0 时才抖动（默认 0） */
+/** 正常换卡：按宠 interval；仅 jitterMs>0 时才抖动（默认 0） */
 function nextRoamDelayMs(): number {
-	const base = Math.max(roam.minIntervalMs, roam.intervalMs);
+	const interval = effectiveRoamIntervalMs;
+	const minInterval = pet.roamIntervalMs ?? roam.minIntervalMs;
+	const base = Math.max(minInterval, interval);
 	if (roam.jitterMs <= 0) return base;
 	const jitter = Math.floor(Math.random() * roam.jitterMs);
-	return Math.max(roam.minIntervalMs, roam.intervalMs + jitter - roam.jitterMs / 2);
+	return Math.max(minInterval, interval + jitter - roam.jitterMs / 2);
 }
 
 /**
  * 钻洞换位：原地淡出（像钻进小洞）→ 挪到目标卡角 → 淡入并跑两步爬出。
  * 不再整屏插值闪现。
+ * 伊蕾娜：portalMotionState 女巫形态；点点：facing 跑 + portalArrivalSequence 停→睡。
  */
 async function portalToAnchor(target: PetRoamResolvedAnchor) {
 	const gen = ++roamPortalGen;
-	const fadeMs = Math.max(120, roam.fadeMs ?? 380);
-	const holdMs = Math.max(0, roam.portalHoldMs ?? 160);
+	const fadeMs = Math.max(120, pet.portalFadeMs ?? roam.fadeMs ?? 380);
+	const holdMs = Math.max(0, pet.portalHoldMs ?? roam.portalHoldMs ?? 160);
+	const leadMs = Math.max(
+		80,
+		pet.portalLeadMs ?? Math.min(220, fadeMs),
+	);
+	const exitMs = Math.max(80, pet.portalExitMs ?? fadeMs);
 	const useFade = effectiveMotion && !prefersReducedMotion;
+	const portalState = pet.portalMotionState;
+	// 左栏卡 facing=right → 朝右跑；右栏卡 facing=left → 朝左跑
+	const dirRun: PetAnimationState =
+		target.facing === "right" ? "running-right" : "running-left";
+	// 有落地序列且无固定 portal 形态时，进/出洞也用方向跑（点点）
+	const leadState =
+		portalState ?? (pet.portalArrivalSequence?.length ? dirRun : "running");
+	const exitState = portalState ?? dirRun;
 
 	roamMoving = true;
 	gazeActive = false;
@@ -760,10 +880,10 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 	stopPlayback();
 
 	try {
-		// 进洞：先播一小段跑，再压透明
+		// 进洞：先播一小段跑（或按宠指定形态），再压透明
 		if (useFade) {
-			animationState = "running";
-			await waitMs(Math.min(220, fadeMs));
+			animationState = leadState;
+			await waitMs(leadMs);
 			if (gen !== roamPortalGen) return;
 			skinOpacity = 0;
 			await waitMs(fadeMs);
@@ -776,18 +896,35 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 		if (useFade) {
 			await waitMs(holdMs);
 			if (gen !== roamPortalGen) return;
-			// 出洞：透明拉回 + 朝内容方向小跑出来
-			animationState =
-				target.facing === "right" ? "running-right" : "running-left";
+			// 出洞：透明拉回；有按宠形态则保持该形态，否则朝内容方向小跑
+			animationState = exitState;
 			skinOpacity = 1;
-			await waitMs(fadeMs);
+			await waitMs(exitMs);
 			if (gen !== roamPortalGen) return;
 		} else {
 			skinOpacity = 1;
 		}
 
 		if (effectiveMotion) {
-			playTransient(target.arrivalAction, 1);
+			const seq = pet.portalArrivalSequence;
+			if (seq && seq.length > 0) {
+				// 点点等：再跑 → 停 → 睡；跳过卡 arrivalAction
+				playSequence(
+					seq.map((step) => ({
+						state: step.state === "facing-run" ? dirRun : step.state,
+						loops: step.loops ?? 2,
+					})),
+				);
+			} else if (
+				portalState &&
+				pet.portalArrivalLoops &&
+				pet.portalArrivalLoops > 0
+			) {
+				// 落地再亮一会儿特殊形态，再回 idle
+				playTransient(portalState, pet.portalArrivalLoops);
+			} else {
+				playTransient(target.arrivalAction, 1);
+			}
 		} else {
 			animationState = "idle";
 		}
@@ -806,7 +943,7 @@ async function roamToAnchor(target: PetRoamResolvedAnchor) {
 
 async function performRoamStep() {
 	if (!canRoamNow()) return;
-	const visible = listVisibleRoamAnchors(size, height);
+	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	if (visible.length === 0) {
 		clearPlannedRoamTarget();
 		return;
@@ -837,7 +974,7 @@ function scheduleNextRoam() {
 	if (roamTimer) clearTimeout(roamTimer);
 
 	// 开 5s 表时就锁定下一张卡（随机且 ≠ 当前）；拖拽会 stopRoamLoop 作废
-	const visible = listVisibleRoamAnchors(size, height);
+	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	const planned = pickNextRoamAnchor(visible, currentAnchorId);
 	plannedRoamTargetId = planned?.id ?? null;
 
@@ -853,7 +990,7 @@ function scheduleNextRoam() {
 function startRoamLoop() {
 	if (!roam.enable) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
-	if (isPostPath() || activePetId !== defaultPetId || hidden) return;
+	if (!canRoamOnBrowse() || hidden) return;
 	if (roamLoopActive) return;
 	roamLoopActive = true;
 	scheduleNextRoam();
@@ -864,12 +1001,11 @@ function startRoamLoop() {
  * 若中途又滚回原卡，取消这次换位。
  */
 function onScrollRoamCheck() {
-	if (!roam.enable || hidden || isPostPath()) return;
-	if (activePetId !== defaultPetId) return;
+	if (!roam.enable || hidden || !canRoamOnBrowse()) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
 	if (roamMoving) return;
 
-	const visible = listVisibleRoamAnchors(size, height);
+	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	const ok =
 		currentAnchorId != null &&
 		visible.some((a) => a.id === currentAnchorId);
@@ -884,7 +1020,7 @@ function onScrollRoamCheck() {
 	scrollLeaveTimer = setTimeout(() => {
 		scrollLeaveTimer = null;
 		if (!canRoamNow()) return;
-		const still = listVisibleRoamAnchors(size, height);
+		const still = listVisibleRoamAnchors(effectiveSize, height);
 		if (still.length === 0) return;
 		if (
 			currentAnchorId != null &&
@@ -913,7 +1049,7 @@ function viewportToPage(x: number, y: number): { x: number; y: number } {
 
 function clampToViewport(x: number, y: number): { x: number; y: number } {
 	if (typeof window === "undefined") return { x, y };
-	const maxX = Math.max(0, window.innerWidth - size);
+	const maxX = Math.max(0, window.innerWidth - effectiveSize);
 	const maxY = Math.max(0, window.innerHeight - height);
 	return {
 		x: Math.min(maxX, Math.max(0, x)),
@@ -923,7 +1059,7 @@ function clampToViewport(x: number, y: number): { x: number; y: number } {
 
 function clampToDocument(x: number, y: number): { x: number; y: number } {
 	if (typeof document === "undefined") return { x, y };
-	const maxX = Math.max(0, document.documentElement.scrollWidth - size);
+	const maxX = Math.max(0, document.documentElement.scrollWidth - effectiveSize);
 	const maxY = Math.max(0, document.documentElement.scrollHeight - height);
 	return {
 		x: Math.min(maxX, Math.max(0, x)),
@@ -941,13 +1077,8 @@ function defaultStyle(): string {
 
 function positionedStyle(): string {
 	if (dockMode === "card") {
-		// 大半身子落在卡片外侧页边留白，只留一点「踩」卡边，避免挡正文
-		const sink = Math.round(height * 0.08);
-		const out = Math.round(size * 0.82);
-		if (dockCorner === "bottom-left") {
-			return `left:${-out}px;right:auto;bottom:${-sink}px;top:auto;`;
-		}
-		return `right:${-out}px;left:auto;bottom:${-sink}px;top:auto;`;
+		// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
+		return `left:${dockFixedX}px;top:${dockFixedY}px;right:auto;bottom:auto;`;
 	}
 	if (posX === null || posY === null) return defaultStyle();
 	return `left:${posX}px;top:${posY}px;right:auto;bottom:auto;`;
@@ -1225,7 +1356,7 @@ function onSitePointerDown(event: Event) {
 $effect(() => {
 	void animationState;
 	void effectiveMotion;
-	void size;
+	void effectiveSize;
 	void height;
 	void activePetId;
 	void atlasUrl;
@@ -1241,16 +1372,13 @@ $effect(() => {
 	startPlayback(animationState);
 });
 
-// hidden 切换后根节点会重建：卡片模式挂回卡片，否则挂 body
+// hidden 切换后根节点会重建：始终挂 body（卡片模式只同步 fixed 坐标）
 $effect(() => {
 	if (!rootEl || typeof document === "undefined") return;
-	if (dockMode === "card" && dockHost?.isConnected) {
-		if (rootEl.parentElement !== dockHost) {
-			dockHost.appendChild(rootEl);
-		}
-		return;
-	}
 	mountPetToBody(rootEl);
+	if (dockMode === "card") {
+		syncCardDockFixedPos();
+	}
 });
 
 /** 挂到 body（自由拖拽 / 文章页 / 回退） */
@@ -1310,6 +1438,9 @@ onMount(() => {
 			posX = clamped.x;
 			posY = clamped.y;
 		}
+		if (dockMode === "card") {
+			syncCardDockFixedPos();
+		}
 		if (!userPinnedPosition && !isPostPath() && dockMode !== "card") {
 			if (placeNearDynamicsWidget()) {
 				startRoamLoop();
@@ -1330,6 +1461,9 @@ onMount(() => {
 
 	const onScroll = () => {
 		resetIdleTimer();
+		if (dockMode === "card") {
+			syncCardDockFixedPos();
+		}
 		onScrollRoamCheck();
 		if (!reactToSiteUi || !effectiveMotion || !isPostPath()) return;
 		if (readScrollTimer) return;
@@ -1459,6 +1593,20 @@ onMount(() => {
 	};
 	window.addEventListener("firefly:pet-scenario", onPetScenario);
 
+	const onPetChange = (event: Event) => {
+		const detail = (event as CustomEvent<{ petId?: string }>).detail;
+		const raw = detail?.petId;
+		if (!raw) return;
+		const next: StoredPetSelection =
+			raw === "default"
+				? "default"
+				: isPickerPetId(raw)
+					? raw
+					: "default";
+		void applyVisitorSelection(next);
+	};
+	window.addEventListener("firefly:pet-change", onPetChange);
+
 	const onInvalid = () => {
 		if (canTriggerScenario("form-fail", 6_000)) playTransient("failed", 3);
 	};
@@ -1472,7 +1620,7 @@ onMount(() => {
 		reactToRoute();
 	}
 	resetIdleTimer();
-	if (!isPostPath() && !userPinnedPosition) {
+	if (canRoamOnBrowse() && !userPinnedPosition) {
 		startRoamLoop();
 	}
 
@@ -1491,6 +1639,7 @@ onMount(() => {
 		win.swup?.hooks?.off?.("page:view", onSwupArrive);
 		window.removeEventListener("bg-player-state-change", onBgPlayer);
 		window.removeEventListener("firefly:pet-scenario", onPetScenario);
+		window.removeEventListener("firefly:pet-change", onPetChange);
 		document.removeEventListener("invalid", onInvalid, true);
 		footerObserver?.disconnect();
 		if (idleTimer) clearTimeout(idleTimer);
@@ -1538,7 +1687,7 @@ onDestroy(() => {
 		>
 			<div
 				class="pet-sprite-stage pet-sprite-stage--atlas"
-				style={`width:${size}px;height:${height}px;opacity:${skinOpacity};`}
+				style={`width:${effectiveSize}px;height:${height}px;opacity:${skinOpacity};`}
 				data-pet-motion={effectiveMotion ? "enabled" : "disabled"}
 				data-pet-motion-state={animationState}
 			>
@@ -1550,11 +1699,11 @@ onDestroy(() => {
 					data-pet-state={animationState}
 					data-pet-motion={effectiveMotion ? "enabled" : "disabled"}
 					style={`
-						width:${size}px;
+						width:${effectiveSize}px;
 						height:${height}px;
 						background-image:url(${JSON.stringify(atlasUrl)});
 						background-repeat:no-repeat;
-						background-size:${size * atlas.columns}px ${height * atlas.rows}px;
+						background-size:${effectiveSize * atlas.columns}px ${height * atlas.rows}px;
 					`}
 				></div>
 			</div>
@@ -1576,10 +1725,10 @@ onDestroy(() => {
 		--pet-grade: brightness(1.02) contrast(1.03) saturate(1.02);
 	}
 
-	/* 挂在侧栏卡片上：随卡片滚动/sticky，禁止再用视口 left/top 追窗口 */
+	/* 卡片锚定：仍用 fixed（坐标由 JS 同步），勿改 absolute 挂进卡片（会被 overflow 裁进框内） */
 	.sprite-pet-root.is-card-docked {
-		position: absolute;
-		z-index: 40;
+		position: fixed;
+		z-index: 1100;
 	}
 
 	/* 拖放到页面某处：文档绝对坐标，滚动窗口时留在原落点，不贴视口跟着跑 */

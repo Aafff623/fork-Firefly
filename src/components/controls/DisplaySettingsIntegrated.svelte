@@ -17,6 +17,7 @@ import {
 	getDefaultOverlayBlur,
 	getDefaultOverlayCardOpacity,
 	getDefaultOverlayOpacity,
+	getDefaultPetSelection,
 	getDefaultSakuraEnabled,
 	getDefaultWavesEnabled,
 	getHue,
@@ -28,6 +29,7 @@ import {
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
+	getStoredPetSelection,
 	getStoredSakuraEnabled,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
@@ -40,6 +42,7 @@ import {
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
+	setPetSelection,
 	setSakuraEnabled,
 	setWallpaperMode,
 	setWavesEnabled,
@@ -50,7 +53,9 @@ import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	siteConfig,
+	spritePetConfig,
 } from "@/config";
+import { findBuiltinPet } from "@/lib/pets/builtinPets";
 import type { WALLPAPER_MODE } from "@/types/config";
 
 type OverlaySliderItem = {
@@ -66,7 +71,7 @@ type OverlaySliderItem = {
 	onValueChange: (value: number) => void;
 };
 
-type TabKey = "appearance" | "wallpaper" | "effects";
+type TabKey = "appearance" | "wallpaper" | "effects" | "pets";
 
 let hue = $state(getHue());
 const defaultHue = getDefaultHue();
@@ -125,6 +130,15 @@ const isSakuraSwitchable = displaySettingsConfig.sakuraSwitchable;
 const isCardBorderSwitchable = displaySettingsConfig.cardBorderSwitchable;
 const isCardFollowThemeSwitchable =
 	displaySettingsConfig.cardFollowThemeSwitchable;
+const isPetPickerSwitchable =
+	displaySettingsConfig.petPickerSwitchable &&
+	spritePetConfig.enable &&
+	spritePetConfig.pickerEnabled;
+const pickerPets = isPetPickerSwitchable
+	? spritePetConfig.pickerPetIds.map((id) => findBuiltinPet(id))
+	: [];
+let selectedPetId = $state(getStoredPetSelection());
+const defaultPetSelection = getDefaultPetSelection();
 // 是否有任何横幅设置可显示（后续添加新设置时在此处添加条件）
 const hasBannerSettings =
 	isWavesSwitchable ||
@@ -177,7 +191,8 @@ const hasAnyContent =
 	allowLayoutSwitch ||
 	hasBannerSettings ||
 	hasOverlaySettings ||
-	isSakuraSwitchable;
+	isSakuraSwitchable ||
+	isPetPickerSwitchable;
 
 // --- Tab visibility ---
 const hasAppearanceTab = $derived(
@@ -194,6 +209,7 @@ const hasWallpaperTab = $derived(
 			hasBannerSettings),
 );
 const hasEffectsTab = $derived(isSakuraSwitchable);
+const hasPetsTab = $derived(isPetPickerSwitchable);
 
 let visibleTabs = $derived.by(() => {
 	const tabs: { key: TabKey; icon: string; label: string }[] = [];
@@ -214,6 +230,12 @@ let visibleTabs = $derived.by(() => {
 			key: "effects",
 			icon: "lucide:flower-2",
 			label: i18n(I18nKey.settingsTabEffects),
+		});
+	if (hasPetsTab)
+		tabs.push({
+			key: "pets",
+			icon: "lucide:cat",
+			label: i18n(I18nKey.settingsTabPets),
 		});
 	return tabs;
 });
@@ -304,6 +326,16 @@ function resetLayout() {
 		detail: { layout: effectiveDefaultLayout },
 	});
 	window.dispatchEvent(event);
+}
+
+function selectPet(petId: string) {
+	if (!mounted || selectedPetId === petId) return;
+	selectedPetId = petId;
+	setPetSelection(petId);
+}
+
+function resetPetSelection() {
+	selectPet(defaultPetSelection);
 }
 
 function resetWavesEnabled() {
@@ -515,6 +547,9 @@ onMount(() => {
 	sakuraEnabled =
 		getStoredSakuraEnabled() ||
 		document.documentElement.getAttribute("data-sakura-enabled") === "true";
+
+	// 桌宠选中项
+	selectedPetId = getStoredPetSelection();
 
 	const handleSakuraIntroEnded = () => {
 		sakuraEnabled = false;
@@ -771,8 +806,8 @@ $effect(() => {
 	{#if activeTab === "wallpaper"}
 		<!-- Wallpaper Mode Section -->
 		{#if isWallpaperSwitchable}
-		<div>
-			<div class="section-title">
+		<div class="wallpaper-dense">
+			<div class="section-title section-title--dense">
 				{i18n(I18nKey.wallpaperMode)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
 						class:opacity-0={wallpaperMode === defaultWallpaperMode} class:pointer-events-none={wallpaperMode === defaultWallpaperMode} onclick={resetWallpaperMode}>
@@ -781,42 +816,42 @@ $effect(() => {
 					</div>
 				</button>
 			</div>
-			<div class="grid grid-cols-2 gap-2">
+			<div class="grid grid-cols-2 gap-1">
 				<button
-					class="btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={wallpaperMode !== WALLPAPER_BANNER}
 					class:bg-(--btn-regular-bg-hover)={wallpaperMode === WALLPAPER_BANNER}
 					onclick={() => switchWallpaperMode(WALLPAPER_BANNER)}
 				>
-					<Icon icon="lucide:image" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.wallpaperBannerMode)}</span>
+					<Icon icon="lucide:image" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] font-medium leading-tight">{i18n(I18nKey.wallpaperBannerMode)}</span>
 				</button>
 				<button
-					class="btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={wallpaperMode !== WALLPAPER_FULLSCREEN}
 					class:bg-(--btn-regular-bg-hover)={wallpaperMode === WALLPAPER_FULLSCREEN}
 					onclick={() => switchWallpaperMode(WALLPAPER_FULLSCREEN)}
 				>
-					<Icon icon="lucide:image" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.wallpaperFullscreenMode)}</span>
+					<Icon icon="lucide:image" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] font-medium leading-tight">{i18n(I18nKey.wallpaperFullscreenMode)}</span>
 				</button>
 				<button
-					class="btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={wallpaperMode !== WALLPAPER_OVERLAY}
 					class:bg-(--btn-regular-bg-hover)={wallpaperMode === WALLPAPER_OVERLAY}
 					onclick={() => switchWallpaperMode(WALLPAPER_OVERLAY)}
 				>
-					<Icon icon="lucide:maximize" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.wallpaperOverlayMode)}</span>
+					<Icon icon="lucide:maximize" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] font-medium leading-tight">{i18n(I18nKey.wallpaperOverlayMode)}</span>
 				</button>
 				<button
-					class="btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
 					class:opacity-60={wallpaperMode !== WALLPAPER_NONE}
 					class:bg-(--btn-regular-bg-hover)={wallpaperMode === WALLPAPER_NONE}
 					onclick={() => switchWallpaperMode(WALLPAPER_NONE)}
 				>
-					<Icon icon="lucide:image-off" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.wallpaperNoneMode)}</span>
+					<Icon icon="lucide:image-off" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] font-medium leading-tight">{i18n(I18nKey.wallpaperNoneMode)}</span>
 				</button>
 			</div>
 		</div>
@@ -861,8 +896,8 @@ $effect(() => {
 
 		<!-- Banner Settings Section -->
 		{#if (wallpaperMode === WALLPAPER_BANNER || wallpaperMode === WALLPAPER_FULLSCREEN) && hasBannerSettings}
-		<div class="">
-			<div class="section-title">
+		<div class="wallpaper-dense">
+			<div class="section-title section-title--dense">
 				{i18n(I18nKey.wallpaperSettings)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
 						class:opacity-0={bannerSettingsIsDefault} class:pointer-events-none={bannerSettingsIsDefault} onclick={resetBannerSettings}>
@@ -871,76 +906,73 @@ $effect(() => {
 					</div>
 				</button>
 			</div>
-			<div class="space-y-1">
-				<!-- Banner Title Switch -->
+			<!-- 2×2 紧凑开关，压低弹层高度 -->
+			<div class="grid grid-cols-2 gap-1">
 				{#if isBannerTitleSwitchable}
 				<button
-					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center gap-1.5 text-left active:scale-95 transition-all relative overflow-hidden"
 					class:bg-(--btn-regular-bg-hover)={bannerTitleEnabled}
 					onclick={toggleBannerTitleEnabled}
 				>
-					<Icon icon="lucide:type" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-sm flex-1">{i18n(I18nKey.wallpaperTitle)}</span>
-					<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+					<Icon icon="lucide:type" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] flex-1 leading-tight">{i18n(I18nKey.wallpaperTitle)}</span>
+					<div class="w-8 h-4 rounded-full transition-all duration-200 relative shrink-0"
 						 class:bg-(--primary)={bannerTitleEnabled}
 						 class:bg-(--btn-regular-bg-active)={!bannerTitleEnabled}>
-						<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+						<div class="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200"
 							 class:left-0.5={!bannerTitleEnabled}
-							 class:left-5={bannerTitleEnabled}></div>
+							 class:left-4={bannerTitleEnabled}></div>
 					</div>
 				</button>
 				{/if}
-				<!-- Banner Carousel Switch -->
 				{#if isBannerCarouselSwitchable}
 				<button
-					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center gap-1.5 text-left active:scale-95 transition-all relative overflow-hidden"
 					class:bg-(--btn-regular-bg-hover)={bannerCarouselEnabled}
 					onclick={toggleBannerCarouselEnabled}
 				>
-					<Icon icon="lucide:gallery-horizontal" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-sm flex-1">{i18n(I18nKey.wallpaperCarousel)}</span>
-					<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+					<Icon icon="lucide:gallery-horizontal" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] flex-1 leading-tight">{i18n(I18nKey.wallpaperCarousel)}</span>
+					<div class="w-8 h-4 rounded-full transition-all duration-200 relative shrink-0"
 						 class:bg-(--primary)={bannerCarouselEnabled}
 						 class:bg-(--btn-regular-bg-active)={!bannerCarouselEnabled}>
-						<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+						<div class="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200"
 							 class:left-0.5={!bannerCarouselEnabled}
-							 class:left-5={bannerCarouselEnabled}></div>
+							 class:left-4={bannerCarouselEnabled}></div>
 					</div>
 				</button>
 				{/if}
-				<!-- Waves Animation Switch -->
 				{#if isWavesSwitchable}
 				<button
-					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center gap-1.5 text-left active:scale-95 transition-all relative overflow-hidden"
 					class:bg-(--btn-regular-bg-hover)={wavesEnabled}
 					onclick={toggleWavesEnabled}
 				>
-					<Icon icon="lucide:waves" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-sm flex-1">{i18n(I18nKey.wavesAnimation)}</span>
-					<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+					<Icon icon="lucide:waves" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] flex-1 leading-tight">{i18n(I18nKey.wavesAnimation)}</span>
+					<div class="w-8 h-4 rounded-full transition-all duration-200 relative shrink-0"
 						 class:bg-(--primary)={wavesEnabled}
 						 class:bg-(--btn-regular-bg-active)={!wavesEnabled}>
-						<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+						<div class="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200"
 							 class:left-0.5={!wavesEnabled}
-							 class:left-5={wavesEnabled}></div>
+							 class:left-4={wavesEnabled}></div>
 					</div>
 				</button>
 				{/if}
-				<!-- Gradient Transition Switch -->
 				{#if isGradientSwitchable}
 				<button
-					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+					class="btn-regular rounded-md py-1.5 px-2 flex items-center gap-1.5 text-left active:scale-95 transition-all relative overflow-hidden"
 					class:bg-(--btn-regular-bg-hover)={gradientEnabled}
 					onclick={toggleGradientEnabled}
 				>
-					<Icon icon="lucide:blend" class="text-[1.25rem] shrink-0"></Icon>
-					<span class="text-sm flex-1">{i18n(I18nKey.gradientTransition)}</span>
-					<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+					<Icon icon="lucide:blend" class="text-[1rem] shrink-0"></Icon>
+					<span class="text-[0.7rem] flex-1 leading-tight">{i18n(I18nKey.gradientTransition)}</span>
+					<div class="w-8 h-4 rounded-full transition-all duration-200 relative shrink-0"
 						 class:bg-(--primary)={gradientEnabled}
 						 class:bg-(--btn-regular-bg-active)={!gradientEnabled}>
-						<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+						<div class="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200"
 							 class:left-0.5={!gradientEnabled}
-							 class:left-5={gradientEnabled}></div>
+							 class:left-4={gradientEnabled}></div>
 					</div>
 				</button>
 				{/if}
@@ -979,6 +1011,81 @@ $effect(() => {
 			</button>
 		</div>
 		{/if}
+	{/if}
+
+	<!-- Pets Tab: visitor skin picker -->
+	{#if activeTab === "pets" && isPetPickerSwitchable}
+		<div class="">
+			<div class="section-title">
+				{i18n(I18nKey.petPickerTitle)}
+				<button
+					aria-label="Reset to Default"
+					class="btn-regular rounded-md active:scale-90"
+					class:opacity-0={selectedPetId === defaultPetSelection}
+					class:pointer-events-none={selectedPetId === defaultPetSelection}
+					onclick={resetPetSelection}
+				>
+					<div class="text-(--btn-content)">
+						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="flex flex-col gap-1.5">
+				<button
+					type="button"
+					class="pet-picker-item btn-regular rounded-md py-2 px-2.5 flex items-start gap-2.5 text-left active:scale-95 transition-all"
+					class:pet-picker-item--active={selectedPetId === 'default'}
+					onclick={() => selectPet('default')}
+				>
+					<span
+						class="mt-0.5 w-3 h-3 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
+						style="background:#5eb8ff"
+					></span>
+					<span class="min-w-0 flex-1">
+						<span class="pet-picker-item__head flex items-center gap-1.5 min-w-0">
+							<span class="pet-picker-item__title text-xs truncate">{i18n(I18nKey.petPickerDefault)}</span>
+							{#if selectedPetId === 'default'}
+								<span class="pet-picker-item__badge shrink-0">{i18n(I18nKey.petPickerCurrent)}</span>
+							{/if}
+						</span>
+						<span class="pet-picker-item__sub block text-[0.65rem] leading-snug mt-0.5">
+							{i18n(I18nKey.petPickerDefaultHint)}
+						</span>
+					</span>
+				</button>
+				{#each pickerPets as pet (pet.id)}
+					<button
+						type="button"
+						class="pet-picker-item btn-regular rounded-md py-2 px-2.5 flex items-start gap-2.5 text-left active:scale-95 transition-all"
+						class:pet-picker-item--active={selectedPetId === pet.id}
+						onclick={() => selectPet(pet.id)}
+						title={pet.description}
+					>
+						<span
+							class="mt-0.5 w-3 h-3 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
+							style={`background:${pet.accent}`}
+						></span>
+						<span class="min-w-0 flex-1">
+							<span class="pet-picker-item__head flex items-center gap-1.5 min-w-0">
+								<span class="pet-picker-item__title text-xs truncate">{pet.shortName}</span>
+								{#if selectedPetId === pet.id}
+									<span class="pet-picker-item__badge shrink-0">{i18n(I18nKey.petPickerCurrent)}</span>
+								{/if}
+							</span>
+							<span class="pet-picker-item__sub block text-[0.65rem] leading-snug mt-0.5">
+								{pet.displayName}
+								{#if pet.licenseKind === "unknown"}
+									· <span class="text-amber-600 dark:text-amber-400">{i18n(I18nKey.petPickerLicenseUnknown)}</span>
+								{/if}
+							</span>
+						</span>
+					</button>
+				{/each}
+			</div>
+			<p class="pet-picker-footnote mt-2 text-[0.65rem] leading-snug">
+				{i18n(I18nKey.petPickerAttribution)}
+			</p>
+		</div>
 	{/if}
 </div>
 {/if}

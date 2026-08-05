@@ -315,6 +315,15 @@ export const zh_CN: Translation = {
 	[Key.settingsTabAppearance]: "外观",
 	[Key.settingsTabWallpaper]: "壁纸",
 	[Key.settingsTabEffects]: "特效",
+	[Key.settingsTabPets]: "桌宠",
+
+	// 桌宠换皮
+	[Key.petPickerTitle]: "选择桌宠",
+	[Key.petPickerDefault]: "默认 · DeepSeek",
+	[Key.petPickerDefaultHint]: "浏览 Maid · 文章 OpenPet",
+	[Key.petPickerLicenseUnknown]: "许可未明确",
+	[Key.petPickerCurrent]: "当前",
+	[Key.petPickerAttribution]: "素材来自 awesome-codex-pet；非商业展示请署名作者。",
 
 	// 卡片样式
 	[Key.cardSettings]: "卡片样式",
@@ -428,6 +437,7 @@ export const zh_CN: Translation = {
 	[Key.galleryViewWork]: "查看相册",
 	[Key.galleryDragHint]: "点击聚焦 · 拖拽平移 · 滚轮缩放 · WASD / QE",
 	[Key.galleryDemoHint]: "演示循环中 · 点击画幅或按 Esc 接管",
+	[Key.galleryPhotoWall]: "照片墙",
 
 	// 密码保护
 	[Key.passwordProtected]: "密码保护",

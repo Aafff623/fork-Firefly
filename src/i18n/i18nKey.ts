@@ -316,6 +316,15 @@ enum I18nKey {
 	settingsTabAppearance = "settingsTabAppearance",
 	settingsTabWallpaper = "settingsTabWallpaper",
 	settingsTabEffects = "settingsTabEffects",
+	settingsTabPets = "settingsTabPets",
+
+	// 桌宠换皮
+	petPickerTitle = "petPickerTitle",
+	petPickerDefault = "petPickerDefault",
+	petPickerDefaultHint = "petPickerDefaultHint",
+	petPickerLicenseUnknown = "petPickerLicenseUnknown",
+	petPickerCurrent = "petPickerCurrent",
+	petPickerAttribution = "petPickerAttribution",
 
 	// 卡片样式
 	cardSettings = "cardSettings",
@@ -427,6 +436,7 @@ enum I18nKey {
 	galleryViewWork = "galleryViewWork",
 	galleryDragHint = "galleryDragHint",
 	galleryDemoHint = "galleryDemoHint",
+	galleryPhotoWall = "galleryPhotoWall",
 
 	// 密码保护
 	passwordProtected = "passwordProtected",

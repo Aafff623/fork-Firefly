@@ -325,6 +325,14 @@ export const ru: Translation = {
 	[Key.settingsTabAppearance]: "Оформление",
 	[Key.settingsTabWallpaper]: "Обои",
 	[Key.settingsTabEffects]: "Эффекты",
+	[Key.settingsTabPets]: "Питомец",
+
+	[Key.petPickerTitle]: "Питомцы",
+	[Key.petPickerDefault]: "По умолчанию · DeepSeek",
+	[Key.petPickerDefaultHint]: "Обзор Maid · Статья OpenPet",
+	[Key.petPickerLicenseUnknown]: "Лицензия неясна",
+	[Key.petPickerCurrent]: "Сейчас",
+	[Key.petPickerAttribution]: "Материалы из awesome-codex-pet; укажите авторов при некоммерческом показе.",
 
 	// Стиль карточек
 	[Key.cardSettings]: "Стиль карточек",
@@ -439,6 +447,7 @@ export const ru: Translation = {
 	[Key.galleryViewWork]: "Открыть альбом",
 	[Key.galleryDragHint]: "Клик — фокус · перетаскивание · колесо · WASD / QE",
 	[Key.galleryDemoHint]: "Демо · клик по кадру или Esc",
+	[Key.galleryPhotoWall]: "Стена фото",
 
 	// Защита паролем
 	[Key.passwordProtected]: "Защищено паролем",

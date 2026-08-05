@@ -50,3 +50,7 @@
 ## 许可
 
 见 `public/pets/README.md`。历史：`docs/knowledge/cc-haha-pets.md`（已归档）。
+
+## 访客换皮
+
+设置面板「桌宠」Tab 可覆盖为 Codex v1 单皮（全站同皮）。语义见 `docs/knowledge/codex-pet-picker.md`。

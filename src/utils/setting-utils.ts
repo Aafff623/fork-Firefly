@@ -16,6 +16,7 @@ import {
 	expressiveCodeConfig,
 	siteConfig,
 } from "../config";
+import { isPickerPetId } from "@/lib/pets/builtinPets";
 import { isHomePage as checkIsHomePage } from "./layout-utils";
 
 // Declare global functions
@@ -905,7 +906,19 @@ export function getDefaultOverlayCardOpacity(): number {
 	return backgroundWallpaper.overlay?.cardOpacity ?? 0.6;
 }
 
+/** 面板关闭透明调节时，始终用站点配置，忽略历史 localStorage */
+function isOverlayPanelSwitchable(): boolean {
+	const cfg = displaySettingsConfig.overlaySwitchable;
+	if (cfg === false) return false;
+	if (cfg === true) return true;
+	return !!(cfg.opacity || cfg.blur || cfg.cardOpacity);
+}
+
 export function getStoredOverlayOpacity(): number {
+	// 面板未开放时强制配置默认，避免访客残留值
+	if (!isOverlayPanelSwitchable()) {
+		return getDefaultOverlayOpacity();
+	}
 	if (
 		typeof localStorage === "undefined" ||
 		typeof localStorage.getItem !== "function"
@@ -924,6 +937,9 @@ export function getStoredOverlayOpacity(): number {
 }
 
 export function getStoredOverlayBlur(): number {
+	if (!isOverlayPanelSwitchable()) {
+		return getDefaultOverlayBlur();
+	}
 	if (
 		typeof localStorage === "undefined" ||
 		typeof localStorage.getItem !== "function"
@@ -942,6 +958,9 @@ export function getStoredOverlayBlur(): number {
 }
 
 export function getStoredOverlayCardOpacity(): number {
+	if (!isOverlayPanelSwitchable()) {
+		return getDefaultOverlayCardOpacity();
+	}
 	if (
 		typeof localStorage === "undefined" ||
 		typeof localStorage.getItem !== "function"
@@ -1382,5 +1401,53 @@ export function setCardFollowThemeEnabled(enabled: boolean): void {
 		document.body.classList.add("card-follow-theme-hue");
 	} else {
 		document.body.classList.remove("card-follow-theme-hue");
+	}
+}
+
+// ── 站内桌宠换皮（访客偏好）────────────────────────────────
+
+const PET_SELECTION_STORAGE_KEY = "firefly-sprite-pet-id-v1";
+
+export function getDefaultPetSelection(): "default" {
+	return "default";
+}
+
+export function getStoredPetSelection(): string {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultPetSelection();
+	}
+	try {
+		const raw = localStorage.getItem(PET_SELECTION_STORAGE_KEY);
+		if (!raw || raw === "default") return "default";
+		if (isPickerPetId(raw)) return raw;
+		return getDefaultPetSelection();
+	} catch {
+		return getDefaultPetSelection();
+	}
+}
+
+/** 写入选宠并广播，供 SpritePet 即时换皮 */
+export function setPetSelection(petId: string): void {
+	const value =
+		petId === "default" || isPickerPetId(petId) ? petId : "default";
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		try {
+			localStorage.setItem(PET_SELECTION_STORAGE_KEY, value);
+		} catch {
+			/* ignore */
+		}
+	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("firefly:pet-change", {
+				detail: { petId: value },
+			}),
+		);
 	}
 }
