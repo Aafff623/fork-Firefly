@@ -23,11 +23,14 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "#",
 		icon: "lucide:book-open",
 		children: [
-			// 归档
+			// 时间轴
 			LinkPresets.Archive,
 
 			// 分类
 			LinkPresets.Categories,
+
+			// 合集
+			LinkPresets.Collections,
 
 			// 标签
 			LinkPresets.Tags,
@@ -129,14 +132,19 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		pageKey: "dynamic",
 	},
 	Archive: {
-		name: "归档",
-		url: "/archive/",
-		icon: "lucide:archive",
+		name: "时间轴",
+		url: "/timeline/",
+		icon: "lucide:history",
 	},
 	Categories: {
 		name: "分类",
 		url: "/categories/",
 		icon: "lucide:folder-open",
+	},
+	Collections: {
+		name: "合集",
+		url: "/collections/",
+		icon: "lucide:library",
 	},
 	Tags: {
 		name: "标签",

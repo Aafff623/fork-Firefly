@@ -1,7 +1,7 @@
 ---
 /**
  * 卡片质感立体标签球（TagCloud.js）。
- * 闲置慢转 · 拖拽灵敏加速 · 轻点一级标签 → /archive/?tag=
+ * 闲置慢转 · 拖拽灵敏加速 · 轻点一级标签 → /timeline/?tag=
  * 支持 data-view-mode=sphere|list；侧栏标签墙与 /tags/ 复用。
  */
 import { getTagList } from "@/utils/content-utils";
@@ -22,6 +22,8 @@ interface Props {
 	moreCount?: number;
 	/** 侧栏紧凑尺寸 */
 	compact?: boolean;
+	/** 初始视图：侧栏默认球，/tags/ 页默认列表 */
+	defaultMode?: "sphere" | "list";
 }
 
 const {
@@ -33,7 +35,10 @@ const {
 	moreHref,
 	moreCount = 0,
 	compact = false,
+	defaultMode = "sphere",
 } = Astro.props;
+
+const initialMode = defaultMode === "list" ? "list" : "sphere";
 
 const source = tagsProp ?? (await getTagList());
 const ranked = [...source]
@@ -87,13 +92,13 @@ const showMore = Boolean(moreHref && moreCount > 0);
   data-cloud-id={cloudId}
   data-radius={radius}
   data-href-map={JSON.stringify(hrefByName)}
-  data-view-mode="sphere"
-  data-ready="0"
+  data-view-mode={initialMode}
+  data-ready={initialMode === "list" ? "1" : "0"}
   style={`--tag-sphere-d: ${Math.max(8, radius * 2)}px;`}
   aria-label={title || "标签立体球"}
 >
   {title ? <h3 class="tag-sphere__title">{title}</h3> : null}
-  <div class="tag-sphere__frame" data-tag-sphere-frame>
+  <div class="tag-sphere__frame" data-tag-sphere-frame hidden={initialMode === "list"}>
     {/* 球未就绪时仅占位，避免空白框外再露列表 */}
     <div class="tag-sphere__placeholder" data-tag-sphere-placeholder aria-hidden="true">
       <span class="tag-sphere__placeholder-pulse"></span>
@@ -102,8 +107,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
       <div class="tag-sphere__cloud" id={cloudId}></div>
     </div>
   </div>
-  {/* 默认隐藏；列表模式或减动效时再显示 */}
-  <ul class="tag-sphere__fallback" data-tag-chalk-fallback hidden>
+  {/* 列表模式默认露出；球模式隐藏 */}
+  <ul class="tag-sphere__fallback" data-tag-chalk-fallback hidden={initialMode !== "list"}>
     {
       shown.map((t) => (
         <li>
@@ -199,7 +204,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
     function fallbackTagHref(name) {
       return (
-        "/archive/?tag=" + encodeURIComponent(String(name).trim())
+        "/timeline/?tag=" + encodeURIComponent(String(name).trim())
       );
     }
 

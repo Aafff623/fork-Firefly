@@ -14,7 +14,7 @@ const { currentPostCategory } = Astro.props as Props;
 const categories = await getCategoryList();
 const totalPosts = (await getSortedPostsList()).length;
 const homeUrl = url("/");
-const archiveUrl = url("/archive/");
+const archiveUrl = url("/timeline/");
 
 // 服务端计算初始高亮 pill（首屏无需等 JS）。
 // 查询串筛选（?category=/?tag=/?uncategorized）在静态页构建期不可知，
@@ -66,7 +66,7 @@ function initialActive(categoryName: string): {
       data-category-name="__archive__"
       data-active={initialActive("__archive__").active ? "" : undefined}
     >
-      <Icon is:inline name="lucide:archive" class="category-icon text-[0.95rem]" aria-hidden="true" />
+      <Icon is:inline name="lucide:history" class="category-icon text-[0.95rem]" aria-hidden="true" />
       <span>{i18n(I18nKey.archive)}</span>
       <span class="pill-count">{totalPosts}</span>
     </a>
@@ -201,7 +201,7 @@ function initialActive(categoryName: string): {
   function getCategoryBarState(bar: HTMLElement, currentUrl: URL) {
     const pathname = currentUrl.pathname.replace(/\/$/, "");
     const homePath = (bar.getAttribute("data-home-path") || "/").replace(/\/$/, "");
-    const archivePath = (bar.getAttribute("data-archive-path") || "/archive").replace(/\/$/, "");
+    const archivePath = (bar.getAttribute("data-archive-path") || "/timeline").replace(/\/$/, "");
     const isHome = pathname === homePath || pathname === "" || pathname === "/";
     const isArchive = pathname === archivePath;
     const isCategories = pathname === "/categories";

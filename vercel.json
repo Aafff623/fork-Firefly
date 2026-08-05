@@ -3,6 +3,13 @@
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": "astro",
+  "redirects": [
+    {
+      "source": "/archive/:path*",
+      "destination": "/timeline/:path*",
+      "statusCode": 308
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
