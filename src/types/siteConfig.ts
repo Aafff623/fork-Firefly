@@ -88,6 +88,11 @@ export type SiteConfig = {
 		dynamic: boolean; // 动态页面开关
 	};
 
+	/** 留言页顶卡右半竹蝉岛（自研；默认启用） */
+	guestbookCicada?: {
+		enabled?: boolean;
+	};
+
 	// 分类导航栏开关
 	categoryBar?: boolean;
 

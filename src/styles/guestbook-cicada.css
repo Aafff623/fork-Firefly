@@ -1,0 +1,66 @@
+/* 留言卡右半 · 竹蝉岛：透明无框，融进留言卡 */
+
+.guestbook-cicada {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  contain: paint;
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.guestbook-cicada__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  background: transparent;
+}
+
+.guestbook-cicada__canvas.is-holding {
+  cursor: grabbing;
+}
+
+/* 留言顶卡分栏：无分割线、无独立方框感 */
+.guestbook-hero {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 8rem;
+}
+
+.guestbook-hero__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.5rem 2.25rem;
+}
+
+.guestbook-hero__aside {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 10rem;
+  overflow: hidden;
+  contain: paint;
+  background: transparent;
+  border: 0;
+}
+
+@media (min-width: 768px) {
+  .guestbook-hero {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .guestbook-hero__aside {
+    /* 跟左栏同高，不另起正方形面板 */
+    width: min(42%, 17rem);
+    min-height: 0;
+    align-self: stretch;
+  }
+}

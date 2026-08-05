@@ -118,6 +118,14 @@ export const siteConfig: SiteConfig = {
 		dynamic: true,
 	},
 
+	/**
+	 * 留言页顶卡右半「竹蝉」交互岛（自研 Canvas，非原作再分发）
+	 * enabled=false 时顶卡恢复单栏
+	 */
+	guestbookCicada: {
+		enabled: true,
+	},
+
 	// 分类导航栏开关，在首页和归档页顶部显示分类快捷导航
 	categoryBar: true,
 

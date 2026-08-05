@@ -2,6 +2,7 @@
 import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
+import GuestbookCicada from "@/components/pages/guestbook/GuestbookCicada.svelte";
 import { Icon } from "astro-icon/components";
 import { commentConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
@@ -27,33 +28,46 @@ const isCommentEnabled = commentConfig?.type && commentConfig.type !== "none";
 // 页面标题和描述
 const title = i18n(I18nKey.guestbook);
 const description = i18n(I18nKey.guestbookDescription);
+
+/** 留言卡右半竹蝉岛开关（自研兼容实现，非原作再分发） */
+const cicadaEnabled = siteConfig.guestbookCicada?.enabled !== false;
 ---
 
 <MainGridLayout title={title} description={description}>
   <div
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
-      <div class="mb-8">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
-            <Icon is:inline name="lucide:message-circle" class="text-[1.5rem]"></Icon>
+    <div class="card-base z-10 relative w-full overflow-hidden p-0">
+      <div class="guestbook-hero">
+        <div class="guestbook-hero__copy">
+          <!-- 页面标题和描述 -->
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
+                <Icon is:inline name="lucide:message-circle" class="text-[1.5rem]"></Icon>
+              </div>
+              <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+                {title}
+              </div>
+            </div>
+            {description && (
+              <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+                {description}
+              </p>
+            )}
           </div>
-          <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            {title}
-          </div>
+
+          <Markdown class="mt-2">
+            <Content />
+          </Markdown>
         </div>
-        {description && (
-          <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
-            {description}
-          </p>
+
+        {cicadaEnabled && (
+          <aside class="guestbook-hero__aside" aria-label="留言卡角落玩具">
+            <GuestbookCicada client:visible />
+          </aside>
         )}
       </div>
-      
-      <Markdown class="mt-2">
-        <Content />
-      </Markdown>
     </div>
   </div>
 

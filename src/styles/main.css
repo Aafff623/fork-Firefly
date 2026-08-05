@@ -19,6 +19,7 @@
 @import './waterfall.css';
 @import './text-voice.css';
 @import './announcement-press.css';
+@import './guestbook-cicada.css';
 
 @plugin '@tailwindcss/typography';
 

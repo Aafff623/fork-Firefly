@@ -1331,6 +1331,13 @@ function onSitePointerDown(event: Event) {
 	const target = event.target;
 	if (!(target instanceof Element)) return;
 	if (rootEl?.contains(target)) return;
+	// 留言卡竹蝉岛激活时不抢站点 UI 反应，避免与画圈手势打架
+	if (
+		document.documentElement.dataset.cicadaActive === "1" ||
+		target.closest("[data-guestbook-cicada]")
+	) {
+		return;
+	}
 	resetIdleTimer();
 
 	if (target.closest("#scheme-switch")) {
