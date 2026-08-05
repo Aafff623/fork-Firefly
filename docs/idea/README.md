@@ -59,5 +59,9 @@ docs/idea/{theme}/          # 灵感沉淀（本目录）
 | `zhuzhiliao-toy` | 竹知了玩具模拟器 → 角落互动彩蛋（画圈甩动 + 真实竹叫采样） | step-1 + clone 补记（2026-08-04） |
 | `interface-lab` | Interface Lab：视频懒播 · 折纸信封 Motion · 橱窗注册表；Desktop-only 作反模式 | step-1 分析完成（2026-08-04） |
 | `codex-pet-deepseek` | 双桌宠：浏览 Maid（v2）/ 文章 OpenPet（8×9）；PRD 已落地 | step-3 shipped（2026-08-04） |
+| `comment-sticker-suggest` | 评论梗图联想（架构 / 调研） | 已有 architecture · research-index |
+| `pixtale-gallery` | Pixtale（Next 瀑布相册）→ 产品壳与密度参考 | step-1（2026-08-05） |
+| `pinterest-masonry` | Pinterest 式瀑布 + Grok 轮子消化；对齐本站 Astro 栈 | step-1（2026-08-05） |
 
-探针类（`temp/_cdn_probe` · `_page.html` · `_probe.bin`）不建 theme。本地素材仍在 `temp/maid-deepseek-whale*` · `temp/openpet-ai-girls*`，**未**拷入 `public/pets`。
+探针类（`temp/_cdn_probe` · `_page.html` · `_probe.bin`）不建 theme。  
+桌宠：产品已在 `public/pets/`；`temp/maid-deepseek-whale*` / `openpet-ai-girls*` 仅作可选对照源（可删）。

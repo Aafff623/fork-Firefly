@@ -25,10 +25,11 @@
 
 ## 开放问题
 
-- License 未标注（README 无 license），直接内嵌或重写需先确认
+- **License（已核实）**：原作 `Zhuzhiliao Source-Available License` 禁止未授权公开站部署/再分发。站内留言卡右半为**自研兼容岛**（`GuestbookCicada`），玩法对齐「画圈甩」，**不拷贝原作源码与采样资产**。
 - 是否要实时计数（全球哇数等）——涉及后端，默认砍掉只留本地自嗨？
-- 塞哪个犄角旮旯、如何被用户发现（404 / about / 侧栏 / 彩蛋入口）
+- 塞哪个犄角旮旯、如何被用户发现（404 / about / 侧栏 / 彩蛋入口）——**当前落地**：`/guestbook/` 顶卡右半
 - 桌面鼠标 vs 移动甩动：交互适配差异需处理
-- Canvas 常驻开销 vs 懒加载激活策略
+- Canvas 常驻开销 vs 懒加载激活策略——已用 `client:visible` + 离屏挂起 AudioContext
 
-> 2026-08-04：本地 clone 已核过静置挂起音频、触屏锚点、DO 计数边界等，见 [`clone-notes.md`](./clone-notes.md)。
+> 2026-08-04：本地 clone 已核过静置挂起音频、触屏锚点、DO 计数边界等，见 [`clone-notes.md`](./clone-notes.md)。  
+> 2026-08-05：留言卡右半自研岛上线；配置 `siteConfig.guestbookCicada.enabled`。
