@@ -46,13 +46,13 @@
 
 几乎所有开关在 `src/config/*.ts`，经 `@/config` barrel 导出；类型在 `src/types/`。改站优先改配置，不改布局内核。
 
-核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` …
+核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `collectionsConfig`（人工合集登记）…
 
 ## 内容模型
 
 Content Collections（`src/content.config.ts`）：
 
-- `posts` — 博客文章（md/mdx）
+- `posts` — 博客文章（md/mdx；frontmatter 可含 `collections` 人工收录进合集）
 - `dynamic` — 动态/碎碎念（可接 Memos）
 - `spec` — 特殊页面 Markdown
 

@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 > **Output Style**: `humanizer-output-style` — `~/.claude/skills/humanizer-output-style/SKILL.md`  
+> **Session Init**: `windows-agent-discipline` — 会话启动先读（见 AGENTS.md）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
 > **Windows / Answer / Commit / Karpathy rules**: `.cursor/rules/*.mdc`（alwaysApply）
 
 本文件是维护协议与加载顺序；硬约束以 `AGENTS.md` 为准，领域以 `CONTEXT.md` 为准。

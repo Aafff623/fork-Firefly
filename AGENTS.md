@@ -1,6 +1,7 @@
 # AGENTS.md
 
 > **Output Style**: `humanizer-output-style` skill — 统一语气与去 AI 味。路径：`~/.claude/skills/humanizer-output-style/SKILL.md`  
+> **Session Init**: `windows-agent-discipline` skill — **会话启动先读**（Agent 画像警示 / Windows 编码纪律 / 工具调用与交付自检）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
 > **Windows Rules**: `.cursor/rules/windows-path-discipline.mdc` · `windows-shell-discipline.mdc`  
 > **Commit History**: `.cursor/rules/commit-history.mdc`  
 > **Karpathy**: `.cursor/rules/karpathy-guidelines.mdc`
