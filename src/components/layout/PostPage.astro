@@ -10,9 +10,11 @@ interface Props {
 		data: CollectionEntry<"posts">[];
 	};
 	autoPinnedId?: string | null;
+	/** 强制文章列表布局（忽略浏览器 localStorage 偏好）；不传则用站点默认 + 用户偏好 */
+	forcedLayout?: "list" | "grid" | "waterfall";
 }
 
-const { page, autoPinnedId = null } = Astro.props;
+const { page, autoPinnedId = null, forcedLayout } = Astro.props;
 
 let delay = 0;
 const interval = 50;
@@ -24,10 +26,13 @@ const masonryEnabled = siteConfig.postListLayout.grid.masonry;
 const columnWidth = siteConfig.postListLayout.grid.columnWidth || 280;
 
 // 根据配置设置初始布局模式，避免闪烁
-const defaultLayout = siteConfig.postListLayout.defaultMode || "list";
+const defaultLayout =
+	forcedLayout ?? (siteConfig.postListLayout.defaultMode || "list");
 const mobileDefaultLayout =
-	siteConfig.postListLayout.mobileDefaultMode || defaultLayout;
-const layoutSwitchable = displaySettingsConfig.layoutSwitchable;
+	forcedLayout ?? (siteConfig.postListLayout.mobileDefaultMode || defaultLayout);
+const layoutSwitchable = forcedLayout
+	? false
+	: displaySettingsConfig.layoutSwitchable;
 const initialLayoutClass =
 	defaultLayout === "grid"
 		? "post-grid-auto grid-mode"

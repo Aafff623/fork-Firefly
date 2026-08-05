@@ -1,0 +1,99 @@
+---
+/**
+ * 合集详情页：头部（emoji + 名称 + 描述 + 数量）+ 复用 PostPage 的文章列表。
+ */
+import type { GetStaticPaths } from "astro";
+import PostPage from "@/components/layout/PostPage.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import type { CollectionEntryWithMeta } from "@/utils/collection-utils";
+import { getCollections } from "@/utils/collection-utils";
+
+export const getStaticPaths = (async () => {
+	const collections = await getCollections();
+	return collections.map((c) => ({
+		params: { slug: c.meta.slug },
+		props: { collection: c },
+	}));
+}) satisfies GetStaticPaths;
+
+const { collection } = Astro.props as { collection: CollectionEntryWithMeta };
+
+// 未登记 slug（仅动态访问兜底）：跳 404
+if (!collection) return Astro.redirect("/404/");
+
+const { meta, posts } = collection;
+const page = { data: posts };
+---
+
+<MainGridLayout title={meta.name} description={meta.description}>
+  <div class="card-base px-6 py-5 mb-4 sm:px-8 sm:py-6">
+    <div class="collection-head">
+      {
+        meta.emoji && (
+          <span class="collection-head__emoji" aria-hidden="true">
+            {meta.emoji}
+          </span>
+        )
+      }
+      <div class="collection-head__body">
+        <h1 class="collection-head__title">{meta.name}</h1>
+        <p class="collection-head__desc">{meta.description}</p>
+        <p class="collection-head__meta">
+          {posts.length} {i18n(I18nKey.postsCount)}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <PostPage page={page} forcedLayout="list" />
+</MainGridLayout>
+
+<style>
+  .collection-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .collection-head__emoji {
+    flex: none;
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+
+  .collection-head__body {
+    min-width: 0;
+  }
+
+  .collection-head__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+    font-family:
+      "Iowan Old Style",
+      "Palatino Linotype",
+      Palatino,
+      "Songti SC",
+      "Noto Serif SC",
+      Georgia,
+      serif;
+  }
+
+  .collection-head__desc {
+    margin: 0 0 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-color, #444);
+  }
+
+  .collection-head__meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+    font-variant-numeric: tabular-nums;
+  }
+</style>

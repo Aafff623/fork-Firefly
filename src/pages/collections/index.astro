@@ -1,0 +1,134 @@
+---
+/**
+ * 合集总览页：人工策展合集卡片墙。
+ */
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getCollections } from "@/utils/collection-utils";
+
+const collections = await getCollections();
+const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
+---
+
+<MainGridLayout title={i18n(I18nKey.collections)} description={i18n(I18nKey.allCollections)}>
+  <div class="card-base px-6 py-5 mb-4 sm:px-8 sm:py-6">
+    <h1 class="collections-page__title">{i18n(I18nKey.collections)}</h1>
+    <p class="collections-page__meta">
+      {i18n(I18nKey.allCollections)} · {totalPosts} {i18n(I18nKey.postsCount)}
+    </p>
+  </div>
+
+  {
+    collections.length > 0 ? (
+      <div class="collections-grid">
+        {
+          collections.map(({ meta, url, posts }) => (
+            <a
+              href={url}
+              class="collection-card card-base onload-animation"
+              title={`${meta.name} · ${posts.length}`}
+            >
+              {
+                meta.emoji && (
+                  <span class="collection-card__emoji" aria-hidden="true">
+                    {meta.emoji}
+                  </span>
+                )
+              }
+              <span class="collection-card__name">{meta.name}</span>
+              <span class="collection-card__desc">{meta.description}</span>
+              <span class="collection-card__count">
+                {posts.length} {i18n(I18nKey.postsCount)}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    ) : (
+      <div class="card-base px-8 py-12 text-center">
+        <p class="text-30">{i18n(I18nKey.noData)}</p>
+      </div>
+    )
+  }
+</MainGridLayout>
+
+<style>
+  .collections-page__title {
+    margin: 0 0 0.25rem;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+    font-family:
+      "Iowan Old Style",
+      "Palatino Linotype",
+      Palatino,
+      "Songti SC",
+      "Noto Serif SC",
+      Georgia,
+      serif;
+  }
+
+  .collections-page__meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.9rem;
+  }
+
+  .collection-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem 1.25rem 1.1rem;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 78%, transparent);
+  }
+
+  .collection-card__emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .collection-card__name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-style: italic;
+    text-decoration: underline wavy;
+    text-decoration-color: color-mix(in oklch, var(--primary) 55%, transparent);
+  }
+
+  .collection-card__desc {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .collection-card__count {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (hover: hover) {
+    .collection-card:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in oklch, var(--primary) 34%, var(--line-divider));
+      box-shadow: 0 0.45rem 1.1rem color-mix(in oklch, var(--primary) 10%, transparent);
+    }
+  }
+</style>
