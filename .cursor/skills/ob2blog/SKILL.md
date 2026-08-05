@@ -26,6 +26,7 @@ compatibility: Requires the Firefly project root (package.json with pnpm new-pos
 | **一致性检查、加速管线、manifest** | [sync-and-speed.md](references/sync-and-speed.md) |
 | Vault 路径、`![[…]]` 解析、附件目录 | [obsidian-vault.md](references/obsidian-vault.md) |
 | 字段、脏 yaml、要不要加密 | [frontmatter.md](references/frontmatter.md) |
+| **列表卡 emoji / 颜文字（勿写进 title）** | [title-mood.md](references/title-mood.md) |
 | 提醒框 / 代码 / GitHub 卡 / MDX | [syntax-cookbook.md](references/syntax-cookbook.md) |
 | 图、GIF、B 站/YT、音频 | [media-rules.md](references/media-rules.md) |
 | 乱码、危险链、script、结构极端 | [safety.md](references/safety.md) |
@@ -42,7 +43,8 @@ compatibility: Requires the Firefly project root (package.json with pnpm new-pos
 6. **一致性：** 已映射文章每次动手前跑 `sync_check.py`；漂移先处理再改。  
 7. **本地改名必跟：** vault 改文件名/标题 → 同步博客 `title` + manifest 路径 + 动态锚文本（见下节）；默认保留 slug。  
 8. **加速：** 新文/重转优先 `prep_convert.py`，Agent 只审 `report.json` 警告项，勿从零手搓拷图。  
-9. 跑 `validate_post.py`；未获准不 commit/push。
+9. 跑 `validate_post.py`；未获准不 commit/push。  
+10. **列表卡情绪点缀**（emoji / 颜文字）由 `title-mood` **仅展示层**挂载；**禁止**写入 frontmatter `title`（正文 H1 / RSS / OG 保持干净）。见 [title-mood.md](references/title-mood.md)。
 
 ## 真源与一致性（摘要）
 
@@ -128,11 +130,13 @@ public/posts/<slug>/          # GIF / 本地音视频
 
 ```bash
 python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug>
-# 公开帖且尚无「新笔记」动态时：
-python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug> --emit-dynamic
+# 公开帖且尚无「新笔记」动态时（推荐带批注）：
+python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug> --emit-dynamic --blurb "一两句作者批注"
 ```
 
-3. 将 cascade 摘要写入本 skill 的最终汇报（动态是否 emit、分类/标签是否进索引、热力日期是否计入）。
+3. 将 cascade 摘要写入本 skill 的最终汇报（动态是否 emit、**是否含批注**、分类/标签是否进索引、热力日期是否计入）。
+
+笔记型动态须带 Markdown `>` 批注；未传 `--blurb` 时 cascade 会用帖子 `description`（见 `site-cascade`）。
 
 MDC 提醒：`.cursor/rules/site-cascade-after-content.mdc`。  
 分工：本 skill = Obsidian→帖；**site-cascade** = 发文后首页/侧栏级联。

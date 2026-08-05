@@ -5,6 +5,7 @@ Usage (Firefly/):
   python .cursor/skills/site-cascade/scripts/cascade_check.py
   python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-save-money
   python .cursor/skills/site-cascade/scripts/cascade_check.py --slug X --emit-dynamic
+  python .cursor/skills/site-cascade/scripts/cascade_check.py --slug X --emit-dynamic --blurb "作者批注一句"
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ TZ_SHANGHAI = timezone(timedelta(hours=8), name="UTC+8")
 
 FM_RE = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n?", re.S)
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}")
+FALLBACK_BLURB = "写完挂上了，点进去看。"
 
 
 def firefly_root() -> Path:
@@ -103,12 +105,27 @@ def load_posts(repo: Path) -> list[dict]:
                 "slug": slug,
                 "draft": draft,
                 "published": published,
+                "description": (meta.get("description") or "").strip(),
                 "category": (meta.get("category") or "").strip(),
                 "tags": parse_tags(meta.get("tags") or ""),
                 "words": count_words(body),
             }
         )
     return posts
+
+
+def normalize_blurb(text: str) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    return text if text else FALLBACK_BLURB
+
+
+def resolve_blurb(post: dict, blurb: str | None) -> str:
+    if blurb and blurb.strip():
+        return normalize_blurb(blurb.strip())
+    desc = (post.get("description") or "").strip()
+    if desc:
+        return normalize_blurb(desc)
+    return FALLBACK_BLURB
 
 
 def load_dynamics(repo: Path) -> list[dict]:
@@ -163,7 +180,7 @@ def dynamic_covers_slug(dynamics: list[dict], slug: str) -> bool:
     return False
 
 
-def emit_dynamic(repo: Path, post: dict) -> Path:
+def emit_dynamic(repo: Path, post: dict, blurb: str | None = None) -> Path:
     now = datetime.now(TZ_SHANGHAI)
     stamp = now.strftime("%Y-%m-%d %H:%M:%S")
     file_stamp = now.strftime("%Y-%m-%d-%H%M%S")
@@ -174,10 +191,16 @@ def emit_dynamic(repo: Path, post: dict) -> Path:
         path = target_dir / f"{file_stamp}-post.md"
     slug = post["slug"].strip("/")
     title = post["title"]
-    body = f"发布了新笔记：[{title}](/posts/{slug}/)\n"
+    note = resolve_blurb(post, blurb)
+    body = (
+        f"发布了新笔记：[{title}](/posts/{slug}/)\n"
+        f"\n"
+        f"> {note}\n"
+    )
     path.write_text(
         f"---\npublished: {stamp}\n---\n\n{body}",
         encoding="utf-8",
+        newline="\n",
     )
     return path
 
@@ -258,6 +281,11 @@ def main() -> int:
         action="store_true",
         help="create dynamic entry for --slug if missing (public posts only)",
     )
+    ap.add_argument(
+        "--blurb",
+        default="",
+        help="author note for --emit-dynamic (blockquote); else use post description",
+    )
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
@@ -284,10 +312,11 @@ def main() -> int:
         if focus["hasDynamic"]:
             print(f"OK dynamic already covers {post['slug']}", file=sys.stderr)
         else:
-            path = emit_dynamic(repo, post)
+            path = emit_dynamic(repo, post, args.blurb or None)
             emitted = str(path.relative_to(repo)).replace("\\", "/")
             report = build_report(repo, args.slug)
             report["emittedDynamic"] = emitted
+            report["emittedBlurb"] = resolve_blurb(post, args.blurb or None)
             print(f"OK emitted {emitted}", file=sys.stderr)
 
     if args.json or True:

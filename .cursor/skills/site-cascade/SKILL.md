@@ -63,9 +63,23 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-sav
 ```bash
 python .cursor/skills/site-cascade/scripts/cascade_check.py \
   --slug <slug> --emit-dynamic
+
+# 推荐带作者批注（写入 Markdown blockquote）
+python .cursor/skills/site-cascade/scripts/cascade_check.py \
+  --slug <slug> --emit-dynamic --blurb "Luna 当主粮，生图当零食。"
 ```
 
-生成 `src/content/dynamic/YYYY-MM-DD-HHMMSS.md`，正文含标题链到 `/posts/<slug>/`。  
+生成 `src/content/dynamic/YYYY-MM-DD-HHMMSS.md`，形态为：
+
+```markdown
+发布了新笔记：[标题](/posts/<slug>/)
+
+> 作者批注一两句
+```
+
+未传 `--blurb` 时：用帖子完整 `description`（仅折叠空白）；再无则用「写完挂上了，点进去看。」  
+旧条目无批注或需重写截断批注可跑：`python .cursor/skills/site-cascade/scripts/backfill_note_blurbs.py`（`--force` 覆盖已有 `>`）。  
+
 用户手写碎碎念继续用 `pnpm new-dynamic "..."`；本 skill **不删**既有动态。
 
 ### 4. 分类 / 标签「位置」
@@ -87,7 +101,7 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 
 1. 级联在 **内容落盘之后** 跑；未获准不 commit。  
 2. 统计数字以脚本/站点聚合为准，禁止硬编码进组件。  
-3. 动态文案简短；链到本站帖用 `/posts/<slug>/`。  
+3. 动态文案简短；链到本站帖用 `/posts/<slug>/`；**笔记型动态须带 `>` 批注**（人工 / description / 兜底）。  
 4. 与上游分工：`ob2blog`（Obsidian→帖）/ `knowledge-output`（Knowledge→帖）/ 手写 posts 负责正文落盘；**本 skill 负责发文后的站点表面**。  
 5. 侧栏大改（挪组件顺序）需用户确认，默认只修误关的 enable。
 
@@ -95,7 +109,7 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 
 - 触发 slug / draft  
 - cascade_check 摘要（帖数、分类、标签、字数）  
-- 是否 emit 动态及路径  
+- 是否 emit 动态及路径；**是否含批注**（`--blurb` / description / 兜底）  
 - 侧栏 / 热力 WARN  
 - 建议用户刷新的页面：`/` 、`/dynamic/`
 
