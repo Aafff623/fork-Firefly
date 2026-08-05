@@ -119,3 +119,26 @@ export function formatDateTimeToYYYYMMDDHHmm(dateInput: Date | string): string {
 
 	return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
 }
+
+/** 站点时区（默认 Asia/Shanghai）下的日历日，形如 2026-08-05 */
+export function getSiteDayKey(date: Date = new Date()): string {
+	const timeZone = siteConfig.timezone || "Asia/Shanghai";
+	return new Intl.DateTimeFormat("en-CA", {
+		timeZone,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}).format(date);
+}
+
+/**
+ * 按站点日历日对 length 取模（北京时间日切，而非 UTC epoch 日）。
+ * 用于园径便签等「每天换一条」。
+ */
+export function getSiteDayIndex(length: number, date: Date = new Date()): number {
+	if (length <= 0) return 0;
+	const [y, m, d] = getSiteDayKey(date).split("-").map(Number);
+	const epochDay = Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);
+	// 保证正余数，避免负 epoch 边缘情况
+	return ((epochDay % length) + length) % length;
+}

@@ -23,8 +23,8 @@ export const announcementConfig: AnnouncementConfig = {
 		enable: true,
 		version: "2026-08-02",
 		note: "点开惊喜",
-		heading: "致每一位路过的你",
+		heading: "🎁 致每一位路过的你",
 		message:
-			"谢谢你停在这里。愿你被温柔以待，也愿你带着一点勇气继续往前——这是我留给访客的小小礼物。",
+			"谢谢你停在这里。愿你被温柔以待，也愿你带着一点勇气继续往前——这是我留给访客的小小礼物 🎀✨。",
 	},
 };

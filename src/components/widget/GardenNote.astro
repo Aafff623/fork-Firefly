@@ -1,9 +1,12 @@
 ---
 /**
  * 园径便签：左栏轻量卡，季节/花园短句轮换 + 走进数字花园
+ * 标语与 MiniMax 预生成氛围底图（及可选循环动底）成对按天切换
  */
 import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import { gardenNotes } from "@/data/garden-notes";
+import { getSiteDayIndex } from "@/utils/date-utils";
 import { url } from "@/utils/url-utils";
 import type { WidgetComponentConfig } from "@/types/config";
 
@@ -16,23 +19,27 @@ interface Props {
 const { class: className, style, widgetConfig } = Astro.props;
 const showTitle = widgetConfig?.showTitle !== false;
 
-const tips = [
-	"今日林间微风，亦宜浇水。",
-	"少写一行代码，多种一棵念头。",
-	"客来不妨坐下，落叶声里续一壶茶。",
-	"枝叶未整齐，心意已先到。",
-	"园门半开着，欢迎你慢慢逛。",
-];
-const dayIndex = Math.floor(Date.now() / 86400000) % tips.length;
-const tip = tips[dayIndex];
+// 按站点时区（Asia/Shanghai）日历日轮换，而非 UTC
+const dayIndex = getSiteDayIndex(gardenNotes.length);
+const note = gardenNotes[dayIndex] ?? gardenNotes[0];
+const tip = note.tip;
+const bgUrl = note.bg;
+const bgMotion = note.bgMotion;
+const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
+	.filter(Boolean)
+	.join("; ");
 ---
 
 <WidgetLayout
   id="garden-note"
   name="园径便签"
   showTitle={showTitle}
-  class:list={["garden-note-widget", className]}
-  style={style}
+  class:list={[
+    "garden-note-widget",
+    bgMotion && "garden-note-widget--motion",
+    className,
+  ]}
+  style={widgetStyle}
 >
   <Icon
     slot="title-leading"
@@ -41,6 +48,21 @@ const tip = tips[dayIndex];
     class="widget-title-icon"
     aria-hidden="true"
   />
+  {
+    bgMotion && (
+      <video
+        class="garden-note__motion"
+        src={bgMotion}
+        poster={bgUrl}
+        muted
+        loop
+        playsinline
+        autoplay
+        preload="metadata"
+        aria-hidden="true"
+      />
+    )
+  }
   <div class="garden-note">
     <p class="garden-note__tip">{tip}</p>
     <a class="garden-note__link" href={url("/about/")}>
@@ -51,11 +73,108 @@ const tip = tips[dayIndex];
 </WidgetLayout>
 
 <style>
+  /*
+   * 底图 / 动底铺满整张 card（含标题行）。
+   * video 虽在 collapse-wrapper 槽内，但定位到 widget-layout，并放开 overflow 裁切。
+   */
+  :global(widget-layout.garden-note-widget.card-base) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    /* 避免标题区露出不透明卡底发白 */
+    background-color: transparent !important;
+  }
+
+  :global(body.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base),
+  :global(.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base) {
+    background-color: transparent !important;
+  }
+
+  :global(widget-layout.garden-note-widget.card-base)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background-image: var(--garden-note-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.42;
+  }
+
+  :global(widget-layout.garden-note-widget.card-base)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    /* 轻 veil：通透够见底图，标题/正文仍可读 */
+    background: linear-gradient(
+      165deg,
+      color-mix(in oklch, var(--card-bg) 48%, transparent) 0%,
+      color-mix(in oklch, var(--card-bg) 32%, transparent) 100%
+    );
+    opacity: 1;
+  }
+
+  :global(html.dark) :global(widget-layout.garden-note-widget.card-base)::after {
+    background: linear-gradient(
+      165deg,
+      color-mix(in oklch, var(--card-bg) 55%, transparent) 0%,
+      color-mix(in oklch, var(--card-bg) 38%, transparent) 100%
+    );
+  }
+
+  /* 槽位放开裁切，让 video 能铺到标题行 */
+  :global(widget-layout.garden-note-widget #garden-note.collapse-wrapper) {
+    position: static;
+    overflow: visible !important;
+  }
+
+  :global(widget-layout.garden-note-widget.card-base) .garden-note__motion {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.42;
+    pointer-events: none;
+  }
+
+  /* 有动底时静图略压，避免双层糊死；标题行仍靠同一张 cover */
+  :global(widget-layout.garden-note-widget--motion.card-base)::before {
+    opacity: 0.28;
+  }
+
+  :global(widget-layout.garden-note-widget.card-base) > :global(.widget-title),
+  :global(widget-layout.garden-note-widget.card-base) > :global(.collapse-wrapper) {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+  }
+
   .garden-note {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
     padding-bottom: 0.15rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(widget-layout.garden-note-widget.card-base) .garden-note__motion {
+      display: none;
+    }
+
+    :global(widget-layout.garden-note-widget--motion.card-base)::before {
+      opacity: 0.42;
+    }
   }
 
   .garden-note__tip {

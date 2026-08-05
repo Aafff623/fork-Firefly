@@ -82,12 +82,12 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
         )}
         {title}
         {showGiftBox && (
-          <span class="announcement-press__gift-badge">惊喜礼盒</span>
+          <span class="announcement-press__gift-badge">🎁 惊喜礼盒</span>
         )}
       </h2>
       <div class="announcement-press__double-rule" aria-hidden="true"></div>
       <p class="announcement-press__kicker">
-        {showGiftBox ? "Surprise · 不定期 · 随缘更新" : "Notice · 在研 · Agent 工作流"}
+        {showGiftBox ? "🎁 Surprise · 不定期 · 随缘更新" : "Notice · 在研 · Agent 工作流"}
       </p>
     </header>
 
@@ -192,7 +192,7 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
           <aside class="gift-surprise__envelope" aria-live="polite">
             <span class="gift-surprise__wax" aria-hidden="true">520</span>
             <div class="gift-surprise__paper">
-              <p class="gift-surprise__seal">SURPRISE</p>
+              <p class="gift-surprise__seal">🎁 SURPRISE</p>
               <h3 class="gift-surprise__heading">{giftHeading}</h3>
               <p class="gift-surprise__message">{giftMessage}</p>
               <p class="gift-surprise__sign">— threetwoa</p>
@@ -205,7 +205,7 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
 
     {
       showGiftBox && (
-        <script define:vars={{ giftId, isDev: import.meta.env.DEV }}>
+        <script define:vars={{ giftId }}>
           const OPENED_KEY = `firefly-gift-opened:${giftId}`;
           const GONE_KEY = `firefly-gift-card-gone:${giftId}`;
           const SEEN_KEY = `firefly-gift-seen:${giftId}`;
@@ -286,6 +286,7 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
               check.addEventListener("change", () => {
                 if (!check.checked) return;
                 lsSet(OPENED_KEY, "1");
+                lsSet(SEEN_KEY, "1"); // 已拆开，不再弹送达提示
                 syncOpenedBadge();
                 // 信封飞入约 2.5s 后整卡淡出
                 const card = getAnnouncementCard(root);
@@ -306,13 +307,13 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
             });
           }
 
-          /** 新惊喜 toast：DEV 每次弹；生产仅未见过 version 时弹一次 */
+          /** 新惊喜 toast：仅「本期未打开且未点过提示」时弹；已打开/已完结不弹 */
           function initGiftToast() {
             if (document.getElementById("gift-surprise-toast")) return;
-            const shouldShow = isDev || lsGet(SEEN_KEY) !== "1";
-            // 卡已 gone 且非 DEV：不必再弹（用户已完成本期）
-            if (!isDev && lsGet(GONE_KEY) === "1") return;
-            if (!shouldShow) return;
+            // 已拆开 / 卡已收起 / 已点过「去看看|知道了」→ 一律不弹（含 DEV）
+            if (lsGet(OPENED_KEY) === "1") return;
+            if (lsGet(GONE_KEY) === "1") return;
+            if (lsGet(SEEN_KEY) === "1") return;
 
             const toast = document.createElement("div");
             toast.id = "gift-surprise-toast";
@@ -320,8 +321,8 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
             toast.setAttribute("role", "status");
             toast.innerHTML = `
               <div class="gift-surprise-toast__inner">
-                <p class="gift-surprise-toast__title">新的惊喜已送达</p>
-                <p class="gift-surprise-toast__desc">左栏「不期而至」有一份小礼盒，随缘拆开。</p>
+                <p class="gift-surprise-toast__title">🎁 新的惊喜已送达</p>
+                <p class="gift-surprise-toast__desc">点「去看看」打开左栏礼盒 🎀，随缘拆开。</p>
                 <div class="gift-surprise-toast__actions">
                   <button type="button" class="gift-surprise-toast__go">去看看</button>
                   <button type="button" class="gift-surprise-toast__close">知道了</button>
@@ -329,7 +330,11 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
               </div>
             `;
             document.body.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.add("is-visible"));
+            requestAnimationFrame(() => {
+              toast.classList.add("is-visible");
+              // 进场后再抖几下，提醒点主按钮
+              requestAnimationFrame(() => toast.classList.add("is-attention"));
+            });
 
             const dismiss = () => {
               lsSet(SEEN_KEY, "1");
@@ -341,9 +346,14 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
             toast.querySelector(".gift-surprise-toast__go")?.addEventListener("click", () => {
               lsSet(SEEN_KEY, "1");
               const card = getAnnouncementCard(document.querySelector("[data-gift-card-id]"));
+              const gift = document.querySelector(".gift-surprise");
               card?.scrollIntoView({ behavior: "smooth", block: "center" });
               card?.classList.add("announcement-widget--pulse");
-              setTimeout(() => card?.classList.remove("announcement-widget--pulse"), 1200);
+              gift?.classList.add("gift-surprise--invite"); // 礼盒再晃一下邀请点开
+              setTimeout(() => {
+                card?.classList.remove("announcement-widget--pulse");
+                gift?.classList.remove("gift-surprise--invite");
+              }, 1800);
               dismiss();
             });
           }
