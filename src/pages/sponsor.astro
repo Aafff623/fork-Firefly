@@ -34,7 +34,7 @@ function getQrLqipProps(qrCode: string) {
 
 <MainGridLayout title={title} description={description}>
   <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-9 py-6 relative w-full">
+    <div class="card-base z-10 px-9 py-6 relative w-full sponsor-hero">
       <!-- 页面标题和描述 -->
       <div class="mb-8">
         <div class="flex items-center gap-3 mb-3">
@@ -198,6 +198,49 @@ function getQrLqipProps(qrCode: string) {
 </MainGridLayout>
 
 <style>
+  /* 打赏顶卡：插画铺底 + 磨砂遮罩（对齐 friends 顶卡效果） */
+  .sponsor-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    /* 压过 card-base 实底，让底图透出来 */
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  .sponsor-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url("/assets/hero/sponsor-hero.jpg") center 62% / cover no-repeat;
+    pointer-events: none;
+  }
+
+  .sponsor-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: color-mix(in oklab, var(--card-bg, #fff) 78%, transparent);
+    backdrop-filter: blur(1.5px);
+  }
+
+  :global(html.dark) .sponsor-hero::before {
+    filter: brightness(1.12) saturate(1.08) contrast(1.05);
+  }
+
+  :global(html.dark) .sponsor-hero::after {
+    background: color-mix(in oklab, var(--card-bg, #111) 88%, transparent);
+    backdrop-filter: blur(2.5px);
+  }
+
+  .sponsor-hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
   /* 透明模式下使用半透明背景 */
   :global(body.wallpaper-transparent .usage-info-box) {
     background-color: rgba(var(--primary-rgb, 70, 130, 180), 0.15) !important;
