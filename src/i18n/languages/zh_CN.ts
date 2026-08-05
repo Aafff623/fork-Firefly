@@ -4,7 +4,7 @@ import type { Translation } from "../translation";
 export const zh_CN: Translation = {
 	[Key.home]: "主页",
 	[Key.about]: "关于我",
-	[Key.archive]: "归档",
+	[Key.archive]: "时间轴",
 	[Key.search]: "搜索",
 	[Key.searchNoResults]: "找不到相关结果。",
 	[Key.searchTypeSomething]: "请输入搜索关键词。",
@@ -19,6 +19,8 @@ export const zh_CN: Translation = {
 	[Key.tagWall]: "🧱 标签墙",
 	[Key.categories]: "分类",
 	[Key.allCategories]: "全部分类",
+	[Key.collections]: "合集",
+	[Key.allCollections]: "全部合集",
 	[Key.allTags]: "全部标签",
 	[Key.recentPosts]: "最新文章",
 	[Key.postList]: "文章列表",
@@ -329,6 +331,8 @@ export const zh_CN: Translation = {
 	[Key.cardSettings]: "卡片样式",
 	[Key.cardBorder]: "卡片边框和阴影",
 	[Key.cardFollowTheme]: "卡片跟随主题色",
+	[Key.noteCardSettings]: "笔记引用框",
+	[Key.noteCardEnabled]: "附件引用框样式",
 
 	// 文章布局
 	[Key.postListLayout]: "文章布局",

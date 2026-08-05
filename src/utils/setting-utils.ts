@@ -1369,6 +1369,41 @@ export function setCardBorderEnabled(enabled: boolean): void {
 	}
 }
 
+// Note card (attachment reference box) functions
+export function getDefaultNoteCardEnabled(): boolean {
+	return true;
+}
+
+export function getStoredNoteCardEnabled(): boolean {
+	// 面板未开放时始终走站点默认，忽略历史 localStorage
+	if (!displaySettingsConfig.noteCardSwitchable) {
+		return getDefaultNoteCardEnabled();
+	}
+	if (typeof localStorage === "undefined") {
+		return getDefaultNoteCardEnabled();
+	}
+	const stored = localStorage.getItem("noteCardEnabled");
+	if (stored === null) {
+		return getDefaultNoteCardEnabled();
+	}
+	return stored === "true";
+}
+
+export function setNoteCardEnabled(enabled: boolean): void {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.setItem !== "function"
+	) {
+		return;
+	}
+	localStorage.setItem("noteCardEnabled", String(enabled));
+	if (enabled) {
+		document.documentElement.classList.remove("note-cards-off");
+	} else {
+		document.documentElement.classList.add("note-cards-off");
+	}
+}
+
 // Card follow theme functions
 export function getDefaultCardFollowThemeEnabled(): boolean {
 	return siteConfig.card?.followTheme ?? false;

@@ -38,6 +38,9 @@ import {
 	setCardBorderEnabled,
 	setCardFollowThemeEnabled,
 	setGradientEnabled,
+	getDefaultNoteCardEnabled,
+	getStoredNoteCardEnabled,
+	setNoteCardEnabled,
 	setHue,
 	setOverlayBlur,
 	setOverlayCardOpacity,
@@ -110,6 +113,8 @@ let cardBorderEnabled = $state(false);
 const defaultCardBorderEnabled = getDefaultCardBorderEnabled();
 let cardFollowThemeEnabled = $state(false);
 const defaultCardFollowThemeEnabled = getDefaultCardFollowThemeEnabled();
+let noteCardEnabled = $state(true);
+const defaultNoteCardEnabled = getDefaultNoteCardEnabled();
 
 const isWallpaperSwitchable = displaySettingsConfig.wallpaperModeSwitchable;
 const allowLayoutSwitch = displaySettingsConfig.layoutSwitchable;
@@ -130,6 +135,7 @@ const isSakuraSwitchable = displaySettingsConfig.sakuraSwitchable;
 const isCardBorderSwitchable = displaySettingsConfig.cardBorderSwitchable;
 const isCardFollowThemeSwitchable =
 	displaySettingsConfig.cardFollowThemeSwitchable;
+const isNoteCardSwitchable = displaySettingsConfig.noteCardSwitchable;
 const isPetPickerSwitchable =
 	displaySettingsConfig.petPickerSwitchable &&
 	spritePetConfig.enable &&
@@ -183,7 +189,8 @@ let bannerSettingsIsDefault = $derived(
 let cardSettingsIsDefault = $derived(
 	(!isCardBorderSwitchable || cardBorderEnabled === defaultCardBorderEnabled) &&
 		(!isCardFollowThemeSwitchable ||
-			cardFollowThemeEnabled === defaultCardFollowThemeEnabled),
+			cardFollowThemeEnabled === defaultCardFollowThemeEnabled) &&
+		(!isNoteCardSwitchable || noteCardEnabled === defaultNoteCardEnabled),
 );
 const hasAnyContent =
 	showThemeColor ||
@@ -192,14 +199,16 @@ const hasAnyContent =
 	hasBannerSettings ||
 	hasOverlaySettings ||
 	isSakuraSwitchable ||
-	isPetPickerSwitchable;
+	isPetPickerSwitchable ||
+	isNoteCardSwitchable;
 
 // --- Tab visibility ---
 const hasAppearanceTab = $derived(
 	showThemeColor ||
 		allowLayoutSwitch ||
 		isCardBorderSwitchable ||
-		isCardFollowThemeSwitchable,
+		isCardFollowThemeSwitchable ||
+		isNoteCardSwitchable,
 );
 const hasWallpaperTab = $derived(
 	isWallpaperSwitchable ||
@@ -243,7 +252,7 @@ let visibleTabs = $derived.by(() => {
 let showTabBar = $derived(visibleTabs.length > 1);
 // 外观关闭后默认打开壁纸页（导航栏入口已改为壁纸按钮）
 let activeTab = $state<TabKey>(
-	showThemeColor || allowLayoutSwitch || isCardBorderSwitchable || isCardFollowThemeSwitchable
+	showThemeColor || allowLayoutSwitch || isCardBorderSwitchable || isCardFollowThemeSwitchable || isNoteCardSwitchable
 		? "appearance"
 		: "wallpaper",
 );
@@ -428,6 +437,11 @@ function toggleCardFollowThemeEnabled() {
 	setCardFollowThemeEnabled(cardFollowThemeEnabled);
 }
 
+function toggleNoteCardEnabled() {
+	noteCardEnabled = !noteCardEnabled;
+	setNoteCardEnabled(noteCardEnabled);
+}
+
 function resetCardSettings() {
 	if (
 		isCardBorderSwitchable &&
@@ -442,6 +456,10 @@ function resetCardSettings() {
 	) {
 		cardFollowThemeEnabled = defaultCardFollowThemeEnabled;
 		setCardFollowThemeEnabled(defaultCardFollowThemeEnabled);
+	}
+	if (isNoteCardSwitchable && noteCardEnabled !== defaultNoteCardEnabled) {
+		noteCardEnabled = defaultNoteCardEnabled;
+		setNoteCardEnabled(defaultNoteCardEnabled);
 	}
 }
 
@@ -559,6 +577,7 @@ onMount(() => {
 	// 从localStorage读取卡片样式状态
 	cardBorderEnabled = getStoredCardBorderEnabled();
 	cardFollowThemeEnabled = getStoredCardFollowThemeEnabled();
+	noteCardEnabled = getStoredNoteCardEnabled();
 
 	// 从localStorage读取全屏透明设置状态
 	overlayOpacity = getStoredOverlayOpacity();
@@ -797,6 +816,38 @@ $effect(() => {
 					</div>
 				</button>
 				{/if}
+			</div>
+		</div>
+		{/if}
+
+		<!-- Note Card Settings Section -->
+		{#if isNoteCardSwitchable}
+		<div>
+			<div class="section-title">
+				{i18n(I18nKey.noteCardSettings)}
+				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
+						class:opacity-0={noteCardEnabled === defaultNoteCardEnabled} class:pointer-events-none={noteCardEnabled === defaultNoteCardEnabled} onclick={() => { noteCardEnabled = defaultNoteCardEnabled; setNoteCardEnabled(defaultNoteCardEnabled); }}>
+					<div class="text-(--btn-content)">
+						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="space-y-1">
+				<button
+					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+					class:bg-(--btn-regular-bg-hover)={noteCardEnabled}
+					onclick={toggleNoteCardEnabled}
+				>
+					<Icon icon="lucide:file-text" class="text-[1.25rem] shrink-0"></Icon>
+					<span class="text-sm flex-1">{i18n(I18nKey.noteCardEnabled)}</span>
+					<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+						 class:bg-(--primary)={noteCardEnabled}
+						 class:bg-(--btn-regular-bg-active)={!noteCardEnabled}>
+						<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+							 class:left-0.5={!noteCardEnabled}
+							 class:left-5={noteCardEnabled}></div>
+					</div>
+				</button>
 			</div>
 		</div>
 		{/if}

@@ -20,6 +20,9 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 	// 卡片风格跟随主题色开关（不需要此能力）
 	cardFollowThemeSwitchable: false,
 
+	// 笔记引用框（附件下载卡片）样式开关
+	noteCardSwitchable: true,
+
 	// ── 壁纸 (Wallpaper) ──────────────────────────────────
 
 	// 壁纸模式切换开关（导航栏入口改为壁纸面板）

@@ -4,7 +4,7 @@ import type { Translation } from "../translation";
 export const ja: Translation = {
 	[Key.home]: "ホーム",
 	[Key.about]: "について",
-	[Key.archive]: "アーカイブ",
+	[Key.archive]: "タイムライン",
 	[Key.search]: "検索",
 	[Key.searchNoResults]: "結果が見つかりません。",
 	[Key.searchTypeSomething]: "検索キーワードを入力してください。",
@@ -19,6 +19,8 @@ export const ja: Translation = {
 	[Key.tagWall]: "🧱 タグウォール",
 	[Key.categories]: "カテゴリ",
 	[Key.allCategories]: "すべてのカテゴリ",
+	[Key.collections]: "コレクション",
+	[Key.allCollections]: "すべてのコレクション",
 	[Key.allTags]: "すべてのタグ",
 	[Key.recentPosts]: "最近の投稿",
 	[Key.postList]: "投稿リスト",
@@ -335,6 +337,8 @@ export const ja: Translation = {
 	[Key.cardSettings]: "カードスタイル",
 	[Key.cardBorder]: "カードのボーダーと影",
 	[Key.cardFollowTheme]: "カードのテーマカラー追随",
+	[Key.noteCardSettings]: "ノート引用カード",
+	[Key.noteCardEnabled]: "添付ファイル引用カード",
 
 	// 投稿リストレイアウト
 	[Key.postListLayout]: "投稿リストレイアウト",

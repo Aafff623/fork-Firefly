@@ -256,6 +256,236 @@ a.card-github.fetch-error
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
   transition-duration: 0.15s
 
+// ─── 笔记引用卡（::note） ─────────────────────────────────────────────────
+// 附件链接色：亮色蓝 / 暗色亮蓝（用户指定"蓝色附件链接"；stylus 不支持 CSS color-mix，用 rgba）
+:root
+  --nc-link: #2563eb
+  --nc-link-soft: rgba(37, 99, 235, 0.55)
+  --nc-link-bg: rgba(37, 99, 235, 0.08)
+
+html.dark
+  --nc-link: #93c5fd
+  --nc-link-soft: rgba(147, 197, 253, 0.55)
+  --nc-link-bg: rgba(147, 197, 253, 0.08)
+
+a.card-note-main
+  display: block
+  position: relative
+  margin: 0.5rem 0
+  padding: 0.4rem 3.2rem 0.4rem 0.2rem
+  color: var(--tw-prose-body)
+  border-radius: var(--radius-small)
+  text-decoration: none
+  background: transparent
+  transition: background-color 0.15s ease
+
+  &:hover
+    background-color: var(--nc-link-bg)
+
+    .nc-description, .nc-infobar
+      color: var(--tw-prose-headings)
+
+  &:active
+    scale: .98
+
+  .nc-titlebar
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    margin-bottom: 0.4rem
+    color: var(--tw-prose-headings)
+    font-size: 1.05rem
+    font-weight: 600
+
+    .nc-badge
+      flex-shrink: 0
+      font-size: 0.7rem
+      font-weight: 600
+      padding: 0.15rem 0.55rem
+      border-radius: 0.5rem
+      background: var(--primary)
+      color: #fff
+      opacity: 0.92
+
+    .nc-title
+      font-style: italic
+      color: var(--nc-link)
+      text-decoration: underline wavy
+      text-decoration-color: var(--nc-link-soft)
+      text-underline-offset: 0.2em
+      text-decoration-thickness: 0.06em
+
+  .nc-description
+    margin-bottom: 0.6rem
+    font-size: 0.95rem
+    font-weight: 300
+    line-height: 1.5rem
+    color: var(--tw-prose-body)
+
+  .nc-infobar
+    display: flex
+    flex-flow: row wrap
+    gap: 1.2rem
+    font-size: 0.8rem
+    opacity: 0.85
+
+    .nc-meta
+      font-weight: 500
+      opacity: 0.9
+
+.card-note
+  position: relative
+  margin: 0.5rem 0
+
+  .card-note-download
+    position: absolute
+    top: 0.8rem
+    right: 0.9rem
+    z-index: 2
+    font-size: 0.75rem
+    font-weight: 500
+    padding: 0.25rem 0.65rem
+    border-radius: 0.5rem
+    background: var(--btn-regular-bg)
+    color: var(--btn-content)
+    text-decoration: none
+    cursor: pointer
+
+    &:hover
+      background: var(--btn-regular-bg-hover)
+
+    &:active
+      scale: .96
+
+// ─── 设置开关关闭：引用框退化为普通超链接 ──────────────────────────────
+html.note-cards-off
+  a.card-note-main
+    display: inline
+    background: transparent
+    padding: 0
+    margin: 0
+    border-radius: 0
+    color: var(--primary)
+    text-decoration: underline
+    text-underline-offset: 0.2em
+
+    &:hover
+      background: transparent
+      color: var(--primary)
+
+    .nc-badge, .nc-description, .nc-infobar
+      display: none
+
+    .nc-titlebar
+      display: inline
+      margin: 0
+      font-size: 1rem
+      font-weight: 500
+
+  .card-note
+    margin: 0.25rem 0
+
+  .card-note-download
+    display: none
+
+// ─── 笔记预览 modal ────────────────────────────────────────────────────────
+.nc-modal-backdrop
+  position: fixed
+  inset: 0
+  z-index: 90
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 2rem
+  background: rgba(0, 0, 0, 0.55)
+  backdrop-filter: blur(2px)
+  animation: nc-fade-in 0.15s ease-out
+
+.nc-modal-panel
+  width: min(860px, 100%)
+  max-height: 82vh
+  display: flex
+  flex-direction: column
+  overflow: hidden
+  border-radius: var(--radius-large)
+  background: var(--card-bg)
+  border: 1px solid var(--btn-regular-bg)
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35)
+  animation: nc-pop-in 0.18s ease-out
+
+  .nc-modal-header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 0.75rem
+    padding: 0.85rem 1.2rem
+    border-bottom: 1px solid var(--btn-regular-bg)
+
+    .nc-modal-title
+      font-size: 1.05rem
+      font-weight: 600
+      color: var(--tw-prose-headings)
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+    .nc-modal-actions
+      display: flex
+      gap: 0.5rem
+      flex-shrink: 0
+
+      a, button
+        font-size: 0.75rem
+        padding: 0.3rem 0.7rem
+        border-radius: 0.5rem
+        background: var(--btn-regular-bg)
+        color: var(--btn-content)
+        text-decoration: none
+        cursor: pointer
+        border: none
+
+        &:hover
+          background: var(--btn-regular-bg-hover)
+
+  .nc-modal-body
+    overflow: auto
+    padding: 1.2rem 1.4rem
+    flex: 1
+    min-height: 0
+
+    .nc-render
+      margin: 0
+      font-size: 0.95rem
+      line-height: 1.7
+      color: var(--tw-prose-body)
+
+      > :first-child
+        margin-top: 0
+
+      > :last-child
+        margin-bottom: 0
+
+      img
+        max-width: 100%
+
+.nc-modal-closing
+  opacity: 0
+  transition: opacity 0.15s ease-out
+
+@keyframes nc-fade-in
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+@keyframes nc-pop-in
+  from
+    opacity: 0
+    transform: translateY(8px) scale(0.98)
+  to
+    opacity: 1
+    transform: translateY(0) scale(1)
+
 // ─── 共享图表容器样式 ───────────────────────────────────────────────────────
 // pan-zoom 控制栏、全屏 overlay 等交互样式由 rehype-diagram-panzoom 插件注入
 

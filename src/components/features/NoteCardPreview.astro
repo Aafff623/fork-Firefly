@@ -1,0 +1,98 @@
+---
+// 笔记引用卡预览（::note）——点击卡片弹窗预览 MD，右侧按钮下载
+---
+<script>
+	import { getStoredNoteCardEnabled } from "@/utils/setting-utils";
+	let modalEl: HTMLElement | null = null;
+	const SELECTOR = ".card-note-main[data-note-preview]";
+
+	// 设置面板开关：关闭时引用框退化为普通超链接
+	if (!getStoredNoteCardEnabled()) {
+		document.documentElement.classList.add("note-cards-off");
+	}
+
+	// 动态加载 marked（public 自带，非 npm 包），渲染 markdown 成品；失败回退源码显示
+	function loadMarked(): Promise<void> {
+		return new Promise((resolve) => {
+			if ((window as any).marked?.parse) return resolve();
+			const s = document.createElement("script");
+			s.src = "/assets/js/marked.min.js";
+			s.onload = () => resolve();
+			s.onerror = () => resolve();
+			document.head.appendChild(s);
+		});
+	}
+
+	function ensureModal(): HTMLElement {
+		if (modalEl && document.body.contains(modalEl)) return modalEl;
+		modalEl = document.createElement("div");
+		modalEl.className = "nc-modal-backdrop";
+		modalEl.style.display = "none";
+		modalEl.innerHTML = `
+      <div class="nc-modal-panel">
+        <div class="nc-modal-header">
+          <span class="nc-modal-title"></span>
+          <div class="nc-modal-actions">
+            <a class="nc-modal-download" download>下载</a>
+            <button class="nc-modal-close" type="button">关闭</button>
+          </div>
+        </div>
+        <div class="nc-modal-body"><div class="nc-render prose dark:prose-invert prose-base max-w-none custom-md"></div></div>
+      </div>`;
+		modalEl.addEventListener("click", (e) => {
+			if (e.target === modalEl) close();
+		});
+		modalEl.querySelector(".nc-modal-close")!.addEventListener("click", close);
+		document.body.appendChild(modalEl);
+		return modalEl;
+	}
+
+	async function open(url: string) {
+		const modal = ensureModal();
+		const title = modal.querySelector<HTMLElement>(".nc-modal-title")!;
+		const body = modal.querySelector<HTMLElement>(".nc-render")!;
+		const dl = modal.querySelector<HTMLAnchorElement>(".nc-modal-download")!;
+		title.textContent = decodeURIComponent(url.split("/").pop() || "笔记");
+		dl.href = url;
+		body.textContent = "加载中…";
+		modal.style.display = "flex";
+		document.body.style.overflow = "hidden";
+		try {
+			await loadMarked();
+			const resp = await fetch(url);
+			if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+			const md = await resp.text();
+			const marked = (window as any).marked;
+			if (marked?.parse) {
+				body.innerHTML = marked.parse(md);
+			} else {
+				body.textContent = md;
+			}
+		} catch (err) {
+			body.textContent = `加载失败：${(err as Error).message}`;
+		}
+	}
+
+	function close() {
+		if (!modalEl || modalEl.style.display === "none") return;
+		modalEl.style.display = "none";
+		document.body.style.overflow = "";
+	}
+
+	document.addEventListener("click", (e) => {
+		// 开关关闭态：不拦截，走浏览器默认（普通超链接下载/跳转）
+		if (document.documentElement.classList.contains("note-cards-off")) {
+			return;
+		}
+		const card = (e.target as HTMLElement).closest<HTMLElement>(SELECTOR);
+		if (!card) return;
+		e.preventDefault();
+		open(card.getAttribute("data-note-preview")!);
+	});
+
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape") close();
+	});
+
+	document.addEventListener("swup:visit:start", close);
+</script>

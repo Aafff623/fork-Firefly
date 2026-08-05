@@ -23,6 +23,9 @@ export type DisplaySettingsConfig = {
 	// 卡片风格跟随主题色开关
 	cardFollowThemeSwitchable: boolean;
 
+	// 笔记引用框（附件下载卡片）样式开关
+	noteCardSwitchable: boolean;
+
 	// ── 壁纸 (Wallpaper) ──────────────────────────────────
 
 	// 壁纸模式切换开关

@@ -4,7 +4,7 @@ import type { Translation } from "../translation";
 export const ko: Translation = {
 	[Key.home]: "홈",
 	[Key.about]: "소개",
-	[Key.archive]: "아카이브",
+	[Key.archive]: "타임라인",
 	[Key.search]: "검색",
 	[Key.searchNoResults]: "검색 결과가 없습니다.",
 	[Key.searchTypeSomething]: "검색어를 입력하세요...",
@@ -19,6 +19,8 @@ export const ko: Translation = {
 	[Key.tagWall]: "🧱 태그 벽",
 	[Key.categories]: "카테고리",
 	[Key.allCategories]: "모든 카테고리",
+	[Key.collections]: "컬렉션",
+	[Key.allCollections]: "모든 컬렉션",
 	[Key.allTags]: "모든 태그",
 	[Key.recentPosts]: "최근 게시글",
 	[Key.postList]: "게시글 목록",
@@ -335,6 +337,8 @@ export const ko: Translation = {
 	[Key.cardSettings]: "카드 스타일",
 	[Key.cardBorder]: "카드 테두리와 그림자",
 	[Key.cardFollowTheme]: "카드 테마 색상 따르기",
+	[Key.noteCardSettings]: "노트 인용 카드",
+	[Key.noteCardEnabled]: "첨부파일 인용 카드",
 
 	// Post List Layout
 	[Key.postListLayout]: "게시글 목록 레이아웃",

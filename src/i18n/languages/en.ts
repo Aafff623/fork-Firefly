@@ -4,7 +4,7 @@ import type { Translation } from "../translation";
 export const en: Translation = {
 	[Key.home]: "Home",
 	[Key.about]: "About",
-	[Key.archive]: "Archive",
+	[Key.archive]: "Timeline",
 	[Key.search]: "Search",
 	[Key.searchNoResults]: "No results found.",
 	[Key.searchTypeSomething]: "Type something to search...",
@@ -19,6 +19,8 @@ export const en: Translation = {
 	[Key.tagWall]: "🧱 Tag Wall",
 	[Key.categories]: "Categories",
 	[Key.allCategories]: "All Categories",
+	[Key.collections]: "Collections",
+	[Key.allCollections]: "All Collections",
 	[Key.allTags]: "All Tags",
 	[Key.recentPosts]: "Recent Posts",
 	[Key.postList]: "Post List",
@@ -337,6 +339,8 @@ export const en: Translation = {
 	[Key.cardSettings]: "Card Style",
 	[Key.cardBorder]: "Card Border & Shadow",
 	[Key.cardFollowTheme]: "Card Follow Theme Color",
+	[Key.noteCardSettings]: "Note Cards",
+	[Key.noteCardEnabled]: "Attachment card style",
 
 	// Post List Layout
 	[Key.postListLayout]: "Post List Layout",

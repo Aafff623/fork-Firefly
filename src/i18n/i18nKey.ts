@@ -16,6 +16,8 @@ enum I18nKey {
 	tagWall = "tagWall",
 	categories = "categories",
 	allCategories = "allCategories",
+	collections = "collections",
+	allCollections = "allCollections",
 	allTags = "allTags",
 	recentPosts = "recentPosts",
 	postList = "postList",
@@ -330,6 +332,8 @@ enum I18nKey {
 	cardSettings = "cardSettings",
 	cardBorder = "cardBorder",
 	cardFollowTheme = "cardFollowTheme",
+	noteCardSettings = "noteCardSettings",
+	noteCardEnabled = "noteCardEnabled",
 
 	// 文章布局
 	postListLayout = "postListLayout",

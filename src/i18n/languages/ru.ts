@@ -4,7 +4,7 @@ import type { Translation } from "../translation";
 export const ru: Translation = {
 	[Key.home]: "Главная",
 	[Key.about]: "О нас",
-	[Key.archive]: "Архив",
+	[Key.archive]: "Таймлайн",
 	[Key.search]: "Поиск",
 	[Key.searchNoResults]: "Результаты не найдены.",
 	[Key.searchTypeSomething]: "Введите ключевое слово для поиска...",
@@ -19,6 +19,8 @@ export const ru: Translation = {
 	[Key.tagWall]: "🧱 Стена тегов",
 	[Key.categories]: "Категории",
 	[Key.allCategories]: "Все категории",
+	[Key.collections]: "Коллекции",
+	[Key.allCollections]: "Все коллекции",
 	[Key.allTags]: "Все теги",
 	[Key.recentPosts]: "Последние посты",
 	[Key.postList]: "Список постов",
@@ -338,6 +340,8 @@ export const ru: Translation = {
 	[Key.cardSettings]: "Стиль карточек",
 	[Key.cardBorder]: "Рамка и тень карточек",
 	[Key.cardFollowTheme]: "Карточки跟随主题色",
+	[Key.noteCardSettings]: "Карточка заметки",
+	[Key.noteCardEnabled]: "Стиль карточки вложения",
 
 	// Макет списка сообщений
 	[Key.postListLayout]: "Макет списка сообщений",
