@@ -89,15 +89,15 @@
 	font-size: 0.8125rem;
 	line-height: 1.35;
 	letter-spacing: 0.01em;
-	font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+	font-family: inherit;
 }
 
 .toc-label-primary {
-	color: color-mix(in oklab, var(--content-meta) 70%, transparent);
+	color: var(--content-meta);
 }
 
 .toc-label-secondary {
-	color: color-mix(in oklab, var(--content-meta) 55%, transparent);
+	color: color-mix(in oklab, var(--content-meta) 82%, transparent);
 	opacity: 0.92;
 }
 
@@ -117,7 +117,7 @@
 	font-size: 0.75rem;
 	font-weight: 500;
 	line-height: 1;
-	font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+	font-family: inherit;
 	letter-spacing: 0.02em;
 }
 
