@@ -55,6 +55,10 @@ export { friendsPageConfig, getEnabledFriends } from "./friendsConfig"; // 友�
 export { galleryConfig } from "./galleryConfig"; // 相册配置
 export { licenseConfig } from "./licenseConfig"; // 许可证配置
 export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
+export {
+	categoryIconConfig,
+	categoryIconName,
+} from "./categoryIconConfig"; // 分类条 Lucide 图标
 // 组件配置
 export { mermaidConfig } from "./mermaidConfig"; // Mermaid 图表配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置

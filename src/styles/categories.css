@@ -23,14 +23,16 @@
 	font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
 	font-size: 0.68rem;
 	font-weight: 700;
-	opacity: 0.55;
+	opacity: 0.88;
 	padding: 0.08rem 0.38rem;
 	border-radius: 0.45rem;
-	background: color-mix(in oklch, var(--btn-content) 9%, transparent);
+	background: color-mix(in oklch, var(--btn-content) 12%, transparent);
 	letter-spacing: 0.02em;
+	color: color-mix(in oklch, var(--btn-content) 92%, black);
 }
 
-.category-pill[data-category-name=""] {
+.category-pill[data-category-name=""],
+.category-pill[data-category-name="__archive__"] {
 	color: var(--primary);
 	background:
 		linear-gradient(180deg, color-mix(in oklch, var(--primary) 10%, transparent), transparent),
@@ -38,8 +40,9 @@
 	border-color: color-mix(in oklch, var(--primary) 18%, transparent);
 }
 
-/* 主页家徽：更紧、更细，避免默认 house 图标的廉价感 */
-.category-pill--home {
+/* 主页 / 时间轴：圆角方标，只露 icon */
+.category-pill--home,
+.category-pill--icon {
 	width: 2.05rem;
 	height: 2.05rem;
 	padding: 0 !important;
@@ -112,7 +115,9 @@
 }
 
 .category-pill[data-category-name=""][data-active],
-.category-pill[data-category-name=""][data-active]:hover {
+.category-pill[data-category-name=""][data-active]:hover,
+.category-pill[data-category-name="__archive__"][data-active],
+.category-pill[data-category-name="__archive__"][data-active]:hover {
 	color: white;
 }
 

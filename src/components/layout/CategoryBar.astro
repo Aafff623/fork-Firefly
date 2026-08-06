@@ -2,6 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { Icon } from "astro-icon/components";
+import { categoryIconName } from "@/config";
 import { getCategoryList, getSortedPostsList } from "@/utils/content-utils";
 import { url } from "@/utils/url-utils";
 
@@ -61,14 +62,14 @@ function initialActive(categoryName: string): {
     </a>
     <a
       href={archiveUrl}
-      class="category-pill text-sm px-4 py-1.5 rounded-full whitespace-nowrap shrink-0
+      class="category-pill category-pill--icon text-sm shrink-0
              transition-colors duration-150 ease-out flex items-center justify-center"
       data-category-name="__archive__"
       data-active={initialActive("__archive__").active ? "" : undefined}
+      aria-label={`${i18n(I18nKey.archive)} · ${totalPosts}`}
+      title={`${i18n(I18nKey.archive)} · ${totalPosts}`}
     >
-      <Icon is:inline name="lucide:history" class="category-icon text-[0.95rem]" aria-hidden="true" />
-      <span>{i18n(I18nKey.archive)}</span>
-      <span class="pill-count">{totalPosts}</span>
+      <Icon is:inline name="lucide:calendar-clock" class="category-icon text-base" aria-hidden="true" />
     </a>
     <div class="category-divider shrink-0"></div>
     <div class="scroll-area relative">
@@ -86,7 +87,7 @@ function initialActive(categoryName: string): {
               data-active={active.active ? "" : undefined}
               data-soft-active={active.soft ? "" : undefined}
             >
-              <Icon is:inline name="lucide:folder" class="category-icon text-[0.9rem]" aria-hidden="true" />
+              <Icon is:inline name={categoryIconName(cat.name)} class="category-icon text-[0.9rem]" aria-hidden="true" />
               <span>{cat.name}</span>
               <span class="pill-count">{cat.count}</span>
             </a>
@@ -142,6 +143,16 @@ function initialActive(categoryName: string): {
   }
   .category-icon {
     flex: none;
+    opacity: 0.72;
+    color: color-mix(in oklch, var(--primary) 55%, currentColor);
+  }
+  .category-pill[data-active] .category-icon,
+  .category-pill[data-soft-active] .category-icon {
+    opacity: 0.95;
+    color: var(--primary);
+  }
+  .category-pill {
+    gap: 0.35rem;
   }
   .category-divider {
     width: 1px;
