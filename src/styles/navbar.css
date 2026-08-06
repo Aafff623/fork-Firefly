@@ -347,14 +347,15 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 }
 
 /* ============================================
- * 品牌按钮 · 水流波纹
+ * 品牌按钮 · 雨水缓积
  * 改编自 bilibili-goat effects/水流波纹按钮
+ * 常态：底部小水洼缓慢积高再回落；悬停：慢慢涨满
  * ============================================ */
 #navbar a.navbar-brand-ripple {
     /* 固定蓝色波浪（不跟主题 hue / 紫色走） */
     --brand-ripple: rgb(59 130 246 / 0.55);
     --brand-ripple-strong: rgb(37 99 235 / 0.9);
-    --brand-ripple-rise: 2.45s;
+    --brand-ripple-rise: 5.5s; /* 悬停涨满 / 离开回落：偏慢 */
     --brand-ripple-ease: cubic-bezier(0.33, 0.02, 0.18, 1);
     position: relative;
     z-index: 1;
@@ -367,6 +368,20 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
         transform 0.2s ease;
 }
 
+/* 左波：从浅洼缓慢积到半高，再慢慢退 */
+@keyframes brand-rain-accumulate-l {
+    0%, 100% { transform: translate3d(0, 4.2em, 0) rotate(-340deg); }
+    45% { transform: translate3d(0, 2.35em, 0) rotate(-348deg); }
+    55% { transform: translate3d(0, 2.2em, 0) rotate(-352deg); }
+}
+
+/* 右波：错开相位，更像两股雨水先后汇入 */
+@keyframes brand-rain-accumulate-r {
+    0%, 100% { transform: translate3d(0, 4.2em, 0) rotate(390deg); }
+    48% { transform: translate3d(0, 2.45em, 0) rotate(398deg); }
+    58% { transform: translate3d(0, 2.15em, 0) rotate(402deg); }
+}
+
 #navbar a.navbar-brand-ripple::before,
 #navbar a.navbar-brand-ripple::after {
     content: "";
@@ -377,7 +392,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     aspect-ratio: 1;
     border-radius: 42%;
     background-color: var(--brand-ripple);
-    /* 悬停涨涌 / 离开回落：同慢速过渡，更像水位缓缓上涨 */
+    /* 悬停涨满 / 离开回落仍用过渡；常态靠 animation 积水 */
     transition:
         transform var(--brand-ripple-rise) var(--brand-ripple-ease),
         background-color var(--brand-ripple-rise) var(--brand-ripple-ease);
@@ -388,11 +403,14 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar a.navbar-brand-ripple::before {
     left: -85%;
     transform: translate3d(0, 4.2em, 0) rotate(-340deg);
+    animation: brand-rain-accumulate-l 18s ease-in-out infinite;
 }
 
 #navbar a.navbar-brand-ripple::after {
     right: -85%;
     transform: translate3d(0, 4.2em, 0) rotate(390deg);
+    animation: brand-rain-accumulate-r 18s ease-in-out infinite;
+    animation-delay: -3.2s; /* 相位错开 */
 }
 
 #navbar a.navbar-brand-ripple:hover,
@@ -411,6 +429,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar a.navbar-brand-ripple:hover::after,
 #navbar a.navbar-brand-ripple:focus-visible::before,
 #navbar a.navbar-brand-ripple:focus-visible::after {
+    animation-play-state: paused; /* 让 transition 接管涨满 */
     transform: none;
     background-color: var(--brand-ripple-strong);
 }
@@ -424,6 +443,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 @media (prefers-reduced-motion: reduce) {
     #navbar a.navbar-brand-ripple::before,
     #navbar a.navbar-brand-ripple::after {
+        animation: none;
         transition-duration: 0.01ms;
     }
 }

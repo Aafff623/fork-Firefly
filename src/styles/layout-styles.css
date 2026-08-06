@@ -475,6 +475,26 @@ html.is-page-transitioning .banner-home-text-overlay {
     animation-play-state: running;
 }
 
+/* 当前可见壁纸轻微呼吸（挂在 img，不碰 slide-item 的切页 transform） */
+@keyframes banner-breathe {
+    0%, 100% { transform: scale(1.03); }
+    50% { transform: scale(1.055); }
+}
+#banner-images-container .slide-item.active img,
+#banner-images-container .banner-image-slot-mobile img,
+#banner-images-container .banner-image-slot-desktop img {
+    animation: banner-breathe 8s ease-in-out infinite;
+    transform-origin: center;
+    will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+    #banner-images-container .slide-item.active img,
+    #banner-images-container .banner-image-slot-mobile img,
+    #banner-images-container .banner-image-slot-desktop img {
+        animation: none;
+    }
+}
+
 /* 当banner被禁用时的布局样式 */
 .no-banner-layout {
     top: 5.5rem !important;
