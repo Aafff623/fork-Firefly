@@ -160,14 +160,12 @@ onMount(() => {
 
 <style>
 	/*
-	 * 原设计 590×235 ≈ 2.51:1
-	 * 导航栏控件高 h-11 = 2.75rem，宽度按比例算出
-	 * 1em = 控件高度，阴影/圆角全部相对高度，保证缩小后仍有立体感
+	 * 对齐导航液态玻璃：外壳吃 navbar-liquid-glass，场景降为点缀。
+	 * 高 h-11；宽高比略收，避免比邻钮抢眼。
 	 */
 	.day-slide {
 		--h: 2.75rem;
-		--ratio: 2.510638; /* 590 / 235 */
-		/* 加快昼夜切换：原 ~1.15s/1.6s 体感偏拖，收束到更利落的时长 */
+		--ratio: 2.2; /* 原 2.51，略收以贴邻钮节奏 */
 		--dur: 0.42s;
 		--dur-color: 0.5s;
 		--ease: cubic-bezier(0.33, 0.1, 0.2, 1);
@@ -185,8 +183,13 @@ onMount(() => {
 		background: transparent;
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
-		font-size: var(--h); /* 子元素用 em 相对高度 */
+		font-size: var(--h);
 		isolation: isolate;
+		transition: transform 0.15s ease;
+	}
+
+	.day-slide:active {
+		transform: scale(0.9);
 	}
 
 	.scene {
@@ -194,19 +197,27 @@ onMount(() => {
 		inset: 0;
 		overflow: hidden;
 		border-radius: inherit;
-		/* 轻微液态玻璃：半透明 + 轻模糊，贴合导航胶囊 */
-		-webkit-backdrop-filter: blur(12px) saturate(150%);
-		backdrop-filter: blur(12px) saturate(150%);
-		border: 1px solid color-mix(in oklch, white 32%, transparent);
-		background: color-mix(in oklch, white 8%, transparent);
+		/* 对齐 .navbar-liquid-glass */
+		-webkit-backdrop-filter: blur(28px) saturate(180%);
+		backdrop-filter: blur(28px) saturate(180%);
+		border: 1px solid color-mix(in oklch, white 58%, transparent);
+		background: color-mix(in oklch, white 48%, transparent);
 		box-shadow:
-			inset 0 0.08em 0.12em rgba(0, 0, 0, 0.22),
-			inset 0 0.04em 0.06em rgba(0, 0, 0, 0.16),
-			inset 0 1px 0 rgba(255, 255, 255, 0.28),
-			0 0.06em 0.12em rgba(0, 0, 0, 0.16);
+			0 8px 28px rgba(0, 0, 0, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.72),
+			inset 0 -1px 0 rgba(255, 255, 255, 0.14);
 	}
 
-	/* ---------- 天空 ---------- */
+	:global(.dark) .scene {
+		background: color-mix(in oklch, white 14%, transparent);
+		border: 1px solid color-mix(in oklch, white 20%, transparent);
+		box-shadow:
+			0 8px 32px rgba(0, 0, 0, 0.38),
+			inset 0 1px 0 rgba(255, 255, 255, 0.24),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+	}
+
+	/* ---------- 天空（玻璃壳上略回补色度，勿回到原实蓝塑料感） ---------- */
 	.sky {
 		position: absolute;
 		inset: 0;
@@ -215,11 +226,11 @@ onMount(() => {
 	}
 
 	.is-day .sky {
-		background: rgb(45 109 162 / 0.82);
+		background: rgb(56 122 178 / 0.52);
 	}
 
 	.is-night .sky {
-		background: rgb(28 31 44 / 0.78);
+		background: rgb(28 31 44 / 0.58);
 	}
 
 	.sky-band {
@@ -250,41 +261,41 @@ onMount(() => {
 
 	.is-day .sky-band.b1 {
 		left: 0;
-		background: rgb(76 134 189 / 0.84);
+		background: rgb(76 134 189 / 0.5);
 		border-radius: 0.51em 0.4em 0.4em 0.51em;
 	}
 
 	.is-day .sky-band.b2 {
 		left: 0;
-		background: rgb(89 146 194 / 0.82);
+		background: rgb(89 146 194 / 0.46);
 		border-radius: 0.51em 0.4em 0.4em 0.51em;
 	}
 
 	.is-day .sky-band.b3 {
 		left: 0;
-		background: rgb(104 157 202 / 0.8);
+		background: rgb(104 157 202 / 0.42);
 		border-radius: 0.25em 0.51em 0.51em 0.25em;
 	}
 
 	.is-night .sky-band.b1 {
 		left: 15%;
-		background: rgb(45 51 61 / 0.82);
+		background: rgb(45 51 61 / 0.5);
 		border-radius: 0.4em 0.51em 0.51em 0.4em;
 	}
 
 	.is-night .sky-band.b2 {
 		left: 30%;
-		background: rgb(64 67 80 / 0.8);
+		background: rgb(64 67 80 / 0.42);
 		border-radius: 0.4em 0.51em 0.51em 0.4em;
 	}
 
 	.is-night .sky-band.b3 {
 		left: 45%;
-		background: rgb(80 84 94 / 0.78);
+		background: rgb(80 84 94 / 0.36);
 		border-radius: 0.51em 0.25em 0.25em 0.51em;
 	}
 
-	/* ---------- 云 ---------- */
+	/* ---------- 云（近平面，色度略回补） ---------- */
 	.clouds {
 		position: absolute;
 		inset: 0;
@@ -301,27 +312,23 @@ onMount(() => {
 		display: block;
 		border-radius: 50%;
 		transition: background-color var(--dur-color) var(--ease);
-		box-shadow:
-			inset 0 0.03em 0.06em rgba(255, 255, 255, 0.35),
-			inset -0.02em 0.04em 0.05em rgba(255, 255, 255, 0.2),
-			inset -0.05em -0.05em 0.08em rgba(0, 0, 0, 0.35),
-			0.06em 0.06em 0.08em rgba(0, 0, 0, 0.28);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 	}
 
 	.is-day .far .blob {
-		background: rgb(163 197 224 / 0.86);
+		background: rgb(163 197 224 / 0.68);
 	}
 
 	.is-night .far .blob {
-		background: rgb(108 131 149 / 0.84);
+		background: rgb(108 131 149 / 0.52);
 	}
 
 	.is-day .near .blob {
-		background: rgb(241 250 252 / 0.88);
+		background: rgb(241 250 252 / 0.72);
 	}
 
 	.is-night .near .blob {
-		background: rgb(198 198 198 / 0.86);
+		background: rgb(198 198 198 / 0.48);
 	}
 
 	/* 远景云位置（对齐原 back-cloud） */
@@ -435,7 +442,7 @@ onMount(() => {
 	}
 
 	.is-night .stars {
-		opacity: 1;
+		opacity: 0.85;
 		transform: translateY(0);
 	}
 
@@ -443,7 +450,7 @@ onMount(() => {
 		position: absolute;
 		width: 0.14em;
 		height: 0.14em;
-		background: #fff;
+		background: rgb(255 255 255 / 0.88);
 		clip-path: polygon(
 			50% 0%,
 			61% 35%,
@@ -454,7 +461,7 @@ onMount(() => {
 			0% 50%,
 			39% 35%
 		);
-		filter: drop-shadow(0 0 0.04em rgba(255, 255, 255, 0.85));
+		filter: drop-shadow(0 0 0.03em rgba(255, 255, 255, 0.5));
 	}
 
 	.s1 {
@@ -499,37 +506,40 @@ onMount(() => {
 		height: 0.26em;
 	}
 
-	/* ---------- 太阳 / 月亮 ---------- */
+	/* ---------- 太阳 / 月亮（扁平壳 + 原色系黄） ---------- */
 	.orb {
 		position: absolute;
-		top: 10%;
+		top: 12%;
 		left: 5%;
 		z-index: 10;
 		width: 33%;
-		height: 80%;
+		height: 76%;
 		border-radius: 50%;
 		background: #fec428;
 		transition:
 			left var(--dur) var(--ease),
-			background-color var(--dur) var(--ease);
+			background-color var(--dur) var(--ease),
+			box-shadow var(--dur) var(--ease);
 		box-shadow:
-			inset 0 0.04em 0.08em rgba(255, 255, 255, 0.45),
-			inset -0.04em -0.05em 0.1em rgba(0, 0, 0, 0.35),
-			0.08em 0.08em 0.12em rgba(0, 0, 0, 0.35);
+			inset 0 1px 0 rgba(255, 255, 255, 0.5),
+			0 1px 4px rgba(0, 0, 0, 0.14);
 	}
 
 	.is-night .orb {
 		left: 62%;
 		background: #c3c9d1;
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.4),
+			0 1px 4px rgba(0, 0, 0, 0.22);
 	}
 
 	.crater {
 		position: absolute;
 		border-radius: 50%;
-		background: #949eb2;
+		background: rgb(148 158 178 / 0.7);
 		opacity: 0;
 		transition: opacity var(--dur) var(--ease);
-		box-shadow: inset -0.03em -0.03em 0.06em rgba(0, 0, 0, 0.45);
+		box-shadow: none;
 	}
 
 	.is-night .crater {
@@ -557,13 +567,14 @@ onMount(() => {
 		left: 60%;
 	}
 
-	.day-slide:active .orb {
-		transform: scale(0.96);
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.day-slide {
 			--dur: 0.01ms;
+			transition: none;
+		}
+
+		.day-slide:active {
+			transform: none;
 		}
 
 		.far .blob,
