@@ -31,11 +31,16 @@
 
 /* —— Header —— */
 .dynamic-page-header {
+	--hero-img: url("/assets/hero/dynamic-hero.gif");
 	display: flex;
 	flex-direction: column;
 	gap: 0.7rem;
 	margin-bottom: 0.85rem;
 	padding: 1rem 1.1rem 0.95rem;
+	overflow: hidden;
+	/* 压过 card-base 实底，让底图透出来 */
+	background-color: transparent !important;
+	background-image: none !important;
 }
 
 @media (min-width: 768px) {
