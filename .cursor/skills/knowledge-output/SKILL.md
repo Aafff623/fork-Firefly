@@ -7,6 +7,7 @@ description: >-
   调用方式：无参数 = 处理 todo 全部主题；带参数(/knowledge-output {主题A} {主题B}) = 只处理指定主题。
   区别于 ob2blog(Obsidian vault → 博客)：本技能源是 Agent 自行总结的素材笔记(非 Obsidian vault，
   无 wiki 链接/附件映射/manifest 一致性)。任何「把 Knowledge 素材笔记变成博客成品帖」的诉求触发本技能。
+  用户若同时要求「在动态里加内容/发条动态」，按 references/dynamic-sync.md 子模块补一条自定义动态。
 compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Python 3 stdlib；复用 ob2blog 的
   frontmatter 模板与 validate_post.py。产出后收尾调用 site-cascade。
 ---
@@ -54,10 +55,15 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
             Obsidian vault，本场景无 manifest)
 5 校验    → python .cursor/skills/ob2blog/scripts/validate_post.py src/content/posts/{slug}/index.md
 6 收尾    → 调 site-cascade（公开帖 `--emit-dynamic`，推荐 `--blurb "作者批注"`；未传则用 description）；提示用户 pnpm dev 预览；未获准不 commit/push
+6b 动态同步（可选）→ 用户若要求「同时在动态里加内容」，按 references/dynamic-sync.md 补一条自定义动态
 7 归档    → 每发布成功一个主题，将其目录从 Knowledge\todo\ 移入 Knowledge\Archive\（原样留档，不改内容；失败/未发布不移动）
 ```
 
 笔记型动态正文须含 `>` 批注块（见 `site-cascade`）；勿只 emit 单行「发布了新笔记」。
+
+## 动态同步（可选子模块）
+
+用户调用本技能时若**显式要求**在动态流补充内容（「发帖同时在动态里说……」「动态里顺便发张图」），按 [references/dynamic-sync.md](references/dynamic-sync.md) 发布一条自定义动态。未提则只走 site-cascade 的默认「新笔记」动态，不额外发。
 
 ## 成帖红线（素材进博客前最后一道）
 
