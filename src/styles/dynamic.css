@@ -703,10 +703,12 @@
 
 .dynamic-gallery-grid[data-layout="single"] img {
 	width: auto;
-	max-width: 100%;
-	max-height: min(28rem, 55vh);
+	max-width: min(100%, 16rem);
+	max-height: 11rem;
 	height: auto;
-	object-fit: contain;
+	object-fit: cover;
+	border-radius: 0.45rem;
+	cursor: zoom-in;
 }
 
 .dynamic-gallery-more {
