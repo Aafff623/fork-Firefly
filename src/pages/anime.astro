@@ -56,20 +56,43 @@ interface BilibiliItem {
 
 // ============ 数据获取 ============
 
-/** 从本地缓存读取 TMDB 数据，读取失败返回空数组 */
-function readTmdbLocalCache(): TmdbItem[] {
+/** 读取 public/anime-list.json；mode=local 为精选清单，否则视为 TMDB 缓存 */
+function readAnimeListFile(): {
+	mode: "local" | "tmdb" | "unknown";
+	localItems: StandardizedAnime[];
+	tmdbItems: TmdbItem[];
+} {
 	try {
 		const localPath = path.resolve("public/anime-list.json");
-		if (fs.existsSync(localPath)) {
-			const localData = JSON.parse(fs.readFileSync(localPath, "utf-8"));
-			const items = localData.items || localData[0]?.items || [];
-			console.log(`[Anime] Using local cache: ${items.length} items.`);
-			return items;
+		if (!fs.existsSync(localPath)) {
+			return { mode: "unknown", localItems: [], tmdbItems: [] };
 		}
+		const localData = JSON.parse(fs.readFileSync(localPath, "utf-8"));
+		const items = localData.items || localData[0]?.items || [];
+		if (localData.mode === "local") {
+			console.log(`[Anime] Using local catalog: ${items.length} items.`);
+			return {
+				mode: "local",
+				localItems: items as StandardizedAnime[],
+				tmdbItems: [],
+			};
+		}
+		console.log(`[Anime] Using TMDB local cache: ${items.length} items.`);
+		return {
+			mode: "tmdb",
+			localItems: [],
+			tmdbItems: items as TmdbItem[],
+		};
 	} catch {
-		// 本地缓存读取失败，忽略
+		return { mode: "unknown", localItems: [], tmdbItems: [] };
 	}
-	return [];
+}
+
+const animeListFile = readAnimeListFile();
+
+/** 从本地缓存读取 TMDB 数据，读取失败返回空数组 */
+function readTmdbLocalCache(): TmdbItem[] {
+	return animeListFile.mode === "tmdb" ? animeListFile.tmdbItems : [];
 }
 
 // 1. TMDB 数据
@@ -222,7 +245,30 @@ if (bilibiliItems.length > 0) {
 	animeList = [...animeList, ...bilibiliMapped];
 }
 
-const isConfigured = !!(BILIBILI_UID || (TMDB_API_KEY && TMDB_LIST_ID));
+// 3. 本地精选清单（B 站追番隐私/空列表时兜底；有远端数据则按标题去重合并）
+if (animeListFile.localItems.length > 0) {
+	if (animeList.length === 0) {
+		animeList = [...animeListFile.localItems];
+		console.log(
+			`[Anime] Falling back to local catalog: ${animeList.length} items.`,
+		);
+	} else {
+		const existingTitles = new Set(animeList.map((item) => item.title));
+		const extras = animeListFile.localItems.filter(
+			(item) => !existingTitles.has(item.title),
+		);
+		if (extras.length > 0) {
+			animeList = [...animeList, ...extras];
+			console.log(`[Anime] Merged ${extras.length} local catalog extras.`);
+		}
+	}
+}
+
+const isConfigured = !!(
+	BILIBILI_UID ||
+	(TMDB_API_KEY && TMDB_LIST_ID) ||
+	animeListFile.localItems.length > 0
+);
 ---
 
 <MainGridLayout title={i18n(I18nKey.anime)} description={i18n(I18nKey.animeSubtitle)}>
