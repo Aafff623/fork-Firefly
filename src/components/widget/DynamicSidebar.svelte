@@ -105,7 +105,7 @@ function formatDate(timestamp: number): string {
 			{@const image = entry.images?.[0]}
 			<a
 				href={url(`/dynamic/#dynamic-${entry.id}`)}
-				class={`dynamics-sidebar__entry dynamics-sidebar__entry--${index % 2 === 0 ? "ink" : "ash"} ${index < 2 ? "dynamics-sidebar__entry--blink" : ""} group flex min-w-0 items-center gap-2 rounded-lg p-1.5
+				class={`dynamics-sidebar__entry dynamics-sidebar__entry--${index % 2 === 0 ? "ink" : "ash"} ${index === 1 ? "dynamics-sidebar__entry--blink" : ""} group flex min-w-0 items-center gap-2 rounded-lg p-1.5
 					text-neutral-700/75 dark:text-neutral-300/75
 					hover:bg-(--btn-plain-bg-hover)
 					active:bg-(--btn-plain-bg-active) transition-colors duration-150`}
@@ -172,7 +172,7 @@ function formatDate(timestamp: number): string {
 		--dynamic-body: oklch(0.68 0.01 265);
 	}
 
-	/* 最新两条：仅颜色/透明度变淡闪烁，无位移缩放 */
+	/* 仅第 2 条软闪；最新一条保持静止 */
 	@keyframes dynamics-sidebar-fade-soft {
 		0%,
 		100% {
