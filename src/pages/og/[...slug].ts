@@ -418,7 +418,8 @@ export async function GET({
 		});
 	}
 
-	const svg = await satori(template, {
+	// satori 虚拟节点 ≠ React 19 ReactNode；接入 @types/react 后需断言
+	const svg = await satori(template as Parameters<typeof satori>[0], {
 		width: 1200,
 		height: 630,
 		fonts,

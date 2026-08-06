@@ -2,6 +2,7 @@ import { setMaxListeners } from "node:events";
 import cloudflare from "@astrojs/cloudflare";
 import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
+import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import vercel from "@astrojs/vercel";
@@ -239,6 +240,7 @@ export default defineConfig({
 			},
 		}),
 		svelte(),
+		react(),
 		sitemap({
 			filter: (page) => {
 				// 根据页面开关配置过滤sitemap

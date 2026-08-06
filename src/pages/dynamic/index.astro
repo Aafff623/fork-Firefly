@@ -1,16 +1,20 @@
 ---
-/* Hallmark · macrostructure: Index-First (timeline feed) · tone: editorial
- * genre: editorial · theme: Firefly tokens (hue 290) · enrichment: none
- * polish: rail + meta mono + filter tray + indent tokens
- */
+import path from "node:path";
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
-import DynamicFeed from "@/components/pages/dynamic/DynamicFeed.svelte";
-import DynamicItemTemplate from "@/components/pages/dynamic/DynamicItemTemplate.astro";
-import { commentConfig, dynamicConfig, siteConfig } from "@/config";
+import DynamicTimeline from "@/components/pages/dynamic/react/DynamicTimeline";
+import {
+	commentConfig,
+	dynamicConfig,
+	profileConfig,
+	siteConfig,
+} from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import "@/styles/dynamic.css";
+import { DYNAMIC_KIND_LABEL } from "@/utils/dynamic-utils";
 import { url } from "@/utils/url-utils";
 
 if (!siteConfig.pages.dynamic) {
@@ -30,51 +34,110 @@ const dataUrl = dynamicConfig.apiUrl?.startsWith("http")
 	? dynamicConfig.apiUrl
 	: url(dynamicConfig.apiUrl || "/api/dynamic.json");
 const memos = dynamicConfig.memos;
+
+const kindLegend = [
+	{ kind: "status", label: DYNAMIC_KIND_LABEL.status },
+	{ kind: "note", label: DYNAMIC_KIND_LABEL.note },
+	{ kind: "gallery", label: DYNAMIC_KIND_LABEL.gallery },
+] as const;
+
+const profileUrl = url(dynamicConfig.profileUrl || "/about/");
+
+/** 与 ImageWrapper 同策略：src/ 本地图走 Astro 优化 URL，勿直接拼 /assets/… */
+async function resolveAvatarUrl(src: string): Promise<string> {
+	if (!src) return "";
+	if (
+		src.startsWith("http://") ||
+		src.startsWith("https://") ||
+		src.startsWith("//") ||
+		src.startsWith("data:")
+	) {
+		return src;
+	}
+	if (src.startsWith("/")) return url(src);
+
+	const files = import.meta.glob<ImageMetadata>(
+		"../../**/*.{png,jpg,jpeg,webp,avif}",
+		{ import: "default" },
+	);
+	const normalizedPath = path
+		.normalize(path.join("../../", src))
+		.replace(/\\/g, "/");
+	const file = files[normalizedPath];
+	if (!file) {
+		console.error(`[dynamic] avatar not found: ${normalizedPath}`);
+		return "";
+	}
+	const meta = await file();
+	const optimized = await getImage({
+		src: meta,
+		width: 96,
+		height: 96,
+	});
+	return optimized.src;
+}
+
+const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 ---
 
 <MainGridLayout title={title} description={description}>
 	<section class="dynamic-page" aria-labelledby="dynamic-page-title">
 		<header class="dynamic-page-header card-base">
-			<p class="dynamic-mast-meta">
-				<span class="dynamic-mast-left">
-					<span>DYNAMIC · FEED</span>
-					{/* 页头音浪点缀：此刻广播气质 */}
-					<span class="dynamic-wave" aria-hidden="true">
-						<span></span><span></span><span></span><span></span><span></span>
-						<span></span><span></span>
-					</span>
-				</span>
-				<span class="dynamic-count" aria-label={i18n(I18nKey.dynamic)}>
-					<strong data-dynamic-page-count>0</strong>
-					<span>{i18n(I18nKey.dynamic)}</span>
-				</span>
-			</p>
 			<div class="dynamic-page-heading">
-				<h1 id="dynamic-page-title" class="dynamic-page-title">{title}</h1>
+				<div class="dynamic-page-title-row">
+					<h1 id="dynamic-page-title" class="dynamic-page-title">{title}</h1>
+					<span class="dynamic-count" aria-label={i18n(I18nKey.dynamic)}>
+						<strong data-dynamic-page-count>0</strong>
+						<span>{i18n(I18nKey.dynamic)}</span>
+					</span>
+				</div>
 				{description && <p class="dynamic-page-lede">{description}</p>}
 			</div>
-			<div class="dynamic-filter">
-				<label class="dynamic-search">
-					<span class="sr-only">{i18n(I18nKey.dynamicSearch)}</span>
-					<Icon is:inline name="lucide:search" />
-					<input
-						type="search"
-						data-dynamic-search
-						placeholder={i18n(I18nKey.dynamicSearch)}
-					/>
-				</label>
-				<label class="dynamic-year-select">
-					<span class="sr-only">{i18n(I18nKey.year)}</span>
-					<Icon is:inline name="lucide:calendar-days" />
-					<select data-year-select aria-label={i18n(I18nKey.year)}>
-						<option value="all">{i18n(I18nKey.dynamicAllYears)}</option>
-					</select>
-					<Icon is:inline name="lucide:chevron-down" />
-				</label>
+
+			<div class="dynamic-toolbar">
+				<div class="dynamic-filter">
+					<label class="dynamic-search">
+						<span class="sr-only">{i18n(I18nKey.dynamicSearch)}</span>
+						<Icon is:inline name="lucide:search" />
+						<input
+							type="search"
+							data-dynamic-search
+							placeholder={i18n(I18nKey.dynamicSearch)}
+						/>
+					</label>
+					<label class="dynamic-year-select">
+						<span class="sr-only">{i18n(I18nKey.year)}</span>
+						<Icon is:inline name="lucide:calendar-days" />
+						<select data-year-select aria-label={i18n(I18nKey.year)}>
+							<option value="all">{i18n(I18nKey.dynamicAllYears)}</option>
+						</select>
+						<Icon is:inline name="lucide:chevron-down" />
+					</label>
+				</div>
+				<ul class="dynamic-kind-legend" aria-label="动态类型图例">
+					{
+						kindLegend.map(({ kind, label }) => (
+							<li
+								class="dynamic-kind-legend-item"
+								data-kind={kind}
+								title={
+									kind === "note"
+										? "笔记 · completed"
+										: kind === "gallery"
+											? "图集 · in-progress"
+											: "动态 · pending"
+								}
+							>
+								<span class="dynamic-kind-dot" aria-hidden="true" />
+								<span>{label}</span>
+							</li>
+						))
+					}
+				</ul>
 			</div>
 		</header>
 
-		<DynamicFeed
+		<DynamicTimeline
 			client:load
 			source={dataUrl}
 			{itemsPerPage}
@@ -85,8 +148,17 @@ const memos = dynamicConfig.memos;
 			allYearsText={i18n(I18nKey.dynamicAllYears)}
 			timezone={siteConfig.timezone || "UTC"}
 			{memos}
+			profileName={profileConfig.name}
+			{profileUrl}
+			{avatarUrl}
+			commentsLabel={i18n(I18nKey.comments)}
+			pinnedLabel={i18n(I18nKey.pinned)}
+			collapseGalleryLabel={i18n(I18nKey.dynamicCollapseGallery)}
+			viewOriginalLabel={i18n(I18nKey.dynamicViewOriginal)}
+			prevImageLabel={i18n(I18nKey.dynamicPreviousImage)}
+			nextImageLabel={i18n(I18nKey.dynamicNextImage)}
+			viewImageLabel={i18n(I18nKey.dynamicViewImage)}
+			selectImageLabel={i18n(I18nKey.dynamicSelectImage)}
 		/>
-
-		<DynamicItemTemplate />
 	</section>
 </MainGridLayout>

@@ -3,11 +3,10 @@
 ## 动态组件
 
 - `widget/Dynamic.astro`：显示最新动态的侧边栏组件。
-- `pages/dynamic/DynamicFeed.svelte`：负责动态 JSON 加载、搜索、年份筛选和分页。
-- `pages/dynamic/DynamicGallery.astro`：动态图片网格、轮播和灯箱。
+- `pages/dynamic/react/DynamicTimeline.tsx`：React island；vendored shadcn-timeline 原语 + 中轴左右错落；负责 JSON/Memos、筛选与分页。
+- `pages/dynamic/react/timeline.tsx`：timDeHof/shadcn-timeline 原语（MIT vendor）+ `side` / `children` 扩展。
+- `pages/dynamic/DynamicGallery.astro`：动态图片网格、轮播和灯箱（CE 仍由 Timeline 挂载）。
 - `pages/dynamic/DynamicInlineComments.astro`：单条动态的按需评论区。
-- `pages/dynamic/DynamicItem.astro`：动态条目的服务端渲染组件。
-- `pages/dynamic/DynamicItemTemplate.astro`：动态条目的客户端渲染模板。
 
 Firefly 项目中所有可复用组件的集中管理。组件按照功能和职责进行分类，提供清晰的架构和易于维护的代码组织。
 
