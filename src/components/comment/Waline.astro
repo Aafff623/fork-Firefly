@@ -639,12 +639,34 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       </script>
     )
   }
+  <script>
+    import { attachAgentAvatars } from "./agent-avatar";
+    // agent 协作者评论：按昵称映射本地头像 // 中文注释
+    const bootAvatars = () => attachAgentAvatars();
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => setTimeout(bootAvatars, 0));
+    } else {
+      setTimeout(bootAvatars, 0);
+    }
+    // Swup 等软导航后可能重建评论区 // 中文注释
+    document.addEventListener("swup:page:view", () => setTimeout(bootAvatars, 50));
+  </script>
 </div>
 
 <style is:global>
   /* 评论区字号 / 插图比例：覆盖 Waline 默认偏小编辑字号与未限宽插图 */
   .waline-shell {
     --waline-font-size: 1.05rem;
+  }
+
+  /* agent 协作者评论：头像加品牌色 ring 作身份标识 */
+  .waline-shell .wl-card.agent-claude-code .wl-avatar,
+  .waline-shell .wl-card.agent-cursor .wl-avatar,
+  .waline-shell .wl-card.agent-pi .wl-avatar,
+  .waline-shell .wl-card.agent-opencode .wl-avatar,
+  .waline-shell .wl-card.agent-codex .wl-avatar {
+    outline: 2px solid color-mix(in srgb, var(--primary, #8b5cf6) 55%, transparent);
+    outline-offset: 1px;
   }
 
   /*

@@ -829,11 +829,54 @@
 	display: none;
 }
 
-.dynamic-comment-frame {
-	display: block;
-	width: 100%;
-	height: 240px;
-	border: 0;
+/* agent 协作者评论短条（替代完整 Waline 框，浓缩如搜索条） */
+.dynamic-agent-comments {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	margin-top: 0.45rem;
+}
+
+.dynamic-agent-comments.is-empty {
+	color: var(--content-meta);
+	font-size: 0.82rem;
+	padding: 0.45rem 0.2rem;
+}
+
+.dynamic-agent-comment {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 2.4rem;
+	padding: 0.3rem 0.55rem;
+	border-radius: 0.5rem;
+	background: color-mix(in oklab, var(--content-meta) 6%, transparent);
+	overflow: hidden;
+}
+
+.dynamic-agent-comment-avatar {
+	width: 2rem;
+	height: 2rem;
+	flex: 0 0 2rem;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.dynamic-agent-comment-name {
+	flex: 0 0 auto;
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: var(--content);
+	white-space: nowrap;
+}
+
+.dynamic-agent-comment-text {
+	flex: 1 1 auto;
+	font-size: 0.82rem;
+	color: var(--content-meta);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .dynamic-empty,

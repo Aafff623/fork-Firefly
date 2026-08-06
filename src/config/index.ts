@@ -3,6 +3,8 @@
 
 // 类型导出
 export type {
+	AgentPersona,
+	AgentPersonas,
 	AdConfig,
 	AnalyticsConfig,
 	AnnouncementConfig,
@@ -39,6 +41,7 @@ export type {
 	FontDefinition,
 	FontSelectionConfig,
 } from "../types/fontConfig"; // 字体类型定义
+export { agentPersonas } from "./agentPersonas"; // agent 协作者人格配置
 export { analyticsConfig } from "./analyticsConfig"; // 统计分析配置
 export { announcementConfig } from "./announcementConfig"; // 公告配置
 // 样式配置

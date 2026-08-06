@@ -1,3 +1,4 @@
+export type { AgentPersona, AgentPersonas } from "./agentPersonas";
 export type { AnalyticsConfig } from "./analyticsConfig";
 export type { AnnouncementConfig } from "./announcementConfig";
 export type { BackgroundWallpaperConfig } from "./backgroundWallpaper";
