@@ -51,6 +51,9 @@ tmp/
 __tmp__/
 temp/
 
+# calendar GIF compression backups (local only)
+public/assets/images/widgets/calendar/_orig-backup/
+
 # local agent and deployment state
 .hallmark/
 .wrangler/

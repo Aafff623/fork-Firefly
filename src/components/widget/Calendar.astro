@@ -71,22 +71,37 @@ const postUrlPrefix = url("/posts/");
   contentPadding={false}
 >
   <!-- 笔记本日历：对照 bili-goat widgets/日历（GIF 封面 + 活页环 + 珊瑚点缀） -->
+  <!-- 首帧用体积最小的 02.gif，HTML 直接写 src，浏览器尽早拉取 -->
+  <link rel="preload" as="image" href="/assets/images/widgets/calendar/02.gif" fetchpriority="high" />
   <div class="calendar-shell">
     <header
       class="calendar-cover"
       data-cover-gifs={JSON.stringify([
-        "/assets/images/widgets/calendar/01.gif",
         "/assets/images/widgets/calendar/02.gif",
         "/assets/images/widgets/calendar/03.gif",
+        "/assets/images/widgets/calendar/09.gif",
+        "/assets/images/widgets/calendar/08.gif",
         "/assets/images/widgets/calendar/04.gif",
         "/assets/images/widgets/calendar/06.gif",
         "/assets/images/widgets/calendar/07.gif",
-        "/assets/images/widgets/calendar/08.gif",
-        "/assets/images/widgets/calendar/09.gif",
+        "/assets/images/widgets/calendar/01.gif",
+        "/assets/images/widgets/calendar/05.gif",
       ])}
       data-cover-interval-ms="4500"
     >
-      <div class="calendar-cover-media" aria-hidden="true"></div>
+      <div class="calendar-cover-media" aria-hidden="true">
+        <img
+          class="calendar-cover-img"
+          src="/assets/images/widgets/calendar/02.gif"
+          alt=""
+          width="360"
+          height="200"
+          decoding="async"
+          fetchpriority="high"
+          loading="eager"
+          draggable="false"
+        />
+      </div>
       <div class="calendar-cover-scrim" aria-hidden="true"></div>
       <div class="calendar-cover-copy">
         <div class="calendar-cover-day" id="calendar-cover-day"></div>
@@ -172,13 +187,14 @@ const postUrlPrefix = url("/posts/");
   let allPostsData = [];
   let availableYears = [];
 
-  /** 封面 GIF 轮询：多图切换，避免只烧一张 */
+  /** 封面 GIF：可靠显示 + 按需预取轮询（侧栏常驻，Swup 不重建 DOM） */
   function initCalendarCoverRotate() {
     const cover = document.querySelector(".calendar-shell .calendar-cover");
     const media = cover && cover.querySelector(".calendar-cover-media");
     if (!cover || !media) return;
-    if (media.dataset.coverRotateBound === "1") return;
-    media.dataset.coverRotateBound = "1";
+
+    const img = media.querySelector(".calendar-cover-img");
+    if (!img) return;
 
     let gifs = [];
     try {
@@ -190,38 +206,137 @@ const postUrlPrefix = url("/posts/");
       .map(function (u) { return String(u || "").trim(); })
       .filter(Boolean);
     if (!gifs.length) {
-      gifs = ["/assets/images/widgets/calendar/01.gif"];
+      gifs = ["/assets/images/widgets/calendar/02.gif"];
     }
+
+    const cache = window.__calendarGifCache || (window.__calendarGifCache = Object.create(null));
+    const FAIL_MARK = "__fail";
+
+    function absoluteUrl(path) {
+      try {
+        return new URL(path, window.location.origin).href;
+      } catch {
+        return path;
+      }
+    }
+
+    function preload(url) {
+      const key = absoluteUrl(url);
+      if (cache[key] === FAIL_MARK) return Promise.reject(new Error("cached-fail"));
+      if (cache[key] === true) return Promise.resolve(url);
+      if (cache[key] && typeof cache[key].then === "function") return cache[key];
+
+      cache[key] = new Promise(function (resolve, reject) {
+        const probe = new Image();
+        let tries = 0;
+        function attempt() {
+          tries += 1;
+          probe.onload = function () {
+            cache[key] = true;
+            resolve(url);
+          };
+          probe.onerror = function () {
+            if (tries < 2) {
+              // 失败重试一次（带 cache-bust），避免偶发网络抖动
+              window.setTimeout(function () {
+                probe.src = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_r=" + tries;
+              }, 120);
+              return;
+            }
+            cache[key] = FAIL_MARK;
+            reject(new Error("gif-load-fail"));
+          };
+          probe.decoding = "async";
+          probe.fetchPriority = tries === 1 ? "high" : "low";
+          probe.src = tries === 1 ? url : url + (url.indexOf("?") >= 0 ? "&" : "?") + "_r=" + tries;
+        }
+        attempt();
+      });
+      return cache[key];
+    }
+
+    function applyUrl(url) {
+      if (img.getAttribute("src") !== url) {
+        img.setAttribute("src", url);
+      }
+    }
+
+    // Swup 后侧栏 DOM 常驻：已绑定则只确保首帧仍在显示，并预热下一张
+    if (media.dataset.coverRotateBound === "1") {
+      const cur = img.getAttribute("src") || gifs[0];
+      if (!cur || !img.complete || img.naturalWidth === 0) {
+        preload(gifs[0]).then(function () { applyUrl(gifs[0]); }).catch(function () {});
+      } else {
+        applyUrl(cur);
+      }
+      const nextIdx = (Number(media.dataset.coverIdx || 0) + 1) % gifs.length;
+      preload(gifs[nextIdx]).catch(function () {});
+      return;
+    }
+    media.dataset.coverRotateBound = "1";
+    media.dataset.coverIdx = "0";
 
     const intervalMs = Math.max(
       2500,
       Number(cover.getAttribute("data-cover-interval-ms") || 4500) || 4500,
     );
     let idx = 0;
+    let switching = false;
 
-    function apply(url) {
-      media.style.backgroundImage = 'url("' + url + '")';
+    // 首帧：HTML 已写 src；再确保进缓存，失败则换下一张
+    preload(gifs[0])
+      .then(function () { applyUrl(gifs[0]); })
+      .catch(function () {
+        // 跳过坏链，找第一张可用
+        (function tryNext(i) {
+          if (i >= gifs.length) return;
+          preload(gifs[i])
+            .then(function () {
+              idx = i;
+              media.dataset.coverIdx = String(i);
+              applyUrl(gifs[i]);
+            })
+            .catch(function () { tryNext(i + 1); });
+        })(1);
+      });
+
+    if (gifs.length >= 2) {
+      preload(gifs[1]).catch(function () {});
     }
 
-    // 预热，减少切换闪白
-    gifs.forEach(function (url) {
-      const img = new Image();
-      img.src = url;
-    });
-
-    apply(gifs[0]);
     if (gifs.length < 2) return;
 
     if (window.__calendarCoverRotateTimer) {
       clearInterval(window.__calendarCoverRotateTimer);
     }
+
     window.__calendarCoverRotateTimer = setInterval(function () {
-      media.classList.add("is-fading");
-      window.setTimeout(function () {
-        idx = (idx + 1) % gifs.length;
-        apply(gifs[idx]);
-        media.classList.remove("is-fading");
-      }, 280);
+      if (switching) return;
+      // 离屏不轮询，省带宽/解码
+      if (document.hidden) return;
+      const next = (idx + 1) % gifs.length;
+      const url = gifs[next];
+      if (cache[absoluteUrl(url)] === FAIL_MARK) {
+        idx = next;
+        media.dataset.coverIdx = String(idx);
+        return;
+      }
+      switching = true;
+      preload(url)
+        .then(function () {
+          // 已缓存再换：禁止先淡出到透明（会露出红底占位）
+          idx = next;
+          media.dataset.coverIdx = String(idx);
+          applyUrl(url);
+          switching = false;
+          const ahead = gifs[(idx + 1) % gifs.length];
+          preload(ahead).catch(function () {});
+        })
+        .catch(function () {
+          switching = false;
+          idx = next;
+          media.dataset.coverIdx = String(idx);
+        });
     }, intervalMs);
   }
 
@@ -1191,16 +1306,18 @@ const postUrlPrefix = url("/posts/");
     position: absolute;
     inset: 0;
     z-index: 0;
-    /* 由脚本轮询 .calendar-cover 的 data-cover-gifs；默认首帧兜底 */
-    background-image: url("/assets/images/widgets/calendar/01.gif");
-    background-size: cover;
-    background-position: center 28%;
-    background-repeat: no-repeat;
-    transition: opacity 0.55s ease;
+    /* 红渐变底仅作加载前占位；真正画面由 .calendar-cover-img 承担 */
+    background: transparent;
   }
 
-  .calendar-cover-media.is-fading {
-    opacity: 0;
+  .calendar-cover-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 28%;
+    pointer-events: none;
+    user-select: none;
   }
 
   .calendar-cover-scrim {
