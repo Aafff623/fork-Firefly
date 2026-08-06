@@ -93,8 +93,8 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 
 ```
 [ ] check_quota --need image
-[ ] 读帖主题；查重；选定 style-taste ID（未点名默认 03；见 prompt-craft）
-[ ] 艺术 prompt（该 ID 材质/光线 + 创意/贴题或高度抽象/多要素；禁蓝紫渐变与廉价 AI 味）→ text_to_image
+[ ] 读帖主题；查重；选定 style-taste ID（未点名默认 03；日历/合集吉祥物→17；见 prompt-craft）
+[ ] 艺术 prompt（该 ID 材质/光线 + 创意/贴题或高度抽象/多要素；17 用专节模板；禁蓝紫渐变与廉价 AI 味）→ text_to_image
 [ ] fetch_media 落到 cover.*
 [ ] 改 FM；可选 understand_image
 ```

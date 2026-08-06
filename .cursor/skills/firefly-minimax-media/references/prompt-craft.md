@@ -13,12 +13,12 @@
 
 概念句模板：`主题物件A + 物件B + 材质/工艺 + 光线 + 情绪 + 禁止项`。
 
-## 风格路由（style-taste · 2026-08-02）
+## 风格路由（style-taste · 2026-08-06）
 
 样张页：`Firefly/public/media/minimax/style-taste/index.html`。
 **未入选（避开）**：04 瑞士海报 · 12 黏土 · 14 粗野 · 15 陶瓷。
 
-**适用范围**：卡片封面 **与** 索引/章节信息图同一套表。封面未点名时默认 **03**；索引帖须按章显式选 ID，**禁止**把 16 水粉/水彩当整帖默认，**禁止**并发批任务共用一个材质 prompt。
+**适用范围**：卡片封面 **与** 索引/章节信息图同一套表。封面未点名时默认 **03**；索引帖须按章显式选 ID，**禁止**把 16 水粉/水彩当整帖默认，**禁止**并发批任务共用一个材质 prompt。日历封面 / 合集卡背景命中 **17**，勿默认 03。
 
 ### 通用（生成前列选项；封面未选 → 默认 03）
 
@@ -36,11 +36,63 @@
 
 | ID | 风格 | 触发主题 |
 |----|------|----------|
-| 01 | 像素 | 像素 / 8·16-bit / 复古掌机 / retro game |
+| 01 | 像素场景 | 像素场景 / 8·16-bit 环境 / 复古掌机 / retro game（**非**吉祥物主角） |
+| **17** | **卡通人物** | 日历封面族 / 合集卡背景 / 侧栏吉祥物 / soft chibi 叠字 UI |
 | 02 | 体素 | Minecraft / 方块 / 沙盒 |
 | 13 | Low-poly | 低面数 / 3D 游戏美术 |
 | 07 | 浮世绘 | 和风 / 浮世绘 / 日式美学 |
 | 11 | 水墨 | 书法 / 古典 / 禅意 / 水墨 |
+
+> **01 vs 17**：01 偏「像素场景/物件」；17 偏「圆润 16-bit chibi 人物 + 柔色底 + 下半留白叠字」。合集卡、日历封面族**一律 17**，不要用 01 凑合。
+
+### 17 · 卡通人物风（标准 · 2026-08-06）
+
+站点锚点：`docs/idea/calendar-cover/mood.md` + `public/assets/images/widgets/calendar/*.gif`；合集样张：`public/assets/collections/*.jpg`；菜单样张：`style-taste/17-chibi.jpg`。
+
+**气质**：`soft · pixel · chibi · calm · UI-banner-safe`（非写实、非赛博、非黏土）。
+
+#### Prompt 结构（按序拼接，英文主体 + 可选中文补钉）
+
+| 段 | 必填 | 写什么 |
+|----|------|--------|
+| A 画风锁 | ✓ | `soft 16-bit pixel art, cute chibi character, rounded pixel edges, gentle anime-pixel look` |
+| B 人物变体 | ✓ | 发型/发色/服装 1 句（同族可换变体，忌换画风） |
+| C 主题道具 | ✓ | 1～2 个可辨物件，贴合合集/栏目主题（勿堆满） |
+| D 构图 | ✓ | 人物偏**上半**；**下半柔色留白**供叠标题；主体居中略上 |
+| E 色板光感 | ✓ | soft pastel / muted sky；克制点缀；忌高饱和霓虹 |
+| F 媒介 | ✓ | 合集/静封面：`static illustration`；日历动图另走视频→GIF，仍锁本画风 |
+| G 禁止尾 | ✓ | 见下方固定尾句 |
+
+**模板**（合集卡 / 叠字横幅 · `aspect_ratio=4:3` 或 `16:9`）：
+
+```
+soft 16-bit pixel art, cute chibi character, [hair/outfit variant],
+holding or beside [1–2 theme props], calm gentle expression,
+character in the upper half of the frame, soft pastel [sky/room] background,
+empty soft lower half reserved for UI text overlay, calendar-banner-safe composition,
+rounded pixels, cozy and readable, static illustration,
+no text, no watermark, no logo, no UI chrome, no photorealism,
+no purple neon glassmorphism, no dense clutter in the lower half
+```
+
+中文可补钉（勿替代英文主体）：`柔和像素卡通人物，上半角色下半留白叠字，静帧，无文字无水印`。
+
+#### 硬规范
+
+1. **人物优先**：画面主角必须是 chibi 人物，不是空场景（空场景改用 01/03）。
+2. **同族可变体**：发色/服装/道具可换；禁止漂成写实、3D 黏土、赛博霓虹。
+3. **叠字安全区**：下半约 40～50% 保持柔、空、低对比；标题叠在卡上仍可读。
+4. **道具克制**：1～2 件主题物即可；禁止下半堆道具抢字。
+5. **合集卡用静图**：落盘 `jpg/png`，不要用 GIF 当合集背景。
+6. **`prompt_optimizer`**：若漂成通用二次元厚涂或霓虹，改 `false` 重跑并收紧 A/G 段。
+7. **与索引信息图区分**：章节信息图仍禁「同款吉祥物只换姿势」；17 专用于日历/合集/侧栏吉祥物位。
+
+#### 质检（17 专用）
+
+1. 一眼是「软像素 chibi」，不是照片、厚涂插画或 01 夜写字台场景？
+2. 主题道具能否对应栏目（合集 slug / 日历气质）？
+3. 下半是否够空、叠字后对比够？
+4. 有无文字/水印/UI 框/紫霓虹？
 
 ## 布局与比例
 
@@ -71,7 +123,7 @@
 
 ## 必含的高级感约束（写入 prompt 尾部）
 
-英文尾句可复用：
+**静物/编辑向**（03 等）英文尾句可复用：
 
 ```
 editorial still life, museum catalog photography, tactile materials,
@@ -80,6 +132,8 @@ no logo, no UI mockup, no purple neon glassmorphism, no generic AI cyber glow
 ```
 
 中文可加：`印刷级静物摄影，克制配色，真实材质，无文字无水印`。
+
+**17 卡通人物**勿套上面静物尾句；用专节「G 禁止尾」与模板末段（`static illustration` + `calendar-banner-safe` + 下半留白）。
 
 ## 明确禁止（用户已踩过的坑）
 

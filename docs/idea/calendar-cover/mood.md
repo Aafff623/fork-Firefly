@@ -22,7 +22,7 @@
 - 资产：`public/assets/images/widgets/calendar/*.gif`
 - 轮询：`data-cover-gifs` + 切换间隔（现约 4.5s）
 - 生成链路（若再扩池）：MiniMax 视频 → `scripts/video_to_seamless_gif.py`（ping-pong + xfade）
-- 提示词：`firefly-minimax-media` · prompt-craft 像素路由 **01**
+- 提示词：`firefly-minimax-media` · prompt-craft **style-taste 17 卡通人物风**（与 01 像素场景区分；合集卡同族）
 
 ## 开放问题
 
