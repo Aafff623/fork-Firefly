@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>README Preview · threetwoa's blog</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.8.1/github-markdown-light.min.css" />
+  <link rel="stylesheet" href="./preview-readme.css" />
+</head>
+<body>
+  <header class="preview-toolbar">
+    <div class="preview-toolbar__title" id="preview-title">threetwoa's blog · README</div>
+    <div class="preview-toolbar__actions">
+      <button type="button" id="preview-reload">重新加载</button>
+      <a class="preview-toolbar__link" href="./README.md" target="_blank" rel="noopener">原始 Markdown</a>
+      <span class="preview-toolbar__hint" id="preview-hint">需 HTTP 打开 · 端口 8090</span>
+    </div>
+  </header>
+  <main class="preview-main">
+    <article class="markdown-body" id="preview-content">加载中…</article>
+    <p class="preview-status" id="preview-status"></p>
+  </main>
+  <footer class="preview-footer" id="preview-footer">
+    配图目录：assets/images/readme/ · 本壳仅渲染 README.md · 产品站另开 pnpm dev :4321
+  </footer>
+  <script>
+    window.__PREVIEW_README__ = {
+      lang: "zh-CN",
+      title: "threetwoa's blog · README Preview",
+      hint: "请用 python -m http.server 8090 后访问本页；file:// 无法 fetch README。",
+      portError: "无法加载 README.md。请在仓库根执行：python -m http.server 8090，然后打开 http://127.0.0.1:8090/preview-readme.html",
+      footer: "threetwoa's blog · assets/images/readme/ · Live: https://fork-firefly.vercel.app"
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+  <script src="./preview-readme.js"></script>
+</body>
+</html>

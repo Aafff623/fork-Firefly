@@ -63,7 +63,7 @@
 ## Agent 边界
 
 - README Polish **只改**：`README.md` · `docs/outputs/prd/readme-diagrams/**` · `assets/images/readme/**` · 必要时 `scripts/capture-readme-showcase.py`（HIDE_CSS）
-- 本仓**未提供**根目录 `preview-readme.html`（见 `CLAUDE.md`）
+- README 本地预览壳：根目录 `preview-readme.{html,css,js}` · `python -m http.server 8090` · http://127.0.0.1:8090/preview-readme.html
 - **不改** `src/config` / layouts / 其他 plan 正在动的模块
 
 ## 验收

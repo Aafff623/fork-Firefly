@@ -22,7 +22,7 @@
 - 配置优先于改布局；大文件（`Layout.astro` 等）非必要不拆。
 - 中文沟通；代码与提交 Conventional Commits。
 - project-init 与上游文档冲突时：**覆盖式更新**本仓治理文件，并在对话里声明冲突点。
-- **README 本地预览壳**：本仓**未提供**根目录 `preview-readme.html`；需要时再本地自建。
+- **README 本地预览壳**：根目录 `preview-readme.{html,css,js}`；仓库根 `python -m http.server 8090`，打开 http://127.0.0.1:8090/preview-readme.html（勿用 `file://`）。
 - **交付闭环**：本地预览 → 校验 → push → 核线上（见 `docs/agents/workflow.md`）。
 
 ## Agent skills
