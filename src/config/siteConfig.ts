@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
 
 	// 站点描述（对齐 GitHub bio / profile）
 	description:
-		"threetwoa 的个人博客：Code less, Architect more. Turning AI tools into reusable, production-ready workflows. 中北大学软件工程 · Java & Python · Agent Engineering。",
+		"threetwoa 的个人博客。中北软件工程 · Java & Python · 折腾 Agent 与发货。",
 
 	// 站点关键词
 	keywords: [

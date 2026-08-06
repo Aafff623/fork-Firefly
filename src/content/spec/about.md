@@ -1,7 +1,7 @@
 <div class="about-bio">
   <div class="about-bio__copy">
     <p>我是 <strong>threetwoa</strong>（GitHub: <a href="https://github.com/Aafff623">Aafff623</a>）。中北大学软件工程<strong>即将升入三年级</strong>。</p>
-    <p>这个夏天主要在做：Java 微服务、Python / Python AI，以及 Harness Engineering 语境下的 AI Coding。没有硬约束的纯 vibe coding 上手快、难养；我更在意架构、系统工作，以及<strong>还能被 review 的代码</strong>——少写一次性的行，多留判断与工作流。</p>
+    <p>这个夏天主要在啃：Java 微服务、Python / Python AI，还有 Harness 那一套 AI Coding。纯 vibe 上手很快，养着难；我更在意架构和还能被 review 的代码，不想堆一堆一次性的行。</p>
     <p class="about-reach">
       <a href="mailto:laiyif68@gmail.com">Email</a>
       <a href="https://github.com/Aafff623">GitHub</a>
@@ -44,7 +44,7 @@
 
 ## 03 · Practice
 
-- **Agent Engineering**：把 AI 工具锻成可复用、可上线的工作流；scoped task、仓库规则、可复现命令、测试与 diff review。
+- **Agent Engineering**：scoped task、仓库规则、可复现命令、测完再看 diff；设计决策和 merge 归我。
 - **Java / Python 业务系统**：服务边界、持久化、缓存、部署与维护；微服务与中间件。
 - **系统与推理**：vLLM、调度与吞吐；国产加速卡（Hygon DCU / Biren）上的工程优化。
 - **前端与全栈**：React / Vue / UniApp / Next.js / TypeScript / Tailwind；Node 实时与 Prisma 等。

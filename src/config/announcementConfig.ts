@@ -5,7 +5,7 @@ export const announcementConfig: AnnouncementConfig = {
 	title: "不期而至",
 
 	content:
-		"正在把 AI 工具锻成可复用、能上线的工作流；少写一点代码，多留一点架构的余白。新笔记会陆续放进博客与数字花园。",
+		"正在把工具玩明白，也在把能上线的工作流一点点攒起来。新笔记会陆续放进博客与数字花园。",
 
 	icon: "lucide:sparkles",
 	type: "info",
