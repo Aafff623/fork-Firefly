@@ -1231,6 +1231,24 @@
 	animation: gift-envelope-flyin 0.9s 1.9s forwards cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 停留后：信封慢慢淡出（JS 加 .gift-surprise--envelope-out，约 1s） */
+.gift-surprise.gift-surprise--envelope-out:has(.gift-surprise__check:checked) .gift-surprise__envelope {
+	animation: gift-envelope-fadeout 1s forwards ease;
+}
+
+@keyframes gift-envelope-fadeout {
+	from {
+		opacity: 1;
+		filter: blur(0);
+		transform: translate(-50%, -52%) translateZ(0) scale(1.1) rotate(-3.5deg);
+	}
+	to {
+		opacity: 0;
+		filter: blur(2px);
+		transform: translate(-50%, -48%) translateZ(0) scale(1.02) rotate(-2deg);
+	}
+}
+
 /* 信封：从摊平的包装中央升起 → 转正 → 越出边框、略倾斜停稳
  * （信是从拆开的盒里取出来的，不是天外飞来的） */
 @keyframes gift-envelope-flyin {
@@ -1381,6 +1399,13 @@
 		opacity: 1;
 		filter: none;
 		transform: translate(-50%, -52%) scale(1.1) rotate(-3.5deg);
+	}
+
+	.gift-surprise.gift-surprise--envelope-out:has(.gift-surprise__check:checked) .gift-surprise__envelope,
+	.gift-surprise.gift-surprise--envelope-out .gift-surprise__envelope {
+		animation: none !important;
+		opacity: 0;
+		transition: opacity 0.35s ease;
 	}
 }
 

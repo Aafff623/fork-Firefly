@@ -288,9 +288,14 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
                 lsSet(OPENED_KEY, "1");
                 lsSet(SEEN_KEY, "1"); // 已拆开，不再弹送达提示
                 syncOpenedBadge();
-                // 信封飞入约 2.5s 后整卡淡出
+                // fly-in ≈2.8s → 停留 ≈2.7s → 信封淡出 1s → 整卡淡出
                 const card = getAnnouncementCard(root);
-                setTimeout(() => fadeOutAnnouncementCard(card), 2500);
+                const ENVELOPE_HOLD_MS = 5500;
+                const ENVELOPE_FADE_MS = 1000;
+                setTimeout(() => {
+                  root.classList.add("gift-surprise--envelope-out");
+                  setTimeout(() => fadeOutAnnouncementCard(card), ENVELOPE_FADE_MS);
+                }, ENVELOPE_HOLD_MS);
               });
 
               syncOpenedBadge();
@@ -305,6 +310,78 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
                 removeAnnouncementCard(card);
               });
             });
+          }
+
+          /** 短促双音通知（Web Audio，无外部音效文件） */
+          function playGiftToastChime() {
+            try {
+              const Ctx =
+                window.AudioContext ||
+                window.webkitAudioContext;
+              if (!Ctx) return;
+              const ctx = new Ctx();
+
+              const ring = () => {
+                const now = ctx.currentTime;
+                const master = ctx.createGain();
+                master.gain.setValueAtTime(0.0001, now);
+                master.gain.exponentialRampToValueAtTime(0.2, now + 0.015);
+                master.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+                master.connect(ctx.destination);
+
+                [523.25, 784.99].forEach((freq, i) => {
+                  const osc = ctx.createOscillator();
+                  const g = ctx.createGain();
+                  osc.type = "sine";
+                  osc.frequency.value = freq;
+                  const t0 = now + i * 0.11;
+                  g.gain.setValueAtTime(0.0001, t0);
+                  g.gain.exponentialRampToValueAtTime(0.24, t0 + 0.018);
+                  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.26);
+                  osc.connect(g);
+                  g.connect(master);
+                  osc.start(t0);
+                  osc.stop(t0 + 0.28);
+                });
+              };
+
+              let played = false;
+              const tryPlay = () => {
+                if (played) return;
+                const go = () => {
+                  if (played) return;
+                  if (!document.getElementById("gift-surprise-toast")) return;
+                  played = true;
+                  ring();
+                  setTimeout(() => ctx.close().catch(() => {}), 700);
+                };
+                if (ctx.state === "suspended") {
+                  ctx.resume().then(go).catch(() => {});
+                } else {
+                  go();
+                }
+              };
+
+              tryPlay();
+              // 自动播放策略：冷启动可能被拦，toast 仍在时首次交互补播
+              const unlock = () => {
+                if (!document.getElementById("gift-surprise-toast")) {
+                  cleanup();
+                  return;
+                }
+                tryPlay();
+                cleanup();
+              };
+              const cleanup = () => {
+                document.removeEventListener("pointerdown", unlock, true);
+                document.removeEventListener("keydown", unlock, true);
+              };
+              document.addEventListener("pointerdown", unlock, true);
+              document.addEventListener("keydown", unlock, true);
+              setTimeout(cleanup, 2500);
+            } catch {
+              /* ignore */
+            }
           }
 
           /** 新惊喜 toast：仅「本期未打开且未点过提示」时弹；已打开/已完结不弹 */
@@ -336,11 +413,20 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
               requestAnimationFrame(() => toast.classList.add("is-attention"));
             });
 
+            playGiftToastChime();
+
+            let dismissed = false;
             const dismiss = () => {
+              if (dismissed) return;
+              dismissed = true;
+              clearTimeout(autoHide);
               lsSet(SEEN_KEY, "1");
               toast.classList.remove("is-visible");
               setTimeout(() => toast.remove(), 320);
             };
+
+            // 约 2s 自动收起（进场动画占一点时间，体感仍短促）
+            const autoHide = setTimeout(dismiss, 2000);
 
             toast.querySelector(".gift-surprise-toast__close")?.addEventListener("click", dismiss);
             toast.querySelector(".gift-surprise-toast__go")?.addEventListener("click", () => {

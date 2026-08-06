@@ -182,7 +182,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	 */
 	atmosphere: {
 		enable: true,
-		previewBadge: true,
+		previewBadge: false, // 选型调试结束：关掉右下角 BA 编号浮标
 		opacity: 0.52,
 		veil: 0.72,
 		cardOpacity: 0.84,
