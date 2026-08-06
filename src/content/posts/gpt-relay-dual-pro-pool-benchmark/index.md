@@ -3,9 +3,11 @@ title: 双 Pro 拼池的 GPT 中转，实测下来到底什么水平
 published: 2026-08-04
 description: 号商拼两个 Pro 账号套壳的中转，低并发真香、高并发排队式恶化、额度无查询；三款模型脾气逐一拆给你。
 image: ./cover.jpg
+updated: 2026-08-05T11:12:00
 tags: [GPT, 中转, 压测, AI Coding]
-category: Agentic Coding
-draft: true
+category: 中转
+collections: [transit-relay]
+draft: false
 slug: gpt-relay-dual-pro-pool-benchmark
 lang: ''
 pinned: false
@@ -13,6 +15,8 @@ comment: true
 ---
 
 号商把两个 ChatGPT Pro 账号拼成池子，套一层 OpenAI 兼容 API 卖中转。这种中转满大街都是，但水平参差。我花了一上午把它三款模型实测了一遍，顺便踩了几个坑，写下来给你省时间。
+
+相关阅读：[Best Codex 中转：三把钥匙、一个 Luna](/posts/bestcodex-relay-luna/)——那边偏分组钥匙与额度账本；这篇偏并发脾气。
 
 > 并发不超过 3 的时候它非常好用，写个 HTML 静态页 9 到 10 秒出完，首包延迟 1.6 到 2 秒。但别拿它当高并发底座，并发过 10 延迟开始排队式恶化，高压流式还会 502。额度没有查询接口，你付的是号商服务费，不是 API 里能查的余额。
 
