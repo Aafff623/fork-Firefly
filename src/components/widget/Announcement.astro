@@ -1,14 +1,13 @@
 ---
 /**
- * 侧栏公告：主题卡壳 + 编辑/报纸家具（folio · 双线 · 衬线标题 · drop cap）
- * 样式见 src/styles/announcement-press.css
- *
- * 调研取舍（Newsprint / Broadsheet / Guardian / Hallmark editorial）：
- * - 保留 card-base 圆角与主题色，不另起奶油纸直角卡
- * - 报纸感靠排版家具，不靠换底色
+ * 侧栏公告：主题卡壳 + 编辑/报纸家具（folio · 双线 · 衬线标题）
+ * 惊喜礼盒：GiftSurprise + 全屏 GiftEnvelopeOverlay
+ * 样式：announcement-press.css + gift-surprise.css
  */
 import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import GiftEnvelopeOverlay from "@/components/widget/gift/GiftEnvelopeOverlay.astro";
+import GiftSurprise from "@/components/widget/gift/GiftSurprise.astro";
 import { announcementConfig } from "@/config/announcementConfig";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -31,7 +30,7 @@ const giftHeading = loveLetter?.heading || "致每一位路过的你";
 const giftMessage =
 	loveLetter?.message ||
 	"谢谢你停在这里。愿你被温柔以待——这是我留给访客的小小礼物。";
-/** 惊喜期号：显式 version 优先，否则用文案指纹；换新后「已开启」自动消失 */
+
 function giftFingerprint(parts: string[]): string {
 	const s = parts.join("|");
 	let h = 0;
@@ -39,11 +38,8 @@ function giftFingerprint(parts: string[]): string {
 	return `g${(h >>> 0).toString(36)}`;
 }
 const giftId = loveLetter?.version || giftFingerprint([giftHeading, giftMessage]);
-/** CodePen twhite96/NWRxmwG：丝带体素环 0..40 */
-const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
 ---
 
-{/* showTitle=false：自绘 masthead，避免与紫条标题重复，仍套 card-base */}
 <WidgetLayout
   id="announcement"
   showTitle={false}
@@ -91,375 +87,7 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
       </p>
     </header>
 
-    {
-      showGiftBox && (
-        <section
-          class="gift-surprise"
-          aria-label="不期而至"
-          data-gift-source="twhite96-NWRxmwG+jhey-css-tricks-package-toggle"
-          data-gift-id={giftId}
-          data-gift-opened="false"
-        >
-          <input id="gift-box-open" type="checkbox" class="gift-surprise__check" />
-          <label class="gift-surprise__hit" for="gift-box-open" aria-label="打开惊喜信封"></label>
-
-          {/* 本机开过当期惊喜才显示；换 version / 文案后自动消失 */}
-          <span class="gift-surprise__opened-badge" hidden>本次惊喜限定已开启</span>
-
-          {/* 舞台：粉框内居中；常驻 3D + 悬停/点击经典盒叠放 */}
-          <div class="gift-surprise__stage">
-            {/*
-              常驻 3D：johnnyfekete/NWRxmwG（社区常标 twhite96）
-              结构必须与原 Pen 一致：盖面 + 丝带都是 .gift-box 的直接子节点，
-              勿再包 .gift-box-lid（会 flatten 3D，看起来像平面贴纸）。
-              https://codepen.io/johnnyfekete/pen/NWRxmwG
-            */}
-            <div class="gift-box-container" aria-hidden="true">
-              <div class="gift-box">
-                <div class="gift-box__side gift-box__side--front"></div>
-                <div class="gift-box__side gift-box__side--back"></div>
-                <div class="gift-box__side gift-box__side--left"></div>
-                <div class="gift-box__side gift-box__side--right"></div>
-                <div class="gift-box__end gift-box__side--top"></div>
-                <div class="gift-box__end gift-box__side--bottom"></div>
-
-                <div class="gift-box-lid__side gift-box-lid__side--front"></div>
-                <div class="gift-box-lid__side gift-box-lid__side--back"></div>
-                <div class="gift-box-lid__side gift-box-lid__side--left"></div>
-                <div class="gift-box-lid__side gift-box-lid__side--right"></div>
-                <div class="gift-box-lid__end gift-box-lid__side--top"></div>
-
-                {
-                  ribbonPositions.map((i) => (
-                    <div
-                      class="ribbon-l"
-                      style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 37 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
-                    />
-                  ))
-                }
-                <div class="ribbon-l-end"></div>
-                {
-                  ribbonPositions.map((i) => (
-                    <div
-                      class="ribbon-r"
-                      style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 37 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
-                    />
-                  ))
-                }
-                <div class="ribbon-r-end"></div>
-              </div>
-            </div>
-
-            {/* 悬停/点击：Jhey Tompkins 纯 CSS 3D 折叠包装盒（酒红×金皮肤）
-               https://css-tricks.com/how-to-make-a-pure-css-3d-package-toggle/
-               侧面嵌套是折叠机制核心（子级继承父级 transform），勿扁平化。 */}
-            <div class="gift-package" aria-hidden="true">
-              <div class="gift-package__wrapper">
-                <div class="gift-package__box">
-                  <div class="pkg-side pkg-side--main">
-                    <div class="pkg-flap pkg-flap--top"></div>
-                    <div class="pkg-flap pkg-flap--bottom"></div>
-                    <div class="pkg-side pkg-side--tabbed">
-                      <div class="pkg-flap pkg-flap--top"></div>
-                      <div class="pkg-flap pkg-flap--bottom"></div>
-                    </div>
-                    <div class="pkg-side pkg-side--extra">
-                      <div class="pkg-flap pkg-flap--top"></div>
-                      <div class="pkg-flap pkg-flap--bottom"></div>
-                      <div class="pkg-side pkg-side--flipped">
-                        <div class="pkg-flap pkg-flap--top"></div>
-                        <div class="pkg-flap pkg-flap--bottom"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="gift-package__tape"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* 金箔纸屑：点击后从盒口迸出（4 金 3 红 1 象牙）；--cx/--cy 抛物线终点，--cr 旋转量，--cd 错峰 */}
-            <span class="gift-confetti__piece" style="--cx:-34px; --cy:-38px; --cr:220deg; --cd:0s; --cs:5px" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:30px; --cy:-44px; --cr:-260deg; --cd:0.04s; --cs:4px; --cc:linear-gradient(135deg,#a63d52,#6e1f2e)" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:-18px; --cy:-52px; --cr:300deg; --cd:0.08s; --cs:6px" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:44px; --cy:-26px; --cr:-200deg; --cd:0.02s; --cs:4px" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:-46px; --cy:-20px; --cr:240deg; --cd:0.1s; --cs:3px; --cc:linear-gradient(135deg,#8c2f42,#5c1a28)" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:12px; --cy:-56px; --cr:-300deg; --cd:0.06s; --cs:5px; --cc:linear-gradient(135deg,#fdfaf3,#ecd9ae)" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:38px; --cy:-50px; --cr:260deg; --cd:0.12s; --cs:3px; --cc:linear-gradient(135deg,#7d2a3b,#47121d)" aria-hidden="true"></span>
-            <span class="gift-confetti__piece" style="--cx:-8px; --cy:-34px; --cr:-220deg; --cd:0.03s; --cs:4px" aria-hidden="true"></span>
-          </div>
-
-          {/* 信封在舞台外：可越过粉框，略倾斜放大 */}
-          <aside class="gift-surprise__envelope" aria-live="polite">
-            <span class="gift-surprise__wax" aria-hidden="true">520</span>
-            <div class="gift-surprise__paper">
-              <p class="gift-surprise__seal">🎁 SURPRISE</p>
-              <h3 class="gift-surprise__heading">{giftHeading}</h3>
-              <p class="gift-surprise__message">{giftMessage}</p>
-              <p class="gift-surprise__sign">— threetwoa</p>
-            </div>
-            <span class="gift-surprise__corner" aria-hidden="true"></span>
-          </aside>
-        </section>
-      )
-    }
-
-    {
-      showGiftBox && (
-        <script define:vars={{ giftId }}>
-          const OPENED_KEY = `firefly-gift-opened:${giftId}`;
-          const GONE_KEY = `firefly-gift-card-gone:${giftId}`;
-          const SEEN_KEY = `firefly-gift-seen:${giftId}`;
-
-          function lsGet(key) {
-            try {
-              return localStorage.getItem(key);
-            } catch {
-              return null;
-            }
-          }
-          function lsSet(key, val) {
-            try {
-              localStorage.setItem(key, val);
-            } catch {
-              /* private mode */
-            }
-          }
-
-          function getAnnouncementCard(from) {
-            return from?.closest?.("widget-layout.announcement-widget") ||
-              document.querySelector("widget-layout.announcement-widget");
-          }
-
-          function markCardGone() {
-            lsSet(GONE_KEY, "1");
-          }
-
-          function removeAnnouncementCard(card) {
-            if (!card) return;
-            markCardGone();
-            card.remove();
-          }
-
-          /** 整卡淡出 → 收起 → 移除，下方卡片顶上 */
-          function fadeOutAnnouncementCard(card) {
-            if (!card || card.dataset.giftFading === "1") return;
-            card.dataset.giftFading = "1";
-            markCardGone();
-            card.classList.add("announcement-widget--fading");
-            const onEnd = () => {
-              card.removeEventListener("transitionend", onEnd);
-              card.remove();
-            };
-            card.addEventListener("transitionend", onEnd);
-            // 兜底：部分浏览器不触发 transitionend
-            setTimeout(() => {
-              if (card.isConnected) card.remove();
-            }, 1400);
-          }
-
-          function initGiftCardLifecycle() {
-            // 同版本已淡出：直接不展示
-            if (lsGet(GONE_KEY) === "1") {
-              const card = getAnnouncementCard(document.querySelector("[data-gift-card-id]"));
-              if (card) card.remove();
-              return;
-            }
-
-            document.querySelectorAll(".gift-surprise[data-gift-id]").forEach((node) => {
-              const root = node;
-              if (root.dataset.giftBound === "1") return;
-              root.dataset.giftBound = "1";
-
-              const id = root.dataset.giftId;
-              if (!id) return;
-
-              const check = root.querySelector(".gift-surprise__check");
-              const badge = root.querySelector(".gift-surprise__opened-badge");
-              if (!(check instanceof HTMLInputElement) || !(badge instanceof HTMLElement)) return;
-
-              const syncOpenedBadge = () => {
-                const opened = lsGet(OPENED_KEY) === "1";
-                root.dataset.giftOpened = opened ? "true" : "false";
-                badge.hidden = !opened;
-              };
-
-              check.addEventListener("change", () => {
-                if (!check.checked) return;
-                lsSet(OPENED_KEY, "1");
-                lsSet(SEEN_KEY, "1"); // 已拆开，不再弹送达提示
-                syncOpenedBadge();
-                // fly-in ≈2.8s → 停留 ≈2.7s → 信封淡出 1s → 整卡淡出
-                const card = getAnnouncementCard(root);
-                const ENVELOPE_HOLD_MS = 5500;
-                const ENVELOPE_FADE_MS = 1000;
-                setTimeout(() => {
-                  root.classList.add("gift-surprise--envelope-out");
-                  setTimeout(() => fadeOutAnnouncementCard(card), ENVELOPE_FADE_MS);
-                }, ENVELOPE_HOLD_MS);
-              });
-
-              syncOpenedBadge();
-            });
-
-            // X：立即隐藏并记 gone
-            document.querySelectorAll("[data-announcement-dismiss]").forEach((btn) => {
-              if (btn.dataset.dismissBound === "1") return;
-              btn.dataset.dismissBound = "1";
-              btn.addEventListener("click", () => {
-                const card = getAnnouncementCard(btn);
-                removeAnnouncementCard(card);
-              });
-            });
-          }
-
-          /** 短促双音通知（Web Audio，无外部音效文件） */
-          function playGiftToastChime() {
-            try {
-              const Ctx =
-                window.AudioContext ||
-                window.webkitAudioContext;
-              if (!Ctx) return;
-              const ctx = new Ctx();
-
-              const ring = () => {
-                const now = ctx.currentTime;
-                const master = ctx.createGain();
-                master.gain.setValueAtTime(0.0001, now);
-                master.gain.exponentialRampToValueAtTime(0.2, now + 0.015);
-                master.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
-                master.connect(ctx.destination);
-
-                [523.25, 784.99].forEach((freq, i) => {
-                  const osc = ctx.createOscillator();
-                  const g = ctx.createGain();
-                  osc.type = "sine";
-                  osc.frequency.value = freq;
-                  const t0 = now + i * 0.11;
-                  g.gain.setValueAtTime(0.0001, t0);
-                  g.gain.exponentialRampToValueAtTime(0.24, t0 + 0.018);
-                  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.26);
-                  osc.connect(g);
-                  g.connect(master);
-                  osc.start(t0);
-                  osc.stop(t0 + 0.28);
-                });
-              };
-
-              let played = false;
-              const tryPlay = () => {
-                if (played) return;
-                const go = () => {
-                  if (played) return;
-                  if (!document.getElementById("gift-surprise-toast")) return;
-                  played = true;
-                  ring();
-                  setTimeout(() => ctx.close().catch(() => {}), 700);
-                };
-                if (ctx.state === "suspended") {
-                  ctx.resume().then(go).catch(() => {});
-                } else {
-                  go();
-                }
-              };
-
-              tryPlay();
-              // 自动播放策略：冷启动可能被拦，toast 仍在时首次交互补播
-              const unlock = () => {
-                if (!document.getElementById("gift-surprise-toast")) {
-                  cleanup();
-                  return;
-                }
-                tryPlay();
-                cleanup();
-              };
-              const cleanup = () => {
-                document.removeEventListener("pointerdown", unlock, true);
-                document.removeEventListener("keydown", unlock, true);
-              };
-              document.addEventListener("pointerdown", unlock, true);
-              document.addEventListener("keydown", unlock, true);
-              setTimeout(cleanup, 2500);
-            } catch {
-              /* ignore */
-            }
-          }
-
-          /** 新惊喜 toast：仅「本期未打开且未点过提示」时弹；已打开/已完结不弹 */
-          function initGiftToast() {
-            if (document.getElementById("gift-surprise-toast")) return;
-            // 已拆开 / 卡已收起 / 已点过「去看看|知道了」→ 一律不弹（含 DEV）
-            if (lsGet(OPENED_KEY) === "1") return;
-            if (lsGet(GONE_KEY) === "1") return;
-            if (lsGet(SEEN_KEY) === "1") return;
-
-            const toast = document.createElement("div");
-            toast.id = "gift-surprise-toast";
-            toast.className = "gift-surprise-toast";
-            toast.setAttribute("role", "status");
-            toast.innerHTML = `
-              <div class="gift-surprise-toast__inner">
-                <p class="gift-surprise-toast__title">🎁 新的惊喜已送达</p>
-                <p class="gift-surprise-toast__desc">点「去看看」打开左栏礼盒 🎀，随缘拆开。</p>
-                <div class="gift-surprise-toast__actions">
-                  <button type="button" class="gift-surprise-toast__go">去看看</button>
-                  <button type="button" class="gift-surprise-toast__close">知道了</button>
-                </div>
-              </div>
-            `;
-            document.body.appendChild(toast);
-            requestAnimationFrame(() => {
-              toast.classList.add("is-visible");
-              // 进场后再抖几下，提醒点主按钮
-              requestAnimationFrame(() => toast.classList.add("is-attention"));
-            });
-
-            playGiftToastChime();
-
-            let dismissed = false;
-            const dismiss = () => {
-              if (dismissed) return;
-              dismissed = true;
-              clearTimeout(autoHide);
-              lsSet(SEEN_KEY, "1");
-              toast.classList.remove("is-visible");
-              setTimeout(() => toast.remove(), 320);
-            };
-
-            // 约 2s 自动收起（进场动画占一点时间，体感仍短促）
-            const autoHide = setTimeout(dismiss, 2000);
-
-            toast.querySelector(".gift-surprise-toast__close")?.addEventListener("click", dismiss);
-            toast.querySelector(".gift-surprise-toast__go")?.addEventListener("click", () => {
-              lsSet(SEEN_KEY, "1");
-              const card = getAnnouncementCard(document.querySelector("[data-gift-card-id]"));
-              const gift = document.querySelector(".gift-surprise");
-              card?.scrollIntoView({ behavior: "smooth", block: "center" });
-              card?.classList.add("announcement-widget--pulse");
-              gift?.classList.add("gift-surprise--invite"); // 礼盒再晃一下邀请点开
-              setTimeout(() => {
-                card?.classList.remove("announcement-widget--pulse");
-                gift?.classList.remove("gift-surprise--invite");
-              }, 1800);
-              dismiss();
-            });
-          }
-
-          function bootGiftUi() {
-            initGiftCardLifecycle();
-            initGiftToast();
-          }
-
-          if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", bootGiftUi);
-          } else {
-            bootGiftUi();
-          }
-          document.addEventListener("swup:contentReplaced", bootGiftUi);
-          document.addEventListener("swup:content:replace", bootGiftUi);
-          document.addEventListener("swup:page:view", bootGiftUi);
-        </script>
-      )
-    }
+    {showGiftBox && <GiftSurprise giftId={giftId} />}
 
     {
       config.link && config.link.enable !== false && (
@@ -481,4 +109,14 @@ const ribbonPositions = Array.from({ length: 41 }, (_, i) => i);
       )
     }
   </article>
+
+  {showGiftBox && (
+    <>
+      <GiftEnvelopeOverlay giftId={giftId} heading={giftHeading} message={giftMessage} />
+      <script>
+        import { installGiftSurprise } from "@/components/widget/gift/gift-lifecycle";
+        installGiftSurprise();
+      </script>
+    </>
+  )}
 </WidgetLayout>

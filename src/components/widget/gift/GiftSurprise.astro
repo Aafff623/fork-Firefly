@@ -1,0 +1,102 @@
+---
+/**
+ * 侧栏惊喜礼盒舞台：常驻 3D + 悬停/点击包装盒
+ * 信封已迁至 GiftEnvelopeOverlay（全屏）
+ */
+interface Props {
+	giftId: string;
+}
+
+const { giftId } = Astro.props;
+/** 丝带体素：步长 3，约 14×2（原 41×2） */
+const ribbonPositions = Array.from({ length: 14 }, (_, i) => i * 3);
+---
+
+<section
+  class="gift-surprise"
+  aria-label="不期而至"
+  data-gift-source="twhite96-NWRxmwG+jhey-css-tricks-package-toggle"
+  data-gift-id={giftId}
+  data-gift-opened="false"
+>
+  <input id="gift-box-open" type="checkbox" class="gift-surprise__check" />
+  <label class="gift-surprise__hit" for="gift-box-open" aria-label="打开惊喜信封"></label>
+
+  <span class="gift-surprise__opened-badge" hidden>本次惊喜限定已开启</span>
+
+  <div class="gift-surprise__stage">
+    {/*
+      常驻 3D：johnnyfekete/NWRxmwG
+      结构必须与原 Pen 一致：盖面 + 丝带都是 .gift-box 的直接子节点
+    */}
+    <div class="gift-box-container" aria-hidden="true">
+      <div class="gift-box">
+        <div class="gift-box__side gift-box__side--front"></div>
+        <div class="gift-box__side gift-box__side--back"></div>
+        <div class="gift-box__side gift-box__side--left"></div>
+        <div class="gift-box__side gift-box__side--right"></div>
+        <div class="gift-box__end gift-box__side--top"></div>
+        <div class="gift-box__end gift-box__side--bottom"></div>
+
+        <div class="gift-box-lid__side gift-box-lid__side--front"></div>
+        <div class="gift-box-lid__side gift-box-lid__side--back"></div>
+        <div class="gift-box-lid__side gift-box-lid__side--left"></div>
+        <div class="gift-box-lid__side gift-box-lid__side--right"></div>
+        <div class="gift-box-lid__end gift-box-lid__side--top"></div>
+
+        {
+          ribbonPositions.map((i) => (
+            <div
+              class="ribbon-l"
+              style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 36 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
+            />
+          ))
+        }
+        <div class="ribbon-l-end"></div>
+        {
+          ribbonPositions.map((i) => (
+            <div
+              class="ribbon-r"
+              style={`--gift-box-position: ${i}px; border-color: ${i < 3 || i > 36 ? "var(--gift-box-edge-color)" : "var(--wrap-ribbon-color)"}`}
+            />
+          ))
+        }
+        <div class="ribbon-r-end"></div>
+      </div>
+    </div>
+
+    {/* Jhey Tompkins 纯 CSS 3D 折叠包装盒 — 侧面嵌套勿扁平化 */}
+    <div class="gift-package" aria-hidden="true">
+      <div class="gift-package__wrapper">
+        <div class="gift-package__box">
+          <div class="pkg-side pkg-side--main">
+            <div class="pkg-flap pkg-flap--top"></div>
+            <div class="pkg-flap pkg-flap--bottom"></div>
+            <div class="pkg-side pkg-side--tabbed">
+              <div class="pkg-flap pkg-flap--top"></div>
+              <div class="pkg-flap pkg-flap--bottom"></div>
+            </div>
+            <div class="pkg-side pkg-side--extra">
+              <div class="pkg-flap pkg-flap--top"></div>
+              <div class="pkg-flap pkg-flap--bottom"></div>
+              <div class="pkg-side pkg-side--flipped">
+                <div class="pkg-flap pkg-flap--top"></div>
+                <div class="pkg-flap pkg-flap--bottom"></div>
+              </div>
+            </div>
+          </div>
+          <div class="gift-package__tape"></div>
+        </div>
+      </div>
+    </div>
+
+    <span class="gift-confetti__piece" style="--cx:-34px; --cy:-38px; --cr:220deg; --cd:0s; --cs:5px" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:30px; --cy:-44px; --cr:-260deg; --cd:0.04s; --cs:4px; --cc:linear-gradient(135deg,#a63d52,#6e1f2e)" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:-18px; --cy:-52px; --cr:300deg; --cd:0.08s; --cs:6px" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:44px; --cy:-26px; --cr:-200deg; --cd:0.02s; --cs:4px" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:-46px; --cy:-20px; --cr:240deg; --cd:0.1s; --cs:3px; --cc:linear-gradient(135deg,#8c2f42,#5c1a28)" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:12px; --cy:-56px; --cr:-300deg; --cd:0.06s; --cs:5px; --cc:linear-gradient(135deg,#fdfaf3,#ecd9ae)" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:38px; --cy:-50px; --cr:260deg; --cd:0.12s; --cs:3px; --cc:linear-gradient(135deg,#7d2a3b,#47121d)" aria-hidden="true"></span>
+    <span class="gift-confetti__piece" style="--cx:-8px; --cy:-34px; --cr:-220deg; --cd:0.03s; --cs:4px" aria-hidden="true"></span>
+  </div>
+</section>

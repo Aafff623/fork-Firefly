@@ -1,0 +1,46 @@
+---
+/**
+ * 全屏惊喜信封：由 lifecycle 挂到 document.body，从侧栏礼盒位置慢放大
+ * 点点（diandian）固定 idle 帧坐在信纸上，与漫游桌宠无关
+ */
+interface Props {
+	giftId: string;
+	heading: string;
+	message: string;
+}
+
+const { giftId, heading, message } = Astro.props;
+---
+
+<div
+  class="gift-envelope-overlay"
+  id="gift-envelope-overlay"
+  data-gift-id={giftId}
+  hidden
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="gift-envelope-heading"
+>
+  <div class="gift-envelope-overlay__backdrop" data-gift-overlay-backdrop></div>
+  <div class="gift-envelope-overlay__sheet">
+    <span class="gift-envelope-overlay__wax" aria-hidden="true">520</span>
+    <div class="gift-envelope-overlay__paper">
+      <p class="gift-envelope-overlay__seal">🎁 SURPRISE</p>
+      <h3 class="gift-envelope-overlay__heading" id="gift-envelope-heading">{heading}</h3>
+      <p class="gift-envelope-overlay__message">{message}</p>
+      <p class="gift-envelope-overlay__sign">— threetwoa</p>
+      {/* 点点：classic 8×9 idle 第 0 帧，固定 pose */}
+      <span
+        class="gift-envelope-overlay__pet"
+        role="img"
+        aria-label="点点"
+        data-gift-pet="diandian--lllucasxu"
+      ></span>
+      <span class="gift-envelope-overlay__corner" aria-hidden="true"></span>
+    </div>
+    <button type="button" class="gift-envelope-overlay__confirm" data-gift-confirm>
+      我已阅读
+    </button>
+  </div>
+</div>
