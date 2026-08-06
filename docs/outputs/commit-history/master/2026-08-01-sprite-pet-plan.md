@@ -1,4 +1,4 @@
-﻿# Commit 记录 · master · 2026-08-01 · Sprite Pet 交互与场景
+# Commit 记录 · master · 2026-08-01 · Sprite Pet 交互与场景
 
 > 状态：**executed**  
 > 前置：`0444b972 feat(pets): 接入 SpritePet 桌宠并与看板娘互斥`
@@ -14,8 +14,8 @@
 src/pages/404.astro
 src/components/controls/Search.svelte
 docs/knowledge/cc-haha-pets.md
-docs/outputs/report/cc-haha-pets/session-changelog.md
-docs/outputs/handoff/cc-haha-pets/2026-08-01-master-sprite-pet.md
+docs/outputs/report/archive/cc-haha-pets/session-changelog.md
+docs/outputs/handoff/archive/cc-haha-pets/2026-08-01-master-sprite-pet.md
 docs/outputs/commit-history/master/2026-08-01-sprite-pet-plan.md
 ```
 

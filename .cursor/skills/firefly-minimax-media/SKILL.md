@@ -34,6 +34,8 @@ compatibility: Requires Firefly project root and mmx CLI for quota script. Prefe
 | 落盘接线 | [workflows.md](references/workflows.md) |
 | Lab 两轮结论 | [lab-findings.md](references/lab-findings.md) |
 
+> **官方 Prompt 规范（2026-08-06 已装本机）**：生成 prompt 前可调用 `h3-prompt-writing`（视频 H3 五模式/三字段结构）与 `minimax-music-gen`（音乐叙事句结构）；两者核心已内化进 [prompt-craft.md](references/prompt-craft.md)，测试素材池 `minimax_test_tmp/awesome-minimax-h3-prompts`（149 条）。
+
 ## 运行时分层（必须按序）
 
 ```
@@ -83,7 +85,6 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 | 类型 | 目录 | 接线 |
 |------|------|------|
 | 新帖封面 | `posts/<slug>/cover.*` | `image: ./cover.*` |
-| 演示封面池 | `posts/images/minimax/v2-*.jpg` | 相对 FM |
 | 桌宠音频 | `public/pets/<petId>/audio/` | `<audio src="/pets/...">` |
 | 站点音乐 | `public/assets/music/` | `<audio src="/assets/music/...">` |
 | 短视频 | `public/media/minimax/video/` | `<video src="/media/minimax/video/...">`；禁改壁纸 |

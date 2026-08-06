@@ -1,7 +1,8 @@
 # MiniMax 可调度资源（本机实测索引）
 
 > 密钥只存在于本机配置；此处只写 **键名与路径**，永不写值。  
-> 权威长文索引：`C:\Users\Lenovo\.claude\minimax-config.md`
+> 权威长文索引：`C:\Users\Lenovo\.claude\minimax-config.md`  
+> 官方 Prompt 规范（2026-08-06 已装本机）：`h3-prompt-writing`（视频 H3 结构）· `minimax-music-gen`（音乐叙事句）→ 详见 `prompt-craft.md`。
 
 ## 配置位置
 

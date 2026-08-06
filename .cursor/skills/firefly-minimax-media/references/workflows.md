@@ -8,7 +8,7 @@
 ```
 0. check_quota.py --need image --min-percent 5
 1. 列 slug / title / 现有 image
-2. 新帖 → posts/<slug>/cover.*；演示批量 → images/minimax/v2-*
+2. 新帖 → posts/<slug>/cover.*
 3. 选定 style-taste ID（未点名默认 03）；独立艺术 prompt（prompt-craft）；默认 aspect_ratio=16:9；n=1
 4. text_to_image（可带 output_directory，但不要信任它落盘）
 5. 若响应含 URL → fetch_media.py → cover 路径
