@@ -333,6 +333,15 @@ enum I18nKey {
 	petPickerCurrent = "petPickerCurrent",
 	petPickerAttribution = "petPickerAttribution",
 
+	avatarFrameTitle = "avatarFrameTitle",
+	avatarFrameNone = "avatarFrameNone",
+	avatarFrameC3 = "avatarFrameC3",
+	avatarFrameC2 = "avatarFrameC2",
+	avatarFrameC6 = "avatarFrameC6",
+	avatarFrameC5 = "avatarFrameC5",
+	avatarFrameS3 = "avatarFrameS3",
+	avatarFrameS6 = "avatarFrameS6",
+
 	// 卡片样式
 	cardSettings = "cardSettings",
 	cardBorder = "cardBorder",

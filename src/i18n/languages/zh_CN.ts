@@ -331,6 +331,14 @@ export const zh_CN: Translation = {
 	[Key.petPickerLicenseUnknown]: "许可未明确",
 	[Key.petPickerCurrent]: "当前",
 	[Key.petPickerAttribution]: "素材来自 awesome-codex-pet；非商业展示请署名作者。",
+	[Key.avatarFrameTitle]: "头像边框",
+	[Key.avatarFrameNone]: "无边框",
+	[Key.avatarFrameC3]: "旋转渐变环",
+	[Key.avatarFrameC2]: "淡紫双环",
+	[Key.avatarFrameC6]: "金属光泽环",
+	[Key.avatarFrameC5]: "星点淡蓝紫",
+	[Key.avatarFrameS3]: "金属细环",
+	[Key.avatarFrameS6]: "金紫月桂环",
 
 	// 卡片样式
 	[Key.cardSettings]: "卡片样式",

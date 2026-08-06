@@ -339,6 +339,14 @@ export const en: Translation = {
 	[Key.petPickerLicenseUnknown]: "License unclear",
 	[Key.petPickerCurrent]: "Current",
 	[Key.petPickerAttribution]: "Assets from awesome-codex-pet; attribute authors for non-commercial display.",
+	[Key.avatarFrameTitle]: "Avatar frame",
+	[Key.avatarFrameNone]: "None",
+	[Key.avatarFrameC3]: "Spinning gradient",
+	[Key.avatarFrameC2]: "Soft dual ring",
+	[Key.avatarFrameC6]: "Metallic gloss",
+	[Key.avatarFrameC5]: "Starry pastel",
+	[Key.avatarFrameS3]: "Metallic thin ring",
+	[Key.avatarFrameS6]: "Gold laurel",
 
 	// Card Style
 	[Key.cardSettings]: "Card Style",

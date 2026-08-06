@@ -337,6 +337,14 @@ export const ja: Translation = {
 	[Key.petPickerLicenseUnknown]: "ライセンス不明",
 	[Key.petPickerCurrent]: "選択中",
 	[Key.petPickerAttribution]: "素材は awesome-codex-pet より。非商用表示時は作者表記をお願いします。",
+	[Key.avatarFrameTitle]: "アバターフレーム",
+	[Key.avatarFrameNone]: "なし",
+	[Key.avatarFrameC3]: "回転グラデ",
+	[Key.avatarFrameC2]: "ソフト二重リング",
+	[Key.avatarFrameC6]: "メタル光沢",
+	[Key.avatarFrameC5]: "星のパステル",
+	[Key.avatarFrameS3]: "メタル細リング",
+	[Key.avatarFrameS6]: "金の月桂",
 
 	// カードスタイル
 	[Key.cardSettings]: "カードスタイル",

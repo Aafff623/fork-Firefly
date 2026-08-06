@@ -53,4 +53,7 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 
 	// 桌宠换皮 Tab（内容列表以 spritePetConfig.pickerPetIds 为准）
 	petPickerSwitchable: true,
+
+	// 头像边框选择（外观 Tab；目录见 profileConfig.avatarFrame）
+	avatarFrameSwitchable: true,
 };

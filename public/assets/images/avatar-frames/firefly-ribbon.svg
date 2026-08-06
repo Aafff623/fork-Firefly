@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="ringOuter" x1="40" y1="28" x2="200" y2="212" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6C6DE"/>
+      <stop offset=".35" stop-color="#C9B4F5"/>
+      <stop offset=".7" stop-color="#9EC9F7"/>
+      <stop offset="1" stop-color="#F8D9A8"/>
+    </linearGradient>
+    <linearGradient id="ringInner" x1="56" y1="48" x2="186" y2="196" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8FC"/>
+      <stop offset=".5" stop-color="#F0E6FF"/>
+      <stop offset="1" stop-color="#FFE8F2"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="96" y1="8" x2="148" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9EC8"/>
+      <stop offset=".5" stop-color="#D4A8FF"/>
+      <stop offset="1" stop-color="#8EC5FF"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFE7A8"/>
+      <stop offset="1" stop-color="#F0B45A"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- soft halo -->
+  <circle cx="120" cy="120" r="102" stroke="url(#ringOuter)" stroke-width="14" opacity=".35"/>
+  <circle cx="120" cy="120" r="96" stroke="url(#ringOuter)" stroke-width="7" stroke-linecap="round" opacity=".95"/>
+  <circle cx="120" cy="120" r="90" stroke="url(#ringInner)" stroke-width="3.5" opacity=".9"/>
+  <circle cx="120" cy="120" r="86.5" stroke="#ffffff" stroke-width="1.6" opacity=".85"/>
+
+  <!-- dashed sparkle track -->
+  <circle cx="120" cy="120" r="99" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="2.2 7.5" opacity=".75"/>
+
+  <!-- top ribbon bow -->
+  <g filter="url(#softGlow)">
+    <path d="M120 18c-7 6-16 14-22 22 8-2 16-3 22-3s14 1 22 3c-6-8-15-16-22-22Z" fill="url(#ribbon)" opacity=".95"/>
+    <path d="M98 38c-10 2-20 8-26 14 9 1 18-1 26-5 4-2 6-5 0-9Z" fill="url(#ribbon)"/>
+    <path d="M142 38c10 2 20 8 26 14-9 1-18-1-26-5-4-2-6-5 0-9Z" fill="url(#ribbon)"/>
+    <circle cx="120" cy="36" r="7.5" fill="url(#gold)" stroke="#fff" stroke-width="1.2"/>
+    <circle cx="120" cy="36" r="3.2" fill="#fff7e8"/>
+  </g>
+
+  <!-- corner stars -->
+  <g fill="url(#gold)" stroke="#fff" stroke-width=".8">
+    <path d="M42 58l2.4 5.2 5.6.8-4 4 1 5.6-5-2.8-5 2.8 1-5.6-4-4 5.6-.8Z"/>
+    <path d="M198 58l2.1 4.5 4.8.7-3.5 3.4.8 4.8-4.2-2.4-4.2 2.4.8-4.8-3.5-3.4 4.8-.7Z"/>
+    <path d="M46 178l1.8 3.8 4.1.6-3 2.9.7 4.1-3.6-2-3.6 2 .7-4.1-3-2.9 4.1-.6Z"/>
+    <path d="M194 176l2 4.2 4.5.7-3.3 3.2.8 4.5-4-2.2-4 2.2.8-4.5-3.3-3.2 4.5-.7Z"/>
+  </g>
+
+  <!-- tiny sparkles -->
+  <g fill="#fff" opacity=".95">
+    <circle cx="68" cy="42" r="1.8"/>
+    <circle cx="176" cy="46" r="1.5"/>
+    <circle cx="34" cy="118" r="1.4"/>
+    <circle cx="206" cy="122" r="1.6"/>
+    <circle cx="72" cy="198" r="1.5"/>
+    <circle cx="168" cy="200" r="1.7"/>
+  </g>
+  <g stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".9">
+    <path d="M58 86l3.2-3.2M58 86l-3.2-3.2M58 86l0 4.5"/>
+    <path d="M182 88l3-3M182 88l-3-3M182 88l0 4.2"/>
+    <path d="M64 162l2.8-2.8M64 162l-2.8-2.8M64 162l0 4"/>
+    <path d="M178 160l2.8-2.8M178 160l-2.8-2.8M178 160l0 4"/>
+  </g>
+
+  <!-- side charms (firefly dots) -->
+  <g filter="url(#softGlow)">
+    <circle cx="28" cy="120" r="5.5" fill="url(#ribbon)" stroke="#fff" stroke-width="1.1"/>
+    <circle cx="28" cy="120" r="2.2" fill="#fff8e8"/>
+    <circle cx="212" cy="120" r="5.5" fill="url(#ribbon)" stroke="#fff" stroke-width="1.1"/>
+    <circle cx="212" cy="120" r="2.2" fill="#fff8e8"/>
+  </g>
+
+  <!-- bottom petal accent -->
+  <g opacity=".92">
+    <path d="M120 214c-8-7-18-12-26-14 8 1 17 0 26 0s18 1 26 0c-8 2-18 7-26 14Z" fill="url(#ribbon)"/>
+    <circle cx="120" cy="204" r="4.2" fill="url(#gold)" stroke="#fff" stroke-width="1"/>
+  </g>
+</svg>

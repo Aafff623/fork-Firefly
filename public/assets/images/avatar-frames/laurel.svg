@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- ornate thin laurel-like (public-domain inspired geometry, original paths) -->
+  <defs>
+    <linearGradient id="laurel" x1="40" y1="20" x2="160" y2="180">
+      <stop stop-color="#fde68a"/>
+      <stop offset=".5" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="82" stroke="#fff" stroke-width="3" opacity=".85"/>
+  <circle cx="100" cy="100" r="88" stroke="url(#laurel)" stroke-width="4"/>
+  <!-- leaf ticks around ring -->
+  <g stroke="url(#laurel)" stroke-width="2" stroke-linecap="round" opacity=".9">
+    <path d="M100 8c-4 6-4 10 0 14c4-4 4-8 0-14z"/>
+    <path d="M132 16c-6 4-8 8-6 13c5-2 8-6 6-13z"/>
+    <path d="M160 40c-6 2-10 6-10 12c6 0 10-4 10-12z"/>
+    <path d="M180 78c-5 0-10 2-12 8c5 2 10 2 12-8z"/>
+    <path d="M184 118c-5-1-10 1-13 6c5 3 10 2 13-6z"/>
+    <path d="M168 154c-5-3-10-2-14 2c4 4 10 4 14-2z"/>
+    <path d="M136 178c-4-5-9-6-14-4c2 5 8 8 14 4z"/>
+    <path d="M100 188c-4-6-4-10 0-14c4 4 4 8 0 14z"/>
+    <path d="M64 178c4-5 9-6 14-4c-2 5-8 8-14 4z"/>
+    <path d="M32 154c5-3 10-2 14 2c-4 4-10 4-14-2z"/>
+    <path d="M16 118c5-1 10 1 13 6c-5 3-10 2-13-6z"/>
+    <path d="M20 78c5 0 10 2 12 8c-5 2-10 2-12-8z"/>
+    <path d="M40 40c6 2 10 6 10 12c-6 0-10-4-10-12z"/>
+    <path d="M68 16c6 4 8 8 6 13c-5-2-8-6-6-13z"/>
+  </g>
+</svg>

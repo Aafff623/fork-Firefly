@@ -340,6 +340,14 @@ export const ru: Translation = {
 	[Key.petPickerLicenseUnknown]: "Лицензия неясна",
 	[Key.petPickerCurrent]: "Сейчас",
 	[Key.petPickerAttribution]: "Материалы из awesome-codex-pet; укажите авторов при некоммерческом показе.",
+	[Key.avatarFrameTitle]: "Рамка аватара",
+	[Key.avatarFrameNone]: "Без рамки",
+	[Key.avatarFrameC3]: "Вращающийся градиент",
+	[Key.avatarFrameC2]: "Двойное кольцо",
+	[Key.avatarFrameC6]: "Металлический блеск",
+	[Key.avatarFrameC5]: "Звёздный пастель",
+	[Key.avatarFrameS3]: "Тонкое металлическое",
+	[Key.avatarFrameS6]: "Золотой лавр",
 
 	// Стиль карточек
 	[Key.cardSettings]: "Стиль карточек",

@@ -20,6 +20,7 @@ import {
 	getDefaultPetSelection,
 	getDefaultSakuraEnabled,
 	getDefaultWavesEnabled,
+	getDefaultAvatarFrameId,
 	getHue,
 	getStoredBannerCarouselEnabled,
 	getStoredBannerTitleEnabled,
@@ -33,6 +34,7 @@ import {
 	getStoredSakuraEnabled,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
+	getStoredAvatarFrameId,
 	setBannerCarouselEnabled,
 	setBannerTitleEnabled,
 	setCardBorderEnabled,
@@ -49,17 +51,20 @@ import {
 	setSakuraEnabled,
 	setWallpaperMode,
 	setWavesEnabled,
+	setAvatarFrameId,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
 import {
 	backgroundWallpaper,
 	displaySettingsConfig,
+	profileConfig,
 	siteConfig,
 	spritePetConfig,
 } from "@/config";
 import { findBuiltinPet } from "@/lib/pets/builtinPets";
 import type { WALLPAPER_MODE } from "@/types/config";
+import type { AvatarFrameId } from "@/types/profileConfig";
 
 type OverlaySliderItem = {
 	key: "opacity" | "blur" | "cardOpacity";
@@ -145,6 +150,59 @@ const pickerPets = isPetPickerSwitchable
 	: [];
 let selectedPetId = $state(getStoredPetSelection());
 const defaultPetSelection = getDefaultPetSelection();
+const isAvatarFrameSwitchable =
+	displaySettingsConfig.avatarFrameSwitchable &&
+	profileConfig.avatarFrame?.enabled !== false;
+let selectedAvatarFrameId = $state<AvatarFrameId>(getStoredAvatarFrameId());
+const defaultAvatarFrameId = getDefaultAvatarFrameId();
+
+const avatarFrameChoices: {
+	id: AvatarFrameId;
+	label: string;
+	swatch: string;
+}[] = [
+	{ id: "none", label: i18n(I18nKey.avatarFrameNone), swatch: "#e5e7eb" },
+	{
+		id: "C3-conic-spin",
+		label: i18n(I18nKey.avatarFrameC3),
+		swatch: "conic-gradient(#a78bfa,#38bdf8,#f472b6,#a78bfa)",
+	},
+	{
+		id: "C2-dual-soft",
+		label: i18n(I18nKey.avatarFrameC2),
+		swatch: "#c4b5fd",
+	},
+	{
+		id: "C6-metallic",
+		label: i18n(I18nKey.avatarFrameC6),
+		swatch: "linear-gradient(135deg,#f8fafc,#64748b,#f1f5f9)",
+	},
+	{
+		id: "C5-stars-css",
+		label: i18n(I18nKey.avatarFrameC5),
+		swatch: "linear-gradient(#c4b5fd,#93c5fd)",
+	},
+	{
+		id: "S3-metallic",
+		label: i18n(I18nKey.avatarFrameS3),
+		swatch: "linear-gradient(135deg,#e2e8f0,#94a3b8,#fde68a)",
+	},
+	{
+		id: "S6-laurel",
+		label: i18n(I18nKey.avatarFrameS6),
+		swatch: "linear-gradient(135deg,#fde68a,#a78bfa)",
+	},
+];
+
+function selectAvatarFrame(id: AvatarFrameId) {
+	selectedAvatarFrameId = id;
+	setAvatarFrameId(id);
+}
+
+function resetAvatarFrame() {
+	selectAvatarFrame(defaultAvatarFrameId);
+}
+
 // 是否有任何横幅设置可显示（后续添加新设置时在此处添加条件）
 const hasBannerSettings =
 	isWavesSwitchable ||
@@ -200,7 +258,8 @@ const hasAnyContent =
 	hasOverlaySettings ||
 	isSakuraSwitchable ||
 	isPetPickerSwitchable ||
-	isNoteCardSwitchable;
+	isNoteCardSwitchable ||
+	isAvatarFrameSwitchable;
 
 // --- Tab visibility ---
 const hasAppearanceTab = $derived(
@@ -208,7 +267,8 @@ const hasAppearanceTab = $derived(
 		allowLayoutSwitch ||
 		isCardBorderSwitchable ||
 		isCardFollowThemeSwitchable ||
-		isNoteCardSwitchable,
+		isNoteCardSwitchable ||
+		isAvatarFrameSwitchable,
 );
 const hasWallpaperTab = $derived(
 	isWallpaperSwitchable ||
@@ -568,6 +628,7 @@ onMount(() => {
 
 	// 桌宠选中项
 	selectedPetId = getStoredPetSelection();
+	selectedAvatarFrameId = getStoredAvatarFrameId();
 
 	const handleSakuraIntroEnded = () => {
 		sakuraEnabled = false;
@@ -765,6 +826,43 @@ $effect(() => {
 					<Icon icon="lucide:columns-3" class="w-4 h-4 shrink-0"></Icon>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutWaterfall)}</span>
 				</button>
+			</div>
+		</div>
+		{/if}
+
+		{#if isAvatarFrameSwitchable}
+		<div class="">
+			<div class="section-title">
+				{i18n(I18nKey.avatarFrameTitle)}
+				<button
+					aria-label="Reset to Default"
+					class="btn-regular rounded-md active:scale-90"
+					class:opacity-0={selectedAvatarFrameId === defaultAvatarFrameId}
+					class:pointer-events-none={selectedAvatarFrameId === defaultAvatarFrameId}
+					onclick={resetAvatarFrame}
+				>
+					<div class="text-(--btn-content)">
+						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="grid grid-cols-2 gap-1.5">
+				{#each avatarFrameChoices as frame (frame.id)}
+					<button
+						type="button"
+						class="btn-regular rounded-md py-2 px-2 flex items-center gap-2 active:scale-95 transition-all text-left"
+						class:opacity-60={selectedAvatarFrameId !== frame.id}
+						class:bg-(--btn-regular-bg-hover)={selectedAvatarFrameId === frame.id}
+						onclick={() => selectAvatarFrame(frame.id)}
+						title={frame.label}
+					>
+						<span
+							class="w-4 h-4 rounded-full shrink-0 ring-1 ring-black/10 dark:ring-white/15"
+							style={`background:${frame.swatch}`}
+						></span>
+						<span class="text-xs font-medium truncate min-w-0">{frame.label}</span>
+					</button>
+				{/each}
 			</div>
 		</div>
 		{/if}

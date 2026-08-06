@@ -8,6 +8,44 @@ export const profileConfig: ProfileConfig = {
 	// 3. 远程 URL："https://example.com/avatar.jpg"
 	avatar: "assets/images/avatar.webp",
 
+	// 侧栏头像装饰框（显示设置可切换；默认金属细环 SVG）
+	avatarFrame: {
+		enabled: true,
+		defaultId: "S3-metallic",
+		frames: [
+			{
+				id: "C3-conic-spin",
+				kind: "css",
+				cssClass: "af-conic-spin",
+			},
+			{
+				id: "C2-dual-soft",
+				kind: "css",
+				cssClass: "af-dual-soft",
+			},
+			{
+				id: "C6-metallic",
+				kind: "css",
+				cssClass: "af-metallic",
+			},
+			{
+				id: "C5-stars-css",
+				kind: "css",
+				cssClass: "af-stars",
+			},
+			{
+				id: "S3-metallic",
+				kind: "svg",
+				src: "/assets/images/avatar-frames/metallic.svg",
+			},
+			{
+				id: "S6-laurel",
+				kind: "svg",
+				src: "/assets/images/avatar-frames/laurel.svg",
+			},
+		],
+	},
+
 	// 名字（GitHub display name）
 	name: "threetwoa",
 

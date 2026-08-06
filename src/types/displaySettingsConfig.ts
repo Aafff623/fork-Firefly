@@ -56,4 +56,7 @@ export type DisplaySettingsConfig = {
 
 	/** 桌宠换皮 Tab 是否在显示设置中出现（还受 spritePetConfig 约束） */
 	petPickerSwitchable: boolean;
+
+	/** 头像边框选择是否在显示设置「外观」中出现 */
+	avatarFrameSwitchable: boolean;
 };

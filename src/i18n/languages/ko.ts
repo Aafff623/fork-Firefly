@@ -337,6 +337,14 @@ export const ko: Translation = {
 	[Key.petPickerLicenseUnknown]: "라이선스 불명확",
 	[Key.petPickerCurrent]: "현재",
 	[Key.petPickerAttribution]: "소재: awesome-codex-pet. 비상업 표시 시 저작자 표기.",
+	[Key.avatarFrameTitle]: "아바타 프레임",
+	[Key.avatarFrameNone]: "없음",
+	[Key.avatarFrameC3]: "회전 그라데이션",
+	[Key.avatarFrameC2]: "소프트 이중 링",
+	[Key.avatarFrameC6]: "메탈 광택",
+	[Key.avatarFrameC5]: "별 파스텔",
+	[Key.avatarFrameS3]: "메탈 가는 링",
+	[Key.avatarFrameS6]: "금 월계수",
 
 	// 카드 스타일
 	[Key.cardSettings]: "카드 스타일",

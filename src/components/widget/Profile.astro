@@ -22,6 +22,13 @@ const voiceBio = profileConfig.bio;
 const noticeText = announcementConfig.content;
 const greetingsJson = JSON.stringify(avatarGreetings.map((g) => g.text));
 const aboutUrl = url("/about/");
+const frameCfg = profileConfig.avatarFrame;
+const frameFeatureOn = frameCfg?.enabled !== false;
+const defaultFrameId = frameCfg?.defaultId || "S3-metallic";
+const frameOptions = frameCfg?.frames ?? [];
+const svgFrames = frameOptions.filter(
+	(f) => f.kind === "svg" && typeof f.src === "string" && f.src.length > 0,
+);
 
 /** 社交图标悬停品牌色 key */
 function socialBrandKey(name: string, icon: string): string {
@@ -38,7 +45,14 @@ function socialBrandKey(name: string, icon: string): string {
 
 {/* 对齐时钟：无 card-base 外壳，内容直接浮在壁纸上 */}
 <div class:list={["profile-widget", "p-2.5", className]} style={style}>
-  <div class="profile-avatar-stage relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32">
+  <div
+    class:list={[
+      "profile-avatar-stage relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32",
+      frameFeatureOn && "profile-avatar-stage--frame-ready",
+    ]}
+    data-profile-avatar-frame
+    data-default-frame={defaultFrameId}
+  >
     <button
       type="button"
       aria-label="向园主问好"
@@ -60,6 +74,22 @@ function socialBrandKey(name: string, icon: string): string {
           showOverlay={false}
         />
       </span>
+      {
+        frameFeatureOn &&
+          svgFrames.map((f) => (
+            <img
+              class="profile-avatar-frame"
+              data-frame-id={f.id}
+              src={f.src}
+              alt=""
+              width="240"
+              height="240"
+              decoding="async"
+              aria-hidden="true"
+              draggable="false"
+            />
+          ))
+      }
       <span class="profile-avatar-wave" data-avatar-wave aria-hidden="true">👋</span>
       <span
         class="profile-avatar-bubble"
@@ -73,7 +103,9 @@ function socialBrandKey(name: string, icon: string): string {
   <div class="px-2">
     <a
       href={aboutUrl}
-      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition block hover:text-(--primary)"
+      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition-colors block hover:text-(--primary)"
+      data-repel-radius="52"
+      data-repel-strength="2.2"
       aria-label="前往关于页"
     >
       {profileConfig.name}
@@ -295,6 +327,21 @@ function socialBrandKey(name: string, icon: string): string {
     overflow: visible;
   }
 
+  /* 有装饰框时略放大舞台，避免挂件裁切（none 除外） */
+  :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+    .profile-avatar-stage--frame-ready {
+    width: 68%;
+    max-width: 8.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+      .profile-avatar-stage--frame-ready {
+      width: 72%;
+      max-width: 9.25rem;
+    }
+  }
+
   .profile-avatar-stage:has(.is-greeting) {
     margin-bottom: 3.25rem;
   }
@@ -310,8 +357,152 @@ function socialBrandKey(name: string, icon: string): string {
     cursor: pointer;
   }
 
+  :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    padding: 0.12rem;
+    background: color-mix(in oklch, var(--card-bg) 90%, white);
+    border-color: color-mix(in oklch, var(--line-divider) 40%, transparent);
+    box-shadow: 0 0.2rem 0.55rem rgb(69 58 45 / 0.08);
+  }
+
   .profile-avatar-clip {
     z-index: 1;
+  }
+
+  .profile-avatar-frame {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    inset: -18%;
+    width: 136%;
+    height: 136%;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+    object-fit: contain;
+  }
+
+  :global(html[data-avatar-frame="S3-metallic"])
+    .profile-avatar-frame[data-frame-id="S3-metallic"],
+  :global(html[data-avatar-frame="S6-laurel"])
+    .profile-avatar-frame[data-frame-id="S6-laurel"] {
+    display: block;
+  }
+
+  /* —— CSS 框（从挑选页迁入）—— */
+  @property --af-a {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  :global(html[data-avatar-frame="C3-conic-spin"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    padding: 3px;
+    border: 0;
+    background: conic-gradient(
+      from var(--af-a, 0deg),
+      #ddd6fe,
+      #7c3aed,
+      #f9a8d4,
+      #93c5fd,
+      #ddd6fe
+    );
+    animation:
+      profile-avatar-breathe 4.8s ease-in-out infinite,
+      af-spin 6s linear infinite;
+    box-shadow: 0 0.2rem 0.55rem rgb(69 58 45 / 0.08);
+  }
+
+  :global(html[data-avatar-frame="C3-conic-spin"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-clip {
+    inset: 4px;
+    background: var(--card-bg, #fff);
+  }
+
+  :global(html[data-avatar-frame="C2-dual-soft"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow:
+      0 0 0 3px #fff,
+      0 0 0 6px #c4b5fd,
+      0 0 0 9px rgb(167 139 250 / 0.35),
+      0 8px 20px rgb(100 60 180 / 0.18);
+  }
+
+  :global(html.dark[data-avatar-frame="C2-dual-soft"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    box-shadow:
+      0 0 0 3px color-mix(in oklch, var(--card-bg) 80%, white),
+      0 0 0 6px #a78bfa,
+      0 0 0 9px rgb(167 139 250 / 0.28),
+      0 8px 20px rgb(0 0 0 / 0.35);
+  }
+
+  :global(html[data-avatar-frame="C6-metallic"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    padding: 4px;
+    border: 0;
+    background: linear-gradient(
+      135deg,
+      #f8fafc,
+      #94a3b8 30%,
+      #e2e8f0 50%,
+      #64748b 75%,
+      #f1f5f9
+    );
+    box-shadow: 0 4px 14px rgb(15 23 42 / 0.2);
+  }
+
+  :global(html[data-avatar-frame="C6-metallic"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-clip {
+    inset: 4px;
+  }
+
+  :global(html[data-avatar-frame="C5-stars-css"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-shell {
+    padding: 5px;
+    border: 0;
+    background:
+      radial-gradient(circle at 50% 4%, #fde68a 0 2px, transparent 2.5px),
+      radial-gradient(circle at 88% 22%, #fff 0 1.5px, transparent 2px),
+      radial-gradient(circle at 96% 55%, #fde68a 0 2px, transparent 2.5px),
+      radial-gradient(circle at 78% 90%, #fff 0 1.5px, transparent 2px),
+      radial-gradient(circle at 22% 92%, #fde68a 0 2px, transparent 2.5px),
+      radial-gradient(circle at 4% 48%, #fff 0 1.5px, transparent 2px),
+      linear-gradient(#c4b5fd, #93c5fd);
+    box-shadow: 0 0.2rem 0.55rem rgb(69 58 45 / 0.1);
+  }
+
+  :global(html[data-avatar-frame="C5-stars-css"])
+    .profile-avatar-stage--frame-ready
+    .profile-avatar-clip {
+    inset: 5px;
+    background: var(--card-bg, #fff);
+  }
+
+  @keyframes af-spin {
+    to {
+      --af-a: 360deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html[data-avatar-frame="C3-conic-spin"])
+      .profile-avatar-stage--frame-ready
+      .profile-avatar-shell {
+      animation: profile-avatar-breathe 4.8s ease-in-out infinite;
+    }
   }
 
   .profile-avatar-shell :global(.profile-avatar-image),
