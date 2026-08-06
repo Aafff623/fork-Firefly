@@ -8,6 +8,11 @@ export type CollectionMeta = {
 	description: string;
 	/** 可选 emoji 点缀（仅展示层，勿写入文章 frontmatter title） */
 	emoji?: string;
+	/**
+	 * 合集卡片背景图（站点根路径，如 `/assets/collections/<slug>.jpg`）。
+	 * 新增合集时用 MiniMax 出一张贴题 4:3 图落盘后再填此字段。
+	 */
+	cover?: string;
 };
 
 export type CollectionsConfig = {
