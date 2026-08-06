@@ -20,7 +20,7 @@ const SiteContent = siteRendered?.Content;
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
     <div class="about-shell flex w-full relative min-h-32">
-        <div class="about-panel z-10 relative w-full">
+        <div class="about-panel card-base z-10 relative w-full overflow-hidden">
             <p class="about-mast"><span>THREETWOA</span><span>ABOUT · 2026</span></p>
 
             <div class="about-intro hero-bg">
@@ -55,10 +55,9 @@ const SiteContent = siteRendered?.Content;
     overflow: visible;
   }
 
-  /* 外层不套卡片：透明底、无外框，避免与文章大卡片叠卡 */
+  /* 外层大卡片：card-base 供底，与友链/留言同结构 */
   .about-panel {
     padding: 1.35rem 1.5rem 1.75rem;
-    overflow: visible;
   }
 
   @media (min-width: 768px) {
@@ -81,17 +80,16 @@ const SiteContent = siteRendered?.Content;
     color: color-mix(in oklab, var(--content-meta) 80%, transparent);
   }
 
-  /* 一层氛围带：hero-bg 共享层铺骑士少女底图 + 文案，不再套第二层描边卡片 */
+  /* 顶部氛围带：hero-bg 共享层铺骑士少女底图，坐在大卡片内的圆角带 */
   .about-intro {
     --hero-img: url("/assets/hero/about-hero.gif");
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
     margin: 0 0 1.5rem;
-    padding: 1.1rem 0.15rem 1.25rem;
+    padding: 1.1rem 1.15rem 1.25rem;
     border: 0;
-    border-radius: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--primary) 35%, var(--line-color));
+    border-radius: 0.65rem;
     overflow: hidden;
   }
 

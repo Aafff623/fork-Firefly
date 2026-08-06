@@ -155,13 +155,15 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     --apc-shell-w: 17.5rem;
     --apc-shell-h: 5.25rem;
     --apc-photo: 5.25rem;
-    --apc-accent: color-mix(in oklab, var(--primary) 82%, #6866ee);
-    --apc-accent-soft: color-mix(in oklab, var(--primary) 35%, #fbc8d4);
-    --apc-surface: color-mix(in oklab, var(--card-bg) 92%, white);
+    /* 配色向 hero 水彩靠：主色揉一点青蓝，辅色带一点暖黄 */
+    --apc-accent: color-mix(in oklab, var(--primary) 72%, #8ea6f2);
+    --apc-accent-soft: color-mix(in oklab, var(--primary) 18%, #ffdf9e);
+    --apc-surface: color-mix(in oklab, var(--card-bg) 80%, transparent);
     --apc-ink: var(--deep-text);
     --apc-muted: color-mix(in oklab, var(--content-meta) 88%, transparent);
     --apc-shadow: color-mix(in oklab, var(--deep-text) 14%, transparent);
     --apc-scale: 0.92;
+    --apc-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
     position: relative;
     width: calc(var(--apc-shell-w) + 7.5rem);
@@ -176,26 +178,32 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
   }
 
   :global(:root.dark) .about-pop-card {
-    --apc-surface: color-mix(in oklab, var(--card-bg) 88%, #1a1a1a);
+    --apc-surface: color-mix(in oklab, var(--card-bg) 82%, transparent);
     --apc-shadow: color-mix(in oklab, black 45%, transparent);
-    --apc-accent-soft: color-mix(in oklab, var(--primary) 40%, #3a2a35);
+    --apc-accent-soft: color-mix(in oklab, var(--primary) 32%, #4a3a28);
   }
 
   .about-pop-card__shell {
     position: relative;
     width: var(--apc-shell-w);
     height: var(--apc-shell-h);
-    border-radius: 0.4rem;
+    border-radius: 1.4rem;
     background: var(--apc-surface);
-    box-shadow: 0 0 1.35rem var(--apc-shadow);
+    backdrop-filter: blur(12px) saturate(1.05);
+    box-shadow:
+      0 12px 32px -10px var(--apc-shadow),
+      inset 0 0 0 1px color-mix(in oklab, white 30%, transparent);
     transform: scale(var(--apc-scale));
     transform-origin: left center;
-    animation: about-pop-show-shell 0.5s forwards ease-in-out;
+    animation: about-pop-shell-in 1.1s ease-out 0.15s both;
   }
 
-  @keyframes about-pop-show-shell {
+  @keyframes about-pop-shell-in {
     0% {
-      width: 0;
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
     }
   }
 
@@ -209,11 +217,11 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     height: var(--apc-photo);
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid var(--apc-surface);
+    border: 3px solid color-mix(in oklab, var(--card-bg) 85%, white);
     background: var(--apc-surface);
     margin-left: calc(var(--apc-photo) / -2);
-    box-shadow: 0 0 0.45rem var(--apc-shadow);
-    animation: about-pop-rotate-photo 0.5s forwards ease-in-out;
+    box-shadow: 0 6px 18px -6px var(--apc-shadow);
+    animation: about-pop-rotate-photo 2.2s var(--apc-ease) 0.4s both;
   }
 
   @keyframes about-pop-rotate-photo {
@@ -237,6 +245,18 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     inset: 0;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
+    /* 面层从左侧缓缓揭开：内容不动，只揭遮罩，无重排不卡顿 */
+    animation: about-pop-reveal 2.2s var(--apc-ease) 0.3s both;
+  }
+
+  @keyframes about-pop-reveal {
+    0% {
+      clip-path: inset(0 100% 0 0 round 1.4rem);
+    }
+    100% {
+      clip-path: inset(0 0 0 0 round 1.4rem);
+    }
   }
 
   .about-pop-card__content::before {
@@ -248,10 +268,12 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     top: -1.1rem;
     z-index: -1;
     transform: rotate(-8deg);
+    border-radius: 1rem;
+    opacity: 0.95;
     background-image: linear-gradient(
-      to top,
+      118deg,
       var(--apc-accent) 0%,
-      var(--apc-accent-soft) 100%
+      var(--apc-accent-soft) 130%
     );
   }
 
@@ -287,7 +309,11 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     appearance: none;
     border: 0;
     padding: 0;
-    background-color: var(--apc-accent);
+    background-image: linear-gradient(
+      135deg,
+      var(--apc-accent),
+      var(--apc-accent-soft)
+    );
     width: 2.55rem;
     height: 2.55rem;
     position: absolute;
@@ -297,7 +323,7 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
     z-index: 2;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    animation: about-pop-btn 0.3s both ease-in-out 0.5s;
+    animation: about-pop-btn 0.8s var(--apc-ease) 2.5s both;
   }
 
   @keyframes about-pop-btn {
