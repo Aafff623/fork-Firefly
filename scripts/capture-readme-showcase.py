@@ -1,6 +1,6 @@
-"""Capture showcase screenshots from local Firefly blog (Playwright).
+r"""Capture showcase screenshots from local Firefly blog (Playwright).
 
-前置：`pnpm dev` 已在 http://localhost:4321 跑着（本机多为 [::1]）。
+前置：`pnpm dev` 已在 http://127.0.0.1:4321 跑着。
 用法：完整路径调用 python，例如：
 `& "$env:LOCALAPPDATA\Programs\Python\Python313\python.exe" scripts\capture-readme-showcase.py`
 """
@@ -10,8 +10,8 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-# Astro 在本机常只监听 [::1]；127.0.0.1 会连不上
-BASE = "http://localhost:4321"
+# 优先 127.0.0.1（pnpm dev --host 127.0.0.1）；本机偶发只绑 [::1] 时再改 BASE
+BASE = "http://127.0.0.1:4321"
 OUT = Path(__file__).resolve().parent.parent / "assets" / "images" / "readme"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -26,7 +26,7 @@ SHOTS: list[tuple[str, str, dict[str, str] | None, str | None]] = [
         "#post-container",
     ),
     ("showcase-dynamic.png", "/dynamic/", None, None),
-    ("showcase-archive.png", "/archive/", None, None),
+    ("showcase-timeline.png", "/timeline/", None, None),
     ("showcase-about.png", "/about/", None, "main, #post-container, .custom-md"),
     ("showcase-gallery.png", "/gallery/", None, None),
 ]
@@ -34,7 +34,9 @@ SHOTS: list[tuple[str, str, dict[str, str] | None, str | None]] = [
 HIDE_CSS = """
 .sprite-pet-root,
 #pio-container,
-.pio-container {
+.pio-container,
+#gift-surprise-toast,
+.gift-surprise-toast {
   display: none !important;
   visibility: hidden !important;
 }

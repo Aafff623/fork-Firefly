@@ -1,18 +1,18 @@
 <h1 align="center">threetwoa's blog</h1>
 
 <p align="center">
-  <strong><em>an Astro blog with a system behind it</em></strong> 🚀
+  <strong><em>an Astro blog with a system behind it</em></strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Node.js-%3E%3D22-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/pnpm-%3E%3D9-F69220?style=flat-square&logo=pnpm&logoColor=white" alt="pnpm">
-  <img src="https://img.shields.io/badge/Astro-7-FF5D01?style=flat-square&logo=astro&logoColor=white" alt="Astro">
-  <img src="https://img.shields.io/badge/Svelte-5-FF3E00?style=flat-square&logo=svelte&logoColor=white" alt="Svelte"><br>
-  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Deploy-Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel">
-  <img src="https://img.shields.io/github/license/Aafff623/fork-Firefly?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D22-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/pnpm-%3E%3D9-F69220?style=for-the-badge&logo=pnpm&logoColor=white" alt="pnpm">
+  <img src="https://img.shields.io/badge/Astro-7-FF5D01?style=for-the-badge&logo=astro&logoColor=white" alt="Astro">
+  <img src="https://img.shields.io/badge/Svelte-5-FF3E00?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte"><br>
+  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel">
+  <img src="https://img.shields.io/github/license/Aafff623/fork-Firefly?style=for-the-badge" alt="License">
 </p>
 
 <p align="center">
@@ -26,9 +26,12 @@
 
 <p align="center">
   <a href="#project">Project</a>
+  · <a href="#features">Features</a>
+  · <a href="#integrations">Integrations</a>
   · <a href="#showcase">Showcase</a>
   · <a href="#quick-start">Quick start</a>
   · <a href="#architecture">Architecture</a>
+  · <a href="#tech-stack">Tech stack</a>
 </p>
 
 <p align="center">
@@ -44,11 +47,9 @@
 
 ## Project
 
-An Astro blog built around content, configuration, and visual iteration.
+配置驱动的 Astro 个人博客：内容写在 Markdown / MDX，站点行为落在 `src/config`，页面由 Astro + Svelte islands + 少量客户端脚本组成。
 
-这是一个基于 Firefly 二次开发的 Astro 个人博客：内容写在 Markdown / MDX，站点行为由 `src/config` 控制，页面与交互由 Astro、Svelte islands 和少量客户端脚本共同完成。
-
-项目关注的不只是主题展示，也包括内容发布、页面组合、搜索、评论和部署之间的清晰边界。当前工作重点是继续收敛信息架构、页面节奏和视觉一致性。
+边界很清楚——**静态优先**、**配置优先于改布局内核**、发文走双路径（Obsidian vault → `ob2blog`，或 Knowledge → `knowledge-output`），收尾都接 `site-cascade`。本仓**没有**独立 Preview 壳；产品面用下方 [Showcase](#showcase) 真机截图。
 
 当前站点：<https://fork-firefly.vercel.app>
 
@@ -58,34 +59,34 @@ An Astro blog built around content, configuration, and visual iteration.
 | Rendering model | Static-first · SSG · CDN-friendly |
 | Content model | Markdown / MDX · Content Collections |
 | Interaction model | Svelte islands · Swup · progressive enhancement |
-| Visual phase | 页面信息架构与视觉一致性持续收敛 |
+| Integrations | Waline · Iconify · SpritePet · local music（见下） |
 | Deployment | Vercel 默认 · Cloudflare adapter 可选 |
 
-<details id="key-docs-and-assets">
-<summary>Key docs and assets</summary>
+### Key docs and assets
+
+<a id="key-docs-and-assets"></a>
 
 | 入口 | 用途 |
 | --- | --- |
 | [CONTEXT.md](CONTEXT.md) | 产品定位、技术事实、术语和仓库边界 |
 | [AGENTS.md](AGENTS.md) | 任务流、修改边界、验证与交付规则 |
-| [docs/adr/](docs/adr/) | 需要长期保留的架构决策 |
+| [docs/adr/](docs/adr/) | 需要长期保留的架构决策（含 Waline / 本地音乐） |
 | [docs/outputs/commit-history/](docs/outputs/commit-history/) | 历史改动、视觉演进和工作摘要 |
 | [assets/images/readme/](assets/images/readme/) | Banner、架构图、技术栈图与 Showcase 资产 |
-| [capture-readme-showcase.py](scripts/capture-readme-showcase.py) | 使用真实页面重新生成 README Showcase |
+| [capture-readme-showcase.py](scripts/capture-readme-showcase.py) | 本地 Playwright 重截 README Showcase |
 
 推荐阅读顺序：`README.md` → `CONTEXT.md` → `AGENTS.md` → `docs/adr/` → `src/config/` / `src/content/`。
-</details>
 
 ## Features
 
-核心能力按“内容 → 阅读 → 个性化 → 集成”组织；每一行同时给出能力范围和主要代码入口。
+核心能力按「内容 → 阅读 → 个性化 → 集成」组织；每一行同时给出能力范围和主要代码入口。
 
 | Area | Capability | Included | Main entry |
 | --- | --- | --- | --- |
 | Publishing | Content model | `posts`、`dynamic`、`spec` 三类 Content Collections | `src/content/` · `src/content.config.ts` |
 | Publishing | Authoring | Markdown / MDX、frontmatter、草稿、置顶、密码文章、文章关联 | `src/content/` · `src/plugins/` |
 | Publishing | Build output | RSS、Sitemap、OpenGraph、阅读时间、字数、Pagefind 索引 | `astro.config.mjs` · `scripts/` |
-| Publishing | Rich content | KaTeX、Mermaid、PlantUML、Wiki Link、代码组、自定义 directive | `src/plugins/` |
+| Publishing | Rich content | KaTeX、Mermaid（merman 静态 SVG）、PlantUML、Wiki Link、代码组、directive | `src/plugins/` |
 | Reading | List system | list、grid、waterfall；Featured、标签和分类入口 | `src/components/layout/` |
 | Reading | Article navigation | Index-First TOC、相关文章、文章导航、标签聚焦 | `src/components/layout/PostPage.astro` |
 | Reading | Display controls | 亮暗色、系统主题、色相、壁纸模式、卡片表现 | `src/config/displaySettingsConfig.ts` |
@@ -93,56 +94,85 @@ An Astro blog built around content, configuration, and visual iteration.
 | Personal surfaces | Dynamic | 碎碎念时间线，可接本地内容或 Memos | `src/pages/dynamic/index.astro` |
 | Personal surfaces | Gallery | 作品集手风琴与 Three.js 无限画布双模式 | `src/pages/gallery/` |
 | Personal surfaces | Extended pages | About、Friends、Guestbook、Anime 等独立页面 | `src/pages/` · `src/content/spec/` |
-| Personal surfaces | Widgets | 热力图、日历、贪吃蛇、热笺、标签墙、统计、桌宠 | `src/components/widget/` |
-| Integration | Comments | Waline、表情、Giphy、访客统计 | `src/config/commentConfig.ts` |
-| Integration | Media services | 评论图片通过服务端代理上传腾讯云 COS | `.env.example` · `src/pages/api/` |
+| Personal surfaces | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、统计、桌宠 | `src/components/widget/` |
+| Integration | Comments | Waline（ADR-0001）：表情预设、Giphy、访客统计；`stickerSuggest` 已集成默认关 | `src/config/commentConfig.ts` |
+| Integration | Icons | `astro-icon` + Iconify（lucide 主，兼 fa7 / simple-icons / mdi / mingcute / material-symbols） | `astro.config.mjs` |
+| Integration | Pets & music | SpritePet 默认开；Live2D / Spine 备选互斥；音乐默认 local（ADR-0002） | `petConfig.ts` · `musicConfig.ts` · `pioConfig.ts` |
+| Integration | Media services | 评论大图 COS 代理上传；Fancybox 灯箱 | `.env.example` · `src/pages/api/` |
 | Integration | Delivery | Vercel 默认部署，Cloudflare adapter 可选 | `vercel.json` · `wrangler.jsonc` |
 | Integration | Localization | `zh_CN`、`zh_TW`、`en`、`ja`、`ru`、`ko` | `src/config/siteConfig.ts` |
 
+## Integrations
+
+把「装进站点、但容易被 README 漏掉」的集成单独摊开。现行 vs 备选以配置为准，不硬编码进布局。
+
+| 域 | 现行（默认） | 备选 / 旁路 | 配置入口 |
+| --- | --- | --- | --- |
+| 评论 | **Waline**（自建 `serverURL` + Neon） | Twikoo / Giscus / Artalk / Disqus 槽位保留 | [`commentConfig.ts`](src/config/commentConfig.ts) · [ADR-0001](docs/adr/0001-waline-over-giscus.md) |
+| 表情包 | `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji | CDN 可换包 | `commentConfig.waline.emoji` |
+| GIF | Waline 客户端默认 **Giphy** search | 高流量时可换自有 API Key | `Waline.astro` |
+| 梗图建议 | `stickerSuggest` **已接线、默认 `enabled: false`** | 可开词表；可选 DeepSeek agent | `/api/comment-sticker-suggest` |
+| 评论大图 | 腾讯云 **COS** 服务端代理（绕过 128KB Base64） | 未配密钥则大图不可用 | `/api/comment-image` · `.env.example` |
+| 图标 | **Iconify** via `astro-icon`；UI 以 **Lucide** 为主 | fa7 / simple-icons / mdi / mingcute / material-symbols | `astro.config.mjs` → `icon({ include })` |
+| 桌宠 | **SpritePet** 默认开（双 DeepSeek 皮） | Live2D / Spine；三者互斥 | [`petConfig.ts`](src/config/petConfig.ts) · `pioConfig.ts` |
+| 音乐 | **local** 自托管曲库 | Meting API 备源 | [`musicConfig.ts`](src/config/musicConfig.ts) · [ADR-0002](docs/adr/0002-local-music-default.md) |
+| 灯箱 / 图示 | Fancybox；Mermaid 经 **merman** 构建期出 SVG | PlantUML · panzoom | `@fancyapps/ui` · `@mermanjs/web` |
+| 动态源 | 本地 `content/dynamic` | 可选 Memos API | `dynamicConfig` · `DynamicSidebar` |
+| 分析 | 槽位就绪（GA / Clarity / Umami / 51la） | ID 多为空，按需填 | `analyticsConfig.ts` |
+
+决策记录：评论走 Waline 而不是 Giscus，是为了表情选项卡与 GIF 插入闭环（见 ADR-0001）。音乐默认 local，是为了不依赖公共 Meting 可用性（见 ADR-0002）。
+
 ## Showcase
 
-推荐浏览路径：首页 → 文章 → Dynamic → Archive / About / Gallery。
+推荐浏览路径：首页 → 文章 → Dynamic → Timeline / About / Gallery。
 
-UI 大改后可以使用 `scripts/capture-readme-showcase.py` 重新截取展示图。脚本需要先启动本地开发服务器。
+截图来自本地 `pnpm dev`（`http://127.0.0.1:4321`），由 Playwright 脚本重截；样式迭代后请再跑一遍覆盖旧图。脚本会隐藏桌宠与礼盒 toast，避免挡画面。
+
+```bash
+# 先 pnpm dev，再：
+python scripts/capture-readme-showcase.py
+```
+
+本仓无独立 Preview 站；下表即产品主链路真机面。
 
 <table>
   <tr>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-home.png"><img alt="Home" src="assets/images/readme/showcase-home.png" width="100%"></a>
       <br><strong>Home</strong><br>
-      <sub>文章卡片 · 双侧栏 · 壁纸横幅 · 分类入口</sub><br>
+      <sub>文章卡片 · 双侧栏 · 壁纸横幅 · 分类条</sub><br>
       <a href="https://fork-firefly.vercel.app/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-post.png"><img alt="Post" src="assets/images/readme/showcase-post.png" width="100%"></a>
       <br><strong>Post</strong><br>
-      <sub>Index-First TOC · 封面 · Markdown 扩展</sub><br>
+      <sub>Index-First TOC · 封面 · Markdown 扩展 · 公告礼盒</sub><br>
       <a href="https://fork-firefly.vercel.app/posts/claude-code-windows-beautify/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-dynamic.png"><img alt="Dynamic" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
       <br><strong>Dynamic</strong><br>
-      <sub>碎碎念时间线 · Memos 适配 · 幕布聚焦</sub><br>
+      <sub>碎碎念时间线 · 搜索筛选 · Memos 可接</sub><br>
       <a href="https://fork-firefly.vercel.app/dynamic/">Open</a>
     </td>
   </tr>
   <tr>
     <td width="33%" valign="top" align="center">
-      <a href="assets/images/readme/showcase-archive.png"><img alt="Archive" src="assets/images/readme/showcase-archive.png" width="100%"></a>
-      <br><strong>Archive</strong><br>
-      <sub>按年折叠 · 克制行列表 · 内容索引</sub><br>
-      <a href="https://fork-firefly.vercel.app/archive/">Open</a>
+      <a href="assets/images/readme/showcase-timeline.png"><img alt="Timeline" src="assets/images/readme/showcase-timeline.png" width="100%"></a>
+      <br><strong>Timeline</strong><br>
+      <sub>按年折叠 · 行列表 · 内容索引</sub><br>
+      <a href="https://fork-firefly.vercel.app/timeline/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-about.png"><img alt="About" src="assets/images/readme/showcase-about.png" width="100%"></a>
       <br><strong>About</strong><br>
-      <sub>Quote-Led · Now / Practice / Reach · 视觉组件</sub><br>
+      <sub>Quote-Led · Now / 统计 / 日历侧栏</sub><br>
       <a href="https://fork-firefly.vercel.app/about/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-gallery.png"><img alt="Gallery" src="assets/images/readme/showcase-gallery.png" width="100%"></a>
       <br><strong>Gallery</strong><br>
-      <sub>作品集手风琴 · 无限画布 · 视觉内容</sub><br>
+      <sub>作品集手风琴 · 无限画布双模式</sub><br>
       <a href="https://fork-firefly.vercel.app/gallery/">Open</a>
     </td>
   </tr>
@@ -169,7 +199,7 @@ pnpm dev
 
 打开 <http://localhost:4321> 查看站点。
 
-首次配置请阅读 [Configuration](#configuration)，先完成站点身份和内容设置，再开启评论、Memos 或 COS 等可选服务。
+首次配置请阅读 [Configuration](#configuration)：先完成站点身份和内容，再开评论、COS、Memos 等可选服务。
 </details>
 
 <details>
@@ -207,6 +237,13 @@ src/content/
 ```
 
 文章 frontmatter 会经过 [src/content.config.ts](src/content.config.ts) 校验。生产构建默认隐藏 `draft: true` 的文章，本地开发可以继续预览草稿。
+
+发文双路径（细则见 `AGENTS.md` / `docs/agents/workflow.md`）：
+
+| 路径 | 源 | 技能链 |
+| --- | --- | --- |
+| 甲 | Obsidian vault | `ob2blog` → `site-cascade` |
+| 乙 | 会话 / Knowledge 素材 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
 
 日常写作走内容文件，日常换皮走 `src/config`。不要为了改站点名称、侧栏顺序或壁纸参数去修改布局内核。
 
@@ -266,13 +303,12 @@ src/content/
 
    文章 frontmatter 会由 [src/content.config.ts](src/content.config.ts) 校验。生产构建默认隐藏 `draft: true` 的文章。
 
-6. **启用可选服务**
+6. **启用 / 核对集成服务**
 
-   只有需要评论图片上传或外部数据源时才配置环境变量：
-
-   - 复制 [.env.example](.env.example) 为 `.env`
-   - 在 `src/config/commentConfig.ts` 中配置 Waline
-   - 在对应配置中开启 Memos、COS、音乐、Live2D 或 Spine
+   - 复制 [.env.example](.env.example) 为 `.env`（仅在需要 COS 等密钥时）
+   - 评论：`commentConfig.ts` 现行 Waline；表情与 Giphy 已接
+   - 桌宠：`petConfig.ts` 默认开；与 Live2D / Spine 互斥
+   - 音乐：`musicConfig.ts` 默认 `local`
    - 不要提交 `.env`、API key 或评论服务 token
 
 7. **本地验证**
@@ -325,7 +361,7 @@ src/content/
 
 ## Architecture
 
-项目把“经常修改的内容”与“尽量稳定的内核”分开：运营走配置和 Markdown，构建链路负责增强，浏览器只接收必要的交互。
+项目把「经常修改的内容」与「尽量稳定的内核」分开：运营走配置和 Markdown，构建链路负责增强，浏览器只接收必要的交互。
 
 <p align="center">
   <img src="assets/images/readme/architecture.svg" alt="threetwoa's blog architecture diagram" width="100%">
@@ -335,8 +371,8 @@ src/content/
 | --- | --- | --- |
 | Authoring | 配置、文案、Markdown / MDX | `src/config` · `src/content` |
 | Composition | 页面、布局、组件和 Markdown plugins | `src/pages` · `src/layouts` · `src/components` · `src/plugins` |
-| Build | 静态生成、图片占位、字体和搜索索引 | Astro SSG · LQIP · font subset · Pagefind |
-| Runtime | CDN 交付和轻量交互 | `dist` · Vercel · Swup · Svelte islands |
+| Build | 静态生成、图片占位、字体、Mermaid SVG、搜索索引 | Astro SSG · LQIP · font subset · merman · Pagefind |
+| Runtime | CDN 交付与轻量交互 | `dist` · Vercel · Swup · Svelte islands · Waline · SpritePet · Iconify |
 
 ### Design principles
 
@@ -349,11 +385,21 @@ src/content/
 
 ## Tech stack
 
-技术栈按“页面框架、内容处理、构建增强、交付环境”分组，方便定位依赖和评估改动影响。
+技术栈按「页面框架、内容处理、构建增强、交付环境、站点集成」分组。图负责气质；下表负责事实。
 
 <p align="center">
   <img src="assets/images/readme/tech-stack.svg" alt="threetwoa's blog technology stack" width="100%">
 </p>
+
+| Lane | Stack | Role |
+| --- | --- | --- |
+| Runtime core | Astro 7.1 · Svelte 5 · TypeScript 6 · Tailwind CSS 4 | 页面、岛屿、类型与样式 |
+| Publishing | MD / MDX · Content Collections · remark / rehype · Expressive Code | 写作契约与正文增强 |
+| Interaction | Swup · Iconify (`astro-icon`) · Fancybox · Three.js（Gallery） | 过渡、图标、灯箱、画廊 |
+| Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | 构建期把贵活做完 |
+| Delivery | `dist/` · Vercel · Cloudflare adapter（可选） | 静态出站 |
+| Site integrations | Waline + emoji/Giphy · SpritePet · local music · COS · Memos（可选） | 配置门控；前几项现行默认开 |
+| Quality | Biome · `astro check` · tsc · pnpm only-allow | 格式、类型与包管理纪律 |
 
 ## Deploy
 

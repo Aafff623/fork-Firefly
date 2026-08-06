@@ -1,6 +1,6 @@
 <svg width="1600" height="860" viewBox="0 0 1600 860" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Firefly blog technology map</title>
-  <desc id="desc">A structured technology map grouped by runtime core, publishing, interaction, build enrichment, delivery and optional services.</desc>
+  <desc id="desc">A structured technology map grouped by runtime core, publishing, interaction, build enrichment, delivery and site integrations.</desc>
   <style>
     .eyebrow { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2.4px; fill: #5B5960; }
     .title { font: 800 42px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: -1.4px; fill: #20222A; }
@@ -60,9 +60,10 @@
   <rect x="456" y="364" width="8" height="78" fill="#D95C58"/>
   <text x="486" y="393" class="lane-label">INTERACTION</text>
   <text x="486" y="416" class="lane-copy">responsive surfaces and transitions</text>
-  <rect x="740" y="382" width="154" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="761" y="406" class="chip">Tailwind CSS 4</text>
-  <rect x="908" y="382" width="110" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="934" y="406" class="chip">Swup</text>
-  <rect x="1032" y="382" width="124" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="1054" y="406" class="chip">Three.js</text>
+  <rect x="740" y="382" width="140" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="756" y="406" class="chip-small">Tailwind CSS 4</text>
+  <rect x="890" y="382" width="96" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="914" y="406" class="chip">Swup</text>
+  <rect x="996" y="382" width="110" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="1016" y="406" class="chip">Iconify</text>
+  <rect x="1116" y="382" width="90" height="38" fill="#FFFFFF" stroke="#DF8A84"/><text x="1134" y="406" class="chip-small">Three.js</text>
   <text x="1220" y="400" class="lane-copy">hydrate only</text>
   <text x="1220" y="416" class="lane-copy">where interaction pays</text>
 
@@ -88,13 +89,13 @@
 
   <rect x="456" y="646" width="1030" height="78" fill="#F0EAFE" stroke="#BBA3E8"/>
   <rect x="456" y="646" width="8" height="78" fill="#7B56D8"/>
-  <text x="486" y="675" class="lane-label">OPTIONAL SERVICES</text>
-  <text x="486" y="698" class="lane-copy">configuration-gated integrations</text>
-  <rect x="740" y="664" width="106" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="766" y="688" class="chip">Waline</text>
-  <rect x="860" y="664" width="106" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="887" y="688" class="chip">Memos</text>
-  <rect x="980" y="664" width="116" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1004" y="688" class="chip-small">Tencent COS</text>
-  <rect x="1110" y="664" width="116" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1128" y="688" class="chip-small">Live2D / Spine</text>
-  <text x="1220" y="682" class="lane-copy">off by</text>
+  <text x="486" y="675" class="lane-label">SITE INTEGRATIONS</text>
+  <text x="486" y="698" class="lane-copy">config-gated · several ON by default</text>
+  <rect x="740" y="664" width="128" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="752" y="688" class="chip-small">Waline+GIF</text>
+  <rect x="878" y="664" width="110" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="894" y="688" class="chip">SpritePet</text>
+  <rect x="998" y="664" width="100" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1016" y="688" class="chip-small">Local music</text>
+  <rect x="1108" y="664" width="98" height="38" fill="#FFFFFF" stroke="#A482DC"/><text x="1132" y="688" class="chip">COS</text>
+  <text x="1220" y="682" class="lane-copy">on by</text>
   <text x="1220" y="698" class="lane-copy">default</text>
 
   <rect x="96" y="748" width="1390" height="56" fill="#20222A"/>
