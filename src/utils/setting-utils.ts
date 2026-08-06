@@ -67,8 +67,8 @@ export function getTimeScheduleHours(): {
 /** hour in [0,23]：dark when hour >= darkFrom || hour < lightFrom */
 export function isDarkHour(
 	hour: number,
-	lightFromHour = DEFAULT_TIME_LIGHT_FROM_HOUR,
-	darkFromHour = DEFAULT_TIME_DARK_FROM_HOUR,
+	lightFromHour: number,
+	darkFromHour: number,
 ): boolean {
 	return hour >= darkFromHour || hour < lightFromHour;
 }
