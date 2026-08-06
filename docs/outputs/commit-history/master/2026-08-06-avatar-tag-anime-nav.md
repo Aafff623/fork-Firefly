@@ -12,9 +12,11 @@ shipped
 | 2026-08-06 | master | 50bc587b | feat | 追番本地兜底 | 12 部经典番 WebP + anime-list.json |
 | 2026-08-06 | master | 79de5808 | feat | 按时段主题 | time 模式亮暗 + 头像框早期初始化接线 |
 | 2026-08-06 | master | 6906ddcb | feat | 头像边框选择 | 显示设置外观区 6 框 + 无边框，默认金属细环 |
+| 2026-08-06 | master | 9496ee57 | fix | 时段判定类型 | isDarkHour 显式参数类型（isolatedDeclarations） |
+| 2026-08-06 | master | cd174ebc | docs | CONTEXT 时段约定 | 记录 defaultMode=time 与 7/18 边界 |
 
 ## 做了什么
-标签墙球体不再空底，拖拽更跟手。导航下拉间歇失灵修好。追番在 B 站隐私时用本地精选封面。侧栏头像框可在显示设置切换，默认金属细环。
+标签墙球体不再空底，拖拽更跟手。导航下拉间歇失灵修好。追番在 B 站隐私时用本地精选封面。侧栏头像框可在显示设置切换，默认金属细环。亮暗默认按时段（7–18 亮 / 18–7 暗）。
 
 ## 关联
 - 挑选临时页 `tmp/avatar-frame-gallery` 已删（选定后落地 public）
