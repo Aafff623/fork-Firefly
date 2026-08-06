@@ -48,6 +48,8 @@
 
 核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `collectionsConfig`（人工合集登记）…
 
+亮暗色：`themeColor.defaultMode` 现行为 **`time`**（访客本地时区；`timeSchedule` 默认 07:00–18:00 亮、18:00–07:00 暗）。另支持 `light` / `dark` / `system`；点导航日月钮会写入亮或暗并退出自动模式。
+
 ## 内容模型
 
 Content Collections（`src/content.config.ts`）：
