@@ -95,9 +95,13 @@ if (footerConfig.enable) {
 />
 
 <footer class="site-footer">
+  <!-- 局部景层：复用氛围插画，避免只靠全站 atmosphere 透色 -->
+  <div class="site-footer__scape" aria-hidden="true"></div>
+  <div class="site-footer__veil" aria-hidden="true"></div>
   <!-- 两侧树木装饰（不占交互层） -->
   <div class="site-footer__tree site-footer__tree--left" aria-hidden="true"></div>
   <div class="site-footer__tree site-footer__tree--right" aria-hidden="true"></div>
+  <div class="site-footer__petals" aria-hidden="true"></div>
   <div class="site-footer__mist" aria-hidden="true"></div>
   <div class="site-footer__inner">
     <div class="site-footer__grid">

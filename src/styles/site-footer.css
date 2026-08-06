@@ -1,5 +1,5 @@
 /* 站点 Footer · 专业四栏 + V2 浇水胶囊 + V4 邮戳
- * 全宽底栏带（极淡森林底）；树木降权；法律行安静
+ * 全宽底栏带：局部景层 + 可读性雾罩；树木/花瓣点缀；法律行安静
  */
 
 .site-footer {
@@ -19,8 +19,11 @@
 	--sf-display: "Playfair Display", Georgia, "Times New Roman", serif;
 	--sf-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	/* 局部景层：花田人物插画（复用 atmosphere 资产，不改全站） */
+	--sf-scape: url("/assets/atmosphere/ba-06-paired.jpg");
 
 	position: relative;
+	isolation: isolate;
 	/* 相对内容栏 full-bleed 到视口，树木贴左右边无白边 */
 	width: 100vw;
 	max-width: 100vw;
@@ -29,12 +32,12 @@
 	padding: 2.85rem 0 1.75rem;
 	min-width: 0;
 	overflow: hidden;
-	/* 极淡森林底带：形成底栏带，非实色卡 */
+	/* 底栏带略实一点：压住全站 atmosphere 透色，文字仍靠 veil */
 	background: linear-gradient(
 		180deg,
-		oklch(0.94 0.02 145 / 0.22) 0%,
-		oklch(0.92 0.025 148 / 0.38) 55%,
-		oklch(0.9 0.03 150 / 0.28) 100%
+		oklch(0.95 0.018 145 / 0.55) 0%,
+		oklch(0.93 0.024 148 / 0.72) 48%,
+		oklch(0.9 0.03 150 / 0.78) 100%
 	);
 	color: var(--sf-ink);
 	border: none;
@@ -51,6 +54,7 @@
 	left: 0;
 	right: 0;
 	height: 1px;
+	z-index: 2;
 	background: linear-gradient(
 		90deg,
 		transparent 0%,
@@ -69,6 +73,7 @@
 	left: 8%;
 	right: 8%;
 	height: 1px;
+	z-index: 2;
 	background: linear-gradient(
 		90deg,
 		transparent,
@@ -92,9 +97,9 @@ html.dark .site-footer {
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 26%, transparent);
 	background: linear-gradient(
 		180deg,
-		oklch(0.22 0.012 145 / 0.55) 0%,
-		oklch(0.2 0.014 148 / 0.62) 55%,
-		oklch(0.18 0.016 150 / 0.55) 100%
+		oklch(0.2 0.012 145 / 0.78) 0%,
+		oklch(0.18 0.014 148 / 0.86) 55%,
+		oklch(0.16 0.016 150 / 0.9) 100%
 	);
 }
 
@@ -131,7 +136,90 @@ html.dark .site-footer__col-title {
 	box-sizing: border-box;
 }
 
-/* 两侧简化树干 + 树冠：贴视口左右，加宽覆盖白边 */
+/* 局部景层：底部锚定花田插画，顶部 mask 淡出，细节可读但不抢正文 */
+.site-footer__scape {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image: var(--sf-scape);
+	background-size: cover;
+	background-position: 38% 78%;
+	background-repeat: no-repeat;
+	opacity: 0.48;
+	-webkit-mask-image: linear-gradient(
+		180deg,
+		transparent 0%,
+		rgba(0, 0, 0, 0.28) 22%,
+		rgba(0, 0, 0, 0.72) 55%,
+		rgba(0, 0, 0, 0.95) 100%
+	);
+	mask-image: linear-gradient(
+		180deg,
+		transparent 0%,
+		rgba(0, 0, 0, 0.28) 22%,
+		rgba(0, 0, 0, 0.72) 55%,
+		rgba(0, 0, 0, 0.95) 100%
+	);
+}
+
+html.dark .site-footer__scape {
+	opacity: 0.34;
+	filter: brightness(0.68) saturate(0.88) contrast(1.05);
+	-webkit-mask-image: linear-gradient(
+		180deg,
+		transparent 0%,
+		rgba(0, 0, 0, 0.22) 18%,
+		rgba(0, 0, 0, 0.62) 52%,
+		rgba(0, 0, 0, 0.9) 100%
+	);
+	mask-image: linear-gradient(
+		180deg,
+		transparent 0%,
+		rgba(0, 0, 0, 0.22) 18%,
+		rgba(0, 0, 0, 0.62) 52%,
+		rgba(0, 0, 0, 0.9) 100%
+	);
+}
+
+/* 可读性雾罩：压对比、留柔光，保证 wordmark / 链接够清晰 */
+.site-footer__veil {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(
+			180deg,
+			oklch(0.97 0.012 145 / 0.82) 0%,
+			oklch(0.95 0.018 148 / 0.52) 38%,
+			oklch(0.93 0.022 150 / 0.28) 72%,
+			oklch(0.91 0.028 152 / 0.18) 100%
+		),
+		radial-gradient(
+			ellipse 90% 55% at 50% 0%,
+			oklch(0.98 0.01 95 / 0.55),
+			transparent 70%
+		);
+}
+
+html.dark .site-footer__veil {
+	background:
+		linear-gradient(
+			180deg,
+			oklch(0.18 0.012 145 / 0.9) 0%,
+			oklch(0.17 0.014 148 / 0.72) 40%,
+			oklch(0.16 0.016 150 / 0.48) 72%,
+			oklch(0.15 0.018 152 / 0.32) 100%
+		),
+		radial-gradient(
+			ellipse 90% 50% at 50% 0%,
+			oklch(0.22 0.01 95 / 0.5),
+			transparent 70%
+		);
+}
+
+/* 两侧简化树干 + 树冠：贴视口左右，略抬对比作景深边框 */
 .site-footer__tree {
 	position: absolute;
 	top: 0.5rem;
@@ -139,7 +227,7 @@ html.dark .site-footer__col-title {
 	width: clamp(5.5rem, 14vw, 11rem);
 	pointer-events: none;
 	z-index: 0;
-	opacity: 0.18; /* 降权，避免抢链接区 */
+	opacity: 0.26;
 }
 
 .site-footer__tree--left {
@@ -168,7 +256,7 @@ html.dark .site-footer__col-title {
 }
 
 .site-footer__tree::after {
-	/* 树冠三团 */
+	/* 树冠三团 + 侧枝点缀 */
 	content: "";
 	position: absolute;
 	left: 8%;
@@ -179,11 +267,13 @@ html.dark .site-footer__col-title {
 	background:
 		radial-gradient(circle at 30% 55%, oklch(0.45 0.1 145 / 0.9) 0 38%, transparent 40%),
 		radial-gradient(circle at 68% 48%, oklch(0.4 0.09 150 / 0.88) 0 42%, transparent 44%),
-		radial-gradient(circle at 48% 28%, oklch(0.48 0.1 140 / 0.85) 0 36%, transparent 38%);
+		radial-gradient(circle at 48% 28%, oklch(0.48 0.1 140 / 0.85) 0 36%, transparent 38%),
+		radial-gradient(circle at 18% 42%, oklch(0.5 0.08 140 / 0.55) 0 18%, transparent 20%),
+		radial-gradient(circle at 82% 36%, oklch(0.46 0.09 150 / 0.5) 0 16%, transparent 18%);
 }
 
 html.dark .site-footer__tree {
-	opacity: 0.28;
+	opacity: 0.36;
 }
 
 /* 暗色：树干/树冠提亮，避免深色值叠深底看不见 */
@@ -199,17 +289,28 @@ html.dark .site-footer__tree::after {
 	background:
 		radial-gradient(circle at 30% 55%, oklch(0.64 0.08 145 / 0.82) 0 38%, transparent 40%),
 		radial-gradient(circle at 68% 48%, oklch(0.6 0.075 150 / 0.8) 0 42%, transparent 44%),
-		radial-gradient(circle at 48% 28%, oklch(0.68 0.08 140 / 0.78) 0 36%, transparent 38%);
+		radial-gradient(circle at 48% 28%, oklch(0.68 0.08 140 / 0.78) 0 36%, transparent 38%),
+		radial-gradient(circle at 18% 42%, oklch(0.7 0.06 140 / 0.48) 0 18%, transparent 20%),
+		radial-gradient(circle at 82% 36%, oklch(0.66 0.07 150 / 0.44) 0 16%, transparent 18%);
 }
 
 @media (max-width: 720px) {
 	.site-footer__tree {
-		opacity: 0.14;
+		opacity: 0.18;
 		width: clamp(3.25rem, 18vw, 5rem);
 	}
 
 	html.dark .site-footer__tree {
-		opacity: 0.24;
+		opacity: 0.28;
+	}
+
+	.site-footer__scape {
+		opacity: 0.36;
+		background-position: 30% 82%;
+	}
+
+	html.dark .site-footer__scape {
+		opacity: 0.26;
 	}
 }
 
@@ -227,25 +328,63 @@ html.dark .site-footer__tree::after {
 	min-width: 0;
 }
 
-/* 底栏轻雾波纹装饰 */
+/* 花瓣/光斑点缀：CSS 径向叠层，不另增资产 */
+.site-footer__petals {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	opacity: 0.55;
+	background:
+		radial-gradient(circle 3px at 12% 28%, oklch(0.78 0.12 15 / 0.55), transparent 70%),
+		radial-gradient(circle 2.5px at 22% 62%, oklch(0.82 0.1 350 / 0.45), transparent 70%),
+		radial-gradient(circle 3.5px at 48% 22%, oklch(0.86 0.08 20 / 0.4), transparent 70%),
+		radial-gradient(circle 2px at 58% 48%, oklch(0.8 0.11 350 / 0.5), transparent 70%),
+		radial-gradient(circle 4px at 72% 34%, oklch(0.84 0.09 15 / 0.38), transparent 70%),
+		radial-gradient(circle 2.5px at 86% 58%, oklch(0.8 0.1 350 / 0.42), transparent 70%),
+		radial-gradient(circle 3px at 34% 78%, oklch(0.88 0.06 95 / 0.35), transparent 70%),
+		radial-gradient(circle 2px at 78% 82%, oklch(0.82 0.08 20 / 0.4), transparent 70%),
+		radial-gradient(ellipse 40% 20% at 65% 18%, oklch(0.95 0.03 95 / 0.28), transparent 70%);
+}
+
+html.dark .site-footer__petals {
+	opacity: 0.4;
+	background:
+		radial-gradient(circle 3px at 12% 28%, oklch(0.72 0.08 15 / 0.45), transparent 70%),
+		radial-gradient(circle 2.5px at 22% 62%, oklch(0.7 0.07 350 / 0.38), transparent 70%),
+		radial-gradient(circle 3.5px at 48% 22%, oklch(0.78 0.05 20 / 0.32), transparent 70%),
+		radial-gradient(circle 2px at 58% 48%, oklch(0.74 0.08 350 / 0.4), transparent 70%),
+		radial-gradient(circle 4px at 72% 34%, oklch(0.76 0.06 15 / 0.3), transparent 70%),
+		radial-gradient(circle 2.5px at 86% 58%, oklch(0.72 0.07 350 / 0.35), transparent 70%),
+		radial-gradient(circle 3px at 34% 78%, oklch(0.8 0.04 95 / 0.28), transparent 70%),
+		radial-gradient(circle 2px at 78% 82%, oklch(0.74 0.05 20 / 0.32), transparent 70%),
+		radial-gradient(ellipse 40% 20% at 65% 18%, oklch(0.55 0.04 95 / 0.22), transparent 70%);
+}
+
+/* 底栏轻雾波纹装饰 + 底部雾化 */
 .site-footer__mist {
 	position: absolute;
 	inset: auto 0 0 0;
-	height: 42%;
+	height: 48%;
 	z-index: 0;
 	pointer-events: none;
 	background:
 		radial-gradient(
 			ellipse 70% 80% at 18% 100%,
-			color-mix(in oklch, var(--sf-moss) 14%, transparent),
+			color-mix(in oklch, var(--sf-moss) 18%, transparent),
 			transparent 70%
 		),
 		radial-gradient(
 			ellipse 55% 70% at 82% 100%,
-			color-mix(in oklch, var(--sf-water-dot) 12%, transparent),
+			color-mix(in oklch, var(--sf-water-dot) 16%, transparent),
 			transparent 68%
+		),
+		linear-gradient(
+			0deg,
+			oklch(0.94 0.02 145 / 0.35) 0%,
+			transparent 65%
 		);
-	opacity: 0.9;
+	opacity: 0.95;
 }
 
 html.dark .site-footer__mist {
@@ -253,13 +392,18 @@ html.dark .site-footer__mist {
 	background:
 		radial-gradient(
 			ellipse 70% 80% at 18% 100%,
-			color-mix(in oklch, var(--sf-moss) 22%, transparent),
+			color-mix(in oklch, var(--sf-moss) 26%, transparent),
 			transparent 70%
 		),
 		radial-gradient(
 			ellipse 55% 70% at 82% 100%,
-			color-mix(in oklch, var(--sf-water-dot) 18%, transparent),
+			color-mix(in oklch, var(--sf-water-dot) 22%, transparent),
 			transparent 68%
+		),
+		linear-gradient(
+			0deg,
+			oklch(0.14 0.014 150 / 0.45) 0%,
+			transparent 65%
 		);
 }
 
