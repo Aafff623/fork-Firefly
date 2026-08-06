@@ -5,6 +5,7 @@ import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
 import UmamiAnalytics from "@components/analytics/UmamiAnalytics.astro";
 import CodeGroupManager from "@components/features/CodeGroupManager.astro";
 import FancyboxManager from "@components/features/FancyboxManager.astro";
+import NoteCardPreview from "@components/features/NoteCardPreview.astro";
 import FontSetup from "@components/features/FontSetup.astro";
 import RepelText from "@components/features/RepelText.astro";
 import MusicManager from "@components/features/MusicManager.astro";
@@ -622,6 +623,7 @@ const siteLang = lang.replace("_", "-");
 
     <!-- Fancybox Manager -->
     <FancyboxManager />
+    <NoteCardPreview />
 
     <!-- Tab 代码块交互 -->
     <CodeGroupManager />
