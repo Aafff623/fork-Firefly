@@ -647,6 +647,99 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     --waline-font-size: 1.05rem;
   }
 
+  /*
+   * 暗色：Waline 默认不少节点继承 #000（#waline / .wl-comment / 表头标签等），
+   * 叠在深色 card 上会「黑字撞黑底」。变量 + 容器底色一起拉白。
+   */
+  html.dark .waline-shell,
+  html.dark .waline-shell #waline {
+    --waline-white: #fff;
+    --waline-light-grey: rgb(255 255 255 / 0.72);
+    --waline-dark-grey: rgb(255 255 255 / 0.88);
+    --waline-color: rgb(255 255 255 / 0.92);
+    --waline-bgcolor: transparent;
+    --waline-bgcolor-light: rgb(255 255 255 / 0.06);
+    --waline-bgcolor-hover: rgb(255 255 255 / 0.1);
+    --waline-border-color: rgb(255 255 255 / 0.14);
+    --waline-disable-bgcolor: rgb(255 255 255 / 0.06);
+    --waline-disable-color: rgb(255 255 255 / 0.45);
+    --waline-code-bgcolor: rgb(255 255 255 / 0.08);
+    --waline-info-bgcolor: rgb(255 255 255 / 0.06);
+    --waline-info-color: rgb(255 255 255 / 0.62);
+    color: var(--waline-color);
+  }
+
+  /* 切断黑字继承：评论壳、编辑区、列表区、卡片正文 */
+  html.dark .waline-shell #waline,
+  html.dark .waline-shell .wl-comment,
+  html.dark .waline-shell .wl-panel,
+  html.dark .waline-shell .wl-header,
+  html.dark .waline-shell .wl-header-item,
+  html.dark .waline-shell .wl-footer,
+  html.dark .waline-shell .wl-info,
+  html.dark .waline-shell .wl-meta-head,
+  html.dark .waline-shell .wl-meta-foot,
+  html.dark .waline-shell .wl-sort,
+  html.dark .waline-shell .wl-rss,
+  html.dark .waline-shell .wl-cards,
+  html.dark .waline-shell .wl-card,
+  html.dark .waline-shell .wl-card-item {
+    color: var(--waline-color);
+  }
+
+  html.dark .waline-shell .wl-empty,
+  html.dark .waline-shell .wl-sort li,
+  html.dark .waline-shell .wl-text,
+  html.dark .waline-shell .wl-count,
+  html.dark .waline-shell .wl-power,
+  html.dark .waline-shell .wl-text-number,
+  html.dark .waline-shell .wl-meta,
+  html.dark .waline-shell .wl-time,
+  html.dark .waline-shell label {
+    color: var(--waline-light-grey) !important;
+  }
+
+  html.dark .waline-shell .wl-sort li.active {
+    color: var(--waline-theme-color, var(--primary, #27ae60)) !important;
+  }
+
+  /* 正文评论：强制浅色，避免 Markdown 子节点带回黑字 */
+  html.dark .waline-shell .wl-card .wl-nick,
+  html.dark .waline-shell .wl-card .wl-content,
+  html.dark .waline-shell .wl-card .wl-content p,
+  html.dark .waline-shell .wl-card .wl-content span,
+  html.dark .waline-shell .wl-card .wl-content li,
+  html.dark .waline-shell .wl-card .wl-content blockquote,
+  html.dark .waline-shell .wl-card .wl-quote {
+    color: var(--waline-color) !important;
+  }
+
+  html.dark .waline-shell .wl-card .wl-content a {
+    color: var(--waline-theme-color, var(--primary, #7dd3a0));
+  }
+
+  html.dark .waline-shell .wl-editor,
+  html.dark .waline-shell .wl-input {
+    color: var(--waline-color) !important;
+    background: var(--waline-bgcolor-light);
+    -webkit-text-fill-color: var(--waline-color);
+  }
+
+  html.dark .waline-shell .wl-editor::placeholder,
+  html.dark .waline-shell .wl-input::placeholder {
+    color: rgb(255 255 255 / 0.48);
+    -webkit-text-fill-color: rgb(255 255 255 / 0.48);
+  }
+
+  /* 视觉层镜像（短码→表情）也跟暗色字色 */
+  html.dark .waline-shell .waline-editor-visual {
+    color: var(--waline-color);
+  }
+
+  html.dark .waline-shell .waline-hint {
+    color: rgb(255 255 255 / 0.6);
+  }
+
   .waline-shell .wl-editor {
     position: relative;
     z-index: 2;
