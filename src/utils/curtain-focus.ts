@@ -23,7 +23,8 @@ export function isCurtainFocusPath(
 		/* keep raw */
 	}
 	const path = normalizePathname(pathname, baseUrl);
-	return /^\/(dynamic|gallery)(\/|$)/.test(path);
+	// 仅 gallery 收侧栏沉浸式；dynamic 需要右侧时间轴索引，不收
+	return /^\/gallery(\/|$)/.test(path);
 }
 
 export function setCurtainFocus(enabled: boolean): boolean {
