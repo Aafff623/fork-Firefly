@@ -159,4 +159,107 @@ const labels = {
 	body.wallpaper-transparent:has(.dynamic-page) .dynamic-nav-widget.card-base {
 		background-color: color-mix(in oklab, var(--card-bg) 88%, transparent) !important;
 	}
+
+	/* —— 垂直时间刻度轴 —— */
+	.dynamic-axis {
+		list-style: none;
+		margin: 0;
+		padding: 0.2rem 0 0.2rem 0.55rem;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+
+	/* 轴主线 */
+	.dynamic-axis::before {
+		content: "";
+		position: absolute;
+		left: 0.55rem;
+		top: 0.5rem;
+		bottom: 0.5rem;
+		width: 2px;
+		transform: translateX(-50%);
+		border-radius: 2px;
+		background: linear-gradient(
+			180deg,
+			transparent,
+			color-mix(in oklab, var(--primary) 30%, transparent) 12%,
+			color-mix(in oklab, var(--content-meta) 30%, transparent) 88%,
+			transparent
+		);
+		pointer-events: none;
+	}
+
+	.dynamic-axis__item {
+		position: relative;
+	}
+
+	.dynamic-axis__tick {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.28rem 0.35rem 0.28rem 0;
+		text-decoration: none;
+		border-radius: 0.4rem;
+		transition: background-color 140ms ease;
+	}
+
+	.dynamic-axis__tick:hover {
+		background: color-mix(in oklab, var(--primary) 7%, transparent);
+	}
+
+	.dynamic-axis__dot {
+		flex: 0 0 auto;
+		width: 0.55rem;
+		height: 0.55rem;
+		margin-left: -0.02rem;
+		border-radius: 50%;
+		background: color-mix(in oklab, var(--content-meta) 45%, transparent);
+		border: 2px solid var(--card-bg, #fff);
+		box-shadow: 0 0 0 1px color-mix(in oklab, var(--content-meta) 25%, transparent);
+		transition:
+			background-color 160ms ease,
+			transform 160ms ease,
+			box-shadow 160ms ease;
+		position: relative;
+		z-index: 1;
+	}
+
+	.dynamic-axis__tick:hover .dynamic-axis__dot {
+		background: color-mix(in oklab, var(--primary) 70%, transparent);
+	}
+
+	.dynamic-axis__tick.is-active .dynamic-axis__dot {
+		background: var(--primary);
+		transform: scale(1.35);
+		box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 25%, transparent);
+	}
+
+	.dynamic-axis__tick.is-pinned .dynamic-axis__dot {
+		background: color-mix(in oklab, var(--primary) 55%, #f59e0b);
+	}
+
+	.dynamic-axis__date {
+		font-size: 0.72rem;
+		font-variant-numeric: tabular-nums;
+		font-weight: 550;
+		letter-spacing: 0.02em;
+		color: color-mix(in oklab, var(--content-meta) 90%, transparent);
+		transition: color 140ms ease;
+	}
+
+	.dynamic-axis__tick:hover .dynamic-axis__date {
+		color: var(--primary);
+	}
+
+	.dynamic-axis__tick.is-active .dynamic-axis__date {
+		color: var(--primary);
+		font-weight: 650;
+	}
+
+	:root.dark .dynamic-axis__dot,
+	html.dark .dynamic-axis__dot {
+		border-color: var(--card-bg, #1a1a1a);
+	}
 </style>

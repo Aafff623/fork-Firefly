@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dynamicAnchor } from "@/utils/dynamic-utils";
 
 export type DynamicNavItem = {
@@ -25,89 +25,7 @@ type NavDetail = {
 	loading?: boolean;
 };
 
-type GroupKey = "pinned" | "today" | "yesterday" | "last7" | "older";
-
-type Group = {
-	key: GroupKey;
-	label: string;
-	items: Array<DynamicNavItem & { anchor: string }>;
-};
-
 const EVENT_NAME = "firefly:dynamic-nav";
-
-function startOfLocalDay(ts: number): number {
-	const d = new Date(ts);
-	d.setHours(0, 0, 0, 0);
-	return d.getTime();
-}
-
-function groupItems(
-	items: DynamicNavItem[],
-	labels: DynamicNavLabels,
-): Group[] {
-	const enriched = items.map((item) => ({
-		...item,
-		anchor: dynamicAnchor(item.id),
-	}));
-	const pinned = enriched.filter((item) => item.pinned);
-	const rest = enriched.filter((item) => !item.pinned);
-
-	const todayStart = startOfLocalDay(Date.now());
-	const yesterdayStart = todayStart - 86_400_000;
-	const weekStart = todayStart - 6 * 86_400_000;
-
-	const today: typeof enriched = [];
-	const yesterday: typeof enriched = [];
-	const last7: typeof enriched = [];
-	const older: typeof enriched = [];
-
-	for (const item of rest) {
-		const day = startOfLocalDay(item.published);
-		if (day >= todayStart) today.push(item);
-		else if (day >= yesterdayStart) yesterday.push(item);
-		else if (day >= weekStart) last7.push(item);
-		else older.push(item);
-	}
-
-	const groups: Group[] = [];
-	if (pinned.length) {
-		groups.push({ key: "pinned", label: labels.pinned, items: pinned });
-	}
-	if (today.length) {
-		groups.push({ key: "today", label: labels.today, items: today });
-	}
-	if (yesterday.length) {
-		groups.push({
-			key: "yesterday",
-			label: labels.yesterday,
-			items: yesterday,
-		});
-	}
-	if (last7.length) {
-		groups.push({ key: "last7", label: labels.last7Days, items: last7 });
-	}
-	if (older.length) {
-		groups.push({ key: "older", label: labels.older, items: older });
-	}
-	return groups;
-}
-
-function formatShortTime(published: number): string {
-	const d = new Date(published);
-	const now = new Date();
-	if (
-		d.getFullYear() === now.getFullYear() &&
-		d.getMonth() === now.getMonth() &&
-		d.getDate() === now.getDate()
-	) {
-		return d.toLocaleTimeString("zh-CN", {
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: false,
-		});
-	}
-	return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 export default function DynamicNavPanel({
 	labels,
@@ -131,8 +49,6 @@ export default function DynamicNavPanel({
 			document.removeEventListener(EVENT_NAME, onNav as EventListener);
 		};
 	}, []);
-
-	const groups = useMemo(() => groupItems(items, labels), [items, labels]);
 
 	useEffect(() => {
 		if (!items.length) {
@@ -226,36 +142,55 @@ export default function DynamicNavPanel({
 		return <p className="dynamic-nav__hint">{labels.empty}</p>;
 	}
 
+	// 垂直刻度轴：按日去重（同日多条取最新一条作锚点），时间倒序
+	const ticks = (() => {
+		const seen = new Set<string>();
+		const out: Array<{
+			key: string;
+			anchor: string;
+			dateLabel: string;
+			title: string;
+			pinned: boolean;
+		}> = [];
+		for (const item of items) {
+			const d = new Date(item.published);
+			const dayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+			if (seen.has(dayKey)) continue;
+			seen.add(dayKey);
+			out.push({
+				key: dayKey,
+				anchor: dynamicAnchor(item.id),
+				dateLabel: `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+				title: item.title,
+				pinned: Boolean(item.pinned),
+			});
+		}
+		return out;
+	})();
+
 	return (
 		<nav className="dynamic-nav" aria-label={labels.nav}>
-			<div className="dynamic-nav__scroll" ref={listRef}>
-				{groups.map((group) => (
-					<section key={group.key} className="dynamic-nav__group">
-						<h3 className="dynamic-nav__group-title">{group.label}</h3>
-						<ul className="dynamic-nav__list">
-							{group.items.map((item) => {
-								const active = item.anchor === activeAnchor;
-								return (
-									<li key={item.id}>
-										<a
-											href={`#${item.anchor}`}
-											data-nav-anchor={item.anchor}
-											className={`dynamic-nav__item${active ? " is-active" : ""}`}
-											aria-current={active ? "true" : undefined}
-											onClick={onJump(item.anchor)}
-											title={item.title}
-										>
-											<span className="dynamic-nav__item-title">{item.title}</span>
-											<span className="dynamic-nav__item-time">
-												{formatShortTime(item.published)}
-											</span>
-										</a>
-									</li>
-								);
-							})}
-						</ul>
-					</section>
-				))}
+			<div className="dynamic-nav__scroll dynamic-nav__axis" ref={listRef}>
+				<ol className="dynamic-axis">
+					{ticks.map((tick) => {
+						const active = tick.anchor === activeAnchor;
+						return (
+							<li key={tick.key} className="dynamic-axis__item">
+								<a
+									href={`#${tick.anchor}`}
+									data-nav-anchor={tick.anchor}
+									className={`dynamic-axis__tick${active ? " is-active" : ""}${tick.pinned ? " is-pinned" : ""}`}
+									aria-current={active ? "true" : undefined}
+									onClick={onJump(tick.anchor)}
+									title={tick.title}
+								>
+									<span className="dynamic-axis__dot" aria-hidden="true" />
+									<span className="dynamic-axis__date">{tick.dateLabel}</span>
+								</a>
+							</li>
+						);
+					})}
+				</ol>
 			</div>
 		</nav>
 	);
