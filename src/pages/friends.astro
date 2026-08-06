@@ -44,6 +44,7 @@ const description =
 
 <MainGridLayout title={title} description={description}>
   <div class="friends-shell flex w-full relative min-h-32">
+    {/* 像素双人图作卡片背景，内容叠在上面 */}
     <div class="friends-panel card-base z-10 relative w-full">
       <header class="friends-mast">
         <p class="friends-mast-meta">
@@ -280,14 +281,58 @@ const description =
       overflow: visible;
     }
 
+    /* 友链主卡：像素氛围图铺底，正文半透叠上 */
     .friends-panel {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
       padding: 1.25rem 1.35rem 1.5rem;
+      /* 压过 card-base 实底，让底图透出来 */
+      background-color: transparent !important;
+      background-image: none !important;
     }
 
     @media (min-width: 768px) {
       .friends-panel {
         padding: 1.5rem 1.85rem 1.75rem;
       }
+    }
+
+    .friends-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        url("/assets/friends/friends-hero.jpg") center 62% / cover no-repeat;
+      pointer-events: none;
+    }
+
+    .friends-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      /* 半透磨砂，保证字可读，仍能看见双人场景 */
+      background: color-mix(in oklab, var(--card-bg, #fff) 78%, transparent);
+      backdrop-filter: blur(1.5px);
+    }
+
+    :global(html.dark) .friends-panel::before {
+      /* 暗色略提亮底图，避免泥灰死黑 */
+      filter: brightness(1.12) saturate(1.08) contrast(1.05);
+    }
+
+    :global(html.dark) .friends-panel::after {
+      /* 更深遮罩 + 轻模糊，托住浅色字 */
+      background: color-mix(in oklab, var(--card-bg, #111) 88%, transparent);
+      backdrop-filter: blur(2.5px);
+    }
+
+    .friends-panel > * {
+      position: relative;
+      z-index: 1;
     }
 
     .friends-mast {
@@ -314,8 +359,13 @@ const description =
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: -0.02em;
-      color: var(--content-title, inherit);
+      /* --content-title 未定义时会 inherit 成黑，暗色必炸 */
+      color: var(--deep-text, rgb(0 0 0 / 0.88));
       font-style: normal;
+    }
+
+    :global(html.dark) .friends-title {
+      color: rgb(255 255 255 / 0.92);
     }
 
     .friends-lede {
@@ -324,6 +374,76 @@ const description =
       font-size: 0.92rem;
       line-height: 1.65;
       color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+    }
+
+    :global(html.dark) .friends-mast-meta,
+    :global(html.dark) .friends-lede {
+      color: rgb(255 255 255 / 0.68);
+    }
+
+    :global(html.dark) .friends-empty-icon {
+      opacity: 0.7;
+      color: rgb(255 255 255 / 0.72);
+    }
+
+    :global(html.dark) .friends-empty-title {
+      color: rgb(255 255 255 / 0.88);
+    }
+
+    :global(html.dark) .friends-empty-hint {
+      color: rgb(255 255 255 / 0.58);
+    }
+
+    :global(html.dark) .friend-card {
+      border-color: rgb(255 255 255 / 0.12);
+      background: rgb(255 255 255 / 0.04);
+    }
+
+    :global(html.dark) .friend-card:hover {
+      border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+      background: color-mix(in oklab, var(--primary) 10%, transparent);
+    }
+
+    :global(html.dark) .friend-card-name {
+      color: rgb(255 255 255 / 0.9);
+    }
+
+    :global(html.dark) .friend-card-desc {
+      color: rgb(255 255 255 / 0.58);
+    }
+
+    :global(html.dark) .friend-card-tag {
+      background: rgb(255 255 255 / 0.08);
+      color: rgb(255 255 255 / 0.65);
+    }
+
+    :global(html.dark) .friends-spec :global(.friends-col-kicker) {
+      color: rgb(255 255 255 / 0.55);
+    }
+
+    :global(html.dark) .friends-spec :global(.friends-col-title),
+    :global(html.dark) .friends-spec :global(.friends-step-title),
+    :global(html.dark) .friends-spec :global(.friends-field-value),
+    :global(html.dark) .friends-spec :global(.friends-notes-dt) {
+      color: rgb(255 255 255 / 0.92);
+    }
+
+    :global(html.dark) .friends-spec :global(.friends-site-desc),
+    :global(html.dark) .friends-spec :global(.friends-step-body),
+    :global(html.dark) .friends-spec :global(.friends-notes-dd),
+    :global(html.dark) .friends-spec :global(.friends-field-label) {
+      color: rgb(255 255 255 / 0.62);
+    }
+
+    :global(html.dark) .friends-spec :global(.friends-field),
+    :global(html.dark) .friends-spec :global(.friends-template) {
+      background: rgb(255 255 255 / 0.06);
+      border-color: rgb(255 255 255 / 0.1);
+    }
+
+    :global(html.dark) .friends-spec :global(.friends-copy) {
+      background: rgb(255 255 255 / 0.1);
+      color: rgb(255 255 255 / 0.85);
     }
 
     .friends-filter {
