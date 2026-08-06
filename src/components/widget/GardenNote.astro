@@ -81,13 +81,34 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    /* 避免标题区露出不透明卡底发白 */
-    background-color: transparent !important;
+    /*
+     * 对齐「最新动态」：实心卡底，不要透明雾罩。
+     * 壁纸透明模式也强制近白底，保证字黑度成立。
+     */
+    background-color: oklch(0.99 0.004 145 / 0.96) !important;
+    border-color: color-mix(in oklch, var(--primary) 18%, oklch(0.7 0.01 145 / 0.28)) !important;
+    box-shadow:
+      0 1px 2px oklch(0.35 0.02 145 / 0.06),
+      0 4px 14px oklch(0.4 0.03 145 / 0.05);
+  }
+
+  :global(html.dark) :global(widget-layout.garden-note-widget.card-base) {
+    background-color: oklch(0.2 0.012 145 / 0.94) !important;
+    border-color: oklch(1 0 0 / 0.14) !important;
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.35),
+      0 8px 22px oklch(0 0 0 / 0.28);
   }
 
   :global(body.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base),
   :global(.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base) {
-    background-color: transparent !important;
+    /* 覆盖全局透明卡规则：便签必须可读 */
+    background-color: oklch(0.99 0.004 145 / 0.96) !important;
+  }
+
+  :global(html.dark) :global(body.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base),
+  :global(html.dark) :global(.wallpaper-transparent) :global(widget-layout.garden-note-widget.card-base) {
+    background-color: oklch(0.2 0.012 145 / 0.94) !important;
   }
 
   :global(widget-layout.garden-note-widget.card-base)::before {
@@ -101,31 +122,13 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.42;
+    /* 仅作淡水印，不抢字 */
+    opacity: 0.14;
   }
 
+  /* 不再叠灰雾 veil；字直接压在实心卡上 */
   :global(widget-layout.garden-note-widget.card-base)::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: inherit;
-    /* 轻 veil：通透够见底图，标题/正文仍可读 */
-    background: linear-gradient(
-      165deg,
-      color-mix(in oklch, var(--card-bg) 48%, transparent) 0%,
-      color-mix(in oklch, var(--card-bg) 32%, transparent) 100%
-    );
-    opacity: 1;
-  }
-
-  :global(html.dark) :global(widget-layout.garden-note-widget.card-base)::after {
-    background: linear-gradient(
-      165deg,
-      color-mix(in oklch, var(--card-bg) 55%, transparent) 0%,
-      color-mix(in oklch, var(--card-bg) 38%, transparent) 100%
-    );
+    content: none;
   }
 
   /* 槽位放开裁切，让 video 能铺到标题行 */
@@ -142,13 +145,21 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     height: 100%;
     object-fit: cover;
     object-position: center;
-    opacity: 0.42;
+    opacity: 0.12;
     pointer-events: none;
   }
 
-  /* 有动底时静图略压，避免双层糊死；标题行仍靠同一张 cover */
   :global(widget-layout.garden-note-widget--motion.card-base)::before {
-    opacity: 0.28;
+    opacity: 0.08;
+  }
+
+  :global(html.dark) :global(widget-layout.garden-note-widget--motion.card-base)::before,
+  :global(html.dark) :global(widget-layout.garden-note-widget.card-base) .garden-note__motion {
+    opacity: 0.1;
+  }
+
+  :global(html.dark) :global(widget-layout.garden-note-widget.card-base)::before {
+    opacity: 0.12;
   }
 
   :global(widget-layout.garden-note-widget.card-base) > :global(.widget-title),
@@ -173,7 +184,7 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     }
 
     :global(widget-layout.garden-note-widget--motion.card-base)::before {
-      opacity: 0.42;
+      opacity: 0.14;
     }
   }
 
@@ -182,13 +193,17 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
     font-size: 0.86rem;
     font-style: italic;
+    font-weight: 500;
     line-height: 1.55;
     letter-spacing: 0.01em;
-    color: oklch(0.42 0.04 145);
+    /* 与「最新动态」ink 正文同黑度 */
+    color: oklch(0.2 0.008 265);
+    text-shadow: none;
   }
 
   :global(html.dark) .garden-note__tip {
-    color: oklch(0.78 0.04 145);
+    color: oklch(0.82 0.01 265);
+    text-shadow: none;
   }
 
   .garden-note__link {
@@ -197,19 +212,22 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     gap: 0.3rem;
     width: fit-content;
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.04em;
-    color: oklch(0.45 0.08 145);
+    /* 与最新动态 ink 强调色同级 */
+    color: oklch(0.16 0.008 265);
     text-decoration: none;
+    text-shadow: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .garden-note__link:hover {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: translateX(2px);
   }
 
   :global(html.dark) .garden-note__link {
-    color: oklch(0.72 0.07 145);
+    color: oklch(0.9 0.01 265);
+    text-shadow: none;
   }
 </style>
