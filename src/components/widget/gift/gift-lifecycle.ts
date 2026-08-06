@@ -5,11 +5,17 @@
  * DEV（pnpm dev）：不读写 localStorage，刷新/站内跳转后礼盒始终再出现，方便调试。
  * PROD（Vercel 等）：按 opened / seen / gone 三键走一次性惊喜。
  */
+import {
+	triggerConfettiBurst,
+	triggerTsParticlesCelebrate,
+} from "@/utils/ambient-fx";
 
 const EXPAND_MS = 1050;
-const LEAVE_MS = 900;
-/** 包装盒拆开大致完成后再弹出全屏信封 */
-const UNPACK_DELAY_MS = 1800;
+const LEAVE_MS = 720;
+/** 包装盒快拆大致完成后再弹出全屏信封 */
+const UNPACK_DELAY_MS = 1000;
+/** 侧栏礼盒卡高度收合（须与 CSS transition 对齐） */
+const CARD_COLLAPSE_MS = 420;
 
 /** Vite 在生产构建时会替换为 false */
 const GIFT_PERSIST = !import.meta.env.DEV;
@@ -74,19 +80,43 @@ function fadeOutAnnouncementCard(card: HTMLElement | null, giftId: string): void
 	if (!card || card.dataset.giftFading === "1") return;
 	card.dataset.giftFading = "1";
 	markCardGone(giftId);
+
+	const collapseMs = prefersReducedMotion() ? 50 : CARD_COLLAPSE_MS;
+	const rect = card.getBoundingClientRect();
+	const cs = getComputedStyle(card);
+	card.style.boxSizing = "border-box";
+	card.style.height = `${rect.height}px`;
+	card.style.marginTop = cs.marginTop;
+	card.style.marginBottom = cs.marginBottom;
+	card.style.paddingTop = cs.paddingTop;
+	card.style.paddingBottom = cs.paddingBottom;
+	card.style.overflow = "hidden";
+	void card.offsetHeight;
+
 	card.classList.add("announcement-widget--fading");
-	const onEnd = () => {
+	card.style.height = "0px";
+	card.style.marginTop = "0px";
+	card.style.marginBottom = "0px";
+	card.style.paddingTop = "0px";
+	card.style.paddingBottom = "0px";
+	card.style.opacity = "0";
+
+	let done = false;
+	const finish = () => {
+		if (done) return;
+		done = true;
 		card.removeEventListener("transitionend", onEnd);
+		if (!card.isConnected) return;
 		card.remove();
 		notifySidebarLayout();
 	};
+	const onEnd = (ev: TransitionEvent) => {
+		if (ev.target !== card) return;
+		if (ev.propertyName !== "height" && ev.propertyName !== "opacity") return;
+		finish();
+	};
 	card.addEventListener("transitionend", onEnd);
-	setTimeout(() => {
-		if (card.isConnected) {
-			card.remove();
-			notifySidebarLayout();
-		}
-	}, 1400);
+	setTimeout(finish, collapseMs + 80);
 }
 
 function lockBodyScroll(lock: boolean): void {
@@ -196,6 +226,8 @@ function confirmAndDismiss(
 	setTimeout(() => {
 		const card = getAnnouncementCard(root);
 		disposeOverlay(overlay);
+		// E09：信封收起后再庆祝，避免特效落在侧栏空洞里
+		void triggerTsParticlesCelebrate();
 		fadeOutAnnouncementCard(card, giftId);
 	}, leaveMs);
 }
@@ -393,6 +425,8 @@ function initGiftCardLifecycle(): void {
 			return;
 		}
 		if (hit instanceof HTMLElement) hit.style.pointerEvents = "none";
+		// E08：开盖瞬间 canvas-confetti（与盒边 CSS 碎屑并存）
+		void triggerConfettiBurst();
 		openFullscreenEnvelope(root, overlay, giftId);
 	});
 

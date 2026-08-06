@@ -22,8 +22,8 @@ alwaysApply: true
 ## 交互约定（改 UI 时遵守）
 
 1. **常驻**：3D 礼盒缓慢自转（不晃动）
-2. **悬停**：淡入切换到「准备开盖」经典盒，经典盒轻微晃动（不开盖）
-3. **点击**：经典盒开盖 → 信封从礼盒位置慢放大铺满全屏 → 点「我已阅读」（或 Esc）→ 信封淡出 → 整张公告卡收起（记 `gone`）
+2. **悬停**：同形态 3D 轻晃邀请（**不**切到酒红包装盒）
+3. **点击**：confetti → 包装盒淡入并快速拆开 → 全屏信封 → 点「我已阅读」（或 Esc）→ 信封收起 → tsParticles → 侧栏卡高度同步收合（记 `gone`）
 
 实现入口：`Announcement.astro` + `src/components/widget/gift/*` + `gift-surprise.css`。  
 换新惊喜：bump `announcementConfig.loveLetter.version`（或改 heading/message）；访客「已开启」/收卡标记按期号存 localStorage，新年份自动消失。

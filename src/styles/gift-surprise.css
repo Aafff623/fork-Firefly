@@ -90,9 +90,9 @@
 .gift-surprise {
 	--gb-ease: 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 	/* 悬停：3D 先销毁，再淡入成型盒（错峰，不硬切） */
-	--gift-destroy: 0.55s;
-	--gift-arrive-delay: 0.3s;
-	--gift-arrive: 0.55s;
+	--gift-destroy: 0.35s;
+	--gift-arrive-delay: 0.08s;
+	--gift-arrive: 0.28s;
 	/* 侧栏宽度有限：略放大，保证体块可读 */
 	--gift-3d-scale: 0.42;
 	--gb-ink: #3d2229;
@@ -265,11 +265,11 @@
 	filter: blur(0) brightness(1) saturate(1);
 	z-index: 4;
 	pointer-events: none;
-	/* 回落悬停时：略延迟再出现，让成型盒先收 */
+	/* 回落：立刻回到 3D；包装只在点击时出现 */
 	transition:
-		opacity 0.4s ease var(--gift-arrive-delay),
-		filter 0.4s ease var(--gift-arrive-delay);
-	/* 轻微上下悬浮；悬停销毁另挂一条 animation，不抢 transform */
+		opacity 0.35s ease,
+		filter 0.35s ease;
+	/* 轻微上下悬浮；悬停邀请另挂晃动，点击才溶解 */
 	animation: gift-float-3d 4.5s ease-in-out infinite;
 }
 
@@ -480,7 +480,7 @@
 	}
 }
 
-/* —— Jhey Tompkins 纯 CSS 3D 折叠包装盒（悬停 / 点击形态）——
+/* —— Jhey Tompkins 纯 CSS 3D 折叠包装盒（仅点击后出现）——
  * https://css-tricks.com/how-to-make-a-pure-css-3d-package-toggle/
  * 机制：--packaged 1=成型 0=摊平；侧面嵌套继承父级 transform（勿扁平化）；
  * --step-delay 反转公式让「拆开」严格倒放「折叠」。
@@ -518,7 +518,7 @@
 	/* 场景：居中 + Jhey 招牌俯仰角 + rotateX(90) 把模板放平到「地面」 */
 	transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
 		translate3d(0, 0, calc(var(--pkg-h) * -0.5));
-	/* 默认无 delay：离悬停时立刻收起，让 3D 稍后回来 */
+	/* 默认无 delay：未点击时保持隐藏 */
 	transition:
 		opacity var(--gift-arrive) ease,
 		filter var(--gift-arrive) ease;
@@ -561,47 +561,56 @@
 	transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 拆开（--packaged 1→0）：delay = (16 - step) × 0.14s，字面写死 */
+/* 拆开（--packaged 1→0）：加速版 delay，约 1s 内流水过完 */
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--extra {
-	transition-delay: 2.1s;
+	transition-delay: 0.94s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--tabbed {
-	transition-delay: 1.96s;
+	transition-delay: 0.88s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--flipped,
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--tabbed::after {
-	transition-delay: 1.82s;
+	transition-delay: 0.82s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--extra > .pkg-flap--bottom {
-	transition-delay: 1.68s;
+	transition-delay: 0.76s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--tabbed > .pkg-flap--bottom {
-	transition-delay: 1.54s;
+	transition-delay: 0.69s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--main > .pkg-flap--bottom {
-	transition-delay: 1.4s;
+	transition-delay: 0.63s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--flipped > .pkg-flap--bottom {
-	transition-delay: 1.26s;
+	transition-delay: 0.57s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .gift-package__box,
 .gift-surprise:has(.gift-surprise__check:checked) .gift-package__wrapper {
-	transition-delay: 1.12s;
+	transition-delay: 0.5s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--extra > .pkg-flap--top {
-	transition-delay: 0.98s;
+	transition-delay: 0.44s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--tabbed > .pkg-flap--top {
-	transition-delay: 0.84s;
+	transition-delay: 0.38s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--main > .pkg-flap--top {
-	transition-delay: 0.7s;
+	transition-delay: 0.32s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .pkg-side--flipped > .pkg-flap--top {
-	transition-delay: 0.56s;
+	transition-delay: 0.25s;
 }
 .gift-surprise:has(.gift-surprise__check:checked) .gift-package__tape {
-	transition-delay: 0.42s;
+	transition-delay: 0.12s;
+}
+
+.gift-surprise:has(.gift-surprise__check:checked) .pkg-side,
+.gift-surprise:has(.gift-surprise__check:checked) .pkg-flap,
+.gift-surprise:has(.gift-surprise__check:checked) .pkg-side::after,
+.gift-surprise:has(.gift-surprise__check:checked) .gift-package__tape,
+.gift-surprise:has(.gift-surprise__check:checked) .gift-package__box,
+.gift-surprise:has(.gift-surprise__check:checked) .gift-package__wrapper {
+	transition-duration: 0.16s;
 }
 
 .pkg-side {
@@ -790,12 +799,10 @@
 	transform: scaleX(0) rotateX(14deg) skewY(4deg);
 }
 
-/* 悬停期待感：一道高光沿带身缓慢扫过（background-position 动画） */
-.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package__tape::before,
-.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package__tape::after,
-.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package__tape::before,
-.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package__tape::after {
-	animation: gift-tape-sheen 2.8s ease-in-out infinite;
+/* 封箱带扫光：仅点击可见包装后播一次（悬停不再露包装） */
+.gift-surprise:has(.gift-surprise__check:checked) .gift-package__tape::before,
+.gift-surprise:has(.gift-surprise__check:checked) .gift-package__tape::after {
+	animation: gift-tape-sheen 1.2s ease-in-out 1;
 }
 
 @keyframes gift-tape-sheen {
@@ -812,31 +819,55 @@
 	}
 }
 
-/* 悬停摇摆：±1.2deg 偏航，挂在场景元素上（wrapper 在折序里，动画移除会跳变） */
-@keyframes gift-package-wiggle {
+/* 悬停邀请：同形态 3D 轻晃（不切包装盒） */
+@keyframes gift-box-invite-wiggle {
 	0%,
 	100% {
-		transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
-			translate3d(0, 0, calc(var(--pkg-h) * -0.5)) rotateZ(0deg) scale(1);
+		transform: translate(-50%, calc(-50% + 0px)) scale(var(--gift-3d-scale)) rotateZ(0deg);
 	}
 	25% {
-		transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
-			translate3d(0, 0, calc(var(--pkg-h) * -0.5)) rotateZ(-1.2deg) scale(1.012);
+		transform: translate(-50%, calc(-50% - 5px)) scale(calc(var(--gift-3d-scale) * 1.03))
+			rotateZ(-2.2deg);
 	}
 	50% {
-		transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
-			translate3d(0, 0, calc(var(--pkg-h) * -0.5)) rotateZ(0deg) scale(1.025);
+		transform: translate(-50%, calc(-50% - 9px)) scale(calc(var(--gift-3d-scale) * 1.04))
+			rotateZ(0deg);
 	}
 	75% {
-		transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
-			translate3d(0, 0, calc(var(--pkg-h) * -0.5)) rotateZ(1.2deg) scale(1.012);
+		transform: translate(-50%, calc(-50% - 5px)) scale(calc(var(--gift-3d-scale) * 1.03))
+			rotateZ(2.2deg);
 	}
 }
 
-/* 悬停 / 点击：3D 先销毁溶解，成型盒错峰淡入（避免两态硬切） */
+/* 点击：包装淡入 → 拆开 → 淡出（与 UNPACK_DELAY ≈1s 对齐） */
+@keyframes gift-package-click-cycle {
+	0% {
+		opacity: 0;
+		filter: blur(5px);
+	}
+	10% {
+		opacity: 1;
+		filter: blur(0);
+	}
+	72% {
+		opacity: 1;
+		filter: blur(0);
+	}
+	100% {
+		opacity: 0;
+		filter: blur(0);
+	}
+}
+
+/* 悬停 / invite：只晃 3D，不溶解、不换包装 */
 .gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 .gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
-.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container {
+	animation: gift-box-invite-wiggle 0.75s ease-in-out infinite;
+	transition: none;
+}
+
+/* 点击：3D 溶解；包装仅此时出现并快拆 */
 .gift-surprise:has(.gift-surprise__check:checked) .gift-box-container {
 	animation:
 		gift-float-3d 4.5s ease-in-out infinite,
@@ -844,28 +875,12 @@
 	transition: none;
 }
 
-.gift-surprise:hover:not(:has(.gift-surprise__check:checked)) .gift-package,
-.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)) .gift-package,
-.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)) .gift-package {
-	opacity: 1;
-	filter: blur(0);
-	transition-delay: var(--gift-arrive-delay);
-}
-
-.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package,
-.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package,
-.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package {
-	animation: gift-package-wiggle 0.7s ease-in-out calc(var(--gift-arrive-delay) + 0.35s) infinite;
-}
-
-/* 点击：--packaged 归 0 → 按折序倒放摊平；信封改由全屏 overlay 承接 */
 .gift-surprise:has(.gift-surprise__check:checked) .gift-package {
 	--packaged: 0;
 	opacity: 0;
 	filter: blur(0);
-	transition:
-		opacity 0.4s ease 2.1s,
-		filter 0.4s ease 2.1s;
+	animation: gift-package-click-cycle 1.05s ease-out forwards;
+	transition: none;
 }
 
 .gift-surprise:has(.gift-surprise__check:checked) {
@@ -890,9 +905,9 @@
 	opacity: 1;
 }
 
-/* 点开：金光从洒下到收敛的脉冲（0.9s 起，配合纸屑与信封升起） */
+/* 点开：金光脉冲（提前，配合 confetti / 快拆） */
 .gift-surprise:has(.gift-surprise__check:checked)::after {
-	animation: gift-stage-glow 1.4s ease-out 0.9s both;
+	animation: gift-stage-glow 1s ease-out 0.12s both;
 }
 
 @keyframes gift-stage-glow {
@@ -924,8 +939,8 @@
 }
 
 .gift-surprise:has(.gift-surprise__check:checked) .gift-confetti__piece {
-	animation: gift-confetti-fly 0.9s cubic-bezier(0.22, 0.9, 0.36, 1) both;
-	animation-delay: calc(1s + var(--cd, 0s));
+	animation: gift-confetti-fly 0.85s cubic-bezier(0.22, 0.9, 0.36, 1) both;
+	animation-delay: calc(0.12s + var(--cd, 0s));
 }
 
 @keyframes gift-confetti-fly {
@@ -960,23 +975,21 @@
 
 	.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 	.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
-	.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+	.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container {
+		animation: none !important;
+	}
+
 	.gift-surprise:has(.gift-surprise__check:checked) .gift-box-container {
 		animation: none !important;
 		opacity: 0;
 		filter: none;
 	}
 
-	/* 包装盒：不拆盒、不摇摆，所有折叠步骤瞬时完成 */
+	/* 包装盒：不拆盒，所有折叠步骤瞬时完成 */
 	.gift-package *,
 	.gift-package .pkg-side::after {
 		transition-duration: 0.01ms !important;
 		transition-delay: 0ms !important;
-	}
-
-	.gift-surprise:hover:not(:has(.gift-surprise__check:checked)) .gift-package,
-	.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)) .gift-package {
-		animation: none !important;
 	}
 
 	.gift-box-container,
@@ -986,6 +999,7 @@
 
 	.gift-surprise:has(.gift-surprise__check:checked) .gift-package {
 		opacity: 0;
+		animation: none !important;
 		transition: none;
 	}
 
@@ -1017,15 +1031,19 @@
 	color: #f3e8e2;
 }
 
-/* 开封后整卡淡出：下方卡片在 remove 后自然顶上 */
+/* 开封后整卡收合：高度跟透明度一起收，下方卡片同步顶上（避免空洞卡顿） */
 .announcement-widget.announcement-widget--fading {
-	opacity: 0 !important;
-	transform: translateY(-0.35rem) scale(0.98);
 	overflow: hidden !important;
 	pointer-events: none !important;
+	border-width: 0 !important;
+	box-shadow: none !important;
 	transition:
-		opacity 1.15s ease,
-		transform 1.15s ease;
+		opacity 0.28s ease,
+		height 0.42s ease,
+		margin 0.42s ease,
+		padding 0.42s ease,
+		border-width 0.42s ease,
+		box-shadow 0.28s ease !important;
 }
 
 .announcement-widget {
