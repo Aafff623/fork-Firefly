@@ -25,26 +25,37 @@
     filter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/*
+ * 侧栏带 .onload-animation（fade-in-up forwards）时，动画会锁住
+ * opacity / transform，导致幕布只剩 filter:blur 生效 → 侧栏「朦胧残影」。
+ * 开幕时先关掉入场动画，并用 !important 盖过 forwards 残留。
+ */
+html.curtain-focus #left-sidebar,
+html.curtain-focus #right-sidebar,
+html.curtain-focus #mobile-bottom-sidebar {
+  animation: none !important;
+}
+
 /* 左侧栏：向左弹开 */
 html.curtain-focus #left-sidebar {
-  opacity: 0;
-  transform: translate3d(calc(-100% - 1.25rem), 0, 0) scale(0.96);
+  opacity: 0 !important;
+  transform: translate3d(calc(-100% - 1.25rem), 0, 0) scale(0.96) !important;
   filter: blur(3px);
   pointer-events: none;
 }
 
 /* 右侧栏：向右弹开 */
 html.curtain-focus #right-sidebar {
-  opacity: 0;
-  transform: translate3d(calc(100% + 1.25rem), 0, 0) scale(0.96);
+  opacity: 0 !important;
+  transform: translate3d(calc(100% + 1.25rem), 0, 0) scale(0.96) !important;
   filter: blur(3px);
   pointer-events: none;
 }
 
 /* 移动端底部栏一并收起 */
 html.curtain-focus #mobile-bottom-sidebar {
-  opacity: 0;
-  transform: translate3d(0, 1.25rem, 0) scale(0.98);
+  opacity: 0 !important;
+  transform: translate3d(0, 1.25rem, 0) scale(0.98) !important;
   filter: blur(2px);
   pointer-events: none;
   max-height: 0;
@@ -125,7 +136,7 @@ html.curtain-focus #right-sidebar {
   html.curtain-focus #left-sidebar,
   html.curtain-focus #right-sidebar,
   html.curtain-focus #mobile-bottom-sidebar {
-    transform: none;
+    transform: none !important;
     filter: none;
   }
 
