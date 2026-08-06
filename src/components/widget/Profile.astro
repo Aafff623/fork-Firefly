@@ -36,7 +36,8 @@ function socialBrandKey(name: string, icon: string): string {
 }
 ---
 
-<div class:list={["card-base", "profile-widget", "p-2.5", className]} style={style}>
+{/* 对齐时钟：无 card-base 外壳，内容直接浮在壁纸上 */}
+<div class:list={["profile-widget", "p-2.5", className]} style={style}>
   <div class="profile-avatar-stage relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32">
     <button
       type="button"
@@ -268,50 +269,25 @@ function socialBrandKey(name: string, icon: string): string {
 </script>
 
 <style>
+  /* 与 surprise-clock / layered-clock 同款：无底、无边、无影 */
   .profile-widget {
     position: relative;
-    border-radius: calc(var(--radius-large) + 0.3rem);
-    isolation: isolate; /* 顶缘伪元素与内容分层 */
+    overflow: visible;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  /* 顶缘对壁纸的柔和过渡：内洗渐隐，不改全局 card-base */
-  .profile-widget::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2rem;
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      color-mix(in oklch, var(--card-bg) 48%, transparent) 100%
-    );
-  }
-
-  /* 壁纸透明模式：轻毛玻璃 + 顶缘 alpha 略抬高（强度低于顶栏） */
+  :global(.enable-card-border) .profile-widget,
+  :global(.wallpaper-transparent) .profile-widget,
   :global(body.wallpaper-transparent) .profile-widget {
-    backdrop-filter: blur(12px) saturate(1.05);
-    -webkit-backdrop-filter: blur(12px) saturate(1.05);
-  }
-
-  :global(body.wallpaper-transparent) .profile-widget::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--card-bg) 12%, transparent) 0%,
-      color-mix(in oklch, var(--card-bg) 62%, transparent) 100%
-    );
-  }
-
-  /* 内容压在伪元素之上，避免头像/文字被盖住 */
-  .profile-widget > :global(*) {
-    position: relative;
-    z-index: 1;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
 
   .profile-avatar-stage {
