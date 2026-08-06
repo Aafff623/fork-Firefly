@@ -326,6 +326,10 @@ export default defineConfig({
 				ignored: ["**/package/**", "**/docs/official/**"],
 			},
 		},
+		optimizeDeps: {
+			include: ["@lottiefiles/dotlottie-web"],
+		},
+		assetsInclude: ["**/*.wasm"],
 		resolve: {
 			alias: {
 				"@rehype-callouts-theme": `rehype-callouts/theme/${siteConfig.post.rehypeCallouts.theme}`,

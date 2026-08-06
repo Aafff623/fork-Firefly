@@ -17,6 +17,9 @@
 	--sf-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
 	/* 品牌 wordmark：对齐 GitHub profile 斜体展示衬线 */
 	--sf-display: "Playfair Display", Georgia, "Times New Roman", serif;
+	/* 花园简介：与笔名区分的园记体（中文小薇 / 英文 Cormorant） */
+	--sf-blurb-cn: "ZCOOL XiaoWei", "Source Han Serif SC", "Noto Serif SC", "Songti SC", serif;
+	--sf-blurb-en: "Cormorant Garamond", "Source Serif 4", Georgia, serif;
 	--sf-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	/* 局部景层：花田人物插画（复用 atmosphere 资产，不改全站） */
@@ -103,7 +106,7 @@ html.dark .site-footer {
 	);
 }
 
-/* 暗色链接用干净无衬线，更利落可读 */
+/* 暗色链接用干净无衬线，更利落可读；默认近白，悬停仍走绿色 */
 html.dark .site-footer__list a {
 	font-family:
 		"Inter",
@@ -113,6 +116,7 @@ html.dark .site-footer__list a {
 		sans-serif;
 	font-weight: 450;
 	letter-spacing: 0.015em;
+	color: var(--sf-ink);
 }
 
 html.dark .site-footer__blurb {
@@ -484,24 +488,43 @@ html.dark .site-footer__garden-tip {
 .site-footer__blurb-stack {
 	display: flex;
 	flex-direction: column;
-	gap: 0.35rem;
+	gap: 0.45rem;
 	margin: 0.85rem 0 0;
 	max-width: min(30rem, 100%);
 }
 
 .site-footer__blurb {
 	margin: 0;
-	font-size: 0.84rem;
-	line-height: 1.65;
-	letter-spacing: 0.01em;
-	color: var(--sf-muted);
+	color: var(--deep-text);
+	font-weight: 400;
 }
 
+/* 中文园记：站酷小薇，偏手札标题感，不跟 Playfair 笔名撞车 */
+.site-footer__blurb--cn {
+	font-family: var(--sf-blurb-cn);
+	font-size: clamp(0.95rem, 0.88rem + 0.22vw, 1.08rem);
+	line-height: 1.75;
+	letter-spacing: 0.06em;
+}
+
+/* 英文园记：Cormorant 斜体，软衬线文学感 */
 .site-footer__blurb--en {
-	font-size: 0.78rem;
+	font-family: var(--sf-blurb-en);
+	font-size: clamp(0.92rem, 0.86rem + 0.18vw, 1.02rem);
 	font-style: italic;
-	opacity: 0.88;
+	font-weight: 500;
 	line-height: 1.55;
+	letter-spacing: 0.015em;
+	opacity: 0.9;
+	color: color-mix(in oklch, var(--deep-text) 82%, var(--sf-moss));
+}
+
+html.dark .site-footer__blurb--cn {
+	color: var(--sf-ink);
+}
+
+html.dark .site-footer__blurb--en {
+	color: color-mix(in oklch, var(--sf-ink) 88%, var(--sf-moss));
 }
 
 .site-footer__col-title {
@@ -556,7 +579,8 @@ html.dark .site-footer__garden-tip {
 	position: relative;
 	display: inline-block;
 	width: fit-content;
-	color: var(--sf-ink);
+	/* 默认：站点黑；悬停再变绿 + 下划线 */
+	color: var(--deep-text);
 	font-size: 0.9rem;
 	font-weight: 450;
 	letter-spacing: 0.01em;
@@ -574,10 +598,10 @@ html.dark .site-footer__garden-tip {
 	bottom: -2px;
 	width: 100%;
 	height: 1px;
-	background: currentColor;
+	background: var(--sf-accent);
 	transform: scaleX(0);
 	transform-origin: left;
-	opacity: 0.45;
+	opacity: 0.9;
 	transition: transform 0.28s var(--sf-ease);
 }
 
@@ -633,11 +657,19 @@ html.dark .site-footer__garden-tip {
 	opacity: 0.9;
 }
 
-/* V2 浇水胶囊 —— 水滴 + 羽毛 + 轻玻璃 */
+/* 浇水胶囊 + 旁侧舞台（相对定位锚点） */
+.site-footer__water-wrap {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* V2 浇水胶囊 —— 水滴 + 羽毛 + 轻玻璃；可点击 */
 .site-footer__water {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
+	font: inherit;
 	font-size: 0.76rem;
 	letter-spacing: 0.02em;
 	color: var(--sf-muted);
@@ -647,12 +679,38 @@ html.dark .site-footer__garden-tip {
 	background: oklch(100% 0 0 / 0.22);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
-	transition: border-color 0.2s var(--sf-ease), background 0.2s var(--sf-ease);
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	transition:
+		border-color 0.2s var(--sf-ease),
+		background 0.2s var(--sf-ease),
+		box-shadow 0.2s var(--sf-ease),
+		transform 0.2s var(--sf-ease);
 }
 
 .site-footer__water:hover {
 	border-color: color-mix(in oklch, var(--sf-muted) 42%, transparent);
 	background: oklch(100% 0 0 / 0.32);
+}
+
+.site-footer__water:focus-visible {
+	outline: 2px solid var(--sf-accent);
+	outline-offset: 3px;
+}
+
+.site-footer__water:active {
+	transform: scale(0.98);
+}
+
+.site-footer__water.is-watering {
+	border-color: color-mix(in oklch, var(--sf-water-dot) 45%, transparent);
+	background: color-mix(in oklch, var(--sf-water-dot) 12%, oklch(100% 0 0 / 0.28));
+	box-shadow: 0 0 0 3px var(--sf-water-ring);
+}
+
+.site-footer__water.is-watering .site-footer__icon-drop {
+	animation: sf-drop-bob 0.55s ease-in-out 2;
 }
 
 html.dark .site-footer__water {
@@ -662,6 +720,118 @@ html.dark .site-footer__water {
 
 html.dark .site-footer__water:hover {
 	background: oklch(100% 0 0 / 0.08);
+}
+
+html.dark .site-footer__water.is-watering {
+	background: color-mix(in oklch, var(--sf-water-dot) 16%, oklch(100% 0 0 / 0.06));
+}
+
+/* 旁侧小舞台：贴胶囊上方 */
+.site-footer__water-stage {
+	position: absolute;
+	left: 50%;
+	bottom: calc(100% + 0.55rem);
+	transform: translateX(-50%) translateY(6px) scale(0.92);
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 0.15rem;
+	width: 11.5rem;
+	height: 7.25rem;
+	padding: 0.35rem 0.4rem 0.25rem;
+	border-radius: 1rem;
+	background: oklch(100% 0 0 / 0.55);
+	border: 1px solid color-mix(in oklch, var(--sf-rule) 80%, transparent);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	box-shadow: 0 10px 28px oklch(0.35 0.04 145 / 0.18);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	z-index: 20;
+	transition:
+		opacity 0.28s var(--sf-ease),
+		transform 0.28s var(--sf-ease),
+		visibility 0.28s;
+}
+
+.site-footer__water-stage.is-open {
+	opacity: 1;
+	visibility: visible;
+	transform: translateX(-50%) translateY(0) scale(1);
+}
+
+html.dark .site-footer__water-stage {
+	background: oklch(0.22 0.02 145 / 0.78);
+	border-color: color-mix(in oklch, var(--sf-rule) 70%, transparent);
+	box-shadow: 0 12px 32px oklch(0 0 0 / 0.35);
+}
+
+.site-footer__water-canvas {
+	width: 5.75rem;
+	height: 5.75rem;
+	flex-shrink: 0;
+}
+
+.site-footer__water-sprout {
+	width: 2.75rem;
+	height: 3.2rem;
+	color: var(--sf-leaf);
+	transform-origin: 50% 100%;
+	transform: scaleY(0.86);
+	opacity: 0.85;
+	margin-bottom: 0.15rem;
+	transition:
+		transform 0.45s var(--sf-ease),
+		opacity 0.3s var(--sf-ease),
+		color 0.3s var(--sf-ease);
+}
+
+.site-footer__water-sprout.is-thirsty {
+	animation: sf-sprout-sway 0.55s ease-in-out infinite;
+}
+
+.site-footer__water-sprout.is-grown {
+	transform: scaleY(1.08) scaleX(1.04);
+	opacity: 1;
+	color: var(--sf-moss);
+	animation: none;
+}
+
+@keyframes sf-sprout-sway {
+	0%,
+	100% {
+		transform: scaleY(0.9) rotate(-3deg);
+	}
+	50% {
+		transform: scaleY(0.94) rotate(4deg);
+	}
+}
+
+@media (max-width: 640px) {
+	.site-footer__water-stage {
+		left: 0;
+		transform: translateX(0) translateY(6px) scale(0.92);
+	}
+
+	.site-footer__water-stage.is-open {
+		transform: translateX(0) translateY(0) scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.site-footer__water-stage,
+	.site-footer__water-sprout {
+		transition: none;
+	}
+
+	.site-footer__water-sprout.is-thirsty {
+		animation: none;
+	}
+
+	.site-footer__water.is-watering .site-footer__icon-drop {
+		animation: none;
+	}
 }
 
 .site-footer__water-icons {
