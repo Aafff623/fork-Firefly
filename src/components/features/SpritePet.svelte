@@ -36,6 +36,7 @@ import {
 	type PetRoamResolvedAnchor,
 } from "@/lib/pets/petRoamAnchors";
 import type { SpritePetRoamConfig } from "@/types/petConfig";
+import { triggerPetYzhanByTheme } from "@/utils/ambient-fx";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -1363,6 +1364,10 @@ function onClick(event: MouseEvent) {
 	const isDouble = now - lastClickAt <= DOUBLE_CLICK_MS;
 	lastClickAt = now;
 	playTransient(actionForPetClick(event.clientY, isDouble), isDouble ? 4 : 3);
+	// 连点两下：暗色萤火虫 / 亮色蝴蝶（E04/E05），不钉住常驻
+	if (isDouble) {
+		triggerPetYzhanByTheme();
+	}
 }
 
 function onSitePointerDown(event: Event) {

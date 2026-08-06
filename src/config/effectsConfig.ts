@@ -1,4 +1,4 @@
-import type { SakuraConfig } from "../types/effectsConfig";
+import type { AmbientFxConfig, SakuraConfig } from "../types/effectsConfig";
 
 // 特效配置 - 集中管理所有动画特效
 
@@ -52,4 +52,14 @@ export const sakuraConfig: SakuraConfig = {
 
 	// 层级，确保樱花在合适的层级显示
 	zIndex: 100,
+};
+
+/** E04/E05 桌宠 yzhan · E08 礼盒 confetti · E09 礼盒 tsParticles */
+export const ambientFxConfig: AmbientFxConfig = {
+	enable: true,
+	petYzhanEnable: true,
+	petBurstMs: 5000,
+	giftConfettiEnable: true,
+	giftTsParticlesEnable: true,
+	giftTsParticlesMs: 2200,
 };
