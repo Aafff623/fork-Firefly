@@ -7,16 +7,26 @@ description: >-
   发到博客动态流」的诉求都用本技能——轻量、单条、即时，区别于 knowledge-output（长文成帖）
   与 ob2blog（Obsidian 同步）。本技能熟悉动态全链路：内容集合 schema、API 图片抽取、
   kind 启发式分类、配图缩略图规范、侧栏/时间线渲染、pnpm new-dynamic 脚本。
-compatibility: 需在 Firefly 项目根（含 src/content.config.ts）下执行。配图压缩用 Python PIL（可选）。
+compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/content.config.ts）。配图压缩用 Python PIL（可选）。
 ---
 
 # dynamic-post — Firefly 最新动态发布
 
 把一句即时的想法、状态、心情或配图，发布成博客「最新动态」流里的一条。动态是**短内容**——不进 `posts/`、不走成帖流程、不需要标题，发完即时出现在 `/dynamic/` 时间线和首页侧栏。
 
+本技能是**唯一真源**，全局 `~/.agents/skills/dynamic-post/` 是指向本目录的 junction（防漂移）。在任意工作区都可触发——若当前不在博客仓库，先按「第 0 步」定位仓库再落盘。
+
+## 第 0 步：定位博客仓库
+
+默认博客仓库根：`D:\OneDrive\Desktop\blog\Firefly`（含 `src/content.config.ts`）。
+
+- 当前已在该仓库内 → 直接用。
+- 不在 → 先确认仓库存在（`ls "D:/OneDrive/Desktop/blog/Firefly/src/content/dynamic"`）；用户告知了别的路径时以用户为准。
+- 后续所有路径都相对博客仓库根。
+
 ## 何时用 / 不用
 
-- **用**：发一条即时动态、碎碎念、心情、进展、吐槽，或带一两张配图的分享。
+- **用**：发一条即时动态、碎碎念、心情、进展、吐槽，或带一两张配图的分享；在别的工作区想「把这段感想同步到博客动态」。
 - **不用**：有主题、有结构、值得长期归档的长内容 → 走 `knowledge-output`（成帖）或 `ob2blog`（Obsidian）。动态 ≠ 博客文章。
 
 ## 动态的本质（先理解，再动手）
