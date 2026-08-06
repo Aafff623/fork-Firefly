@@ -1,14 +1,19 @@
 ---
-import ButtonLink from "@/components/common/ButtonLink.astro";
+/**
+ * 分类墙：迷你软木便利贴 + 行级图标 / 分色计数 / 热度条。
+ * 视觉对齐 /categories/ 软木板；标题气质对齐标签墙 / 热笺。
+ */
+import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import { categoryIconName } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
+import { tagAccentStyle } from "@/utils/accent-from-label";
 import { getCategoryList } from "@/utils/content-utils";
+import { url } from "@/utils/url-utils";
 
 const categories = await getCategoryList();
-
-const COLLAPSED_HEIGHT = "7.5rem";
 
 interface Props {
 	class?: string;
@@ -17,23 +22,355 @@ interface Props {
 }
 const { class: className, style, widgetConfig } = Astro.props;
 
-const collapseThreshold = widgetConfig?.specificConfig?.collapseThreshold;
 const showTitle = widgetConfig?.showTitle !== false;
-const isCollapsed = collapseThreshold
-	? categories.length > collapseThreshold
-	: false;
+const maxVisible = Math.max(
+	1,
+	Number(widgetConfig?.specificConfig?.collapseThreshold ?? 5),
+);
+
+const ranked = [...categories]
+	.map((c) => ({
+		name: c.name.trim(),
+		count: c.count,
+		url: c.url,
+	}))
+	.filter((c) => c.name)
+	.sort((a, b) => {
+		if (b.count !== a.count) return b.count - a.count;
+		return a.name.localeCompare(b.name, "zh-CN");
+	});
+
+const maxCount = Math.max(...ranked.map((c) => c.count), 1);
+const visible = ranked.slice(0, maxVisible);
+const hiddenCount = Math.max(0, ranked.length - maxVisible);
+const categoriesIndexUrl = url("/categories/");
+const postsLabel = i18n(I18nKey.postsCount);
 ---
 
-<WidgetLayout name={i18n(I18nKey.categories)} showTitle={showTitle} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
-                class={className} style={style}
+<WidgetLayout
+  name={i18n(I18nKey.categories)}
+  showTitle={showTitle}
+  id="categories"
+  isCollapsed={false}
+  class:list={["categories-widget", className]}
+  style={style}
 >
-    {categories.map((c) =>
-        <ButtonLink
-            url={c.url}
-            badge={String(c.count)}
-            label={`View all posts in the ${c.name.trim()} category`}
-        >
-            {c.name.trim()}
-        </ButtonLink>
-    )}
+  <Icon
+    slot="title-leading"
+    is:inline
+    name="lucide:folders"
+    class="widget-title-icon"
+    aria-hidden="true"
+  />
+
+  {
+    visible.length > 0 ? (
+      <div
+        class="cat-cork"
+        role="list"
+        aria-label={i18n(I18nKey.categories)}
+      >
+        <div class="cat-cork__board">
+          {visible.map((c, index) => {
+            const heat = Math.max(0.18, Math.min(1, c.count / maxCount));
+            const wide = visible.length === 1 || (visible.length % 2 === 1 && index === 0);
+            return (
+              <a
+                role="listitem"
+                href={c.url}
+                class:list={["cat-cork__note", wide && "cat-cork__note--wide"]}
+                style={`${tagAccentStyle(c.name)}; --cat-heat: ${heat};`}
+                title={`${c.name} · ${c.count} ${postsLabel}`}
+                aria-label={`View all posts in the ${c.name} category`}
+              >
+                <span class="cat-cork__tape" aria-hidden="true" />
+                <span class="cat-cork__head">
+                  <Icon
+                    is:inline
+                    name={categoryIconName(c.name)}
+                    class="cat-cork__icon"
+                    aria-hidden="true"
+                  />
+                  <span class="cat-cork__badge">{c.count}</span>
+                </span>
+                <span class="cat-cork__name">{c.name}</span>
+                <span class="cat-cork__heat" aria-hidden="true">
+                  <span class="cat-cork__heat-fill" />
+                </span>
+              </a>
+            );
+          })}
+        </div>
+        {
+          hiddenCount > 0 && (
+            <a class="cat-cork__more" href={categoriesIndexUrl}>
+              <Icon is:inline name="lucide:ellipsis" class="cat-cork__more-icon" aria-hidden="true" />
+              <span>{i18n(I18nKey.more)}</span>
+              <span class="cat-cork__more-n">+{hiddenCount}</span>
+            </a>
+          )
+        }
+      </div>
+    ) : (
+      <p class="cat-cork__empty">{i18n(I18nKey.noData)}</p>
+    )
+  }
 </WidgetLayout>
+
+<style is:global>
+  /* 标题：软木琥珀点缀（衬线由 WidgetLayout 统一） */
+  widget-layout.categories-widget .widget-title::before {
+    background: linear-gradient(
+      180deg,
+      oklch(0.78 0.12 75),
+      oklch(0.58 0.12 55)
+    ) !important;
+  }
+
+  widget-layout.categories-widget .widget-name,
+  widget-layout.categories-widget .widget-name__text {
+    color: oklch(0.42 0.08 55);
+  }
+
+  html.dark widget-layout.categories-widget .widget-name,
+  html.dark widget-layout.categories-widget .widget-name__text {
+    color: oklch(0.86 0.06 75);
+  }
+
+  widget-layout.categories-widget {
+    padding-bottom: 0.65rem !important;
+  }
+
+  widget-layout.categories-widget .collapse-wrapper {
+    padding-top: 0.15rem;
+  }
+
+  .cat-cork {
+    --postit-ink: #1c1c1c;
+    --postit-y: #fef9c3;
+    --postit-p: #fce7f3;
+    --postit-b: #dbeafe;
+    --postit-g: #dcfce7;
+    --postit-o: #ffedd5;
+    --cork: #c9a66b;
+    --cork-dot: #b8925a;
+  }
+
+  html.dark .cat-cork {
+    --postit-ink: #1a1814;
+    --postit-y: #e8dfa0;
+    --postit-p: #e4c0d0;
+    --postit-b: #b8cce0;
+    --postit-g: #b8dcc0;
+    --postit-o: #e4c8a8;
+    --cork: #5c4a36;
+    --cork-dot: #4a3b2c;
+  }
+
+  .cat-cork__board {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem 0.5rem;
+    padding: 0.65rem 0.55rem 0.55rem;
+    border-radius: 0.65rem;
+    background-color: var(--cork);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgb(255 248 235 / 0.38), transparent 52%),
+      radial-gradient(var(--cork-dot) 1px, transparent 1px);
+    background-size: auto, 9px 9px;
+    box-shadow:
+      inset 0 0 0 1px rgb(90 60 30 / 0.22),
+      0 2px 6px rgb(60 40 20 / 0.1);
+  }
+
+  .cat-cork__note {
+    --note-rot: -1deg;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    min-width: 0;
+    min-height: 4.1rem;
+    padding: 0.85rem 0.55rem 0.45rem;
+    text-decoration: none;
+    color: var(--postit-ink);
+    border: 1.25px solid rgb(28 28 28 / 0.65);
+    box-shadow: 1.5px 2px 0 rgb(28 28 28 / 0.12);
+    border-radius: 1px;
+    background: var(--postit-y);
+    transform: rotate(var(--note-rot));
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .cat-cork__note--wide {
+    grid-column: 1 / -1;
+  }
+
+  .cat-cork__board > .cat-cork__note:nth-child(5n + 1) {
+    --note-rot: -1.8deg;
+    background: var(--postit-y);
+  }
+  .cat-cork__board > .cat-cork__note:nth-child(5n + 2) {
+    --note-rot: 1.4deg;
+    background: var(--postit-p);
+  }
+  .cat-cork__board > .cat-cork__note:nth-child(5n + 3) {
+    --note-rot: -0.9deg;
+    background: var(--postit-b);
+  }
+  .cat-cork__board > .cat-cork__note:nth-child(5n + 4) {
+    --note-rot: 1.8deg;
+    background: var(--postit-g);
+  }
+  .cat-cork__board > .cat-cork__note:nth-child(5n + 5) {
+    --note-rot: -1.2deg;
+    background: var(--postit-o);
+  }
+
+  .cat-cork__tape {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    width: 36px;
+    height: 10px;
+    transform: translateX(-50%) rotate(-2deg);
+    border-radius: 1px;
+    background-color: rgb(253 224 71 / 0.72);
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      rgb(255 255 255 / 0.18) 3px 4px
+    );
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .cat-cork__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+
+  .cat-cork__icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex: 0 0 auto;
+    stroke-width: 1.9;
+    opacity: 0.82;
+    color: color-mix(in oklch, var(--tag-accent, var(--primary)) 75%, #1c1c1c);
+  }
+
+  .cat-cork__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.15rem;
+    padding: 0 0.35rem;
+    border-radius: 0.35rem;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: color-mix(in oklch, var(--tag-accent, var(--primary)) 88%, #111);
+    background: color-mix(in oklch, var(--tag-accent, var(--primary)) 18%, white);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--tag-accent, var(--primary)) 22%, transparent);
+  }
+
+  .cat-cork__name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .cat-cork__heat {
+    display: block;
+    width: 100%;
+    height: 3px;
+    margin-top: auto;
+    border-radius: 999px;
+    background: rgb(28 28 28 / 0.1);
+    overflow: hidden;
+  }
+
+  .cat-cork__heat-fill {
+    display: block;
+    height: 100%;
+    width: calc(var(--cat-heat, 0.4) * 100%);
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--tag-accent, var(--primary)) 55%, transparent),
+      var(--tag-accent, var(--primary))
+    );
+  }
+
+  .cat-cork__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 0.45rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .cat-cork__more:hover {
+    background: color-mix(in oklch, var(--primary) 10%, transparent);
+  }
+
+  .cat-cork__more-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .cat-cork__more-n {
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cat-cork__empty {
+    margin: 0;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.78rem;
+    color: oklch(0.45 0.02 70);
+    text-align: center;
+  }
+
+  html.dark .cat-cork__empty {
+    color: oklch(0.7 0.02 70);
+  }
+
+  @media (hover: hover) {
+    .cat-cork__note:hover {
+      z-index: 2;
+      transform: rotate(0deg) translateY(-2px);
+      box-shadow: 2px 5px 0 rgb(28 28 28 / 0.16);
+    }
+
+    .cat-cork__note:hover .cat-cork__icon {
+      opacity: 1;
+    }
+  }
+
+  .cat-cork__note:focus-visible {
+    outline: 2px solid #c9a227;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cat-cork__note {
+      transition: none;
+      transform: none !important;
+    }
+  }
+</style>
