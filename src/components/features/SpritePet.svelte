@@ -148,6 +148,11 @@ function isPostPath(pathname = window.location.pathname) {
 	return /\/posts\//.test(pathname);
 }
 
+/** 文章页是否用「文档绝对坐标」钉页（否：始终 position:fixed 贴视口） */
+function isPostViewportMode(pathname = window.location.pathname) {
+	return isPostPath(pathname);
+}
+
 function readStoredPetSelection(): StoredPetSelection {
 	if (typeof window === "undefined") return "default";
 	try {
@@ -489,7 +494,9 @@ async function syncPetFromPath(
 ): Promise<boolean> {
 	const next = resolveActivePetId(visitorSelection, pathname);
 	updateHidden();
-	if (!canRoamOnBrowse()) {
+	if (isPostViewportMode(pathname)) {
+		applyPostViewportLock(pathname);
+	} else if (!canRoamOnBrowse()) {
 		stopRoamLoop();
 	}
 	// 同皮也强制可见，避免上次淡出被并发打断后卡在 opacity:0
@@ -525,11 +532,8 @@ async function applyVisitorSelection(next: StoredPetSelection) {
 	visitorSelection = next;
 	preloadPetSheets();
 	const swapped = await syncPetFromPath(window.location.pathname);
-	if (isPostPath()) {
-		stopRoamLoop();
-		if (dockMode === "card") {
-			undockToBodyAtCurrentScreenPos();
-		}
+	if (isPostViewportMode()) {
+		applyPostViewportLock();
 	} else if (!userPinnedPosition) {
 		scheduleBrowseDefaultPlacement();
 		// 换宠后尺寸/轮询可能变：先停再开，避免仍用旧 interval
@@ -686,6 +690,25 @@ function undockToBodyAtCurrentScreenPos() {
 }
 
 /**
+ * 文章页：钉死在视口角落（配置 position / offset），不跟滚动、不贴侧栏、不游走。
+ * 主页的卡片锚定与文档坐标逻辑一律不进这里。
+ */
+function applyPostViewportLock(pathname = window.location.pathname) {
+	if (typeof window === "undefined" || !isPostViewportMode(pathname)) return;
+	stopRoamLoop();
+	clearResumeAfterDragTimer();
+	clearScrollLeaveTimer();
+	clearDockHost();
+	dockMode = "free";
+	currentAnchorId = null;
+	plannedRoamTargetId = null;
+	// null → positionedStyle 走 defaultStyle（fixed + bottom/right）
+	posX = null;
+	posY = null;
+	if (rootEl) mountPetToBody(rootEl);
+}
+
+/**
  * 锚定侧栏卡片外侧留白：宠物始终挂在 body + position:fixed，
  * 只记录宿主用于滚动态同步坐标（不再 append 进卡片，避免 overflow 裁成「钻进卡里」）。
  */
@@ -696,6 +719,8 @@ function dockToCard(
 	facing: PetRoamFacing = facingForCorner(corner),
 ) {
 	if (!rootEl || typeof document === "undefined") return;
+	// 文章页禁止贴卡片：只认视口固定位
+	if (isPostViewportMode()) return;
 	const mountEl = resolveDockHost(host);
 	clearDockHost();
 	mountEl.classList.add("has-sprite-pet-anchor");
@@ -1192,17 +1217,31 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 
 	const dx = clientX - origin.startClientX;
 	const dy = clientY - origin.startClientY;
-	// 拖拽中用视口坐标跟手；松手换成文档坐标，滚动窗口时停在原落点
 	const screen = clampToViewport(origin.originLeft + dx, origin.originTop + dy);
+	dockMode = "free";
+	currentAnchorId = null;
+	animationState = "idle";
+
+	// 文章页：松手仍用视口坐标 + fixed，滚动时不挪；也不写文档坐标 / 不恢复游走
+	if (isPostViewportMode()) {
+		posX = screen.x;
+		posY = screen.y;
+		userPinnedPosition = false;
+		try {
+			localStorage.removeItem(STORAGE_KEY);
+		} catch {
+			/* ignore */
+		}
+		return;
+	}
+
+	// 主页：松手换成文档坐标，滚动窗口时停在原落点
 	const rawPage = viewportToPage(screen.x, screen.y);
 	const page = clampToDocument(rawPage.x, rawPage.y);
 	posX = page.x;
 	posY = page.y;
-	dockMode = "free";
-	currentAnchorId = null;
 	userPinnedPosition = false;
 	// 拖拽只临时改坐标，不永久钉死；松开后开快速倒计时再回卡片游走
-	animationState = "idle";
 	if (roam.pauseWhenPinned) {
 		persistPosition(posX, posY);
 		userPinnedPosition = true;
@@ -1400,7 +1439,10 @@ onMount(() => {
 	preloadPetSheets();
 	void syncPetFromPath();
 	const hadStored = loadStoredPosition();
-	if (!hadStored) {
+	if (isPostViewportMode()) {
+		// 文章页忽略主页存档坐标，直接钉视口角
+		applyPostViewportLock();
+	} else if (!hadStored) {
 		applyBrowseDefaultPlacement();
 		scheduleBrowseDefaultPlacement();
 	}
@@ -1439,11 +1481,18 @@ onMount(() => {
 
 	const onResize = () => {
 		updateHidden();
-		// free=文档坐标：只夹在页面范围内，勿按视口重算（否则一 resize 就飘）
 		if (dockMode === "free" && !dragging && posX !== null && posY !== null) {
-			const clamped = clampToDocument(posX, posY);
-			posX = clamped.x;
-			posY = clamped.y;
+			if (isPostViewportMode()) {
+				// 文章页是视口坐标：按窗口夹紧
+				const clamped = clampToViewport(posX, posY);
+				posX = clamped.x;
+				posY = clamped.y;
+			} else {
+				// 主页 free=文档坐标：只夹在页面范围内，勿按视口重算
+				const clamped = clampToDocument(posX, posY);
+				posX = clamped.x;
+				posY = clamped.y;
+			}
 		}
 		if (dockMode === "card") {
 			syncCardDockFixedPos();
@@ -1504,16 +1553,9 @@ onMount(() => {
 			const pathAtStart = window.location.pathname;
 			const swapped = await syncPetFromPath(pathAtStart);
 			if (window.location.pathname !== pathAtStart) return;
-			if (isPostPath()) {
+			if (isPostViewportMode()) {
+				// syncPetFromPath 已钉视口；这里只保证游走关掉
 				stopRoamLoop();
-				// 文章页卸下侧栏挂载，回到视口自由位（OpenPet 不跟卡片滚）
-				if (dockMode === "card") {
-					undockToBodyAtCurrentScreenPos();
-				}
-				if (!userPinnedPosition) {
-					posX = null;
-					posY = null;
-				}
 			} else if (!userPinnedPosition) {
 				scheduleBrowseDefaultPlacement();
 				startRoamLoop();
@@ -1671,7 +1713,14 @@ onDestroy(() => {
 		bind:this={rootEl}
 		class="sprite-pet-root"
 		class:is-card-docked={dockMode === "card"}
-		class:is-page-anchored={dockMode === "free" && !dragging && posX !== null && posY !== null}
+		class:is-page-anchored={
+			dockMode === "free" &&
+			!dragging &&
+			posX !== null &&
+			posY !== null &&
+			!isPostViewportMode()
+		}
+		class:is-post-viewport={isPostViewportMode()}
 		class:is-face-left={dockMode === "card" && dockFacing === "left" && !animationState.startsWith("running")}
 		class:is-dragging={dragging}
 		class:is-theme-pulse={themePulse}
@@ -1736,6 +1785,11 @@ onDestroy(() => {
 	.sprite-pet-root.is-card-docked {
 		position: fixed;
 		z-index: 1100;
+	}
+
+	/* 文章页：强制贴视口，避免被 is-page-anchored 的 absolute 带走 */
+	.sprite-pet-root.is-post-viewport {
+		position: fixed;
 	}
 
 	/* 拖放到页面某处：文档绝对坐标，滚动窗口时留在原落点，不贴视口跟着跑 */
