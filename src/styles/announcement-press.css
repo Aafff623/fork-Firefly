@@ -301,14 +301,16 @@
 
 /* ── 520 惊喜礼盒 ──
  * 常驻：3D 自转（不晃）
- * 悬停：淡入切换到「成型」折叠包装盒，轻轻摇摆（不拆开）
+ * 悬停：3D 销毁溶解 → 延迟淡入「成型」折叠包装盒，再轻轻摇摆（不拆开）
  * 点击：包装盒多步摊平 → 淡出 → 信封淡入
  */
 
 .gift-surprise {
 	--gb-ease: 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-	/* 3D ↔ 准备开盖：交叉淡入淡出（偏缓，不硬切） */
-	--gift-crossfade: 0.7s ease-in-out;
+	/* 悬停：3D 先销毁，再淡入成型盒（错峰，不硬切） */
+	--gift-destroy: 0.55s;
+	--gift-arrive-delay: 0.3s;
+	--gift-arrive: 0.55s;
 	/* 侧栏宽度有限：略放大，保证体块可读 */
 	--gift-3d-scale: 0.42;
 	--gb-ink: #3d2229;
@@ -478,10 +480,14 @@
 	transform-origin: center center;
 	transform-style: preserve-3d;
 	opacity: 1;
+	filter: blur(0) brightness(1) saturate(1);
 	z-index: 4;
 	pointer-events: none;
-	transition: opacity var(--gift-crossfade);
-	/* 轻微上下悬浮，强调「3D 悬浮」而不是贴在平面上 */
+	/* 回落悬停时：略延迟再出现，让成型盒先收 */
+	transition:
+		opacity 0.4s ease var(--gift-arrive-delay),
+		filter 0.4s ease var(--gift-arrive-delay);
+	/* 轻微上下悬浮；悬停销毁另挂一条 animation，不抢 transform */
 	animation: gift-float-3d 4.5s ease-in-out infinite;
 }
 
@@ -676,6 +682,22 @@
 	}
 }
 
+/* 悬停销毁：只用 opacity/filter，禁止 clip-path（会裁掉 3D 盖/丝带） */
+@keyframes gift-3d-dissolve {
+	0% {
+		opacity: 1;
+		filter: blur(0) brightness(1) saturate(1);
+	}
+	28% {
+		opacity: 0.92;
+		filter: blur(1.5px) brightness(1.22) saturate(0.9);
+	}
+	100% {
+		opacity: 0;
+		filter: blur(12px) brightness(1.5) saturate(0.3);
+	}
+}
+
 /* —— Jhey Tompkins 纯 CSS 3D 折叠包装盒（悬停 / 点击形态）——
  * https://css-tricks.com/how-to-make-a-pure-css-3d-package-toggle/
  * 机制：--packaged 1=成型 0=摊平；侧面嵌套继承父级 transform（勿扁平化）；
@@ -707,13 +729,17 @@
 	height: var(--pkg-h);
 	margin: 0;
 	opacity: 0;
+	filter: blur(5px);
 	pointer-events: none;
 	z-index: 5;
 	transform-style: preserve-3d;
 	/* 场景：居中 + Jhey 招牌俯仰角 + rotateX(90) 把模板放平到「地面」 */
 	transform: translate(-50%, -50%) rotateX(-24deg) rotateY(-32deg) rotateX(90deg)
 		translate3d(0, 0, calc(var(--pkg-h) * -0.5));
-	transition: opacity var(--gift-crossfade);
+	/* 默认无 delay：离悬停时立刻收起，让 3D 稍后回来 */
+	transition:
+		opacity var(--gift-arrive) ease,
+		filter var(--gift-arrive) ease;
 }
 
 .gift-package__wrapper {
@@ -1155,30 +1181,44 @@
 	color: #8a6c3c;
 }
 
-/* 悬停 / 点击：两态重叠交叉溶解（同时淡出 3D + 淡入包装盒） */
+/* 悬停 / 点击：3D 先销毁溶解，成型盒错峰淡入（避免两态硬切） */
 .gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 .gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 .gift-surprise:has(.gift-surprise__check:checked) .gift-box-container {
-	opacity: 0;
+	/* float 保留 transform；dissolve 只管消散 */
+	animation:
+		gift-float-3d 4.5s ease-in-out infinite,
+		gift-3d-dissolve var(--gift-destroy) ease-in forwards;
+	transition: none;
 }
 
 .gift-surprise:hover:not(:has(.gift-surprise__check:checked)) .gift-package,
 .gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)) .gift-package,
-.gift-surprise:has(.gift-surprise__check:checked) .gift-package {
+.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)) .gift-package {
 	opacity: 1;
+	filter: blur(0);
+	/* 等 3D 销毁过半再现身 */
+	transition-delay: var(--gift-arrive-delay);
 }
 
 /* 悬停：成型盒轻轻摇摆；已开启静置时不晃，避免「还能再开」的错觉 */
 .gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package,
-.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package {
-	animation: gift-package-wiggle 0.7s ease-in-out 0.25s infinite;
+.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package,
+.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-package {
+	/* 等淡入完成后再晃 */
+	animation: gift-package-wiggle 0.7s ease-in-out calc(var(--gift-arrive-delay) + 0.35s) infinite;
 }
 
-/* 点击：--packaged 归 0 → 按折序倒放摊平（≈2.3s），随后整体淡出，信封接力 */
+/* 点击：--packaged 归 0 → 按折序倒放摊平（≈2.3s），随后整体淡出，信封接力
+ * 先靠悬停把成型盒带上来；本规则只负责拆开后收盒 */
 .gift-surprise:has(.gift-surprise__check:checked) .gift-package {
 	--packaged: 0;
 	opacity: 0;
-	transition: opacity 0.4s ease 2.1s;
+	filter: blur(0);
+	transition:
+		opacity 0.4s ease 2.1s,
+		filter 0.4s ease 2.1s;
 }
 
 /* 打开后允许信封越界；舞台仍裁 3D/包装盒 */
@@ -1301,6 +1341,15 @@
 		animation: none !important;
 	}
 
+	.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+	.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+	.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
+	.gift-surprise:has(.gift-surprise__check:checked) .gift-box-container {
+		animation: none !important;
+		opacity: 0;
+		filter: none;
+	}
+
 	/* 包装盒：不拆盒、不摇摆，所有折叠步骤瞬时完成 */
 	.gift-package *,
 	.gift-package .pkg-side::after {
@@ -1413,12 +1462,37 @@
 	pointer-events: auto;
 }
 
+/* 进场后抖动：外壳抖，避免和 fade-in 抢 transform */
+.gift-surprise-toast.is-attention .gift-surprise-toast__inner {
+	animation: gift-toast-shake 0.55s ease-in-out 0.15s 3;
+}
+
+@keyframes gift-toast-shake {
+	0%,
+	100% {
+		transform: translateX(0) rotate(0deg);
+	}
+	20% {
+		transform: translateX(-5px) rotate(-1.4deg);
+	}
+	40% {
+		transform: translateX(5px) rotate(1.4deg);
+	}
+	60% {
+		transform: translateX(-3.5px) rotate(-0.8deg);
+	}
+	80% {
+		transform: translateX(3.5px) rotate(0.8deg);
+	}
+}
+
 .gift-surprise-toast__inner {
 	padding: 0.85rem 0.95rem;
 	border-radius: 0.75rem;
 	background: color-mix(in oklch, #fff 92%, #6e1f2e);
 	border: 1px solid color-mix(in oklch, #6e1f2e 22%, transparent);
 	box-shadow: 0 10px 28px rgb(40 20 24 / 0.14);
+	transform-origin: center bottom;
 }
 
 html.dark .gift-surprise-toast__inner {
@@ -1467,6 +1541,24 @@ html.dark .gift-surprise-toast__desc {
 .gift-surprise-toast__go {
 	background: #6e1f2e;
 	color: #fff;
+	box-shadow: 0 0 0 0 color-mix(in oklch, #6e1f2e 45%, transparent);
+}
+
+/* 主按钮脉冲：引导点击「去看看」 */
+.gift-surprise-toast.is-visible .gift-surprise-toast__go {
+	animation: gift-toast-cta-pulse 1.5s ease-in-out 0.9s infinite;
+}
+
+@keyframes gift-toast-cta-pulse {
+	0%,
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 color-mix(in oklch, #6e1f2e 42%, transparent);
+	}
+	50% {
+		transform: scale(1.06);
+		box-shadow: 0 0 0 6px color-mix(in oklch, #6e1f2e 0%, transparent);
+	}
 }
 
 .gift-surprise-toast__close {
@@ -1478,4 +1570,11 @@ html.dark .gift-surprise-toast__desc {
 html.dark .gift-surprise-toast__close {
 	color: oklch(0.8 0.02 40);
 	border-color: color-mix(in oklch, #ecd9ae 28%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gift-surprise-toast.is-attention .gift-surprise-toast__inner,
+	.gift-surprise-toast.is-visible .gift-surprise-toast__go {
+		animation: none;
+	}
 }
