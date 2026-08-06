@@ -76,13 +76,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 分类与顶部分类条重复，首页改由「热笺」承接
-			type: "categories",
-			enable: false,
+			// 标签墙：与分类墙对调后置上
+			type: "tags",
+			enable: true,
 			position: "sticky",
-			showOnPostPage: false,
+			showOnPostPage: true,
 			specificConfig: {
-				collapseThreshold: 5,
+				collapseThreshold: 12,
 			},
 		},
 		{
@@ -98,7 +98,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 推荐文章：仅文章页显示，顶替上方分类位；标签相关 + 热度代理，限 3 篇
+			// 推荐文章：仅文章页显示；标签相关 + 热度代理，限 3 篇
 			type: "recommend",
 			enable: true,
 			position: "sticky",
@@ -111,18 +111,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 组件类型：标签组件
-			type: "tags",
-			// 是否启用该组件
+			// 分类墙：与标签墙对调后置下；「中转」等专题在此可见
+			type: "categories",
 			enable: true,
-			// 组件位置
 			position: "sticky",
-			// 是否在文章详情页显示
 			showOnPostPage: true,
-			// 组件专属配置
 			specificConfig: {
-				// 浏览态标签球最多进球数（不含「…」）；超出进 /tags/
-				collapseThreshold: 12,
+				collapseThreshold: 5,
 			},
 		},
 	],
@@ -306,12 +301,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: true,
 		},
 		{
-			// 分类与顶部分类条重复，移动端改由「热笺」承接
-			type: "categories",
-			enable: false,
-			showOnPostPage: false,
+			// 标签墙：与分类墙对调后置上
+			type: "tags",
+			enable: true,
+			showOnPostPage: true,
 			specificConfig: {
-				collapseThreshold: 5,
+				collapseThreshold: 12,
 			},
 		},
 		{
@@ -325,7 +320,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 移动端：推荐文章（顶替分类位）
+			// 移动端：推荐文章
 			type: "recommend",
 			enable: true,
 			showOnPostPage: true,
@@ -337,16 +332,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 组件类型：标签组件
-			type: "tags",
-			// 是否启用该组件
+			// 分类墙：与标签墙对调后置下
+			type: "categories",
 			enable: true,
-			// 是否在文章详情页显示
 			showOnPostPage: true,
-			// 组件专属配置
 			specificConfig: {
-				// 浏览态标签球最多进球数（不含「…」）；超出进 /tags/
-				collapseThreshold: 12,
+				collapseThreshold: 5,
 			},
 		},
 		{
