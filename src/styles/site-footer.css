@@ -15,6 +15,8 @@
 	--sf-water-dot: oklch(0.62 0.12 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
 	--sf-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+	/* 品牌 wordmark：对齐 GitHub profile 斜体展示衬线 */
+	--sf-display: "Playfair Display", Georgia, "Times New Roman", serif;
 	--sf-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -77,22 +79,44 @@
 }
 
 html.dark .site-footer {
-	--sf-forest: oklch(0.86 0.05 145);
-	--sf-moss: oklch(0.78 0.06 150);
-	--sf-leaf: oklch(0.76 0.08 145);
-	--sf-ink: var(--sf-forest);
-	--sf-muted: oklch(0.72 0.04 148);
-	--sf-faint: oklch(0.42 0.03 145 / 0.55);
-	--sf-rule: oklch(0.48 0.04 145 / 0.5);
-	--sf-accent: var(--sf-leaf);
-	--sf-water-dot: oklch(0.72 0.11 230);
+	/* 暗色：正文走近白中性色，告别浅绿撞深绿底 */
+	--sf-forest: oklch(0.94 0.008 95);
+	--sf-moss: oklch(0.82 0.012 95);
+	--sf-leaf: oklch(0.8 0.05 145); /* 仅作点缀色 */
+	--sf-ink: oklch(0.94 0.006 95);
+	--sf-muted: oklch(0.78 0.01 95);
+	--sf-faint: oklch(0.5 0.01 95 / 0.45);
+	--sf-rule: oklch(0.55 0.015 95 / 0.45);
+	--sf-accent: oklch(0.78 0.06 145);
+	--sf-water-dot: oklch(0.74 0.08 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 26%, transparent);
 	background: linear-gradient(
 		180deg,
-		oklch(0.22 0.02 145 / 0.35) 0%,
-		oklch(0.2 0.025 148 / 0.5) 55%,
-		oklch(0.18 0.03 150 / 0.4) 100%
+		oklch(0.22 0.012 145 / 0.55) 0%,
+		oklch(0.2 0.014 148 / 0.62) 55%,
+		oklch(0.18 0.016 150 / 0.55) 100%
 	);
+}
+
+/* 暗色链接用干净无衬线，更利落可读 */
+html.dark .site-footer__list a {
+	font-family:
+		"Inter",
+		"Segoe UI",
+		system-ui,
+		-apple-system,
+		sans-serif;
+	font-weight: 450;
+	letter-spacing: 0.015em;
+}
+
+html.dark .site-footer__blurb {
+	color: var(--sf-muted);
+}
+
+html.dark .site-footer__col-title {
+	color: oklch(0.7 0.01 95);
+	letter-spacing: 0.12em;
 }
 
 .site-footer__inner {
@@ -159,13 +183,33 @@ html.dark .site-footer {
 }
 
 html.dark .site-footer__tree {
-	opacity: 0.16;
+	opacity: 0.28;
+}
+
+/* 暗色：树干/树冠提亮，避免深色值叠深底看不见 */
+html.dark .site-footer__tree::before {
+	background: linear-gradient(
+		180deg,
+		oklch(0.68 0.04 60 / 0.8),
+		oklch(0.58 0.045 55 / 0.88)
+	);
+}
+
+html.dark .site-footer__tree::after {
+	background:
+		radial-gradient(circle at 30% 55%, oklch(0.64 0.08 145 / 0.82) 0 38%, transparent 40%),
+		radial-gradient(circle at 68% 48%, oklch(0.6 0.075 150 / 0.8) 0 42%, transparent 44%),
+		radial-gradient(circle at 48% 28%, oklch(0.68 0.08 140 / 0.78) 0 36%, transparent 38%);
 }
 
 @media (max-width: 720px) {
 	.site-footer__tree {
 		opacity: 0.14;
 		width: clamp(3.25rem, 18vw, 5rem);
+	}
+
+	html.dark .site-footer__tree {
+		opacity: 0.24;
 	}
 }
 
@@ -204,6 +248,21 @@ html.dark .site-footer__tree {
 	opacity: 0.9;
 }
 
+html.dark .site-footer__mist {
+	opacity: 1;
+	background:
+		radial-gradient(
+			ellipse 70% 80% at 18% 100%,
+			color-mix(in oklch, var(--sf-moss) 22%, transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			ellipse 55% 70% at 82% 100%,
+			color-mix(in oklch, var(--sf-water-dot) 18%, transparent),
+			transparent 68%
+		);
+}
+
 .site-footer__garden-status {
 	display: flex;
 	flex-wrap: wrap;
@@ -227,7 +286,13 @@ html.dark .site-footer__tree {
 }
 
 html.dark .site-footer__garden-chip {
-	background: oklch(100% 0 0 / 0.05);
+	background: oklch(100% 0 0 / 0.06);
+	border-color: oklch(100% 0 0 / 0.14);
+	color: var(--sf-muted);
+}
+
+html.dark .site-footer__garden-tip {
+	color: var(--sf-muted);
 }
 
 .site-footer__garden-sep {
@@ -242,11 +307,12 @@ html.dark .site-footer__garden-chip {
 }
 
 .site-footer__wordmark {
-	font-family: var(--sf-serif);
-	font-weight: 600;
-	font-size: clamp(1.4rem, 1.2rem + 0.4vw, 1.65rem);
-	letter-spacing: -0.015em;
-	line-height: 1.15;
+	font-family: var(--sf-display);
+	font-weight: 500;
+	font-style: italic;
+	font-size: clamp(1.55rem, 1.3rem + 0.55vw, 1.9rem);
+	letter-spacing: 0.03em;
+	line-height: 1.12;
 	color: var(--sf-forest);
 }
 
