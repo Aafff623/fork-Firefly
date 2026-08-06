@@ -32,6 +32,8 @@ html.is-page-transitioning .banner-home-text-overlay {
 .banner-title.repel-text,
 .banner-post-title.repel-text {
     animation: none;
+    /* 大范围软阴影跟拆字重绘极贵；轻阴影由 RepelText 全局样式统一 */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 .banner-subtitle {
