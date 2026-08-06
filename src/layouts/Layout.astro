@@ -1687,6 +1687,14 @@ function disableAnimation() {
       !isPostPage ? widget.classList.add("hidden") : widget.classList.remove("hidden");
     });
 
+    const isDynamicPage = /\/dynamic(\/|$)/.test(window.location.pathname);
+    document.querySelectorAll(".widget-hide-on-dynamic").forEach((widget) => {
+      isDynamicPage ? widget.classList.add("hidden") : widget.classList.remove("hidden");
+    });
+    document.querySelectorAll(".widget-show-only-on-dynamic").forEach((widget) => {
+      !isDynamicPage ? widget.classList.add("hidden") : widget.classList.remove("hidden");
+    });
+
     // 组件可见性变化后，立即重算 sticky 间距，避免 swup 切页后残留旧间距
     updateSidebarStickySpacing();
   }

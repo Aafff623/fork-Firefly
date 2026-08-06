@@ -133,7 +133,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			showOnPostPage: false,
 		},
 		{
-			// 组件类型：最新动态组件
+			// 组件类型：最新动态组件（/dynamic/ 页改由 dynamicNav 目录承接）
 			type: "dynamic",
 			// 是否启用该组件
 			enable: true,
@@ -141,6 +141,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			position: "top",
 			// 是否在文章详情页显示
 			showOnPostPage: true,
+			hideOnDynamicPage: true,
 			// 组件专属配置
 			specificConfig: {
 				dynamic: {
@@ -148,6 +149,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 					limit: 2,
 				},
 			},
+		},
+		{
+			// /dynamic/ 专用：ChatGPT 风时间分组目录 + 滚动高亮
+			type: "dynamicNav",
+			enable: true,
+			position: "sticky",
+			showOnPostPage: false,
+			showOnlyOnDynamicPage: true,
 		},
 		{
 			// 已并入 clockCorner

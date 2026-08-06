@@ -1,0 +1,162 @@
+---
+/**
+ * /dynamic/ 右栏：ChatGPT 风时间分组目录（A）+ 滚动高亮（D）
+ * 数据由 DynamicTimeline 经 CustomEvent `firefly:dynamic-nav` 推送。
+ */
+import { Icon } from "astro-icon/components";
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import DynamicNavPanel from "@/components/widget/DynamicNavPanel";
+import { siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { WidgetComponentConfig } from "@/types/config";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+}
+
+const { class: className, style, widgetConfig } = Astro.props;
+const showTitle = widgetConfig?.showTitle !== false;
+
+const labels = {
+	nav: i18n(I18nKey.dynamicNav),
+	pinned: i18n(I18nKey.pinned),
+	today: i18n(I18nKey.dynamicNavToday),
+	yesterday: i18n(I18nKey.dynamicNavYesterday),
+	last7Days: i18n(I18nKey.dynamicNavLast7Days),
+	older: i18n(I18nKey.dynamicNavOlder),
+	empty: i18n(I18nKey.dynamicNoResults),
+	loading: i18n(I18nKey.dynamicLoading),
+};
+---
+
+{
+	siteConfig.pages.dynamic && (
+		<WidgetLayout
+			name={i18n(I18nKey.dynamicNav)}
+			showTitle={showTitle}
+			id="dynamic-nav"
+			class:list={["dynamic-nav-widget", className]}
+			style={style}
+		>
+			<Icon
+				slot="title-leading"
+				is:inline
+				name="lucide:list"
+				class="widget-title-icon"
+				aria-hidden="true"
+			/>
+			<DynamicNavPanel client:load labels={labels} />
+		</WidgetLayout>
+	)
+}
+
+<style is:global>
+	.dynamic-nav-widget {
+		min-width: 0;
+	}
+
+	.dynamic-nav__hint {
+		margin: 0;
+		padding: 0.35rem 0 0.15rem;
+		font-size: 0.8rem;
+		color: var(--content-meta);
+	}
+
+	.dynamic-nav {
+		min-width: 0;
+	}
+
+	.dynamic-nav__scroll {
+		max-height: min(52vh, 28rem);
+		overflow-x: hidden;
+		overflow-y: auto;
+		margin: 0 -0.15rem;
+		padding: 0.1rem 0.15rem 0.35rem;
+		scrollbar-width: thin;
+	}
+
+	.dynamic-nav__group + .dynamic-nav__group {
+		margin-top: 0.55rem;
+	}
+
+	.dynamic-nav__group-title {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		margin: 0 0 0.28rem;
+		padding: 0.2rem 0.35rem;
+		font-size: 0.68rem;
+		font-weight: 650;
+		letter-spacing: 0.04em;
+		color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+		background: color-mix(in oklab, var(--card-bg, #fff) 92%, transparent);
+		backdrop-filter: blur(6px);
+	}
+
+	.dynamic-nav__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.12rem;
+	}
+
+	.dynamic-nav__item {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.45rem;
+		min-width: 0;
+		padding: 0.38rem 0.45rem;
+		border-radius: 0.45rem;
+		border-left: 2px solid transparent;
+		text-decoration: none;
+		color: color-mix(in oklab, var(--content-meta) 95%, #111);
+		transition:
+			background-color 140ms ease,
+			border-color 140ms ease,
+			color 140ms ease;
+	}
+
+	.dynamic-nav__item:hover {
+		background: color-mix(in oklab, var(--primary) 8%, transparent);
+		color: var(--primary);
+	}
+
+	.dynamic-nav__item.is-active {
+		border-left-color: var(--primary);
+		background: color-mix(in oklab, var(--primary) 12%, transparent);
+		color: var(--primary);
+	}
+
+	.dynamic-nav__item-title {
+		min-width: 0;
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 0.78rem;
+		line-height: 1.35;
+		font-weight: 550;
+	}
+
+	.dynamic-nav__item-time {
+		flex: 0 0 auto;
+		font-size: 0.62rem;
+		font-variant-numeric: tabular-nums;
+		opacity: 0.72;
+	}
+
+	:root.dark .dynamic-nav__group-title,
+	html.dark .dynamic-nav__group-title {
+		background: color-mix(in oklab, var(--card-bg, #1a1a1a) 90%, transparent);
+	}
+
+	body.wallpaper-transparent:has(.dynamic-page) .dynamic-nav-widget.card-base {
+		background-color: color-mix(in oklab, var(--card-bg) 88%, transparent) !important;
+	}
+</style>

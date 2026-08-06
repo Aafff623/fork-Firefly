@@ -28,6 +28,11 @@ enum I18nKey {
 	// 动态
 	dynamic = "dynamic",
 	latestDynamics = "latestDynamics",
+	dynamicNav = "dynamicNav",
+	dynamicNavToday = "dynamicNavToday",
+	dynamicNavYesterday = "dynamicNavYesterday",
+	dynamicNavLast7Days = "dynamicNavLast7Days",
+	dynamicNavOlder = "dynamicNavOlder",
 	moreDynamics = "moreDynamics",
 	dynamicDescription = "dynamicDescription",
 	dynamicEmpty = "dynamicEmpty",

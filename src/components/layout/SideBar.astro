@@ -5,6 +5,7 @@ import Announcement from "@/components/widget/Announcement.astro";
 import Calendar from "@/components/widget/Calendar.astro";
 import Categories from "@/components/widget/Categories.astro";
 import Dynamic from "@/components/widget/Dynamic.astro";
+import DynamicNav from "@/components/widget/DynamicNav.astro";
 import GardenNote from "@/components/widget/GardenNote.astro";
 import HotPosts from "@/components/widget/HotPosts.astro";
 import Music from "@/components/widget/Music.astro";
@@ -72,6 +73,7 @@ const componentMap = {
 	music: Music,
 	siteInfo: SiteInfo,
 	dynamic: Dynamic,
+	dynamicNav: DynamicNav,
 };
 
 // 获取侧边栏位置
@@ -123,6 +125,7 @@ const getAnimationDelay = (index: number): string => {
 
 // 判断当前页面是否为文章页面（服务端渲染时确定）
 const isPostPage = Astro.url.pathname.includes("/posts/");
+const isDynamicPage = /\/dynamic(\/|$)/.test(Astro.url.pathname);
 
 // 判断组件在当前页面首屏是否可见（用于计算布局间距，避免隐藏组件占位）
 const isComponentInitiallyVisible = (
@@ -139,6 +142,20 @@ const isComponentInitiallyVisible = (
 		"hideOnNonPostPage" in config &&
 		config.hideOnNonPostPage === true &&
 		!isPostPage
+	) {
+		return false;
+	}
+	if (
+		"hideOnDynamicPage" in config &&
+		config.hideOnDynamicPage === true &&
+		isDynamicPage
+	) {
+		return false;
+	}
+	if (
+		"showOnlyOnDynamicPage" in config &&
+		config.showOnlyOnDynamicPage === true &&
+		!isDynamicPage
 	) {
 		return false;
 	}
@@ -167,6 +184,21 @@ const getComponentProps = (
 	if ("hideOnNonPostPage" in config && config.hideOnNonPostPage === true) {
 		baseProps.class = `${baseProps.class} widget-hide-on-non-post`;
 		if (!isPostPage) {
+			baseProps.class = `${baseProps.class} hidden`;
+		}
+	}
+	if ("hideOnDynamicPage" in config && config.hideOnDynamicPage === true) {
+		baseProps.class = `${baseProps.class} widget-hide-on-dynamic`;
+		if (isDynamicPage) {
+			baseProps.class = `${baseProps.class} hidden`;
+		}
+	}
+	if (
+		"showOnlyOnDynamicPage" in config &&
+		config.showOnlyOnDynamicPage === true
+	) {
+		baseProps.class = `${baseProps.class} widget-show-only-on-dynamic`;
+		if (!isDynamicPage) {
 			baseProps.class = `${baseProps.class} hidden`;
 		}
 	}
