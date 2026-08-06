@@ -190,10 +190,15 @@ export default function DynamicNavPanel({
 
 	useEffect(() => {
 		if (!activeAnchor || !listRef.current) return;
-		const active = listRef.current.querySelector<HTMLElement>(
+		const list = listRef.current;
+		const active = list.querySelector<HTMLElement>(
 			`[data-nav-anchor="${CSS.escape(activeAnchor)}"]`,
 		);
-		active?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+		if (!active) return;
+		// 只在导航列表内部滚动，避免 scrollIntoView 冒泡滚动主文档导致页面反弹
+		const delta =
+			active.offsetTop - list.clientHeight / 2 + active.clientHeight / 2;
+		list.scrollTo({ top: delta, behavior: "smooth" });
 	}, [activeAnchor]);
 
 	const onJump = (anchor: string) => (event: MouseEvent<HTMLAnchorElement>) => {
