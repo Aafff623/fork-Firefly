@@ -209,7 +209,12 @@ const accentKey = navKey(processedLink.name);
 	 *
 	 * 根因 1：:focus-within 粘住 → 两项叠开。进入/打开时互斥并 blur。
 	 * 根因 2：点子项后鼠标仍悬停，:hover 继续撑开 → Swup 过渡期间菜单挂着。
-	 * 修复：点子项 / 开始换页时打 data-force-closed，盖过 hover；指针离开再清。
+	 * 修复：点子项 / 开始换页时打 data-force-closed，盖过「仍在内部」的 hover。
+	 *
+	 * 注意：force-closed 只应挡住「指针还没离开」的同一次悬停；
+	 * 外部点击 / 换页会打到所有项，若仅靠 pointerleave 清除，
+	 * 从未悬停过的项在「第一次移入」时属性仍在 → CSS !important 盖掉 :hover，表现为间歇性失效。
+	 * 因此 pointerenter 必须清掉 force-closed（仍在内部时不会再触发 enter，点链收起仍有效）。
 	 */
 	const INIT_KEY = "data-dropdown-nav-init";
 	const FORCE_CLOSED = "data-force-closed";
@@ -234,9 +239,8 @@ const accentKey = navKey(processedLink.name);
 		);
 	}
 
-	/** 强制收起：盖过仍悬停 / focus-within，直到指针离开 */
-	function forceCloseDropdown(dropdown: Element) {
-		dropdown.setAttribute(FORCE_CLOSED, "1");
+	/** 软关闭：收起 + blur，不打 force-closed（外部点击用） */
+	function softCloseDropdown(dropdown: Element) {
 		const trigger = dropdown.querySelector(
 			"[data-dropdown-trigger]",
 		) as HTMLElement | null;
@@ -245,6 +249,12 @@ const accentKey = navKey(processedLink.name);
 
 		const active = document.activeElement as HTMLElement | null;
 		if (active && dropdown.contains(active)) active.blur();
+	}
+
+	/** 强制收起：盖过仍悬停 / focus-within，直到指针离开或再次进入 */
+	function forceCloseDropdown(dropdown: Element) {
+		dropdown.setAttribute(FORCE_CLOSED, "1");
+		softCloseDropdown(dropdown);
 	}
 
 	function forceCloseAll() {
@@ -307,14 +317,14 @@ const accentKey = navKey(processedLink.name);
 
 		if (!trigger || !menu) return;
 
-		// 指针离开后清强制收起，下次悬停可再开
+		// 指针离开后清强制收起
 		dropdown.addEventListener("pointerleave", () => {
 			dropdown.removeAttribute(FORCE_CLOSED);
 		});
 
-		// 鼠标滑到本项：关掉其它（含「点开后 focus 卡住」的那一项）
+		// 再次移入：清 force-closed，恢复 :hover；关掉其它项残留 focus
 		dropdown.addEventListener("pointerenter", () => {
-			if (dropdown.hasAttribute(FORCE_CLOSED)) return;
+			dropdown.removeAttribute(FORCE_CLOSED);
 			closeOthers(dropdown);
 		});
 
@@ -370,11 +380,12 @@ const accentKey = navKey(processedLink.name);
 		if (document.documentElement.hasAttribute("data-dropdown-doc-click")) return;
 		document.documentElement.setAttribute("data-dropdown-doc-click", "1");
 
+		// 外部点击：软关闭即可（指针不在菜单上，无需 force-closed）
 		document.addEventListener("click", (e) => {
 			const target = e.target as Node | null;
 			getDropdowns().forEach((dropdown) => {
 				if (target && dropdown.contains(target)) return;
-				forceCloseDropdown(dropdown);
+				softCloseDropdown(dropdown);
 			});
 		});
 	}
