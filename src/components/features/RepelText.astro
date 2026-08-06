@@ -3,10 +3,11 @@
  * RepelText — agent-cfo landing DecodeHeadline 的 vanilla 复刻（丝滑版）
  *
  * 效果（对照 decode-headline.tsx + use-pointer-repel.ts）：
- *   ① 逐词上浮淡入（opacity 0→1, y 14px→0, 词间 stagger）
- *   ② 鼠标 110px 半径内字符被推开，离开后弹簧回位
+ *   ① 逐词上浮淡入（opacity 0→1, y 14px→0, 词间 stagger）；结束后 clear 父级 transform
+ *   ② 鼠标 110px 半径内字符被推开，离开后弹簧回位（共享 rAF）
  *
  * 用法：给目标元素加 class "repel-text"，本组件自动增强。
+ * 可选 data-repel-radius / data-repel-strength（侧栏短名宜更小；横幅用默认）。
  * Swup 换页后自动重新扫描；尊重 prefers-reduced-motion。
  */
 ---
@@ -24,16 +25,25 @@
 		animation: repel-word-in 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 	}
 
+	.repel-word.is-settled {
+		opacity: 1;
+		transform: none;
+		animation: none;
+	}
+
 	.repel-char {
 		display: inline-block;
-		will-change: transform;
+		transition: none !important;
 		transform: translate3d(0, 0, 0);
 	}
 
-	/* 斥力激活时弱化父级阴影，避免拆字层每帧重绘昂贵 text-shadow */
-	.banner-title.repel-text.is-repelling,
-	.banner-post-title.repel-text.is-repelling {
-		text-shadow: none !important;
+	/*
+	 * 横幅拆字标题：不用 24px 软阴影（跟字重绘极贵）。
+	 * 可读性用 1～3px 轻阴影；勿用父级 filter:drop-shadow（子字位移仍会重算滤镜）。
+	 */
+	.banner-title.repel-text,
+	.banner-post-title.repel-text {
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55) !important;
 	}
 
 	@keyframes repel-word-in {
@@ -58,6 +68,7 @@
 	const SPRING = 0.11;
 	const DAMPING = 0.78;
 	const WORD_STAGGER_MS = 55;
+	const WORD_IN_MS = 450;
 	/** 位移变化小于此值则跳过写 DOM（约 0.05px） */
 	const WRITE_EPS = 0.05;
 
@@ -73,8 +84,28 @@
 		wy: number;
 	}
 
+	interface RepelScope {
+		el: HTMLElement;
+		elements: HTMLElement[];
+		states: RepelState[];
+		pointer: { x: number; y: number; active: boolean };
+		willChangeOn: boolean;
+		radius: number;
+		strength: number;
+	}
+
+	function readNumberAttr(el: HTMLElement, name: string, fallback: number): number {
+		const raw = el.getAttribute(name);
+		if (raw == null || raw === "") return fallback;
+		const n = Number(raw);
+		return Number.isFinite(n) && n > 0 ? n : fallback;
+	}
+
 	const abortByEl = new WeakMap<HTMLElement, AbortController>();
 	const observerByEl = new WeakMap<HTMLElement, ResizeObserver>();
+	/** 活跃斥力实例（共享一条 rAF） */
+	const scopes = new Set<RepelScope>();
+	let sharedFrame = 0;
 
 	// 按「词」切分：连续拉丁/数字算一个词，CJK 逐字成词（中文没有空格分词）
 	function splitWords(text: string): string[] {
@@ -102,12 +133,158 @@
 		return words;
 	}
 
+	function setCharsWillChange(scope: RepelScope, on: boolean) {
+		if (scope.willChangeOn === on) return;
+		scope.willChangeOn = on;
+		const value = on ? "transform" : "auto";
+		for (const element of scope.elements) {
+			element.style.willChange = value;
+		}
+	}
+
+	function writeTransform(element: HTMLElement, s: RepelState) {
+		if (Math.abs(s.x - s.wx) < WRITE_EPS && Math.abs(s.y - s.wy) < WRITE_EPS) return;
+		s.wx = s.x;
+		s.wy = s.y;
+		const rx = Math.round(s.x * 100) / 100;
+		const ry = Math.round(s.y * 100) / 100;
+		element.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+	}
+
+	function tickScope(scope: RepelScope): boolean {
+		const { elements, states, pointer } = scope;
+		let moving = false;
+		const n = elements.length;
+		for (let index = 0; index < n; index++) {
+			const element = elements[index];
+			const s = states[index];
+			if (!element || !s) continue;
+
+			if (pointer.active) {
+				const dx = s.centerX + s.x - pointer.x;
+				const dy = s.centerY + s.y - pointer.y;
+				const dist = Math.hypot(dx, dy);
+				if (dist < scope.radius && dist > 1) {
+					const force = (1 - dist / scope.radius) * scope.strength;
+					s.vx += (dx / dist) * force;
+					s.vy += (dy / dist) * force;
+				}
+			}
+			s.vx += -s.x * SPRING;
+			s.vy += -s.y * SPRING;
+			s.vx *= DAMPING;
+			s.vy *= DAMPING;
+			s.x += s.vx;
+			s.y += s.vy;
+
+			const active =
+				Math.abs(s.vx) > 0.03 ||
+				Math.abs(s.vy) > 0.03 ||
+				(!pointer.active && (Math.abs(s.x) > 0.08 || Math.abs(s.y) > 0.08));
+			if (!pointer.active && !active) {
+				s.x = 0;
+				s.y = 0;
+				s.vx = 0;
+				s.vy = 0;
+			}
+
+			writeTransform(element, s);
+			moving = moving || active;
+		}
+
+		if (moving || pointer.active) {
+			setCharsWillChange(scope, true);
+		} else {
+			setCharsWillChange(scope, false);
+		}
+
+		return moving;
+	}
+
+	function sharedTick() {
+		let anyMoving = false;
+		for (const scope of scopes) {
+			if (tickScope(scope)) anyMoving = true;
+		}
+		sharedFrame = anyMoving ? requestAnimationFrame(sharedTick) : 0;
+	}
+
+	function startShared() {
+		if (!sharedFrame) sharedFrame = requestAnimationFrame(sharedTick);
+	}
+
+	/** 入场结束：清掉父级 animation/transform（对齐 GSAP clearProps） */
+	function settleWords(el: HTMLElement, wordCount: number, signal: AbortSignal) {
+		const words = el.querySelectorAll<HTMLElement>(".repel-word");
+		const clearOne = (w: HTMLElement) => {
+			w.classList.add("is-settled");
+			w.style.animation = "none";
+			w.style.animationDelay = "";
+			w.style.opacity = "1";
+			w.style.transform = "none";
+		};
+
+		words.forEach((w, i) => {
+			const delay = i * WORD_STAGGER_MS;
+			const onEnd = (e: AnimationEvent) => {
+				if (e.target !== w) return;
+				clearOne(w);
+			};
+			w.addEventListener("animationend", onEnd, { signal, once: true });
+			// 兜底：个别浏览器 animationend 丢失时仍清 props
+			window.setTimeout(() => {
+				if (signal.aborted) return;
+				if (!w.classList.contains("is-settled")) clearOne(w);
+			}, delay + WORD_IN_MS + 40);
+		});
+
+		// 全部词结束后再量一次中心（入场 transform 已清）
+		const totalMs = Math.max(0, wordCount - 1) * WORD_STAGGER_MS + WORD_IN_MS + 60;
+		window.setTimeout(() => {
+			if (signal.aborted) return;
+			const scope = findScope(el);
+			if (scope) measureScope(scope);
+		}, totalMs);
+	}
+
+	function findScope(el: HTMLElement): RepelScope | undefined {
+		for (const scope of scopes) {
+			if (scope.el === el) return scope;
+		}
+		return undefined;
+	}
+
+	function measureScope(scope: RepelScope) {
+		scope.elements = Array.from(scope.el.querySelectorAll<HTMLElement>(".repel-char"));
+		const rects = scope.elements.map((node) => node.getBoundingClientRect());
+		scope.states = scope.elements.map((_, index) => {
+			const rect = rects[index];
+			const prev = scope.states[index];
+			const px = prev?.x ?? 0;
+			const py = prev?.y ?? 0;
+			return {
+				x: px,
+				y: py,
+				vx: prev?.vx ?? 0,
+				vy: prev?.vy ?? 0,
+				centerX: rect.left + rect.width / 2 - px,
+				centerY: rect.top + rect.height / 2 - py,
+				wx: prev?.wx ?? 0,
+				wy: prev?.wy ?? 0,
+			};
+		});
+	}
+
 	function teardown(el: HTMLElement) {
 		abortByEl.get(el)?.abort();
 		abortByEl.delete(el);
 		observerByEl.get(el)?.disconnect();
 		observerByEl.delete(el);
-		el.classList.remove("is-repelling");
+		const scope = findScope(el);
+		if (scope) {
+			setCharsWillChange(scope, false);
+			scopes.delete(scope);
+		}
 		delete el.dataset.repelBound;
 	}
 
@@ -141,133 +318,69 @@
 			if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
 		});
 
-		if (reduced) return;
+		if (reduced) {
+			el.querySelectorAll<HTMLElement>(".repel-word").forEach((w) => {
+				w.classList.add("is-settled");
+				w.style.animation = "none";
+				w.style.opacity = "1";
+				w.style.transform = "none";
+			});
+			return;
+		}
 
 		el.dataset.repelBound = "1";
 		const ac = new AbortController();
 		abortByEl.set(el, ac);
 		const { signal } = ac;
 
-		let elements: HTMLElement[] = [];
-		let states: RepelState[] = [];
-		let frame = 0;
-		const pointer = { x: -9999, y: -9999, active: false };
-
-		const measure = () => {
-			elements = Array.from(el.querySelectorAll<HTMLElement>(".repel-char"));
-			// 批量读 layout，避免读写交错造成抖动
-			const rects = elements.map((node) => node.getBoundingClientRect());
-			states = elements.map((_, index) => {
-				const rect = rects[index];
-				const prev = states[index];
-				const px = prev?.x ?? 0;
-				const py = prev?.y ?? 0;
-				return {
-					x: px,
-					y: py,
-					vx: prev?.vx ?? 0,
-					vy: prev?.vy ?? 0,
-					centerX: rect.left + rect.width / 2 - px,
-					centerY: rect.top + rect.height / 2 - py,
-					wx: prev?.wx ?? 0,
-					wy: prev?.wy ?? 0,
-				};
-			});
+		const scope: RepelScope = {
+			el,
+			elements: [],
+			states: [],
+			pointer: { x: -9999, y: -9999, active: false },
+			willChangeOn: false,
+			radius: readNumberAttr(el, "data-repel-radius", REPEL_RADIUS),
+			strength: readNumberAttr(el, "data-repel-strength", REPEL_STRENGTH),
 		};
+		scopes.add(scope);
 
-		const writeTransform = (element: HTMLElement, s: RepelState) => {
-			if (Math.abs(s.x - s.wx) < WRITE_EPS && Math.abs(s.y - s.wy) < WRITE_EPS) return;
-			s.wx = s.x;
-			s.wy = s.y;
-			// 数值拼串，避免每帧 toFixed 造临时字符串压力
-			const rx = Math.round(s.x * 100) / 100;
-			const ry = Math.round(s.y * 100) / 100;
-			element.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
-		};
-
-		const tick = () => {
-			let moving = false;
-			const n = elements.length;
-			for (let index = 0; index < n; index++) {
-				const element = elements[index];
-				const s = states[index];
-				if (!element || !s) continue;
-
-				if (pointer.active) {
-					const dx = s.centerX + s.x - pointer.x;
-					const dy = s.centerY + s.y - pointer.y;
-					const dist = Math.hypot(dx, dy);
-					if (dist < REPEL_RADIUS && dist > 1) {
-						const force = (1 - dist / REPEL_RADIUS) * REPEL_STRENGTH;
-						s.vx += (dx / dist) * force;
-						s.vy += (dy / dist) * force;
-					}
-				}
-				s.vx += -s.x * SPRING;
-				s.vy += -s.y * SPRING;
-				s.vx *= DAMPING;
-				s.vy *= DAMPING;
-				s.x += s.vx;
-				s.y += s.vy;
-
-				const active =
-					Math.abs(s.vx) > 0.03 ||
-					Math.abs(s.vy) > 0.03 ||
-					(!pointer.active && (Math.abs(s.x) > 0.08 || Math.abs(s.y) > 0.08));
-				if (!pointer.active && !active) {
-					s.x = 0;
-					s.y = 0;
-					s.vx = 0;
-					s.vy = 0;
-				}
-
-				writeTransform(element, s);
-				moving = moving || active;
-			}
-			frame = moving ? requestAnimationFrame(tick) : 0;
-		};
-
-		const start = () => {
-			if (!frame) frame = requestAnimationFrame(tick);
-		};
+		settleWords(el, words.length, signal);
 
 		el.addEventListener(
 			"pointerenter",
 			() => {
-				measure();
-				el.classList.add("is-repelling");
+				measureScope(scope);
 			},
 			{ signal },
 		);
-		// 只记坐标；写 DOM 全交给 rAF。passive 避免阻塞滚动合成
+		// 只记坐标；写 DOM 全交给共享 rAF。passive 避免阻塞滚动合成
 		el.addEventListener(
 			"pointermove",
 			(e: PointerEvent) => {
-				pointer.x = e.clientX;
-				pointer.y = e.clientY;
-				pointer.active = true;
-				start();
+				scope.pointer.x = e.clientX;
+				scope.pointer.y = e.clientY;
+				scope.pointer.active = true;
+				startShared();
 			},
 			{ signal, passive: true },
 		);
 		el.addEventListener(
 			"pointerleave",
 			() => {
-				pointer.active = false;
-				el.classList.remove("is-repelling");
-				start();
+				scope.pointer.active = false;
+				startShared();
 			},
 			{ signal },
 		);
 
 		if (typeof ResizeObserver !== "undefined") {
 			const ro = new ResizeObserver(() => {
-				measure();
+				measureScope(scope);
 			});
 			ro.observe(el);
 			observerByEl.set(el, ro);
 		}
-		measure();
+		measureScope(scope);
 	}
 
 	function initRepelText() {
