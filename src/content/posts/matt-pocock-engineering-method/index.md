@@ -1,8 +1,8 @@
 ---
 title: 40 个技能围着一个 grilling 转：Matt Pocock 工程方法论拆解
 published: 2026-08-05
-updated: 2026-08-05T20:06:20
-description: 40 个 agent 技能拆开看是同一套工程方法论：grilling 逼你把每个假设问一遍，主流程从想法一路推进到可验证的切片。
+updated: 2026-08-06T23:57:13
+description: 40 个 agent 技能拆开看是同一套工程方法论：grilling 逼你把每个假设问一遍，主流程从想法一路推进到可验证的切片。附 v1.2 更新：新技能 wait-what、废弃吸收、跨工具 Agent Skills 落地。
 image: ./cover.jpg
 tags: [Matt Pocock, AI Agent, 方法论, 工作流, TypeScript]
 category: Agentic Coding
@@ -121,3 +121,44 @@ ask-matt 里最实用的一段是 phase boundaries。两个阶段之间怎么处
 - **强绑定维护文档的习惯**：CONTEXT.md + ADR 这套领域建模假设你愿意写文档；如果你本来就不写，这些技能的价值打对折
 
 最核心的一点：**Matt Pocock 的整个技能库，本质是在教 agent 一件事，动手之前先把每个假设都问一遍。** 其他全是这条主线的配套。
+
+## 两天三个版本：从 40 个技能到 25 个 promoted
+
+这篇发出之后，官方从 v1.1.0 一路发到 v1.2.3（两天三个版本）。技能数量不再是 40 个——现在全仓 35 个，官方正式分发的 promoted 是 25 个。
+
+### 数量为什么缩水：4 个技能被吸收合并
+
+v1.2.0 一口气废弃了 4 个：design-an-interface、ubiquitous-language、request-refactor-plan、qa。前三个分别被 codebase-design、domain-modeling、improve-codebase-architecture 吸收——正好印证了上文的「旧能力吸收合并」：词汇层和架构层越做越全，原先独立的单点技能就没了存在必要。
+
+### 三个新面孔
+
+| 技能 | 它干嘛的 | 特别之处 |
+|---|---|---|
+| wait-what | 消息没看懂就让 agent 重新讲一遍 | 全库最短，正文 3 行；用「听者状态」命名而不是输出（不叫 /tldr），逼它重讲 + 简化 + 带上缺的上下文 |
+| to-questionnaire | 把「你一个人答不了的决定」变成问卷 | grill 的对象不是主题而是「发给谁、要什么」，从 in-progress 毕业 |
+| wizard | 生成交互式 bash 脚本带你走手动流程 | 从 in-progress 毕业，改成 model-invoked（agent 遇到只有人能做的步骤会自动调它） |
+
+另外 writing-great-skills 改名为 writing-for-agents，无别名，旧名直接失效。重构动作：GLOSSARY 并入 SKILL.md、skill 专属机制拆到新的 SKILL-MECHANICS.md、pruning 加了「cache」概念（文档别复述环境里能查到的东西）。
+
+### 这套技能踩在 Agent Skills 开放标准上
+
+v1.2.0 最大的结构性动作是加了 Codex 兼容：每个 SKILL.md 旁多一个 agents/openai.yaml（Codex 的扩展元数据），仓库根 AGENTS.md 是 CLAUDE.md 的符号链接。背后是 OpenAI 推的 Agent Skills 开放标准（agentskills.io）：目录约定 .agents/skills/<name>/SKILL.md（项目）+ ~/.agents/skills/（用户），frontmatter 必需键只有 name + description。
+
+各工具对这套标准的读取路径并不完全一样，铺到多工具链时最容易踩：
+
+| 工具 | 读哪些 skills 目录 |
+|---|---|
+| Codex | ~/.agents/skills（主路径）+ 项目级 .agents/skills |
+| Cursor | ~/.cursor/skills + 兼容 .agents/skills |
+| OpenCode | ~/.config/opencode/skills + 兼容 .agents/skills |
+| Claude Code | ~/.claude/skills，不读 .agents/skills，要靠 junction/符号链接 |
+
+把技能放进 ~/.agents/skills 真源，Codex 直接读，Cursor/OpenCode 双路径兜底，只有 Claude Code 需要一条 junction（~/.claude/skills 指向真源）。
+
+### 插件版 vs 复制版
+
+官方从 v1.2.0 起同时提供两种装法：插件版（claude plugins install mattpocock-skills，订阅制自动更新，但只活在 Claude Code 的插件沙盒里）和复制版（npx skills@latest add mattpocock/skills，可编辑文件副本）。官方明说装两个会重复。工具链不止 Claude Code 的话，插件版其他工具读不到，只能复制版 + 真源 + 镜像。
+
+### 更新里最值钱的一手
+
+是 wait-what 的命名哲学：修「模型话痨」这类毛病，技能越写越长越没用，不如用一个命名精确的短触发词，让 agent 一次做对「重讲、简化、补齐上下文」三件事。名字描述「听者的状态」而不是「想要的输出」，是这套技能库一贯思路的极端化。
