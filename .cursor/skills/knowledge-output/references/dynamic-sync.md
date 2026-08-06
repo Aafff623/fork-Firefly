@@ -102,3 +102,11 @@ im.save("public/assets/dynamic/名字.jpg", "JPEG", quality=85, optimize=True)
 - 样式：`src/styles/dynamic.css`
 - 配置：`src/config/dynamicConfig.ts`（defaultLocation/itemsPerPage）
 - 脚本：`scripts/new-dynamic.js`
+
+## 多 Agent 协作纪律
+
+本仓是多 agent 并行工作区，各 agent 负责不同业务模块。发布动态时：
+
+- 看到 `src/content/dynamic/` 里有非自己发布的文件变动：正常，是其他 agent 的在制品，不要疑惑、不要碰。
+- 只 add 自己创建的那条动态文件；commit 前查 `git status` 确认无他人在制品夹带。
+- 不杀/不重启他人服务或 dev server。
