@@ -146,9 +146,10 @@ const showMore = Boolean(moreHref && moreCount > 0);
     var DRAG_PX = 6;
     // 闲置慢 / 拖拽快（数值档，库内 slow=0.5 仍偏快）
     var IDLE_MAX_SPEED = 0.28;
-    var DRAG_MAX_SPEED = 3.8;
+    var DRAG_MAX_SPEED = 5.5;
     var IDLE_DIV = 5;
-    var DRAG_DIV = 1.15;
+    // 越小越灵敏；1.15→0.42 ≈ ×2.7
+    var DRAG_DIV = 0.42;
 
     function reducedMotion() {
       return (
@@ -232,7 +233,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       });
     }
 
-    /** sensitivityDiv：闲置 5，拖拽 2.5 更跟手 */
+    /** sensitivityDiv：闲置 IDLE_DIV，拖拽 DRAG_DIV（更小更跟手） */
     function applyPointerToInstance(instance, cloudEl, clientX, clientY, sensitivityDiv) {
       if (!instance || !cloudEl) return;
       var div = sensitivityDiv || IDLE_DIV;
@@ -552,16 +553,23 @@ const showMore = Boolean(moreHref && moreCount > 0);
   .tag-sphere__frame {
     position: relative;
     border-radius: var(--radius-large, 0.75rem);
-    background:
+    /* 多层：上压暗渐变 → 星空纹理 → 深邃底色（见 public/assets/tag-sphere/SOURCE.md） */
+    background-color: oklch(0.22 0.025 270);
+    background-image:
       radial-gradient(
-        ellipse 90% 80% at 50% 40%,
-        color-mix(in oklch, var(--card-bg, #fff) 92%, white) 0%,
-        var(--card-bg, #fff) 72%
-      );
-    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 70%, transparent);
+        ellipse 85% 75% at 50% 38%,
+        oklch(0.34 0.04 280 / 0.55) 0%,
+        oklch(0.18 0.03 270 / 0.82) 55%,
+        oklch(0.14 0.02 265 / 0.92) 100%
+      ),
+      url("/assets/tag-sphere/starfield.webp");
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    border: 1px solid color-mix(in oklch, oklch(0.45 0.02 270) 55%, transparent);
     box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.55) inset,
-      0 8px 22px rgb(40 30 20 / 0.06);
+      0 1px 0 rgb(255 255 255 / 0.08) inset,
+      0 8px 22px rgb(10 8 20 / 0.22);
     min-height: 220px;
     display: flex;
     align-items: center;
@@ -581,15 +589,19 @@ const showMore = Boolean(moreHref && moreCount > 0);
   }
 
   :global(html.dark) .tag-sphere__frame {
-    background:
+    background-color: oklch(0.16 0.028 270);
+    background-image:
       radial-gradient(
-        ellipse 90% 80% at 50% 38%,
-        color-mix(in oklch, var(--card-bg) 88%, white) 0%,
-        var(--card-bg) 75%
-      );
+        ellipse 85% 75% at 50% 36%,
+        oklch(0.28 0.045 285 / 0.45) 0%,
+        oklch(0.14 0.03 270 / 0.88) 58%,
+        oklch(0.1 0.02 265 / 0.96) 100%
+      ),
+      url("/assets/tag-sphere/starfield.webp");
+    border: 1px solid color-mix(in oklch, oklch(0.5 0.03 280) 35%, transparent);
     box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.06) inset,
-      0 10px 26px rgb(0 0 0 / 0.28);
+      0 1px 0 rgb(255 255 255 / 0.05) inset,
+      0 10px 26px rgb(0 0 0 / 0.4);
   }
 
   .tag-sphere--compact .tag-sphere__frame {
@@ -677,34 +689,25 @@ const showMore = Boolean(moreHref && moreCount > 0);
     line-height: 1.15;
   }
 
+  /* 球框恒为深底：亮/暗主题统一浅色字，保证对比 */
   .tag-sphere :global(.tag-sphere__link--primary) {
-    color: oklch(0.28 0.01 70) !important;
+    color: oklch(0.93 0.01 80) !important;
     font-weight: 700 !important;
     cursor: pointer;
     transition: color 0.15s ease;
-  }
-
-  :global(html.dark) .tag-sphere :global(.tag-sphere__link--primary) {
-    color: oklch(0.92 0.01 70) !important;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.45) !important;
   }
 
   .tag-sphere :global(.tag-sphere__link--primary:hover) {
-    color: oklch(0.12 0.01 70) !important;
-  }
-
-  :global(html.dark) .tag-sphere :global(.tag-sphere__link--primary:hover) {
-    color: oklch(0.99 0.005 70) !important;
+    color: oklch(0.99 0.005 80) !important;
   }
 
   .tag-sphere :global(.tag-sphere__link--theme) {
-    color: oklch(0.55 0.01 70) !important;
+    color: oklch(0.72 0.015 80) !important;
     font-weight: 500 !important;
     font-size: 1.18em !important;
     cursor: default;
-  }
-
-  :global(html.dark) .tag-sphere :global(.tag-sphere__link--theme) {
-    color: oklch(0.68 0.01 70) !important;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.4) !important;
   }
 
   .tag-sphere__fallback {
