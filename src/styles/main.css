@@ -436,7 +436,7 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     }
 
     .dropdown-menu {
-        @apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-200 ease-out transform translate-y-[-8px] z-50;
+        @apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out transform translate-y-[-8px] z-50;
     }
 
     .dropdown-container:hover .dropdown-menu,
@@ -447,6 +447,23 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     .dropdown-container:hover .dropdown-arrow,
     .dropdown-container:focus-within .dropdown-arrow {
         @apply rotate-180;
+    }
+
+    /* 点子项 / 换页：强制收起，盖过仍悬停（见 DropdownMenu.astro） */
+    .dropdown-container[data-force-closed] .dropdown-menu,
+    .dropdown-container[data-force-closed]:hover .dropdown-menu,
+    .dropdown-container[data-force-closed]:focus-within .dropdown-menu {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: translateY(-8px) !important;
+        transition-duration: 80ms !important;
+    }
+
+    .dropdown-container[data-force-closed] .dropdown-arrow,
+    .dropdown-container[data-force-closed]:hover .dropdown-arrow,
+    .dropdown-container[data-force-closed]:focus-within .dropdown-arrow {
+        transform: rotate(0deg) !important;
     }
 
     .dropdown-content {

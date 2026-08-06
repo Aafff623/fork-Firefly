@@ -158,7 +158,7 @@ const accentKey = navKey(processedLink.name);
 	}
 
 	.dropdown-menu {
-		@apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-200 ease-out transform translate-y-[-8px] z-50;
+		@apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out transform translate-y-[-8px] z-50;
 	}
 
 	.dropdown-container:hover .dropdown-menu,
@@ -169,6 +169,26 @@ const accentKey = navKey(processedLink.name);
 	.dropdown-container:hover .dropdown-arrow,
 	.dropdown-container:focus-within .dropdown-arrow {
 		@apply rotate-180;
+	}
+
+	/*
+	 * 点进子链后：强制收起，盖过仍悬停 / focus-within
+	 *（否则 Swup 过渡期间鼠标还在菜单上，会一直挂着）
+	 */
+	.dropdown-container[data-force-closed] .dropdown-menu,
+	.dropdown-container[data-force-closed]:hover .dropdown-menu,
+	.dropdown-container[data-force-closed]:focus-within .dropdown-menu {
+		opacity: 0 !important;
+		visibility: hidden !important;
+		pointer-events: none !important;
+		transform: translateY(-8px) !important;
+		transition-duration: 80ms !important;
+	}
+
+	.dropdown-container[data-force-closed] .dropdown-arrow,
+	.dropdown-container[data-force-closed]:hover .dropdown-arrow,
+	.dropdown-container[data-force-closed]:focus-within .dropdown-arrow {
+		transform: rotate(0deg) !important;
 	}
 
 	.dropdown-content {
@@ -185,19 +205,20 @@ const accentKey = navKey(processedLink.name);
 
 <script>
 	/**
-	 * 导航下拉：hover / 键盘互斥
+	 * 导航下拉：hover / 键盘互斥 + 点链立刻收起
 	 *
-	 * 根因：CSS 用 :hover 与 :focus-within 开菜单。点击触发器后 focus 留在按钮上，
-	 * 再 hover 另一项时旧项仍命中 :focus-within，两个弹层叠在一起。
-	 * 修复：进入任一 dropdown 时关闭并 blur 其它项；打开时同样互斥。
+	 * 根因 1：:focus-within 粘住 → 两项叠开。进入/打开时互斥并 blur。
+	 * 根因 2：点子项后鼠标仍悬停，:hover 继续撑开 → Swup 过渡期间菜单挂着。
+	 * 修复：点子项 / 开始换页时打 data-force-closed，盖过 hover；指针离开再清。
 	 */
 	const INIT_KEY = "data-dropdown-nav-init";
+	const FORCE_CLOSED = "data-force-closed";
 
 	function getDropdowns(): NodeListOf<Element> {
 		return document.querySelectorAll("[data-dropdown]");
 	}
 
-	function closeDropdown(_dropdown: Element, trigger: Element, menu: Element) {
+	function closeDropdown(dropdown: Element, trigger: Element, menu: Element) {
 		trigger.setAttribute("aria-expanded", "false");
 		menu.classList.add(
 			"opacity-0",
@@ -211,6 +232,23 @@ const accentKey = navKey(processedLink.name);
 			"pointer-events-auto",
 			"translate-y-0",
 		);
+	}
+
+	/** 强制收起：盖过仍悬停 / focus-within，直到指针离开 */
+	function forceCloseDropdown(dropdown: Element) {
+		dropdown.setAttribute(FORCE_CLOSED, "1");
+		const trigger = dropdown.querySelector(
+			"[data-dropdown-trigger]",
+		) as HTMLElement | null;
+		const menu = dropdown.querySelector("[data-dropdown-menu]");
+		if (trigger && menu) closeDropdown(dropdown, trigger, menu);
+
+		const active = document.activeElement as HTMLElement | null;
+		if (active && dropdown.contains(active)) active.blur();
+	}
+
+	function forceCloseAll() {
+		getDropdowns().forEach((dropdown) => forceCloseDropdown(dropdown));
 	}
 
 	function closeOthers(except: Element | null) {
@@ -229,6 +267,7 @@ const accentKey = navKey(processedLink.name);
 	}
 
 	function openDropdown(dropdown: Element, trigger: Element, menu: Element) {
+		dropdown.removeAttribute(FORCE_CLOSED);
 		closeOthers(dropdown);
 		trigger.setAttribute("aria-expanded", "true");
 		menu.classList.remove(
@@ -268,8 +307,14 @@ const accentKey = navKey(processedLink.name);
 
 		if (!trigger || !menu) return;
 
+		// 指针离开后清强制收起，下次悬停可再开
+		dropdown.addEventListener("pointerleave", () => {
+			dropdown.removeAttribute(FORCE_CLOSED);
+		});
+
 		// 鼠标滑到本项：关掉其它（含「点开后 focus 卡住」的那一项）
 		dropdown.addEventListener("pointerenter", () => {
+			if (dropdown.hasAttribute(FORCE_CLOSED)) return;
 			closeOthers(dropdown);
 		});
 
@@ -292,11 +337,15 @@ const accentKey = navKey(processedLink.name);
 				openDropdown(dropdown, trigger, menu);
 				if (items.length > 0) items[0].focus();
 			} else if (e.key === "Escape") {
-				closeDropdown(dropdown, trigger, menu);
+				forceCloseDropdown(dropdown);
 			}
 		});
 
 		items.forEach((item, index) => {
+			// 点子链：立刻收起（不等鼠标移开 / Swup 播完）
+			item.addEventListener("click", () => {
+				forceCloseDropdown(dropdown);
+			});
 			item.addEventListener("keydown", (e: KeyboardEvent) => {
 				if (e.key === "ArrowDown") {
 					e.preventDefault();
@@ -305,8 +354,11 @@ const accentKey = navKey(processedLink.name);
 					e.preventDefault();
 					items[(index - 1 + items.length) % items.length].focus();
 				} else if (e.key === "Escape") {
-					closeDropdown(dropdown, trigger, menu);
+					forceCloseDropdown(dropdown);
 					trigger.focus();
+				} else if (e.key === "Enter") {
+					// 键盘回车跟鼠标点一样，马上收
+					forceCloseDropdown(dropdown);
 				}
 			});
 		});
@@ -322,11 +374,19 @@ const accentKey = navKey(processedLink.name);
 			const target = e.target as Node | null;
 			getDropdowns().forEach((dropdown) => {
 				if (target && dropdown.contains(target)) return;
-				const trigger = dropdown.querySelector("[data-dropdown-trigger]");
-				const menu = dropdown.querySelector("[data-dropdown-menu]");
-				if (trigger && menu) closeDropdown(dropdown, trigger, menu);
+				forceCloseDropdown(dropdown);
 			});
 		});
+	}
+
+	function bindSwupDropdownClose() {
+		const hooks = window.swup?.hooks;
+		if (!hooks || document.documentElement.hasAttribute("data-dropdown-swup"))
+			return;
+		document.documentElement.setAttribute("data-dropdown-swup", "1");
+		// 换页一开始就收，避免过渡动画期间菜单还挂着
+		hooks.on("visit:start", forceCloseAll);
+		hooks.on("content:replace", initNavbarDropdowns);
 	}
 
 	if (document.readyState === "loading") {
@@ -335,11 +395,6 @@ const accentKey = navKey(processedLink.name);
 		initNavbarDropdowns();
 	}
 
-	// Swup 换页后 navbar 若重建，补绑一次
-	document.addEventListener("swup:enable", () => {
-		window.swup?.hooks?.on("content:replace", initNavbarDropdowns);
-	});
-	if (window.swup?.hooks) {
-		window.swup.hooks.on("content:replace", initNavbarDropdowns);
-	}
+	document.addEventListener("swup:enable", bindSwupDropdownClose);
+	bindSwupDropdownClose();
 </script>
