@@ -2,6 +2,7 @@ import type {
 	DARK_MODE,
 	LIGHT_MODE,
 	SYSTEM_MODE,
+	TIME_MODE,
 	WALLPAPER_BANNER,
 	WALLPAPER_FULLSCREEN,
 	WALLPAPER_NONE,
@@ -11,7 +12,8 @@ import type {
 export type LIGHT_DARK_MODE =
 	| typeof LIGHT_MODE
 	| typeof DARK_MODE
-	| typeof SYSTEM_MODE;
+	| typeof SYSTEM_MODE
+	| typeof TIME_MODE;
 
 export type WALLPAPER_MODE =
 	| typeof WALLPAPER_BANNER
@@ -36,7 +38,15 @@ export type SiteConfig = {
 
 	themeColor: {
 		hue: number;
-		defaultMode?: LIGHT_DARK_MODE; // 默认模式：浅色、深色或跟随系统
+		/** 默认模式：浅色、深色、跟随系统、或按本地时段 */
+		defaultMode?: LIGHT_DARK_MODE;
+		/** 按时段（time）边界；缺省 lightFromHour=7、darkFromHour=18 */
+		timeSchedule?: {
+			/** 亮色起始小时（含），0–23 */
+			lightFromHour: number;
+			/** 暗色起始小时（含），0–23；跨午夜至 lightFromHour */
+			darkFromHour: number;
+		};
 	};
 
 	// 页面整体宽度（单位：rem）

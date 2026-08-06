@@ -34,8 +34,13 @@ export const siteConfig: SiteConfig = {
 	themeColor: {
 		// 默认色相（oklch hue）。Kraken 微调锚点 ≈ oklch(0.54 0.255 288)，取 290 对齐滑块 step=5
 		hue: 290,
-		// 默认模式："light" 亮色，"dark" 暗色，"system" 跟随系统
-		defaultMode: "system",
+		// 默认模式："light" | "dark" | "system" | "time"（按本地时段）
+		defaultMode: "time",
+		// 按时段：07:00–18:00 亮色，18:00–07:00 暗色（访客本地时区）
+		timeSchedule: {
+			lightFromHour: 7,
+			darkFromHour: 18,
+		},
 	},
 
 	// 页面整体宽度（单位：rem）
@@ -222,11 +227,13 @@ export const siteConfig: SiteConfig = {
 		// },
 	},
 
-	// 追番配置（Bilibili + TMDB）
+	// 追番配置（Bilibili + TMDB + 本地精选）
+	// 若 UID 追番列表设为隐私，构建时 API 会空；此时用 public/anime-list.json（mode=local）+ public/assets/anime/ 封面兜底
 	anime: {
 		// Bilibili 配置
 		bilibili: {
 			// 你的 Bilibili 用户 UID（对齐 GitHub README Contact）
+			// 追番列表需设为公开，否则页面依赖本地精选清单
 			uid: "549916339",
 		},
 		// TMDB 配置（可选，需要翻墙）

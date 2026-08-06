@@ -250,6 +250,10 @@ const siteLang = lang.replace("_", "-");
         PAGE_WIDTH,
         configHue,
         defaultMode: siteConfig.themeColor.defaultMode ?? "light",
+        timeLightFromHour:
+          siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7,
+        timeDarkFromHour:
+          siteConfig.themeColor.timeSchedule?.darkFromHour ?? 18,
         defaultWallpaperMode: backgroundWallpaper.mode,
         isWallpaperSwitchable:
           displaySettingsConfig.wallpaperModeSwitchable,
@@ -260,12 +264,18 @@ const siteLang = lang.replace("_", "-");
           backgroundWallpaper.atmosphere?.enable === true
             ? (backgroundWallpaper.atmosphere.cardOpacity ?? 0.78)
             : (backgroundWallpaper.overlay?.cardOpacity ?? 0.6),
+        defaultAvatarFrameId:
+          profileConfig.avatarFrame?.enabled === false
+            ? "none"
+            : (profileConfig.avatarFrame?.defaultId ?? "S3-metallic"),
+        avatarFrameFeatureOn: profileConfig.avatarFrame?.enabled !== false,
       }}
     >
       // 主题初始化 - 与setting-utils.ts保持一致
       const LIGHT_MODE = "light";
       const DARK_MODE = "dark";
       const SYSTEM_MODE = "system";
+      const TIME_MODE = "time";
 
       // 获取存储的主题，如果没有则使用默认值
       const theme = localStorage.getItem("theme") || defaultMode;
@@ -277,10 +287,20 @@ const siteLang = lang.replace("_", "-");
           : LIGHT_MODE;
       }
 
-      // 解析主题（如果是system模式，则获取系统主题）
+      function getTimeTheme() {
+        const hour = new Date().getHours();
+        const isDarkHour =
+          hour >= timeDarkFromHour || hour < timeLightFromHour;
+        return isDarkHour ? DARK_MODE : LIGHT_MODE;
+      }
+
+      // 解析主题（system → OS；time → 本地时段）
       function resolveTheme(themeValue) {
         if (themeValue === SYSTEM_MODE) {
           return getSystemTheme();
+        }
+        if (themeValue === TIME_MODE) {
+          return getTimeTheme();
         }
         return themeValue;
       }
@@ -304,6 +324,29 @@ const siteLang = lang.replace("_", "-");
       // Load the hue from local storage
       const hue = localStorage.getItem("hue") || configHue;
       document.documentElement.style.setProperty("--hue", hue);
+
+      // 头像框：尽早写入，避免侧栏闪无框
+      (function initAvatarFrameEarly() {
+        const allowed = {
+          none: 1,
+          "C3-conic-spin": 1,
+          "C2-dual-soft": 1,
+          "C6-metallic": 1,
+          "C5-stars-css": 1,
+          "S3-metallic": 1,
+          "S6-laurel": 1,
+        };
+        let id = defaultAvatarFrameId;
+        if (!avatarFrameFeatureOn) {
+          id = "none";
+        } else {
+          try {
+            const stored = localStorage.getItem("avatarFrameId");
+            if (stored && allowed[stored]) id = stored;
+          } catch (e) {}
+        }
+        document.documentElement.setAttribute("data-avatar-frame", id);
+      })();
 
       // 设置卡片透明度（全屏透明模式下使用），优先使用用户自定义值
       const storedCardOpacity = localStorage.getItem("overlayCardOpacity");
@@ -1761,7 +1804,7 @@ function disableAnimation() {
   });
 
   // Initialize wallpaper mode
-  import { initWallpaperMode, initThemeListener } from "@/utils/setting-utils";
+  import { initWallpaperMode, initThemeListener, initAvatarFrame } from "@/utils/setting-utils";
 
   function initCurtainFocusOnLoad() {
     // 首屏若落在动态/相册：先保持合拢，下一帧再推开，才能看到幕布动画
@@ -1784,6 +1827,7 @@ function disableAnimation() {
       updateSidebarComponentsVisibility();
       initWallpaperMode();
       initThemeListener();
+      initAvatarFrame();
       initCurtainFocusOnLoad();
     });
   } else {
@@ -1791,6 +1835,7 @@ function disableAnimation() {
     updateSidebarComponentsVisibility();
     initWallpaperMode();
     initThemeListener();
+    initAvatarFrame();
     initCurtainFocusOnLoad();
   }
 

@@ -2,8 +2,11 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	DARK_MODE,
 	DEFAULT_THEME,
+	DEFAULT_TIME_DARK_FROM_HOUR,
+	DEFAULT_TIME_LIGHT_FROM_HOUR,
 	LIGHT_MODE,
 	SYSTEM_MODE,
+	TIME_MODE,
 	WALLPAPER_BANNER,
 	WALLPAPER_FULLSCREEN,
 	WALLPAPER_NONE,
@@ -14,8 +17,10 @@ import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	expressiveCodeConfig,
+	profileConfig,
 	siteConfig,
 } from "../config";
+import type { AvatarFrameId } from "../types/profileConfig";
 import { isPickerPetId } from "@/lib/pets/builtinPets";
 import { isHomePage as checkIsHomePage } from "./layout-utils";
 
@@ -43,6 +48,31 @@ export function getDefaultTheme(): LIGHT_DARK_MODE {
 	return siteConfig.themeColor.defaultMode ?? DEFAULT_THEME;
 }
 
+export function getTimeScheduleHours(): {
+	lightFromHour: number;
+	darkFromHour: number;
+} {
+	const schedule = siteConfig.themeColor.timeSchedule;
+	const lightFromHour =
+		typeof schedule?.lightFromHour === "number"
+			? schedule.lightFromHour
+			: DEFAULT_TIME_LIGHT_FROM_HOUR;
+	const darkFromHour =
+		typeof schedule?.darkFromHour === "number"
+			? schedule.darkFromHour
+			: DEFAULT_TIME_DARK_FROM_HOUR;
+	return { lightFromHour, darkFromHour };
+}
+
+/** hour in [0,23]：dark when hour >= darkFrom || hour < lightFrom */
+export function isDarkHour(
+	hour: number,
+	lightFromHour = DEFAULT_TIME_LIGHT_FROM_HOUR,
+	darkFromHour = DEFAULT_TIME_DARK_FROM_HOUR,
+): boolean {
+	return hour >= darkFromHour || hour < lightFromHour;
+}
+
 // 获取系统主题
 export function getSystemTheme(): LIGHT_DARK_MODE {
 	if (typeof window === "undefined") {
@@ -53,10 +83,21 @@ export function getSystemTheme(): LIGHT_DARK_MODE {
 		: LIGHT_MODE;
 }
 
-// 解析主题（如果是system模式，则获取系统主题）
+// 按本地时段解析亮/暗
+export function getTimeTheme(): LIGHT_DARK_MODE {
+	const { lightFromHour, darkFromHour } = getTimeScheduleHours();
+	const hour =
+		typeof Date !== "undefined" ? new Date().getHours() : lightFromHour;
+	return isDarkHour(hour, lightFromHour, darkFromHour) ? DARK_MODE : LIGHT_MODE;
+}
+
+// 解析主题（system → OS；time → 本地时段）
 export function resolveTheme(theme: LIGHT_DARK_MODE): LIGHT_DARK_MODE {
 	if (theme === SYSTEM_MODE) {
 		return getSystemTheme();
+	}
+	if (theme === TIME_MODE) {
+		return getTimeTheme();
 	}
 	return theme;
 }
@@ -153,6 +194,8 @@ let systemThemeListener:
 	| ((e: MediaQueryListEvent | MediaQueryList) => void)
 	| null = null;
 
+let timeThemeTimer: ReturnType<typeof setTimeout> | null = null;
+
 export function setTheme(theme: LIGHT_DARK_MODE): void {
 	// 检查是否在浏览器环境中
 	if (
@@ -168,12 +211,15 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 	// 保存到localStorage
 	localStorage.setItem("theme", theme);
 
-	// 如果切换到 system 模式，需要监听系统主题变化
 	if (theme === SYSTEM_MODE) {
+		cleanupTimeThemeListener();
 		setupSystemThemeListener();
-	} else {
-		// 如果切换其他模式，移除系统主题监听
+	} else if (theme === TIME_MODE) {
 		cleanupSystemThemeListener();
+		setupTimeThemeListener();
+	} else {
+		cleanupSystemThemeListener();
+		cleanupTimeThemeListener();
 	}
 }
 
@@ -247,6 +293,63 @@ function cleanupSystemThemeListener() {
 	systemThemeListener = null;
 }
 
+/** 距下一切换边界（lightFrom / darkFrom 整点）的毫秒数 */
+function msUntilNextTimeBoundary(
+	lightFromHour: number,
+	darkFromHour: number,
+): number {
+	const now = new Date();
+	const candidates = [lightFromHour, darkFromHour].map((h) => {
+		const next = new Date(now);
+		next.setHours(h, 0, 0, 0);
+		if (next.getTime() <= now.getTime()) {
+			next.setDate(next.getDate() + 1);
+		}
+		return next.getTime() - now.getTime();
+	});
+	return Math.min(...candidates);
+}
+
+export function setupTimeThemeListener(): void {
+	cleanupTimeThemeListener();
+
+	if (typeof window === "undefined") {
+		return;
+	}
+
+	const tick = () => {
+		const beforeDark = document.documentElement.classList.contains("dark");
+		applyThemeToDocument(TIME_MODE);
+		const afterDark = document.documentElement.classList.contains("dark");
+		if (beforeDark !== afterDark) {
+			window.dispatchEvent(new CustomEvent("theme-change"));
+		}
+
+		const { lightFromHour, darkFromHour } = getTimeScheduleHours();
+		const delay = Math.max(
+			1000,
+			msUntilNextTimeBoundary(lightFromHour, darkFromHour) + 50,
+		);
+		timeThemeTimer = setTimeout(tick, delay);
+	};
+
+	// 先对齐当前时段，再挂下一次边界
+	applyThemeToDocument(TIME_MODE);
+	const { lightFromHour, darkFromHour } = getTimeScheduleHours();
+	const delay = Math.max(
+		1000,
+		msUntilNextTimeBoundary(lightFromHour, darkFromHour) + 50,
+	);
+	timeThemeTimer = setTimeout(tick, delay);
+}
+
+function cleanupTimeThemeListener() {
+	if (timeThemeTimer !== null) {
+		clearTimeout(timeThemeTimer);
+		timeThemeTimer = null;
+	}
+}
+
 export function getStoredTheme(): LIGHT_DARK_MODE {
 	// 检查是否在浏览器环境中
 	if (
@@ -271,9 +374,10 @@ export function initThemeListener(): void {
 
 	const theme = getStoredTheme();
 
-	// 如果主题是 system 模式，需要监听系统主题变化
 	if (theme === SYSTEM_MODE) {
 		setupSystemThemeListener();
+	} else if (theme === TIME_MODE) {
+		setupTimeThemeListener();
 	}
 }
 
@@ -1230,6 +1334,31 @@ export function getSakuraIntroDurationMs(): number {
 	return SAKURA_INTRO_MS;
 }
 
+/** 桌宠双击等：短暂飘樱，不写入常驻/钉住；已钉住则不动 */
+let sakuraBurstTimer: ReturnType<typeof setTimeout> | null = null;
+
+export function triggerSakuraBurst(durationMs = SAKURA_INTRO_MS): void {
+	if (typeof window === "undefined") return;
+	if (getSakuraPinned()) return;
+
+	if (sakuraBurstTimer !== null) {
+		clearTimeout(sakuraBurstTimer);
+		sakuraBurstTimer = null;
+	}
+
+	setSakuraEnabled(true, { persist: false });
+	sakuraBurstTimer = setTimeout(() => {
+		sakuraBurstTimer = null;
+		if (getSakuraPinned()) return;
+		setSakuraEnabled(false, { persist: false });
+		window.dispatchEvent(
+			new CustomEvent("sakuraIntroEnded", {
+				detail: { enabled: false },
+			}),
+		);
+	}, durationMs);
+}
+
 // Banner title functions
 export function getDefaultBannerTitleEnabled(): boolean {
 	return backgroundWallpaper.common?.homeText?.enable ?? true;
@@ -1486,3 +1615,82 @@ export function setPetSelection(petId: string): void {
 		);
 	}
 }
+
+const AVATAR_FRAME_STORAGE_KEY = "avatarFrameId";
+
+const AVATAR_FRAME_IDS: AvatarFrameId[] = [
+	"none",
+	"C3-conic-spin",
+	"C2-dual-soft",
+	"C6-metallic",
+	"C5-stars-css",
+	"S3-metallic",
+	"S6-laurel",
+];
+
+function isAvatarFrameId(id: string): id is AvatarFrameId {
+	return (AVATAR_FRAME_IDS as string[]).includes(id);
+}
+
+export function getDefaultAvatarFrameId(): AvatarFrameId {
+	const cfg = profileConfig.avatarFrame;
+	if (!cfg || cfg.enabled === false) return "none";
+	const raw = cfg.defaultId || "S3-metallic";
+	return isAvatarFrameId(raw) ? raw : "S3-metallic";
+}
+
+export function getStoredAvatarFrameId(): AvatarFrameId {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultAvatarFrameId();
+	}
+	try {
+		const raw = localStorage.getItem(AVATAR_FRAME_STORAGE_KEY);
+		if (!raw) return getDefaultAvatarFrameId();
+		if (isAvatarFrameId(raw)) return raw;
+		return getDefaultAvatarFrameId();
+	} catch {
+		return getDefaultAvatarFrameId();
+	}
+}
+
+/** 写入 html[data-avatar-frame] 并广播，供 Profile / 设置面板同步 */
+export function applyAvatarFrameToDocument(id: AvatarFrameId): void {
+	if (typeof document === "undefined") return;
+	document.documentElement.setAttribute("data-avatar-frame", id);
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("firefly:avatar-frame-change", {
+				detail: { id },
+			}),
+		);
+	}
+}
+
+export function setAvatarFrameId(id: string): void {
+	const value: AvatarFrameId = isAvatarFrameId(id)
+		? id
+		: getDefaultAvatarFrameId();
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		try {
+			localStorage.setItem(AVATAR_FRAME_STORAGE_KEY, value);
+		} catch {
+			/* ignore */
+		}
+	}
+	applyAvatarFrameToDocument(value);
+}
+
+export function initAvatarFrame(): void {
+	if (profileConfig.avatarFrame?.enabled === false) {
+		applyAvatarFrameToDocument("none");
+		return;
+	}
+	applyAvatarFrameToDocument(getStoredAvatarFrameId());
+}
+

@@ -4,11 +4,17 @@
  * 按原设计 590×235 等比例适配导航栏高度，不用 transform scale（避免挤压/阴影糊掉）。
  */
 import { onMount } from "svelte";
-import { DARK_MODE, LIGHT_MODE, SYSTEM_MODE } from "@/constants/constants";
+import {
+	DARK_MODE,
+	LIGHT_MODE,
+	SYSTEM_MODE,
+	TIME_MODE,
+} from "@/constants/constants";
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 import {
 	applyThemeToDocument,
 	getStoredTheme,
+	getTimeTheme,
 	setTheme,
 } from "@/utils/setting-utils";
 
@@ -33,6 +39,8 @@ function updateDisplayedMode() {
 			"(prefers-color-scheme: dark)",
 		).matches;
 		displayedMode = isSystemDark ? DARK_MODE : LIGHT_MODE;
+	} else if (mode === TIME_MODE) {
+		displayedMode = getTimeTheme();
 	} else {
 		displayedMode = mode;
 	}
@@ -50,7 +58,7 @@ onMount(() => {
 	mode = storedTheme;
 	updateDisplayedMode();
 
-	if (storedTheme !== SYSTEM_MODE) {
+	if (storedTheme !== SYSTEM_MODE && storedTheme !== TIME_MODE) {
 		const currentTheme = document.documentElement.classList.contains("dark")
 			? DARK_MODE
 			: LIGHT_MODE;
@@ -86,7 +94,7 @@ onMount(() => {
 	}
 
 	const handleThemeChange = () => {
-		if (mode !== SYSTEM_MODE) {
+		if (mode !== SYSTEM_MODE && mode !== TIME_MODE) {
 			mode = getStoredTheme();
 		}
 		updateDisplayedMode();
