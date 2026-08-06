@@ -4,7 +4,7 @@
 
 | 路径 | 用途 | 何时建 |
 |---|---|---|
-| `images/readme/` | README 配图：`banner.png` + `showcase-*.png`（Playwright：`scripts/capture-readme-showcase.py`） | 默认 |
+| `images/readme/` | README 配图：`banner-*.png` · `features.png` · `integrations.png` · `workflow.png` · `architecture.svg` · `tech-stack.svg` · `showcase-*.png`；README 本地预览壳见仓库根 `preview-readme.{html,css,js}`（端口 8090） | 默认 |
 | `images/avatar/` · `icon/` | 文档用槽位 | 有图时 |
 | `backup/` | 上游 zip 只读备份 | 有才建 |
 | `video/` · `ppt/` · `speeches/` | 演示素材 | 有才建 |
