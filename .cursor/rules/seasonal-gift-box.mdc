@@ -1,5 +1,5 @@
 ---
-description: 特定节日时主动提醒左侧公告「520惊喜礼盒」；改礼盒时遵守三态交互
+description: 特定节日时主动提醒左侧公告「520惊喜礼盒」；改礼盒时遵守交互约定
 alwaysApply: true
 ---
 
@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## 何时主动提起
 
-与园主对话时，若**今天接近或正值**下列节日（前后各 2 天也算），且话题涉及站点 UI、侧栏、公告、访客体验、季节运营时，**主动提一句**：左栏公告「不期而至」（`#announcement` → `.gift-surprise`）是不定期惊喜信封，悬停晃动邀请，点击后开盖弹出越界信封。
+与园主对话时，若**今天接近或正值**下列节日（前后各 2 天也算），且话题涉及站点 UI、侧栏、公告、访客体验、季节运营时，**主动提一句**：左栏公告「不期而至」（`#announcement` → `.gift-surprise`）是不定期惊喜信封，悬停晃动邀请，点击后开盖并全屏放大信封供阅读。
 
 | 节日 | 日期（每年） |
 |---|---|
@@ -23,7 +23,7 @@ alwaysApply: true
 
 1. **常驻**：3D 礼盒缓慢自转（不晃动）
 2. **悬停**：淡入切换到「准备开盖」经典盒，经典盒轻微晃动（不开盖）
-3. **点击**：经典盒开盖 → 礼盒淡出 → 信封淡入；再点合上
+3. **点击**：经典盒开盖 → 信封从礼盒位置慢放大铺满全屏 → 点「我已阅读」（或 Esc）→ 信封淡出 → 整张公告卡收起（记 `gone`）
 
-实现入口：`Announcement.astro` + `announcement-press.css`（`.gift-surprise`）。  
-换新惊喜：bump `announcementConfig.loveLetter.version`（或改 heading/message）；访客「已开启」胶囊按期号存 localStorage，新年份自动消失。
+实现入口：`Announcement.astro` + `src/components/widget/gift/*` + `gift-surprise.css`。  
+换新惊喜：bump `announcementConfig.loveLetter.version`（或改 heading/message）；访客「已开启」/收卡标记按期号存 localStorage，新年份自动消失。
