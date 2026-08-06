@@ -21,6 +21,7 @@
 @import './announcement-press.css';
 @import './gift-surprise.css';
 @import './guestbook-cicada.css';
+@import './hero-bg.css';
 
 @plugin '@tailwindcss/typography';
 

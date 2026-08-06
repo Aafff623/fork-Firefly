@@ -1,7 +1,6 @@
 ---
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/common/Markdown.astro";
-import AboutWaves from "@/components/pages/about/AboutWaves.astro";
 import FlipComicBook from "@/components/pages/about/FlipComicBook.astro";
 import RotatingPopCard from "@/components/pages/about/RotatingPopCard.astro";
 import I18nKey from "@/i18n/i18nKey";
@@ -24,8 +23,7 @@ const SiteContent = siteRendered?.Content;
         <div class="about-panel z-10 relative w-full">
             <p class="about-mast"><span>THREETWOA</span><span>ABOUT · 2026</span></p>
 
-            <div class="about-intro">
-              <AboutWaves />
+            <div class="about-intro hero-bg">
               <div class="about-intro-body">
                 <blockquote class="about-pull">
                   少写一点代码，多留一点能复用的结构。<br />
@@ -57,10 +55,8 @@ const SiteContent = siteRendered?.Content;
     overflow: visible;
   }
 
+  /* 外层不套卡片：透明底、无外框，避免与文章大卡片叠卡 */
   .about-panel {
-    background: var(--card-bg);
-    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
-    border-radius: 0.35rem;
     padding: 1.35rem 1.5rem 1.75rem;
     overflow: visible;
   }
@@ -85,9 +81,9 @@ const SiteContent = siteRendered?.Content;
     color: color-mix(in oklab, var(--content-meta) 80%, transparent);
   }
 
-  /* 一层氛围带：海浪底 + 文案，不再套第二层描边卡片 */
+  /* 一层氛围带：hero-bg 共享层铺骑士少女底图 + 文案，不再套第二层描边卡片 */
   .about-intro {
-    position: relative;
+    --hero-img: url("/assets/hero/about-hero.gif");
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -97,7 +93,6 @@ const SiteContent = siteRendered?.Content;
     border-radius: 0;
     border-bottom: 1px solid color-mix(in oklab, var(--primary) 35%, var(--line-color));
     overflow: hidden;
-    isolation: isolate;
   }
 
   .about-intro-body {

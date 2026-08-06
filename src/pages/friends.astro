@@ -45,7 +45,7 @@ const description =
 <MainGridLayout title={title} description={description}>
   <div class="friends-shell flex w-full relative min-h-32">
     {/* 像素双人图作卡片背景，内容叠在上面 */}
-    <div class="friends-panel card-base z-10 relative w-full">
+    <div class="friends-panel card-base hero-bg z-10 relative w-full">
       <header class="friends-mast">
         <p class="friends-mast-meta">
           <span>FRIENDS · LINK</span>
@@ -281,10 +281,9 @@ const description =
       overflow: visible;
     }
 
-    /* 友链主卡：像素氛围图铺底，正文半透叠上 */
+    /* 友链主卡：像素氛围图铺底（hero-bg 共享层），正文半透叠上 */
     .friends-panel {
-      position: relative;
-      isolation: isolate;
+      --hero-img: url("/assets/friends/friends-hero.gif");
       overflow: hidden;
       padding: 1.25rem 1.35rem 1.5rem;
       /* 压过 card-base 实底，让底图透出来 */
@@ -296,43 +295,6 @@ const description =
       .friends-panel {
         padding: 1.5rem 1.85rem 1.75rem;
       }
-    }
-
-    .friends-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background:
-        url("/assets/friends/friends-hero.gif") center 62% / cover no-repeat;
-      pointer-events: none;
-    }
-
-    .friends-panel::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      /* 半透磨砂，保证字可读，仍能看见双人场景 */
-      background: color-mix(in oklab, var(--card-bg, #fff) 78%, transparent);
-      backdrop-filter: blur(1.5px);
-    }
-
-    :global(html.dark) .friends-panel::before {
-      /* 暗色略提亮底图，避免泥灰死黑 */
-      filter: brightness(1.12) saturate(1.08) contrast(1.05);
-    }
-
-    :global(html.dark) .friends-panel::after {
-      /* 更深遮罩 + 轻模糊，托住浅色字 */
-      background: color-mix(in oklab, var(--card-bg, #111) 88%, transparent);
-      backdrop-filter: blur(2.5px);
-    }
-
-    .friends-panel > * {
-      position: relative;
-      z-index: 1;
     }
 
     .friends-mast {

@@ -1,0 +1,42 @@
+/* 共享 hero 背景层：使用方加 .hero-bg 并注入 --hero-img。
+   结构 = ::before 底图 + ::after 半透磨砂遮罩（暗色自动加深）。 */
+.hero-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--hero-img) center 62% / cover no-repeat;
+  pointer-events: none;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* 半透磨砂，保证字可读，仍能看见底图 */
+  background: color-mix(in oklab, var(--card-bg, #fff) 78%, transparent);
+  backdrop-filter: blur(1.5px);
+}
+
+html.dark .hero-bg::before {
+  /* 暗色略提亮底图，避免泥灰死黑 */
+  filter: brightness(1.12) saturate(1.08) contrast(1.05);
+}
+
+html.dark .hero-bg::after {
+  /* 更深遮罩 + 轻模糊，托住浅色字 */
+  background: color-mix(in oklab, var(--card-bg, #111) 88%, transparent);
+  backdrop-filter: blur(2.5px);
+}
+
+.hero-bg > * {
+  position: relative;
+  z-index: 1;
+}

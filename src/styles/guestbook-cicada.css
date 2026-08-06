@@ -26,49 +26,14 @@
   cursor: grabbing;
 }
 
-/* 留言顶卡分栏：无分割线、无独立方框感 */
+/* 留言顶卡分栏：无分割线、无独立方框感；底图走 hero-bg 共享层 */
 .guestbook-hero {
-  position: relative;
-  isolation: isolate;
+  --hero-img: url("/assets/hero/guestbook-hero.gif");
   overflow: hidden;
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 8rem;
-}
-
-.guestbook-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: url("/assets/hero/guestbook-hero.gif") center 62% / cover no-repeat;
-  pointer-events: none;
-}
-
-.guestbook-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* 半透磨砂，保证字可读，仍能看见插画 */
-  background: color-mix(in oklab, var(--card-bg, #fff) 78%, transparent);
-  backdrop-filter: blur(1.5px);
-}
-
-html.dark .guestbook-hero::before {
-  filter: brightness(1.12) saturate(1.08) contrast(1.05);
-}
-
-html.dark .guestbook-hero::after {
-  background: color-mix(in oklab, var(--card-bg, #111) 88%, transparent);
-  backdrop-filter: blur(2.5px);
-}
-
-.guestbook-hero > * {
-  position: relative;
-  z-index: 1;
 }
 
 .guestbook-hero__copy {
