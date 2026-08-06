@@ -2,6 +2,8 @@
 
 <p align="center">
   <strong><em>an Astro blog with a system behind it</em></strong>
+  <br>
+  <sub>✨ code less, architect more · 配置驱动 · 静态优先 · Agent 发文流水线</sub>
 </p>
 
 <p align="center">
@@ -16,7 +18,7 @@
 </p>
 
 <p align="center">
-  基于 <a href="https://github.com/CuteLeaf/Firefly">Firefly</a> 的 Astro 个人博客二次开发<br>
+  🪴 基于 <a href="https://github.com/CuteLeaf/Firefly">Firefly</a> 的 Astro 个人博客二次开发 ☕(￣▽￣)ノ<br>
   <sub>Standalone by <a href="https://github.com/Aafff623/fork-Firefly">threetwoa</a> · 独立演进 · 非官方镜像</sub>
 </p>
 
@@ -25,19 +27,14 @@
 </p>
 
 <p align="center">
-  <a href="#project">Project</a>
-  · <a href="#features">Features</a>
-  · <a href="#integrations">Integrations</a>
+  <a href="#features">Features</a>
   · <a href="#showcase">Showcase</a>
   · <a href="#quick-start">Quick start</a>
-  · <a href="#architecture">Architecture</a>
+  · <a href="#workflows">Workflows</a>
   · <a href="#tech-stack">Tech stack</a>
-</p>
-
-<p align="center">
-  <a href="https://fork-firefly.vercel.app">Live site</a>
-  · <a href="https://github.com/Aafff623/fork-Firefly">Source</a>
-  · <a href="#key-docs-and-assets">Docs</a>
+  · <a href="https://fork-firefly.vercel.app">🚀 Live</a>
+  · <a href="https://github.com/Aafff623/fork-Firefly">📦 Source</a>
+  · <a href="#key-docs-and-assets">📋 Docs</a>
 </p>
 
 ---
@@ -70,16 +67,27 @@
 | --- | --- |
 | [CONTEXT.md](CONTEXT.md) | 产品定位、技术事实、术语和仓库边界 |
 | [AGENTS.md](AGENTS.md) | 任务流、修改边界、验证与交付规则 |
+| [docs/agents/workflow.md](docs/agents/workflow.md) | 发文 / 功能 PRD / 交付闭环细则 |
+| [docs/knowledge/tech-stack-inventory.md](docs/knowledge/tech-stack-inventory.md) | 技术栈细清单（包名 · 入口 · 现行/备选） |
+| [docs/knowledge/style-and-assets-inventory.md](docs/knowledge/style-and-assets-inventory.md) | 视觉 · 字体 · 图标 · 桌宠 · 曲库 · 静态资源 |
 | [docs/adr/](docs/adr/) | 需要长期保留的架构决策（含 Waline / 本地音乐） |
 | [docs/outputs/commit-history/](docs/outputs/commit-history/) | 历史改动、视觉演进和工作摘要 |
-| [assets/images/readme/](assets/images/readme/) | Banner、架构图、技术栈图与 Showcase 资产 |
+| [assets/images/readme/](assets/images/readme/) | Banner、Features、Integrations、Workflow、架构图、技术栈图与 Showcase 资产 |
+| [preview-readme.html](preview-readme.html) | README 本地预览壳（端口 **8090**；非产品站） |
 | [capture-readme-showcase.py](scripts/capture-readme-showcase.py) | 本地 Playwright 重截 README Showcase |
 
-推荐阅读顺序：`README.md` → `CONTEXT.md` → `AGENTS.md` → `docs/adr/` → `src/config/` / `src/content/`。
+推荐阅读顺序：`README.md` → `CONTEXT.md` → `AGENTS.md` → 两篇 inventory → `docs/adr/` → `src/config/` / `src/content/`。
 
 ## Features
 
-核心能力按「内容 → 阅读 → 个性化 → 集成」组织；每一行同时给出能力范围和主要代码入口。
+核心能力按「内容 → 阅读 → 个性化 → 集成」组织。主视觉见下图；入口路径与完整行表在折叠区。
+
+<p align="center">
+  <img src="assets/images/readme/features.png" alt="threetwoa's blog features overview" width="100%">
+</p>
+
+<details>
+<summary>Features 详表（Area · Capability · entry）</summary>
 
 | Area | Capability | Included | Main entry |
 | --- | --- | --- | --- |
@@ -102,9 +110,18 @@
 | Integration | Delivery | Vercel 默认部署，Cloudflare adapter 可选 | `vercel.json` · `wrangler.jsonc` |
 | Integration | Localization | `zh_CN`、`zh_TW`、`en`、`ja`、`ru`、`ko` | `src/config/siteConfig.ts` |
 
+</details>
+
 ## Integrations
 
-把「装进站点、但容易被 README 漏掉」的集成单独摊开。现行 vs 备选以配置为准，不硬编码进布局。
+把「装进站点、但容易被 README 漏掉」的集成单独摊开。现行 vs 备选以配置为准，不硬编码进布局。主视觉见下图；完整对照表在折叠区。
+
+<p align="center">
+  <img src="assets/images/readme/integrations.png" alt="threetwoa's blog integrations matrix" width="100%">
+</p>
+
+<details>
+<summary>Integrations 详表（现行 · 备选 · 配置入口）</summary>
 
 | 域 | 现行（默认） | 备选 / 旁路 | 配置入口 |
 | --- | --- | --- | --- |
@@ -119,6 +136,8 @@
 | 灯箱 / 图示 | Fancybox；Mermaid 经 **merman** 构建期出 SVG | PlantUML · panzoom | `@fancyapps/ui` · `@mermanjs/web` |
 | 动态源 | 本地 `content/dynamic` | 可选 Memos API | `dynamicConfig` · `DynamicSidebar` |
 | 分析 | 槽位就绪（GA / Clarity / Umami / 51la） | ID 多为空，按需填 | `analyticsConfig.ts` |
+
+</details>
 
 决策记录：评论走 Waline 而不是 Giscus，是为了表情选项卡与 GIF 插入闭环（见 ADR-0001）。音乐默认 local，是为了不依赖公共 Meting 可用性（见 ADR-0002）。
 
@@ -222,12 +241,53 @@ pnpm new-d <一句话>
 
 # README Showcase; run pnpm dev first
 python scripts/capture-readme-showcase.py
+
+# README 本地预览壳（GFM 渲染 README.md，非产品站）
+python -m http.server 8090
+# 打开 http://127.0.0.1:8090/preview-readme.html
 ```
 </details>
 
-## Content workflow
+## Workflows
 
-文章、动态和特殊页面分别位于：
+三条主链路：发文、功能、交付。主视觉见下图；细则见 [docs/agents/workflow.md](docs/agents/workflow.md) · [AGENTS.md](AGENTS.md)。
+
+<p align="center">
+  <img src="assets/images/readme/workflow.png" alt="threetwoa's blog workflows — publish, feature, ship" width="100%">
+</p>
+
+<details>
+<summary>Workflows 详表（发文路径 · PRD 门禁 · 交付 · Mermaid）</summary>
+
+```mermaid
+flowchart LR
+  subgraph publish [发文]
+    A1[Obsidian或会话素材] --> A2[成帖技能链]
+    A2 --> A3[site-cascade级联]
+    A3 --> A4[本地预览]
+  end
+  subgraph feature [功能]
+    B1[灵感idea] --> B2[Issue与PRD]
+    B2 --> B3[你批准后handoff]
+    B3 --> B4[实施与Review]
+    B4 --> B5[commit-history]
+  end
+  subgraph ship [交付]
+    C1[本地预览] --> C2[check与build]
+    C2 --> C3[push]
+    C3 --> C4[Vercel Ready]
+    C4 --> C5[再核线上]
+  end
+```
+
+#### 发文
+
+| 路径 | 源 | 技能链 |
+| --- | --- | --- |
+| 甲 | Obsidian vault（`threetwoa_ob`） | `ob2blog` → `site-cascade` |
+| 乙 | 会话 / Knowledge 素材 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+
+内容目录：
 
 ```text
 src/content/
@@ -236,16 +296,22 @@ src/content/
 └── spec/       # About、Friends、Guestbook 等特殊页面内容
 ```
 
-文章 frontmatter 会经过 [src/content.config.ts](src/content.config.ts) 校验。生产构建默认隐藏 `draft: true` 的文章，本地开发可以继续预览草稿。
+文章 frontmatter 经 [src/content.config.ts](src/content.config.ts) 校验。生产构建默认隐藏 `draft: true`；本地可预览草稿。日常写作改内容文件，日常换皮改 `src/config`——不要为改站名、侧栏或壁纸去动布局内核。
 
-发文双路径（细则见 `AGENTS.md` / `docs/agents/workflow.md`）：
+#### 功能（PRD 门禁）
 
-| 路径 | 源 | 技能链 |
-| --- | --- | --- |
-| 甲 | Obsidian vault | `ob2blog` → `site-cascade` |
-| 乙 | 会话 / Knowledge 素材 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+```text
+docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
+  → handoff → 实施 → awaiting-review → commit + commit-history → archive
+```
 
-日常写作走内容文件，日常换皮走 `src/config`。不要为了改站点名称、侧栏顺序或壁纸参数去修改布局内核。
+灵感只进 `docs/idea/` 不算开题。未批准的大规模功能不写代码（配置微调 / 文案 / 部署除外，需在对话声明）。
+
+#### 交付闭环
+
+本地预览 → 本地校验 → 你确认后 push → 等 Vercel Ready → **打开线上再核**。未本地验收不得 push；未看线上不得宣称部署完成。
+
+</details>
 
 ## Configuration
 
@@ -353,6 +419,7 @@ src/content/
 | 评论系统与 Waline | `src/config/commentConfig.ts` |
 | 相册模式与相册元数据 | `src/config/galleryConfig.ts` |
 | 公告、礼盒和日历封面 | `src/config/announcementConfig.ts` |
+| 特效开关 | `src/config/effectsConfig.ts` |
 | 音乐、桌宠、Live2D / Spine | `src/config/musicConfig.ts` · `petConfig.ts` · `pioConfig.ts` |
 | 字体、代码块和 Markdown 扩展 | `src/config/fontConfig.ts` · `expressiveCodeConfig.ts` · `src/plugins/` |
 
@@ -383,23 +450,52 @@ src/content/
 5. **Motion with intent** — 微交互优先 CSS；复杂编排才使用更重的动画方案，并保留 reduced-motion 路径。
 6. **Visual consistency over feature count** — 新页面必须共享 token、导航、响应式边界和可访问状态。
 
+## Style and assets
+
+视觉三原则（细则见 [CONTEXT.md](CONTEXT.md)）：
+
+1. 壳层中性灰 — 页面 / 卡片底色不泡在主题色里。
+2. 彩仅点缀 — 紫系邻近色只出现在链接、高亮、图标、竖条。
+3. 默认色相 hue ≈ 290（Kraken 主紫）作链接主色。
+
+| 域 | 现行 | 配置 / 路径 |
+| --- | --- | --- |
+| 主题与显示 | system 模式 · hue 290 · 卡片边框开 | `siteConfig.ts` · `displaySettingsConfig.ts` |
+| 壁纸 / Banner 氛围 | 横幅 + 独立 `atmosphere` 垫底 | `backgroundWallpaper.ts` |
+| 样式入口 | `main.css` + 页面/组件 CSS | `src/styles/` |
+| 字体 | 全局 Inter；横幅 Zen Maru；代码 JetBrains Mono | `fontConfig.ts` |
+| 代码主题 | `one-dark-pro` / `one-light` | `expressiveCodeConfig.ts` |
+| 图标 | Iconify；UI 以 Lucide 为主 | `astro.config.mjs` → `icon.include` |
+| 桌宠 | SpritePet 双 DeepSeek + 访客换皮 | `petConfig.ts` · `public/pets/` |
+| Live2D / Spine | 备选，与桌宠互斥 | `pioConfig.ts` · `public/pio/` |
+| 评论表情 | Waline emojis：qq / weibo / bilibili / bmoji | `commentConfig.ts` |
+| 音乐 | local 曲库（Pixabay 氛围曲等） | `musicConfig.ts` · `public/assets/music/` |
+| README 配图 | banner · architecture · tech-stack · showcase-* | `assets/images/readme/` |
+| 合集 / 日历 GIF 等 | 合集封面 · 日历月图 | `public/assets/collections/` · `images/widgets/calendar/` |
+
+细清单（字体权重、图标全集、宠物许可、静态目录树）：[docs/knowledge/style-and-assets-inventory.md](docs/knowledge/style-and-assets-inventory.md)。
+
 ## Tech stack
 
-技术栈按「页面框架、内容处理、构建增强、交付环境、站点集成」分组。图负责气质；下表负责事实。
+技术栈按「运行时、内容管线、交互、构建、交付、集成、开发期」分组。图负责气质；下表负责事实。图若略旧，以本表与 inventory 为准。
 
 <p align="center">
   <img src="assets/images/readme/tech-stack.svg" alt="threetwoa's blog technology stack" width="100%">
 </p>
 
-| Lane | Stack | Role |
-| --- | --- | --- |
-| Runtime core | Astro 7.1 · Svelte 5 · TypeScript 6 · Tailwind CSS 4 | 页面、岛屿、类型与样式 |
-| Publishing | MD / MDX · Content Collections · remark / rehype · Expressive Code | 写作契约与正文增强 |
-| Interaction | Swup · Iconify (`astro-icon`) · Fancybox · Three.js（Gallery） | 过渡、图标、灯箱、画廊 |
-| Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | 构建期把贵活做完 |
-| Delivery | `dist/` · Vercel · Cloudflare adapter（可选） | 静态出站 |
-| Site integrations | Waline + emoji/Giphy · SpritePet · local music · COS · Memos（可选） | 配置门控；前几项现行默认开 |
-| Quality | Biome · `astro check` · tsc · pnpm only-allow | 格式、类型与包管理纪律 |
+| Lane | Stack | 本站现行 | Role |
+| --- | --- | --- | --- |
+| Runtime core | Astro 7.1 · Svelte 5 · React 19（少量）· TypeScript 6 · Tailwind CSS 4 · pnpm 9 · Node ≥22 | 全开 | 页面、岛屿、类型与样式 |
+| Publishing | MD / MDX · Content Collections · remark / rehype · Expressive Code（one-dark-pro / one-light） | 全开 | 写作契约与正文增强 |
+| Fonts | Inter（全局）· Zen Maru（横幅）· JetBrains Mono（代码）· GreatVibes（本地子集） | 见 fontConfig | 品牌与可读性 |
+| Interaction | Swup · Iconify（Lucide 主）· Fancybox · Three.js（Gallery）· Framer Motion（动态时间线） | 全开 | 过渡、图标、灯箱、画廊 |
+| Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | `pnpm build` 串起 | 构建期把贵活做完 |
+| Delivery | `dist/` · Vercel（`@astrojs/vercel`）· Cloudflare adapter（可选） | Vercel 默认 | 静态出站 + 少量 API |
+| Site integrations | Waline + emoji/Giphy · SpritePet · local music · COS · analytics 槽位 | 前三项现行；分析 ID 多为空 | 配置门控 |
+| Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
+| Agent tooling | `ob2blog` · knowledge-* · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
+
+完整包名、插件链与入口路径：[docs/knowledge/tech-stack-inventory.md](docs/knowledge/tech-stack-inventory.md)。
 
 ## Deploy
 
@@ -421,6 +517,8 @@ Cloudflare 配置保留在 [wrangler.jsonc](wrangler.jsonc)，但启用 Cloudfla
 
 - [AGENTS.md](AGENTS.md)：任务流、修改边界、提交和交付规则。
 - [CONTEXT.md](CONTEXT.md)：产品定位、术语、技术事实和仓库边界。
+- [docs/agents/workflow.md](docs/agents/workflow.md)：发文 / 功能 / 交付细则。
+- [docs/knowledge/tech-stack-inventory.md](docs/knowledge/tech-stack-inventory.md) · [style-and-assets-inventory.md](docs/knowledge/style-and-assets-inventory.md)：栈与素材细表。
 - `docs/adr/`：需要长期保留的架构决策。
 - `docs/outputs/commit-history/`：已完成工作和视觉演进的摘要。
 - `docs/idea/`：尚未进入实现阶段的灵感和设计研究。

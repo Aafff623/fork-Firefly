@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> **This repository’s canonical README is the Chinese [`README.md`](README.md)** (threetwoa's standalone Firefly blog: stack inventory, workflows, live site docs).  
+> The English text below is the **upstream CuteLeaf/Firefly theme** README kept for lineage reference — versions and demo links there may not match this fork.
+
+---
 
 <img src="./docs/images/1131.png" width = "350" height = "500" alt="Firefly" align=right />
 
