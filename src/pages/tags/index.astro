@@ -1,6 +1,7 @@
 ---
 /**
- * 全站标签页：黑板立体球 + 粉笔色兜底列表。
+ * 全站标签页：默认粉笔列表（与侧栏列表态同款）；可切回立体球。
+ * 侧栏标签墙仍默认球，互不共用 localStorage。
  */
 import { Icon } from "astro-icon/components";
 import TagChalkSphere from "@/components/widget/TagChalkSphere.astro";
@@ -22,20 +23,51 @@ const ranked = [...tags]
 <MainGridLayout title={i18n(I18nKey.tags)} description={i18n(I18nKey.allTags)}>
   <div class="tags-page card-base px-6 py-5 mb-4 sm:px-8 sm:py-6">
     <header class="tags-page__head">
-      <h1 class="tags-page__title">{i18n(I18nKey.tags)}</h1>
-      <p class="tags-page__meta">
-        {i18n(I18nKey.allTags)} · {tags.length} {i18n(I18nKey.tagsCount)}
-      </p>
+      <div class="tags-page__head-row">
+        <div>
+          <h1 class="tags-page__title">{i18n(I18nKey.tags)}</h1>
+          <p class="tags-page__meta">
+            {i18n(I18nKey.allTags)} · {tags.length} {i18n(I18nKey.tagsCount)}
+          </p>
+        </div>
+        {
+          ranked.length > 0 && (
+            <div class="tags-page__mode" data-tags-page-mode-toggle>
+              <button
+                type="button"
+                class="tags-page__mode-btn"
+                data-tags-page-mode="sphere"
+                aria-label="立体球模式"
+                title="立体球"
+                aria-pressed="false"
+              >
+                <Icon is:inline name="lucide:globe" class="tags-page__mode-icon tags-page__mode-icon--globe" />
+              </button>
+              <button
+                type="button"
+                class="tags-page__mode-btn"
+                data-tags-page-mode="list"
+                aria-label="列表模式"
+                title="列表"
+                aria-pressed="true"
+              >
+                <Icon is:inline name="lucide:list" class="tags-page__mode-icon" />
+              </button>
+            </div>
+          )
+        }
+      </div>
     </header>
 
     {
       ranked.length > 0 ? (
-        <div class="tags-page__sphere">
+        <div class="tags-page__sphere" data-tags-page-sphere>
           <TagChalkSphere
             title=""
             tags={ranked}
-            limit={Math.min(36, ranked.length)}
+            limit={ranked.length}
             radius={120}
+            defaultMode="list"
           />
         </div>
       ) : (
@@ -57,6 +89,13 @@ const ranked = [...tags]
 
   :global(html.dark) .tags-page__head {
     border-bottom-color: rgb(255 255 255 / 0.08);
+  }
+
+  .tags-page__head-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
   .tags-page__title {
@@ -81,9 +120,59 @@ const ranked = [...tags]
     color: var(--text-color-muted, oklch(0.5 0.02 70));
   }
 
+  .tags-page__mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-shrink: 0;
+    padding: 0.12rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 55%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+  }
+
+  .tags-page__mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: color-mix(in oklch, var(--content-meta, #666) 90%, transparent);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .tags-page__mode-btn:hover {
+    color: var(--primary);
+  }
+
+  .tags-page__mode-btn[aria-pressed="true"] {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+  }
+
+  .tags-page__mode-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .tags-page__mode-icon--globe {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
   .tags-page__sphere {
-    max-width: 36rem;
+    max-width: 42rem;
     margin: 0 auto;
+  }
+
+  /* 列表态拉满可读宽度；球态仍居中 */
+  .tags-page__sphere:has(:global([data-view-mode="list"])) {
+    max-width: none;
   }
 
   .tags-page__sphere :global(.tag-sphere__frame) {
@@ -94,6 +183,11 @@ const ranked = [...tags]
   .tags-page__sphere :global(.tag-sphere__cloud) {
     width: 240px !important;
     height: 240px !important;
+  }
+
+  .tags-page__sphere :global(.tag-sphere__fallback) {
+    font-size: 1.15rem;
+    gap: 0.45rem 0.85rem;
   }
 
   .tags-page__empty {
@@ -109,3 +203,93 @@ const ranked = [...tags]
     opacity: 0.55;
   }
 </style>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    var PAGE_MODE_KEY = "firefly-tags-page-mode"; // 与侧栏 firefly-tag-wall-mode 分开
+
+    function readMode() {
+      try {
+        var m = localStorage.getItem(PAGE_MODE_KEY);
+        if (m === "sphere" || m === "list") return m;
+      } catch (e) {}
+      return "list"; // /tags/ 默认列表
+    }
+
+    function writeMode(mode) {
+      try {
+        localStorage.setItem(PAGE_MODE_KEY, mode);
+      } catch (e) {}
+    }
+
+    function syncButtons(root, mode) {
+      if (!root) return;
+      root.querySelectorAll("[data-tags-page-mode]").forEach(function (btn) {
+        var on = btn.getAttribute("data-tags-page-mode") === mode;
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function applyMode(mode) {
+      var next = mode === "sphere" ? "sphere" : "list";
+      var host = document.querySelector("[data-tags-page-sphere]");
+      var sphere = host && host.querySelector("[data-tag-chalk-sphere]");
+      var toggle = document.querySelector("[data-tags-page-mode-toggle]");
+      if (!sphere) return;
+      writeMode(next);
+      syncButtons(toggle, next);
+      if (typeof window.__setTagChalkSphereMode === "function") {
+        window.__setTagChalkSphereMode(sphere, next);
+      } else {
+        sphere.setAttribute("data-view-mode", next);
+      }
+      // 切回球时重挂
+      if (next === "sphere") {
+        var cloud = sphere.querySelector(".tag-sphere__cloud");
+        var cloudId = cloud && cloud.id;
+        if (cloudId && typeof window.__remountTagChalkSphere === "function") {
+          var map = {};
+          try {
+            map = JSON.parse(sphere.getAttribute("data-href-map") || "{}");
+          } catch (e) {}
+          var items = Object.keys(map).map(function (name) {
+            return { name: name, kind: "primary" };
+          });
+          // fallback 列表顺序含 count；优先从 fallback 抽
+          var links = sphere.querySelectorAll("[data-tag-chalk-fallback] a");
+          if (links.length) {
+            items = Array.prototype.map.call(links, function (a) {
+              var text = (a.textContent || "").replace(/#/, "").replace(/\([\d]+\)/, "").trim();
+              return { name: text, kind: "primary" };
+            }).filter(function (t) { return t.name; });
+          }
+          window.__remountTagChalkSphere(cloudId, items);
+        }
+      }
+    }
+
+    function boot() {
+      var toggle = document.querySelector("[data-tags-page-mode-toggle]");
+      if (!toggle) return;
+      if (!toggle._tagsPageBound) {
+        toggle._tagsPageBound = true;
+        toggle.addEventListener("click", function (ev) {
+          var btn = ev.target && ev.target.closest
+            ? ev.target.closest("[data-tags-page-mode]")
+            : null;
+          if (!btn || !toggle.contains(btn)) return;
+          applyMode(btn.getAttribute("data-tags-page-mode") || "list");
+        });
+      }
+      applyMode(readMode());
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+    document.addEventListener("swup:contentReplaced", boot);
+    document.addEventListener("swup:page:view", boot);
+  })();
+</script>
