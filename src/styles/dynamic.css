@@ -447,6 +447,66 @@ dynamic-feed {
 	border-color: color-mix(in oklab, var(--primary) 34%, transparent);
 }
 
+/* 笔记型双层卡：标题链 + 作者批注 */
+.dynamic-entry[data-note-layout="split"] .dynamic-content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+}
+
+.dynamic-entry[data-note-layout="split"] .dynamic-note-headline {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.55;
+	letter-spacing: 0.01em;
+}
+
+/* SSR / 未打 class 时：首段 + 引用块 */
+.dynamic-entry[data-note-layout="split"] .dynamic-content > p:first-of-type {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.55;
+	letter-spacing: 0.01em;
+}
+
+.dynamic-entry[data-note-layout="split"] .dynamic-note-blurb,
+.dynamic-entry[data-note-layout="split"] .dynamic-content > blockquote {
+	margin: 0;
+	padding: 0.55rem 0.7rem 0.55rem 0.75rem;
+	border: none;
+	border-radius: 0.45rem;
+	border-left: 2px solid color-mix(in oklab, var(--primary) 55%, var(--dyn-line));
+	background: color-mix(in oklab, var(--primary) 6%, var(--card-bg, #fff));
+	color: color-mix(in oklab, var(--content-meta, #666) 92%, rgb(0 0 0 / 70%));
+	font-family: var(--font-zen-maru-gothic), "Zen Maru Gothic", ui-rounded, sans-serif;
+	font-size: 0.84rem;
+	font-weight: 500;
+	font-style: normal;
+	letter-spacing: 0.02em;
+	line-height: 1.7;
+}
+
+.dynamic-entry[data-note-layout="split"] .dynamic-note-blurb p,
+.dynamic-entry[data-note-layout="split"] .dynamic-content > blockquote p {
+	margin: 0;
+}
+
+.dynamic-entry[data-note-layout="split"] .dynamic-note-blurb p + p,
+.dynamic-entry[data-note-layout="split"] .dynamic-content > blockquote p + p {
+	margin-top: 0.35rem;
+}
+
+:root.dark .dynamic-entry[data-note-layout="split"] .dynamic-note-blurb,
+html.dark .dynamic-entry[data-note-layout="split"] .dynamic-note-blurb,
+:root.dark .dynamic-entry[data-note-layout="split"] .dynamic-content > blockquote,
+html.dark .dynamic-entry[data-note-layout="split"] .dynamic-content > blockquote {
+	background: color-mix(in oklab, var(--primary) 10%, var(--card-bg, #1a1a1a));
+	color: color-mix(in oklab, var(--content-meta, #aaa) 88%, #fff);
+	border-left-color: color-mix(in oklab, var(--primary) 48%, transparent);
+}
+
 .dynamic-author {
 	width: fit-content;
 	max-width: 100%;
@@ -1059,6 +1119,33 @@ body.wallpaper-transparent .dynamic-year-select select {
 
 body.wallpaper-transparent .dynamic-year-select select option {
 	background: var(--card-bg);
+}
+
+/*
+ * 动态页锐边：仅当本页存在 .dynamic-page 时抬高侧栏/卡片实色与边框对比，
+ * 关掉渗边感；不改全站 .wallpaper-transparent .card-base 默认。
+ */
+body.wallpaper-transparent:has(.dynamic-page) #right-sidebar .card-base,
+body.wallpaper-transparent:has(.dynamic-page) .dynamic-page .card-base,
+body.wallpaper-transparent:has(.dynamic-page) .dynamic-entry.card-base {
+	background-color: color-mix(in oklab, var(--card-bg) 88%, transparent) !important;
+	border: 1px solid color-mix(in oklab, var(--line-divider) 55%, rgb(0 0 0 / 22%));
+	box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+	filter: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	overflow: hidden;
+}
+
+:root.dark body.wallpaper-transparent:has(.dynamic-page) #right-sidebar .card-base,
+html.dark body.wallpaper-transparent:has(.dynamic-page) #right-sidebar .card-base,
+:root.dark body.wallpaper-transparent:has(.dynamic-page) .dynamic-page .card-base,
+html.dark body.wallpaper-transparent:has(.dynamic-page) .dynamic-page .card-base,
+:root.dark body.wallpaper-transparent:has(.dynamic-page) .dynamic-entry.card-base,
+html.dark body.wallpaper-transparent:has(.dynamic-page) .dynamic-entry.card-base {
+	background-color: color-mix(in oklab, var(--card-bg) 86%, transparent) !important;
+	border-color: color-mix(in oklab, white 16%, transparent);
+	box-shadow: 0 1px 2px rgb(0 0 0 / 0.28);
 }
 
 @media (max-width: 768px) {

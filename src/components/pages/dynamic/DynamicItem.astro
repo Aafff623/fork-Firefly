@@ -38,6 +38,7 @@ const profileLabel = i18n(I18nKey.dynamicProfile).replace(
 	profileConfig.name,
 );
 const profileUrl = url(dynamicConfig.profileUrl || "/about/");
+const isNotePost = /发布了新笔记/.test(entry.body ?? "");
 ---
 
 <dynamic-entry
@@ -45,6 +46,7 @@ const profileUrl = url(dynamicConfig.profileUrl || "/about/");
 	class="dynamic-entry card-base"
 	data-dynamic-entry
 	data-year={entry.data.published.getUTCFullYear()}
+	data-note-layout={isNotePost ? "split" : undefined}
 >
 	<article aria-labelledby={`${anchorId}-author`}>
 		<header class="dynamic-entry-header">

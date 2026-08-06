@@ -217,10 +217,10 @@ function createItem(entry: DynamicData) {
 	// 类型胶囊：图集 / 笔记 / 动态（启发式，不改 schema）
 	const kindEl = root.querySelector<HTMLElement>("[data-dynamic-kind]");
 	const kindText = root.querySelector<HTMLElement>("[data-dynamic-kind-text]");
+	let kind: "gallery" | "note" | "status" = "status";
 	if (kindEl && kindText) {
 		const html = entry.html || "";
 		const imageCount = entry.images?.length ?? 0;
-		let kind: "gallery" | "note" | "status" = "status";
 		let label = "动态";
 		if (
 			imageCount > 1 ||
@@ -239,6 +239,24 @@ function createItem(entry: DynamicData) {
 		kindEl.dataset.kind = kind;
 		kindText.textContent = label;
 		kindEl.removeAttribute("hidden");
+	}
+
+	// 笔记型：双层卡标记 + 批注 / 标题 class
+	if (kind === "note") {
+		root.dataset.noteLayout = "split";
+		const contentEl = root.querySelector<HTMLElement>("[data-dynamic-content]");
+		if (contentEl) {
+			const quote = contentEl.querySelector("blockquote");
+			if (quote) quote.classList.add("dynamic-note-blurb");
+			for (const p of contentEl.querySelectorAll(":scope > p")) {
+				if (/发布了新笔记/.test(p.textContent || "")) {
+					p.classList.add("dynamic-note-headline");
+					break;
+				}
+			}
+		}
+	} else {
+		delete root.dataset.noteLayout;
 	}
 
 	// 置顶标识
