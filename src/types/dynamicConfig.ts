@@ -5,6 +5,12 @@ export type DynamicConfig = {
 	profileUrl?: string;
 	showComment?: boolean;
 	itemsPerPage?: number;
+	/**
+	 * 公屏默认定位文案（只展示地址，不展示 IP）。
+	 * 故意不用浏览器/代理 IP 反查，避免 VPN 漂到国外。
+	 * 单条 frontmatter `location` 非空时优先用单条；空则回落本字段。
+	 */
+	defaultLocation?: string;
 	// 动态数据 json 地址，本地默认 "/api/dynamic.json"
 	// 可改为第三方接口地址
 	// 数据结构可打开上方链接地址参考

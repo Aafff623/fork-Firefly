@@ -16,6 +16,13 @@ export const dynamicConfig: DynamicConfig = {
 	// 每页显示的动态数量
 	itemsPerPage: 20,
 
+	/**
+	 * 公屏默认定位（只写地址，不写 IP）。
+	 * 不走 IP/代理反查；发帖机在别处时在 frontmatter 写 `location:` 覆盖。
+	 * 配图：正文用 `![](/assets/dynamic/xxx.jpg)`（文件放 public/assets/dynamic/）。
+	 */
+	defaultLocation: "太原 · 中北大学",
+
 	// 动态数据 json 地址，本地默认 "/api/dynamic.json"
 	// 可改为第三方接口地址；数据结构可打开该地址参考
 	// 当 memos.enable 为 true 时，此配置会被忽略

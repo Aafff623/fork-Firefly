@@ -64,9 +64,9 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-sav
 python .cursor/skills/site-cascade/scripts/cascade_check.py \
   --slug <slug> --emit-dynamic
 
-# 推荐带作者批注（写入 Markdown blockquote）
+# 推荐带作者批注（写入 Markdown blockquote；口语短句，像发推/L 站随口评，忌产品白皮书腔）
 python .cursor/skills/site-cascade/scripts/cascade_check.py \
-  --slug <slug> --emit-dynamic --blurb "Luna 当主粮，生图当零食。"
+  --slug <slug> --emit-dynamic --blurb "Luna 写码真香，画图额度咬得也狠。"
 ```
 
 生成 `src/content/dynamic/YYYY-MM-DD-HHMMSS.md`，形态为：
@@ -78,6 +78,7 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 ```
 
 未传 `--blurb` 时：用帖子完整 `description`（仅折叠空白）；再无则用「写完挂上了，点进去看。」  
+批注语气：第一人称口语（「属实」「真香」「别踩坑」），禁止「本文旨在」「综上所述」。  
 旧条目无批注或需重写截断批注可跑：`python .cursor/skills/site-cascade/scripts/backfill_note_blurbs.py`（`--force` 覆盖已有 `>`）。  
 
 用户手写碎碎念继续用 `pnpm new-dynamic "..."`；本 skill **不删**既有动态。
