@@ -13,6 +13,7 @@ import type { PinKind } from "@/utils/content-utils";
 import { tagAccentStyle } from "@/utils/accent-from-label";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
+import { decorateListTitle } from "@/utils/title-mood";
 import { getFileDirFromPath, getTagUrl } from "@/utils/url-utils";
 
 interface Props {
@@ -71,6 +72,8 @@ const pinAdminLabels = {
 	prodHint: i18n(I18nKey.pinAdminProdHint),
 };
 const className = Astro.props.class;
+/** 仅列表展示点缀；frontmatter title 保持干净 */
+const listTitle = decorateListTitle(title, entry.id);
 
 // 处理随机图：如果image为"api"，则从配置的API获取随机图
 const processedImage = processCoverImageSync(image, entry.id);
@@ -174,7 +177,7 @@ const publishedLabel = formatDateToYYYYMMDD(published);
           hover:text-(--primary) dark:hover:text-(--primary)
           active:text-(--title-active) dark:active:text-(--title-active)"
       >
-        <span class="post-card-title-hl">{title}</span>
+        <span class="post-card-title-hl">{listTitle}</span>
 
         {
           password && (
