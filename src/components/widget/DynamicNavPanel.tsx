@@ -29,11 +29,14 @@ const EVENT_NAME = "firefly:dynamic-nav";
 
 export default function DynamicNavPanel({
 	labels,
+	initialItems,
 }: {
 	labels: DynamicNavLabels;
+	initialItems?: DynamicNavItem[];
 }) {
-	const [items, setItems] = useState<DynamicNavItem[]>([]);
-	const [loading, setLoading] = useState(true);
+	const seeded = Array.isArray(initialItems);
+	const [items, setItems] = useState<DynamicNavItem[]>(initialItems ?? []);
+	const [loading, setLoading] = useState(!seeded);
 	const [activeAnchor, setActiveAnchor] = useState("");
 	const listRef = useRef<HTMLDivElement>(null);
 

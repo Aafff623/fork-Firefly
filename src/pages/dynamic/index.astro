@@ -15,6 +15,7 @@ import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import "@/styles/dynamic.css";
 import { DYNAMIC_KIND_LABEL } from "@/utils/dynamic-utils";
+import { loadDynamicEntries } from "@/utils/load-dynamic-entries";
 import { url } from "@/utils/url-utils";
 
 if (!siteConfig.pages.dynamic) {
@@ -34,6 +35,9 @@ const dataUrl = dynamicConfig.apiUrl?.startsWith("http")
 	? dynamicConfig.apiUrl
 	: url(dynamicConfig.apiUrl || "/api/dynamic.json");
 const memos = dynamicConfig.memos;
+/** 本地 content 模式：SSR 直出，避免客户端一直「正在加载动态」 */
+const initialEntries = memos?.enable ? undefined : await loadDynamicEntries();
+const entryCount = initialEntries?.length ?? 0;
 
 const kindLegend = [
 	{ kind: "status", label: DYNAMIC_KIND_LABEL.status },
@@ -87,7 +91,7 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 				<div class="dynamic-page-title-row">
 					<h1 id="dynamic-page-title" class="dynamic-page-title">{title}</h1>
 					<span class="dynamic-count" aria-label={i18n(I18nKey.dynamic)}>
-						<strong data-dynamic-page-count>0</strong>
+						<strong data-dynamic-page-count>{entryCount}</strong>
 						<span>{i18n(I18nKey.dynamic)}</span>
 					</span>
 				</div>
@@ -148,6 +152,7 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 			allYearsText={i18n(I18nKey.dynamicAllYears)}
 			timezone={siteConfig.timezone || "UTC"}
 			{memos}
+			initialEntries={initialEntries}
 			profileName={profileConfig.name}
 			{profileUrl}
 			{avatarUrl}

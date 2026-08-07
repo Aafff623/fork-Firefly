@@ -46,6 +46,8 @@ export interface DynamicTimelineProps {
 	allYearsText: string;
 	timezone: string;
 	memos?: MemosConfig;
+	/** SSR 直出：有则首屏不转圈、本地模式跳过 fetch */
+	initialEntries?: DynamicData[];
 	profileName: string;
 	profileUrl: string;
 	avatarUrl: string;
@@ -295,6 +297,31 @@ function EntryBody({
 	);
 }
 
+function syncYearSelect(data: DynamicData[], allYearsText: string) {
+	const page = document.querySelector(".dynamic-page");
+	const yearSelect = page?.querySelector<HTMLSelectElement>("[data-year-select]");
+	if (!yearSelect) return;
+	yearSelect.replaceChildren();
+	const all = document.createElement("option");
+	all.value = "all";
+	all.textContent = allYearsText;
+	yearSelect.append(all);
+	const years = [
+		...new Set(data.map((entry) => new Date(entry.published).getUTCFullYear())),
+	];
+	for (const y of years) {
+		const option = document.createElement("option");
+		option.value = String(y);
+		option.textContent = String(y);
+		yearSelect.append(option);
+	}
+}
+
+function syncPageCount(data: DynamicData[]) {
+	const countEl = document.querySelector("[data-dynamic-page-count]");
+	if (countEl) countEl.textContent = String(data.length);
+}
+
 export default function DynamicTimeline({
 	source,
 	itemsPerPage,
@@ -305,6 +332,7 @@ export default function DynamicTimeline({
 	allYearsText,
 	timezone,
 	memos,
+	initialEntries,
 	profileName,
 	profileUrl,
 	avatarUrl,
@@ -317,10 +345,15 @@ export default function DynamicTimeline({
 	viewImageLabel,
 	selectImageLabel,
 }: DynamicTimelineProps) {
-	const [entries, setEntries] = useState<DynamicData[]>([]);
-	const [filtered, setFiltered] = useState<DynamicData[]>([]);
+	const hasInitial = Array.isArray(initialEntries) && !memos?.enable;
+	const [entries, setEntries] = useState<DynamicData[]>(() =>
+		hasInitial ? (initialEntries as DynamicData[]) : [],
+	);
+	const [filtered, setFiltered] = useState<DynamicData[]>(() =>
+		hasInitial ? (initialEntries as DynamicData[]) : [],
+	);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(!hasInitial);
 	const [failed, setFailed] = useState(false);
 	const [query, setQuery] = useState("");
 	const [year, setYear] = useState("all");
@@ -362,45 +395,37 @@ export default function DynamicTimeline({
 		};
 	}, []);
 
+	// SSR 种子：hydrate 后同步计数/年份，不再为了首屏去 fetch
 	useEffect(() => {
+		if (!hasInitial || !initialEntries) return;
+		syncPageCount(initialEntries);
+		syncYearSelect(initialEntries, allYearsText);
+		const pageParam = Math.max(
+			1,
+			Number(new URL(window.location.href).searchParams.get("page")) || 1,
+		);
+		setCurrentPage(pageParam);
+	}, [hasInitial, initialEntries, allYearsText]);
+
+	useEffect(() => {
+		if (hasInitial) return;
 		let cancelled = false;
+		const controller = new AbortController();
+		const timer = window.setTimeout(() => controller.abort(), 8000);
 		(async () => {
 			try {
 				let data: DynamicData[];
 				if (memos?.enable) {
 					data = await fetchMemos(memos.apiUrl, { parent: memos.parent });
 				} else {
-					const response = await fetch(source);
+					const response = await fetch(source, { signal: controller.signal });
 					if (!response.ok) throw new Error(`HTTP ${response.status}`);
 					data = (await response.json()) as DynamicData[];
 				}
 				if (cancelled) return;
 				setEntries(data);
-				const countEl = document.querySelector("[data-dynamic-page-count]");
-				if (countEl) countEl.textContent = String(data.length);
-
-				const page = document.querySelector(".dynamic-page");
-				const yearSelect = page?.querySelector<HTMLSelectElement>(
-					"[data-year-select]",
-				);
-				if (yearSelect) {
-					yearSelect.replaceChildren();
-					const all = document.createElement("option");
-					all.value = "all";
-					all.textContent = allYearsText;
-					yearSelect.append(all);
-					const years = [
-						...new Set(
-							data.map((entry) => new Date(entry.published).getUTCFullYear()),
-						),
-					];
-					for (const y of years) {
-						const option = document.createElement("option");
-						option.value = String(y);
-						option.textContent = String(y);
-						yearSelect.append(option);
-					}
-				}
+				syncPageCount(data);
+				syncYearSelect(data, allYearsText);
 
 				const pageParam = Math.max(
 					1,
@@ -411,13 +436,16 @@ export default function DynamicTimeline({
 				console.error("Failed to load dynamics", error);
 				if (!cancelled) setFailed(true);
 			} finally {
+				window.clearTimeout(timer);
 				if (!cancelled) setLoading(false);
 			}
 		})();
 		return () => {
 			cancelled = true;
+			controller.abort();
+			window.clearTimeout(timer);
 		};
-	}, [source, memos, allYearsText]);
+	}, [hasInitial, source, memos, allYearsText]);
 
 	useEffect(() => {
 		const next = entries.filter(

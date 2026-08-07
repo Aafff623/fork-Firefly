@@ -215,8 +215,10 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 			...filteredProps
 		} = props;
 
+		// Astro SSR 可能有 window 桩但无 matchMedia；须双重守卫
 		const reduceMotion =
 			typeof window !== "undefined" &&
+			typeof window.matchMedia === "function" &&
 			window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 		return (
