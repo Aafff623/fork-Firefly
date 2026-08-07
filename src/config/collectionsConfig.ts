@@ -5,60 +5,147 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 文章 frontmatter 写 `collections: [slug, ...]` 即可入合集（多对多）。
  * 合集展示顺序 = 数组顺序；description 用于总览卡片与详情页头部。
  *
- * 新增合集背景：MiniMax style-taste **17 卡通人物风**（日历封面同族 soft pixel chibi，静图非 GIF）。
- * 落盘 `public/assets/collections/<slug>.jpg`（建议 4:3）；人物上半、下半留白保字。
- * Prompt 规范见 `.cursor/skills/firefly-minimax-media/references/prompt-craft.md` →「17 · 卡通人物风」。
+ * 分层：
+ * - 一级（无 parent）：总览页卡片
+ * - 二级（有 parent）：挂在一级详情页内，不单独出现在总览墙
+ *
+ * 当前嵌套：
+ * - `ai-coding-tools` ← tool-claude-code / kimi / opencode / cursor / pi
+ * - `course-geektime` ← 四门极客时间课
  */
 export const collectionsConfig: CollectionsConfig = {
 	items: [
+		// ── 专题系列（一级）──
 		{
-			slug: "agentic-coding",
-			name: "Agentic Coding 实践",
-			description: "用 AI 写码：Harness、Agent 工作流、工具链实测与避坑。",
-			emoji: "🤖",
-			cover: "/assets/collections/agentic-coding.jpg",
-		},
-		{
-			slug: "vibe-coding",
-			name: "Vibe Coding 教程索引",
-			description: "鱼皮 vibe-coding 系列导读：基础、技巧、工具与 MCP 索引。",
-			emoji: "🚀",
-			cover: "/assets/collections/vibe-coding.jpg",
-		},
-		{
-			slug: "mcp-recommend",
-			name: "MCP 推荐",
-			description: "MCP 工具链与生态：协议、推荐与落地实践。",
-			emoji: "🔌",
-			cover: "/assets/collections/mcp-recommend.jpg",
+			slug: "agentic-workflow",
+			name: "Agentic Workflow",
+			description:
+				"跨工具工作流：MiniMax 媒体管线、Windows 编码治理、视觉外挂等可复用打法。",
+			emoji: "⚙️",
+			cover: "/assets/collections/agentic-workflow.jpg",
 		},
 		{
 			slug: "transit-relay",
-			name: "中转 Relay 评测",
+			name: "中转站评测",
 			description: "GPT / Codex 中转方案、额度与压测实录。",
 			emoji: "🔁",
 			cover: "/assets/collections/transit-relay.jpg",
 		},
 		{
-			slug: "windows-discipline",
-			name: "Windows 编码纪律",
-			description: "中文 Windows 下的编码与 Shell 治理：UTF-8、GBK、CC Switch。",
-			emoji: "🪟",
-			cover: "/assets/collections/windows-discipline.jpg",
+			slug: "vibe-tutorial-index",
+			name: "Vibe Coding 教程索引",
+			description: "鱼皮 vibe-coding 系列导读：基础、技巧、工具与 OpenClaw 索引。",
+			emoji: "🚀",
+			cover: "/assets/collections/vibe-coding.jpg",
+		},
+
+		// ── 课程合集（一级：极客时间 → 二级：各门课）──
+		{
+			slug: "course-geektime",
+			name: "极客时间",
+			description: "极客时间 AI 相关训练营结课笔记与选课对比。",
+			emoji: "📚",
+			cover: "/assets/collections/course-geektime.jpg",
 		},
 		{
-			slug: "media-workflow",
-			name: "MiniMax 媒体工作流",
-			description: "封面、配音、音乐、短视频：MiniMax 出媒体全流程。",
-			emoji: "🎨",
-			cover: "/assets/collections/media-workflow.jpg",
+			slug: "course-geektime-agent-fullstack",
+			name: "AI Agent 全栈工程师",
+			description: "14 周全栈 Agent 工程平台训练营结课笔记与拆解。",
+			emoji: "📚",
+			cover: "/assets/collections/course-geektime-agent-fullstack.jpg",
+			parent: "course-geektime",
 		},
 		{
-			slug: "firefly-guide",
-			name: "Firefly 主题指南",
-			description: "本站主题的二次开发与使用：配置、桌宠、评论。",
-			emoji: "🍀",
-			cover: "/assets/collections/firefly-guide.jpg",
+			slug: "course-geektime-agentic-product",
+			name: "Agentic AI 产品",
+			description: "8 周零代码 Agentic AI 产品训练营结课笔记。",
+			emoji: "📚",
+			cover: "/assets/collections/course-geektime-agentic-product.jpg",
+			parent: "course-geektime",
+		},
+		{
+			slug: "course-geektime-enterprise-coding",
+			name: "企业级 AI 编程",
+			description: "SDD × Harness，11 周企业级 AI 编程实战营结课笔记。",
+			emoji: "📚",
+			cover: "/assets/collections/course-geektime-enterprise-coding.jpg",
+			parent: "course-geektime",
+		},
+		{
+			slug: "course-geektime-bootcamps",
+			name: "三门训练营对比",
+			description: "三门 AI 训练营大纲对比与选课重点。",
+			emoji: "📚",
+			cover: "/assets/collections/course-geektime-bootcamps.jpg",
+			parent: "course-geektime",
+		},
+
+		// ── AI 编程工具（一级 + 二级）──
+		{
+			slug: "ai-coding-tools",
+			name: "AI 编程工具",
+			description:
+				"Claude Code、Kimi、OpenCode、Cursor、Pi 等工具上手、技巧与 Harness 生态。",
+			emoji: "🧰",
+			cover: "/assets/collections/ai-coding-tools.jpg",
+		},
+		{
+			slug: "tool-claude-code",
+			name: "Claude Code",
+			description: "美化、记忆、Skill 加载、Harness 生态与 Claude Code 专文。",
+			emoji: "🟣",
+			cover: "/assets/collections/tool-claude-code.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-kimi-code",
+			name: "Kimi Code",
+			description: "Hook 验证、工具循环、从 Claude 迁移等 Kimi 专文。",
+			emoji: "🌙",
+			cover: "/assets/collections/tool-kimi-code.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-opencode",
+			name: "OpenCode",
+			description: "OpenCode + Luna / DeepSeek 协作配置与迁移实践。",
+			emoji: "📂",
+			cover: "/assets/collections/tool-opencode.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-cursor",
+			name: "Cursor",
+			description: "Cursor 侧 Harness 迁移与 Claude 规矩搬运。",
+			emoji: "⬡",
+			cover: "/assets/collections/tool-cursor.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-pi",
+			name: "Pi Coding Agent",
+			description: "Pi 开荒、记忆机制、主题状态栏与 provider 排错。",
+			emoji: "π",
+			cover: "/assets/collections/tool-pi.jpg",
+			parent: "ai-coding-tools",
+		},
+
+		// ── Agentic Coding（一级 · 共性创意）──
+		{
+			slug: "agentic-coding",
+			name: "Agentic Coding",
+			description: "AI 编程过程中的创意、奇技与工程化想法（不绑单一工具）。",
+			emoji: "💡",
+			cover: "/assets/collections/agentic-coding.jpg",
+		},
+
+		// ── 测评（一级）──
+		{
+			slug: "review-skill-mcp",
+			name: "Skill 与 MCP 测评",
+			description: "Skill、MCP 与相关工具链的实测与横评。",
+			emoji: "🔌",
+			cover: "/assets/collections/mcp-recommend.jpg",
 		},
 	],
 };

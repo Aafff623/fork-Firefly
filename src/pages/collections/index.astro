@@ -1,13 +1,13 @@
 ---
 /**
- * 合集总览页：人工策展合集卡片墙（可贴题背景图）。
+ * 合集总览页：只展示一级合集；二级挂在一级详情页内。
  */
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getCollections } from "@/utils/collection-utils";
+import { getTopLevelCollections } from "@/utils/collection-utils";
 
-const collections = await getCollections();
+const collections = await getTopLevelCollections();
 const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
 ---
 
@@ -23,7 +23,7 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     collections.length > 0 ? (
       <div class="collections-grid">
         {
-          collections.map(({ meta, url, posts }) => (
+          collections.map(({ meta, url, posts, children }) => (
             <a
               href={url}
               class:list={[
@@ -47,7 +47,18 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
               <span class="collection-card__name">{meta.name}</span>
               <span class="collection-card__desc">{meta.description}</span>
               <span class="collection-card__count">
-                {posts.length} {i18n(I18nKey.postsCount)}
+                {
+                  children.length > 0 ? (
+                    <>
+                      {children.length} 个子合集 · {posts.length}{" "}
+                      {i18n(I18nKey.postsCount)}
+                    </>
+                  ) : (
+                    <>
+                      {posts.length} {i18n(I18nKey.postsCount)}
+                    </>
+                  )
+                }
               </span>
             </a>
           ))
@@ -115,7 +126,6 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     z-index: -2;
     background-image: var(--collection-cover);
     background-size: cover;
-    /* 像素 chibi 主体偏上裁切更稳 */
     background-position: center top;
     transform: scale(1.02);
     filter: brightness(1.06) saturate(1.04);
@@ -126,7 +136,6 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     position: absolute;
     inset: 0;
     z-index: -1;
-    /* 上半透亮露像素图；底部略厚保标题/篇数，勿闷死 */
     background: linear-gradient(
       180deg,
       color-mix(in oklch, var(--card-bg) 28%, transparent) 0%,
@@ -145,7 +154,6 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     font-size: 1.12rem;
     font-weight: 800;
     font-style: normal;
-    /* 青绿醒目色，告别主紫波浪斜体 */
     color: oklch(0.42 0.12 195);
     text-decoration: none;
     letter-spacing: 0.01em;

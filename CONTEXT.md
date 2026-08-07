@@ -46,7 +46,7 @@
 
 几乎所有开关在 `src/config/*.ts`，经 `@/config` barrel 导出；类型在 `src/types/`。改站优先改配置，不改布局内核。
 
-核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `collectionsConfig`（人工合集登记）…
+核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `collectionsConfig`（人工合集登记，支持一级/二级嵌套）…
 
 亮暗色：`themeColor.defaultMode` 现行为 **`time`**（访客本地时区；`timeSchedule` 默认 07:00–18:00 亮、18:00–07:00 暗）。另支持 `light` / `dark` / `system`；点导航日月钮会写入亮或暗并退出自动模式。
 
@@ -58,6 +58,16 @@ Content Collections（`src/content.config.ts`）：
 - `dynamic` — 动态/碎碎念（可接 Memos）
 - `spec` — 特殊页面 Markdown
 
+### 合集（人工策展）
+
+登记在 `src/config/collectionsConfig.ts`；文章 frontmatter `collections: [slug, ...]`（多对多）。
+
+| 层级 | 规则 |
+|---|---|
+| 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
+| 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
+
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / Vibe / Agentic Coding / Skill·MCP 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
 ## Obsidian 写作源（固定）
 
 | 项 | 值 |

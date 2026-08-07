@@ -1,14 +1,17 @@
 ---
 /**
- * 合集详情页：头部（emoji + 名称 + 描述 + 数量）+ 复用 PostPage 的文章列表。
+ * 合集详情页：
+ * - 一级含二级：先展示子合集卡片，再展示聚合文章列表
+ * - 二级 / 普通：文章列表；若有 parent 显示返回一级链接
  */
 import type { GetStaticPaths } from "astro";
 import PostPage from "@/components/layout/PostPage.astro";
+import { collectionsConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import type { CollectionEntryWithMeta } from "@/utils/collection-utils";
-import { getCollections } from "@/utils/collection-utils";
+import { getCollectionUrl, getCollections } from "@/utils/collection-utils";
 
 export const getStaticPaths = (async () => {
 	const collections = await getCollections();
@@ -20,11 +23,15 @@ export const getStaticPaths = (async () => {
 
 const { collection } = Astro.props as { collection: CollectionEntryWithMeta };
 
-// 未登记 slug（仅动态访问兜底）：跳 404
 if (!collection) return Astro.redirect("/404/");
 
-const { meta, posts } = collection;
+const { meta, posts, children } = collection;
 const page = { data: posts };
+
+const parentUrl = meta.parent ? getCollectionUrl(meta.parent) : null;
+const parentName = meta.parent
+	? collectionsConfig.items.find((c) => c.slug === meta.parent)?.name
+	: null;
 ---
 
 <MainGridLayout title={meta.name} description={meta.description}>
@@ -38,16 +45,81 @@ const page = { data: posts };
         )
       }
       <div class="collection-head__body">
+        {
+          parentUrl && parentName && (
+            <p class="collection-head__crumb">
+              <a href={parentUrl}>{parentName}</a>
+              <span aria-hidden="true"> / </span>
+              <span>{meta.name}</span>
+            </p>
+          )
+        }
         <h1 class="collection-head__title">{meta.name}</h1>
         <p class="collection-head__desc">{meta.description}</p>
         <p class="collection-head__meta">
-          {posts.length} {i18n(I18nKey.postsCount)}
+          {
+            children.length > 0 ? (
+              <>
+                {children.length} 个子合集 · {posts.length}{" "}
+                {i18n(I18nKey.postsCount)}
+              </>
+            ) : (
+              <>
+                {posts.length} {i18n(I18nKey.postsCount)}
+              </>
+            )
+          }
         </p>
       </div>
     </div>
   </div>
 
-  <PostPage page={page} forcedLayout="list" />
+  {
+    children.length > 0 && (
+      <div class="collection-children mb-4">
+        <h2 class="collection-children__title">子合集</h2>
+        <div class="collection-children__grid">
+          {children.map(({ meta: childMeta, url, posts: childPosts }) => (
+            <a
+              href={url}
+              class:list={[
+                "collection-child card-base",
+                childMeta.cover && "collection-child--has-cover",
+              ]}
+              style={
+                childMeta.cover
+                  ? `--collection-cover: url('${childMeta.cover}')`
+                  : undefined
+              }
+            >
+              {childMeta.emoji && (
+                <span class="collection-child__emoji" aria-hidden="true">
+                  {childMeta.emoji}
+                </span>
+              )}
+              <span class="collection-child__name">{childMeta.name}</span>
+              <span class="collection-child__desc">{childMeta.description}</span>
+              <span class="collection-child__count">
+                {childPosts.length} {i18n(I18nKey.postsCount)}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    posts.length > 0 ? (
+      <PostPage page={page} forcedLayout="list" />
+    ) : (
+      children.length === 0 && (
+        <div class="card-base px-8 py-12 text-center">
+          <p class="text-30">{i18n(I18nKey.noData)}</p>
+        </div>
+      )
+    )
+  }
 </MainGridLayout>
 
 <style>
@@ -65,6 +137,21 @@ const page = { data: posts };
 
   .collection-head__body {
     min-width: 0;
+  }
+
+  .collection-head__crumb {
+    margin: 0 0 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .collection-head__crumb a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .collection-head__crumb a:hover {
+    text-decoration: underline;
   }
 
   .collection-head__title {
@@ -95,5 +182,104 @@ const page = { data: posts };
     font-size: 0.8rem;
     color: var(--text-color-muted, oklch(0.5 0.02 70));
     font-variant-numeric: tabular-nums;
+  }
+
+  .collection-children__title {
+    margin: 0 0 0.65rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .collection-children__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 0.75rem;
+  }
+
+  .collection-child {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-height: 9.5rem;
+    padding: 1rem 1.05rem 0.9rem;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 78%, transparent);
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .collection-child--has-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-image: var(--collection-cover);
+    background-size: cover;
+    background-position: center top;
+  }
+
+  .collection-child--has-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--card-bg) 30%, transparent) 0%,
+      color-mix(in oklch, var(--card-bg) 72%, transparent) 70%,
+      color-mix(in oklch, var(--card-bg) 88%, transparent) 100%
+    );
+  }
+
+  .collection-child__emoji {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .collection-child__name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: oklch(0.42 0.12 195);
+  }
+
+  :global(.dark) .collection-child__name {
+    color: oklch(0.78 0.1 195);
+  }
+
+  .collection-child__desc {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: oklch(0.32 0.02 70);
+  }
+
+  :global(.dark) .collection-child__desc {
+    color: oklch(0.86 0.01 70);
+  }
+
+  .collection-child__count {
+    margin-top: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: oklch(0.35 0.02 70);
+  }
+
+  :global(.dark) .collection-child__count {
+    color: oklch(0.88 0.01 70);
+  }
+
+  @media (hover: hover) {
+    .collection-child:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in oklch, var(--primary) 34%, var(--line-divider));
+      box-shadow: 0 0.35rem 0.9rem color-mix(in oklch, var(--primary) 10%, transparent);
+    }
   }
 </style>
