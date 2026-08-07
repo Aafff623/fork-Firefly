@@ -91,12 +91,10 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	padding-left: 0 !important;
 }
 
-:not(.grid-mode) > .post-card-wrapper--letter:hover,
-:not(.grid-mode) > .post-card-wrapper--letter:active,
 .list-mode .post-card-wrapper--letter:hover,
 .list-mode .post-card-wrapper--letter:active,
-.waterfall-mode .post-card-wrapper--letter:hover,
-.waterfall-mode .post-card-wrapper--letter:active {
+.card-mode .post-card-wrapper--letter:hover,
+.card-mode .post-card-wrapper--letter:active {
 	transform: none !important;
 }
 
@@ -442,248 +440,120 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	width: 100% !important;
 }
 
-/* ========== grid：有封面 → 整卡背景（不再右侧小图） ========== */
-.grid-mode .post-card-wrapper--letter.has-cover {
-	display: block !important;
-	grid-template-columns: unset !important;
+/* card：置顶跨栏放大 → 左文右图（文字主体，封面约占 1/3） */
+.card-mode .post-card-wrapper--letter {
+	display: grid !important;
+	flex-direction: unset !important;
+	height: auto !important;
+	min-height: 11.5rem !important;
+	aspect-ratio: auto !important;
+	grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 32%) !important;
+	grid-template-rows: 1fr !important;
+	padding: 0 !important;
+}
+
+.card-mode .post-card-wrapper--letter > .post-card-content {
 	position: relative !important;
-	/* 对齐方形置顶卡视觉尺度 */
-	aspect-ratio: 1 / 1;
-	min-height: 0 !important;
-	height: auto !important;
-	background: var(--letter-cover) !important;
-	background-color: var(--letter-cover) !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover > .letter-cover {
-	position: absolute !important;
-	inset: 0 !important;
-	grid-column: unset !important;
-	grid-row: unset !important;
-	width: 100% !important;
-	height: 100% !important;
-	min-height: 0 !important;
-	max-height: none !important;
-	aspect-ratio: auto !important;
-	border: 0 !important;
-	border-radius: inherit !important;
-	z-index: 0;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover > .letter-cover::before {
-	/* 底部可读性渐变，压过原淡紫罩 */
-	background: linear-gradient(
-		180deg,
-		oklch(0% 0 0 / 0.12) 0%,
-		oklch(0% 0 0 / 0.18) 38%,
-		oklch(0% 0 0 / 0.72) 100%
-	) !important;
-	z-index: 1;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover > .letter-cover::after {
-	/* cover 角标在深色底上更清晰 */
-	color: oklch(100% 0 0 / 0.72);
-	text-shadow: 0 1px 2px oklch(0% 0 0 / 0.35);
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover > .post-card-content {
-	position: absolute !important;
-	inset: 0 !important;
-	z-index: 2;
-	width: 100% !important;
-	max-width: none !important;
-	height: 100% !important;
-	display: flex !important;
-	flex-direction: column !important;
-	justify-content: flex-end !important;
-	padding: 1rem 1rem 0.9rem !important;
-	background: transparent !important;
-	background-color: transparent !important;
-	color: oklch(98% 0.01 90);
-	box-sizing: border-box;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .post-card-title,
-.grid-mode .post-card-wrapper--letter.has-cover .post-card-title-hl {
-	color: oklch(99% 0.01 90) !important;
-	font-size: 1.12rem !important;
-	line-height: 1.3 !important;
-	text-shadow: 0 1px 2px oklch(0% 0 0 / 0.35);
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .post-card-title:hover,
-.grid-mode .post-card-wrapper--letter.has-cover .post-card-title:hover .post-card-title-hl {
-	color: oklch(96% 0.04 var(--hue)) !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .card-header-meta,
-.grid-mode .post-card-wrapper--letter.has-cover .card-header-meta .text-50,
-.grid-mode .post-card-wrapper--letter.has-cover .card-header-meta .text-sm,
-.grid-mode .post-card-wrapper--letter.has-cover .card-header-meta span {
-	color: oklch(96% 0.01 90 / 0.78) !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .card-header-meta a {
-	color: oklch(92% 0.06 var(--hue)) !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .description {
-	color: oklch(97% 0.01 90 / 0.82) !important;
-	font-size: 0.86rem !important;
-	max-width: none !important;
-	-webkit-line-clamp: 2 !important;
-	line-clamp: 2 !important;
-	margin-bottom: 0.55rem !important;
-	flex: 0 1 auto !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .card-rail {
-	display: grid !important;
-	grid-template-columns: auto minmax(0, 1fr) auto !important;
-	gap: 0.4rem 0.5rem !important;
-	align-items: baseline !important;
-	border-top-color: oklch(100% 0 0 / 0.22);
-	color: oklch(96% 0.01 90 / 0.72);
-	font-size: 0.62rem !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .card-rail .tags {
-	min-width: 0 !important;
-	overflow: hidden !important;
-	text-overflow: ellipsis !important;
-	white-space: nowrap !important;
-	display: block !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .card-rail .tags a,
-.grid-mode .post-card-wrapper--letter.has-cover .card-rail .tags b {
-	color: oklch(92% 0.06 var(--hue));
-	font-size: inherit !important;
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .pinned-btn--sticky {
-	color: oklch(98% 0.01 90) !important;
-	background: oklch(0% 0 0 / 0.28) !important;
-	border-color: oklch(100% 0 0 / 0.28) !important;
-	backdrop-filter: blur(6px);
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .pinned-auto-meta__glyph {
-	color: oklch(0.9 0.12 95) !important;
-}
-
-/* grid 无封面 letter：保持奶油纸，不套背景图规则 */
-.grid-mode .post-card-wrapper--letter.no-cover {
-	flex-direction: unset !important;
-	height: auto !important;
-	aspect-ratio: auto;
-	grid-template-columns: 1fr !important;
-}
-
-.grid-mode .post-card-wrapper--letter.no-cover > .post-card-content {
-	width: 100% !important;
-	padding: 1rem 1rem 0.75rem !important;
-}
-
-.grid-mode .post-card-wrapper--letter.no-cover .post-card-title {
-	font-size: 1.15rem !important;
-	line-height: 1.35 !important;
-}
-
-/* waterfall：封面在上 1:1，正文在下（统一方形尺度） */
-:is(.waterfall-mode) .post-card-wrapper--letter {
-	display: grid !important;
-	flex-direction: unset !important;
-	height: auto !important;
-	aspect-ratio: auto !important;
-	grid-template-columns: 1fr !important;
-	grid-template-rows: auto auto !important;
-}
-
-:is(.waterfall-mode) .post-card-wrapper--letter > .letter-cover {
+	inset: auto !important;
 	grid-column: 1 !important;
 	grid-row: 1 !important;
-	position: relative !important;
-	inset: auto !important;
-	width: 100% !important;
-	min-width: 0 !important;
-	min-height: 0 !important;
-	height: auto !important;
-	aspect-ratio: 1 / 1 !important;
-	border-left: 0 !important;
-	border-bottom: 1px solid var(--letter-rule) !important;
-	border-radius: 0 !important;
-	max-height: none !important;
-}
-
-:is(.waterfall-mode) .post-card-wrapper--letter > .post-card-content {
-	position: relative !important;
-	inset: auto !important;
-	grid-column: 1 !important;
-	grid-row: 2 !important;
 	width: 100% !important;
 	height: auto !important;
 	min-width: 0 !important;
-	padding: 0.8rem 0.9rem 0.7rem !important;
+	min-height: 11.5rem !important;
+	padding: 1.05rem 1.15rem 0.9rem !important;
 	background: var(--letter-surface) !important;
 	background-color: var(--letter-surface) !important;
 	color: var(--letter-ink);
 	justify-content: flex-start !important;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter .post-card-title,
-:is(.waterfall-mode) .post-card-wrapper--letter .post-card-title-hl {
+.card-mode .post-card-wrapper--letter > .letter-cover {
+	grid-column: 2 !important;
+	grid-row: 1 !important;
+	position: relative !important;
+	inset: auto !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	min-height: 11.5rem !important;
+	height: 100% !important;
+	aspect-ratio: auto !important;
+	max-height: none !important;
+	border-left: 1px solid var(--letter-rule) !important;
+	border-bottom: 0 !important;
+	border-radius: 0 !important;
+}
+
+.card-mode .post-card-wrapper--letter .post-card-title,
+.card-mode .post-card-wrapper--letter .post-card-title-hl {
 	color: var(--letter-ink) !important;
-	font-size: 1.05rem !important;
+	font-size: 1.22rem !important;
 	line-height: 1.35 !important;
 	text-shadow: none;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter .description {
-	-webkit-line-clamp: 2 !important;
-	line-clamp: 2 !important;
-	font-size: 0.84rem !important;
+.card-mode .post-card-wrapper--letter .description {
+	-webkit-line-clamp: 3 !important;
+	line-clamp: 3 !important;
+	font-size: 0.86rem !important;
+	font-style: italic !important;
 	max-width: none !important;
 	color: var(--letter-muted) !important;
+	margin-bottom: 0.55rem !important;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter .card-header-meta,
-:is(.waterfall-mode) .post-card-wrapper--letter .card-header-meta .text-50,
-:is(.waterfall-mode) .post-card-wrapper--letter .card-header-meta .text-sm {
+.card-mode .post-card-wrapper--letter .card-header-meta,
+.card-mode .post-card-wrapper--letter .card-header-meta .text-50,
+.card-mode .post-card-wrapper--letter .card-header-meta .text-sm {
 	color: var(--letter-muted) !important;
+	font-size: 0.75rem !important;
 }
 
-/* 瀑布/窄卡：底部 rail 与列表一致——单行 分类 | #标签 · #标签 | 字数，禁止竖排大号标签 */
-:is(.waterfall-mode) .post-card-wrapper--letter .card-rail {
+.card-mode .post-card-wrapper--letter .card-rail {
 	display: grid !important;
 	grid-template-columns: auto minmax(0, 1fr) auto !important;
-	gap: 0.4rem 0.5rem !important;
-	align-items: baseline !important;
+	gap: 0.4rem 0.55rem !important;
+	align-items: center !important;
+	border-top: 1px solid var(--letter-rule) !important;
 	border-top-color: var(--letter-rule);
+	padding-top: 0.5rem !important;
+	margin-top: auto !important;
 	color: var(--letter-muted);
-	font-size: 0.62rem !important;
-	letter-spacing: 0.04em;
+	font-size: 0.72rem !important;
+	letter-spacing: 0.02em;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter .card-rail .tags {
+.card-mode .post-card-wrapper--letter .card-rail .tags {
 	min-width: 0 !important;
-	overflow: hidden !important;
-	text-overflow: ellipsis !important;
-	white-space: nowrap !important;
-	display: block !important;
-	-webkit-line-clamp: unset !important;
-	line-clamp: unset !important;
+	overflow: visible !important;
+	text-overflow: unset !important;
+	white-space: normal !important;
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.28rem !important;
+	align-items: center;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter .card-rail .tags a,
-:is(.waterfall-mode) .post-card-wrapper--letter .card-rail .tags b {
-	color: var(--letter-accent);
-	font-size: inherit !important;
-	font-weight: 500;
+.card-mode .post-card-wrapper--letter .card-rail .tags .rail-tag-gap {
+	display: none !important;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter > .letter-cover::before {
+.card-mode .post-card-wrapper--letter .card-rail .tags a,
+.card-mode .post-card-wrapper--letter .card-rail .tags b {
+	display: inline-flex !important;
+	align-items: center;
+	padding: 0.12rem 0.42rem !important;
+	border-radius: 999px !important;
+	border: 1px solid color-mix(in oklch, var(--letter-accent) 28%, var(--letter-rule)) !important;
+	background: var(--letter-accent-soft) !important;
+	color: var(--letter-accent) !important;
+	font-size: 0.68rem !important;
+	font-weight: 600 !important;
+	line-height: 1.25 !important;
+	text-decoration: none !important;
+}
+
+.card-mode .post-card-wrapper--letter > .letter-cover::before {
 	background: linear-gradient(
 		160deg,
 		color-mix(in oklch, var(--letter-accent) 14%, transparent),
@@ -691,12 +561,43 @@ body.wallpaper-transparent .card-base.post-card-wrapper--letter,
 	) !important;
 }
 
-:is(.waterfall-mode) .post-card-wrapper--letter > .letter-cover::after {
+.card-mode .post-card-wrapper--letter > .letter-cover::after {
 	color: color-mix(in oklch, var(--letter-muted) 70%, white);
 	text-shadow: none;
 }
 
-/* list / 默认窄屏：letter 仍可上下叠（非 grid 背景模式） */
+/* 窄屏卡片：置顶改上下叠，封面扁条 */
+@media (max-width: 720px) {
+	.card-mode .post-card-wrapper--letter {
+		grid-template-columns: 1fr !important;
+		grid-template-rows: auto auto !important;
+		min-height: 0 !important;
+	}
+
+	.card-mode .post-card-wrapper--letter > .letter-cover {
+		grid-column: 1 !important;
+		grid-row: 1 !important;
+		min-height: 0 !important;
+		height: auto !important;
+		aspect-ratio: 2.2 / 1 !important;
+		border-left: 0 !important;
+		border-bottom: 1px solid var(--letter-rule) !important;
+	}
+
+	.card-mode .post-card-wrapper--letter > .post-card-content {
+		grid-column: 1 !important;
+		grid-row: 2 !important;
+		min-height: 0 !important;
+		padding: 0.85rem 0.9rem 0.75rem !important;
+	}
+
+	.card-mode .post-card-wrapper--letter .post-card-title,
+	.card-mode .post-card-wrapper--letter .post-card-title-hl {
+		font-size: 1.08rem !important;
+	}
+}
+
+/* list / 默认窄屏：letter 仍可上下叠 */
 @media (max-width: 720px) {
 	.list-mode .post-card-wrapper--letter,
 	.list-mode .post-card-wrapper--letter.post-card-wrapper--featured {

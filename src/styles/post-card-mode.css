@@ -1,0 +1,253 @@
+/* ===== 卡片布局（原瀑布视觉）=====
+ * CSS multi-column + break-inside: avoid。
+ * 文字信息为主体；封面缩小靠下；置顶 Letter 跨栏放大。
+ * 注意：卡片节点同时带 .post-card-item + .post-card-wrapper（无嵌套壳）。
+ */
+
+#post-list-container.card-mode {
+	display: block;
+	column-count: 1;
+	column-gap: 0.9rem;
+}
+
+@media (min-width: 640px) {
+	#post-list-container.card-mode {
+		column-count: 2;
+	}
+}
+
+@media (min-width: 1024px) {
+	#post-list-container.card-mode {
+		column-count: 3;
+	}
+}
+
+#post-list-container.card-mode > .post-card-item {
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	page-break-inside: avoid;
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 0.9rem;
+	vertical-align: top;
+}
+
+/* ???????????????????? */
+#post-list-container.card-mode > .post-card-wrapper--letter {
+	column-span: all;
+	width: 100%;
+	margin-bottom: 1.15rem;
+}
+
+#post-list-container.card-mode .post-card-wrapper {
+	height: auto !important;
+	overflow: hidden !important;
+}
+
+/* ---------- ??????/???? ? ??? ? ???? ---------- */
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter) {
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: flex-start !important;
+	gap: 0;
+	padding: 0.8rem 0.85rem 0.7rem !important;
+	box-sizing: border-box;
+	position: relative;
+}
+
+/* ????????? order ???????????? */
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	> .post-card-content {
+	display: contents !important;
+	padding: 0 !important;
+	width: auto !important;
+	height: auto !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.post-card-head {
+	order: 1;
+	margin-bottom: 0.3rem !important;
+	gap: 0.4rem;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.card-header-meta {
+	order: 2;
+	margin-bottom: 0.35rem !important;
+	gap: 0.35rem !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.description {
+	order: 3;
+	margin: 0 0 0.55rem !important;
+	-webkit-line-clamp: 3 !important;
+	line-clamp: 3 !important;
+	flex-grow: 0 !important;
+	font-size: 0.8rem !important;
+	line-height: 1.45 !important;
+	font-style: italic;
+	opacity: 0.88;
+}
+
+/* ????? 16:9???????????? */
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	> .post-card-image {
+	order: 4;
+	display: block !important;
+	position: relative !important;
+	inset: auto !important;
+	width: 100% !important;
+	height: auto !important;
+	max-height: 8.5rem !important;
+	margin: 0 0 0.55rem !important;
+	overflow: hidden !important;
+	aspect-ratio: 16 / 9 !important;
+	border-radius: 0.55rem !important;
+	flex-shrink: 0;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	> .post-card-image
+	.cover-image-container {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	min-height: 0 !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	> .post-card-image
+	img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	opacity: 1 !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.post-card-bottom-tags {
+	order: 5;
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.28rem !important;
+	align-items: center;
+	padding-top: 0.15rem !important;
+	margin-top: 0 !important;
+	font-size: 0.68rem !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.post-card-bottom-tags
+	a,
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.post-card-tag {
+	display: inline-flex !important;
+	align-items: center;
+	max-width: 100%;
+	padding: 0.12rem 0.42rem !important;
+	border-radius: 999px !important;
+	border: 1px solid oklch(0.55 0.04 260 / 0.22) !important;
+	background: oklch(0.55 0.08 260 / 0.08) !important;
+	font-size: 0.66rem !important;
+	font-weight: 600 !important;
+	line-height: 1.25 !important;
+	text-decoration: none !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.stats {
+	order: 6;
+	margin-top: 0.35rem !important;
+	padding-top: 0 !important;
+	font-size: 0.68rem !important;
+}
+
+/* ?????????????? */
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	> .post-card-enter-btn {
+	order: 10;
+	position: absolute !important;
+	top: 0.55rem;
+	right: 0.55rem;
+	z-index: 2;
+	width: 1.85rem !important;
+	height: 1.85rem !important;
+	margin: 0 !important;
+}
+
+/* ??????????? */
+#post-list-container.card-mode
+	> .post-card-wrapper.no-cover:not(.post-card-wrapper--letter)
+	> .post-card-image--placeholder {
+	display: none !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.post-card-title {
+	font-size: 0.98rem !important;
+	line-height: 1.35 !important;
+	margin-bottom: 0 !important;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.card-header-meta
+	.text-sm,
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.card-header-meta
+	.text-50 {
+	font-size: 0.7rem !important;
+	line-height: 1.2 !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.card-header-meta
+	.meta-icon {
+	width: 1.05rem !important;
+	height: 1.05rem !important;
+	margin-right: 0.15rem !important;
+}
+
+#post-list-container.card-mode
+	> .post-card-wrapper:not(.post-card-wrapper--letter)
+	.card-header-meta
+	.text-xl {
+	font-size: 0.85rem !important;
+	line-height: 1.2 !important;
+}
+
+/* ??????????? padding ??????? */
+#post-list-container.card-mode
+	> .post-card-wrapper.no-cover:not(.post-card-wrapper--letter)
+	> .post-card-content,
+#post-list-container.card-mode .no-cover .post-card-content {
+	padding-right: 0 !important;
+	width: auto !important;
+}

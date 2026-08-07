@@ -330,17 +330,31 @@ const publishedLabel = formatDateToYYYYMMDD(published);
 
   {
     !useLetterSkin && !hasCover && (
-      <a
-        href={url}
-        aria-label={title}
-        class:list={["post-card-enter-btn", "flex"]}
-      >
-        <Icon
-          is:inline
-          name="lucide:square-arrow-out-up-right"
-          class="transition mx-auto self-center"
-        />
-      </a>
+      <>
+        {/* grid 分层：与有封面同构的 16:9 占位头；list 下由 CSS 隐藏 */}
+        <a
+          href={url}
+          aria-label={title}
+          class="post-card-image post-card-image--placeholder group"
+        >
+          <Icon
+            is:inline
+            name="lucide:image"
+            class="post-card-placeholder-glyph"
+          />
+        </a>
+        <a
+          href={url}
+          aria-label={title}
+          class:list={["post-card-enter-btn", "flex"]}
+        >
+          <Icon
+            is:inline
+            name="lucide:square-arrow-out-up-right"
+            class="transition mx-auto self-center"
+          />
+        </a>
+      </>
     )
   }
 </div>
@@ -429,68 +443,13 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     }
   }
 
-  /* === Grid / Waterfall Mode Styles === */
-  /* letter 由 post-card-letter.css 单独改形态 */
-  :global(:is(.grid-mode, .waterfall-mode))
-    .post-card-wrapper:not(.post-card-wrapper--letter) {
-    flex-direction: column-reverse !important;
-    justify-content: flex-end !important;
-  }
-
-  /* 行内不对齐拉伸：有图卡按 1:1，无图卡随内容 */
-  :global(.grid-mode) .post-card-wrapper {
-    height: auto !important;
-    align-self: start;
-  }
-
-  :global(.waterfall-mode) .post-card-wrapper {
+  /* === Card Mode === */
+  /* 形态由 post-card-mode.css / post-card-letter.css 管 */
+  :global(.card-mode) .post-card-wrapper {
     height: auto !important;
   }
 
-  :global(:is(.grid-mode, .waterfall-mode))
-    .post-card-wrapper:not(.post-card-wrapper--letter):not(.post-card--bg-cover)
-    .post-card-content {
-    width: 100% !important;
-    height: auto !important;
-    flex-grow: 1 !important;
-  }
-
-  /* waterfall 普通卡：封面在上，1:1 由 waterfall.css 定 */
-  :global(.waterfall-mode)
-    .post-card-wrapper:not(.post-card-wrapper--letter)
-    .post-card-image {
-    position: relative !important;
-    top: auto !important;
-    bottom: auto !important;
-    right: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-    border-radius: var(--radius-large) var(--radius-large) 0 0 !important;
-    max-height: none !important;
-    aspect-ratio: 1 / 1 !important;
-  }
-
-  /* grid 全卡背景样式已迁到 src/styles/post-card.css（全局），避免 scoped 选不中 CoverImage */
-
-  :global(.waterfall-mode) .description {
-    flex-grow: 0 !important;
-  }
-
-  :global(:is(.grid-mode, .waterfall-mode)) .stats {
-    margin-top: auto !important;
-  }
-
-  :global(.waterfall-mode)
-    .post-card-wrapper:not(.post-card-wrapper--letter).has-cover
-    .post-card-content {
-    padding-top: 0.75rem !important;
-  }
-
-  :global(:is(.grid-mode, .waterfall-mode)) .no-cover .post-card-content {
-    width: calc(100% - 52px - 12px) !important;
-  }
-
-  :global(:is(.grid-mode, .waterfall-mode)) .post-card-enter-btn {
+  :global(.card-mode) .post-card-enter-btn {
     display: flex !important;
   }
 </style>

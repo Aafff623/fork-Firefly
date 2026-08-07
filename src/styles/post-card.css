@@ -1,5 +1,5 @@
 /* ===== 文章卡片（reading-ui-polish）=====
- * list：Featured + divide-y 行；grid：克制卡；兼容 masonry / dark / card-border。
+ * list：Featured + divide-y 行；card：多列卡片流；兼容 dark / card-border。
  */
 
 /* ---------- 共享：更扁的轮廓，减弱上浮 ---------- */
@@ -29,34 +29,22 @@
 		0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
-/* grid：轻阴影；transform 交给方向感应（post-card-grid-bg），瀑布仍不上浮 */
+/* card：轻阴影、不上浮 */
 @media (hover: hover) {
-	.waterfall-mode .post-card-wrapper:hover {
+	.card-mode .post-card-wrapper:hover {
 		transform: none;
 		box-shadow:
 			0 0 0 1px oklch(0.45 0.01 260 / 0.1),
 			0 4px 16px -10px oklch(0.35 0.01 260 / 0.14);
 	}
 
-	.grid-mode .post-card-wrapper:hover {
-		box-shadow:
-			0 0 0 1px oklch(0.45 0.01 260 / 0.1),
-			0 4px 16px -10px oklch(0.35 0.01 260 / 0.14);
-	}
-
-	:root.dark .waterfall-mode .post-card-wrapper:hover {
+	:root.dark .card-mode .post-card-wrapper:hover {
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.07),
 			0 4px 18px -12px rgba(0, 0, 0, 0.45);
 	}
 
-	:root.dark .grid-mode .post-card-wrapper:hover {
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.07),
-			0 4px 18px -12px rgba(0, 0, 0, 0.45);
-	}
-
-	.enable-card-border :is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover {
+	.enable-card-border .card-mode .post-card-wrapper:hover {
 		border-color: oklch(0.7 0.08 var(--hue) / 0.28);
 	}
 }
@@ -106,7 +94,7 @@
 	margin-top: 0.15rem;
 }
 
-/* 荧光笔：grid / waterfall / list（非 Letter）悬停展开 */
+/* 荧光笔：card / list（非 Letter）悬停展开 */
 /* --card-hl 由 JS 在 pointerenter 时随机写入，避免同卡连刷撞色 */
 .post-card-title-hl {
 	background-image: var(--card-hl, var(--hl-primary));
@@ -119,13 +107,13 @@
 }
 
 @media (hover: hover) {
-	:is(.grid-mode, .waterfall-mode, .list-mode)
+	:is(.card-mode, .list-mode)
 		.post-card-wrapper:not(.post-card-wrapper--letter):hover
 		.post-card-title-hl {
 		background-size: 100% 10px;
 	}
 
-	:is(.grid-mode, .waterfall-mode, .list-mode)
+	:is(.card-mode, .list-mode)
 		.post-card-wrapper:not(.post-card-wrapper--letter)
 		.post-card-title:hover
 		.post-card-title-hl {
@@ -210,20 +198,15 @@
 	filter: brightness(1.08);
 }
 
-/* 卡片 / 瀑布：与列表 rail 同尺度，禁止大号换行堆叠 */
-:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-bottom-tags {
-	padding-top: 0.5rem;
-	font-size: 0.62rem;
-}
-
-:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-bottom-tags a,
-:is(.grid-mode, .waterfall-mode) .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-tag {
+/* 卡片模式底栏：由 post-card-mode.css 管胶囊；此处仅兜底截断 */
+.card-mode .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-bottom-tags a,
+.card-mode .post-card-wrapper:not(.post-card-wrapper--letter) .post-card-tag {
 	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-/* 封面：grid 轻微 scale；list-row 隐藏 */
+/* 封面：card 轻微 scale；list-row 隐藏 */
 .post-card-wrapper .post-card-image img {
 	transition:
 		transform 0.5s var(--ease-decelerate),
@@ -232,23 +215,10 @@
 }
 
 @media (hover: hover) {
-	:is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover .post-card-image img {
+	.card-mode .post-card-wrapper:hover .post-card-image img {
 		transform: scale(1.015);
 		filter: saturate(1.02);
 	}
-
-	/* grid 全卡背景：封面轻微放大 */
-	.grid-mode .post-card-wrapper.has-cover:hover .post-card-image img,
-	.grid-mode .post-card-wrapper--letter.has-cover:hover .letter-cover__media img {
-		transform: scale(1.03);
-		filter: saturate(1.04);
-	}
-}
-
-.grid-mode .post-card-wrapper--letter.has-cover .letter-cover__media img {
-	transition:
-		transform 0.55s var(--ease-decelerate),
-		filter 0.55s var(--ease-decelerate);
 }
 
 .post-card-image-ring {
@@ -290,7 +260,7 @@
 }
 
 @media (hover: hover) {
-	:is(.grid-mode, .waterfall-mode) .post-card-wrapper:hover .post-card-enter-btn {
+	.card-mode .post-card-wrapper:hover .post-card-enter-btn {
 		opacity: 1;
 		transform: none;
 	}
@@ -299,6 +269,11 @@
 /* list 容器：行之间用 border，去掉 gap 空隙 */
 #post-list-container.list-mode {
 	gap: 0 !important;
+}
+
+/* 列表不用占位头图（卡片模式另有规则） */
+.list-mode .post-card-image--placeholder {
+	display: none !important;
 }
 
 /* 列表模式：简介统一斜体（featured / row / letter） */
@@ -465,7 +440,7 @@
 }
 
 
-/* grid full-bleed styles: post-card-grid-bg.css */
+/* card layout styles: post-card-mode.css */
 
 
 /* ========== 相关/随机推荐行 ========== */

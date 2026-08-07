@@ -3,7 +3,7 @@
  * Hallmark · component: modal+chip · genre: editorial · theme: firefly-tokens
  * states: default · hover · focus · active · disabled · loading · error · success
  *
- * 园主置顶入口：挂在卡片内容区，确认框 portal 到 body，兼容 list / grid / waterfall。
+ * 园主置顶入口：挂在卡片内容区，确认框 portal 到 body，兼容 list / card。
  */
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
