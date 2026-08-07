@@ -14,9 +14,9 @@ export const siteConfig: SiteConfig = {
 	// 站点 URL
 	site_url: "https://fork-firefly.vercel.app",
 
-	// 站点描述（对齐 GitHub bio / profile）
+	// 站点描述（对齐 GitHub bio / profile · 2026-08）
 	description:
-		"threetwoa 的个人博客。中北软件工程 · Java & Python · 折腾 Agent 与发货。",
+		"threetwoa 的个人博客。中北软件工程 · Spec-driven / Harness · Agent 与发货。",
 
 	// 站点关键词
 	keywords: [
@@ -36,10 +36,10 @@ export const siteConfig: SiteConfig = {
 		hue: 290,
 		// 默认模式："light" | "dark" | "system" | "time"（按本地时段）
 		defaultMode: "time",
-		// 按时段：07:00–18:00 亮色，18:00–07:00 暗色（访客本地时区）
+		// 按时段（站点时区 Asia/Shanghai）：07:00–19:00 亮色，19:00–07:00 暗色
 		timeSchedule: {
 			lightFromHour: 7,
-			darkFromHour: 18,
+			darkFromHour: 19,
 		},
 	},
 
@@ -240,8 +240,8 @@ export const siteConfig: SiteConfig = {
 
 	// 分页配置
 	pagination: {
-		// 每页显示的文章数量
-		postsPerPage: 10,
+		// 每页显示的文章数量（list/card 共用；卡片最多 3 列，宜取 3 的倍数以便主列长过侧栏）
+		postsPerPage: 24,
 	},
 
 	// 图像优化及响应式配置

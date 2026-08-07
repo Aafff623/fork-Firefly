@@ -46,8 +46,19 @@ function updateDisplayedMode() {
 	}
 }
 
+/**
+ * 循环：time（北京时段自动）→ light → dark → time
+ * 避免点一次就永远锁死手动亮/暗、丢掉时间感知。
+ */
 function toggleScheme() {
-	const next = displayedMode === DARK_MODE ? LIGHT_MODE : DARK_MODE;
+	let next: LIGHT_DARK_MODE;
+	if (mode === TIME_MODE) {
+		next = LIGHT_MODE;
+	} else if (mode === LIGHT_MODE) {
+		next = DARK_MODE;
+	} else {
+		next = TIME_MODE;
+	}
 	mode = next;
 	setTheme(next);
 	updateDisplayedMode();
@@ -112,7 +123,7 @@ onMount(() => {
 <button
 	type="button"
 	id="scheme-switch"
-	aria-label="Light/Dark Mode"
+	aria-label="主题：时间感知 / 亮色 / 暗色"
 	aria-pressed={isDark}
 	class="day-slide"
 	class:is-night={isDark}

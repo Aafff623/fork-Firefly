@@ -64,6 +64,30 @@ export function getTimeScheduleHours(): {
 	return { lightFromHour, darkFromHour };
 }
 
+/** 主题时段所用时区：站点时区，现行 Asia/Shanghai（北京时间） */
+export function getThemeTimeZone(): string {
+	return siteConfig.timezone || "Asia/Shanghai";
+}
+
+/**
+ * 站点时区下的小时 0–23。
+ * Asia/Shanghai 无夏令时，等价北京时间。
+ */
+export function getZonedHour(
+	date: Date = new Date(),
+	timeZone: string = getThemeTimeZone(),
+): number {
+	const hourPart = new Intl.DateTimeFormat("en-US", {
+		timeZone,
+		hour: "numeric",
+		hourCycle: "h23",
+	})
+		.formatToParts(date)
+		.find((p) => p.type === "hour")?.value;
+	const hour = Number(hourPart);
+	return Number.isFinite(hour) ? hour : 0;
+}
+
 /** hour in [0,23]：dark when hour >= darkFrom || hour < lightFrom */
 export function isDarkHour(
 	hour: number,
@@ -83,15 +107,14 @@ export function getSystemTheme(): LIGHT_DARK_MODE {
 		: LIGHT_MODE;
 }
 
-// 按本地时段解析亮/暗
+// 按站点时区（北京时间）时段解析亮/暗
 export function getTimeTheme(): LIGHT_DARK_MODE {
 	const { lightFromHour, darkFromHour } = getTimeScheduleHours();
-	const hour =
-		typeof Date !== "undefined" ? new Date().getHours() : lightFromHour;
+	const hour = getZonedHour();
 	return isDarkHour(hour, lightFromHour, darkFromHour) ? DARK_MODE : LIGHT_MODE;
 }
 
-// 解析主题（system → OS；time → 本地时段）
+// 解析主题（system → OS；time → 站点时区时段）
 export function resolveTheme(theme: LIGHT_DARK_MODE): LIGHT_DARK_MODE {
 	if (theme === SYSTEM_MODE) {
 		return getSystemTheme();
@@ -293,21 +316,98 @@ function cleanupSystemThemeListener() {
 	systemThemeListener = null;
 }
 
-/** 距下一切换边界（lightFrom / darkFrom 整点）的毫秒数 */
+/**
+ * 距站点时区下一整点边界的毫秒数。
+ * Asia/Shanghai 固定 UTC+8（无 DST），用偏移推算；其它 IANA 走 Intl 迭代。
+ */
+function msUntilNextZonedHour(
+	hour: number,
+	timeZone: string,
+	nowMs: number = Date.now(),
+): number {
+	if (timeZone === "Asia/Shanghai") {
+		const offsetMs = 8 * 60 * 60 * 1000;
+		const bj = new Date(nowMs + offsetMs);
+		const y = bj.getUTCFullYear();
+		const m = bj.getUTCMonth();
+		const d = bj.getUTCDate();
+		let target = Date.UTC(y, m, d, hour, 0, 0, 0) - offsetMs;
+		if (target <= nowMs) {
+			target = Date.UTC(y, m, d + 1, hour, 0, 0, 0) - offsetMs;
+		}
+		return target - nowMs;
+	}
+
+	// 通用：在「今天 / 明天」的目标钟点上，把 UTC 猜测收敛到该时区挂钟
+	const dayKey = new Intl.DateTimeFormat("en-CA", {
+		timeZone,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}).format(new Date(nowMs));
+	const [y, mo, d] = dayKey.split("-").map(Number);
+
+	const zonedWallToUtc = (
+		year: number,
+		month: number,
+		day: number,
+		h: number,
+	): number => {
+		let guess = Date.UTC(year, month - 1, day, h, 0, 0);
+		for (let i = 0; i < 4; i++) {
+			const parts = Object.fromEntries(
+				new Intl.DateTimeFormat("en-US", {
+					timeZone,
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit",
+					hourCycle: "h23",
+				})
+					.formatToParts(new Date(guess))
+					.filter((p) => p.type !== "literal")
+					.map((p) => [p.type, p.value]),
+			) as Record<string, string>;
+			const asUtc = Date.UTC(
+				Number(parts.year),
+				Number(parts.month) - 1,
+				Number(parts.day),
+				Number(parts.hour),
+				Number(parts.minute),
+				Number(parts.second),
+			);
+			const want = Date.UTC(year, month - 1, day, h, 0, 0);
+			guess += want - asUtc;
+		}
+		return guess;
+	};
+
+	let target = zonedWallToUtc(y, mo, d, hour);
+	if (target <= nowMs) {
+		const next = new Date(Date.UTC(y, mo - 1, d + 1));
+		target = zonedWallToUtc(
+			next.getUTCFullYear(),
+			next.getUTCMonth() + 1,
+			next.getUTCDate(),
+			hour,
+		);
+	}
+	return target - nowMs;
+}
+
+/** 距下一切换边界（lightFrom / darkFrom 整点，站点时区）的毫秒数 */
 function msUntilNextTimeBoundary(
 	lightFromHour: number,
 	darkFromHour: number,
 ): number {
-	const now = new Date();
-	const candidates = [lightFromHour, darkFromHour].map((h) => {
-		const next = new Date(now);
-		next.setHours(h, 0, 0, 0);
-		if (next.getTime() <= now.getTime()) {
-			next.setDate(next.getDate() + 1);
-		}
-		return next.getTime() - now.getTime();
-	});
-	return Math.min(...candidates);
+	const timeZone = getThemeTimeZone();
+	const nowMs = Date.now();
+	return Math.min(
+		msUntilNextZonedHour(lightFromHour, timeZone, nowMs),
+		msUntilNextZonedHour(darkFromHour, timeZone, nowMs),
+	);
 }
 
 export function setupTimeThemeListener(): void {
@@ -350,6 +450,22 @@ function cleanupTimeThemeListener() {
 	}
 }
 
+/** 一次性把曾锁死的 light/dark 拉回 time（北京时段感知） */
+const THEME_TIME_RESTORE_KEY = "theme-time-beijing-v1";
+
+export function ensureTimeThemeDefault(): void {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return;
+	}
+	if (getDefaultTheme() !== TIME_MODE) return;
+	if (localStorage.getItem(THEME_TIME_RESTORE_KEY) === "1") return;
+	localStorage.setItem("theme", TIME_MODE);
+	localStorage.setItem(THEME_TIME_RESTORE_KEY, "1");
+}
+
 export function getStoredTheme(): LIGHT_DARK_MODE {
 	// 检查是否在浏览器环境中
 	if (
@@ -358,6 +474,7 @@ export function getStoredTheme(): LIGHT_DARK_MODE {
 	) {
 		return getDefaultTheme();
 	}
+	ensureTimeThemeDefault();
 	return (
 		(localStorage.getItem("theme") as LIGHT_DARK_MODE) || getDefaultTheme()
 	);

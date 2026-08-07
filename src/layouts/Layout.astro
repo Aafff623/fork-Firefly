@@ -253,7 +253,8 @@ const siteLang = lang.replace("_", "-");
         timeLightFromHour:
           siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7,
         timeDarkFromHour:
-          siteConfig.themeColor.timeSchedule?.darkFromHour ?? 18,
+          siteConfig.themeColor.timeSchedule?.darkFromHour ?? 19,
+        themeTimeZone: siteConfig.timezone || "Asia/Shanghai",
         defaultWallpaperMode: backgroundWallpaper.mode,
         isWallpaperSwitchable:
           displaySettingsConfig.wallpaperModeSwitchable,
@@ -271,11 +272,21 @@ const siteLang = lang.replace("_", "-");
         avatarFrameFeatureOn: profileConfig.avatarFrame?.enabled !== false,
       }}
     >
-      // 主题初始化 - 与setting-utils.ts保持一致
+      // 主题初始化 - 与 setting-utils.ts 保持一致（时段按站点时区 / 北京时间）
       const LIGHT_MODE = "light";
       const DARK_MODE = "dark";
       const SYSTEM_MODE = "system";
       const TIME_MODE = "time";
+      const THEME_TIME_RESTORE_KEY = "theme-time-beijing-v1";
+
+      // 一次性恢复时间感知：曾锁死的 light/dark 拉回 time
+      if (
+        defaultMode === TIME_MODE &&
+        localStorage.getItem(THEME_TIME_RESTORE_KEY) !== "1"
+      ) {
+        localStorage.setItem("theme", TIME_MODE);
+        localStorage.setItem(THEME_TIME_RESTORE_KEY, "1");
+      }
 
       // 获取存储的主题，如果没有则使用默认值
       const theme = localStorage.getItem("theme") || defaultMode;
@@ -287,14 +298,26 @@ const siteLang = lang.replace("_", "-");
           : LIGHT_MODE;
       }
 
+      function getZonedHour() {
+        const hourPart = new Intl.DateTimeFormat("en-US", {
+          timeZone: themeTimeZone,
+          hour: "numeric",
+          hourCycle: "h23",
+        })
+          .formatToParts(new Date())
+          .find((p) => p.type === "hour")?.value;
+        const hour = Number(hourPart);
+        return Number.isFinite(hour) ? hour : 0;
+      }
+
       function getTimeTheme() {
-        const hour = new Date().getHours();
+        const hour = getZonedHour();
         const isDarkHour =
           hour >= timeDarkFromHour || hour < timeLightFromHour;
         return isDarkHour ? DARK_MODE : LIGHT_MODE;
       }
 
-      // 解析主题（system → OS；time → 本地时段）
+      // 解析主题（system → OS；time → 北京时段）
       function resolveTheme(themeValue) {
         if (themeValue === SYSTEM_MODE) {
           return getSystemTheme();
@@ -1396,10 +1419,24 @@ function disableAnimation() {
       // 同步主题状态 - 解决从首页进入文章页面时代码块渲染问题
       const storedTheme = localStorage.getItem("theme") || siteConfig.themeColor.defaultMode || "light";
       let isDark = false;
-      
-      // 处理 system 模式
+
       if (storedTheme === "system") {
-        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      } else if (storedTheme === "time") {
+        // 与首屏脚本一致：按站点时区（北京时间）整点
+        const tz = siteConfig.timezone || "Asia/Shanghai";
+        const lightFrom = siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7;
+        const darkFrom = siteConfig.themeColor.timeSchedule?.darkFromHour ?? 19;
+        const hourPart = new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          hour: "numeric",
+          hourCycle: "h23",
+        })
+          .formatToParts(new Date())
+          .find((p) => p.type === "hour")?.value;
+        const hour = Number(hourPart);
+        isDark =
+          Number.isFinite(hour) && (hour >= darkFrom || hour < lightFrom);
       } else {
         isDark = storedTheme === "dark";
       }
