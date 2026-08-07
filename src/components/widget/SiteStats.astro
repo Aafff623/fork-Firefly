@@ -45,8 +45,8 @@ for (const post of posts) {
 }
 
 function formatCompact(num: number): string {
-	if (num >= 10000) return `${(num / 10000).toFixed(1).replace(/\.0$/, "")}万`;
-	if (num >= 1000) return `${(num / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+	if (num >= 10000) return `${(num / 10000).toFixed(1).replace(/\.0$/, "")}W`;
+	if (num >= 1000) return `${(num / 1000).toFixed(1).replace(/\.0$/, "")}K`;
 	return String(num);
 }
 
@@ -202,6 +202,7 @@ const metrics = [
     line-height: 1.1;
     color: var(--so-ink);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .site-overview__label {

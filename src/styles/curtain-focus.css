@@ -73,12 +73,10 @@ html.curtain-focus #swup-container {
   filter: none;
 }
 
-html.curtain-focus .gallery-stage-frame,
 html.curtain-focus .card-base {
   box-shadow: 0 22px 48px rgb(15 23 42 / 0.12);
 }
 
-:is(.dark) html.curtain-focus .gallery-stage-frame,
 :is(.dark) html.curtain-focus .card-base {
   box-shadow: 0 22px 48px rgb(0 0 0 / 0.35);
 }
@@ -104,7 +102,11 @@ html.curtain-focus .card-base {
 }
 
 @media (min-width: 1280px) {
-  html.curtain-focus #main-grid[data-sidebar-position="both"] {
+  /* 特异性须与 768px 的 tablet-sidebar 规则对齐（否则桌面端右栏不塌、内容左偏） */
+  html.curtain-focus
+    #main-grid[data-sidebar-position="both"][data-tablet-sidebar="left"],
+  html.curtain-focus
+    #main-grid[data-sidebar-position="both"][data-tablet-sidebar="right"] {
     grid-template-columns: 0fr 1fr 0fr !important;
   }
 

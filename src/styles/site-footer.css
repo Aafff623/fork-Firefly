@@ -664,34 +664,52 @@ html.dark .site-footer__blurb--en {
 	align-items: center;
 }
 
-/* V2 浇水胶囊 —— 水滴 + 羽毛 + 轻玻璃；可点击 */
+/* V2 浇水胶囊 —— 分层玻璃 + 水光 hover + 浇灌涟漪脉冲；可点击 */
 .site-footer__water {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
 	font: inherit;
 	font-size: 0.76rem;
-	letter-spacing: 0.02em;
+	letter-spacing: 0.03em;
 	color: var(--sf-muted);
-	padding: 0.38rem 0.9rem;
-	border: 1px solid color-mix(in oklch, var(--sf-muted) 28%, transparent);
+	padding: 0.42rem 1rem;
+	border: 1px solid color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
 	border-radius: 999px;
-	background: oklch(100% 0 0 / 0.22);
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
+	background: linear-gradient(
+		180deg,
+		oklch(100% 0 0 / 0.42),
+		oklch(100% 0 0 / 0.16)
+	);
+	backdrop-filter: blur(10px) saturate(1.25);
+	-webkit-backdrop-filter: blur(10px) saturate(1.25);
+	/* 顶部内高光 + 底部软投影，撑起玻璃体积感 */
+	box-shadow:
+		inset 0 1px 0 oklch(100% 0 0 / 0.45),
+		0 4px 14px oklch(0.4 0.05 230 / 0.1);
 	cursor: pointer;
 	appearance: none;
 	-webkit-appearance: none;
 	transition:
-		border-color 0.2s var(--sf-ease),
-		background 0.2s var(--sf-ease),
-		box-shadow 0.2s var(--sf-ease),
-		transform 0.2s var(--sf-ease);
+		border-color 0.22s var(--sf-ease),
+		background 0.22s var(--sf-ease),
+		box-shadow 0.22s var(--sf-ease),
+		transform 0.22s var(--sf-ease),
+		color 0.22s var(--sf-ease);
 }
 
 .site-footer__water:hover {
-	border-color: color-mix(in oklch, var(--sf-muted) 42%, transparent);
-	background: oklch(100% 0 0 / 0.32);
+	border-color: color-mix(in oklch, var(--sf-water-dot) 48%, transparent);
+	background: linear-gradient(
+		180deg,
+		oklch(100% 0 0 / 0.55),
+		oklch(100% 0 0 / 0.26)
+	);
+	box-shadow:
+		inset 0 1px 0 oklch(100% 0 0 / 0.6),
+		0 6px 18px color-mix(in oklch, var(--sf-water-dot) 26%, transparent);
+	transform: translateY(-1px);
+	color: color-mix(in oklch, var(--sf-muted) 70%, var(--sf-water-dot));
 }
 
 .site-footer__water:focus-visible {
@@ -700,13 +718,33 @@ html.dark .site-footer__blurb--en {
 }
 
 .site-footer__water:active {
-	transform: scale(0.98);
+	transform: translateY(0) scale(0.97);
 }
 
 .site-footer__water.is-watering {
-	border-color: color-mix(in oklch, var(--sf-water-dot) 45%, transparent);
-	background: color-mix(in oklch, var(--sf-water-dot) 12%, oklch(100% 0 0 / 0.28));
-	box-shadow: 0 0 0 3px var(--sf-water-ring);
+	border-color: color-mix(in oklch, var(--sf-water-dot) 55%, transparent);
+	background: color-mix(in oklch, var(--sf-water-dot) 10%, oklch(100% 0 0 / 0.3));
+	color: color-mix(in oklch, var(--sf-water-dot) 65%, var(--sf-muted));
+	/* 水环从胶囊边缘扩散一圈，替代静态描边 */
+	animation: sf-water-ring-pulse 1.15s ease-out infinite;
+}
+
+@keyframes sf-water-ring-pulse {
+	0% {
+		box-shadow:
+			inset 0 1px 0 oklch(100% 0 0 / 0.4),
+			0 0 0 0 var(--sf-water-ring);
+	}
+	70% {
+		box-shadow:
+			inset 0 1px 0 oklch(100% 0 0 / 0.4),
+			0 0 0 7px transparent;
+	}
+	100% {
+		box-shadow:
+			inset 0 1px 0 oklch(100% 0 0 / 0.4),
+			0 0 0 0 transparent;
+	}
 }
 
 .site-footer__water.is-watering .site-footer__icon-drop {
@@ -714,16 +752,30 @@ html.dark .site-footer__blurb--en {
 }
 
 html.dark .site-footer__water {
-	background: oklch(100% 0 0 / 0.05);
-	border-color: color-mix(in oklch, var(--sf-muted) 35%, transparent);
+	background: linear-gradient(
+		180deg,
+		oklch(100% 0 0 / 0.08),
+		oklch(100% 0 0 / 0.03)
+	);
+	border-color: color-mix(in oklch, var(--sf-water-dot) 30%, transparent);
+	box-shadow:
+		inset 0 1px 0 oklch(100% 0 0 / 0.08),
+		0 4px 14px oklch(0 0 0 / 0.25);
 }
 
 html.dark .site-footer__water:hover {
-	background: oklch(100% 0 0 / 0.08);
+	background: linear-gradient(
+		180deg,
+		oklch(100% 0 0 / 0.12),
+		oklch(100% 0 0 / 0.05)
+	);
+	box-shadow:
+		inset 0 1px 0 oklch(100% 0 0 / 0.12),
+		0 6px 18px color-mix(in oklch, var(--sf-water-dot) 30%, transparent);
 }
 
 html.dark .site-footer__water.is-watering {
-	background: color-mix(in oklch, var(--sf-water-dot) 16%, oklch(100% 0 0 / 0.06));
+	background: color-mix(in oklch, var(--sf-water-dot) 14%, oklch(100% 0 0 / 0.06));
 }
 
 /* 旁侧小舞台：贴胶囊上方 */
@@ -740,11 +792,12 @@ html.dark .site-footer__water.is-watering {
 	height: 7.25rem;
 	padding: 0.35rem 0.4rem 0.25rem;
 	border-radius: 1rem;
-	background: oklch(100% 0 0 / 0.55);
-	border: 1px solid color-mix(in oklch, var(--sf-rule) 80%, transparent);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	box-shadow: 0 10px 28px oklch(0.35 0.04 145 / 0.18);
+	/* 全透明舞台：无底、无框、无阴影，浇水动画直接浮在页面上 */
+	background: transparent;
+	border: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	box-shadow: none;
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
@@ -762,9 +815,26 @@ html.dark .site-footer__water.is-watering {
 }
 
 html.dark .site-footer__water-stage {
-	background: oklch(0.22 0.02 145 / 0.78);
-	border-color: color-mix(in oklch, var(--sf-rule) 70%, transparent);
-	box-shadow: 0 12px 32px oklch(0 0 0 / 0.35);
+	/* 与亮色一致：全透明，无底板无阴影 */
+	background: transparent;
+	box-shadow: none;
+}
+
+/* 幼苗脚下的水光晕：承接透明舞台，给动画一个「落点」 */
+.site-footer__water-stage::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 0.35rem;
+	width: 6.5rem;
+	height: 1rem;
+	transform: translateX(-38%);
+	background: radial-gradient(
+		ellipse 50% 50% at 50% 50%,
+		color-mix(in oklch, var(--sf-water-dot) 20%, transparent),
+		transparent 70%
+	);
+	pointer-events: none;
 }
 
 .site-footer__water-canvas {
@@ -781,6 +851,7 @@ html.dark .site-footer__water-stage {
 	transform: scaleY(0.86);
 	opacity: 0.85;
 	margin-bottom: 0.15rem;
+	filter: drop-shadow(0 2px 3px oklch(0.35 0.05 145 / 0.22));
 	transition:
 		transform 0.45s var(--sf-ease),
 		opacity 0.3s var(--sf-ease),
@@ -827,6 +898,11 @@ html.dark .site-footer__water-stage {
 
 	.site-footer__water-sprout.is-thirsty {
 		animation: none;
+	}
+
+	.site-footer__water.is-watering {
+		animation: none;
+		box-shadow: 0 0 0 3px var(--sf-water-ring);
 	}
 
 	.site-footer__water.is-watering .site-footer__icon-drop {

@@ -1805,7 +1805,8 @@ onDestroy(() => {
 	:global(widget-layout.has-sprite-pet-anchor),
 	:global(.has-sprite-pet-anchor) {
 		position: relative !important;
-		overflow: visible !important;
+		/* 桌宠本身挂在 body + fixed，不需要强制 widget 溢出可见；
+		   保留 overflow visible 会让卡片圆角内容外溢，视觉上「范围被撑大」。 */
 	}
 
 	:global(widget-layout.has-sprite-pet-anchor .collapse-wrapper) {
@@ -1844,6 +1845,8 @@ onDestroy(() => {
 		z-index: 1;
 		isolation: isolate;
 		overflow: visible;
+		/* 按 spritesheet 单元格 192×208 锁定宽高比，防止外部布局挤压变形 */
+		aspect-ratio: 192 / 208;
 		transform: scale(1.1);
 		transform-origin: 50% 88%;
 		/* 仅 opacity 过渡：换皮丝滑；勿过渡 background-position */
@@ -1858,6 +1861,8 @@ onDestroy(() => {
 	.pet-sprite {
 		position: relative;
 		z-index: 1;
+		/* 与 stage 同比例，防止容器被压窄/拉宽时角色变形 */
+		aspect-ratio: 192 / 208;
 		transform-origin: 50% 88%;
 		filter: var(--pet-shadow) var(--pet-grade);
 		/* filter 可跟主题走；禁止 background-position 过渡防残影 */
