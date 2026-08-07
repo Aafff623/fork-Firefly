@@ -4,6 +4,7 @@
  * bare=true 时无 WidgetLayout（供 ClockCorner 角区嵌底）
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import { backgroundWallpaper, layeredClockConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
@@ -18,6 +19,28 @@ interface Props {
 
 const { class: className, style, widgetConfig, bare = false } = Astro.props;
 const showTitle = widgetConfig?.showTitle === true;
+
+// 天空层：昼夜跟随站点主题；天气场景需站长坐标（与分层时钟共用 layeredClockConfig）
+const { skyMode, weather, skyAssets } = layeredClockConfig;
+const weatherEnabled =
+	weather.enable && weather.latitude !== 0 && weather.longitude !== 0;
+// 天空整体偏淡；略亮于氛围垫底，仍不抢主数字
+const atmoOpacity = backgroundWallpaper.atmosphere?.opacity ?? 0.52;
+const skyBlend = Math.min(0.52, Math.max(0.28, atmoOpacity * 0.68));
+const rootStyle = [style, `--sc-sky-blend: ${skyBlend}`]
+	.filter(Boolean)
+	.join("; ");
+const skyAttrs: Record<string, string> = {
+	"data-sky-mode": skyMode,
+	"data-sky-assets": JSON.stringify(skyAssets),
+	...(weatherEnabled
+		? {
+				"data-weather-lat": String(weather.latitude),
+				"data-weather-lon": String(weather.longitude),
+				"data-weather-refresh": String(weather.refreshMinutes),
+			}
+		: {}),
+};
 ---
 
 {
@@ -28,7 +51,8 @@ const showTitle = widgetConfig?.showTitle === true;
       role="timer"
       aria-live="polite"
       aria-label={i18n(I18nKey.surpriseClock)}
-      style={style}
+      style={rootStyle}
+      {...skyAttrs}
     />
   ) : (
     <WidgetLayout
@@ -45,6 +69,8 @@ const showTitle = widgetConfig?.showTitle === true;
         role="timer"
         aria-live="polite"
         aria-label={i18n(I18nKey.surpriseClock)}
+        style={`--sc-sky-blend: ${skyBlend}`}
+        {...skyAttrs}
       />
     </WidgetLayout>
   )
@@ -54,17 +80,227 @@ const showTitle = widgetConfig?.showTitle === true;
   (function () {
     // 仅翻页计时；已去掉鼠标悬停斥力/复式位移
     const ROOT_ID = "surprise-clock-root";
+    const WEATHER_CACHE_KEY = "lc7-weather"; // 与分层时钟共享缓存，一次请求两钟受益
 
     let raf = 0;
     /** @type {HTMLElement[]} */
     let digitGroups = [];
     let builtFor = null;
+    let lastWeatherCheck = 0;
+    const prefersReducedMotion =
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /** @param {HTMLElement} el */
+    function syncSkyAssets(el) {
+      const raw = el.getAttribute("data-sky-assets");
+      if (!raw) return;
+      /** @type {{ enable?: boolean; day?: string; night?: string; weather?: Record<string, string> }} */
+      let assets;
+      try {
+        assets = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      if (!assets.enable || prefersReducedMotion) {
+        el.removeAttribute("data-sky-gif-ready");
+        return;
+      }
+
+      const sky = el.getAttribute("data-sky");
+      const weatherScene = el.getAttribute("data-weather") || "clear";
+      const baseImg = el.querySelector(".surprise-clock__sky-base");
+      const weatherImg = el.querySelector(".surprise-clock__sky-weather");
+
+      if (baseImg instanceof HTMLImageElement && sky) {
+        const src = sky === "night" ? assets.night : assets.day;
+        if (src && baseImg.getAttribute("data-src") !== src) {
+          baseImg.setAttribute("data-src", src);
+          baseImg.src = src;
+        }
+        baseImg.hidden = !src;
+      }
+
+      if (weatherImg instanceof HTMLImageElement) {
+        const wSrc =
+          weatherScene !== "clear" && assets.weather
+            ? assets.weather[weatherScene] || ""
+            : "";
+        if (wSrc && weatherImg.getAttribute("data-src") !== wSrc) {
+          weatherImg.setAttribute("data-src", wSrc);
+          weatherImg.src = wSrc;
+        }
+        weatherImg.hidden = !wSrc;
+      }
+    }
+
+    /** @param {HTMLImageElement} img @param {HTMLElement} root */
+    function onSkyImgLoad(img, root) {
+      if (img.complete && img.naturalWidth > 0) {
+        root.setAttribute("data-sky-gif-ready", "1");
+      }
+    }
+
+    /** @param {HTMLImageElement} img @param {HTMLElement} root */
+    function onSkyImgError(img, root) {
+      img.remove();
+      root.removeAttribute("data-sky-gif-ready");
+    }
+
+    /** 昼夜：跟随站点主题（html.dark），theme-change 事件即时联动 */
+    function syncSky(el) {
+      const mode = el.getAttribute("data-sky-mode") || "auto";
+      if (mode === "off") {
+        el.removeAttribute("data-sky");
+        return;
+      }
+      const sky =
+        mode === "auto"
+          ? document.documentElement.classList.contains("dark")
+            ? "night"
+            : "day"
+          : mode;
+      if (el.getAttribute("data-sky") !== sky) {
+        el.setAttribute("data-sky", sky);
+        syncSkyAssets(el);
+      }
+    }
+
+    function syncAllSkies() {
+      document
+        .querySelectorAll(".surprise-clock[data-sky-mode]")
+        .forEach(function (el) {
+          if (el instanceof HTMLElement) syncSky(el);
+        });
+    }
+
+    /** WMO weather_code → 场景枚举 */
+    function mapWeatherCode(code) {
+      if (code <= 1) return "clear";
+      if (code <= 3) return "cloudy";
+      if (code === 45 || code === 48) return "fog";
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "rain";
+      if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "snow";
+      if (code >= 95) return "thunder";
+      return "clear";
+    }
+
+    function applyWeather(el, scene) {
+      if (el.getAttribute("data-weather") !== scene) {
+        el.setAttribute("data-weather", scene);
+        syncSkyAssets(el);
+      }
+    }
+
+    function readWeatherCache(maxAgeMs) {
+      try {
+        const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (!raw) return null;
+        const o = JSON.parse(raw);
+        if (typeof o.code !== "number" || typeof o.ts !== "number") return null;
+        return { code: o.code, fresh: Date.now() - o.ts < maxAgeMs };
+      } catch {
+        return null;
+      }
+    }
+
+    /** 天气：Open-Meteo 直连（免 key），localStorage 缓存 TTL 分钟级；失败静默降级 */
+    async function syncWeather(el) {
+      const lat = Number.parseFloat(el.getAttribute("data-weather-lat") || "");
+      const lon = Number.parseFloat(el.getAttribute("data-weather-lon") || "");
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      const refreshMin = Number.parseInt(
+        el.getAttribute("data-weather-refresh") || "30",
+        10,
+      );
+
+      const cached = readWeatherCache(refreshMin * 60000);
+      if (cached) {
+        applyWeather(el, mapWeatherCode(cached.code));
+        if (cached.fresh) return;
+      }
+
+      try {
+        const res = await fetch(
+          "https://api.open-meteo.com/v1/forecast?latitude=" +
+            lat +
+            "&longitude=" +
+            lon +
+            "&current=weather_code&timezone=auto",
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const code = data?.current?.weather_code;
+        if (typeof code !== "number") return;
+        try {
+          localStorage.setItem(
+            WEATHER_CACHE_KEY,
+            JSON.stringify({ code, ts: Date.now() }),
+          );
+        } catch {
+          /* 缓存失败无碍 */
+        }
+        applyWeather(el, mapWeatherCode(code));
+      } catch {
+        /* 静默降级：保持缓存或默认 clear */
+      }
+    }
 
     function build(root) {
       if (builtFor === root && digitGroups.length) return;
       root.innerHTML = "";
       digitGroups = [];
       builtFor = root;
+
+      // 天空层：GIF 基底 + CSS 日月云星兜底
+      const sky = document.createElement("div");
+      sky.className = "surprise-clock__sky";
+      sky.setAttribute("aria-hidden", "true");
+
+      const baseImg = document.createElement("img");
+      baseImg.className = "surprise-clock__sky-base";
+      baseImg.alt = "";
+      baseImg.decoding = "async";
+      baseImg.loading = "lazy";
+      baseImg.hidden = true;
+      baseImg.addEventListener("load", function () {
+        onSkyImgLoad(baseImg, root);
+      });
+      baseImg.addEventListener("error", function () {
+        onSkyImgError(baseImg, root);
+      });
+      sky.appendChild(baseImg);
+
+      const weatherImg = document.createElement("img");
+      weatherImg.className = "surprise-clock__sky-weather";
+      weatherImg.alt = "";
+      weatherImg.decoding = "async";
+      weatherImg.loading = "lazy";
+      weatherImg.hidden = true;
+      weatherImg.addEventListener("load", function () {
+        onSkyImgLoad(weatherImg, root);
+      });
+      weatherImg.addEventListener("error", function () {
+        onSkyImgError(weatherImg, root);
+      });
+      sky.appendChild(weatherImg);
+
+      const celestial = document.createElement("div");
+      celestial.className = "surprise-clock__celestial";
+      sky.appendChild(celestial);
+
+      const stars = document.createElement("div");
+      stars.className = "surprise-clock__stars";
+      sky.appendChild(stars);
+
+      ["a", "b"].forEach(function (suffix) {
+        const cloud = document.createElement("div");
+        cloud.className =
+          "surprise-clock__cloud surprise-clock__cloud--" + suffix;
+        sky.appendChild(cloud);
+      });
+
+      root.appendChild(sky);
 
       const time10 = Array.from({ length: 10 }, (_, i) => i);
       const time6 = time10.slice(0, 6);
@@ -118,6 +354,14 @@ const showTitle = widgetConfig?.showTitle === true;
       const root = document.getElementById(ROOT_ID);
       if (!root) return;
       build(root);
+      syncSky(root);
+      syncSkyAssets(root);
+
+      // 天气检查走分钟级节流，不随帧 tick 发请求
+      if (Date.now() - lastWeatherCheck > 60000) {
+        lastWeatherCheck = Date.now();
+        void syncWeather(root);
+      }
 
       const date = new Date();
       const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
@@ -154,6 +398,12 @@ const showTitle = widgetConfig?.showTitle === true;
       digitGroups = [];
       builtFor = null;
       raf = requestAnimationFrame(tick);
+    }
+
+    // 主题切换（含 18:00 时间感知自动入夜）→ 全部大钟天空即时联动；只绑定一次
+    if (!window.__scThemeBound) {
+      window.__scThemeBound = true;
+      window.addEventListener("theme-change", syncAllSkies);
     }
 
     start();
@@ -193,8 +443,9 @@ const showTitle = widgetConfig?.showTitle === true;
 
   .surprise-clock {
     --sc-h: 7.85rem;
-    --sc-muted: rgb(0 0 0 / 0.18);
+    --sc-muted: rgb(0 0 0 / 0.32);
     --sc-bright: var(--primary);
+    --sc-sky-night: oklch(0.22 0.06 265);
     --sc-pixel: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
     position: relative;
     display: flex;
@@ -203,6 +454,7 @@ const showTitle = widgetConfig?.showTitle === true;
     gap: 0.08rem;
     width: 100%;
     height: var(--sc-h);
+    /* 天空只在角区内轻扩，禁止左溢到中间栏 */
     overflow: hidden;
     color: var(--sc-bright);
     text-align: center;
@@ -225,6 +477,404 @@ const showTitle = widgetConfig?.showTitle === true;
   :global(.dark) .surprise-clock {
     --sc-muted: rgb(255 255 255 / 0.26);
     --sc-bright: color-mix(in oklch, var(--primary) 72%, white);
+    --sc-sky-night: oklch(0.16 0.05 272);
+  }
+
+  /* ── 天空层：昼夜跟随站点主题（data-sky），天气场景叠加（data-weather） ── */
+  /* 轻扩 + 软边：图片略放大，但不伸出侧栏、不挡中间内容 */
+  :global(.surprise-clock__sky) {
+    --sc-sky-mask-x: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.45) 10%,
+      #000 22%,
+      #000 78%,
+      rgba(0, 0, 0, 0.45) 90%,
+      transparent 100%
+    );
+    --sc-sky-mask-y: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.5) 12%,
+      #000 26%,
+      #000 74%,
+      rgba(0, 0, 0, 0.5) 88%,
+      transparent 100%
+    );
+    --sc-sky-mask-r: radial-gradient(
+      ellipse 108% 96% at 50% 46%,
+      #000 0%,
+      #000 40%,
+      rgba(0, 0, 0, 0.55) 70%,
+      transparent 92%
+    );
+    position: absolute;
+    inset: -0.65rem;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+    isolation: isolate;
+    -webkit-mask-image: var(--sc-sky-mask-x), var(--sc-sky-mask-y), var(--sc-sky-mask-r);
+    mask-image: var(--sc-sky-mask-x), var(--sc-sky-mask-y), var(--sc-sky-mask-r);
+    -webkit-mask-composite: source-in, source-in;
+    mask-composite: intersect;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  :global(.surprise-clock[data-sky] .surprise-clock__sky) {
+    opacity: var(--sc-sky-blend, 0.38);
+  }
+
+  :global(.surprise-clock__sky-base),
+  :global(.surprise-clock__sky-weather) {
+    position: absolute;
+    inset: -6%;
+    width: 112%;
+    height: 112%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center 40%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* 亮色：天空偏淡，太阳/云靠对比与饱和略抬 */
+  :global(.surprise-clock__sky-base) {
+    opacity: 0.5;
+    filter: brightness(1.06) contrast(1.08) saturate(1.08);
+  }
+
+  :global(html.dark .surprise-clock__sky-base) {
+    opacity: 0.6;
+    filter: brightness(1.04) contrast(1.06) saturate(1.05);
+  }
+
+  :global(.surprise-clock__sky-weather) {
+    z-index: 1;
+    mix-blend-mode: screen;
+    opacity: 0.7;
+  }
+
+  /* GIF 就绪：藏星；太阳/云留淡光叠亮（不抢像素图） */
+  :global(.surprise-clock[data-sky-gif-ready] .surprise-clock__stars) {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  :global(.surprise-clock[data-sky-gif-ready][data-sky="day"] .surprise-clock__celestial) {
+    opacity: 0.62;
+    mix-blend-mode: screen;
+    filter: brightness(1.15) saturate(1.1);
+  }
+
+  :global(.surprise-clock[data-sky-gif-ready][data-sky="day"] .surprise-clock__cloud) {
+    opacity: 0.55;
+    mix-blend-mode: soft-light;
+    filter: brightness(1.2);
+  }
+
+  :global(.surprise-clock[data-sky-gif-ready][data-sky="night"] .surprise-clock__celestial) {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  :global(.surprise-clock[data-sky-gif-ready]:not([data-sky="day"]) .surprise-clock__cloud) {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* 数字组抬到天空之上 —— 不做 mask / 不降透明度，保持主体浓度 */
+  :global(.surprise-clock__group) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 白天天空底色：略亮一点的淡垫 */
+  :global(.surprise-clock[data-sky="day"] .surprise-clock__sky) {
+    background: radial-gradient(
+      ellipse 100% 90% at 50% 42%,
+      oklch(0.68 0.07 235 / 0.24) 0%,
+      oklch(0.78 0.05 222 / 0.14) 50%,
+      transparent 78%
+    );
+  }
+
+  /* 太阳：更亮核心 + 更强光晕 */
+  :global(.surprise-clock[data-sky="day"] .surprise-clock__celestial) {
+    position: absolute;
+    top: 6%;
+    right: 2%;
+    width: 2.6rem;
+    height: 2.6rem;
+    z-index: 2;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 42% 42%,
+      oklch(1 0.06 98) 0%,
+      oklch(0.96 0.14 90) 48%,
+      oklch(0.88 0.17 75) 100%
+    );
+    box-shadow:
+      0 0 0.4rem oklch(0.98 0.12 95 / 1),
+      0 0 1.35rem oklch(0.94 0.15 90 / 0.8),
+      0 0 2.4rem oklch(0.9 0.14 85 / 0.45);
+  }
+
+  :global(.surprise-clock[data-sky="day"] .surprise-clock__celestial::before) {
+    content: "";
+    position: absolute;
+    inset: -42%;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      oklch(0.98 0.12 95 / 0.72) 0deg 12deg,
+      transparent 12deg 32deg,
+      oklch(0.97 0.11 92 / 0.65) 32deg 44deg,
+      transparent 44deg 64deg,
+      oklch(0.98 0.12 95 / 0.72) 64deg 76deg,
+      transparent 76deg 96deg,
+      oklch(0.97 0.11 92 / 0.65) 96deg 108deg,
+      transparent 108deg 128deg,
+      oklch(0.98 0.12 95 / 0.72) 128deg 140deg,
+      transparent 140deg 160deg,
+      oklch(0.97 0.11 92 / 0.65) 160deg 172deg,
+      transparent 172deg 192deg,
+      oklch(0.98 0.12 95 / 0.72) 192deg 204deg,
+      transparent 204deg 224deg,
+      oklch(0.97 0.11 92 / 0.65) 224deg 236deg,
+      transparent 236deg 256deg,
+      oklch(0.98 0.12 95 / 0.72) 256deg 268deg,
+      transparent 268deg 288deg,
+      oklch(0.97 0.11 92 / 0.65) 288deg 300deg,
+      transparent 300deg 320deg,
+      oklch(0.98 0.12 95 / 0.72) 320deg 332deg,
+      transparent 332deg 360deg
+    );
+    animation: sc-sun-pulse 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes sc-sun-pulse {
+    from {
+      opacity: 0.85;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+  }
+
+  /* 云朵：更白更实一点 */
+  :global(.surprise-clock__cloud) {
+    position: absolute;
+    z-index: 2;
+    height: 2.4rem;
+    border-radius: 50%;
+    background:
+      radial-gradient(ellipse 55% 70% at 30% 65%, oklch(100% 0 0 / 0.96) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 55% 40%, oklch(100% 0 0 / 0.92) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 75% 60%, oklch(100% 0 0 / 0.88) 0%, transparent 70%);
+    filter: blur(0.1rem);
+    opacity: 0.95;
+    pointer-events: none;
+  }
+
+  :global(.surprise-clock__cloud--a) {
+    top: 14%;
+    left: -18%;
+    width: 6.5rem;
+    animation: sc-cloud-drift 38s linear infinite;
+  }
+
+  :global(.surprise-clock__cloud--b) {
+    top: 22%;
+    left: -35%;
+    width: 5rem;
+    opacity: 0.88;
+    animation: sc-cloud-drift 52s linear infinite;
+    animation-delay: -18s;
+  }
+
+  :global(.surprise-clock:not([data-sky="day"]) .surprise-clock__cloud) {
+    display: none;
+  }
+
+  @keyframes sc-cloud-drift {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(44rem);
+    }
+  }
+
+  /* 夜晚天空底色：同样偏淡 */
+  :global(.surprise-clock[data-sky="night"] .surprise-clock__sky) {
+    background: radial-gradient(
+      ellipse 100% 90% at 50% 42%,
+      oklch(0.28 0.055 265 / 0.28) 0%,
+      oklch(0.18 0.04 272 / 0.15) 50%,
+      transparent 78%
+    );
+  }
+
+  /* 月牙：实心圆 + inset 咬缺口 */
+  :global(.surprise-clock[data-sky="night"] .surprise-clock__celestial) {
+    position: absolute;
+    top: 9%;
+    right: 3%;
+    width: 2.1rem;
+    height: 2.1rem;
+    z-index: 2;
+    border-radius: 50%;
+    transform: rotate(-12deg);
+    background: oklch(0.93 0.04 95);
+    box-shadow:
+      inset 0.5rem -0.08rem 0 0 var(--sc-sky-night),
+      0 0 0.5rem oklch(0.9 0.05 95 / 0.55);
+    filter: drop-shadow(0 0 0.35rem oklch(0.9 0.05 95 / 0.45));
+  }
+
+  :global(.surprise-clock:not([data-sky="night"]) .surprise-clock__celestial) {
+    display: none;
+  }
+
+  :global(.surprise-clock__stars) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(circle 0.08rem at 8% 20%, oklch(0.96 0 0 / 0.9), transparent 62%),
+      radial-gradient(circle 0.06rem at 18% 62%, oklch(0.96 0 0 / 0.8), transparent 62%),
+      radial-gradient(circle 0.09rem at 30% 30%, oklch(0.97 0.02 90 / 0.85), transparent 62%),
+      radial-gradient(circle 0.06rem at 42% 12%, oklch(0.96 0 0 / 0.75), transparent 62%),
+      radial-gradient(circle 0.08rem at 55% 55%, oklch(0.96 0 0 / 0.8), transparent 62%),
+      radial-gradient(circle 0.05rem at 64% 22%, oklch(0.96 0 0 / 0.7), transparent 62%),
+      radial-gradient(circle 0.07rem at 74% 68%, oklch(0.96 0 0 / 0.75), transparent 62%),
+      radial-gradient(circle 0.06rem at 86% 34%, oklch(0.97 0.02 90 / 0.8), transparent 62%),
+      radial-gradient(circle 0.05rem at 94% 12%, oklch(0.96 0 0 / 0.7), transparent 62%);
+    animation: sc-star-twinkle 3.4s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  :global(.surprise-clock:not([data-sky="night"]) .surprise-clock__stars) {
+    display: none;
+  }
+
+  @keyframes sc-star-twinkle {
+    from {
+      opacity: 0.55;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 多云：太阳/月牙压暗，云变灰变快 */
+  :global(.surprise-clock[data-weather="cloudy"] .surprise-clock__celestial) {
+    opacity: 0.4;
+  }
+
+  :global(.surprise-clock[data-sky="day"][data-weather="cloudy"] .surprise-clock__cloud) {
+    background: oklch(0.86 0.01 250 / 0.72);
+    animation-duration: 20s;
+  }
+
+  /* 雨：细雨丝下落（压在数字前方，纵深感） */
+  :global(.surprise-clock[data-weather="rain"]::before),
+  :global(.surprise-clock[data-weather="thunder"]::before) {
+    content: "";
+    position: absolute;
+    inset: -14% 0;
+    z-index: 2;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      112deg,
+      transparent 0 0.34rem,
+      oklch(0.88 0.04 240 / 0.3) 0.34rem 0.4rem
+    );
+    animation: sc-rain-fall 0.85s linear infinite;
+  }
+
+  @keyframes sc-rain-fall {
+    from {
+      transform: translateY(-10%);
+    }
+    to {
+      transform: translateY(10%);
+    }
+  }
+
+  /* 雪：碎雪点缓落 */
+  :global(.surprise-clock[data-weather="snow"]::after) {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle 0.07rem at 12% 15%, oklch(100% 0 0 / 0.9), transparent 64%),
+      radial-gradient(circle 0.06rem at 30% 45%, oklch(100% 0 0 / 0.75), transparent 64%),
+      radial-gradient(circle 0.08rem at 48% 8%, oklch(100% 0 0 / 0.85), transparent 64%),
+      radial-gradient(circle 0.05rem at 66% 32%, oklch(100% 0 0 / 0.7), transparent 64%),
+      radial-gradient(circle 0.07rem at 82% 58%, oklch(100% 0 0 / 0.8), transparent 64%);
+    background-size: 100% 55%;
+    background-repeat: repeat;
+    animation: sc-snow-fall 4.6s linear infinite;
+  }
+
+  @keyframes sc-snow-fall {
+    from {
+      background-position: 0 -3rem;
+    }
+    to {
+      background-position: 0 6rem;
+    }
+  }
+
+  /* 雾：底部雾带浮动 */
+  :global(.surprise-clock[data-weather="fog"]::after) {
+    content: "";
+    position: absolute;
+    inset: 42% 0 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(0deg, oklch(0.92 0.01 250 / 0.48), transparent 85%);
+    animation: sc-fog-drift 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes sc-fog-drift {
+    from {
+      opacity: 0.55;
+      transform: translateX(-4%);
+    }
+    to {
+      opacity: 0.9;
+      transform: translateX(4%);
+    }
+  }
+
+  /* 雷暴：雨 + 低频闪 */
+  :global(.surprise-clock[data-weather="thunder"] .surprise-clock__sky) {
+    animation: sc-thunder-flash 8s linear infinite;
+  }
+
+  @keyframes sc-thunder-flash {
+    0%,
+    91%,
+    95%,
+    100% {
+      filter: none;
+    }
+    93% {
+      filter: brightness(1.75);
+    }
   }
 
   :global(.surprise-clock__group) {
@@ -290,13 +940,13 @@ const showTitle = widgetConfig?.showTitle === true;
     width: 100%;
     height: 1.2rem;
     /* 旁路数字更虚 + 轻闪烁，滴答感 */
-    color: var(--sc-muted, rgb(0 0 0 / 0.12));
-    opacity: 0.55;
+    color: var(--sc-muted, rgb(0 0 0 / 0.32));
+    opacity: 0.72;
     font-family: var(--sc-pixel, "DotGothic16", monospace);
     font-size: 0.9rem;
     font-weight: 400;
     line-height: 1;
-    transform: rotate(-90deg);
+    transform: rotate(-45deg);
     transition:
       font-size 160ms steps(4, end),
       transform 280ms steps(6, end),
@@ -308,16 +958,16 @@ const showTitle = widgetConfig?.showTitle === true;
   }
 
   :global(html.dark .surprise-clock__num:not(.is-bright)) {
-    color: rgb(255 255 255 / 0.14);
+    color: rgb(255 255 255 / 0.26);
   }
 
   @keyframes sc-tick-blink {
     0%,
     100% {
-      opacity: 0.38;
+      opacity: 0.58;
     }
     50% {
-      opacity: 0.62;
+      opacity: 0.82;
     }
   }
 
@@ -325,7 +975,7 @@ const showTitle = widgetConfig?.showTitle === true;
     display: inline-block;
   }
 
-  /* 亮字：像素艺术主数字（不闪） */
+  /* 亮字：像素艺术主数字（不闪）；天空淡化后轻阴影咬轮廓 */
   :global(.surprise-clock__num.is-bright) {
     color: var(--sc-bright, var(--primary));
     opacity: 1;
@@ -333,7 +983,7 @@ const showTitle = widgetConfig?.showTitle === true;
     font-size: 1.95rem;
     font-weight: 400;
     transform: rotate(0deg);
-    text-shadow: none;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.22);
     animation: none;
   }
 
@@ -355,7 +1005,20 @@ const showTitle = widgetConfig?.showTitle === true;
 
     :global(.surprise-clock__num:not(.is-bright)) {
       animation: none;
-      opacity: 0.42;
+      opacity: 0.68;
+    }
+
+    /* 天空/天气动画降级：保留静态场景 */
+    :global(.surprise-clock__sky),
+    :global(.surprise-clock__celestial),
+    :global(.surprise-clock__stars),
+    :global(.surprise-clock__cloud),
+    :global(.surprise-clock__sky-base),
+    :global(.surprise-clock__sky-weather),
+    :global(.surprise-clock::before),
+    :global(.surprise-clock::after) {
+      animation: none !important;
+      transition: none !important;
     }
   }
 </style>

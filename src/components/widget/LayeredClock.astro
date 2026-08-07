@@ -5,6 +5,7 @@
  * bare=true：无卡片（嵌站点统计等）
  */
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import { layeredClockConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
@@ -22,7 +23,24 @@ const showTitle = widgetConfig?.showTitle === true;
 const faceImg = "/assets/images/widgets/layered-clock/05.jpg";
 const profileImg = "/assets/images/widgets/layered-clock/04.jpg";
 const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
+
+// 天空层：昼夜跟随站点主题；天气场景需站长坐标（见 src/config/layeredClockConfig.ts）
+const { skyMode, weather, skyAssets } = layeredClockConfig;
+const weatherEnabled =
+	weather.enable && weather.latitude !== 0 && weather.longitude !== 0;
+const skyAttrs: Record<string, string> = {
+	"data-sky-mode": skyMode,
+	"data-sky-assets": JSON.stringify(skyAssets),
+	...(weatherEnabled
+		? {
+				"data-weather-lat": String(weather.latitude),
+				"data-weather-lon": String(weather.longitude),
+				"data-weather-refresh": String(weather.refreshMinutes),
+			}
+		: {}),
+};
 ---
+
 
 {
   bare ? (
@@ -34,8 +52,17 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
       aria-label={i18n(I18nKey.layeredClock)}
       style={style}
       data-face={faceImg}
+      {...skyAttrs}
     >
       <div class="lc7__layer lc7__layer--img" aria-hidden="true"></div>
+      <div class="lc7__layer lc7__layer--sky" aria-hidden="true">
+        <img class="lc7__sky-base" alt="" decoding="async" loading="lazy" hidden />
+        <img class="lc7__sky-weather" alt="" decoding="async" loading="lazy" hidden />
+        <div class="lc7__celestial" aria-hidden="true"></div>
+        <div class="lc7__stars" aria-hidden="true"></div>
+        <div class="lc7__cloud lc7__cloud--a" aria-hidden="true"></div>
+        <div class="lc7__cloud lc7__cloud--b" aria-hidden="true"></div>
+      </div>
       <div class="lc7__layer lc7__layer--shade" aria-hidden="true"></div>
       <div class="lc7__layer lc7__layer--face">
         <div class="lc7__digits">
@@ -71,8 +98,17 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
         aria-live="polite"
         aria-label={i18n(I18nKey.layeredClock)}
         data-face={faceImg}
+        {...skyAttrs}
       >
         <div class="lc7__layer lc7__layer--img" aria-hidden="true"></div>
+        <div class="lc7__layer lc7__layer--sky" aria-hidden="true">
+        <img class="lc7__sky-base" alt="" decoding="async" loading="lazy" hidden />
+        <img class="lc7__sky-weather" alt="" decoding="async" loading="lazy" hidden />
+        <div class="lc7__celestial" aria-hidden="true"></div>
+        <div class="lc7__stars" aria-hidden="true"></div>
+        <div class="lc7__cloud lc7__cloud--a" aria-hidden="true"></div>
+        <div class="lc7__cloud lc7__cloud--b" aria-hidden="true"></div>
+      </div>
         <div class="lc7__layer lc7__layer--shade" aria-hidden="true"></div>
         <div class="lc7__layer lc7__layer--face">
           <div class="lc7__digits">
@@ -99,8 +135,75 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
 <script is:inline data-swup-ignore-script>
   (function () {
     const ROOT_ID = "layered-clock-root";
+    const WEATHER_CACHE_KEY = "lc7-weather";
     /** @type {number | undefined} */
     let loop;
+    let lastWeatherCheck = 0;
+    const prefersReducedMotion =
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /** @param {HTMLElement} el */
+    function initSkyImgs(el) {
+      const sky = el.querySelector(".lc7__layer--sky");
+      if (!(sky instanceof HTMLElement)) return;
+      if (sky.getAttribute("data-sky-imgs-bound")) return;
+      sky.setAttribute("data-sky-imgs-bound", "1");
+      sky.querySelectorAll(".lc7__sky-base, .lc7__sky-weather").forEach(function (img) {
+        if (!(img instanceof HTMLImageElement)) return;
+        img.addEventListener("load", function () {
+          if (img.naturalWidth > 0) el.setAttribute("data-sky-gif-ready", "1");
+        });
+        img.addEventListener("error", function () {
+          img.remove();
+          el.removeAttribute("data-sky-gif-ready");
+        });
+      });
+    }
+
+    /** @param {HTMLElement} el */
+    function syncSkyAssets(el) {
+      initSkyImgs(el);
+      const raw = el.getAttribute("data-sky-assets");
+      if (!raw) return;
+      /** @type {{ enable?: boolean; day?: string; night?: string; weather?: Record<string, string> }} */
+      let assets;
+      try {
+        assets = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      if (!assets.enable || prefersReducedMotion) {
+        el.removeAttribute("data-sky-gif-ready");
+        return;
+      }
+
+      const sky = el.getAttribute("data-sky");
+      const weatherScene = el.getAttribute("data-weather") || "clear";
+      const baseImg = el.querySelector(".lc7__sky-base");
+      const weatherImg = el.querySelector(".lc7__sky-weather");
+
+      if (baseImg instanceof HTMLImageElement && sky) {
+        const src = sky === "night" ? assets.night : assets.day;
+        if (src && baseImg.getAttribute("data-src") !== src) {
+          baseImg.setAttribute("data-src", src);
+          baseImg.src = src;
+        }
+        baseImg.hidden = !src;
+      }
+
+      if (weatherImg instanceof HTMLImageElement) {
+        const wSrc =
+          weatherScene !== "clear" && assets.weather
+            ? assets.weather[weatherScene] || ""
+            : "";
+        if (wSrc && weatherImg.getAttribute("data-src") !== wSrc) {
+          weatherImg.setAttribute("data-src", wSrc);
+          weatherImg.src = wSrc;
+        }
+        weatherImg.hidden = !wSrc;
+      }
+    }
 
     function applyFace(el) {
       const face = el.getAttribute("data-face");
@@ -110,6 +213,103 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
         img.style.backgroundImage = 'url("' + face + '")';
         img.style.backgroundSize = "100% 100%";
         img.style.backgroundPosition = "0 0";
+      }
+    }
+
+    /** 昼夜：跟随站点主题（html.dark），theme-change 事件即时联动 */
+    function syncSky(el) {
+      const mode = el.getAttribute("data-sky-mode") || "auto";
+      if (mode === "off") {
+        el.removeAttribute("data-sky");
+        return;
+      }
+      const sky =
+        mode === "auto"
+          ? document.documentElement.classList.contains("dark")
+            ? "night"
+            : "day"
+          : mode;
+      if (el.getAttribute("data-sky") !== sky) {
+        el.setAttribute("data-sky", sky);
+        syncSkyAssets(el);
+      }
+    }
+
+    function syncAllSkies() {
+      document.querySelectorAll(".lc7[data-sky-mode]").forEach(function (el) {
+        if (el instanceof HTMLElement) syncSky(el);
+      });
+    }
+
+    /** WMO weather_code → 场景枚举 */
+    function mapWeatherCode(code) {
+      if (code <= 1) return "clear";
+      if (code <= 3) return "cloudy";
+      if (code === 45 || code === 48) return "fog";
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "rain";
+      if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "snow";
+      if (code >= 95) return "thunder";
+      return "clear";
+    }
+
+    function applyWeather(el, scene) {
+      if (el.getAttribute("data-weather") !== scene) {
+        el.setAttribute("data-weather", scene);
+        syncSkyAssets(el);
+      }
+    }
+
+    function readWeatherCache(maxAgeMs) {
+      try {
+        const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (!raw) return null;
+        const o = JSON.parse(raw);
+        if (typeof o.code !== "number" || typeof o.ts !== "number") return null;
+        return { code: o.code, fresh: Date.now() - o.ts < maxAgeMs };
+      } catch {
+        return null;
+      }
+    }
+
+    /** 天气：Open-Meteo 直连（免 key），localStorage 缓存 TTL 分钟级；失败静默降级 */
+    async function syncWeather(el) {
+      const lat = Number.parseFloat(el.getAttribute("data-weather-lat") || "");
+      const lon = Number.parseFloat(el.getAttribute("data-weather-lon") || "");
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      const refreshMin = Number.parseInt(
+        el.getAttribute("data-weather-refresh") || "30",
+        10,
+      );
+
+      const cached = readWeatherCache(refreshMin * 60000);
+      if (cached) {
+        applyWeather(el, mapWeatherCode(cached.code));
+        if (cached.fresh) return;
+      }
+
+      try {
+        const res = await fetch(
+          "https://api.open-meteo.com/v1/forecast?latitude=" +
+            lat +
+            "&longitude=" +
+            lon +
+            "&current=weather_code&timezone=auto",
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const code = data?.current?.weather_code;
+        if (typeof code !== "number") return;
+        try {
+          localStorage.setItem(
+            WEATHER_CACHE_KEY,
+            JSON.stringify({ code, ts: Date.now() }),
+          );
+        } catch {
+          /* 缓存失败无碍 */
+        }
+        applyWeather(el, mapWeatherCode(code));
+      } catch {
+        /* 静默降级：保持缓存或默认 clear */
       }
     }
 
@@ -140,6 +340,14 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
       const el = document.getElementById(ROOT_ID);
       if (!el) return;
       applyFace(el);
+      syncSky(el);
+      syncSkyAssets(el);
+
+      // 天气检查走分钟级节流，不随秒 tick 发请求
+      if (Date.now() - lastWeatherCheck > 60000) {
+        lastWeatherCheck = Date.now();
+        void syncWeather(el);
+      }
 
       const time = timeAsObject();
       const secFraction = time.s / 60;
@@ -162,6 +370,12 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
     function start() {
       clearTimeout(loop);
       tick();
+    }
+
+    // 主题切换（含 18:00 时间感知自动入夜）→ 全部时钟天空即时联动；只绑定一次
+    if (!window.__lc7ThemeBound) {
+      window.__lc7ThemeBound = true;
+      window.addEventListener("theme-change", syncAllSkies);
     }
 
     start();
@@ -425,6 +639,330 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
       var(--lc-shade);
   }
 
+  /* ── 天空层：昼夜跟随站点主题（data-sky），天气场景叠加（data-weather） ── */
+  #layered-clock-root {
+    --lc-sky-night: oklch(0.22 0.06 265);
+  }
+
+  #layered-clock-root .lc7__layer--sky {
+    transform: translateZ(-3.5em);
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    isolation: isolate;
+  }
+
+  #layered-clock-root[data-sky] .lc7__layer--sky {
+    opacity: 1;
+  }
+
+  #layered-clock-root .lc7__sky-base,
+  #layered-clock-root .lc7__sky-weather {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #layered-clock-root .lc7__sky-weather {
+    z-index: 1;
+    mix-blend-mode: screen;
+    opacity: 0.88;
+  }
+
+  #layered-clock-root[data-sky-gif-ready] .lc7__celestial,
+  #layered-clock-root[data-sky-gif-ready] .lc7__stars,
+  #layered-clock-root[data-sky-gif-ready] .lc7__cloud {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* 白天：天蓝渐变 + 太阳 + 漂移云 */
+  #layered-clock-root[data-sky="day"] .lc7__layer--sky {
+    background: linear-gradient(
+      180deg,
+      oklch(0.68 0.11 235 / 0.92) 0%,
+      oklch(0.82 0.08 225 / 0.85) 52%,
+      oklch(0.92 0.05 200 / 0.8) 100%
+    );
+  }
+
+  #layered-clock-root[data-sky="day"] .lc7__celestial {
+    position: absolute;
+    top: 8%;
+    right: 10%;
+    width: 22%;
+    height: 22%;
+    z-index: 2;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 42% 42%,
+      oklch(0.99 0.08 98) 0%,
+      oklch(0.92 0.14 88) 52%,
+      oklch(0.85 0.16 75) 100%
+    );
+    box-shadow:
+      0 0 0.25em oklch(0.95 0.12 95 / 0.9),
+      0 0 0.9em oklch(0.9 0.14 90 / 0.65);
+  }
+
+  #layered-clock-root[data-sky="day"] .lc7__celestial::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      oklch(0.95 0.1 95 / 0.5) 0deg 14deg,
+      transparent 14deg 32deg,
+      oklch(0.94 0.1 92 / 0.45) 32deg 46deg,
+      transparent 46deg 64deg,
+      oklch(0.95 0.1 95 / 0.5) 64deg 78deg,
+      transparent 78deg 96deg,
+      oklch(0.94 0.1 92 / 0.45) 96deg 110deg,
+      transparent 110deg 128deg,
+      oklch(0.95 0.1 95 / 0.5) 128deg 142deg,
+      transparent 142deg 160deg,
+      oklch(0.94 0.1 92 / 0.45) 160deg 174deg,
+      transparent 174deg 192deg,
+      oklch(0.95 0.1 95 / 0.5) 192deg 206deg,
+      transparent 206deg 224deg,
+      oklch(0.94 0.1 92 / 0.45) 224deg 238deg,
+      transparent 238deg 256deg,
+      oklch(0.95 0.1 95 / 0.5) 256deg 270deg,
+      transparent 270deg 288deg,
+      oklch(0.94 0.1 92 / 0.45) 288deg 302deg,
+      transparent 302deg 320deg,
+      oklch(0.95 0.1 95 / 0.5) 320deg 334deg,
+      transparent 334deg 360deg
+    );
+  }
+
+  #layered-clock-root .lc7__cloud {
+    position: absolute;
+    z-index: 2;
+    border-radius: 50%;
+    background:
+      radial-gradient(ellipse 55% 70% at 30% 65%, oklch(100% 0 0 / 0.84) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 55% 40%, oklch(100% 0 0 / 0.8) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 75% 60%, oklch(100% 0 0 / 0.76) 0%, transparent 70%);
+    filter: blur(0.12em);
+    pointer-events: none;
+  }
+
+  #layered-clock-root .lc7__cloud--a {
+    top: 22%;
+    left: -52%;
+    width: 54%;
+    height: 16%;
+    animation: lc7-cloud-drift 30s linear infinite;
+  }
+
+  #layered-clock-root .lc7__cloud--b {
+    top: 30%;
+    left: -70%;
+    width: 42%;
+    height: 12%;
+    opacity: 0.88;
+    animation: lc7-cloud-drift 42s linear infinite;
+    animation-delay: -14s;
+  }
+
+  #layered-clock-root:not([data-sky="day"]) .lc7__cloud {
+    display: none;
+  }
+
+  @keyframes lc7-cloud-drift {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(330%);
+    }
+  }
+
+  /* 夜晚：深空渐变 + 月牙 + 星点闪烁 */
+  #layered-clock-root[data-sky="night"] .lc7__layer--sky {
+    background: linear-gradient(
+      180deg,
+      oklch(0.26 0.06 265 / 0.94) 0%,
+      oklch(0.17 0.05 272 / 0.96) 55%,
+      oklch(0.11 0.04 278 / 0.97) 100%
+    );
+  }
+
+  #layered-clock-root[data-sky="night"] .lc7__celestial {
+    position: absolute;
+    top: 9%;
+    right: 11%;
+    width: 18%;
+    height: 18%;
+    z-index: 2;
+    border-radius: 50%;
+    transform: rotate(-12deg);
+    background: oklch(0.93 0.04 95);
+    box-shadow:
+      inset 0.38em -0.06em 0 0 var(--lc-sky-night),
+      0 0 0.45em oklch(0.9 0.05 95 / 0.55);
+    filter: drop-shadow(0 0 0.35em oklch(0.9 0.05 95 / 0.45));
+  }
+
+  #layered-clock-root:not([data-sky="night"]) .lc7__celestial {
+    display: none;
+  }
+
+  #layered-clock-root .lc7__stars {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(circle 0.08em at 16% 26%, oklch(0.96 0 0 / 0.95), transparent 62%),
+      radial-gradient(circle 0.06em at 30% 12%, oklch(0.96 0 0 / 0.8), transparent 62%),
+      radial-gradient(circle 0.09em at 44% 30%, oklch(0.97 0.02 90 / 0.9), transparent 62%),
+      radial-gradient(circle 0.06em at 60% 10%, oklch(0.96 0 0 / 0.75), transparent 62%),
+      radial-gradient(circle 0.07em at 72% 24%, oklch(0.96 0 0 / 0.85), transparent 62%),
+      radial-gradient(circle 0.05em at 84% 12%, oklch(0.96 0 0 / 0.7), transparent 62%),
+      radial-gradient(circle 0.07em at 24% 46%, oklch(0.96 0 0 / 0.6), transparent 62%),
+      radial-gradient(circle 0.05em at 66% 42%, oklch(0.97 0.02 90 / 0.65), transparent 62%);
+    animation: lc7-star-twinkle 3.4s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  #layered-clock-root:not([data-sky="night"]) .lc7__stars {
+    display: none;
+  }
+
+  @keyframes lc7-star-twinkle {
+    from {
+      opacity: 0.55;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 多云：太阳/月牙压暗，云变灰变快 */
+  #layered-clock-root[data-weather="cloudy"] .lc7__celestial {
+    opacity: 0.35;
+  }
+
+  #layered-clock-root[data-sky="day"][data-weather="cloudy"] .lc7__cloud {
+    background: oklch(0.86 0.01 250 / 0.72);
+    animation-duration: 20s;
+  }
+
+  /* 天空出现时罩层压淡，保住场景可读性 */
+  #layered-clock-root[data-sky="day"] .lc7__layer--shade {
+    background:
+      radial-gradient(circle at 42% 28%, rgb(255 255 255 / 0.12), transparent 40%),
+      hsla(222, 32%, 32%, 0.16);
+  }
+
+  #layered-clock-root[data-sky="night"] .lc7__layer--shade {
+    background:
+      radial-gradient(circle at 42% 28%, rgb(255 255 255 / 0.1), transparent 40%),
+      hsla(222, 42%, 10%, 0.3);
+  }
+
+  /* 雨：细雨丝下落（叠在 shade 上） */
+  #layered-clock-root[data-weather="rain"] .lc7__layer--shade::before,
+  #layered-clock-root[data-weather="thunder"] .lc7__layer--shade::before {
+    content: "";
+    position: absolute;
+    inset: -14% 0;
+    background: repeating-linear-gradient(
+      112deg,
+      transparent 0 0.34em,
+      oklch(0.88 0.04 240 / 0.32) 0.34em 0.4em
+    );
+    animation: lc7-rain-fall 0.85s linear infinite;
+  }
+
+  @keyframes lc7-rain-fall {
+    from {
+      transform: translateY(-10%);
+    }
+    to {
+      transform: translateY(10%);
+    }
+  }
+
+  /* 雪：碎雪点缓落 */
+  #layered-clock-root[data-weather="snow"] .lc7__layer--shade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle 0.09em at 20% 15%, oklch(100% 0 0 / 0.9), transparent 64%),
+      radial-gradient(circle 0.07em at 45% 35%, oklch(100% 0 0 / 0.75), transparent 64%),
+      radial-gradient(circle 0.1em at 68% 8%, oklch(100% 0 0 / 0.85), transparent 64%),
+      radial-gradient(circle 0.06em at 84% 30%, oklch(100% 0 0 / 0.7), transparent 64%),
+      radial-gradient(circle 0.08em at 32% 62%, oklch(100% 0 0 / 0.8), transparent 64%);
+    background-size: 100% 55%;
+    background-repeat: repeat;
+    animation: lc7-snow-fall 4.6s linear infinite;
+  }
+
+  @keyframes lc7-snow-fall {
+    from {
+      background-position: 0 -4em;
+    }
+    to {
+      background-position: 0 8em;
+    }
+  }
+
+  /* 雾：底部雾带浮动 */
+  #layered-clock-root[data-weather="fog"] .lc7__layer--shade::after {
+    content: "";
+    position: absolute;
+    inset: 38% 0 0;
+    background: linear-gradient(0deg, oklch(0.92 0.01 250 / 0.5), transparent 85%);
+    animation: lc7-fog-drift 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes lc7-fog-drift {
+    from {
+      opacity: 0.55;
+      transform: translateX(-6%);
+    }
+    to {
+      opacity: 0.9;
+      transform: translateX(6%);
+    }
+  }
+
+  /* 雷暴：雨 + 低频闪 */
+  #layered-clock-root[data-weather="thunder"] .lc7__layer--shade {
+    animation: lc7-thunder-flash 8s linear infinite;
+  }
+
+  @keyframes lc7-thunder-flash {
+    0%,
+    91%,
+    95%,
+    100% {
+      filter: none;
+    }
+    93% {
+      filter: brightness(1.75);
+    }
+  }
+
+  /* 迷你钟（站点统计）：保留天空渐变 + 日/月 + 星点，省略云/雨/雾细节 */
+  #layered-clock-root.lc7--in-stats .lc7__layer--shade::before,
+  #layered-clock-root.lc7--in-stats .lc7__layer--shade::after {
+    display: none;
+  }
+
+  #layered-clock-root.lc7--in-stats[data-sky="day"] .lc7__cloud {
+    display: none;
+  }
+
   #layered-clock-root .lc7__ring {
     box-shadow:
       0 0 0 0.55em var(--lc-ring) inset,
@@ -462,6 +1000,20 @@ const rootClass = ["lc7", bare ? "lc7--bare" : "lc7--solo", className];
 
     #layered-clock-root .lc7__hand {
       transition: none;
+    }
+
+    /* 天空/天气动画降级：保留静态场景 */
+    #layered-clock-root .lc7__layer--sky,
+    #layered-clock-root .lc7__celestial,
+    #layered-clock-root .lc7__stars,
+    #layered-clock-root .lc7__cloud,
+    #layered-clock-root .lc7__sky-base,
+    #layered-clock-root .lc7__sky-weather,
+    #layered-clock-root .lc7__layer--shade,
+    #layered-clock-root .lc7__layer--shade::before,
+    #layered-clock-root .lc7__layer--shade::after {
+      animation: none !important;
+      transition: none !important;
     }
   }
 </style>

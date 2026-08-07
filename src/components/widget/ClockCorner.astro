@@ -27,10 +27,11 @@ const { class: className, style } = Astro.props;
   .clock-corner {
     width: 100%;
     margin: 0;
-    padding: 0.05rem 0 0.1rem;
+    /* 紧凑角区：不撑高、不伸进中间栏 */
+    padding: 0.15rem 0 0.25rem;
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
-    overflow: visible;
+    overflow: hidden;
   }
 </style>
