@@ -24,18 +24,33 @@ updated: 2026-08-07T09:10:00
 | 甲 | Obsidian vault 里的笔记 | `ob2blog` → `site-cascade` |
 | 乙 | 会话/调研结论 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
 
+```mermaid
+flowchart LR
+    subgraph 甲[甲路 · Obsidian 笔记]
+        V[Obsidian 笔记] -->|ob2blog| PA[文章]
+    end
+    subgraph 乙[乙路 · 会话/调研]
+        C[会话/调研] -->|extract| N[知识笔记]
+        N -->|output| PB[文章]
+    end
+    PA --> SC[site-cascade 级联]
+    PB --> SC
+    SC --> O[线上]
+```
+
 两条路互补：笔记已经躺在 Obsidian 里就走甲；素材是对话里现聊出来的就走乙。收尾都是同一个 `site-cascade`——它负责发文后的四件事：生成「新笔记」动态、更新站点统计、分类标签、热力图。
 
 ## 乙路全流程：从一句话到线上
 
 这条是我最常用的（本博客最近的帖子几乎都走它）：
 
-```text
-会话/调研结论
-  → knowledge-extract    提炼成知识笔记（落 Knowledge\todo\{日期_主题}\）
-  → knowledge-output     转成 blog 文章（落 posts\{slug}\）+ 校验 + 归档
-  → site-cascade         级联（新笔记动态/统计/分类/热力图）
-  → 本地预览 → commit/push → 核线上
+```mermaid
+flowchart LR
+    S[会话/调研结论] -->|extract 提炼| N[知识笔记<br>Knowledge/todo]
+    N -->|output 成帖| P[博客文章<br>posts/slug]
+    P -->|site-cascade 级联| D[动态/统计/分类/热力图]
+    D -->|预览| C[commit / push]
+    C -->|部署| O[线上可见]
 ```
 
 每个 skill 只干一件事，边界划得干净：
