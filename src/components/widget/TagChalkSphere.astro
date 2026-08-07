@@ -1,7 +1,7 @@
 ---
 /**
  * 卡片质感立体标签球（TagCloud.js）。
- * 闲置慢转 · 拖拽灵敏加速 · 轻点一级标签 → /timeline/?tag=
+ * 闲置慢转 · 拖拽才转球 · 悬停 0.5s 确认 / 满 1s 丝滑转正中并黄高亮 · 轻点 → /timeline/?tag=
  * 支持 data-view-mode=sphere|list；侧栏标签墙与 /tags/ 复用。
  */
 import { getTagList } from "@/utils/content-utils";
@@ -150,6 +150,12 @@ const showMore = Boolean(moreHref && moreCount > 0);
     var IDLE_DIV = 5;
     // 越小越灵敏；1.15→0.42 ≈ ×2.7
     var DRAG_DIV = 0.42;
+    // 密排布下：0.5s 复核仍悬停，满 1s 才转正中；移出后从 0 重计
+    var HOVER_CONFIRM_MS = 500;
+    var HOVER_TRIGGER_MS = 1000;
+    var HOVER_LEAVE_GRACE_MS = 180;
+    var HOVER_SWITCH_STICKY_MS = 120;
+    var FOCUS_ANIM_MS = 620;
 
     function reducedMotion() {
       return (
@@ -176,7 +182,55 @@ const showMore = Boolean(moreHref && moreCount > 0);
       document.head.appendChild(s);
     }
 
+    function clearHoverTimers(el) {
+      if (!el) return;
+      if (el._hoverConfirmTimer) {
+        clearTimeout(el._hoverConfirmTimer);
+        el._hoverConfirmTimer = null;
+      }
+      if (el._hoverTriggerTimer) {
+        clearTimeout(el._hoverTriggerTimer);
+        el._hoverTriggerTimer = null;
+      }
+      if (el._hoverLeaveGraceTimer) {
+        clearTimeout(el._hoverLeaveGraceTimer);
+        el._hoverLeaveGraceTimer = null;
+      }
+      if (el._hoverSwitchTimer) {
+        clearTimeout(el._hoverSwitchTimer);
+        el._hoverSwitchTimer = null;
+      }
+      el._hoverSwitchItem = null;
+      if (el._focusTimer) {
+        clearInterval(el._focusTimer);
+        el._focusTimer = null;
+      }
+      if (el._focusRaf) {
+        cancelAnimationFrame(el._focusRaf);
+        el._focusRaf = 0;
+      }
+    }
+
+    function clearHoverFocus(el) {
+      if (!el) return;
+      clearHoverTimers(el);
+      el._focusHold = false;
+      el._hoverFocusItem = null;
+      el._hoverDwellItem = null;
+      var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
+      var frame = root && root.querySelector("[data-tag-sphere-frame]");
+      if (frame) frame.classList.remove("is-hover-focus");
+      var nodes = el.querySelectorAll(".tagcloud--item");
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].classList.remove("tag-sphere__item--focus");
+      }
+      var instance = el._tagCloudInstance;
+      if (instance && typeof instance.resume === "function") instance.resume();
+      setIdleSpeed(instance);
+    }
+
     function destroyCloud(el) {
+      if (el) clearHoverFocus(el);
       if (el && el._tagCloudDestroy) {
         try {
           el._tagCloudDestroy();
@@ -186,6 +240,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       if (el) {
         el._tagCloudInstance = null;
         el.innerHTML = "";
+        el._tagInteract = null;
       }
     }
 
@@ -296,16 +351,385 @@ const showMore = Boolean(moreHref && moreCount > 0);
       applyViewMode(root, mode);
     };
 
+    /** 绕轴旋转全部 item（Rodrigues）——锁定轴向做缓动更丝滑 */
+    function rotateItemsAxisAngle(items, ux, uy, uz, angle) {
+      var c = Math.cos(angle);
+      var s = Math.sin(angle);
+      var C = 1 - c;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var x = item.x;
+        var y = item.y;
+        var z = item.z;
+        item.x =
+          (c + ux * ux * C) * x +
+          (ux * uy * C - uz * s) * y +
+          (ux * uz * C + uy * s) * z;
+        item.y =
+          (uy * ux * C + uz * s) * x +
+          (c + uy * uy * C) * y +
+          (uy * uz * C - ux * s) * z;
+        item.z =
+          (uz * ux * C - uy * s) * x +
+          (uz * uy * C + ux * s) * y +
+          (c + uz * uz * C) * z;
+      }
+    }
+
+    /** 绕 X / Y 微调（到位后收束用） */
+    function rotateItemsXY(items, angleX, angleY) {
+      var cosX = Math.cos(angleX);
+      var sinX = Math.sin(angleX);
+      var cosY = Math.cos(angleY);
+      var sinY = Math.sin(angleY);
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        var x = it.x;
+        var y = it.y;
+        var z = it.z;
+        var y2 = y * cosX - z * sinX;
+        var z2 = y * sinX + z * cosX;
+        it.x = x * cosY + z2 * sinY;
+        it.y = y2;
+        it.z = -x * sinY + z2 * cosY;
+      }
+    }
+
+    /** 把 TagCloud item 坐标写回 DOM（对齐库内 _next 公式） */
+    function syncTagCloudStyles(instance) {
+      if (!instance || !instance.items) return;
+      var depth = instance.depth || 2 * (instance.radius || 72);
+      for (var i = 0; i < instance.items.length; i++) {
+        var e = instance.items[i];
+        var r = (2 * depth) / (2 * depth + e.z);
+        e.scale = r;
+        var op = r * r - 0.25;
+        if (op > 1) op = 1;
+        if (op < 0) op = 0;
+        var node = e.el;
+        if (!node) continue;
+        var n = (e.x - node.offsetWidth / 2).toFixed(2);
+        var o = (e.y - node.offsetHeight / 2).toFixed(2);
+        var tr =
+          "translate3d(" + n + "px, " + o + "px, 0) scale(" + r + ")";
+        node.style.WebkitTransform = tr;
+        node.style.transform = tr;
+        node.style.opacity = String(op);
+        node.style.filter = "alpha(opacity=" + Math.round(op * 100) + ")";
+        node.style.zIndex = String(Math.round(r * 1000));
+      }
+    }
+
+    function findInstanceItem(instance, itemEl) {
+      if (!instance || !instance.items || !itemEl) return null;
+      for (var i = 0; i < instance.items.length; i++) {
+        if (instance.items[i].el === itemEl) return instance.items[i];
+      }
+      return null;
+    }
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    /** 丝滑转到正前方：开局锁定旋转轴，按缓动角度推进 */
+    function animateBringToFront(el, itemEl, onDone) {
+      var instance = el._tagCloudInstance;
+      var target = findInstanceItem(instance, itemEl);
+      if (!instance || !target) {
+        if (onDone) onDone(false);
+        return;
+      }
+      if (typeof instance.pause === "function") instance.pause();
+      instance.paused = true;
+      clearHoverTimers(el);
+
+      var len =
+        Math.sqrt(
+          target.x * target.x + target.y * target.y + target.z * target.z,
+        ) || 1;
+      var cx = target.x / len;
+      var cy = target.y / len;
+      var cz = target.z / len;
+      var fx = 0;
+      var fy = 0;
+      var fz = -1;
+      var ux = cy * fz - cz * fy;
+      var uy = cz * fx - cx * fz;
+      var uz = cx * fy - cy * fx;
+      var axisLen = Math.sqrt(ux * ux + uy * uy + uz * uz);
+      var dot = cx * fx + cy * fy + cz * fz;
+      if (dot > 1) dot = 1;
+      if (dot < -1) dot = -1;
+      var totalAngle = Math.acos(dot);
+      if (axisLen < 1e-5) {
+        if (dot > 0.995) {
+          if (onDone) onDone(true);
+          return;
+        }
+        ux = 1;
+        uy = 0;
+        uz = 0;
+        totalAngle = Math.PI;
+      } else {
+        ux /= axisLen;
+        uy /= axisLen;
+        uz /= axisLen;
+      }
+
+      var start = performance.now();
+      var prevEased = 0;
+
+      function fineTune() {
+        var n = 8;
+        while (n-- > 0) {
+          if (
+            Math.abs(target.x) < 12 &&
+            Math.abs(target.y) < 12 &&
+            target.z < -20
+          ) {
+            break;
+          }
+          var ax = -target.y * 0.16;
+          var ay = target.x * 0.16;
+          if (ax > 0.2) ax = 0.2;
+          if (ax < -0.2) ax = -0.2;
+          if (ay > 0.2) ay = 0.2;
+          if (ay < -0.2) ay = -0.2;
+          rotateItemsXY(instance.items, ax, ay);
+        }
+        syncTagCloudStyles(instance);
+      }
+
+      function tick(now) {
+        if (!el._focusHold) {
+          el._focusRaf = 0;
+          return;
+        }
+        var t = Math.min(1, (now - start) / FOCUS_ANIM_MS);
+        var eased = easeInOutCubic(t);
+        var delta = (eased - prevEased) * totalAngle;
+        prevEased = eased;
+        if (Math.abs(delta) > 1e-6) {
+          rotateItemsAxisAngle(instance.items, ux, uy, uz, delta);
+          syncTagCloudStyles(instance);
+        }
+        if (t >= 1) {
+          el._focusRaf = 0;
+          fineTune();
+          if (onDone) onDone(true);
+          return;
+        }
+        el._focusRaf = requestAnimationFrame(tick);
+      }
+      el._focusRaf = requestAnimationFrame(tick);
+    }
+
+    function bindHoverFocus(el, root) {
+      var frame =
+        (root && root.querySelector("[data-tag-sphere-frame]")) || el;
+      if (!frame || frame._tagHoverFocusBound) return;
+      frame._tagHoverFocusBound = true;
+
+      function itemUnderPointer(clientX, clientY) {
+        if (typeof document.elementFromPoint !== "function") return null;
+        var under = document.elementFromPoint(clientX, clientY);
+        if (!under || !under.closest) return null;
+        var item = under.closest(".tagcloud--item");
+        if (!item || !frame.contains(item)) return null;
+        return item;
+      }
+
+      /** 用最近一次指针坐标复核：是否仍悬停在目标上 */
+      function stillHovering(itemEl) {
+        if (!itemEl) return false;
+        var p = el._hoverLastPointer;
+        if (!p) return el._hoverDwellItem === itemEl;
+        return itemUnderPointer(p.x, p.y) === itemEl;
+      }
+
+      function releaseFocus() {
+        clearHoverTimers(el);
+        el._focusHold = false;
+        el._hoverFocusItem = null;
+        el._hoverDwellItem = null;
+        frame.classList.remove("is-hover-focus");
+        var nodes = el.querySelectorAll(".tagcloud--item");
+        for (var i = 0; i < nodes.length; i++) {
+          nodes[i].classList.remove("tag-sphere__item--focus");
+        }
+        var instance = el._tagCloudInstance;
+        if (instance && typeof instance.resume === "function") instance.resume();
+        setIdleSpeed(instance);
+      }
+
+      function fireFocus(itemEl) {
+        if (!itemEl || reducedMotion()) return;
+        if (el._tagInteract && el._tagInteract.dragged) return;
+        // 触发瞬间再复核一次，避免密排布误触
+        if (!stillHovering(itemEl)) {
+          releaseFocus();
+          return;
+        }
+        el._hoverFocusItem = itemEl;
+        el._focusHold = true;
+        frame.classList.add("is-hover-focus");
+        itemEl.classList.add("tag-sphere__item--focus");
+        animateBringToFront(el, itemEl, function () {
+          if (!el._focusHold || el._hoverFocusItem !== itemEl) return;
+          itemEl.classList.add("tag-sphere__item--focus");
+        });
+      }
+
+      function startDwellTimers(itemEl) {
+        clearHoverTimers(el);
+        el._hoverDwellItem = itemEl;
+
+        // Phase 1：满 0.5s 后复核鼠标是否仍在该标签上
+        el._hoverConfirmTimer = setTimeout(function () {
+          el._hoverConfirmTimer = null;
+          if (el._hoverDwellItem !== itemEl) return;
+          if (el._tagInteract && el._tagInteract.dragged) return;
+          if (!stillHovering(itemEl)) {
+            // 0.5s 时已不在 → 整段从 0 重来（若指针落在别的标签上则交给 move）
+            releaseFocus();
+            var p = el._hoverLastPointer;
+            if (p) {
+              var under = itemUnderPointer(p.x, p.y);
+              if (under) beginDwell(under);
+            }
+            return;
+          }
+          // Phase 2：仍悬停 → 再等到一共 1s 触发
+          var remain = Math.max(0, HOVER_TRIGGER_MS - HOVER_CONFIRM_MS);
+          el._hoverTriggerTimer = setTimeout(function () {
+            el._hoverTriggerTimer = null;
+            if (el._hoverDwellItem !== itemEl) return;
+            if (el._tagInteract && el._tagInteract.dragged) return;
+            fireFocus(itemEl);
+          }, remain);
+        }, HOVER_CONFIRM_MS);
+      }
+
+      /**
+       * 开始 / 续上悬停计时。
+       * 密排布：短暂扫到邻签不立刻重置；需 sticky 后才换目标并从 0 重计。
+       */
+      function beginDwell(itemEl) {
+        if (!itemEl || reducedMotion()) return;
+        if (root && root.getAttribute("data-view-mode") === "list") return;
+        if (el._tagInteract && el._tagInteract.dragged) return;
+
+        // 取消「即将离开」宽限（指针又回到某个标签上）
+        if (el._hoverLeaveGraceTimer) {
+          clearTimeout(el._hoverLeaveGraceTimer);
+          el._hoverLeaveGraceTimer = null;
+        }
+
+        // 已在聚焦同一标签：保持
+        if (el._focusHold && el._hoverFocusItem === itemEl) {
+          if (el._hoverSwitchTimer) {
+            clearTimeout(el._hoverSwitchTimer);
+            el._hoverSwitchTimer = null;
+            el._hoverSwitchItem = null;
+          }
+          return;
+        }
+
+        // 已在为同一标签计时：续上，不重置
+        if (el._hoverDwellItem === itemEl) {
+          if (el._hoverSwitchTimer) {
+            clearTimeout(el._hoverSwitchTimer);
+            el._hoverSwitchTimer = null;
+            el._hoverSwitchItem = null;
+          }
+          return;
+        }
+
+        // 换了邻签：先 sticky，确认不是密排布误扫才重置计时
+        if (el._hoverDwellItem || el._focusHold) {
+          if (el._hoverSwitchItem === itemEl && el._hoverSwitchTimer) return;
+          if (el._hoverSwitchTimer) {
+            clearTimeout(el._hoverSwitchTimer);
+            el._hoverSwitchTimer = null;
+          }
+          el._hoverSwitchItem = itemEl;
+          el._hoverSwitchTimer = setTimeout(function () {
+            el._hoverSwitchTimer = null;
+            el._hoverSwitchItem = null;
+            if (el._tagInteract && el._tagInteract.dragged) return;
+            var p = el._hoverLastPointer;
+            var under = p ? itemUnderPointer(p.x, p.y) : itemEl;
+            if (under !== itemEl) return;
+            releaseFocus();
+            startDwellTimers(itemEl);
+          }, HOVER_SWITCH_STICKY_MS);
+          return;
+        }
+
+        startDwellTimers(itemEl);
+      }
+
+      function scheduleLeaveReset() {
+        // 指针在标签间隙：取消换签 sticky，宽限后整段重置
+        if (el._hoverSwitchTimer) {
+          clearTimeout(el._hoverSwitchTimer);
+          el._hoverSwitchTimer = null;
+          el._hoverSwitchItem = null;
+        }
+        if (el._hoverLeaveGraceTimer) return;
+        el._hoverLeaveGraceTimer = setTimeout(function () {
+          el._hoverLeaveGraceTimer = null;
+          // 移出后从 0.5s 确认阶段整段重置
+          releaseFocus();
+        }, HOVER_LEAVE_GRACE_MS);
+      }
+
+      // move + elementFromPoint：密排布下比 pointerover/out 稳
+      frame.addEventListener(
+        "pointermove",
+        function (ev) {
+          el._hoverLastPointer = { x: ev.clientX, y: ev.clientY };
+          if (el._tagInteract && el._tagInteract.dragged) return;
+          var item = itemUnderPointer(ev.clientX, ev.clientY);
+          if (item) beginDwell(item);
+          else if (el._hoverDwellItem || el._focusHold) scheduleLeaveReset();
+        },
+        { passive: true },
+      );
+
+      frame.addEventListener(
+        "pointerover",
+        function (ev) {
+          var t = ev.target;
+          var item =
+            t && t.closest ? t.closest(".tagcloud--item") : null;
+          if (item && frame.contains(item)) beginDwell(item);
+        },
+        true,
+      );
+
+      frame.addEventListener("pointerleave", function () {
+        if (el._hoverLeaveGraceTimer) {
+          clearTimeout(el._hoverLeaveGraceTimer);
+          el._hoverLeaveGraceTimer = null;
+        }
+        releaseFocus();
+      });
+    }
+
     function bindDragAndClick(el, root) {
       var frame =
         (root && root.querySelector("[data-tag-sphere-frame]")) || el;
-      if (!frame || frame._tagSphereInteractBound) return;
+      if (!frame) return;
+      el._tagInteract = el._tagInteract || {
+        suppressClick: false,
+        dragged: false,
+      };
+      if (frame._tagSphereInteractBound) return;
       frame._tagSphereInteractBound = true;
       disarmNativeLinkDrag(frame);
-
       var pressed = false;
-      var dragged = false;
-      var suppressClick = false;
       var pointerId = null;
       var sx = 0;
       var sy = 0;
@@ -317,35 +741,31 @@ const showMore = Boolean(moreHref && moreCount > 0);
       function onDown(ev) {
         if (ev.button != null && ev.button !== 0) return;
         if (root && root.getAttribute("data-view-mode") === "list") return;
+        // 只记起点；超过 DRAG_PX 才 capture + 转球（轻点走原生链接）
         pressed = true;
-        dragged = false;
-        suppressClick = false;
+        el._tagInteract.dragged = false;
+        el._tagInteract.suppressClick = false;
         sx = ev.clientX;
         sy = ev.clientY;
         pointerId = ev.pointerId;
-        try {
-          frame.setPointerCapture(ev.pointerId);
-        } catch (e) {}
-        setDragSpeed(el._tagCloudInstance);
-        applyPointerToInstance(
-          el._tagCloudInstance,
-          cloudBox(),
-          ev.clientX,
-          ev.clientY,
-          DRAG_DIV,
-        );
       }
 
       function onMove(ev) {
         if (!pressed) return;
         var dx = ev.clientX - sx;
         var dy = ev.clientY - sy;
-        if (!dragged && dx * dx + dy * dy > DRAG_PX * DRAG_PX) {
-          dragged = true;
-          suppressClick = true;
+        if (!el._tagInteract.dragged && dx * dx + dy * dy > DRAG_PX * DRAG_PX) {
+          el._tagInteract.dragged = true;
+          el._tagInteract.suppressClick = true;
           frame.classList.add("is-dragging");
+          // 拖拽打断悬停聚焦
+          clearHoverFocus(el);
+          try {
+            if (pointerId != null) frame.setPointerCapture(pointerId);
+          } catch (e) {}
         }
-        if (dragged && ev.cancelable) ev.preventDefault();
+        if (!el._tagInteract.dragged) return;
+        if (ev.cancelable) ev.preventDefault();
         setDragSpeed(el._tagCloudInstance);
         applyPointerToInstance(
           el._tagCloudInstance,
@@ -361,19 +781,21 @@ const showMore = Boolean(moreHref && moreCount > 0);
         pressed = false;
         if (pointerId != null) {
           try {
-            frame.releasePointerCapture(pointerId);
+            if (frame.hasPointerCapture && frame.hasPointerCapture(pointerId)) {
+              frame.releasePointerCapture(pointerId);
+            }
           } catch (e) {}
           pointerId = null;
         }
         frame.classList.remove("is-dragging");
         setIdleSpeed(el._tagCloudInstance);
-        if (suppressClick) {
+        if (el._tagInteract.suppressClick) {
           setTimeout(function () {
-            suppressClick = false;
-            dragged = false;
+            el._tagInteract.suppressClick = false;
+            el._tagInteract.dragged = false;
           }, 0);
         } else {
-          dragged = false;
+          el._tagInteract.dragged = false;
         }
       }
 
@@ -382,10 +804,16 @@ const showMore = Boolean(moreHref && moreCount > 0);
       frame.addEventListener("pointerup", onUp);
       frame.addEventListener("pointercancel", onUp);
 
+      // 拖过则禁止链接跳转；轻点走 <a> 原生
       frame.addEventListener(
         "click",
         function (ev) {
-          if (!suppressClick && !dragged) return;
+          if (
+            !el._tagInteract.suppressClick &&
+            !el._tagInteract.dragged
+          ) {
+            return;
+          }
           ev.preventDefault();
           ev.stopPropagation();
         },
@@ -437,6 +865,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       setIdleSpeed(instance);
 
       el._tagCloudDestroy = function () {
+        clearHoverFocus(el);
         if (el._tagColorWatch) {
           cancelAnimationFrame(el._tagColorWatch);
           el._tagColorWatch = 0;
@@ -453,6 +882,11 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
 
       function enhanceDepthStack() {
+        // 悬停转正中期间由 syncTagCloudStyles 接管，避免抢写 opacity
+        if (el._focusHold || el._focusTimer || el._focusRaf) {
+          el._tagColorWatch = requestAnimationFrame(enhanceDepthStack);
+          return;
+        }
         var nodes = el.querySelectorAll(".tagcloud--item");
         for (var i = 0; i < nodes.length; i++) {
           var node = nodes[i];
@@ -483,6 +917,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       if (root) root.style.setProperty("--tag-sphere-d", d);
 
       bindDragAndClick(el, root);
+      bindHoverFocus(el, root);
       if (fallback) fallback.hidden = true;
       markReady(root, true);
       applyViewMode(root, "sphere");
@@ -586,6 +1021,37 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
   .tag-sphere__frame.is-dragging {
     cursor: grabbing;
+  }
+
+  /* 悬停满 1s：目标黄高亮丝滑转到正中，其余发虚 */
+  .tag-sphere__frame.is-hover-focus
+    :global(.tagcloud--item:not(.tag-sphere__item--focus)) {
+    opacity: 0.28 !important;
+    filter: saturate(0.55) !important;
+    transition:
+      opacity 0.35s ease,
+      filter 0.35s ease;
+  }
+
+  .tag-sphere__frame.is-hover-focus
+    :global(.tagcloud--item.tag-sphere__item--focus) {
+    z-index: 10000 !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .tag-sphere__frame.is-hover-focus
+    :global(.tag-sphere__item--focus .tag-sphere__link--primary),
+  .tag-sphere__frame.is-hover-focus
+    :global(.tag-sphere__item--focus .tag-sphere__link--theme) {
+    color: oklch(0.9 0.18 95) !important;
+    text-shadow:
+      0 0 0.45rem oklch(0.85 0.16 95 / 0.85),
+      0 0 0.9rem oklch(0.78 0.14 85 / 0.45),
+      0 1px 2px rgb(0 0 0 / 0.4) !important;
+    transition:
+      color 0.28s ease,
+      text-shadow 0.35s ease;
   }
 
   :global(html.dark) .tag-sphere__frame {
