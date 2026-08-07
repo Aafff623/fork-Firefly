@@ -367,17 +367,29 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
         transform 0.2s ease;
 }
 
-/* 覆盖 btn-plain 悬停主色，避免与积水白字冲突闪烁 */
+/* 覆盖 btn-plain 的 hover:text-primary：品牌字绝不跟主题蓝走 */
 #navbar a.navbar-brand-ripple.btn-plain {
     transition:
         border-color var(--brand-ripple-rise) var(--brand-ripple-ease),
-        color 0.15s ease,
         transform 0.2s ease;
 }
 
 #navbar a.navbar-brand-ripple.btn-plain:hover,
-#navbar a.navbar-brand-ripple.btn-plain:focus-visible {
-    color: white;
+#navbar a.navbar-brand-ripple.btn-plain:focus-visible,
+#navbar a.navbar-brand-ripple:hover,
+#navbar a.navbar-brand-ripple:focus-visible {
+    color: #111 !important;
+}
+
+:root.dark #navbar a.navbar-brand-ripple.btn-plain:hover,
+:root.dark #navbar a.navbar-brand-ripple.btn-plain:focus-visible,
+:root.dark #navbar a.navbar-brand-ripple:hover,
+:root.dark #navbar a.navbar-brand-ripple:focus-visible,
+html.dark #navbar a.navbar-brand-ripple.btn-plain:hover,
+html.dark #navbar a.navbar-brand-ripple.btn-plain:focus-visible,
+html.dark #navbar a.navbar-brand-ripple:hover,
+html.dark #navbar a.navbar-brand-ripple:focus-visible {
+    color: #f4f4f5 !important;
 }
 
 /* 左波：从浅洼缓慢积到半高，再慢慢退 */
@@ -428,13 +440,22 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar a.navbar-brand-ripple:hover,
 #navbar a.navbar-brand-ripple:focus-visible {
     border-color: rgb(37 99 235 / 0.75);
-    color: white;
 }
 
+/* 内层图标+标题：悬停锁死深色/浅色，禁止被 primary 染蓝 */
 #navbar a.navbar-brand-ripple:hover > div,
-#navbar a.navbar-brand-ripple:focus-visible > div {
-    color: white !important;
-    transition: color 0.15s ease;
+#navbar a.navbar-brand-ripple:focus-visible > div,
+#navbar a.navbar-brand-ripple.is-brand-drawing > div {
+    color: #111 !important;
+}
+
+:root.dark #navbar a.navbar-brand-ripple:hover > div,
+:root.dark #navbar a.navbar-brand-ripple:focus-visible > div,
+:root.dark #navbar a.navbar-brand-ripple.is-brand-drawing > div,
+html.dark #navbar a.navbar-brand-ripple:hover > div,
+html.dark #navbar a.navbar-brand-ripple:focus-visible > div,
+html.dark #navbar a.navbar-brand-ripple.is-brand-drawing > div {
+    color: #f4f4f5 !important;
 }
 
 #navbar a.navbar-brand-ripple:hover::before,
@@ -470,57 +491,69 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 }
 
 /* ============================================
- * 品牌名 · 悬停描边后填白
- * 常态实心 currentColor；悬停：白描边画出 → 白色填实（约 0.65s）
+ * 品牌名 · 悬停沿字横向渐变擦出
+ * 左粉 → 粉橙过渡 → 橙 → 金绿过渡 → 青 → 站点 hue 紫（停靠点都是混色，不硬切）
  * ============================================ */
-#navbar a.navbar-brand-ripple .navbar-brand-title__glyph {
-    fill: currentColor;
-    stroke: transparent;
-    stroke-width: 1.35px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    paint-order: stroke fill;
-    stroke-dasharray: var(--brand-stroke-len, 420);
-    stroke-dashoffset: 0;
+#navbar a.navbar-brand-ripple .navbar-brand-title__fill {
+    position: relative;
+    z-index: 1;
+    color: #111 !important;
 }
 
-@keyframes brand-title-stroke-fill {
-    0% {
-        fill: transparent;
-        stroke: #fff;
-        stroke-dashoffset: var(--brand-stroke-len, 420);
-    }
-    58% {
-        fill: transparent;
-        stroke: #fff;
-        stroke-dashoffset: 0;
-    }
-    100% {
-        fill: #fff;
-        stroke: #fff;
-        stroke-dashoffset: 0;
-    }
+:root.dark #navbar a.navbar-brand-ripple .navbar-brand-title__fill,
+html.dark #navbar a.navbar-brand-ripple .navbar-brand-title__fill {
+    color: #f4f4f5 !important;
 }
 
-#navbar a.navbar-brand-ripple:hover .navbar-brand-title__glyph,
-#navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__glyph,
-#navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__glyph {
-    animation: brand-title-stroke-fill 0.65s cubic-bezier(0.33, 0.02, 0.18, 1) forwards;
+#navbar a.navbar-brand-ripple .navbar-brand-title__stroke {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    /* 整段用户名一条横向渐变：字母位置不同颜色不同，中间连续过渡 */
+    color: transparent !important;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(
+        90deg,
+        oklch(0.72 0.24 350) 0%,
+        oklch(0.74 0.22 12) 14%,
+        oklch(0.76 0.2 38) 28%,
+        oklch(0.78 0.18 58) 42%,
+        oklch(0.76 0.14 110) 56%,
+        oklch(0.7 0.16 220) 72%,
+        oklch(0.66 0.2 270) 86%,
+        oklch(0.62 0.22 var(--hue, 290)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.55s cubic-bezier(0.33, 0.02, 0.18, 1);
+    pointer-events: none;
+    white-space: nowrap;
 }
 
-/* 悬停时内层 color:white 不抢 SVG fill 动画（动画关键帧自管 fill） */
-#navbar a.navbar-brand-ripple:hover .navbar-brand-title,
-#navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title {
-    color: inherit;
+#navbar a.navbar-brand-ripple:hover .navbar-brand-title__stroke,
+#navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__stroke,
+#navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__stroke {
+    clip-path: inset(0 0 0 0);
+}
+
+/* 离开立刻收回 */
+#navbar a.navbar-brand-ripple:not(:hover):not(:focus-visible):not(.is-brand-drawing)
+    .navbar-brand-title__stroke {
+    transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #navbar a.navbar-brand-ripple:hover .navbar-brand-title__glyph,
-    #navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__glyph,
-    #navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__glyph {
-        animation: none;
-        fill: #fff;
-        stroke: transparent;
-        stroke-dashoffset: 0;
+    #navbar a.navbar-brand-ripple .navbar-brand-title__stroke {
+        transition: none;
+    }
+
+    #navbar a.navbar-brand-ripple:hover .navbar-brand-title__stroke,
+    #navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__stroke,
+    #navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__stroke {
+        clip-path: inset(0 0 0 0);
     }
 }

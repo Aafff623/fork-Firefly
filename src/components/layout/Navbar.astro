@@ -223,20 +223,11 @@ const logoVariants = await Promise.all(
                                     ) : (
                                         <Icon is:inline name="lucide:house" class="navbar-logo text-[1.75rem] mb-1 mr-2" />
                                     )}
-                    {/* SVG 文本：悬停描边→填白；sr-only 保读屏 */}
-                    <svg
-                      class="navbar-brand-title"
-                      aria-hidden="true"
-                      focusable="false"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <text
-                        class="navbar-brand-title__glyph"
-                        x="0"
-                        y="1.05em"
-                        dominant-baseline="alphabetic"
-                      >{navbarTitle}</text>
-                    </svg>
+                    {/* 双层字：底填充不变；上层彩色描边 clip 从左擦出 */}
+                    <span class="navbar-brand-title" aria-hidden="true">
+                      <span class="navbar-brand-title__fill">{navbarTitle}</span>
+                      <span class="navbar-brand-title__stroke">{navbarTitle}</span>
+                    </span>
                     <span class="sr-only">{navbarTitle}</span>
                 </div>
             </a>
@@ -325,24 +316,20 @@ const logoVariants = await Promise.all(
 </div>
 
 <style>
-	/* 品牌名：SVG 手写体（描边/填色见 navbar.css） */
+	/* 品牌名：双层手写体（描边擦出见 navbar.css） */
 	.navbar-brand-title {
-		display: block;
-		height: 1.45em;
-		overflow: visible;
+		position: relative;
+		display: inline-block;
 		font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive;
 		font-weight: 700;
 		font-size: 1.35rem;
 		letter-spacing: 0.02em;
 		line-height: 1.1;
-		/* 测长前占位，避免塌缩 */
-		min-width: 4.5em;
 	}
 
-	.navbar-brand-title__glyph {
-		font-family: inherit;
-		font-weight: inherit;
-		font-size: 1em;
+	.navbar-brand-title__fill,
+	.navbar-brand-title__stroke {
+		font: inherit;
 		letter-spacing: inherit;
 	}
 
@@ -536,61 +523,17 @@ initSakuraNavToggle();
 </script>
 
 <script>
-/** 品牌 SVG 标题：字体就绪后测宽 + 估描边周长（供悬停 dash 动画） */
-function fitNavbarBrandTitle(root?: ParentNode | null) {
-	const scope = root ?? document;
-	const svg = scope.querySelector<SVGSVGElement>(".navbar-brand-title");
-	const glyph = svg?.querySelector<SVGTextElement>(".navbar-brand-title__glyph");
-	if (!svg || !glyph) return;
-
-	const apply = () => {
-		const textLen = glyph.getComputedTextLength();
-		if (!textLen || !Number.isFinite(textLen)) return;
-		const padX = 4;
-		const padY = 6;
-		const fontSize = Number.parseFloat(getComputedStyle(svg).fontSize) || 21.6;
-		const height = fontSize * 1.35;
-		const width = textLen + padX * 2;
-		svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-		svg.setAttribute("width", String(width));
-		svg.setAttribute("height", String(height));
-		svg.style.minWidth = "";
-		glyph.setAttribute("x", String(padX));
-		glyph.setAttribute("y", String(fontSize * 1.05));
-		/* 手写体轮廓周长约估：字宽 × 系数 */
-		const strokeLen = Math.ceil(textLen * 2.85);
-		glyph.style.setProperty("--brand-stroke-len", String(strokeLen));
-		glyph.setAttribute("data-stroke-ready", "true");
-	};
-
-	const run = () => {
-		if (document.fonts?.ready) {
-			document.fonts.ready.then(apply).catch(apply);
-		} else {
-			apply();
-		}
-	};
-
-	run();
-}
-
+/** 品牌标题：悬停时加 is-brand-drawing，驱动横向渐变 clip 擦出 */
 function bindNavbarBrandTitleDraw(root?: ParentNode | null) {
 	const scope = root ?? document;
 	const brand = scope.querySelector<HTMLAnchorElement>("a.navbar-brand-ripple");
 	if (!brand || brand.dataset.brandDrawBound === "1") return;
 	brand.dataset.brandDrawBound = "1";
 
-	const reduceMotion = () =>
-		window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 	const startDraw = () => {
-		/* 先移除再加，保证每次悬停重播 */
 		brand.classList.remove("is-brand-drawing");
 		void brand.offsetWidth;
 		brand.classList.add("is-brand-drawing");
-		if (reduceMotion()) {
-			/* 减动：类名仍加上，CSS 直接白实心 */
-		}
 	};
 
 	const stopDraw = () => {
@@ -604,10 +547,8 @@ function bindNavbarBrandTitleDraw(root?: ParentNode | null) {
 }
 
 function initNavbarBrandTitle() {
-	fitNavbarBrandTitle(document);
 	bindNavbarBrandTitleDraw(document);
 	document.addEventListener("swup:page:view", () => {
-		fitNavbarBrandTitle(document);
 		bindNavbarBrandTitleDraw(document);
 	});
 }
@@ -617,8 +558,6 @@ if (document.readyState === "loading") {
 } else {
 	initNavbarBrandTitle();
 }
-
-window.fitNavbarBrandTitle = fitNavbarBrandTitle;
 </script>
 
 <script>
