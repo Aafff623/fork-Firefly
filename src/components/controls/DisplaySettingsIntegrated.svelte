@@ -85,7 +85,7 @@ let hue = $state(getHue());
 const defaultHue = getDefaultHue();
 let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
 const defaultWallpaperMode = backgroundWallpaper.mode;
-type PostListLayoutMode = "list" | "grid" | "waterfall";
+type PostListLayoutMode = "list" | "card";
 let currentLayout: PostListLayoutMode = $state("list");
 const defaultLayout = siteConfig.postListLayout.defaultMode;
 const mobileDefaultLayout =
@@ -536,9 +536,9 @@ function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 function checkScreenSize() {
 	isSmallScreen = window.innerWidth < 1200;
 	isMobileWidth = window.innerWidth < 780;
-	// 低于380px强制卡片网格（列表过窄）
+	// 低于380px强制卡片（列表过窄）
 	if (window.innerWidth < 380 && currentLayout === "list") {
-		setLayout("grid");
+		setLayout("card");
 	}
 }
 
@@ -587,18 +587,18 @@ function setLayout(layout: PostListLayoutMode) {
 onMount(() => {
 	mounted = true;
 
-	// 先恢复布局偏好，再跑视口校正（避免 <380 强制网格冲掉已存选择）
+	// 先恢复布局偏好，再跑视口校正（避免 <380 强制卡片冲掉已存选择）
 	const savedLayout = localStorage.getItem("postListLayout");
-	if (
-		savedLayout === "list" ||
-		savedLayout === "grid" ||
-		savedLayout === "waterfall"
-	) {
+	if (savedLayout === "list" || savedLayout === "card") {
 		currentLayout = savedLayout;
-	} else if (savedLayout === "brick") {
-		// 砖石布局已下线，旧偏好回退到瀑布
-		currentLayout = "waterfall";
-		localStorage.setItem("postListLayout", "waterfall");
+	} else if (
+		savedLayout === "grid" ||
+		savedLayout === "waterfall" ||
+		savedLayout === "brick"
+	) {
+		// 旧三模式 / 砖石 → 卡片
+		currentLayout = "card";
+		localStorage.setItem("postListLayout", "card");
 	} else {
 		currentLayout =
 			window.innerWidth < 780 ? mobileDefaultLayout : defaultLayout;
@@ -805,26 +805,14 @@ $effect(() => {
 				<button
 					aria-label={i18n(I18nKey.postListLayoutGrid)}
 					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
-					class:opacity-60={currentLayout !== 'grid'}
-					class:bg-(--btn-regular-bg-hover)={currentLayout === 'grid'}
+					class:opacity-60={currentLayout !== 'card'}
+					class:bg-(--btn-regular-bg-hover)={currentLayout === 'card'}
 					disabled={isSwitching}
-					onclick={() => setLayout('grid')}
+					onclick={() => setLayout('card')}
 					title={i18n(I18nKey.postListLayoutGrid)}
 				>
 					<Icon icon="lucide:layout-grid" class="w-4 h-4 shrink-0"></Icon>
 					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutGrid)}</span>
-				</button>
-				<button
-					aria-label={i18n(I18nKey.postListLayoutWaterfall)}
-					class="btn-regular rounded-md py-2 px-2 flex items-center justify-center gap-1.5 active:scale-95 transition-all relative overflow-hidden"
-					class:opacity-60={currentLayout !== 'waterfall'}
-					class:bg-(--btn-regular-bg-hover)={currentLayout === 'waterfall'}
-					disabled={isSwitching}
-					onclick={() => setLayout('waterfall')}
-					title={i18n(I18nKey.postListLayoutWaterfall)}
-				>
-					<Icon icon="lucide:columns-3" class="w-4 h-4 shrink-0"></Icon>
-					<span class="text-xs font-medium">{i18n(I18nKey.postListLayoutWaterfall)}</span>
 				</button>
 			</div>
 		</div>

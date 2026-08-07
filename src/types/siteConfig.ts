@@ -111,9 +111,9 @@ export type SiteConfig = {
 
 	// 文章列表布局配置
 	postListLayout: {
-		// list=列表 · grid=卡片网格 · waterfall=瀑布流
-		defaultMode: "list" | "grid" | "waterfall";
-		mobileDefaultMode?: "list" | "grid" | "waterfall"; // 视口宽度<780px；不设置则跟随 defaultMode
+		// list=列表 · card=卡片（原瀑布视觉）
+		defaultMode: "list" | "card";
+		mobileDefaultMode?: "list" | "card"; // 视口宽度<780px；不设置则跟随 defaultMode
 		descriptionLines?: number; // 文章简介显示行数，设为 0 则不截断，默认 2
 		showStatsIcons?: boolean; // 文章卡片底部统计是否显示图标
 		// 标签显示位置："meta"=跟随元数据行（默认），"bottom"=卡片底部独立一行（将替换stats显示，二者只能选其一）
@@ -132,13 +132,6 @@ export type SiteConfig = {
 			showPublished?: boolean; // 是否显示发布日期
 			showWords?: boolean; // 是否显示字数
 			showReadingTime?: boolean; // 是否显示阅读时间
-		};
-		grid: {
-			// 网格布局配置，仅在 grid 模式或允许切换布局时生效
-			// JS 最短列瀑布（仅修饰 grid，与独立的 waterfall 布局模式无关）
-			masonry: boolean;
-			// 网格模式卡片最小宽度(px)，浏览器根据容器宽度自动计算列数，默认 320
-			columnWidth?: number;
 		};
 	};
 
