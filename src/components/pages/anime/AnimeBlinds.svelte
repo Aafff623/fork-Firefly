@@ -1,7 +1,7 @@
 <script lang="ts">
 /**
  * 百叶窗精选条 — 改编自 bilibili-goat `effects/百叶窗`
- * 交互对齐 gallery PortfolioAccordion，尺寸更小，贴合追番页。
+ * 水平展开交互，尺寸更小，贴合追番页。
  */
 interface AnimeBlindItem {
 	id: string | number;

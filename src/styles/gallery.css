@@ -11,9 +11,21 @@
   }
 }
 
-/* 首页 Explorer 下方照片墙区块 */
+/* 首页照片墙区块 */
 .gallery-home-masonry {
   width: 100%;
+}
+
+.gallery-home-masonry__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.gallery-home-masonry__head h2 {
+  margin: 0;
 }
 
 .gallery-home-masonry .gallery-photo-card,
@@ -26,14 +38,6 @@
 }
 
 /* ── 相册分类栏（右侧图标对齐标签墙 Tags.astro）── */
-.gallery-categories__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
 .gallery-categories__title {
   margin: 0;
   font-size: 1.05rem;
@@ -41,494 +45,104 @@
   color: inherit;
 }
 
-.gallery-categories__mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.12rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklch, var(--line-divider, #000) 55%, transparent);
-  background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+.gallery-categories__title.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
-.gallery-categories__mode-btn {
+/* ── 无限画布：App 图标入口 + 全屏层 ── */
+.infinite-canvas-app-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: color-mix(in oklch, var(--content-meta, #666) 90%, transparent);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.gallery-categories__mode-btn:hover {
-  color: var(--primary);
-}
-
-.gallery-categories__mode-btn[aria-pressed="true"] {
-  background: color-mix(in oklch, var(--primary) 14%, transparent);
-  color: var(--primary);
-}
-
-.gallery-categories__mode-icon {
-  width: 0.95rem;
-  height: 0.95rem;
-}
-
-.gallery-categories__mode-icon--globe {
-  width: 1.05rem;
-  height: 1.05rem;
-}
-
-.gallery-categories__mode-btn[data-gallery-category-mode="pills"][aria-pressed="true"] {
-  background: color-mix(in oklch, var(--primary) 18%, transparent);
-}
-
-.gallery-categories__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.gallery-categories__list-btn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: 0;
-  border-radius: 0.65rem;
-  padding: 0.55rem 0.75rem;
-  background: transparent;
-  color: inherit;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.gallery-categories__list-btn:hover {
-  background: color-mix(in oklch, var(--primary) 8%, transparent);
-  color: var(--primary);
-}
-
-.gallery-categories__list-btn[data-active] {
-  background: color-mix(in oklch, var(--primary) 14%, transparent);
-  color: var(--primary);
-  font-weight: 600;
-}
-
-/* ── Gallery explorer（作品集手风琴 / 普通无限画布）── */
-.gallery-explorer {
-  width: 100%;
-}
-
-.gallery-mode-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  margin-bottom: 1rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--btn-regular-bg) 88%, transparent);
+  border-radius: 0.85rem;
   border: 1px solid var(--line-divider);
-}
-
-.gallery-mode-switch button {
-  border: 0;
-  background: transparent;
-  /* --deep-text 暗色下仍是深色，未选中会「没字」；显式给对比色 */
-  color: rgba(0, 0, 0, 0.62);
-  opacity: 1;
-  font-size: 0.875rem;
-  line-height: 1.2;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
+  background: color-mix(in oklab, var(--card-bg) 92%, #e8ecf3);
+  color: var(--primary);
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    transform 0.18s ease;
 }
 
-:is(.dark) .gallery-mode-switch button {
-  color: rgba(255, 255, 255, 0.72);
+:is(.dark) .infinite-canvas-app-btn {
+  background: color-mix(in oklab, var(--card-bg) 90%, #111827);
 }
 
-.gallery-mode-switch button.active {
-  color: white;
-  background: var(--primary);
+.infinite-canvas-app-btn:hover {
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--line-divider));
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  transform: translateY(-1px);
 }
 
-:is(.dark) .gallery-mode-switch button.active {
-  color: rgba(0, 0, 0, 0.78);
+.infinite-canvas-app-btn:active {
+  transform: translateY(0);
 }
 
-/* 等比例舞台：压低高度，锁在卡片内 */
-.gallery-stage-frame {
-  --gallery-stage-ratio: 16 / 9;
-  width: 100%;
-  aspect-ratio: var(--gallery-stage-ratio);
-  max-height: min(400px, 46vh);
-  container-type: size;
-  position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
-  border: 1px solid var(--line-divider);
-  background:
-    radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 45%),
-    color-mix(in oklab, var(--card-bg) 92%, #e8ecf3);
-}
-
-:is(.dark) .gallery-stage-frame {
-  background:
-    radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 50%),
-    color-mix(in oklab, var(--card-bg) 90%, #111827);
-}
-
-.gallery-stage-empty {
+.infinite-canvas-app-btn__glyph {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--deep-text);
-  opacity: 0.55;
+  line-height: 0;
 }
 
-/* 高度被 max-height 裁切时，保持比例框可用 */
-@supports (height: 1cqh) {
-  .gallery-stage-frame {
-    height: min(100cqw / (16 / 9), min(400px, 46vh));
-    max-height: min(400px, 46vh);
-  }
-}
-
-.gallery-stage-frame.is-normal {
-  cursor: grab;
-  touch-action: none;
+.infinite-canvas-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
   background: #ffffff;
-  border-color: rgb(15 23 42 / 0.06);
+  touch-action: none;
 }
 
-.gallery-stage-frame.is-normal:active {
-  cursor: grabbing;
+:is(.dark) .infinite-canvas-fullscreen {
+  background: #111318;
 }
 
-/* ── 作品集：水平手风琴（website-ui-share horizontal-accordion）
- * Grid 列宽 10fr/1fr；竖排标题；单图 + scrim；展开远→近呼吸放大
- * 性能：只过渡 grid-template-columns / opacity / transform，不用 filter/mask
- */
-.gallery-stage-frame.is-portfolio {
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 28% 18%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 48%),
-    color-mix(in oklab, var(--card-bg) 94%, #eef1f6);
+.infinite-canvas-fullscreen .infinite-canvas {
+  position: absolute;
+  inset: 0;
 }
 
-:is(.dark) .gallery-stage-frame.is-portfolio {
-  background:
-    radial-gradient(circle at 28% 18%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 52%),
-    color-mix(in oklab, var(--card-bg) 92%, #111827);
-}
-
-.portfolio-accordion {
-  --gap: 0.55rem;
-  --base: clamp(2rem, 6cqi, 3.6rem);
-  --speed: 0.36s;
-  /* 源码 linear() 缓动的近似：快速起步、末端柔和落定 */
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --article-width: 0;
-  display: grid;
-  align-items: stretch;
-  gap: var(--gap);
-  width: 100%;
-  height: 100%;
-  padding: clamp(0.55rem, 1.8cqi, 0.85rem);
-  box-sizing: border-box;
-  outline: none;
-  transition: grid-template-columns var(--speed) var(--ease);
-}
-
-.portfolio-panel {
-  position: relative;
-  min-width: var(--base);
-  height: 100%;
-  margin: 0;
+.infinite-canvas-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
   padding: 0;
-  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgb(15 23 42 / 0.1);
+  background: rgb(255 255 255 / 0.9);
+  color: #111;
   cursor: pointer;
-  border-radius: 0.9rem;
-  border: 1px solid color-mix(in oklab, var(--line-divider) 80%, transparent);
-  background: color-mix(in oklab, var(--card-bg) 96%, white);
-  box-shadow: 0 4px 16px rgb(120 140 170 / 0.08);
-  color: inherit;
-  text-align: left;
-  contain: layout paint style;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-:is(.dark) .portfolio-panel {
-  background: color-mix(in oklab, var(--card-bg) 94%, #0b0f16);
-  box-shadow: 0 4px 18px rgb(0 0 0 / 0.22);
+:is(.dark) .infinite-canvas-close {
+  border-color: rgb(255 255 255 / 0.14);
+  background: rgb(17 19 24 / 0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.portfolio-panel.is-active {
-  z-index: 1;
-  border-color: color-mix(in oklab, var(--primary) 22%, var(--line-divider));
+.infinite-canvas-close:hover {
+  transform: scale(1.04);
 }
 
-.portfolio-panel-body {
-  /* 文案区宽度锚定最宽一栏，收起时靠 overflow 裁切 */
-  width: max(100%, calc(var(--article-width) * 1px));
-  height: 100%;
+.infinite-canvas-fullscreen__empty {
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.55rem;
-  padding-inline: calc(var(--base) * 0.42);
-  padding-bottom: 1.1rem;
-  overflow: hidden;
-  z-index: 2;
-}
-
-/* 竖排侧标题（收起可见） */
-.portfolio-panel-title {
-  position: absolute;
-  top: 1.05rem;
-  left: calc(var(--base) * 0.42);
-  z-index: 3;
-  margin: 0;
-  transform-origin: 0 50%;
-  rotate: 90deg;
-  font-size: clamp(0.7rem, 2.2cqi, 0.86rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
+  align-items: center;
+  justify-content: center;
   color: var(--deep-text);
-  opacity: 0.5;
-  transition: opacity calc(var(--speed) * 0.9) var(--ease);
-  text-shadow: 0 1px 10px rgb(255 255 255 / 0.28);
-  pointer-events: none;
-}
-
-:is(.dark) .portfolio-panel-title {
-  color: rgb(255 255 255 / 0.92);
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.45);
-}
-
-.portfolio-panel.is-active .portfolio-panel-title {
-  opacity: 1;
-}
-
-.portfolio-panel-desc {
-  margin: 0;
-  max-width: min(18rem, 72%);
-  font-size: clamp(0.68rem, 1.9cqi, 0.78rem);
-  line-height: 1.45;
-  color: rgb(255 255 255 / 0.9);
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.35);
-  text-wrap: balance;
-  opacity: 0;
-  transform: translate3d(0, 0.35rem, 0);
-  transition:
-    opacity calc(var(--speed) * 0.85) var(--ease),
-    transform calc(var(--speed) * 0.85) var(--ease);
-  pointer-events: none;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.portfolio-panel.is-active .portfolio-panel-desc {
-  opacity: 0.92;
-  transform: translate3d(0, 0, 0);
-  pointer-events: auto;
-  transition-delay: 0.06s;
-}
-
-.portfolio-panel-cta {
-  position: relative;
-  z-index: 3;
-  width: fit-content;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: color-mix(in oklab, white 90%, var(--primary));
-  opacity: 0;
-  transform: translate3d(0, 0.3rem, 0);
-  transition:
-    opacity calc(var(--speed) * 0.85) var(--ease),
-    transform calc(var(--speed) * 0.85) var(--ease);
-  pointer-events: none;
-}
-
-.portfolio-panel-cta span {
-  display: inline-block;
-  line-height: 1.2;
-  translate: calc(var(--base) * 0.15);
-}
-
-.portfolio-panel.is-active .portfolio-panel-cta {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  pointer-events: auto;
-  transition-delay: 0.08s;
-}
-
-.portfolio-panel-cta:hover span {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.portfolio-panel-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  background: color-mix(in oklab, var(--btn-regular-bg) 80%, transparent);
-  pointer-events: none;
-}
-
-.portfolio-panel-media img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-  transform: scale(1);
-  transform-origin: center center;
-  opacity: 0.7;
-  /* 只动 transform/opacity，避免 filter 重绘拖慢悬停 */
-  transition: opacity var(--speed) var(--ease);
-  user-select: none;
-}
-
-/* 激活：由远及近微放大 + 过冲回落（呼吸感） */
-.portfolio-panel.is-active .portfolio-panel-media img {
-  opacity: 1;
-  animation: portfolio-breathe 0.72s var(--ease) both;
-}
-
-@keyframes portfolio-breathe {
-  0% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.09);
-  }
-  100% {
-    transform: scale(1.055);
-  }
-}
-
-/* 独立渐隐层，代替 img mask（缩放时不重采样蒙版） */
-.portfolio-panel-scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgb(255 255 255 / 0.5), transparent 44%),
-    linear-gradient(0deg, rgb(15 23 42 / 0.58), transparent 50%);
   opacity: 0.55;
-  transition: opacity var(--speed) var(--ease);
 }
 
-:is(.dark) .portfolio-panel-scrim {
-  background:
-    linear-gradient(90deg, rgb(15 23 42 / 0.55), transparent 42%),
-    linear-gradient(0deg, rgb(0 0 0 / 0.62), transparent 50%);
-}
-
-.portfolio-panel.is-active .portfolio-panel-scrim {
-  opacity: 1;
-}
-
-/* 窄舞台：横滑卡片，避开 grid 列宽动画成本 */
-@container (max-width: 520px) {
-  .portfolio-accordion {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    transition: none;
-    will-change: auto;
-  }
-
-  .portfolio-panel {
-    flex: 0 0 min(78%, 280px);
-    min-width: min(78%, 280px);
-    scroll-snap-align: start;
-  }
-
-  .portfolio-panel-body {
-    width: 100%;
-    position: relative;
-    padding: 0.85rem 0.9rem 0.9rem;
-    justify-content: flex-end;
-  }
-
-  .portfolio-panel-title {
-    position: static;
-    display: block;
-    margin: 0 0 0.35rem;
-    rotate: none;
-    transform: none;
-    opacity: 1;
-    color: rgb(255 255 255 / 0.95);
-    text-shadow: 0 1px 10px rgb(0 0 0 / 0.4);
-  }
-
-  .portfolio-panel-desc,
-  .portfolio-panel-cta {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    position: relative;
-    z-index: 2;
-  }
-
-  .portfolio-panel-cta span {
-    translate: 0;
-  }
-
-  .portfolio-panel-media {
-    position: absolute;
-  }
-
-  .portfolio-panel-media img {
-    opacity: 0.85;
-  }
-
-  .portfolio-panel.is-active .portfolio-panel-media img {
-    animation: none;
-    transform: scale(1.05);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .portfolio-accordion,
-  .portfolio-panel-title,
-  .portfolio-panel-desc,
-  .portfolio-panel-cta,
-  .portfolio-panel-media img,
-  .portfolio-panel-scrim {
-    transition-duration: 0.01ms !important;
-  }
-
-  .portfolio-panel.is-active .portfolio-panel-media img {
-    animation: none;
-    transform: scale(1.04);
-  }
-}
-
-/* ── 普通相册：Infinite Canvas（亮底 / 暗底随主题）── */
+/* ── Infinite Canvas（亮底 / 暗底随主题）── */
 .infinite-canvas {
   position: absolute;
   inset: 0;
@@ -594,7 +208,7 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   font-family: "Georgia", "Times New Roman", serif;
-  font-size: clamp(1.6rem, 5cqi, 2.6rem);
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -629,18 +243,6 @@
 }
 
 @media (max-width: 640px) {
-  .gallery-stage-frame {
-    --gallery-stage-ratio: 4 / 3;
-    max-height: min(340px, 48vh);
-  }
-
-  @supports (height: 1cqh) {
-    .gallery-stage-frame {
-      height: min(100cqw / (4 / 3), min(340px, 48vh));
-      max-height: min(340px, 48vh);
-    }
-  }
-
   .infinite-canvas-title {
     white-space: normal;
     text-align: center;

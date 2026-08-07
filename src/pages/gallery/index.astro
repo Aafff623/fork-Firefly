@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Icon } from "astro-icon/components";
 import AlbumCard from "@/components/pages/gallery/AlbumCard.astro";
-import GalleryExplorer from "@/components/pages/gallery/GalleryExplorer.svelte";
+import InfiniteCanvasLauncher from "@/components/pages/gallery/InfiniteCanvasLauncher.svelte";
 import PhotoCard from "@/components/pages/gallery/PhotoCard.astro";
 import { galleryConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
@@ -43,44 +43,6 @@ const demoPlaceholders = Array.from({ length: 7 }, (_, i) =>
 	url(`/gallery/_demo/placeholders/ph-0${i + 1}.svg`),
 );
 
-const DEMO_WORK_META = [
-	{ title: "日常切片", description: "把灵感收成可复用的视觉模块。" },
-	{ title: "光影节奏", description: "用缓动与比例讲清楚一张图的叙事。" },
-	{ title: "柔光留白", description: "柔光蒙版与层次，留给日常留白。" },
-	{ title: "漫游取景", description: "滚动与目光同向，让浏览像散步。" },
-	{ title: "画布游戏", description: "画布里的自由漫游与取景。" },
-	{ title: "结构巧思", description: "少一点装饰，多一点结构节奏。" },
-	{ title: "静时片刻", description: "把时间感写进色块与留白。" },
-] as const;
-
-function buildWorks() {
-	// 多相册：手风琴面板 = 相册
-	if (albums.length >= 2) {
-		return albums.slice(0, 7).map((album) => ({
-			id: album.id,
-			title: album.name,
-			description: album.description || album.location || album.date || "",
-			image: album.cover || demoPlaceholders[0],
-			href: url(`/gallery/${album.id}/`),
-		}));
-	}
-
-	// 单相册或仅有照片：手风琴面板 = 作品图
-	const photoPool = allPhotos.length > 0 ? allPhotos : demoPlaceholders;
-	return photoPool.slice(0, 7).map((image, index) => {
-		const meta = DEMO_WORK_META[index % DEMO_WORK_META.length];
-		const album = albums[0];
-		return {
-			id: `work-${index}`,
-			title: meta.title,
-			description: album?.description || meta.description,
-			image,
-			href: album ? url(`/gallery/${album.id}/`) : undefined,
-		};
-	});
-}
-
-const works = buildWorks();
 const localAlbumPhotos = allPhotos.filter((p) => !/^https?:\/\//i.test(p));
 const demoArtworks = scanDemoArtworks();
 // 画布优先：本地相册图 + 原版风格 demo 画库（密度/多样性）；外链不进 WebGL
@@ -88,7 +50,6 @@ const explorerPhotos =
 	localAlbumPhotos.length + demoArtworks.length > 0
 		? [...localAlbumPhotos, ...demoArtworks]
 		: demoPlaceholders;
-const defaultViewMode = galleryConfig.defaultViewMode || "portfolio";
 const columnWidth = galleryConfig.columnWidth || 240;
 const homeMasonryEnabled = galleryConfig.homeMasonry?.enabled !== false;
 const homeMasonryMax = galleryConfig.homeMasonry?.maxItems ?? 48;
@@ -109,10 +70,9 @@ const wallPhotos: WallPhoto[] = homeMasonryEnabled
 			.slice(0, homeMasonryMax)
 	: [];
 
-// 收集所有标签用于筛选
-const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
+const showPhotoWallSection = homeMasonryEnabled || explorerPhotos.length > 0;
 
-/** 首页分类栏：配置顺序优先，未出现在相册中的项不显示 */
+/** 相册页专属题材分类：配置顺序优先，未出现在相册中的项不显示 */
 const usedCategories = new Set(
 	albums.map((a) => a.category).filter((c): c is string => !!c),
 );
@@ -123,6 +83,14 @@ const extraCategories = [...usedCategories]
 	.filter((c) => !orderedCategories.includes(c))
 	.sort();
 const galleryCategories = [...orderedCategories, ...extraCategories];
+
+const canvasLabels = {
+	open: i18n(I18nKey.galleryModeNormal),
+	close: i18n(I18nKey.galleryCloseCanvas),
+	dragHint: i18n(I18nKey.galleryDragHint),
+	demoHint: i18n(I18nKey.galleryDemoHint),
+	empty: i18n(I18nKey.galleryNoAlbums),
+};
 ---
 
 <MainGridLayout title={title} description={description}>
@@ -149,117 +117,21 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
         )}
       </div>
 
-      <!-- 作品集 / 普通相册 双模式舞台（等比例适配卡片） -->
-      <GalleryExplorer
-        client:load
-        works={works}
-        photos={explorerPhotos}
-        defaultMode={defaultViewMode}
-        labels={{
-          portfolio: i18n(I18nKey.galleryModePortfolio),
-          normal: i18n(I18nKey.galleryModeNormal),
-          viewWork: i18n(I18nKey.galleryViewWork),
-          dragHint: i18n(I18nKey.galleryDragHint),
-          demoHint: i18n(I18nKey.galleryDemoHint),
-          empty: i18n(I18nKey.galleryNoAlbums),
-        }}
-      />
-
-      <!-- Explorer 下方：本地相册照片 CSS columns 瀑布墙 -->
-      {wallPhotos.length > 0 && (
-        <section class="gallery-home-masonry mt-6" aria-labelledby="gallery-photo-wall-title">
-          <h2
-            id="gallery-photo-wall-title"
-            class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-3"
-          >
-            {i18n(I18nKey.galleryPhotoWall)}
-          </h2>
-          <div
-            class="gallery-masonry"
-            data-gallery-photo-wall
-            style={`column-count: 1; column-gap: 0.75rem; --col-width: ${columnWidth}px;`}
-          >
-            {wallPhotos.map((photo) => (
-              <div
-                class="gallery-photo-wrap"
-                data-gallery-photo
-                data-category={photo.category}
-              >
-                <PhotoCard src={photo.src} albumId="home" />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <!-- 搜索 + 分类栏（右侧图标对齐标签墙）+ 标签筛选 -->
+      <!-- 标题下：相册专属分类 → 搜索 →（下方）照片墙 / 卡片 -->
       {albums.length > 0 && (
-        <gallery-filter class="mb-6 mt-6 block">
-          <div class="relative mb-3">
-            <Icon is:inline
-              name="lucide:search"
-              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-lg pointer-events-none"
-            />
-            <input
-              type="text"
-              data-search
-              placeholder={i18n(I18nKey.searchAlbums)}
-              class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
-            />
-          </div>
-
+        <gallery-filter class="mb-6 block">
           {galleryCategories.length > 0 && (
             <section
               class="gallery-categories mb-4"
               aria-labelledby="gallery-categories-title"
             >
-              <div class="gallery-categories__head">
-                <h2
-                  id="gallery-categories-title"
-                  class="gallery-categories__title"
-                >
-                  {i18n(I18nKey.galleryCategories)}
-                </h2>
-                {/* 样式对齐 Tags.astro 标题右侧 globe/list 切换胶囊 */}
-                <div
-                  class="gallery-categories__mode"
-                  data-gallery-category-mode-toggle
-                >
-                  <button
-                    type="button"
-                    class="gallery-categories__mode-btn"
-                    data-gallery-category-mode="pills"
-                    aria-label={i18n(I18nKey.galleryCategoryPills)}
-                    title={i18n(I18nKey.galleryCategoryPills)}
-                    aria-pressed="true"
-                  >
-                    <Icon
-                      is:inline
-                      name="lucide:globe"
-                      class="gallery-categories__mode-icon gallery-categories__mode-icon--globe"
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    class="gallery-categories__mode-btn"
-                    data-gallery-category-mode="list"
-                    aria-label={i18n(I18nKey.galleryCategoryList)}
-                    title={i18n(I18nKey.galleryCategoryList)}
-                    aria-pressed="false"
-                  >
-                    <Icon
-                      is:inline
-                      name="lucide:list"
-                      class="gallery-categories__mode-icon"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <div
-                class="gallery-categories__pills flex flex-wrap gap-2"
-                data-gallery-category-view="pills"
+              <h2
+                id="gallery-categories-title"
+                class="gallery-categories__title mb-3"
               >
+                {i18n(I18nKey.galleryCategories)}
+              </h2>
+              <div class="gallery-categories__pills flex flex-wrap gap-2">
                 <button
                   type="button"
                   data-category="all"
@@ -278,62 +150,61 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
                   </button>
                 ))}
               </div>
-
-              <ul
-                class="gallery-categories__list hidden"
-                data-gallery-category-view="list"
-                hidden
-              >
-                <li>
-                  <button
-                    type="button"
-                    data-category="all"
-                    class="gallery-categories__list-btn"
-                    data-active
-                  >
-                    {i18n(I18nKey.all)}
-                  </button>
-                </li>
-                {galleryCategories.map((cat) => (
-                  <li>
-                    <button
-                      type="button"
-                      data-category={cat}
-                      class="gallery-categories__list-btn"
-                    >
-                      {cat}
-                    </button>
-                  </li>
-                ))}
-              </ul>
             </section>
           )}
 
-          {allTags.length > 0 && (
-            <div class="flex flex-wrap gap-2" data-gallery-tag-filters>
-              <button
-                type="button"
-                data-tag="all"
-                class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
-                data-active
-              >
-                {i18n(I18nKey.all)}
-              </button>
-              {allTags.map((tag) => (
-                <button
-                  type="button"
-                  data-tag={tag}
-                  class="category-pill px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-200"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          )}
+          <div class="relative">
+            <Icon is:inline
+              name="lucide:search"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-lg pointer-events-none"
+            />
+            <input
+              type="text"
+              data-search
+              placeholder={i18n(I18nKey.searchAlbums)}
+              class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+            />
+          </div>
         </gallery-filter>
       )}
 
-      <!-- 相册卡片网格（传统入口，作为双模式舞台的补充索引） -->
+      <!-- 照片墙（默认主视觉）+ 无限画布 App 入口 -->
+      {showPhotoWallSection && (
+        <section class="gallery-home-masonry" aria-labelledby="gallery-photo-wall-title">
+          <div class="gallery-home-masonry__head">
+            <h2
+              id="gallery-photo-wall-title"
+              class="text-lg font-semibold text-neutral-900 dark:text-neutral-100"
+            >
+              {i18n(I18nKey.galleryPhotoWall)}
+            </h2>
+            <InfiniteCanvasLauncher
+              client:load
+              photos={explorerPhotos}
+              labels={canvasLabels}
+            />
+          </div>
+          {wallPhotos.length > 0 && (
+            <div
+              class="gallery-masonry"
+              data-gallery-photo-wall
+              style={`column-count: 1; column-gap: 0.75rem; --col-width: ${columnWidth}px;`}
+            >
+              {wallPhotos.map((photo) => (
+                <div
+                  class="gallery-photo-wrap"
+                  data-gallery-photo
+                  data-category={photo.category}
+                >
+                  <PhotoCard src={photo.src} albumId="home" />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      <!-- 相册卡片网格 -->
       {albums.length > 0 ? (
         <>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
@@ -365,9 +236,7 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
   <script slot="head" is:inline>
     if (!customElements.get("gallery-filter")) {
       class GalleryFilter extends HTMLElement {
-        selectedTag = "all";
         selectedCategory = "all";
-        categoryMode = "pills";
 
         constructor() {
           super();
@@ -389,13 +258,6 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
           const button = e.target.closest("button");
           if (!button || !this.contains(button)) return;
 
-          // 分类展示模式：胶囊 / 列表（对齐标签墙右侧图标）
-          const mode = button.dataset.galleryCategoryMode;
-          if (mode) {
-            this.setCategoryMode(mode);
-            return;
-          }
-
           if (button.hasAttribute("data-category")) {
             this.selectedCategory = button.dataset.category || "all";
             this.querySelectorAll("[data-category]").forEach((f) => {
@@ -407,31 +269,7 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
               f.setAttribute("data-active", "");
             });
             this.applyFilters();
-            return;
           }
-
-          if (button.hasAttribute("data-tag")) {
-            this.selectedTag = button.dataset.tag || "all";
-            this.querySelectorAll("[data-tag]").forEach((f) => {
-              f.removeAttribute("data-active");
-            });
-            button.setAttribute("data-active", "");
-            this.applyFilters();
-          }
-        }
-
-        setCategoryMode(mode) {
-          this.categoryMode = mode === "list" ? "list" : "pills";
-          this.querySelectorAll("[data-gallery-category-mode]").forEach((btn) => {
-            const on = btn.dataset.galleryCategoryMode === this.categoryMode;
-            btn.setAttribute("aria-pressed", on ? "true" : "false");
-          });
-          this.querySelectorAll("[data-gallery-category-view]").forEach((view) => {
-            const show = view.dataset.galleryCategoryView === this.categoryMode;
-            view.classList.toggle("hidden", !show);
-            if (show) view.removeAttribute("hidden");
-            else view.setAttribute("hidden", "");
-          });
         }
 
         applyFilters() {
@@ -461,9 +299,6 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
             const categoryMatch =
               this.selectedCategory === "all" ||
               category === this.selectedCategory;
-            const tagMatch =
-              this.selectedTag === "all" ||
-              (this.selectedTag && tags.includes(this.selectedTag));
             const searchMatch =
               !query ||
               name.includes(query) ||
@@ -472,7 +307,7 @@ const galleryCategories = [...orderedCategories, ...extraCategories];
               category.toLowerCase().includes(query) ||
               tags.some((t) => t.toLowerCase().includes(query));
 
-            if (categoryMatch && tagMatch && searchMatch) {
+            if (categoryMatch && searchMatch) {
               cardEl.style.display = "";
               cardEl.classList.add("animate-fade-in-up");
               hasVisible = true;
