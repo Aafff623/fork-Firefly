@@ -9,6 +9,15 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import * as React from "react";
 import type { TimelineColor, TimelineSide, TimelineStatus } from "./types";
 import { cn } from "./utils";
+// Astro SSR 注入的 window 桩缺 addEventListener/removeEventListener，
+// framer-motion 的 projection 会因此崩；SSR 下补空实现（客户端桩本来就有，不受影响）
+if (typeof window !== "undefined" && typeof (window as unknown as Record<string, unknown>).addEventListener !== "function") {
+	const noop = () => {};
+	const w = window as unknown as Record<string, unknown>;
+	w.addEventListener = noop;
+	w.removeEventListener = noop;
+}
+
 
 const timelineVariants = cva("ff-tl relative flex w-full flex-col", {
 	variants: {
@@ -39,11 +48,11 @@ const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
 
 		return (
 			<ol
-				ref={ref}
-				aria-label="Timeline"
-				className={cn(timelineVariants({ size }), "ff-tl-root", className)}
-				{...props}
-			>
+					ref={ref}
+					aria-label="Timeline"
+					className={cn(timelineVariants({ size }), "ff-tl-root", className)}
+					{...props}
+				>
 				{React.Children.map(children, (child, index) => {
 					if (
 						React.isValidElement(child) &&
