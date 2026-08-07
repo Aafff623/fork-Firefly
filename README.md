@@ -171,7 +171,7 @@ python scripts/capture-readme-showcase.py
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-dynamic.png"><img alt="Dynamic" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
       <br><strong>Dynamic</strong><br>
-      <sub>碎碎念时间线 · 搜索筛选 · Memos 可接</sub><br>
+      <sub>朋友圈式短动态 · 本地 content 时间线 · 一键发布</sub><br>
       <a href="https://fork-firefly.vercel.app/dynamic/">Open</a>
     </td>
   </tr>
@@ -185,7 +185,7 @@ python scripts/capture-readme-showcase.py
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-about.png"><img alt="About" src="assets/images/readme/showcase-about.png" width="100%"></a>
       <br><strong>About</strong><br>
-      <sub>Quote-Led · Now / 统计 / 日历侧栏</sub><br>
+      <sub>Quote-Led · Now / Agent / 竞赛 · 纸质骑士分镜翻页</sub><br>
       <a href="https://fork-firefly.vercel.app/about/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
