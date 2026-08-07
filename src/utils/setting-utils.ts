@@ -193,22 +193,29 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
 		return;
 	}
 
-	// 批量 DOM 操作，减少重绘
+	// 批量 DOM 操作：短窗关掉全站 color/bg 过渡，避免 .dark 翻转时千节点同时插值卡顿
+	const root = document.documentElement;
 	if (needsThemeChange) {
-		// 添加过渡保护类（但会导致大量重绘，所以使用更轻量的方式）
-		// document.documentElement.classList.add("is-theme-transitioning");
-
-		// 直接切换主题，利用 CSS 变量的特性让浏览器优化过渡
+		root.classList.add("is-theme-transitioning");
 		if (targetIsDark) {
-			document.documentElement.classList.add("dark");
+			root.classList.add("dark");
 		} else {
-			document.documentElement.classList.remove("dark");
+			root.classList.remove("dark");
 		}
 	}
 
 	// Set the theme for Expressive Code based on current mode
 	if (needsCodeThemeUpdate) {
-		document.documentElement.setAttribute("data-theme", expectedTheme);
+		root.setAttribute("data-theme", expectedTheme);
+	}
+
+	if (needsThemeChange) {
+		// 双 rAF：先按「无过渡」提交一帧样式，再撤掉保护类
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				root.classList.remove("is-theme-transitioning");
+			});
+		});
 	}
 }
 
@@ -1617,7 +1624,7 @@ export function setCardBorderEnabled(enabled: boolean): void {
 
 // Note card (attachment reference box) functions
 export function getDefaultNoteCardEnabled(): boolean {
-	return true;
+	return false;
 }
 
 export function getStoredNoteCardEnabled(): boolean {

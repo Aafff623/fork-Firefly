@@ -182,10 +182,8 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
         }
     }
     
-    /* 确保边框和分隔线元素在主题切换时有更明确的过渡时长 */
-    .transition,
-    [class*="border"],
-    [class*="transition"] {
+    /* 仅显式 .transition；勿用 [class*="border|transition"] 误伤海量 Tailwind 节点（主题切换卡顿源） */
+    .transition {
         transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 0.15s;
@@ -247,7 +245,8 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     .is-theme-transitioning:not(.use-view-transition) #wallpaper-wrapper ~ * #navbar > div,
     .is-theme-transitioning:not(.use-view-transition) #wallpaper-wrapper ~ * #navbar[data-transparent-mode] > div,
     .is-theme-transitioning:not(.use-view-transition) body:has(#wallpaper-wrapper) #navbar > div,
-    .is-theme-transitioning:not(.use-view-transition) body:has(#wallpaper-wrapper) #navbar[data-transparent-mode] > div {
+    .is-theme-transitioning:not(.use-view-transition) body:has(#wallpaper-wrapper) #navbar[data-transparent-mode] > div,
+    .is-theme-transitioning:not(.use-view-transition) .navbar-liquid-glass {
         transition: none !important;
         backdrop-filter: none !important;
     }

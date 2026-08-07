@@ -15,6 +15,7 @@ import {
 	applyThemeToDocument,
 	getStoredTheme,
 	getTimeTheme,
+	resolveTheme,
 	setTheme,
 } from "@/utils/setting-utils";
 
@@ -48,16 +49,20 @@ function updateDisplayedMode() {
 
 /**
  * 循环：time（北京时段自动）→ light → dark → time
- * 避免点一次就永远锁死手动亮/暗、丢掉时间感知。
+ * 若下一档解析后外观与当前相同（白天 time≈light、夜里 time≈dark），跳过，保证每点一次必变色。
  */
 function toggleScheme() {
-	let next: LIGHT_DARK_MODE;
-	if (mode === TIME_MODE) {
-		next = LIGHT_MODE;
-	} else if (mode === LIGHT_MODE) {
-		next = DARK_MODE;
-	} else {
-		next = TIME_MODE;
+	const order: LIGHT_DARK_MODE[] = [TIME_MODE, LIGHT_MODE, DARK_MODE];
+	const from = mode === SYSTEM_MODE ? TIME_MODE : mode;
+	const start = Math.max(0, order.indexOf(from));
+	const currentVisual = resolveTheme(from);
+	let next = order[(start + 1) % order.length];
+	for (let i = 1; i <= order.length; i++) {
+		const candidate = order[(start + i) % order.length];
+		if (resolveTheme(candidate) !== currentVisual) {
+			next = candidate;
+			break;
+		}
 	}
 	mode = next;
 	setTheme(next);
