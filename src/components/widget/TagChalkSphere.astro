@@ -1,7 +1,7 @@
 ---
 /**
  * 卡片质感立体标签球（TagCloud.js）。
- * 闲置慢转 · 拖拽才转球 · 悬停 0.5s 确认 / 满 1s 丝滑转正中并黄高亮 · 轻点 → /timeline/?tag=
+ * 闲置慢转 · 拖拽才转球 · 进墙首次悬停 0.5s / 墙内换签 1s 转正中黄高亮 · 轻点 → /timeline/?tag=
  * 支持 data-view-mode=sphere|list；侧栏标签墙与 /tags/ 复用。
  */
 import { getTagList } from "@/utils/content-utils";
@@ -150,9 +150,9 @@ const showMore = Boolean(moreHref && moreCount > 0);
     var IDLE_DIV = 5;
     // 越小越灵敏；1.15→0.42 ≈ ×2.7
     var DRAG_DIV = 0.42;
-    // 密排布下：0.5s 复核仍悬停，满 1s 才转正中；移出后从 0 重计
-    var HOVER_CONFIRM_MS = 500;
-    var HOVER_TRIGGER_MS = 1000;
+    // 进墙首次悬停 0.5s；墙内再换签 1s；整墙离开后再进又回到 0.5s
+    var HOVER_FIRST_MS = 500;
+    var HOVER_NEXT_MS = 1000;
     var HOVER_LEAVE_GRACE_MS = 180;
     var HOVER_SWITCH_STICKY_MS = 120;
     var FOCUS_ANIM_MS = 620;
@@ -217,6 +217,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       el._focusHold = false;
       el._hoverFocusItem = null;
       el._hoverDwellItem = null;
+      el._hoverFastUsed = false;
       var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
       var frame = root && root.querySelector("[data-tag-sphere-frame]");
       if (frame) frame.classList.remove("is-hover-focus");
@@ -540,7 +541,6 @@ const showMore = Boolean(moreHref && moreCount > 0);
         return item;
       }
 
-      /** 用最近一次指针坐标复核：是否仍悬停在目标上 */
       function stillHovering(itemEl) {
         if (!itemEl) return false;
         var p = el._hoverLastPointer;
@@ -548,11 +548,13 @@ const showMore = Boolean(moreHref && moreCount > 0);
         return itemUnderPointer(p.x, p.y) === itemEl;
       }
 
-      function releaseFocus() {
+      /** 仅清聚焦 UI / 计时；resetSession=true 表示整墙离开，下次进墙恢复 0.5s */
+      function releaseFocus(resetSession) {
         clearHoverTimers(el);
         el._focusHold = false;
         el._hoverFocusItem = null;
         el._hoverDwellItem = null;
+        if (resetSession) el._hoverFastUsed = false;
         frame.classList.remove("is-hover-focus");
         var nodes = el.querySelectorAll(".tagcloud--item");
         for (var i = 0; i < nodes.length; i++) {
@@ -566,11 +568,14 @@ const showMore = Boolean(moreHref && moreCount > 0);
       function fireFocus(itemEl) {
         if (!itemEl || reducedMotion()) return;
         if (el._tagInteract && el._tagInteract.dragged) return;
-        // 触发瞬间再复核一次，避免密排布误触
         if (!stillHovering(itemEl)) {
-          releaseFocus();
+          // 墙内间隙：保留「已用过首次 0.5s」状态
+          releaseFocus(false);
+          el._hoverFastUsed = true;
           return;
         }
+        // 触发后，同一次进墙再换签都走 1s
+        el._hoverFastUsed = true;
         el._hoverFocusItem = itemEl;
         el._focusHold = true;
         frame.classList.add("is-hover-focus");
@@ -584,15 +589,15 @@ const showMore = Boolean(moreHref && moreCount > 0);
       function startDwellTimers(itemEl) {
         clearHoverTimers(el);
         el._hoverDwellItem = itemEl;
-
-        // Phase 1：满 0.5s 后复核鼠标是否仍在该标签上
-        el._hoverConfirmTimer = setTimeout(function () {
-          el._hoverConfirmTimer = null;
+        // 进墙第一次：0.5s；墙内已换过 / 触发过：1s
+        var ms = el._hoverFastUsed ? HOVER_NEXT_MS : HOVER_FIRST_MS;
+        el._hoverTriggerTimer = setTimeout(function () {
+          el._hoverTriggerTimer = null;
           if (el._hoverDwellItem !== itemEl) return;
           if (el._tagInteract && el._tagInteract.dragged) return;
           if (!stillHovering(itemEl)) {
-            // 0.5s 时已不在 → 整段从 0 重来（若指针落在别的标签上则交给 move）
-            releaseFocus();
+            releaseFocus(false);
+            el._hoverFastUsed = true;
             var p = el._hoverLastPointer;
             if (p) {
               var under = itemUnderPointer(p.x, p.y);
@@ -600,33 +605,24 @@ const showMore = Boolean(moreHref && moreCount > 0);
             }
             return;
           }
-          // Phase 2：仍悬停 → 再等到一共 1s 触发
-          var remain = Math.max(0, HOVER_TRIGGER_MS - HOVER_CONFIRM_MS);
-          el._hoverTriggerTimer = setTimeout(function () {
-            el._hoverTriggerTimer = null;
-            if (el._hoverDwellItem !== itemEl) return;
-            if (el._tagInteract && el._tagInteract.dragged) return;
-            fireFocus(itemEl);
-          }, remain);
-        }, HOVER_CONFIRM_MS);
+          fireFocus(itemEl);
+        }, ms);
       }
 
       /**
-       * 开始 / 续上悬停计时。
-       * 密排布：短暂扫到邻签不立刻重置；需 sticky 后才换目标并从 0 重计。
+       * 开始 / 续上悬停。
+       * 首次进墙 → 0.5s；仍在墙内换到其他标签 → 1s；整墙离开再进 → 又 0.5s。
        */
       function beginDwell(itemEl) {
         if (!itemEl || reducedMotion()) return;
         if (root && root.getAttribute("data-view-mode") === "list") return;
         if (el._tagInteract && el._tagInteract.dragged) return;
 
-        // 取消「即将离开」宽限（指针又回到某个标签上）
         if (el._hoverLeaveGraceTimer) {
           clearTimeout(el._hoverLeaveGraceTimer);
           el._hoverLeaveGraceTimer = null;
         }
 
-        // 已在聚焦同一标签：保持
         if (el._focusHold && el._hoverFocusItem === itemEl) {
           if (el._hoverSwitchTimer) {
             clearTimeout(el._hoverSwitchTimer);
@@ -636,7 +632,6 @@ const showMore = Boolean(moreHref && moreCount > 0);
           return;
         }
 
-        // 已在为同一标签计时：续上，不重置
         if (el._hoverDwellItem === itemEl) {
           if (el._hoverSwitchTimer) {
             clearTimeout(el._hoverSwitchTimer);
@@ -646,7 +641,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
           return;
         }
 
-        // 换了邻签：先 sticky，确认不是密排布误扫才重置计时
+        // 墙内换到其他标签：标记走 1s，并 sticky 防密排布误扫
         if (el._hoverDwellItem || el._focusHold) {
           if (el._hoverSwitchItem === itemEl && el._hoverSwitchTimer) return;
           if (el._hoverSwitchTimer) {
@@ -661,7 +656,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
             var p = el._hoverLastPointer;
             var under = p ? itemUnderPointer(p.x, p.y) : itemEl;
             if (under !== itemEl) return;
-            releaseFocus();
+            el._hoverFastUsed = true;
+            releaseFocus(false);
             startDwellTimers(itemEl);
           }, HOVER_SWITCH_STICKY_MS);
           return;
@@ -671,7 +667,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
 
       function scheduleLeaveReset() {
-        // 指针在标签间隙：取消换签 sticky，宽限后整段重置
+        // 标签间隙：不清「进墙会话」，只停当前聚焦；再悬停其他签走 1s
         if (el._hoverSwitchTimer) {
           clearTimeout(el._hoverSwitchTimer);
           el._hoverSwitchTimer = null;
@@ -680,12 +676,13 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (el._hoverLeaveGraceTimer) return;
         el._hoverLeaveGraceTimer = setTimeout(function () {
           el._hoverLeaveGraceTimer = null;
-          // 移出后从 0.5s 确认阶段整段重置
-          releaseFocus();
+          if (el._hoverDwellItem || el._hoverFocusItem) {
+            el._hoverFastUsed = true;
+          }
+          releaseFocus(false);
         }, HOVER_LEAVE_GRACE_MS);
       }
 
-      // move + elementFromPoint：密排布下比 pointerover/out 稳
       frame.addEventListener(
         "pointermove",
         function (ev) {
@@ -709,12 +706,13 @@ const showMore = Boolean(moreHref && moreCount > 0);
         true,
       );
 
+      // 整墙离开：下次再进恢复首次 0.5s
       frame.addEventListener("pointerleave", function () {
         if (el._hoverLeaveGraceTimer) {
           clearTimeout(el._hoverLeaveGraceTimer);
           el._hoverLeaveGraceTimer = null;
         }
-        releaseFocus();
+        releaseFocus(true);
       });
     }
 
@@ -1023,7 +1021,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     cursor: grabbing;
   }
 
-  /* 悬停满 1s：目标黄高亮丝滑转到正中，其余发虚 */
+  /* 悬停触发后：目标黄高亮丝滑转到正中，其余发虚 */
   .tag-sphere__frame.is-hover-focus
     :global(.tagcloud--item:not(.tag-sphere__item--focus)) {
     opacity: 0.28 !important;
