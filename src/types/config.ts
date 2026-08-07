@@ -18,6 +18,7 @@ export type { FooterConfig } from "./footerConfig";
 export type { FriendLink, FriendsPageConfig } from "./friendsConfig";
 export type { GalleryAlbum, GalleryConfig } from "./galleryConfig";
 export type { LicenseConfig } from "./licenseConfig";
+export type { LayeredClockConfig } from "./layeredClockConfig";
 export type { MermaidConfig } from "./mermaidConfig";
 export type { MusicPlayerConfig } from "./musicConfig";
 export type {

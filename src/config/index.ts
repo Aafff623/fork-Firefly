@@ -18,6 +18,7 @@ export type {
 	GalleryAlbum,
 	GalleryConfig,
 	LicenseConfig,
+	LayeredClockConfig,
 	MermaidConfig,
 	MusicPlayerConfig,
 	NavBarConfig,
@@ -58,6 +59,7 @@ export { footerConfig } from "./footerConfig"; // 页脚配置
 export { friendsPageConfig, getEnabledFriends } from "./friendsConfig"; // 友链配置
 export { galleryConfig } from "./galleryConfig"; // 相册配置
 export { licenseConfig } from "./licenseConfig"; // 许可证配置
+export { layeredClockConfig } from "./layeredClockConfig"; // 分层时钟天空/天气配置
 export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
 export {
 	categoryIconConfig,
