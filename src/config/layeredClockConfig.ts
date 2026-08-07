@@ -4,7 +4,7 @@ const CLOCK_SKY_BASE = "/assets/images/widgets/clock";
 
 // 分层时钟配置 - 天空层（昼夜）+ 天气场景 + GIF 资产
 export const layeredClockConfig: LayeredClockConfig = {
-	// 昼夜模式：auto 跟随站点主题（18:00 自动入夜时钟面同步入夜）
+	// 昼夜模式：auto 跟随站点主题（19:00 自动入夜时钟面同步入夜）
 	skyMode: "auto",
 
 	weather: {

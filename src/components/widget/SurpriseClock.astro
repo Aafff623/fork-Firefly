@@ -400,7 +400,7 @@ const skyAttrs: Record<string, string> = {
       raf = requestAnimationFrame(tick);
     }
 
-    // 主题切换（含 18:00 时间感知自动入夜）→ 全部大钟天空即时联动；只绑定一次
+    // 主题切换（含 19:00 时间感知自动入夜）→ 全部大钟天空即时联动；只绑定一次
     if (!window.__scThemeBound) {
       window.__scThemeBound = true;
       window.addEventListener("theme-change", syncAllSkies);

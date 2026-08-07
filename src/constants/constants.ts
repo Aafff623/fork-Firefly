@@ -9,7 +9,7 @@ export const DEFAULT_THEME: typeof LIGHT_MODE = LIGHT_MODE; // 仅作为向后�
 /** 按时段默认：亮色起始小时（含） */
 export const DEFAULT_TIME_LIGHT_FROM_HOUR = 7;
 /** 按时段默认：暗色起始小时（含） */
-export const DEFAULT_TIME_DARK_FROM_HOUR = 18;
+export const DEFAULT_TIME_DARK_FROM_HOUR = 19;
 
 // Wallpaper modes
 export const WALLPAPER_BANNER = "banner",

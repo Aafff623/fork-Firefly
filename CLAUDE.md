@@ -16,6 +16,12 @@
 
 基于 CuteLeaf/Firefly 主题的 **standalone** 个人博客二次开发（已脱离 fork 网络；仓库名仍可能带 `fork-` 历史前缀）。作者 **Aafff623 / threetwoa**。线上：https://fork-firefly.vercel.app
 
+## 多 Agent 协作区（认死理防疑）
+
+- 本仓是**多 agent 并行工作区**：各 agent 负责不同业务模块（壁纸、音乐、配图、发文、其他），任务通常由用户明确布置、彼此不互相影响。
+- 看到工作区里有**不是自己改动的文件变动**，不要大惊小怪、不要疑惑——那多半是其他 agent 的在制品，归各自负责。
+- 各自守好自己的任务：只改自己任务直接相关的文件，改动前查 `git status` 确认无他人在制品夹带；不杀/不重启他人服务或 dev server；不碰他 agent 在制品。
+
 ## 偏好归档
 
 - 部署首选 **Vercel**；Cloudflare 存储能力非默认依赖。
