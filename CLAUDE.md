@@ -2,13 +2,13 @@
 
 > **Output Style**: `humanizer-tta` — `~/.claude/skills/humanizer-tta/SKILL.md`  
 > **Session Init**: `windows-agent-discipline` — 会话启动先读（见 AGENTS.md）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
-> **Windows / Answer / Commit / Karpathy rules**: `.cursor/rules/*.mdc`（alwaysApply）
+> **Cursor 宪法**: `%USERPROFILE%\.cursor\rules\`（全局 alwaysApply）；仓内 `.cursor/rules/` 仅站点专有 mdc
 
 本文件是维护协议与加载顺序；硬约束以 `AGENTS.md` 为准，领域以 `CONTEXT.md` 为准。
 
 ## 三层加载
 
-1. **Rules**：`.cursor/rules/`（Windows、回答格式、commit-history、Karpathy）
+1. **Rules**：全局 `%USERPROFILE%\.cursor\rules\`（宪法 + Windows/Answer/Commit/Karpathy）+ 仓内专有 mdc（礼盒 / site-cascade）
 2. **仓级**：`AGENTS.md` → `CONTEXT.md` → `LANGUAGES.md`
 3. **主题文档**：`docs/official/`（配置怎么改；gitignore）；路由见 `docs/knowledge/official-docs.tree.json`；上游主题行为以代码为准
 

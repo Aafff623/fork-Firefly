@@ -2,9 +2,8 @@
 
 > **Output Style**: `humanizer-tta` skill — 统一语气与去 AI 味。路径：`~/.claude/skills/humanizer-tta/SKILL.md`  
 > **Session Init**: `windows-agent-discipline` skill — **会话启动先读**（Agent 画像警示 / Windows 编码纪律 / 工具调用与交付自检）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
-> **Windows Rules**: `.cursor/rules/windows-path-discipline.mdc` · `windows-shell-discipline.mdc`  
-> **Commit History**: `.cursor/rules/commit-history.mdc`  
-> **Karpathy**: `.cursor/rules/karpathy-guidelines.mdc`
+> **Cursor 宪法（全局 SSOT）**: `%USERPROFILE%\.cursor\rules\AGENTS.mdc` + companions（`answer-format` / `windows-*` / `commit-history` / `karpathy-guidelines`）  
+> **仓内 `.cursor/rules/`**: 仅站点专有规则（`seasonal-gift-box` · `site-cascade-after-content`）；禁止再复制全局宪法文件
 
 跨工具 Agent 硬约束与任务流摘要。人读运行说明见 `README.md`；领域事实见 `CONTEXT.md`；用词见 `LANGUAGES.md`。
 
