@@ -2,7 +2,7 @@
 /**
  * 站内桌宠：spritesheet 渲染核。
  * 默认：浏览 defaultPetId · 文章 postPetId（路由换皮）。
- * 访客覆盖：设置里选 Codex 单皮 → 全站同皮（localStorage）。
+ * 访客覆盖：设置里选 Codex 单皮 → 仅浏览态换皮；文章页始终 postPetId。
  */
 import { onDestroy, onMount } from "svelte";
 import {
@@ -45,6 +45,9 @@ interface Props {
 	position?: "bottom-left" | "bottom-right";
 	offsetX?: number;
 	offsetY?: number;
+	/** 文章页视口定格偏移；缺省跟 offsetX/Y */
+	postOffsetX?: number;
+	postOffsetY?: number;
 	size?: number;
 	motionEnabled?: boolean;
 	draggable?: boolean;
@@ -64,6 +67,8 @@ let {
 	position = "bottom-right",
 	offsetX = 28,
 	offsetY = 96,
+	postOffsetX,
+	postOffsetY,
 	size = 128,
 	motionEnabled = true,
 	draggable = true,
@@ -170,19 +175,27 @@ function resolveActivePetId(
 	selection: StoredPetSelection,
 	pathname = typeof window !== "undefined" ? window.location.pathname : "/",
 ): BuiltinPetId {
+	// 文章页锁定 OpenPet：设置换皮只改浏览态，不盖文章宠
+	if (isPostPath(pathname)) return postPetId;
 	if (selection !== "default") return selection;
-	return resolvePetIdForPath(pathname, defaultPetId, postPetId);
+	return defaultPetId;
 }
 
 function initialPetId(): BuiltinPetId {
 	return resolveActivePetId(readStoredPetSelection());
 }
 
-/** 访客覆盖：非 default 时全站同一张皮 */
+/** 访客覆盖：非 default 时仅浏览态换皮；文章页仍强制 postPetId */
 let visitorSelection: StoredPetSelection = $state(
 	typeof window === "undefined" ? "default" : readStoredPetSelection(),
 );
-const isOverrideMode = $derived(visitorSelection !== "default");
+/** Swup 换页时更新，供 isOverrideMode 等派生量跟随路由 */
+let routePathname = $state(
+	typeof window !== "undefined" ? window.location.pathname : "/",
+);
+const isOverrideMode = $derived(
+	visitorSelection !== "default" && !isPostPath(routePathname),
+);
 
 let activePetId: BuiltinPetId = $state(initialPetId());
 
@@ -493,6 +506,7 @@ function clearTransientAndGaze() {
 async function syncPetFromPath(
 	pathname = window.location.pathname,
 ): Promise<boolean> {
+	routePathname = pathname;
 	const next = resolveActivePetId(visitorSelection, pathname);
 	updateHidden();
 	if (isPostViewportMode(pathname)) {
@@ -655,7 +669,8 @@ function clearDockHost() {
 
 /**
  * 按锚点卡片算 fixed 落点：大半身子在页边留白，不被卡片 overflow 裁进框内。
- * 左栏 → 卡左侧外；右栏 → 卡右侧外；并夹进视口以免整只消失。
+ * 左栏 → 卡左侧外；右栏 → 卡右侧外。
+ * 不夹进视口：卡片滚出窗口时宠跟着离开视野（再由 onScrollRoamCheck 换到可见卡）。
  */
 function syncCardDockFixedPos() {
 	if (dockMode !== "card" || !dockHost?.isConnected) return;
@@ -664,7 +679,7 @@ function syncCardDockFixedPos() {
 	const hang = Math.round(effectiveSize * 0.72);
 	const sink = Math.round(height * 0.08);
 	let x: number;
-	let y = r.bottom - height + sink;
+	const y = r.bottom - height + sink;
 	if (dockCorner === "bottom-left") {
 		// 左栏：身子主要在卡片左边的页边
 		x = r.left - hang;
@@ -672,11 +687,8 @@ function syncCardDockFixedPos() {
 		// 右栏：身子主要在卡片右边的页边
 		x = r.right - effectiveSize + hang;
 	}
-	const pad = 4;
-	const maxX = Math.max(pad, window.innerWidth - effectiveSize - pad);
-	const maxY = Math.max(pad, window.innerHeight - height - pad);
-	dockFixedX = Math.round(Math.min(maxX, Math.max(pad, x)));
-	dockFixedY = Math.round(Math.min(maxY, Math.max(pad, y)));
+	dockFixedX = Math.round(x);
+	dockFixedY = Math.round(y);
 }
 
 /** 从卡片锚定卸下，按当前屏幕坐标挂回 body（拖拽 / 自由停靠用） */
@@ -1094,11 +1106,14 @@ function clampToDocument(x: number, y: number): { x: number; y: number } {
 }
 
 function defaultStyle(): string {
+	const onPost = typeof window !== "undefined" && isPostPath();
+	const ox = onPost ? (postOffsetX ?? offsetX) : offsetX;
+	const oy = onPost ? (postOffsetY ?? offsetY) : offsetY;
 	const side =
 		position === "bottom-right"
-			? `right:${offsetX}px;left:auto;`
-			: `left:${offsetX}px;right:auto;`;
-	return `${side}bottom:${offsetY}px;top:auto;`;
+			? `right:${ox}px;left:auto;`
+			: `left:${ox}px;right:auto;`;
+	return `${side}bottom:${oy}px;top:auto;`;
 }
 
 function positionedStyle(): string {
@@ -1223,16 +1238,15 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 	currentAnchorId = null;
 	animationState = "idle";
 
-	// 文章页：松手仍用视口坐标 + fixed，滚动时不挪；也不写文档坐标 / 不恢复游走
+	// 文章页：松手弹回配置定格位（不跟手停在浮动钮上）
 	if (isPostViewportMode()) {
-		posX = screen.x;
-		posY = screen.y;
 		userPinnedPosition = false;
 		try {
 			localStorage.removeItem(STORAGE_KEY);
 		} catch {
 			/* ignore */
 		}
+		applyPostViewportLock();
 		return;
 	}
 

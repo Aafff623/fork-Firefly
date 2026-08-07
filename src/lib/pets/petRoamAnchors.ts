@@ -10,10 +10,12 @@ import type { PetAnimationState } from "@/lib/pets/petAnimation";
 export type PetRoamAnchorId =
 	| "dynamics"
 	| "announcement"
+	| "gardenNote"
 	| "hotPosts"
 	| "stats"
 	| "profile"
 	| "tags"
+	| "categories"
 	| "calendar"
 	| "clock";
 
@@ -34,6 +36,11 @@ export type PetRoamAnchorDef = Readonly<{
 	arrivalAction: PetAnimationState;
 }>;
 
+/**
+ * 锚点与 `sidebarConfig` 现行首页布局对齐。
+ * column 用 auto：按元素中心落左/右栏，避免以后再对调卡片时朝向写死。
+ * 仅收录浏览态常见可见卡；文章页专属（目录/推荐等）不进游走池。
+ */
 export const PET_ROAM_ANCHORS: readonly PetRoamAnchorDef[] = [
 	{
 		id: "dynamics",
@@ -41,53 +48,65 @@ export const PET_ROAM_ANCHORS: readonly PetRoamAnchorDef[] = [
 			"#latest-dynamics:not(.dynamics-widget--dismissed):not(.dynamics-widget--pending)",
 			"widget-layout.dynamics-widget:not(.dynamics-widget--dismissed):not(.dynamics-widget--pending)",
 		],
-		column: "right",
+		column: "auto",
 		arrivalAction: "waiting",
 	},
 	{
 		id: "announcement",
 		selectors: ["#announcement", "widget-layout.announcement-widget"],
-		column: "left",
+		column: "auto",
+		arrivalAction: "waving",
+	},
+	{
+		id: "gardenNote",
+		selectors: ["#garden-note", "widget-layout.garden-note-widget"],
+		column: "auto",
 		arrivalAction: "waving",
 	},
 	{
 		id: "hotPosts",
 		selectors: ["#hot-posts", "widget-layout.hot-posts-widget"],
-		column: "left",
+		column: "auto",
 		arrivalAction: "review",
 	},
 	{
 		id: "stats",
 		selectors: ["#site-stats", "widget-layout.site-overview-widget"],
-		column: "right",
+		column: "auto",
 		arrivalAction: "review",
 	},
 	{
 		id: "profile",
 		selectors: [".profile-widget"],
-		column: "left",
+		column: "auto",
 		arrivalAction: "waving",
 	},
 	{
 		id: "tags",
 		selectors: ["#tags", "widget-layout.tags-widget"],
-		column: "left",
+		column: "auto",
 		arrivalAction: "waiting",
+	},
+	{
+		id: "categories",
+		selectors: ["#categories", "widget-layout.categories-widget"],
+		column: "auto",
+		arrivalAction: "review",
 	},
 	{
 		id: "calendar",
 		selectors: ["#calendar-widget", "widget-layout.calendar-notebook-widget"],
-		column: "right",
+		column: "auto",
 		arrivalAction: "jumping",
 	},
 	{
 		id: "clock",
 		selectors: [
+			"[data-id='clock-corner']",
 			"#surprise-clock-root",
 			"#surprise-clock",
-			"[data-id='clock-corner']",
 		],
-		column: "right",
+		column: "auto",
 		arrivalAction: "waving",
 	},
 ] as const;
@@ -123,9 +142,12 @@ export function isElementUsableInViewport(el: Element): boolean {
 
 function resolveElement(def: PetRoamAnchorDef): HTMLElement | null {
 	for (const selector of def.selectors) {
-		const el = document.querySelector(selector);
-		if (el instanceof HTMLElement && isElementUsableInViewport(el)) {
-			return el;
+		// 同 id/类可能左右栏各有一份（如分类墙）；取第一个视口内可用节点
+		const nodes = document.querySelectorAll(selector);
+		for (const el of nodes) {
+			if (el instanceof HTMLElement && isElementUsableInViewport(el)) {
+				return el;
+			}
 		}
 	}
 	return null;
@@ -174,21 +196,6 @@ export function computeCardCornerPoint(
 	};
 }
 
-function softClampToViewport(
-	x: number,
-	y: number,
-	petWidth: number,
-	petHeight: number,
-): { x: number; y: number } {
-	const pad = 4;
-	const maxX = Math.max(pad, window.innerWidth - petWidth - pad);
-	const maxY = Math.max(pad, window.innerHeight - petHeight - pad);
-	return {
-		x: Math.min(maxX, Math.max(pad, x)),
-		y: Math.min(maxY, Math.max(pad, y)),
-	};
-}
-
 /** All roam anchors that currently intersect the viewport with enough area. */
 export function listVisibleRoamAnchors(
 	petWidth: number,
@@ -201,8 +208,8 @@ export function listVisibleRoamAnchors(
 		if (!el) continue;
 		const column = resolveColumn(def, el);
 		const corner = pickCardCorner(column);
-		const raw = computeCardCornerPoint(el, corner, petWidth, petHeight);
-		const point = softClampToViewport(raw.x, raw.y, petWidth, petHeight);
+		// 不夹进视口：落点跟卡角走，避免「卡片已滚出、宠还钉在窗口边」
+		const point = computeCardCornerPoint(el, corner, petWidth, petHeight);
 		out.push({
 			id: def.id,
 			el,

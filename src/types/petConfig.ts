@@ -45,8 +45,13 @@ export type SpritePetConfig = {
 	pickerPetIds: readonly PickerPetId[];
 	/** 显示位置 */
 	position: "bottom-left" | "bottom-right";
-	/** 距离边缘偏移（px） */
+	/** 浏览态回退锚点 / 非文章页默认偏移（px） */
 	offset: { x: number; y: number };
+	/**
+	 * 文章页视口定格偏移（px）。
+	 * 缺省跟 `offset`；宜加大 x，避开右侧浮动控件（评论 / 回首页 / 回顶）。
+	 */
+	postOffset?: { x: number; y: number };
 	/** 宠物显示宽度（px），高度按 atlas 比例推算；建议 96–192 */
 	size: number;
 	/** 是否播放动画 */

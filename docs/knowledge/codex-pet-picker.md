@@ -9,8 +9,8 @@
 
 | 设置选项 | 浏览态 | 文章页 `/posts/*` |
 |---|---|---|
-| **默认 · DeepSeek** | Maid（v2 · look · 游走） | OpenPet（classic · 无关 look · 不游走） |
-| 任一 Codex 单皮 | 该皮（classic · 无关 look · **可游走**） | 同皮（不游走） |
+| **默认 · DeepSeek** | Maid（v2 · look · 游走） | OpenPet（classic · 无关 look · 不游走 · 视口定格） |
+| 任一 Codex 单皮 | 该皮（classic · 无关 look · **可游走**） | **仍为 OpenPet**（换皮不覆盖文章宠） |
 
 偏好 key：`localStorage.firefly-sprite-pet-id-v1`（`default` | picker id）。  
 改选派发 `firefly:pet-change`。

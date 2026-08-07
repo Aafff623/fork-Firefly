@@ -335,7 +335,7 @@ export const en: Translation = {
 	// Pet picker
 	[Key.petPickerTitle]: "Desktop pet",
 	[Key.petPickerDefault]: "Default · DeepSeek",
-	[Key.petPickerDefaultHint]: "Browse Maid · Post OpenPet",
+	[Key.petPickerDefaultHint]: "Browse skins · Post always OpenPet",
 	[Key.petPickerLicenseUnknown]: "License unclear",
 	[Key.petPickerCurrent]: "Current",
 	[Key.petPickerAttribution]: "Assets from awesome-codex-pet; attribute authors for non-commercial display.",

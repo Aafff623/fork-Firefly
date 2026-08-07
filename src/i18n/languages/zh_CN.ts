@@ -327,7 +327,7 @@ export const zh_CN: Translation = {
 	// 桌宠换皮
 	[Key.petPickerTitle]: "选择桌宠",
 	[Key.petPickerDefault]: "默认 · DeepSeek",
-	[Key.petPickerDefaultHint]: "浏览 Maid · 文章 OpenPet",
+	[Key.petPickerDefaultHint]: "浏览可换皮 · 文章固定 OpenPet",
 	[Key.petPickerLicenseUnknown]: "许可未明确",
 	[Key.petPickerCurrent]: "当前",
 	[Key.petPickerAttribution]: "素材来自 awesome-codex-pet；非商业展示请署名作者。",

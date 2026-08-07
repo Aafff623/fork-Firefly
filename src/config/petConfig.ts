@@ -3,7 +3,7 @@ import type { SpritePetConfig } from "../types/petConfig";
 /**
  * 站内桌宠（spritesheet）配置。
  * 默认双 DeepSeek：浏览态 Maid · 文章页 OpenPet。
- * 访客可在设置里换为 Codex v1 单皮（全站同皮）。
+ * 访客换皮只影响浏览态；文章页始终 postPetId，不随设置覆盖。
  * 素材许可见 `public/pets/README.md` / `docs/knowledge/codex-pet-picker.md`。
  *
  * 与 Spine / Live2D 互斥：三者最多同时启用一个。
@@ -27,6 +27,8 @@ export const spritePetConfig: SpritePetConfig = {
 	// 回退锚点：侧栏「最新动态」不可见时用右下；首页优先贴动态卡（见 SpritePet）
 	position: "bottom-right",
 	offset: { x: 28, y: 96 },
+	// 文章页：加大 right，躲开右侧评论 / 回首页 / 回顶三钮
+	postOffset: { x: 100, y: 96 },
 
 	// 显示宽度（px），高度按 192:208 推算
 	size: 128,
