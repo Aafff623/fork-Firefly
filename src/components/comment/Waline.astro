@@ -1,4 +1,5 @@
----
+﻿---
+import "@waline/client/waline.css";
 import { commentConfig } from "@/config";
 import { url as siteUrl } from "@/utils/url-utils";
 import stickerSuggestStyles from "./sticker-suggest/sticker-suggest.css?url";
@@ -40,588 +41,31 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
 -->
 <div
   class="relative w-full waline-shell"
+  data-waline-config={JSON.stringify(config)}
+  data-upload-api={uploadApi}
   data-sticker-suggest={stickerSuggestBoot ? JSON.stringify(stickerSuggestBoot) : undefined}
 >
   <p class="waline-hint">
     像发消息一样写就好：点工具栏插入表情 / 图片，表情会直接显示。插图 ≤5MB。
   </p>
+  <div class="waline-loading" aria-hidden="true">
+    <div class="waline-loading-editor"></div>
+    <div class="waline-loading-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
   <div id="waline"></div>
-  <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
-  <script type="module" is:inline define:vars={{ config, uploadApi }}>
-    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  <script>
+    import {
+      bootWalineFromShell,
+      registerWalineSwupHooks,
+    } from "@/lib/waline-boot";
 
-    const MAX_BYTES = 5 * 1024 * 1024;
-
-    /** 清掉本地草稿里的巨型 Base64；并把历史 sticker Markdown 迁成短码 */
-    function scrubBase64Drafts() {
-      try {
-        const keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k) keys.push(k);
-        }
-        for (const k of keys) {
-          const low = k.toLowerCase();
-          if (!low.includes("waline") && !low.includes("wl_")) continue;
-          const v = localStorage.getItem(k);
-          if (!v) continue;
-          if (v.includes("data:image")) {
-            localStorage.removeItem(k);
-            console.info("[Waline] cleared base64 draft:", k);
-            continue;
-          }
-          if (v.includes("![sticker:")) {
-            const migrated = v.replace(
-              /!\[sticker:[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi,
-              (full, url) => {
-                const m = String(url).match(
-                  /\/([a-z0-9_]+)\.(?:png|gif|webp|jpe?g)(?:\?|#|$)/i,
-                );
-                return m ? `:${m[1]}:` : full;
-              },
-            );
-            if (migrated !== v) {
-              localStorage.setItem(k, migrated);
-              console.info("[Waline] migrated sticker draft:", k);
-            }
-          }
-          // 调试期常见：连续短码叠在开头，清掉评论草稿避免一进来就「团在一起」 // 中文注释
-          if (/:[a-z0-9_+-]+:\s*:[a-z0-9_+-]+:/i.test(v)) {
-            try {
-              const parsed = JSON.parse(v);
-              if (parsed && typeof parsed === "object" && "comment" in parsed) {
-                parsed.comment = "";
-                localStorage.setItem(k, JSON.stringify(parsed));
-                console.info("[Waline] cleared clumped shortcode draft:", k);
-              }
-            } catch {
-              localStorage.removeItem(k);
-            }
-          }
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-
-    /** 绕过 Waline 默认 Base64 128KB 硬限制：走本站代理上传，返回外链 */
-    async function imageUploader(file) {
-      if (!(file instanceof File)) {
-        throw new Error("无效的图片文件");
-      }
-      if (file.size > MAX_BYTES) {
-        throw new Error("图片不能超过 5MB");
-      }
-      const form = new FormData();
-      form.append("image", file, file.name || "image.png");
-      const res = await fetch(uploadApi, {
-        method: "POST",
-        body: form,
-        headers: { Origin: window.location.origin },
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        /* ignore */
-      }
-      if (!res.ok || !data.url) {
-        const msg =
-          data.error ||
-          (res.status === 503
-            ? "未配置腾讯云 COS（COS_SECRET_ID 等），无法上传大图"
-            : "图片上传失败");
-        throw new Error(msg);
-      }
-      return data.url;
-    }
-
-    /** 隐藏预览按钮（预览区对 QQ 表情短码无效，容易误导） */
-    function hidePreviewAction(root) {
-      const isPreviewBtn = (btn) => {
-        const t = (btn.getAttribute("title") || "").trim().toLowerCase();
-        const label = (btn.getAttribute("aria-label") || "").trim().toLowerCase();
-        return (
-          t === "preview" ||
-          t === "预览" ||
-          t.includes("preview") ||
-          label.includes("preview") ||
-          label.includes("预览")
-        );
-      };
-      const apply = () => {
-        for (const btn of root.querySelectorAll("button.wl-action")) {
-          if (isPreviewBtn(btn)) {
-            btn.classList.remove("active");
-            btn.setAttribute("hidden", "");
-            btn.style.display = "none";
-          }
-        }
-        for (const preview of root.querySelectorAll(".wl-preview")) {
-          preview.setAttribute("hidden", "");
-          preview.style.display = "none";
-        }
-      };
-      apply();
-      const mo = new MutationObserver(() => apply());
-      mo.observe(root, { childList: true, subtree: true });
-      setTimeout(() => mo.disconnect(), 8000);
-    }
-
-    /** 提交成功后清空本次表单，失败时保留内容方便重试。 */
-    function clearDraftAfterSubmit(root) {
-      let pendingSubmit = false;
-      let knownCardCount = root.querySelectorAll(".wl-card").length;
-
-      const clearField = (selector) => {
-        const field = root.querySelector(selector);
-        if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return;
-        field.value = "";
-        field.dispatchEvent(new Event("input", { bubbles: true }));
-        field.dispatchEvent(new Event("change", { bubbles: true }));
-      };
-
-      const clearForm = () => {
-        clearField(".wl-nick");
-        clearField(".wl-mail");
-        clearField(".wl-link");
-        clearField(".wl-editor");
-        pendingSubmit = false;
-        root.dispatchEvent(new CustomEvent("waline-editor-reset"));
-      };
-
-      const markSubmitPending = () => {
-        pendingSubmit = true;
-        knownCardCount = root.querySelectorAll(".wl-card").length;
-      };
-
-      const form = root.querySelector("form");
-      form?.addEventListener("submit", markSubmitPending, true);
-      root.addEventListener(
-        "click",
-        (event) => {
-          const target = event.target;
-          if (!(target instanceof Element)) return;
-          const button = target.closest("button");
-          if (button?.textContent?.trim() === "提交") markSubmitPending();
-        },
-        true,
-      );
-
-      const mo = new MutationObserver(() => {
-        const cardCount = root.querySelectorAll(".wl-card").length;
-        if (cardCount > knownCardCount) {
-          knownCardCount = cardCount;
-          if (pendingSubmit) clearForm();
-          return;
-        }
-        knownCardCount = cardCount;
-      });
-      mo.observe(root, { childList: true, subtree: true });
-    }
-
-    /** 默认收起评论编辑器，获得焦点或点击面板时展开。 */
-    function attachCollapsibleEditor(root, editor) {
-      const panel = editor.closest(".wl-panel");
-      if (!panel || panel.dataset.collapsibleBound === "true") return;
-
-      panel.dataset.collapsibleBound = "true";
-      panel.classList.add("waline-editor-collapsible");
-
-      const isInside = (target) => target instanceof Node && panel.contains(target);
-      const setExpanded = (expanded) => {
-        panel.classList.toggle("waline-editor-expanded", expanded);
-      };
-
-      document.addEventListener("focusin", (event) => {
-        setExpanded(isInside(event.target));
-      });
-      document.addEventListener("pointerdown", (event) => {
-        setExpanded(isInside(event.target));
-      });
-      root.addEventListener("waline-editor-reset", () => setExpanded(false));
-
-      setExpanded(isInside(document.activeElement));
-    }
-
-    scrubBase64Drafts();
-
-    const requestedPath = new URLSearchParams(window.location.search).get("path");
-    const effectiveConfig = {
-      ...config,
-      ...(requestedPath ? { path: requestedPath } : {}),
-      imageUploader,
-    };
-
-    try {
-      init(effectiveConfig);
-      const root = document.querySelector("#waline");
-      if (!root) throw new Error("Waline root element is missing");
-
-      hidePreviewAction(root);
-      clearDraftAfterSubmit(root);
-
-      /**
-       * Waline 将自定义表情插入为 :prefix_name: 短码；textarea 无法内嵌图片。
-      * 这里保留 textarea 原文给 Waline 提交，同时在其上方同步一个只读视觉层。
-      */
-      const emojiMap = new Map();
-      const visualImageCache = new Map();
-
-      const loadEmojiMap = async () => {
-        const packs = Array.isArray(effectiveConfig.emoji) ? effectiveConfig.emoji : [];
-        await Promise.all(
-          packs.map(async (pack) => {
-            const folder = typeof pack === "string" ? pack : pack?.folder;
-            if (!folder) return;
-
-            let info = typeof pack === "object" && Array.isArray(pack.items) ? pack : null;
-            if (!info) {
-              try {
-                const response = await fetch(`${folder.replace(/\/$/, "")}/info.json`);
-                if (!response.ok) return;
-                info = await response.json();
-              } catch {
-                return;
-              }
-            }
-
-            if (!info?.prefix || !Array.isArray(info.items)) return;
-            const extension = info.type && info.type !== "url" ? `.${String(info.type).replace(/^\./, "")}` : "";
-            for (const item of info.items) {
-              const file = `${info.prefix}${item}`;
-              const filename = extension && !file.toLowerCase().endsWith(extension.toLowerCase()) ? `${file}${extension}` : file;
-              emojiMap.set(`${info.prefix}${item}`, `${folder.replace(/\/$/, "")}/${filename}`);
-            }
-          }),
-        );
-      };
-
-      const copyEditorTextStyles = (editor, mirror) => {
-        const styles = getComputedStyle(editor);
-        for (const property of [
-          "font",
-          "font-family",
-          "font-size",
-          "font-weight",
-          "font-style",
-          "line-height",
-          "letter-spacing",
-          "text-align",
-          "text-indent",
-          "padding",
-          "tab-size",
-        ]) {
-          mirror.style.setProperty(property, styles.getPropertyValue(property));
-        }
-      };
-
-      const imagePattern = /^https?:\/\/|^\//i;
-
-      const ensureUploadAnimation = () => {
-        if (document.getElementById("waline-upload-animation-style")) return;
-        const style = document.createElement("style");
-        style.id = "waline-upload-animation-style";
-        style.textContent = "@keyframes waline-upload-spin { to { transform: rotate(360deg); } }";
-        document.head.append(style);
-      };
-
-      ensureUploadAnimation();
-
-      const attachEditorVisual = () => {
-        const editor = root.querySelector("textarea.wl-editor");
-        if (!editor) return false;
-        const host = editor.parentElement;
-        if (!host) return false;
-
-        attachCollapsibleEditor(root, editor);
-        host.classList.add("waline-editor-visual-host");
-        // 绑定时清掉多余镜像，只留一层 // 中文注释
-        const existingMirrors = [...host.querySelectorAll(".waline-editor-visual")];
-        existingMirrors.slice(1).forEach((node) => node.remove());
-        let mirror = host.querySelector(".waline-editor-visual");
-        if (!mirror) {
-          mirror = document.createElement("div");
-          mirror.className = "waline-editor-visual";
-          mirror.setAttribute("aria-hidden", "true");
-          host.append(mirror);
-        }
-
-        if (!editor.dataset.visualBaseHeight) {
-          editor.dataset.visualBaseHeight = String(editor.offsetHeight);
-          editor.dataset.visualOriginalHeight = editor.style.height;
-        }
-
-        const syncPosition = () => {
-          const styles = getComputedStyle(editor);
-          mirror.style.top = `${editor.offsetTop}px`;
-          mirror.style.left = `${editor.offsetLeft}px`;
-          mirror.style.width = `${editor.offsetWidth}px`;
-          mirror.style.height = `${editor.offsetHeight}px`;
-          mirror.style.borderRadius = styles.borderRadius;
-          mirror.style.overflow = "hidden";
-          copyEditorTextStyles(editor, mirror);
-          mirror.scrollTop = editor.scrollTop;
-          mirror.scrollLeft = editor.scrollLeft;
-        };
-
-        const fitEditorHeight = (hasVisualContent) => {
-          if (!hasVisualContent) {
-            editor.style.height = editor.dataset.visualOriginalHeight || "";
-            return;
-          }
-
-          const baseHeight = Number.parseFloat(editor.dataset.visualBaseHeight || "0");
-          const currentMirrorHeight = mirror.style.height;
-          mirror.style.height = "auto";
-          const contentHeight = mirror.scrollHeight;
-          mirror.style.height = currentMirrorHeight;
-          const targetHeight = Math.max(baseHeight, contentHeight + 4);
-          if (targetHeight > 0 && Math.abs(editor.offsetHeight - targetHeight) > 1) {
-            editor.style.height = `${targetHeight}px`;
-          }
-        };
-
-        const syncContent = () => {
-          const value = editor.value || "";
-          const tokenPattern = /!\[([^\]]*)\]\(([^)\s]*)\)|:([a-z0-9_+-]+):/gi;
-          const matches = [...value.matchAll(tokenPattern)];
-          const visualMatches = matches.filter((match) => {
-            // 短码一律走视觉层；map 未就绪时用占位，避免露出 :bb_xxx: 原文 // 中文注释
-            if (match[3]) return true;
-            const alt = match[1] || "";
-            const source = match[2] || "";
-            return imagePattern.test(source) || /^正在上传(?:\s|$)/.test(alt);
-          });
-
-          mirror.replaceChildren();
-          if (!visualMatches.length) {
-            host.classList.remove("waline-editor-visual-active");
-            mirror.hidden = true;
-            mirror.replaceChildren();
-            fitEditorHeight(false);
-            return;
-          }
-
-          host.classList.add("waline-editor-visual-active");
-          mirror.hidden = false;
-          const caretPosition = editor.selectionEnd ?? value.length;
-          const selectionStart = editor.selectionStart ?? caretPosition;
-          const selectionEnd = editor.selectionEnd ?? caretPosition;
-          const hasSelection = document.activeElement === editor && selectionEnd > selectionStart;
-          const showCaret = document.activeElement === editor && !hasSelection;
-          let caretInserted = false;
-          const appendCaretAt = (position) => {
-            if (!showCaret || caretInserted || caretPosition !== position) return;
-            const caret = document.createElement("span");
-            caret.className = "waline-editor-visual-caret";
-            caret.setAttribute("aria-hidden", "true");
-            mirror.append(caret);
-            caretInserted = true;
-          };
-
-          const appendSelectionText = (text, start) => {
-            if (!text) return;
-            if (!hasSelection || selectionEnd <= start || selectionStart >= start + text.length) {
-              mirror.append(document.createTextNode(text));
-              return;
-            }
-
-            let offset = 0;
-            while (offset < text.length) {
-              const absolute = start + offset;
-              const selected = absolute < selectionEnd && absolute + 1 > selectionStart;
-              let boundary = offset + 1;
-              while (boundary < text.length) {
-                const nextAbsolute = start + boundary;
-                const nextSelected = nextAbsolute < selectionEnd && nextAbsolute + 1 > selectionStart;
-                if (nextSelected !== selected) break;
-                boundary += 1;
-              }
-              const chunk = text.slice(offset, boundary);
-              if (selected) {
-                const selectedText = document.createElement("span");
-                selectedText.className = "waline-editor-visual-selection";
-                selectedText.textContent = chunk;
-                mirror.append(selectedText);
-              } else {
-                mirror.append(document.createTextNode(chunk));
-              }
-              offset = boundary;
-            }
-          };
-
-          const appendText = (text, start) => {
-            if (!text) return;
-            const end = start + text.length;
-            if (showCaret && caretPosition > start && caretPosition < end) {
-              const offset = caretPosition - start;
-              appendSelectionText(text.slice(0, offset), start);
-              appendCaretAt(caretPosition);
-              appendSelectionText(text.slice(offset), caretPosition);
-              return;
-            }
-            appendSelectionText(text, start);
-          };
-
-          const appendVisualNode = (node, start, end) => {
-            if (hasSelection && selectionStart < end && selectionEnd > start) {
-              const selectedNode = document.createElement("span");
-              selectedNode.className = "waline-editor-visual-selection";
-              selectedNode.append(node);
-              mirror.append(selectedNode);
-            } else {
-              mirror.append(node);
-            }
-          };
-
-          let cursor = 0;
-          for (const match of matches) {
-            const start = match.index ?? 0;
-            appendCaretAt(cursor);
-            if (start > cursor) appendText(value.slice(cursor, start), cursor);
-            appendCaretAt(start);
-            const tokenEnd = start + match[0].length;
-            const source = match[3] ? emojiMap.get(match[3]) : match[2];
-            if (source) {
-              const imageKey = `${match[3] ? "emoji" : "image"}:${source}`;
-              let template = visualImageCache.get(imageKey);
-              let imageNeedsSource = false;
-              // 联想插入用 sticker: 前缀；Waline 表情 CDN 也按行内小图，避免光标被顶到大图下面 // 中文注释
-              const altText = match[1] || "";
-              const inlineSticker =
-                !match[3] &&
-                (/^sticker:/i.test(altText) ||
-                  /@waline\/emojis/i.test(source) ||
-                  /unpkg\.com\/@waline\/emojis/i.test(source));
-              if (!template) {
-                template = document.createElement("img");
-                template.className = match[3] || inlineSticker
-                  ? "waline-editor-visual-emoji"
-                  : "waline-editor-visual-image";
-                template.alt = altText.replace(/^sticker:/i, "") || match[0];
-                template.draggable = false;
-                template.decoding = "async";
-                imageNeedsSource = true;
-                if (match[3] || inlineSticker) {
-                  template.style.display = "inline-block";
-                  template.style.width = "1.45em";
-                  template.style.height = "1.45em";
-                  template.style.margin = "-0.15em 0.08em";
-                  template.style.verticalAlign = "middle";
-                  template.style.objectFit = "contain";
-                } else {
-                  template.style.display = "block";
-                  template.style.maxWidth = "min(100%, 20rem)";
-                  template.style.maxHeight = "12rem";
-                  template.style.width = "auto";
-                  template.style.height = "auto";
-                  template.style.margin = "0.75em 0 0.9em";
-                  template.style.objectFit = "contain";
-                }
-                template.addEventListener("load", () => {
-                  fitEditorHeight(true);
-                  syncPosition();
-                });
-                visualImageCache.set(imageKey, template);
-              }
-              // 每次克隆，避免同一节点被二次 append 时挪走导致叠在开头 // 中文注释
-              const image = template.cloneNode(true);
-              if (imageNeedsSource || !image.getAttribute("src")) {
-                image.src = source;
-              }
-              appendVisualNode(image, start, tokenEnd);
-            } else if (!match[3] && /^正在上传(?:\s|$)/.test(match[1] || "")) {
-              const uploading = document.createElement("span");
-              uploading.className = "waline-editor-visual-uploading";
-              const spinner = document.createElement("span");
-              spinner.className = "waline-editor-visual-uploading-spinner";
-              spinner.setAttribute("aria-hidden", "true");
-              spinner.style.display = "inline-block";
-              spinner.style.flex = "0 0 0.8em";
-              spinner.style.width = "0.8em";
-              spinner.style.height = "0.8em";
-              spinner.style.marginRight = "0.45em";
-              spinner.style.border = "2px solid rgba(139, 92, 246, 0.24)";
-              spinner.style.borderTopColor = "var(--primary, #8b5cf6)";
-              spinner.style.borderRadius = "999px";
-              spinner.style.animation = "waline-upload-spin 0.8s linear infinite";
-              uploading.append(spinner, document.createTextNode(match[1]));
-              appendVisualNode(uploading, start, tokenEnd);
-            } else if (match[3]) {
-              // emojiMap 尚未加载：占位同尺寸，保持透明 textarea，不露出短码原文 // 中文注释
-              const ph = document.createElement("span");
-              ph.className = "waline-editor-visual-emoji";
-              ph.setAttribute("aria-hidden", "true");
-              ph.style.display = "inline-block";
-              ph.style.width = "1.45em";
-              ph.style.height = "1.45em";
-              ph.style.margin = "-0.15em 0.08em";
-              ph.style.verticalAlign = "middle";
-              appendVisualNode(ph, start, tokenEnd);
-            } else {
-              appendText(match[0], start);
-            }
-            cursor = tokenEnd;
-            appendCaretAt(cursor);
-          }
-          appendCaretAt(cursor);
-          if (cursor < value.length) appendText(value.slice(cursor), cursor);
-          appendCaretAt(value.length);
-          if (showCaret && !caretInserted) appendCaretAt(caretPosition);
-          fitEditorHeight(true);
-          syncPosition();
-        };
-
-        if (editor.dataset.emojiVisualBound !== "true") {
-          editor.dataset.emojiVisualBound = "true";
-          editor.addEventListener("input", syncContent);
-          editor.addEventListener("keyup", syncContent);
-          editor.addEventListener("click", syncContent);
-          editor.addEventListener("select", syncContent);
-          editor.addEventListener("focus", syncContent);
-          editor.addEventListener("blur", syncContent);
-          editor.addEventListener("select", syncContent);
-          editor.addEventListener("scroll", syncPosition, { passive: true });
-          // 联想浮层显隐后重定位镜像，避免 offset 漂移 // 中文注释
-          editor.addEventListener("waline-sticker-suggest-layout", () => {
-            syncPosition();
-          });
-          editor.setAttribute("spellcheck", "false");
-          document.addEventListener("selectionchange", () => {
-            if (document.activeElement === editor) syncContent();
-          });
-          new ResizeObserver(syncPosition).observe(editor);
-          root.addEventListener(
-            "click",
-            (event) => {
-              const target = event.target;
-              if (!(target instanceof Element) || !target.closest(".wl-emoji-popup")) return;
-              requestAnimationFrame(() => {
-                syncContent();
-                requestAnimationFrame(syncContent);
-              });
-            },
-            true,
-          );
-        }
-
-        syncContent();
-        return true;
-      };
-
-      const editorObserver = new MutationObserver(() => {
-        if (attachEditorVisual()) editorObserver.disconnect();
-      });
-      if (!attachEditorVisual()) {
-        editorObserver.observe(root, { childList: true, subtree: true });
-        setTimeout(() => editorObserver.disconnect(), 8000);
-      }
-      loadEmojiMap().then(attachEditorVisual);
-    } catch (error) {
-      console.error("[Waline] Failed to initialize:", error);
-    }
+    registerWalineSwupHooks();
+    bootWalineFromShell();
   </script>
   {
     stickerSuggestEnabled && (
@@ -977,5 +421,85 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     padding: 0.05rem 0.25rem;
     border-radius: 0.25rem;
     background: color-mix(in oklch, var(--card-bg, #fff) 70%, transparent);
+  }
+
+  .waline-shell:not(.waline-ready) #waline {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .waline-shell.waline-ready .waline-loading {
+    display: none;
+  }
+
+  .waline-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  .waline-loading-editor {
+    height: 3rem;
+    border-radius: 0.65rem;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--card-bg, #fff) 88%, var(--primary, #8b5cf6) 12%) 0%,
+      color-mix(in oklch, var(--card-bg, #fff) 72%, var(--primary, #8b5cf6) 28%) 50%,
+      color-mix(in oklch, var(--card-bg, #fff) 88%, var(--primary, #8b5cf6) 12%) 100%
+    );
+    background-size: 200% 100%;
+    animation: waline-loading-shimmer 1.1s ease-in-out infinite;
+  }
+
+  .waline-loading-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .waline-loading-lines span {
+    display: block;
+    height: 0.72rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--line-divider, #ddd) 72%, transparent);
+    animation: waline-loading-pulse 1.2s ease-in-out infinite;
+  }
+
+  .waline-loading-lines span:nth-child(1) {
+    width: 92%;
+  }
+
+  .waline-loading-lines span:nth-child(2) {
+    width: 78%;
+    animation-delay: 0.12s;
+  }
+
+  .waline-loading-lines span:nth-child(3) {
+    width: 64%;
+    animation-delay: 0.24s;
+  }
+
+  @keyframes waline-loading-shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @keyframes waline-loading-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+
+    50% {
+      opacity: 0.9;
+    }
   }
 </style>
