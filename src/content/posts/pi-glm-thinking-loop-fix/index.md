@@ -6,6 +6,7 @@ description: Pi 接智谱 GLM-5.2 时 thinking 阶段反复重复 50+ 次、工�
 image: ''
 tags: [Pi, GLM, AI Coding, 死循环, thinking, Provider]
 category: Agentic Coding
+collections: [tool-pi]
 draft: false
 lang: ''
 slug: pi-glm-thinking-loop-fix

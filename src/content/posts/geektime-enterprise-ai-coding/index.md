@@ -6,7 +6,7 @@ description: '不教用 AI 工具，教把 AI 编程做成可控、可验收、�
 image: ./cover.jpg
 tags: [极客时间, AI 编程, SDD, Harness, Claude Code]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [course-geektime-enterprise-coding]
 draft: false
 lang: ''
 slug: geektime-enterprise-ai-coding

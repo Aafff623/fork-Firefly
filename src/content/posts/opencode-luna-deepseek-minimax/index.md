@@ -6,7 +6,7 @@ description: OpenCode 里把 Luna 留给路由与验收，DeepSeek Flash 干可�
 image: ./cover.jpg
 tags: [OpenCode, Luna, DeepSeek, MiniMax, Agent, AI Coding]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-opencode]
 draft: false
 lang: ''
 slug: opencode-luna-deepseek-minimax

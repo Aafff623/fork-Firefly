@@ -5,7 +5,7 @@ description: Firefly 博客用 MiniMax 出封面时，风格分成通用（列�
 image: ./cover.jpg
 tags: [MiniMax, 封面, 风格规范, Firefly]
 category: 指南
-collections: [media-workflow]
+collections: [agentic-workflow]
 draft: false
 lang: ''
 slug: minimax-cover-styles

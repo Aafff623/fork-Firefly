@@ -5,6 +5,7 @@ description: 把「提炼 → 成帖 → 级联 → 归档」拆成可复用积�
 image: ./cover.jpg
 tags: [Claude Code, workflow, skill, 知识沉淀, blog, 发布]
 category: Agentic Coding
+collections: [agentic-coding]
 draft: false
 lang: zh-CN
 slug: one-click-blog-publish-workflow

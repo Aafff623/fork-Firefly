@@ -6,7 +6,7 @@ description: 额度有限，废片就是烧钱。把生成当制片、提示词�
 image: ./cover.jpg
 tags: [MiniMax, H3, 提示词, 视频生成, 音乐生成, AI Coding]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [agentic-workflow]
 draft: false
 lang: ''
 slug: minimax-generation-as-production

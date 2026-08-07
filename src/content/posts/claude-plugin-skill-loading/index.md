@@ -6,6 +6,7 @@ description: Claude Code 装了插件 skill 却不显示？/reload-skills 不管
 image: ./cover.jpg
 tags: [Claude Code, 插件, Skill, 排查, marketplace, junction]
 category: Agentic Coding
+collections: [tool-claude-code, review-skill-mcp]
 draft: false
 lang: ''
 slug: claude-plugin-skill-loading

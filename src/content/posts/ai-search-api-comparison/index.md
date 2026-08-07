@@ -6,7 +6,7 @@ description: 给 Agent 配联网搜索，五家主流搜索 API（Bocha/Brave/Ta
 tags: [AI Agent, 搜索 API, 选型, Tavily, Exa, Bocha]
 category: Agentic Coding
 
-collections: [agentic-coding]
+collections: [review-skill-mcp]
 draft: false
 lang: ''
 slug: ai-search-api-comparison

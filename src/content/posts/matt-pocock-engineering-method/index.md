@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [Matt Pocock, AI Agent, 方法论, 工作流, TypeScript]
 category: Agentic Coding
 
-collections: [agentic-coding]
+collections: [agentic-workflow, review-skill-mcp]
 draft: false
 lang: ''
 slug: matt-pocock-engineering-method

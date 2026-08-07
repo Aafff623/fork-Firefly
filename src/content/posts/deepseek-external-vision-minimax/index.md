@@ -6,7 +6,7 @@ description: 纯文本模型看不懂图？把视觉理解外挂到工具层、�
 image: ./cover.jpg
 tags: [DeepSeek, MiniMax, 多模态, MCP, 视觉理解, AI Coding]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [agentic-workflow]
 draft: false
 lang: ''
 slug: deepseek-external-vision-minimax

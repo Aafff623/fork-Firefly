@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [Firefly, 桌宠]
 themeTags: [DeepSeek, SpritePet, Maid, OpenPet, atlas]
 category: 指南
-collections: [firefly-guide]
+collections: [agentic-coding]
 draft: false
 lang: ''
 slug: dual-pet-deepseek

@@ -6,7 +6,7 @@ description: 中文 Windows 跑 Claude Code、Cursor 的编码坑：代码页 93
 image: ./cover.jpg
 tags: [Windows, UTF-8, GBK, 编码, Claude Code, Git Bash, CC Switch]
 category: 指南
-collections: [windows-discipline]
+collections: [agentic-workflow]
 draft: false
 lang: ''
 slug: windows-ai-tools-encoding

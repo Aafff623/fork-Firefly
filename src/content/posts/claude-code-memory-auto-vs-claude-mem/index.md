@@ -5,6 +5,7 @@ description: 会话记忆怎么管：内置 Auto Memory 的透明便签本 vs 46
 image: ./cover.jpg
 tags: [Claude Code, Auto Memory, claude-mem, 记忆管理, 评测]
 category: Agentic Coding
+collections: [tool-claude-code]
 draft: false
 lang: zh-CN
 slug: claude-code-memory-auto-vs-claude-mem

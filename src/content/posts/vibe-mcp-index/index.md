@@ -6,7 +6,7 @@ description: 从 Vibe 40* 抽出 MCP 专稿与 04 定位段：STDIO/SSE、Spring
 tags: [Vibe Coding, MCP, 教程索引]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
-collections: [vibe-coding, mcp-recommend]
+collections: [review-skill-mcp]
 draft: false
 lang: ""
 slug: vibe-mcp-index

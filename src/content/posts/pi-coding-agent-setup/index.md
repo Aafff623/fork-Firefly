@@ -7,7 +7,7 @@ image: ""
 tags: [Pi, AI Coding, extension, MCP]
 themeTags: [pi-coding-agent, GLM-5.2, pi-mcp-adapter, pi-subagents, pi-hermes-memory, 视觉回退, LANG]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-pi]
 draft: false
 lang: ""
 slug: pi-coding-agent-setup

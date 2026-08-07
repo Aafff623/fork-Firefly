@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [Kimi Code, AI Coding, hook, PreToolUse, 验证]
 themeTags: [kimi-code, pretooluse-hook, hook验证, 边框漂移, loop-control, 防护验证]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-kimi-code]
 draft: false
 lang: ""
 slug: kimi-code-hook-verify

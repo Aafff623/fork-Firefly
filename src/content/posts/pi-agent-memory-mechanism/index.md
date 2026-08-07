@@ -7,7 +7,7 @@ image: ./cover.png
 tags: [Pi, AI Coding, 记忆机制, extension]
 themeTags: [pi-hermes-memory, 记忆机制, policy-only, standing-instructions, auto-consolidation, FTS5]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-pi]
 draft: false
 lang: ""
 slug: pi-agent-memory-mechanism

@@ -7,7 +7,7 @@ image: ""
 tags: [Pi, 美化配置]
 themeTags: [pi-coding-agent, Catppuccin, pi-inline-statusline, theme, statusline, enabledModels, GLM-5.2]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-pi]
 draft: false
 slug: pi-theme-statusline-setup
 pinned: false

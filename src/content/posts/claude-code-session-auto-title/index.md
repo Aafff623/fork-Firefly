@@ -5,6 +5,7 @@ description: 会话名没被我改过却一直在变——Claude Code 的 ai-tit
 image: ./cover.jpg
 tags: [Claude Code, Hooks, CC Switch, claude-hud]
 category: Agentic Coding
+collections: [tool-claude-code]
 draft: false
 lang: zh-CN
 slug: claude-code-session-auto-title

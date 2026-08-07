@@ -6,6 +6,7 @@ description: 用开源 skill 实测把小说画成八十年代小人书——See
 image: ./cover.jpg
 tags: [AIGC, skill测评, 小人书, 连环画, Seedream, MiniMax, 文生图]
 category: skill 测评
+collections: [review-skill-mcp]
 slug: lianhuanhua-skill-review
 draft: false
 lang: ''

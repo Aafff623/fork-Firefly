@@ -6,7 +6,7 @@ description: '8 周零代码，从 AI 产品经理到 Product Builder：4D Metho
 image: ./cover.jpg
 tags: [极客时间, Agentic AI, 产品经理, 零代码]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [course-geektime-agentic-product]
 draft: false
 lang: ''
 slug: geektime-agentic-ai-product

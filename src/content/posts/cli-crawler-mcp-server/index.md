@@ -6,7 +6,7 @@ description: 把 MediaCrawler 的 CLI 爬虫封装成 MCP Server，AI 一句话�
 image: ./cover.jpg
 tags: [MCP, 爬虫, MediaCrawler, 小红书, Claude Code, Python, 子进程, Agent]
 category: Agentic Coding
-collections: [mcp-recommend]
+collections: [review-skill-mcp]
 draft: false
 lang: ''
 slug: cli-crawler-mcp-server

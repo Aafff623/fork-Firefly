@@ -6,7 +6,7 @@ description: '14 周 6 个项目，从零搭一个可部署、可监控、可灰
 image: ./cover.jpg
 tags: [极客时间, AI Agent, LangGraph, RAG, Agent Eval]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [course-geektime-agent-fullstack]
 draft: false
 lang: ''
 slug: geektime-ai-agent-fullstack

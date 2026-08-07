@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [OpenClaw, 教程索引, Agent]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
-collections: [vibe-coding]
+collections: [vibe-tutorial-index]
 draft: false
 lang: ""
 slug: openclaw-tutorial-index

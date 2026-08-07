@@ -6,7 +6,7 @@ description: '三门课名字像三胞胎，其实是三条路：用 AI 写代�
 image: ./cover.jpg
 tags: [极客时间, AI Agent, 课程拆解, SDD, Harness]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [course-geektime-bootcamps]
 draft: false
 lang: ''
 slug: geektime-ai-bootcamps-compared

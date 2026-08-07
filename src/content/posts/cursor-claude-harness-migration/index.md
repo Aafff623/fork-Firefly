@@ -5,7 +5,7 @@ description: 把 Claude Code 全局规范搬到 Cursor，真正要迁的不是�
 image: ./cover.jpg
 tags: [Cursor, Claude, 迁移, AI Coding]
 category: Agentic Coding
-collections: [agentic-coding]
+collections: [tool-cursor]
 draft: true
 slug: cursor-claude-harness-migration
 lang: ''

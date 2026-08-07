@@ -7,6 +7,7 @@ image: ./cover.jpg
 tags: [Claude, Claude Code, 特性解析, AI Coding]
 themeTags: [Claude Code, Skills, Subagents, Hooks, MCP, Agentic Coding]
 category: Agentic Coding
+collections: [tool-claude-code]
 draft: false
 slug: claude-code-full-features
 lang: ''

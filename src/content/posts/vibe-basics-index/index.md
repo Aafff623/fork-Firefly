@@ -6,7 +6,7 @@ description: Vibe 00–02 基础必读 + 60/90 薄入口：概念、首作、路
 tags: [Vibe Coding, 教程索引, 鱼皮, ai-guide]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
-collections: [vibe-coding]
+collections: [vibe-tutorial-index]
 draft: false
 lang: ""
 slug: vibe-basics-index
