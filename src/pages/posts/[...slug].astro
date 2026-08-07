@@ -4,7 +4,6 @@ import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
 import EncryptedPost from "@components/features/EncryptedPost.astro";
 import KatexManager from "@components/features/KatexManager.astro";
-import License from "@components/misc/License.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -19,9 +18,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import CoverImage from "@/components/common/CoverImage.astro";
 import PostMetadata from "@/components/layout/PostMeta.astro";
+import RelatedHighlight from "@/components/misc/RelatedHighlight.astro";
 import ShareBar from "@/components/misc/ShareBar.astro";
 import { coverImageConfig } from "@/config/coverImageConfig";
-import { licenseConfig } from "@/config/licenseConfig";
 import { profileConfig } from "@/config/profileConfig";
 import { siteConfig } from "@/config/siteConfig";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
@@ -103,6 +102,7 @@ const jsonLd = {
 };
 
 const relatedPosts = await getRelatedPosts(entry, 3);
+const relatedHighlight = relatedPosts[0] ?? null;
 ---
 
 <MainGridLayout
@@ -324,16 +324,10 @@ const relatedPosts = await getRelatedPosts(entry, 3);
           />
 
           {
-            licenseConfig.enable && (
-              <License
-                title={entry.data.title}
-                id={entry.id}
-                pubDate={entry.data.published}
-                author={entry.data.author}
-                sourceLink={entry.data.sourceLink}
-                licenseName={entry.data.licenseName}
-                licenseUrl={entry.data.licenseUrl}
-                class="mb-6 rounded-xl license-container onload-animation"
+            relatedHighlight && (
+              <RelatedHighlight
+                post={relatedHighlight}
+                class="mb-6"
               />
             )
           }
@@ -359,16 +353,10 @@ const relatedPosts = await getRelatedPosts(entry, 3);
           />
 
           {
-            licenseConfig.enable && (
-              <License
-                title={entry.data.title}
-                id={entry.id}
-                pubDate={entry.data.published}
-                author={entry.data.author}
-                sourceLink={entry.data.sourceLink}
-                licenseName={entry.data.licenseName}
-                licenseUrl={entry.data.licenseUrl}
-                class="mb-6 rounded-xl license-container onload-animation"
+            relatedHighlight && (
+              <RelatedHighlight
+                post={relatedHighlight}
+                class="mb-6"
               />
             )
           }
@@ -447,18 +435,18 @@ const relatedPosts = await getRelatedPosts(entry, 3);
   </script>
 
   <div
-    class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"
+    class="flex flex-col md:flex-row justify-between mb-4 gap-3 overflow-hidden w-full"
   >
     <a
       href={entry.data.nextSlug ? getPostUrlBySlug(entry.data.nextSlug) : url("/")}
-      class="w-full font-bold overflow-hidden active:scale-95"
+      class="w-full overflow-hidden active:scale-95"
     >
-      <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-start! gap-4">
+      <div class="btn-card rounded-2xl w-full min-h-15 max-w-full px-3.5 py-2.5 flex items-center justify-start! gap-2.5">
         <Icon is:inline
           name="lucide:chevron-left"
-          class="text-[2rem] text-(--primary)"
+          class="text-xl shrink-0 text-(--primary)"
         />
-        <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
+        <div class="overflow-hidden transition text-sm font-medium leading-snug line-clamp-2 max-w-[calc(100%-1.75rem)] text-black/75 dark:text-white/75">
           {entry.data.nextTitle || i18n(I18nKey.home)}
         </div>
       </div>
@@ -466,15 +454,15 @@ const relatedPosts = await getRelatedPosts(entry, 3);
 
     <a
       href={entry.data.prevSlug ? getPostUrlBySlug(entry.data.prevSlug) : url("/")}
-      class="w-full font-bold overflow-hidden active:scale-95"
+      class="w-full overflow-hidden active:scale-95"
     >
-      <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-end! gap-4">
-        <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
+      <div class="btn-card rounded-2xl w-full min-h-15 max-w-full px-3.5 py-2.5 flex items-center justify-end! gap-2.5">
+        <div class="overflow-hidden transition text-sm font-medium leading-snug line-clamp-2 max-w-[calc(100%-1.75rem)] text-black/75 dark:text-white/75 text-right">
           {entry.data.prevTitle || i18n(I18nKey.home)}
         </div>
         <Icon is:inline
           name="lucide:chevron-right"
-          class="text-[2rem] text-(--primary)"
+          class="text-xl shrink-0 text-(--primary)"
         />
       </div>
     </a>

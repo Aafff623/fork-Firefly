@@ -1,0 +1,190 @@
+---
+/**
+ * 文章页分享区下方：强推一篇相关文（封面底 + 标题摘要）。
+ */
+import { getEntry } from "astro:content";
+import CoverImage from "@/components/common/CoverImage.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { PostForList } from "@/utils/content-utils";
+import { formatDateToYYYYMMDD } from "@/utils/date-utils";
+import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
+import {
+	getFileDirFromPath,
+	getPostUrlBySlug,
+} from "@/utils/url-utils";
+
+interface Props {
+	post: PostForList;
+	class?: string;
+}
+
+const { post, class: className } = Astro.props;
+
+const entry = await getEntry("posts", post.id);
+const coverSrc = processCoverImageSync(post.data.image, post.id);
+const apiUrls = getApiUrlList(post.data.image, post.id);
+const hasCover = Boolean(coverSrc);
+const basePath = getFileDirFromPath(entry?.filePath || "");
+const href = getPostUrlBySlug(post.id);
+const label = i18n(I18nKey.smartRecommend);
+const dateLabel = formatDateToYYYYMMDD(post.data.published);
+const desc = (post.data.description || "").trim();
+---
+
+<a
+  href={href}
+  class:list={[
+    "related-highlight group relative block overflow-hidden rounded-xl onload-animation",
+    className,
+  ]}
+  aria-label={`${label}: ${post.data.title}`}
+>
+  {
+    hasCover ? (
+      <div class="related-highlight__media" aria-hidden="true">
+        <CoverImage
+          src={coverSrc}
+          basePath={basePath}
+          alt=""
+          class="related-highlight__cover"
+          preview={true}
+          loading="lazy"
+          apiUrls={apiUrls}
+        />
+      </div>
+    ) : (
+      <div class="related-highlight__fallback" aria-hidden="true" />
+    )
+  }
+  <div class="related-highlight__shade" aria-hidden="true"></div>
+  <div class="related-highlight__body">
+    <span class="related-highlight__label">{label}</span>
+    <h3 class="related-highlight__title">{post.data.title}</h3>
+    {
+      desc && (
+        <p class="related-highlight__desc">{desc}</p>
+      )
+    }
+    <span class="related-highlight__meta">{dateLabel}</span>
+  </div>
+</a>
+
+<style>
+  .related-highlight {
+    min-height: 11.5rem;
+    isolation: isolate;
+    box-shadow: 0 8px 28px rgb(0 0 0 / 0.08);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .related-highlight:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  }
+
+  .related-highlight__media,
+  .related-highlight__fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .related-highlight__fallback {
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--primary) 28%, #1f2937) 0%,
+        #1f2937 100%
+      );
+  }
+
+  .related-highlight__cover.cover-image-container,
+  .related-highlight__cover {
+    position: absolute !important;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0 !important;
+  }
+
+  .related-highlight__cover :global(img),
+  .related-highlight__cover :global(picture),
+  .related-highlight__cover :global(.image-wrapper) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .related-highlight__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgb(15 23 42 / 0.35) 0%,
+      rgb(15 23 42 / 0.55) 40%,
+      rgb(15 23 42 / 0.82) 100%
+    );
+    pointer-events: none;
+  }
+
+  .related-highlight__body {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.15rem 1.25rem 1.25rem;
+    min-height: 11.5rem;
+    justify-content: flex-end;
+  }
+
+  .related-highlight__label {
+    align-self: flex-start;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgb(255 255 255 / 0.92);
+    background: color-mix(in oklab, var(--primary) 75%, transparent);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+  }
+
+  .related-highlight__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #fff;
+    text-wrap: balance;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .related-highlight__desc {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: rgb(255 255 255 / 0.82);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .related-highlight__meta {
+    font-size: 0.75rem;
+    color: rgb(255 255 255 / 0.65);
+  }
+
+  :global(html.dark) .related-highlight {
+    box-shadow: 0 8px 28px rgb(0 0 0 / 0.28);
+  }
+</style>
