@@ -112,10 +112,11 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 		},
 		{
 			// 分类墙：与标签墙对调后置下；「中转」等专题在此可见
+			// 文章页隐藏——文章页改由右栏紧凑分类卡（仅本篇分类）承接
 			type: "categories",
 			enable: true,
 			position: "sticky",
-			showOnPostPage: true,
+			showOnPostPage: false,
 			specificConfig: {
 				collapseThreshold: 5,
 			},
@@ -230,6 +231,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 是否在文章详情页显示
 			showOnPostPage: true,
 			// 是否在非文章详情页隐藏
+			hideOnNonPostPage: true,
+		},
+		{
+			// 文章页紧凑分类卡：仅显示本篇所属分类，填补目录下方留白
+			type: "categories",
+			enable: true,
+			position: "sticky",
+			showOnPostPage: true,
 			hideOnNonPostPage: true,
 		},
 		{

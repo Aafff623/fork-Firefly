@@ -34,6 +34,8 @@ interface Props {
 	postThemeTags?: string[];
 	/** 文章页相关推荐；传给 Recommend */
 	relatedPosts?: import("@/utils/content-utils").PostForList[];
+	/** 文章页所属分类；仅右栏传给 Categories 做紧凑单分类卡（非文章页勿传） */
+	postCategory?: string;
 	currentPostId?: string;
 	side?: "left" | "right" | "bottom";
 }
@@ -222,6 +224,17 @@ const getComponentProps = (
 			...baseProps,
 			focusTags: Astro.props.postTags ?? [],
 			focusThemeTags: Astro.props.postThemeTags ?? [],
+		};
+	}
+
+	// 右栏分类墙恒为紧凑模式（仅本篇所属分类）：右栏实例仅在文章页可见
+	// （hideOnNonPostPage），主页 SSR 时卡片虽隐藏也保持紧凑 DOM，
+	// 由客户端脚本在 swup 切页时按 data-current-post-category 切换 pill。
+	// 左栏/bottom 不传 postCategory，保持完整分类墙，避免 swup 切回主页时错乱
+	if (config.type === "categories" && side === SIDEBAR_SIDE.RIGHT) {
+		return {
+			...baseProps,
+			postCategory: Astro.props.postCategory ?? "",
 		};
 	}
 

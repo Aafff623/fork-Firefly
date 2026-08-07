@@ -19,8 +19,15 @@ interface Props {
 	class?: string;
 	style?: string;
 	widgetConfig?: WidgetComponentConfig;
+	/** 紧凑模式标记（右栏恒传）：仅显示本篇所属分类的 pill；空串 = 未分类 */
+	postCategory?: string;
 }
-const { class: className, style, widgetConfig } = Astro.props;
+const { class: className, style, widgetConfig, postCategory } = Astro.props;
+
+// 紧凑模式：右栏文章页分类卡。仅当 SideBar 传入 postCategory（含空串）时启用
+const isCompact = typeof postCategory === "string";
+const compactCategory = (postCategory || "").trim();
+const uncategorizedUrl = `${url("/")}?uncategorized`;
 
 const showTitle = widgetConfig?.showTitle !== false;
 const maxVisible = Math.max(
@@ -64,7 +71,52 @@ const postsLabel = i18n(I18nKey.postsCount);
   />
 
   {
-    visible.length > 0 ? (
+    isCompact ? (
+      <div
+        class="cat-compact"
+        data-cat-compact
+        role="list"
+        aria-label={i18n(I18nKey.categories)}
+      >
+        {ranked.map((c) => (
+          <a
+            role="listitem"
+            href={c.url}
+            class="cat-compact__pill"
+            data-category-name={c.name}
+            hidden={c.name !== compactCategory}
+            style={tagAccentStyle(c.name)}
+            title={`${c.name} · ${c.count} ${postsLabel}`}
+            aria-label={`View all posts in the ${c.name} category`}
+          >
+            <Icon
+              is:inline
+              name={categoryIconName(c.name)}
+              class="cat-compact__icon"
+              aria-hidden="true"
+            />
+            <span class="cat-compact__name">{c.name}</span>
+            <span class="cat-compact__count">{c.count}</span>
+          </a>
+        ))}
+        <a
+          role="listitem"
+          href={uncategorizedUrl}
+          class="cat-compact__pill"
+          data-category-name=""
+          hidden={compactCategory !== ""}
+          aria-label={i18n(I18nKey.uncategorized)}
+        >
+          <Icon
+            is:inline
+            name="lucide:folder-open"
+            class="cat-compact__icon"
+            aria-hidden="true"
+          />
+          <span class="cat-compact__name">{i18n(I18nKey.uncategorized)}</span>
+        </a>
+      </div>
+    ) : visible.length > 0 ? (
       <div
         class="cat-cork"
         role="list"
@@ -116,6 +168,48 @@ const postsLabel = i18n(I18nKey.postsCount);
     )
   }
 </WidgetLayout>
+
+<script>
+  // 紧凑分类卡 swup 同步：侧栏为静态容器不被 swup 替换，
+  // 切到另一篇文章时从 #swup-container 读最新分类并切换 pill（同 CategoryBar 模式）
+  function updateCompactCategoryCards() {
+    const containers =
+      document.querySelectorAll<HTMLElement>("[data-cat-compact]");
+    if (containers.length === 0) return;
+
+    const swupContainer = document.getElementById("swup-container");
+    const postCategory = (
+      swupContainer?.getAttribute("data-current-post-category") || ""
+    ).trim();
+
+    containers.forEach((container) => {
+      let matched = false;
+      container
+        .querySelectorAll<HTMLAnchorElement>(".cat-compact__pill")
+        .forEach((pill) => {
+          const name = (pill.getAttribute("data-category-name") || "").trim();
+          const show = postCategory ? name === postCategory : name === "";
+          pill.hidden = !show;
+          if (show && name) matched = true;
+        });
+      // 分类名在列表中查不到（理论不发生）时回退显示「未分类」
+      if (postCategory && !matched) {
+        const fallback = container.querySelector<HTMLAnchorElement>(
+          '.cat-compact__pill[data-category-name=""]',
+        );
+        if (fallback) fallback.hidden = false;
+      }
+    });
+  }
+
+  updateCompactCategoryCards();
+  document.addEventListener("astro:page-load", updateCompactCategoryCards);
+  document.addEventListener("swup:contentReplaced", () => {
+    updateCompactCategoryCards();
+    // 某些 swup 生命周期下 DOM 状态同步稍晚，下一帧再校正一次
+    requestAnimationFrame(updateCompactCategoryCards);
+  });
+</script>
 
 <style is:global>
   /* 标题：软木琥珀点缀（衬线由 WidgetLayout 统一） */
@@ -348,6 +442,80 @@ const postsLabel = i18n(I18nKey.postsCount);
 
   html.dark .cat-cork__empty {
     color: oklch(0.7 0.02 70);
+  }
+
+  /* ===== 紧凑模式（文章页右栏）：单行小 pill，仅本篇所属分类 ===== */
+  .cat-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.1rem 0.1rem 0.25rem;
+  }
+
+  .cat-compact__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 1.9rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: color-mix(in oklch, var(--tag-accent, var(--primary)) 75%, #333);
+    background: color-mix(
+      in oklch,
+      var(--tag-accent, var(--primary)) 13%,
+      var(--card-bg)
+    );
+    box-shadow: inset 0 0 0 1px
+      color-mix(in oklch, var(--tag-accent, var(--primary)) 24%, transparent);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  /* hidden 属性的 UA 样式优先级低于 class，需显式兜底 */
+  .cat-compact__pill[hidden] {
+    display: none;
+  }
+
+  html.dark .cat-compact__pill {
+    color: color-mix(in oklch, var(--tag-accent, var(--primary)) 55%, #fff);
+  }
+
+  .cat-compact__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: 0 0 auto;
+    opacity: 0.85;
+  }
+
+  .cat-compact__count {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    opacity: 0.75;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (hover: hover) {
+    .cat-compact__pill:hover {
+      transform: translateY(-1px);
+      box-shadow: inset 0 0 0 1px
+        color-mix(in oklch, var(--tag-accent, var(--primary)) 45%, transparent);
+    }
+  }
+
+  .cat-compact__pill:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cat-compact__pill {
+      transition: none;
+    }
   }
 
   @media (hover: hover) {

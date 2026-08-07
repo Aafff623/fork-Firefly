@@ -978,7 +978,7 @@ const showAtmosphereLayer =
                     {sidebarLayoutConfig.enable ? (
                         <div id="right-sidebar-static" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
                             {(effectiveIsBothSidebars || sidebarLayoutConfig.position === "right") && effectiveHasRightComponents && (
-								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} postCategory={postCategory} currentPostId={currentPostId}></SideBar>
                             )}
                         </div>
                     ) : (
@@ -989,7 +989,7 @@ const showAtmosphereLayer =
             ) : (
                 <div id="right-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasRightComponents && (
-						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} postCategory={postCategory} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
