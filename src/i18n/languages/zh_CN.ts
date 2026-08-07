@@ -359,9 +359,13 @@ export const zh_CN: Translation = {
 	[Key.sponsorTitle]: "打赏支持",
 	[Key.sponsorDescription]:
 		"如果我的内容对你有帮助，欢迎通过以下方式打赏我，你的支持是我持续创作的动力！",
+	[Key.sponsorDescriptionPending]:
+		"如果内容对你有帮助，欢迎留言鼓励；收款方式筹备中，上线后会更新在本页。",
 	[Key.sponsorMethods]: "打赏方式",
+	[Key.sponsorMethodsPending]:
+		"收款方式筹备中。你可以先在下方留言支持，二维码与链接准备好后会出现在这里。",
 	[Key.sponsorList]: "打赏列表",
-	[Key.sponsorEmpty]: "暂无打赏记录",
+	[Key.sponsorEmpty]: "还没有公开打赏记录，欢迎成为第一位支持者",
 	[Key.sponsorAmount]: "金额",
 	[Key.sponsorDate]: "日期",
 	[Key.sponsorMessage]: "留言",
@@ -434,6 +438,7 @@ export const zh_CN: Translation = {
 	[Key.copyLink]: "复制链接",
 	[Key.savePoster]: "保存海报",
 	[Key.scanToRead]: "扫码阅读文章",
+	[Key.shareCancel]: "取消",
 
 	// 代码块折叠配置
 	[Key.codeCollapsibleShowMore]: "展开",
@@ -449,9 +454,8 @@ export const zh_CN: Translation = {
 	[Key.galleryNoAlbums]: "暂无相册",
 	[Key.galleryBackToAlbums]: "返回相册列表",
 	[Key.searchAlbums]: "搜索相簿...",
-	[Key.galleryModePortfolio]: "作品集模式",
-	[Key.galleryModeNormal]: "无限滚动模式",
-	[Key.galleryViewWork]: "查看相册",
+	[Key.galleryModeNormal]: "无限画布",
+	[Key.galleryCloseCanvas]: "关闭画布",
 	[Key.galleryDragHint]: "点击聚焦 · 拖拽平移 · 滚轮缩放 · WASD / QE",
 	[Key.galleryDemoHint]: "演示循环中 · 点击画幅或按 Esc 接管",
 	[Key.galleryPhotoWall]: "照片墙",

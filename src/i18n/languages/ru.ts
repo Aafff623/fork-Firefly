@@ -368,9 +368,13 @@ export const ru: Translation = {
 	[Key.sponsorTitle]: "Поддержать меня",
 	[Key.sponsorDescription]:
 		"Если мой контент был полезен для вас, добро пожаловать поддержать меня следующими способами. Ваша поддержка - это движущая сила моего постоянного творчества!",
+	[Key.sponsorDescriptionPending]:
+		"Если контент был полезен, оставьте поддерживающий комментарий. Способы оплаты готовятся и скоро появятся на этой странице.",
 	[Key.sponsorMethods]: "Способы оплаты",
+	[Key.sponsorMethodsPending]:
+		"Способы оплаты готовятся. Пока можно поддержать комментарием ниже; QR-коды и ссылки появятся здесь, когда будут готовы.",
 	[Key.sponsorList]: "Спонсоры",
-	[Key.sponsorEmpty]: "Пока нет спонсоров",
+	[Key.sponsorEmpty]: "Публичных записей о спонсорах пока нет — станьте первым",
 	[Key.sponsorAmount]: "Сумма",
 	[Key.sponsorDate]: "Дата",
 	[Key.sponsorMessage]: "Сообщение",
@@ -444,6 +448,7 @@ export const ru: Translation = {
 	[Key.copyLink]: "Копировать ссылку",
 	[Key.savePoster]: "Сохранить постер",
 	[Key.scanToRead]: "Сканируйте, чтобы прочитать",
+	[Key.shareCancel]: "Отмена",
 
 	// Конфигурация блоков коллапсируемого кода
 	[Key.codeCollapsibleShowMore]: "Развернуть",
@@ -459,9 +464,8 @@ export const ru: Translation = {
 	[Key.galleryNoAlbums]: "Пока нет альбомов",
 	[Key.galleryBackToAlbums]: "Вернуться к альбомам",
 	[Key.searchAlbums]: "Поиск альбомов...",
-	[Key.galleryModePortfolio]: "Портфолио",
-	[Key.galleryModeNormal]: "Бесконечный скролл",
-	[Key.galleryViewWork]: "Открыть альбом",
+	[Key.galleryModeNormal]: "Бесконечный холст",
+	[Key.galleryCloseCanvas]: "Закрыть холст",
 	[Key.galleryDragHint]: "Клик — фокус · перетаскивание · колесо · WASD / QE",
 	[Key.galleryDemoHint]: "Демо · клик по кадру или Esc",
 	[Key.galleryPhotoWall]: "Стена фото",

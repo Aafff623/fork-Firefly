@@ -365,9 +365,13 @@ export const ko: Translation = {
 	[Key.sponsorTitle]: "저를 후원해 주세요",
 	[Key.sponsorDescription]:
 		"제 콘텐츠가 도움이 되셨다면 아래 방법으로 후원해 주세요. 여러분의 후원은 계속 창작할 수 있는 원동력이 됩니다!",
+	[Key.sponsorDescriptionPending]:
+		"콘텐츠가 도움이 되었다면 댓글로 응원해 주세요. 결제 수단은 준비 중이며, 준비되면 이 페이지에 업데이트됩니다.",
 	[Key.sponsorMethods]: "결제 방법",
+	[Key.sponsorMethodsPending]:
+		"결제 수단을 준비 중입니다. 지금은 아래 댓글로 응원해 주세요. QR 코드와 링크는 준비되면 여기에 표시됩니다.",
 	[Key.sponsorList]: "후원자",
-	[Key.sponsorEmpty]: "아직 후원자가 없습니다",
+	[Key.sponsorEmpty]: "아직 공개 후원 기록이 없습니다. 첫 번째 후원자가 되어 주세요",
 	[Key.sponsorAmount]: "금액",
 	[Key.sponsorDate]: "날짜",
 	[Key.sponsorMessage]: "메시지",
@@ -440,6 +444,7 @@ export const ko: Translation = {
 	[Key.copyLink]: "링크 복사",
 	[Key.savePoster]: "포스터 저장",
 	[Key.scanToRead]: "스캔하여 읽기",
+	[Key.shareCancel]: "취소",
 
 	// Code Block Collapsible Configuration
 	[Key.codeCollapsibleShowMore]: "더 보기",
@@ -455,9 +460,8 @@ export const ko: Translation = {
 	[Key.galleryNoAlbums]: "아직 앨범이 없습니다",
 	[Key.galleryBackToAlbums]: "앨범으로 돌아가기",
 	[Key.searchAlbums]: "앨범 검색...",
-	[Key.galleryModePortfolio]: "포트폴리오 모드",
-	[Key.galleryModeNormal]: "무한 스크롤",
-	[Key.galleryViewWork]: "앨범 보기",
+	[Key.galleryModeNormal]: "무한 캔버스",
+	[Key.galleryCloseCanvas]: "캔버스 닫기",
 	[Key.galleryDragHint]: "클릭 포커스 · 드래그 · 스크롤 · WASD / QE",
 	[Key.galleryDemoHint]: "데모 루프 · 프레임 클릭 또는 Esc",
 	[Key.galleryPhotoWall]: "포토 월",

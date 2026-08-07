@@ -19,12 +19,25 @@ const isCommentEnabled =
 	commentConfig.type !== "none" &&
 	sponsorConfig.showComment !== false;
 
+const enabledMethods = sponsorConfig.methods.filter((method) => method.enabled);
 const title = sponsorConfig.title || i18n(I18nKey.sponsorTitle);
 const description =
-	sponsorConfig.description || i18n(I18nKey.sponsorDescription);
-const enabledMethods = sponsorConfig.methods.filter((method) => method.enabled);
+	sponsorConfig.description ||
+	(enabledMethods.length > 0
+		? i18n(I18nKey.sponsorDescription)
+		: i18n(I18nKey.sponsorDescriptionPending));
 const sponsors = sponsorConfig.sponsors || [];
 const showSponsorsList = sponsorConfig.showSponsorsList !== false;
+const sponsorDateLocale = siteConfig.lang?.startsWith("zh") ? "zh-CN" : "en-US";
+
+function formatSponsorDate(date: string) {
+	return new Date(date).toLocaleDateString(sponsorDateLocale, {
+		timeZone: siteConfig.timezone,
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	});
+}
 
 // LQIP 渐变占位
 function getQrLqipProps(qrCode: string) {
@@ -33,87 +46,106 @@ function getQrLqipProps(qrCode: string) {
 ---
 
 <MainGridLayout title={title} description={description}>
+  <!-- 打赏支持：仅标题 / 描述 / 用途说明 + 背景图 -->
   <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
     <div class="card-base z-10 px-9 py-6 relative w-full sponsor-hero">
-      <!-- 页面标题和描述 -->
-      <div class="mb-8">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
-                <Icon is:inline name="lucide:heart" class="text-[1.5rem]"></Icon>
-            </div>
-          <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            {title}
+      <div class="flex items-center gap-3 mb-3">
+        <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
+          <Icon is:inline name="lucide:heart" class="text-[1.5rem]"></Icon>
+        </div>
+        <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          {title}
+        </div>
+      </div>
+      {description && (
+        <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+          {description}
+        </p>
+      )}
+      {sponsorConfig.usage && (
+        <div class="p-4 rounded-lg bg-(--primary)/8 dark:bg-(--btn-regular-bg) border border-(--primary)/30 dark:border-none backdrop-blur-xs shadow-xs usage-info-box">
+          <div class="flex items-start gap-2">
+            <Icon is:inline name="lucide:info" class="text-(--primary) text-lg shrink-0 mt-0.5" />
+            <p class="sponsor-usage text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed italic">
+              {sponsorConfig.usage}
+            </p>
           </div>
         </div>
-        {description && (
-          <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
-            {description}
-          </p>
-        )}
-        {sponsorConfig.usage && (
-          <div class="mb-8 p-4 rounded-lg bg-(--primary)/8 dark:bg-(--btn-regular-bg) border border-(--primary)/30 dark:border-none backdrop-blur-xs shadow-xs usage-info-box">
-            <div class="flex items-start gap-2">
-              <Icon is:inline name="lucide:info" class="text-(--primary) text-lg shrink-0 mt-0.5" />
-              <p class="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
-                <span class="font-semibold text-(--primary)"></span>
-                {sponsorConfig.usage}
-              </p>
-            </div>
-          </div>
-        )}
+      )}
+    </div>
+  </div>
+
+  <!-- 打赏方式：独立模块 -->
+  <div class="flex w-full rounded-(--radius-large) overflow-hidden relative mt-4">
+    <div class="card-base z-10 px-9 py-6 relative w-full">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-8 w-8 rounded-lg bg-(--primary)/10 flex items-center justify-center">
+          <Icon is:inline name="lucide:wallet" class="text-[1.15rem] text-(--primary)" />
+        </div>
+        <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+          {i18n(I18nKey.sponsorMethods)}
+        </h2>
       </div>
 
-      <!-- 打赏方式：没有可用方式时不渲染空白区域 -->
-      {enabledMethods.length > 0 && (
-      <div class="mb-8">
+      {enabledMethods.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {enabledMethods.map((method) => (
-                      <div class="flex flex-col items-center card-base p-6 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 hover:border-(--primary) transition-colors">
-                        <!-- 图标和名称 -->
-                        <div class="flex items-center gap-3 mb-4">
-                          {method.icon && (
-                            <Icon is:inline name={method.icon} class="text-2xl text-neutral-900 dark:text-neutral-100 transition-colors" />
-                          )}
-                          <h3 class="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-                            {method.name}
-                          </h3>
-                        </div>
+          {enabledMethods.map((method) => (
+            <div class={`sponsor-method-card flex flex-col items-center card-base p-6 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 hover:border-(--primary) transition-colors ${method.icon?.includes("alipay") ? "sponsor-method-alipay" : ""} ${method.icon?.includes("weixin") ? "sponsor-method-wechat" : ""}`}>
+              <div class="flex items-center gap-3 mb-4">
+                {method.icon && (
+                  <Icon is:inline name={method.icon} class="text-2xl text-neutral-900 dark:text-neutral-100 transition-colors" />
+                )}
+                <h3 class="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                  {method.name}
+                </h3>
+              </div>
 
-                        <!-- 描述 -->
-                        {method.description && (
-                          <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 text-center">
-                            {method.description}
-                          </p>
-                        )}
+              {method.description && (
+                <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 text-center">
+                  {method.description}
+                </p>
+              )}
 
-                        <!-- 二维码或链接 -->
-                        {method.qrCode && (
-                          <div class="relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-4 shadow-md mb-4 overflow-hidden">
-                            <div class="lqip-placeholder absolute inset-0 rounded-lg pointer-events-none" style={getQrLqipProps(method.qrCode).style} aria-hidden="true"></div>
-                            <img
-                              src={url(method.qrCode)}
-                              alt={`${method.name} ${i18n(I18nKey.scanToSponsor)}`}
-                              class="relative w-full h-full object-contain opacity-0 transition-opacity duration-500 ease-out"
-                              loading="lazy"
-                            />
-                          </div>
-                        )}
+              {method.qrCode && (
+                <div class="sponsor-qr-slot relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-3 shadow-md mb-3 overflow-hidden ring-1 ring-black/5">
+                  <div class="lqip-placeholder absolute inset-0 rounded-lg pointer-events-none" style={getQrLqipProps(method.qrCode).style} aria-hidden="true"></div>
+                  <img
+                    src={url(method.qrCode)}
+                    alt={`${method.name} ${i18n(I18nKey.scanToSponsor)}`}
+                    class="sponsor-qr-image relative w-full h-full object-contain opacity-0 transition-opacity duration-500 ease-out"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              {method.qrCode && (
+                <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  {i18n(I18nKey.scanToSponsor)}
+                </p>
+              )}
 
-                        {method.link && (
-                          <a
-                            href={method.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white dark:text-black/70 rounded-lg font-medium hover:bg-(--primary)/90 active:scale-95 transition-all"
-                          >
-                            <span>{i18n(I18nKey.sponsorGoTo)}</span>
-                            <Icon is:inline name="lucide:square-arrow-out-up-right" class="text-sm" />
-                          </a>
-                        )}
-                      </div>
-                    ))}
+              {method.link && (
+                <a
+                  href={method.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white dark:text-black/70 rounded-lg font-medium hover:bg-(--primary)/90 active:scale-95 transition-all"
+                >
+                  <span>{i18n(I18nKey.sponsorGoTo)}</span>
+                  <Icon is:inline name="lucide:square-arrow-out-up-right" class="text-sm" />
+                </a>
+              )}
+            </div>
+          ))}
         </div>
-      </div>
+      ) : (
+        <div class="rounded-xl border border-dashed border-(--line-divider) bg-neutral-50/80 dark:bg-neutral-900/35 px-5 py-6">
+          <div class="flex items-start gap-3">
+            <Icon is:inline name="lucide:clock-3" class="text-(--primary) text-lg shrink-0 mt-0.5" />
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+              {i18n(I18nKey.sponsorMethodsPending)}
+            </p>
+          </div>
+        </div>
       )}
     </div>
   </div>
@@ -140,50 +172,77 @@ function getQrLqipProps(qrCode: string) {
         {sponsors.length > 0 ? (
           <div class="sponsor-grid">
             {sponsors.map((sponsor) => (
-              <div class="group flex items-center gap-3 p-3 rounded-xl border border-(--line-divider) hover:border-(--primary) transition-all duration-200">
-                {/* 头像占位 */}
-                <!-- 新的头像逻辑：有头像用图片，没有用首字母 -->
-                {sponsor.avatar ? (
-                  <img 
-                    src={url(sponsor.avatar)}
-                    alt={sponsor.name}
-                    class="w-9 h-9 rounded-full object-cover shrink-0"
-                    loading="lazy"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                  />
-                ) : null}
+              <article class="sponsor-entry group">
+                <div class="sponsor-entry__main">
+                  {sponsor.avatar ? (
+                    <img
+                      src={url(sponsor.avatar)}
+                      alt={sponsor.name}
+                      class="sponsor-entry__avatar"
+                      loading="lazy"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    />
+                  ) : null}
 
-                <!-- 首字母头像（作为兜底，图片加载失败也会显示这个） -->
-                <div 
-                  class={`w-9 h-9 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0 group-hover:bg-(--primary)/20 transition-colors ${sponsor.avatar ? 'hidden' : ''}`}
-                >
-                  <span class="text-sm font-bold text-(--primary)">{sponsor.name.charAt(0)}</span>
-                </div>
-
-                {/* 信息 */}
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2">
-                    <span class="font-semibold text-sm text-neutral-900 dark:text-neutral-100 truncate">
-                      {sponsor.name}
-                    </span>
-                    {sponsor.amount && (
-                      <span class="shrink-0 text-xs font-bold text-(--primary)">
-                        {sponsor.amount}
-                      </span>
-                    )}
+                  <div
+                    class:list={[
+                      "sponsor-entry__avatar sponsor-entry__avatar--fallback",
+                      sponsor.avatar && "hidden",
+                    ]}
+                  >
+                    <span>{sponsor.name.charAt(0)}</span>
                   </div>
-                  {sponsor.date && (
-                    <span class="text-[0.65rem] text-neutral-400 dark:text-neutral-500">
-                      {new Date(sponsor.date).toLocaleDateString()}
-                    </span>
-                  )}
+
+                  <div class="sponsor-entry__body">
+                    <div class="sponsor-entry__head">
+                      {sponsor.link ? (
+                        <a
+                          href={sponsor.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="sponsor-entry__name sponsor-entry__name--link"
+                        >
+                          {sponsor.name}
+                        </a>
+                      ) : (
+                        <span class="sponsor-entry__name">{sponsor.name}</span>
+                      )}
+                      {sponsor.amount && (
+                        <span class="sponsor-entry__amount">{sponsor.amount}</span>
+                      )}
+                    </div>
+
+                    {sponsor.message && (
+                      <p class="sponsor-entry__message">{sponsor.message}</p>
+                    )}
+
+                    <div class="sponsor-entry__meta">
+                      {sponsor.date && (
+                        <time class="sponsor-entry__date" datetime={sponsor.date}>
+                          {formatSponsorDate(sponsor.date)}
+                        </time>
+                      )}
+                      {sponsor.method && (
+                        <span
+                          class:list={[
+                            "sponsor-entry__method",
+                            sponsor.method.includes("微信") && "sponsor-entry__method--wechat",
+                            sponsor.method.includes("支付宝") && "sponsor-entry__method--alipay",
+                          ]}
+                        >
+                          {sponsor.method}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         ) : (
-          <div class="text-center py-12 text-neutral-500 dark:text-neutral-500">
-            <p>{i18n(I18nKey.sponsorEmpty)}</p>
+          <div class="sponsor-empty">
+            <Icon is:inline name="lucide:heart-handshake" class="sponsor-empty__icon" />
+            <p class="sponsor-empty__text">{i18n(I18nKey.sponsorEmpty)}</p>
           </div>
         )}
       </div>
@@ -203,7 +262,6 @@ function getQrLqipProps(qrCode: string) {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    /* 压过 card-base 实底，让底图透出来 */
     background-color: transparent !important;
     background-image: none !important;
   }
@@ -254,7 +312,214 @@ function getQrLqipProps(qrCode: string) {
 <style is:global>
   .sponsor-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .sponsor-entry {
+    border: 1px solid var(--line-divider, oklch(0.88 0.006 240));
+    border-radius: 0.85rem;
+    padding: 0.85rem 0.95rem;
+    background: color-mix(in oklab, var(--card-bg, #fff) 92%, var(--primary));
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  :root.dark .sponsor-entry {
+    background: color-mix(in oklab, var(--card-bg, #111) 94%, var(--primary));
+    border-color: oklch(0.32 0.01 260);
+  }
+
+  .sponsor-entry:hover {
+    border-color: color-mix(in oklch, var(--primary) 45%, var(--line-divider));
+    box-shadow: 0 8px 22px -16px color-mix(in oklch, var(--primary) 35%, transparent);
+  }
+
+  .sponsor-entry__main {
+    display: flex;
+    align-items: flex-start;
     gap: 0.75rem;
+  }
+
+  .sponsor-entry__avatar {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 9999px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px oklch(0% 0 0 / 0.06);
+  }
+
+  .sponsor-entry__avatar--fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .sponsor-entry__avatar--fallback.hidden {
+    display: none;
+  }
+
+  .sponsor-entry__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sponsor-entry__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .sponsor-entry__name {
+    font-size: 0.9rem;
+    font-weight: 650;
+    color: var(--text-primary, oklch(0.22 0.02 260));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :root.dark .sponsor-entry__name {
+    color: oklch(0.95 0.01 260);
+  }
+
+  .sponsor-entry__name--link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  .sponsor-entry__amount {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+    padding: 0.12rem 0.45rem;
+    border-radius: 9999px;
+    background: color-mix(in oklch, var(--primary) 12%, transparent);
+  }
+
+  .sponsor-entry__message {
+    margin: 0 0 0.45rem;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: color-mix(in oklch, var(--text-primary, #333) 72%, transparent);
+    font-style: italic;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  :root.dark .sponsor-entry__message {
+    color: oklch(0.82 0.01 260);
+  }
+
+  .sponsor-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+  }
+
+  .sponsor-entry__date {
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    color: oklch(0.55 0.01 260);
+  }
+
+  :root.dark .sponsor-entry__date {
+    color: oklch(0.68 0.01 260);
+  }
+
+  .sponsor-entry__method {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.42rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in oklch, var(--primary) 28%, transparent);
+    color: var(--primary);
+    background: color-mix(in oklch, var(--primary) 8%, transparent);
+  }
+
+  .sponsor-entry__method--wechat {
+    color: #059669;
+    border-color: color-mix(in srgb, #07c160 35%, transparent);
+    background: color-mix(in srgb, #07c160 10%, transparent);
+  }
+
+  .sponsor-entry__method--alipay {
+    color: #1677ff;
+    border-color: color-mix(in srgb, #1677ff 35%, transparent);
+    background: color-mix(in srgb, #1677ff 10%, transparent);
+  }
+
+  .sponsor-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 2.5rem 1rem;
+    border-radius: 0.85rem;
+    border: 1px dashed var(--line-divider, oklch(0.88 0.006 240));
+    background: color-mix(in oklab, var(--card-bg, #fff) 96%, var(--primary));
+  }
+
+  :root.dark .sponsor-empty {
+    background: color-mix(in oklab, var(--card-bg, #111) 96%, var(--primary));
+  }
+
+  .sponsor-empty__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    color: color-mix(in oklch, var(--primary) 70%, transparent);
+    opacity: 0.85;
+  }
+
+  .sponsor-empty__text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: oklch(0.55 0.01 260);
+    text-align: center;
+    max-width: 28rem;
+    line-height: 1.55;
+  }
+
+  :root.dark .sponsor-empty__text {
+    color: oklch(0.68 0.01 260);
+  }
+
+  .sponsor-method-alipay {
+    --sponsor-accent: #1677ff;
+  }
+
+  .sponsor-method-wechat {
+    --sponsor-accent: #07c160;
+  }
+
+  .sponsor-method-alipay:hover,
+  .sponsor-method-wechat:hover {
+    border-color: color-mix(in srgb, var(--sponsor-accent) 55%, var(--primary)) !important;
+  }
+
+  .sponsor-method-alipay .sponsor-qr-slot {
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--sponsor-accent) 14%, transparent);
+  }
+
+  .sponsor-method-wechat .sponsor-qr-slot {
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--sponsor-accent) 14%, transparent);
   }
 </style>

@@ -21,9 +21,43 @@ export const sponsorConfig: SponsorConfig = {
 	showButtonInPost: false,
 
 	// 打赏方式列表
-	// 暂不展示支付方式；收到新的收款素材后再在此添加。
-	methods: [],
+	// QR 图：public/assets/images/sponsor/{alipay,wechat}.png
+	methods: [
+		{
+			name: "支付宝",
+			icon: "fa7-brands:alipay",
+			qrCode: "/assets/images/sponsor/alipay.png",
+			description: "打开支付宝，扫一扫完成打赏",
+			enabled: true,
+		},
+		{
+			name: "微信",
+			icon: "fa7-brands:weixin",
+			qrCode: "/assets/images/sponsor/wechat.png",
+			description: "打开微信，扫一扫完成打赏",
+			enabled: true,
+		},
+	],
 
-	// 打赏者列表（可选）
-	sponsors: [],
+	// 打赏者列表：复制下方「模板块」取消注释并改字段即可渲染
+	sponsors: [
+		/*
+		{
+			name: "访客昵称",
+			avatar: "/assets/images/sponsor/avatars/example.png",
+			amount: "¥6.66",
+			date: "2026-08-07",
+			message: "文章很有帮助，小小支持一下～",
+			link: "https://example.com",
+			method: "微信",
+		},
+		{
+			name: "匿名支持者",
+			amount: "¥1.00",
+			date: "2026-08-01",
+			message: "继续加油",
+			method: "支付宝",
+		},
+		*/
+	],
 };

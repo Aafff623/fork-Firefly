@@ -8,12 +8,15 @@ export type SponsorMethod = {
 	enabled: boolean; // 是否启用
 };
 
-// 打赏者列表项
+// 打赏者列表项（复制 sponsorConfig 内模板块填写即可）
 export type SponsorItem = {
-	name: string; // 打赏者名称，如果想显示匿名，可以直接设置为"匿名"或使用 i18n
-	avatar?: string; // 打赏者头像图片路径(可选,相对于 public 目录 或者 网络图片)
-	amount?: string; // 打赏金额（可选）
-	date?: string; // 打赏日期（可选，ISO 格式）
+	name: string; // 显示名；匿名可写「匿名支持者」
+	avatar?: string; // 头像：public 相对路径或 https 外链
+	amount?: string; // 金额展示，如 "¥6.66"（可选）
+	date?: string; // ISO 日期，如 "2026-08-07"（可选）
+	message?: string; // 留言/感谢语（可选）
+	link?: string; // 主页或社交链接（可选）
+	method?: string; // 渠道标签，如 "微信" / "支付宝"（可选）
 };
 
 // 打赏配置

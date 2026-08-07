@@ -360,7 +360,9 @@ enum I18nKey {
 	sponsor = "sponsor",
 	sponsorTitle = "sponsorTitle",
 	sponsorDescription = "sponsorDescription",
+	sponsorDescriptionPending = "sponsorDescriptionPending",
 	sponsorMethods = "sponsorMethods",
+	sponsorMethodsPending = "sponsorMethodsPending",
 	sponsorList = "sponsorList",
 	sponsorEmpty = "sponsorEmpty",
 	sponsorAmount = "sponsorAmount",
@@ -434,6 +436,7 @@ enum I18nKey {
 	copyLink = "copyLink",
 	savePoster = "savePoster",
 	scanToRead = "scanToRead",
+	shareCancel = "shareCancel",
 
 	// 代码块折叠配置
 	codeCollapsibleShowMore = "codeCollapsibleShowMore",
@@ -449,9 +452,8 @@ enum I18nKey {
 	galleryNoAlbums = "galleryNoAlbums",
 	galleryBackToAlbums = "galleryBackToAlbums",
 	searchAlbums = "searchAlbums",
-	galleryModePortfolio = "galleryModePortfolio",
 	galleryModeNormal = "galleryModeNormal",
-	galleryViewWork = "galleryViewWork",
+	galleryCloseCanvas = "galleryCloseCanvas",
 	galleryDragHint = "galleryDragHint",
 	galleryDemoHint = "galleryDemoHint",
 	galleryPhotoWall = "galleryPhotoWall",

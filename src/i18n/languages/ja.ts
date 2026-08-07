@@ -365,9 +365,13 @@ export const ja: Translation = {
 	[Key.sponsorTitle]: "サポート",
 	[Key.sponsorDescription]:
 		"私のコンテンツがあなたの役に立ったなら、以下の方法で私をスポンサーしてください。あなたのサポートは私の継続的な創作の原動力です！",
+	[Key.sponsorDescriptionPending]:
+		"コンテンツが役に立ったら、コメントで応援してください。支払い方法は準備中で、整い次第このページに掲載します。",
 	[Key.sponsorMethods]: "支払い方法",
+	[Key.sponsorMethodsPending]:
+		"支払い方法は準備中です。今は下のコメント欄で応援できます。QRコードとリンクは準備でき次第ここに表示します。",
 	[Key.sponsorList]: "スポンサーリスト",
-	[Key.sponsorEmpty]: "スポンサー記録なし",
+	[Key.sponsorEmpty]: "公開スポンサー記録はまだありません。最初の支援者になってください",
 	[Key.sponsorAmount]: "金額",
 	[Key.sponsorDate]: "日付",
 	[Key.sponsorMessage]: "メッセージ",
@@ -441,6 +445,7 @@ export const ja: Translation = {
 	[Key.copyLink]: "リンクをコピー",
 	[Key.savePoster]: "ポスターを保存",
 	[Key.scanToRead]: "QRコードで読む",
+	[Key.shareCancel]: "キャンセル",
 
 	// コードブロック折りたたみ設定
 	[Key.codeCollapsibleShowMore]: "展開する",
@@ -456,9 +461,8 @@ export const ja: Translation = {
 	[Key.galleryNoAlbums]: "アルバムがありません",
 	[Key.galleryBackToAlbums]: "アルバム一覧に戻る",
 	[Key.searchAlbums]: "アルバムを検索...",
-	[Key.galleryModePortfolio]: "作品集モード",
-	[Key.galleryModeNormal]: "無限スクロール",
-	[Key.galleryViewWork]: "アルバムを見る",
+	[Key.galleryModeNormal]: "無限キャンバス",
+	[Key.galleryCloseCanvas]: "キャンバスを閉じる",
 	[Key.galleryDragHint]: "クリックで寄る · ドラッグ · ホイール · WASD / QE",
 	[Key.galleryDemoHint]: "デモループ中 · 画をクリックまたは Esc",
 	[Key.galleryPhotoWall]: "フォトウォール",

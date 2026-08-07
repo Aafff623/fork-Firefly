@@ -367,9 +367,13 @@ export const en: Translation = {
 	[Key.sponsorTitle]: "Support Me",
 	[Key.sponsorDescription]:
 		"If my content has been helpful to you, welcome to sponsor me through the following methods. Your support is the driving force for my continued creation!",
+	[Key.sponsorDescriptionPending]:
+		"If my content helps you, feel free to leave a comment of support. Payment methods are being prepared and will appear here soon.",
 	[Key.sponsorMethods]: "Payment Methods",
+	[Key.sponsorMethodsPending]:
+		"Payment methods are being prepared. You can leave a supportive comment below for now; QR codes and links will show up here once ready.",
 	[Key.sponsorList]: "Sponsors",
-	[Key.sponsorEmpty]: "No sponsors yet",
+	[Key.sponsorEmpty]: "No public sponsor records yet — you could be the first",
 	[Key.sponsorAmount]: "Amount",
 	[Key.sponsorDate]: "Date",
 	[Key.sponsorMessage]: "Message",
@@ -443,6 +447,7 @@ export const en: Translation = {
 	[Key.copyLink]: "Copy Link",
 	[Key.savePoster]: "Save Poster",
 	[Key.scanToRead]: "Scan to Read",
+	[Key.shareCancel]: "Cancel",
 
 	// Code Block Collapsible Configuration
 	[Key.codeCollapsibleShowMore]: "Show more",
@@ -458,9 +463,8 @@ export const en: Translation = {
 	[Key.galleryNoAlbums]: "No albums yet",
 	[Key.galleryBackToAlbums]: "Back to albums",
 	[Key.searchAlbums]: "Search albums...",
-	[Key.galleryModePortfolio]: "Portfolio",
-	[Key.galleryModeNormal]: "Infinite scroll",
-	[Key.galleryViewWork]: "Open album",
+	[Key.galleryModeNormal]: "Infinite canvas",
+	[Key.galleryCloseCanvas]: "Close canvas",
 	[Key.galleryDragHint]: "Click to focus · drag · scroll · WASD / QE",
 	[Key.galleryDemoHint]: "Demo loop · click a frame or Esc",
 	[Key.galleryPhotoWall]: "Photo wall",
