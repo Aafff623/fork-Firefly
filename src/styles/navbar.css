@@ -363,9 +363,21 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     isolation: isolate;
     border: 1.5px solid rgb(59 130 246 / 0.4);
     transition:
-        color var(--brand-ripple-rise) var(--brand-ripple-ease),
         border-color var(--brand-ripple-rise) var(--brand-ripple-ease),
         transform 0.2s ease;
+}
+
+/* 覆盖 btn-plain 悬停主色，避免与积水白字冲突闪烁 */
+#navbar a.navbar-brand-ripple.btn-plain {
+    transition:
+        border-color var(--brand-ripple-rise) var(--brand-ripple-ease),
+        color 0.15s ease,
+        transform 0.2s ease;
+}
+
+#navbar a.navbar-brand-ripple.btn-plain:hover,
+#navbar a.navbar-brand-ripple.btn-plain:focus-visible {
+    color: white;
 }
 
 /* 左波：从浅洼缓慢积到半高，再慢慢退 */
@@ -422,16 +434,25 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #navbar a.navbar-brand-ripple:hover > div,
 #navbar a.navbar-brand-ripple:focus-visible > div {
     color: white !important;
-    transition: color var(--brand-ripple-rise) var(--brand-ripple-ease);
+    transition: color 0.15s ease;
 }
 
 #navbar a.navbar-brand-ripple:hover::before,
 #navbar a.navbar-brand-ripple:hover::after,
 #navbar a.navbar-brand-ripple:focus-visible::before,
 #navbar a.navbar-brand-ripple:focus-visible::after {
-    animation-play-state: paused; /* 让 transition 接管涨满 */
-    transform: none;
+    animation-play-state: paused;
     background-color: var(--brand-ripple-strong);
+}
+
+#navbar a.navbar-brand-ripple:hover::before,
+#navbar a.navbar-brand-ripple:focus-visible::before {
+    transform: translate3d(0, 0, 0) rotate(-340deg);
+}
+
+#navbar a.navbar-brand-ripple:hover::after,
+#navbar a.navbar-brand-ripple:focus-visible::after {
+    transform: translate3d(0, 0, 0) rotate(390deg);
 }
 
 :root.dark #navbar a.navbar-brand-ripple {
@@ -445,5 +466,61 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     #navbar a.navbar-brand-ripple::after {
         animation: none;
         transition-duration: 0.01ms;
+    }
+}
+
+/* ============================================
+ * 品牌名 · 悬停描边后填白
+ * 常态实心 currentColor；悬停：白描边画出 → 白色填实（约 0.65s）
+ * ============================================ */
+#navbar a.navbar-brand-ripple .navbar-brand-title__glyph {
+    fill: currentColor;
+    stroke: transparent;
+    stroke-width: 1.35px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+    stroke-dasharray: var(--brand-stroke-len, 420);
+    stroke-dashoffset: 0;
+}
+
+@keyframes brand-title-stroke-fill {
+    0% {
+        fill: transparent;
+        stroke: #fff;
+        stroke-dashoffset: var(--brand-stroke-len, 420);
+    }
+    58% {
+        fill: transparent;
+        stroke: #fff;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        fill: #fff;
+        stroke: #fff;
+        stroke-dashoffset: 0;
+    }
+}
+
+#navbar a.navbar-brand-ripple:hover .navbar-brand-title__glyph,
+#navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__glyph,
+#navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__glyph {
+    animation: brand-title-stroke-fill 0.65s cubic-bezier(0.33, 0.02, 0.18, 1) forwards;
+}
+
+/* 悬停时内层 color:white 不抢 SVG fill 动画（动画关键帧自管 fill） */
+#navbar a.navbar-brand-ripple:hover .navbar-brand-title,
+#navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title {
+    color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #navbar a.navbar-brand-ripple:hover .navbar-brand-title__glyph,
+    #navbar a.navbar-brand-ripple:focus-visible .navbar-brand-title__glyph,
+    #navbar a.navbar-brand-ripple.is-brand-drawing .navbar-brand-title__glyph {
+        animation: none;
+        fill: #fff;
+        stroke: transparent;
+        stroke-dashoffset: 0;
     }
 }
