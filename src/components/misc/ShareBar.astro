@@ -51,13 +51,15 @@ const enablePoster = siteConfig.post.sharePoster !== false;
         <div class="share-bar__actions">
           <button
             type="button"
-            class="share-bar__copy-btn"
+            class="share-bar__action share-bar__action--copy"
             data-share-copy
             data-share-url={pageUrl}
             data-copied-label="✓"
             title={i18n(I18nKey.copyLink)}
           >
-            <Icon is:inline name="lucide:link" class="text-lg" aria-hidden="true" />
+            <span class="share-bar__action-icon" aria-hidden="true">
+              <Icon is:inline name="lucide:link" class="share-bar__action-glyph" />
+            </span>
             <span data-share-copy-label>{i18n(I18nKey.copyLink)}</span>
           </button>
           <SharePoster
@@ -140,38 +142,94 @@ const enablePoster = siteConfig.post.sharePoster !== false;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.5rem;
   }
 
-  .share-bar__copy-btn {
+  /* 复制 / 分享：统一轮廓按钮 + 中性图标底，避免 primary 满色与 btn-regular 混搭 */
+  .share-bar__action {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.55rem 0.9rem;
-    border-radius: 0.55rem;
-    border: 1px solid color-mix(in oklch, var(--primary) 35%, oklch(88% 0.012 var(--hue)));
-    background: color-mix(in oklch, var(--primary) 8%, transparent);
-    color: var(--primary);
-    font-size: 0.88rem;
+    gap: 0.5rem;
+    min-height: 2.375rem;
+    padding: 0.35rem 0.9rem 0.35rem 0.4rem;
+    border-radius: 0.6rem;
+    border: 1px solid oklch(88% 0.012 var(--hue));
+    background: color-mix(in oklch, var(--card-bg, oklch(99% 0.004 var(--hue))) 88%, white);
+    color: var(--deep-text);
+    font-size: 0.875rem;
     font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
-  .share-bar__copy-btn:hover {
-    background: color-mix(in oklch, var(--primary) 14%, transparent);
-    border-color: color-mix(in oklch, var(--primary) 50%, transparent);
+  html.dark .share-bar__action {
+    border-color: oklch(34% 0.02 var(--hue));
+    background: color-mix(in oklch, var(--card-bg, oklch(18% 0.022 var(--hue))) 92%, black);
+    color: oklch(94% 0.01 var(--hue));
   }
 
-  .share-bar__copy-btn:focus-visible {
+  .share-bar__action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.45rem;
+    background: oklch(96% 0.008 var(--hue));
+    color: oklch(46% 0.025 var(--hue));
+    flex-shrink: 0;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease;
+  }
+
+  html.dark .share-bar__action-icon {
+    background: oklch(26% 0.02 var(--hue));
+    color: oklch(76% 0.02 var(--hue));
+  }
+
+  .share-bar__action-glyph {
+    width: 1rem !important;
+    height: 1rem !important;
+    font-size: 1rem !important;
+  }
+
+  .share-bar__action:hover {
+    border-color: color-mix(in oklch, var(--primary) 28%, oklch(88% 0.012 var(--hue)));
+    box-shadow: 0 6px 16px -12px oklch(0% 0 0 / 0.28);
+  }
+
+  html.dark .share-bar__action:hover {
+    border-color: color-mix(in oklch, var(--primary) 32%, oklch(34% 0.02 var(--hue)));
+  }
+
+  .share-bar__action:hover .share-bar__action-icon {
+    background: color-mix(in oklch, var(--primary) 11%, oklch(96% 0.008 var(--hue)));
+    color: var(--primary);
+  }
+
+  html.dark .share-bar__action:hover .share-bar__action-icon {
+    background: color-mix(in oklch, var(--primary) 16%, oklch(26% 0.02 var(--hue)));
+    color: color-mix(in oklch, var(--primary) 85%, white);
+  }
+
+  .share-bar__action:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 
-  .share-bar__copy-btn.is-copied {
-    color: oklch(42% 0.1 145);
-    border-color: oklch(70% 0.08 145);
+  .share-bar__action.is-copied {
+    border-color: oklch(72% 0.06 145);
+  }
+
+  .share-bar__action.is-copied .share-bar__action-icon {
     background: oklch(95% 0.03 145);
+    color: oklch(42% 0.1 145);
   }
 </style>
 
