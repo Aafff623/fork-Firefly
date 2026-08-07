@@ -1,61 +1,221 @@
 ---
 import { getEntry, render } from "astro:content";
+import { Icon } from "astro-icon/components";
 import Markdown from "@components/common/Markdown.astro";
+import AboutIntroBlocks from "@/components/pages/about/AboutIntroBlocks.astro";
+import AboutPracticeBlock from "@/components/pages/about/AboutPracticeBlock.astro";
 import FlipComicBook from "@/components/pages/about/FlipComicBook.astro";
 import RotatingPopCard from "@/components/pages/about/RotatingPopCard.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-const aboutPost = await getEntry("spec", "about");
+const aboutAgentPost = await getEntry("spec", "about-agent");
+const aboutRestPost = await getEntry("spec", "about-rest");
 const aboutSitePost = await getEntry("spec", "about-site");
 
-if (!aboutPost) {
-	throw new Error("About page content not found");
+if (!aboutAgentPost || !aboutRestPost) {
+	throw new Error("About page content not found (about-agent / about-rest)");
 }
 
-const { Content } = await render(aboutPost);
+const { Content: AgentContent } = await render(aboutAgentPost);
+const { Content: RestContent } = await render(aboutRestPost);
 const siteRendered = aboutSitePost ? await render(aboutSitePost) : null;
 const SiteContent = siteRendered?.Content;
+
+const statsLight =
+	"https://github-readme-stats-sigma-five.vercel.app/api?username=Aafff623&show_icons=true&bg_color=ffffff&title_color=0969da&text_color=1f2328&icon_color=f59e0b&hide=prs,issues&count_private=true&hide_border=false&border_color=d1d9e0&card_width=500";
+const statsDark =
+	"https://github-readme-stats-sigma-five.vercel.app/api?username=Aafff623&show_icons=true&bg_color=0d1117&title_color=c9d1d9&text_color=adbac7&icon_color=f59e0b&hide=prs,issues&count_private=true&hide_border=false&border_color=30363d&card_width=500";
+const langsLight =
+	"https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=Aafff623&layout=compact&bg_color=ffffff&title_color=0969da&text_color=1f2328&icon_color=f59e0b&hide=prs,issues&count_private=true&hide_border=false&border_color=d1d9e0&card_width=320";
+const langsDark =
+	"https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=Aafff623&layout=compact&bg_color=0d1117&title_color=c9d1d9&text_color=adbac7&icon_color=f59e0b&hide=prs,issues&count_private=true&hide_border=false&border_color=30363d&card_width=320";
+
+const headingIcons = [
+	{ key: "02 · Agent workflow", icon: "lucide:bot" },
+	{ key: "03.5 · Currently building", icon: "lucide:hammer" },
+	{ key: "04 · Competitions", icon: "lucide:trophy" },
+	{ key: "05 · Classic project", icon: "lucide:briefcase" },
+	{ key: "06 · Learning", icon: "lucide:graduation-cap" },
+	{ key: "关于本站", icon: "lucide:globe" },
+] as const;
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
     <div class="about-shell flex w-full relative min-h-32">
         <div class="about-panel card-base z-10 relative w-full overflow-hidden">
             <p class="about-mast"><span>THREETWOA</span><span>ABOUT · 2026</span></p>
 
-            <div class="about-intro hero-bg">
+            <div
+              class="about-intro hero-bg"
+              data-about-hero
+              data-hero-poster="/assets/hero/about-hero-poster.webp"
+              data-hero-gif="/assets/hero/about-hero.gif"
+              style="--hero-img: url(/assets/hero/about-hero-poster.webp)"
+            >
               <div class="about-intro-body">
                 <blockquote class="about-pull">
-                  少写一点代码，多留一点能复用的结构。<br />
-                  <span class="about-strike">把工具当玩具</span> · 真要上线，merge 归我。
+                  少写一点代码，多留一点可复用的结构。<br />
+                  工具负责加速；关键取舍，我来拍板。
                 </blockquote>
                 <RotatingPopCard />
               </div>
             </div>
 
-            <Markdown class="about-md mt-1">
-                <Content />
-            </Markdown>
+            <div class="about-md mt-1">
+              <AboutIntroBlocks />
 
-            <!-- GitHub Stats 正下方：3D 翻页漫画 -->
+              <Markdown class="about-md">
+                <AgentContent />
+              </Markdown>
+
+              <AboutPracticeBlock />
+
+              <Markdown class="about-md">
+                <RestContent />
+              </Markdown>
+            </div>
+
             <FlipComicBook />
+
+            <section class="about-stats-block" aria-labelledby="about-stats-heading">
+              <h2 id="about-stats-heading" class="about-section-title" data-about-h2="07 · Stats">
+                <Icon is:inline name="lucide:bar-chart-3" class="about-h2-icon" aria-hidden="true" />
+                <span>07 · Stats</span>
+              </h2>
+              <p class="about-stats">
+                <img
+                  class="about-stats__light"
+                  src={statsLight}
+                  alt="GitHub stats"
+                  loading="lazy"
+                  decoding="async"
+                  width="500"
+                  height="165"
+                />
+                <img
+                  class="about-stats__dark"
+                  src={statsDark}
+                  alt="GitHub stats"
+                  loading="lazy"
+                  decoding="async"
+                  width="500"
+                  height="165"
+                />
+                <img
+                  class="about-stats__light"
+                  src={langsLight}
+                  alt="Top languages"
+                  loading="lazy"
+                  decoding="async"
+                  width="320"
+                  height="165"
+                />
+                <img
+                  class="about-stats__dark"
+                  src={langsDark}
+                  alt="Top languages"
+                  loading="lazy"
+                  decoding="async"
+                  width="320"
+                  height="165"
+                />
+              </p>
+            </section>
 
             {SiteContent && (
               <Markdown class="about-md mt-2">
                 <SiteContent />
               </Markdown>
             )}
+
+            <!-- MD 章节标题图标库：注入到尚无 .about-h2-icon 的 h2 -->
+            <div class="about-icon-bank" hidden aria-hidden="true">
+              {
+                headingIcons.map((item) => (
+                  <template data-about-icon-for={item.key}>
+                    <Icon is:inline name={item.icon} class="about-h2-icon" />
+                  </template>
+                ))
+              }
+            </div>
         </div>
     </div>
 </MainGridLayout>
 
+<script>
+  function hydrateAboutHero(root: Element) {
+    if (!(root instanceof HTMLElement) || root.dataset.heroHydrated === "1") return;
+    const poster = root.dataset.heroPoster;
+    const gif = root.dataset.heroGif;
+    if (!poster || !gif) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      root.style.setProperty("--hero-img", `url(${poster})`);
+      root.dataset.heroHydrated = "1";
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = () => {
+          root.style.setProperty("--hero-img", `url(${gif})`);
+          root.dataset.heroHydrated = "1";
+        };
+        img.src = gif;
+        io.disconnect();
+      },
+      { rootMargin: "80px" },
+    );
+    io.observe(root);
+  }
+
+  function injectHeadingIcons() {
+    const panel = document.querySelector(".about-panel");
+    if (!(panel instanceof HTMLElement)) return;
+
+    panel.querySelectorAll(".about-md h2").forEach((h2) => {
+      if (!(h2 instanceof HTMLElement)) return;
+      if (h2.querySelector(".about-h2-icon")) return;
+      const key = (h2.textContent || "").trim();
+      const tpl = panel.querySelector(
+        `template[data-about-icon-for="${CSS.escape(key)}"]`,
+      );
+      if (!(tpl instanceof HTMLTemplateElement)) return;
+      const icon = tpl.content.cloneNode(true);
+      const label = document.createElement("span");
+      label.textContent = key;
+      h2.replaceChildren();
+      h2.append(icon, label);
+      h2.classList.add("about-section-title");
+    });
+  }
+
+  function initAboutPage() {
+    document.querySelectorAll("[data-about-hero]").forEach(hydrateAboutHero);
+    injectHeadingIcons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAboutPage);
+  } else {
+    initAboutPage();
+  }
+  document.addEventListener("swup:contentReplaced", () => setTimeout(initAboutPage, 30));
+</script>
+
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap");
+
   .about-shell {
     border-radius: 0.35rem;
     overflow: visible;
   }
 
-  /* 外层大卡片：card-base 供底，与友链/留言同结构 */
   .about-panel {
     padding: 1.35rem 1.5rem 1.75rem;
   }
@@ -80,9 +240,7 @@ const SiteContent = siteRendered?.Content;
     color: color-mix(in oklab, var(--content-meta) 80%, transparent);
   }
 
-  /* 顶部氛围带：hero-bg 共享层铺骑士少女底图，坐在大卡片内的圆角带 */
   .about-intro {
-    --hero-img: url("/assets/hero/about-hero.gif");
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -112,26 +270,21 @@ const SiteContent = siteRendered?.Content;
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: clamp(1.25rem, 2.2vw, 1.7rem);
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-    font-weight: 600;
+    font-family: "Ma Shan Zheng", "ZCOOL XiaoWei", "Songti SC", serif;
+    font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+    line-height: 1.45;
+    letter-spacing: 0.04em;
+    font-weight: 400;
     color: var(--deep-text);
     quotes: none;
     text-shadow: 0 1px 12px color-mix(in oklab, var(--card-bg) 88%, transparent);
   }
 
-  .about-pull :global(p) {
-    margin: 0;
-  }
-
-  .about-strike {
-    text-decoration: line-through;
-    color: color-mix(in oklab, var(--content-meta) 70%, transparent);
-    font-weight: 500;
-  }
-
+  .about-section-title,
   :global(.about-md h2) {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
     font-size: 0.95rem;
     letter-spacing: 0.02em;
@@ -142,8 +295,19 @@ const SiteContent = siteRendered?.Content;
     padding: 0;
   }
 
+  :global(.about-h2-icon) {
+    width: 1.05em;
+    height: 1.05em;
+    flex-shrink: 0;
+    color: var(--primary);
+  }
+
   :global(.about-md h2:first-of-type) {
     margin-top: 0.25rem;
+  }
+
+  .about-stats-block .about-section-title {
+    margin-top: 0.85rem;
   }
 
   :global(.about-md h3) {
@@ -153,8 +317,7 @@ const SiteContent = siteRendered?.Content;
     color: var(--deep-text);
   }
 
-  /* 简介：网格分栏，禁止 float 压图 */
-  :global(.about-md .about-bio) {
+  :global(.about-bio) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) min(15.5rem, 36%);
     gap: 1.25rem 1.5rem;
@@ -162,28 +325,28 @@ const SiteContent = siteRendered?.Content;
     margin: 0 0 0.5rem;
   }
 
-  :global(.about-md .about-bio__copy) {
+  :global(.about-bio__copy) {
     min-width: 0;
   }
 
-  :global(.about-md .about-bio__copy > p) {
+  :global(.about-bio__copy > p) {
     margin: 0 0 0.85rem;
     line-height: 1.75;
     text-align: start;
   }
 
-  :global(.about-md .about-bio__copy > p:last-child) {
+  :global(.about-bio__copy > p:last-child) {
     margin-bottom: 0;
   }
 
-  :global(.about-md .about-bio__figure) {
+  :global(.about-bio__figure) {
     margin: 0;
     padding: 0;
     border: 0;
     min-width: 0;
   }
 
-  :global(.about-md .about-bio__photo) {
+  :global(.about-bio__photo) {
     display: block;
     width: 100%;
     height: auto;
@@ -195,27 +358,28 @@ const SiteContent = siteRendered?.Content;
   }
 
   @media (max-width: 720px) {
-    :global(.about-md .about-bio) {
+    :global(.about-bio) {
       grid-template-columns: 1fr;
     }
 
-    :global(.about-md .about-bio__figure) {
+    :global(.about-bio__figure) {
       order: -1;
       max-width: 14rem;
       justify-self: center;
     }
   }
 
-  :global(.about-md .about-reach) {
+  :global(.about-reach) {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
     margin: 0.15rem 0 0;
   }
 
-  :global(.about-md .about-reach a) {
+  :global(.about-reach a) {
     display: inline-flex;
     align-items: center;
+    gap: 0.35rem;
     padding: 0.28rem 0.7rem;
     border-radius: 999px;
     border: 1px solid color-mix(in oklab, var(--primary) 28%, var(--line-color));
@@ -227,9 +391,96 @@ const SiteContent = siteRendered?.Content;
     transition: background 0.15s ease, border-color 0.15s ease;
   }
 
-  :global(.about-md .about-reach a:hover) {
+  :global(.about-reach a:hover) {
     background: color-mix(in oklab, var(--primary) 14%, var(--card-bg));
     border-color: color-mix(in oklab, var(--primary) 45%, var(--line-color));
+  }
+
+  :global(.about-reach__icon) {
+    width: 0.95em;
+    height: 0.95em;
+    color: var(--primary);
+  }
+
+  :global(.about-block__lead) {
+    margin: 0 0 0.65rem;
+    color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    font-size: 0.92rem;
+  }
+
+  :global(.about-icon-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  :global(.about-icon-row) {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.55rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background: color-mix(in oklab, var(--primary) 4%, var(--card-bg));
+  }
+
+  :global(.about-icon-row__glyph) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.45rem;
+    background: color-mix(in oklab, var(--primary) 12%, var(--card-bg));
+    color: var(--primary);
+  }
+
+  :global(.about-icon-row__glyph svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  :global(.about-icon-row__body) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  :global(.about-icon-row__body strong) {
+    font-size: 0.92rem;
+    color: var(--deep-text);
+  }
+
+  :global(.about-icon-row__body span) {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+  }
+
+  :global(.about-aside) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    margin: 0.85rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+  }
+
+  :global(.about-aside__glyph) {
+    display: inline-flex;
+    margin-top: 0.15rem;
+    color: var(--primary);
+  }
+
+  :global(.about-aside__glyph svg) {
+    width: 1.05rem;
+    height: 1.05rem;
   }
 
   :global(.about-md table) {
@@ -261,7 +512,41 @@ const SiteContent = siteRendered?.Content;
     border: 1px solid color-mix(in oklab, var(--line-color), transparent);
   }
 
-  :global(.about-md .about-stats) {
+  :global(.about-md .about-stack) {
+    margin: 0.75rem 0 1rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 0.55rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background: color-mix(in oklab, var(--primary) 4%, var(--card-bg));
+  }
+
+  :global(.about-md .about-stack > summary) {
+    cursor: pointer;
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+    font-weight: 600;
+    list-style: none;
+  }
+
+  :global(.about-md .about-stack > summary::-webkit-details-marker) {
+    display: none;
+  }
+
+  :global(.about-md .about-stack > summary::before) {
+    content: "▸ ";
+  }
+
+  :global(.about-md .about-stack[open] > summary::before) {
+    content: "▾ ";
+  }
+
+  :global(.about-md .about-stack[open] > summary) {
+    margin-bottom: 0.45rem;
+  }
+
+  .about-stats {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -269,12 +554,24 @@ const SiteContent = siteRendered?.Content;
     margin: 0.5rem 0 0;
   }
 
-  :global(.about-md .about-stats img) {
+  .about-stats img {
     max-width: 100%;
     height: auto;
     border-radius: 0.4rem;
     border: 1px solid color-mix(in oklab, var(--line-color), transparent);
-    background: #fff;
+  }
+
+  .about-stats__dark {
+    display: none;
+  }
+
+  :global(:root.dark) .about-stats__light {
+    display: none;
+  }
+
+  :global(:root.dark) .about-stats__dark {
+    display: inline;
+    background: #0d1117;
   }
 
   :global(.about-md .markdown-alert),

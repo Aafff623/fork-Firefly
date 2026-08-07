@@ -1,0 +1,104 @@
+---
+/**
+ * About 页：简介 + reach + Now（Lucide；Practice 单独组件插在 Agent 段之后）
+ * 文案对齐 GitHub Profile README（Aafff623/Aafff623 · 2026-08）
+ */
+import { Icon } from "astro-icon/components";
+
+const reach = [
+	{ label: "Blog", href: "/", icon: "lucide:book-open" },
+	{
+		label: "Digital Garden",
+		href: "https://threetwoa-digital-garden.vercel.app/",
+		icon: "lucide:trees",
+		external: true,
+	},
+	{ label: "Email", href: "mailto:laiyif68@gmail.com", icon: "lucide:mail" },
+] as const;
+
+const nowRows = [
+	{
+		icon: "lucide:blocks",
+		title: "构建与实践",
+		body: "可维护的大系统与中间件；remix 新兴开源范式（OpenClaw、Hermes Agent、OpenHands、DeerFlow）；长线数字花园与插件生态",
+	},
+	{
+		icon: "lucide:wallet",
+		title: "实战点数",
+		body: "支付、数据库、微信、阿里云、UniApp；轮换 PM / FDE / 全栈 / 黑客松帽子",
+	},
+	{
+		icon: "lucide:git-branch",
+		title: "开源折腾",
+		body: "挖自己的仓与热点项目；跟 B 站创作者（如 IT咖啡馆）学，clone / 改 / fork / 帮忙维护",
+	},
+	{
+		icon: "lucide:cpu",
+		title: "评测与能力包",
+		body: "亲手评国产模型（DeepSeek、GLM、Kimi）与海外三大家（Anthropic、OpenAI、xAI）；MiniMax / 阶跃能力包接入 Agent 工作流",
+	},
+] as const;
+---
+
+<div class="about-bio">
+  <div class="about-bio__copy">
+    <p>我是 <strong>threetwoa</strong>（GitHub: <a href="https://github.com/Aafff623">Aafff623</a>）。中北大学软件工程<strong>即将升入三年级</strong>。</p>
+    <p>这个夏天主要在啃：Java 微服务与中间件、LLM 内部机制，以及 Harness Engineering 下的 Spec-driven Coding。纯 vibe 的蜜月期过去了——我更在意架构、可维护性，和还能被 review 的代码。</p>
+    <p>少写一点一次性的行，多留一点判断与可复用的工作流。</p>
+    <p class="about-reach">
+      {
+        reach.map((item) => (
+          <a
+            href={item.href}
+            {...("external" in item && item.external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+          >
+            <Icon is:inline name={item.icon} class="about-reach__icon" aria-hidden="true" />
+            <span>{item.label}</span>
+          </a>
+        ))
+      }
+    </p>
+  </div>
+  <figure class="about-bio__figure">
+    <img
+      class="about-bio__photo"
+      src="/assets/images/about/hero-knight.webp"
+      alt="threetwoa"
+      loading="lazy"
+      decoding="async"
+      width="528"
+      height="720"
+    />
+  </figure>
+</div>
+
+<section class="about-block" aria-labelledby="about-now-heading">
+  <h2 id="about-now-heading" class="about-section-title" data-about-h2="01 · Now">
+    <Icon is:inline name="lucide:sparkles" class="about-h2-icon" aria-hidden="true" />
+    <span>01 · Now</span>
+  </h2>
+  <p class="about-block__lead">正在练的几件事：</p>
+  <ul class="about-icon-list">
+    {
+      nowRows.map((row) => (
+        <li class="about-icon-row">
+          <span class="about-icon-row__glyph" aria-hidden="true">
+            <Icon is:inline name={row.icon} />
+          </span>
+          <div class="about-icon-row__body">
+            <strong>{row.title}</strong>
+            <span>{row.body}</span>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="about-aside">
+    <span class="about-aside__glyph" aria-hidden="true">
+      <Icon is:inline name="lucide:bike" />
+    </span>
+    <span>技术之外：骑车、看公路赛（大环赛与春经典）；写博客、打理数字花园、记番剧，留一点不想被时间带走的青春。</span>
+  </p>
+</section>

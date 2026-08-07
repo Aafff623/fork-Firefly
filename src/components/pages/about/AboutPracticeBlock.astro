@@ -1,0 +1,48 @@
+---
+import { Icon } from "astro-icon/components";
+
+const practiceRows = [
+	{
+		icon: "lucide:bot",
+		title: "Agent Engineering",
+		body: "scoped task、仓库规则、可复现命令、测完再看 diff；设计决策和 merge 归我。",
+	},
+	{
+		icon: "lucide:layers",
+		title: "Java / Python 业务系统",
+		body: "可维护的大系统与中间件；微服务边界、持久化、缓存、部署与长线维护。",
+	},
+	{
+		icon: "lucide:sparkles",
+		title: "范式 remix 与花园",
+		body: "OpenClaw / Hermes / OpenHands / DeerFlow 等玩具级 remix；数字花园与插件生态长线经营。",
+	},
+	{
+		icon: "lucide:cpu",
+		title: "系统与推理",
+		body: "vLLM、调度与吞吐；国产加速卡（Hygon DCU / Biren）上的工程优化。",
+	},
+] as const;
+---
+
+<section class="about-block" aria-labelledby="about-practice-heading">
+  <h2 id="about-practice-heading" class="about-section-title" data-about-h2="03 · Practice">
+    <Icon is:inline name="lucide:wrench" class="about-h2-icon" aria-hidden="true" />
+    <span>03 · Practice</span>
+  </h2>
+  <ul class="about-icon-list">
+    {
+      practiceRows.map((row) => (
+        <li class="about-icon-row">
+          <span class="about-icon-row__glyph" aria-hidden="true">
+            <Icon is:inline name={row.icon} />
+          </span>
+          <div class="about-icon-row__body">
+            <strong>{row.title}</strong>
+            <span>{row.body}</span>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>

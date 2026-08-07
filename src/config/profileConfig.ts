@@ -49,8 +49,8 @@ export const profileConfig: ProfileConfig = {
 	// 名字（GitHub display name）
 	name: "threetwoa",
 
-	// 个人签名
-	bio: "少写一点胶水代码，多留一点判断。中北软件 · Java & Python · Agent。",
+	// 个人签名（对齐 GitHub Profile · 2026-08）
+	bio: "少写一点一次性的行，多留一点判断。中北软件 · Spec-driven · Agent。",
 
 	// 链接配置（对齐 GitHub profile / README Contact）
 	// UI 通用：lucide；品牌：fa7-brands / simple-icons

@@ -1,30 +1,33 @@
 ---
 /**
  * 3D 翻页漫画 — 改编自 bilibili-goat `categories/effects/3D翻页漫画`
+ * 纸质分镜进视口后再挂 background，避免首屏拖垮。
+ * 角色：骑士少女延续（纸质漫感 + 终端像素）
  */
 const pages = [
-	{ cls: "b", i: 2, s: undefined as number | undefined, src: "/assets/images/about/flip-comic/1.gif" },
-	{ cls: "c", i: 4, s: 1, src: "/assets/images/about/flip-comic/2.gif" },
-	{ cls: "d", i: 3, s: 2, src: "/assets/images/about/flip-comic/3.gif" },
-	{ cls: "e", i: 2, s: 3, src: "/assets/images/about/flip-comic/4.gif" },
-	{ cls: "f", i: 1, s: 4, src: "/assets/images/about/flip-comic/5.gif" },
+	{ cls: "b", i: 2, s: undefined as number | undefined, src: "/assets/images/about/flip-comic/panel-01.webp" },
+	{ cls: "c", i: 4, s: 1, src: "/assets/images/about/flip-comic/panel-02.webp" },
+	{ cls: "d", i: 3, s: 2, src: "/assets/images/about/flip-comic/panel-03.webp" },
+	{ cls: "e", i: 2, s: 3, src: "/assets/images/about/flip-comic/panel-04.webp" },
+	{ cls: "f", i: 1, s: 4, src: "/assets/images/about/flip-comic/panel-05.webp" },
 ];
 ---
 
 <div class="about-flip" data-about-flip id="about-flip-root">
-  <div class="about-flip__stage" aria-label="3D 翻页漫画，悬停翻页">
-    <div class="about-flip__book">
+  <div class="about-flip__stage" aria-label="3D 翻页漫画，悬停或点击翻页">
+    <div class="about-flip__book" tabindex="0" role="button" aria-pressed="false" aria-label="翻开漫画">
       {
         pages.map((p) => (
           <div
             class:list={["about-flip__page", `about-flip__page--${p.cls}`]}
-            style={`--i:${p.i};${p.s !== undefined ? `--s:${p.s};` : ""}background-image:url(${p.src})`}
+            style={`--i:${p.i};${p.s !== undefined ? `--s:${p.s};` : ""}`}
+            data-bg={p.src}
           />
         ))
       }
     </div>
   </div>
-  <p class="about-flip__hint">悬停翻页</p>
+  <p class="about-flip__hint" data-about-flip-hint>悬停或点击翻页</p>
 </div>
 
 <style is:global>
@@ -34,6 +37,8 @@ const pages = [
     flex-direction: column;
     align-items: center;
     gap: 0.55rem;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 22rem;
   }
 
   .about-flip__stage {
@@ -76,6 +81,13 @@ const pages = [
     perspective: 1000px;
     transition: transform 0.8s ease;
     margin-right: 2.5rem;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .about-flip__book:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 45%, transparent);
+    border-radius: 0.35rem;
   }
 
   .about-flip__page {
@@ -83,6 +95,7 @@ const pages = [
     height: calc(var(--book-h) - 1.1rem);
     position: absolute;
     transform-origin: left center;
+    background-color: color-mix(in oklab, var(--card-bg) 70%, #576574);
     background-size: cover;
     background-position: center;
     transition: transform calc(var(--i) * 0.3s), z-index 0s;
@@ -146,20 +159,86 @@ const pages = [
       transform: translateX(1.75rem);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-flip__book,
+    .about-flip__page {
+      transition: none !important;
+    }
+
+    .about-flip__book:hover,
+    .about-flip__book.is-open {
+      transform: none;
+    }
+
+    .about-flip__book:hover .about-flip__page--c,
+    .about-flip__book:hover .about-flip__page--d,
+    .about-flip__book:hover .about-flip__page--e,
+    .about-flip__book:hover .about-flip__page--f,
+    .about-flip__book.is-open .about-flip__page--c,
+    .about-flip__book.is-open .about-flip__page--d,
+    .about-flip__book.is-open .about-flip__page--e,
+    .about-flip__book.is-open .about-flip__page--f {
+      transform: none;
+    }
+  }
 </style>
 
 <script>
-  function bindTouch(root: Element) {
+  function loadFlipBgs(root: HTMLElement) {
+    if (root.dataset.bgLoaded === "1") return;
+    root.dataset.bgLoaded = "1";
+    root.querySelectorAll<HTMLElement>("[data-bg]").forEach((el) => {
+      const src = el.dataset.bg;
+      if (!src) return;
+      el.style.backgroundImage = `url(${src})`;
+      el.removeAttribute("data-bg");
+    });
+  }
+
+  function bindFlip(root: Element) {
     if (!(root instanceof HTMLElement) || root.dataset.bound === "1") return;
     root.dataset.bound = "1";
+
     const book = root.querySelector(".about-flip__book");
     if (!(book instanceof HTMLElement)) return;
-    if (!window.matchMedia("(hover: none)").matches) return;
-    book.addEventListener("click", () => book.classList.toggle("is-open"));
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          loadFlipBgs(root);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "120px" },
+    );
+    io.observe(root);
+
+    const setOpen = (open: boolean) => {
+      book.classList.toggle("is-open", open);
+      book.setAttribute("aria-pressed", open ? "true" : "false");
+    };
+
+    book.addEventListener("click", () => {
+      loadFlipBgs(root);
+      setOpen(!book.classList.contains("is-open"));
+    });
+
+    book.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      loadFlipBgs(root);
+      setOpen(!book.classList.contains("is-open"));
+    });
+
+    const hint = root.querySelector("[data-about-flip-hint]");
+    if (hint && window.matchMedia("(hover: none)").matches) {
+      hint.textContent = "点击翻页";
+    }
   }
 
   function init() {
-    document.querySelectorAll("[data-about-flip]").forEach(bindTouch);
+    document.querySelectorAll("[data-about-flip]").forEach(bindFlip);
   }
 
   if (document.readyState === "loading") {
