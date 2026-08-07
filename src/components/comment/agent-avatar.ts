@@ -2,7 +2,8 @@
 
 import { agentPersonas } from "@/config/agentPersonas";
 
-const BOUND_ATTR = "data-agent-avatar-bound";
+/** dataset 键用 camelCase；勿塞带 data- 的完整属性名（会抛 SyntaxError） */
+const BOUND_DS_KEY = "agentAvatarBound";
 
 function resolvePersona(nick: string) {
 	const n = nick.trim().toLowerCase();
@@ -29,8 +30,8 @@ function processCard(card: HTMLElement) {
 
 export function attachAgentAvatars(): void {
 	const root = document.querySelector<HTMLElement>("#waline");
-	if (!root || root.dataset[BOUND_ATTR]) return;
-	root.dataset[BOUND_ATTR] = "1";
+	if (!root || root.dataset[BOUND_DS_KEY]) return;
+	root.dataset[BOUND_DS_KEY] = "1";
 
 	const scan = () => {
 		for (const card of root.querySelectorAll<HTMLElement>(".wl-card")) {
