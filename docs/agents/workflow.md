@@ -67,7 +67,7 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 ```text
 会话 / 调研结论
   → knowledge-extract（→ D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
-  → knowledge-output（→ src/content/posts/<slug>；无参数=todo 全部，带主题=仅指定）
+  → knowledge-output（→ src/content/posts/<slug>；无参数=todo 全部，带主题=仅指定；成稿后强制过 humanizer-tta 去 AI 味，评分 ≥45 才发布）
   → site-cascade（同上；emit 须带批注）
   → 发布成功后素材移入 Knowledge\Archive\ 留档
   → 本地预览 →（你确认后）commit / push → 核线上

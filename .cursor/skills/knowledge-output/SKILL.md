@@ -45,7 +45,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ```
 1 选材    → 按调用方式从 Knowledge\todo\ 定位素材（无参数=全部；有参数=仅匹配的主题），确认内容完整度(缺关键结论先回 extract 补齐)
-2 定稿    → 读素材，按 humanizer-tta 校准语气；过一遍「成帖红线」(见下)；拆长文为可读章节
+2 定稿    → 读素材，按 humanizer-tta 校准语气；拆长文为可读章节；**成稿后强制过一遍 humanizer-tta（Depointify 去 AI 味，50 分评分 ≥45 才放行）**；再过「成帖红线」(见下)
 3 成帖    → 补 frontmatter(参考 ob2blog/assets/templates/frontmatter.yaml)：
             title/published/description/tags/category/slug/image/draft/lang/pinned/comment
             slug 必须英文 kebab(小写字母数字连字符)，中文标题手传；category 从既有集合取
@@ -67,7 +67,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 成帖红线（素材进博客前最后一道）
 
-素材经过 extract 提炼，但成帖前再扫一遍，别把 AI 味带上线：
+成稿后先按 humanizer-tta（Depointify 模式）过一遍去 AI 味，50 分评分 ≥45 才允许发布；然后逐条过下方红线。素材经过 extract 提炼，但成帖前再扫一遍，别把 AI 味带上线：
 
 1. **标题像人起的**：口语化、有钩子；禁「XX 实录 / XX 清单 / 这篇在讲什么」类手册腔。列表卡情绪点缀（emoji / 颜文字）由站点 `title-mood` **仅展示层**动态挂；**禁止**写入 frontmatter `title`（正文 H1 / RSS / OG 保持干净）。中立标题不装饰；同批邻帖应错开 emoji 与颜文字（实现按 post id 哈希）。
 2. **无「一句话 X」句式**：「一句话结论 / 一句话总结」这类标签清零。
