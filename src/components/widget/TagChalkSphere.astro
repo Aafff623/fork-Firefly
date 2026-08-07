@@ -184,10 +184,6 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
     function clearHoverTimers(el) {
       if (!el) return;
-      if (el._hoverConfirmTimer) {
-        clearTimeout(el._hoverConfirmTimer);
-        el._hoverConfirmTimer = null;
-      }
       if (el._hoverTriggerTimer) {
         clearTimeout(el._hoverTriggerTimer);
         el._hoverTriggerTimer = null;
@@ -218,6 +214,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       el._hoverFocusItem = null;
       el._hoverDwellItem = null;
       el._hoverFastUsed = false;
+      el._hoverFirstItem = null;
       var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
       var frame = root && root.querySelector("[data-tag-sphere-frame]");
       if (frame) frame.classList.remove("is-hover-focus");
@@ -554,7 +551,10 @@ const showMore = Boolean(moreHref && moreCount > 0);
         el._focusHold = false;
         el._hoverFocusItem = null;
         el._hoverDwellItem = null;
-        if (resetSession) el._hoverFastUsed = false;
+        if (resetSession) {
+          el._hoverFastUsed = false;
+          el._hoverFirstItem = null;
+        }
         frame.classList.remove("is-hover-focus");
         var nodes = el.querySelectorAll(".tagcloud--item");
         for (var i = 0; i < nodes.length; i++) {
@@ -569,12 +569,14 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (!itemEl || reducedMotion()) return;
         if (el._tagInteract && el._tagInteract.dragged) return;
         if (!stillHovering(itemEl)) {
-          // 墙内间隙：保留「已用过首次 0.5s」状态
+          // 触发瞬间已离开：不烧掉首次 0.5s；若已落到别的签再续 dwell
           releaseFocus(false);
-          el._hoverFastUsed = true;
+          var pMiss = el._hoverLastPointer;
+          var underMiss = pMiss ? itemUnderPointer(pMiss.x, pMiss.y) : null;
+          if (underMiss && underMiss !== itemEl) beginDwell(underMiss);
           return;
         }
-        // 触发后，同一次进墙再换签都走 1s
+        // 成功触发后，同一次进墙再换签都走 1s
         el._hoverFastUsed = true;
         el._hoverFocusItem = itemEl;
         el._focusHold = true;
@@ -589,20 +591,21 @@ const showMore = Boolean(moreHref && moreCount > 0);
       function startDwellTimers(itemEl) {
         clearHoverTimers(el);
         el._hoverDwellItem = itemEl;
-        // 进墙第一次：0.5s；墙内已换过 / 触发过：1s
-        var ms = el._hoverFastUsed ? HOVER_NEXT_MS : HOVER_FIRST_MS;
+        // 本墙会话里：第一个签 0.5s；换到别的签 / 已成功触发过 → 1s
+        // 空隙抖回同一签仍算「首次签」，不烧成 1s
+        if (!el._hoverFirstItem) el._hoverFirstItem = itemEl;
+        var isFirstTag = !el._hoverFastUsed && el._hoverFirstItem === itemEl;
+        if (!isFirstTag) el._hoverFastUsed = true;
+        var ms = isFirstTag ? HOVER_FIRST_MS : HOVER_NEXT_MS;
         el._hoverTriggerTimer = setTimeout(function () {
           el._hoverTriggerTimer = null;
           if (el._hoverDwellItem !== itemEl) return;
           if (el._tagInteract && el._tagInteract.dragged) return;
           if (!stillHovering(itemEl)) {
             releaseFocus(false);
-            el._hoverFastUsed = true;
             var p = el._hoverLastPointer;
-            if (p) {
-              var under = itemUnderPointer(p.x, p.y);
-              if (under) beginDwell(under);
-            }
+            var under = p ? itemUnderPointer(p.x, p.y) : null;
+            if (under) beginDwell(under);
             return;
           }
           fireFocus(itemEl);
@@ -667,7 +670,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
 
       function scheduleLeaveReset() {
-        // 标签间隙：不清「进墙会话」，只停当前聚焦；再悬停其他签走 1s
+        // 标签间隙：只停当前计时/聚焦；不烧掉首次 0.5s（密排布抖空隙很常见）
+        // 真正换签走 beginDwell sticky；整墙离开走 pointerleave → resetSession
         if (el._hoverSwitchTimer) {
           clearTimeout(el._hoverSwitchTimer);
           el._hoverSwitchTimer = null;
@@ -676,9 +680,6 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (el._hoverLeaveGraceTimer) return;
         el._hoverLeaveGraceTimer = setTimeout(function () {
           el._hoverLeaveGraceTimer = null;
-          if (el._hoverDwellItem || el._hoverFocusItem) {
-            el._hoverFastUsed = true;
-          }
           releaseFocus(false);
         }, HOVER_LEAVE_GRACE_MS);
       }
