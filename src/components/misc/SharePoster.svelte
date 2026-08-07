@@ -23,7 +23,10 @@ let showModal = false;
 let posterImage: string | null = null;
 let generating = false;
 let themeColor = "#558e88"; // Default blue
-const headerTextColor = "#1f2937"; // 站点名称与 Logo 颜色
+/** 与惊喜信封落款同气质 */
+const brandTitleColor = "#8a6c3c";
+const BRAND_FONT_STACK =
+	'"Segoe Script", "Apple Chancery", "Snell Roundhand", "Caveat", cursive';
 
 onMount(() => {
 	// Get theme color from CSS variable
@@ -37,7 +40,34 @@ onMount(() => {
 	if (computedColor) {
 		themeColor = computedColor;
 	}
+
+	ensureBrandFontLink();
 });
+
+/** 补 Caveat 作跨平台兜底（与标签墙同 CDN） */
+function ensureBrandFontLink() {
+	if (typeof document === "undefined") return;
+	if (document.querySelector('link[data-share-brand-font="1"]')) return;
+	const link = document.createElement("link");
+	link.rel = "stylesheet";
+	link.href =
+		"https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap";
+	link.dataset.shareBrandFont = "1";
+	document.head.appendChild(link);
+}
+
+async function ensureBrandFontReady() {
+	ensureBrandFontLink();
+	if (!document.fonts?.load) return;
+	try {
+		await Promise.all([
+			document.fonts.load(`600 18px ${BRAND_FONT_STACK}`),
+			document.fonts.load(`700 18px "Caveat", cursive`),
+		]);
+	} catch {
+		/* canvas 仍可回退系统 cursive */
+	}
+}
 
 function loadImage(src: string): Promise<HTMLImageElement | null> {
 	return new Promise((resolve) => {
@@ -209,27 +239,35 @@ function drawRoundedRect(
 
 async function generatePoster() {
 	showModal = true;
-	if (posterImage) return;
+	// 版式升级后强制重绘，避免会话内旧海报缓存
+	posterImage = null;
 
 	generating = true;
 	try {
+		await ensureBrandFontReady();
+
 		const scale = 2;
-		const width = 425 * scale;
-		const padding = 24 * scale;
-		const logoBox = 22 * scale; // 站点 Logo 尺寸
+		const width = 460 * scale;
+		const padding = 32 * scale;
+		const logoBox = 24 * scale;
+		const paperBg = "#faf7f2";
+		const ink = "#1f2937";
+		const mutedInk = "#6b7280";
+		const bodyFont = "'Roboto', sans-serif";
+		const ruleColor = "rgba(44, 36, 22, 0.1)";
 
 		// 1. Prepare resources
 		const qrCodeUrl = await QRCode.toDataURL(url, {
 			margin: 1,
 			width: 100 * scale,
-			color: { dark: "#000000", light: "#ffffff" },
+			color: { dark: "#1f2937", light: "#faf7f2" },
 		});
 		const resolvedCoverImage = resolveImageSource(
 			coverImage,
 			coverImageSelector,
 		);
 		const resolvedAvatar = resolveImageSource(avatar, avatarSelector);
-		const resolvedSiteLogo = resolveSiteLogoSource(headerTextColor, logoBox);
+		const resolvedSiteLogo = resolveSiteLogoSource(brandTitleColor, logoBox);
 		const [qrImg, coverImg, avatarImg, logoImg] = await Promise.all([
 			loadImage(qrCodeUrl),
 			resolvedCoverImage
@@ -239,84 +277,78 @@ async function generatePoster() {
 			resolvedSiteLogo ? loadImage(resolvedSiteLogo) : Promise.resolve(null),
 		]);
 
-		// 2. Setup Canvas for measuring
+		// 2. Setup Canvas
 		const canvas = document.createElement("canvas");
 		const ctx = canvas.getContext("2d");
 		if (!ctx) throw new Error("Canvas context not available");
 
 		canvas.width = width;
-		// Initial height estimation, will be adjusted
-		canvas.height = 1000 * scale;
+		canvas.height = 1400 * scale;
 
-		// 3. Layout Calculation
+		// 3. Layout — 纸质礼品卡：留白松、正文用原简洁字体
 		const contentWidth = width - padding * 2;
 		let currentY = 0;
 
-		// Cover
-		const coverHeight = (coverImg ? 200 : 64) * scale;
+		const coverHeight = (coverImg ? 236 : 96) * scale;
+		const headerBand = (coverImg ? 52 : 0) * scale;
 		currentY += coverHeight;
-		currentY += padding; // Gap after cover
+		currentY += 28 * scale;
 
-		// Title
-		ctx.font = `700 ${24 * scale}px 'Roboto', sans-serif`;
+		ctx.font = `700 ${24 * scale}px ${bodyFont}`;
 		const titleLines = getLines(ctx, title, contentWidth);
-		const titleLineHeight = 30 * scale;
+		const titleLineHeight = 34 * scale;
 		const titleHeight = titleLines.length * titleLineHeight;
 		currentY += titleHeight;
-		currentY += 16 * scale; // Gap
+		currentY += 22 * scale;
 
-		// Description
 		let descHeight = 0;
+		const descLineHeight = 26 * scale;
+		let displayDescLines: string[] = [];
 		if (description) {
-			ctx.font = `${14 * scale}px 'Roboto', sans-serif`;
-			const descLines = getLines(ctx, description, contentWidth - 16 * scale); // minus border width and gap
-			// Limit to 6 lines
-			const maxDescLines = 6;
-			const displayDescLines = descLines.slice(0, maxDescLines);
-			const descLineHeight = 25 * scale; // 1.8 line-height approx
+			ctx.font = `400 ${14 * scale}px ${bodyFont}`;
+			const descLines = getLines(ctx, description, contentWidth - 16 * scale);
+			displayDescLines = descLines.slice(0, 5);
 			descHeight = displayDescLines.length * descLineHeight;
 			currentY += descHeight;
-			// currentY += 24 * scale; // Gap to footer (Removed to reduce whitespace)
+			currentY += 22 * scale;
 		} else {
-			currentY += 8 * scale; // Smaller gap if no desc
+			currentY += 12 * scale;
 		}
 
-		// Footer (Author + QR)
-		// Divider spacing before and after the line
-		currentY += 16 * scale;
-		const footerHeight = 80 * scale; // Avatar/QR plus QR caption
+		currentY += 18 * scale;
+		const footerHeight = 92 * scale;
 		currentY += footerHeight;
-		currentY += 12 * scale; // Bottom padding
+		currentY += 26 * scale;
 
-		// 4. Resize Canvas to fit content
-		canvas.height = currentY;
+		const minCardHeight = 600 * scale;
+		canvas.height = Math.max(currentY, minCardHeight);
+		const extraBreath =
+			canvas.height > currentY ? (canvas.height - currentY) / 2 : 0;
 
-		// 5. Draw Content
-		// Fill Background
-		ctx.fillStyle = "#ffffff";
+		// 4. 纸面：暖白 + 极淡纹线（纸质，不花哨）
+		ctx.fillStyle = paperBg;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-		// Draw Decorative Circles
 		ctx.save();
-		ctx.globalAlpha = 0.1;
-		ctx.fillStyle = themeColor;
-
-		// Top Right Circle
-		// CSS: top: -50px, right: -50px, width: 150px, height: 150px
-		// Radius = 75px
-		// Center X = width + 50 - 75 = width - 25
-		// Center Y = -50 + 75 = 25
-		ctx.beginPath();
-		ctx.arc(width - 25 * scale, 25 * scale, 75 * scale, 0, Math.PI * 2);
-		ctx.fill();
-
-		// Bottom Left Circle
-		// Adjusted to cover the avatar
-		ctx.beginPath();
-		ctx.arc(10 * scale, canvas.height - 10 * scale, 50 * scale, 0, Math.PI * 2);
-		ctx.fill();
+		ctx.strokeStyle = "rgba(201, 168, 106, 0.07)";
+		ctx.lineWidth = 1;
+		for (let y = 28 * scale; y < canvas.height; y += 22 * scale) {
+			ctx.beginPath();
+			ctx.moveTo(0, y);
+			ctx.lineTo(width, y);
+			ctx.stroke();
+		}
 		ctx.restore();
 
+		// 内缘细线（像卡纸压边，很轻）
+		ctx.strokeStyle = "rgba(44, 36, 22, 0.08)";
+		ctx.lineWidth = 1 * scale;
+		ctx.strokeRect(
+			8 * scale,
+			8 * scale,
+			width - 16 * scale,
+			canvas.height - 16 * scale,
+		);
 		// Parse Date
 		let dateObj: { day: string; month: string; year: string } | null = null;
 		try {
@@ -330,9 +362,12 @@ async function generatePoster() {
 			}
 		} catch (e) {}
 
-		// Draw Cover
+		const dateText = dateObj
+			? `${dateObj.year}.${dateObj.month}.${dateObj.day}`
+			: "";
+
+		// Cover / brand header band
 		if (coverImg) {
-			// Object-fit: cover implementation
 			const imgRatio = coverImg.width / coverImg.height;
 			const targetRatio = width / coverHeight;
 			let sx: number;
@@ -362,39 +397,32 @@ async function generatePoster() {
 				width,
 				coverHeight,
 			);
+			const grad = ctx.createLinearGradient(0, 0, 0, headerBand + 20 * scale);
+			grad.addColorStop(0, "rgba(250, 247, 242, 0.94)");
+			grad.addColorStop(1, "rgba(250, 247, 242, 0)");
+			ctx.fillStyle = grad;
+			ctx.fillRect(0, 0, width, headerBand + 28 * scale);
 		} else {
-			ctx.save();
-			ctx.fillStyle = themeColor;
-			ctx.globalAlpha = 0.2;
+			ctx.fillStyle = paperBg;
 			ctx.fillRect(0, 0, width, coverHeight);
-			ctx.restore();
 		}
 
-		// Draw Header Overlay
-		const headerHeight = (coverImg ? 44 : 64) * scale;
-		const headerCenterY = headerHeight / 2;
-		const dateText = dateObj
-			? `${dateObj.year}.${dateObj.month}.${dateObj.day}`
-			: "";
-
-		ctx.fillStyle = "rgba(255, 255, 255, 0.76)";
-		ctx.fillRect(0, 0, width, headerHeight);
-
+		// Brand row（艺术字保留）
+		const brandY = coverImg ? headerBand / 2 + 4 * scale : 44 * scale;
 		ctx.textAlign = "right";
 		ctx.textBaseline = "middle";
-		ctx.fillStyle = "rgba(31, 41, 55, 0.68)";
-		ctx.font = `${11 * scale}px 'Roboto', sans-serif`;
+		ctx.fillStyle = mutedInk;
+		ctx.font = `${11 * scale}px ${bodyFont}`;
 		const dateWidth = dateText ? ctx.measureText(dateText).width : 0;
 		if (dateText) {
-			ctx.fillText(dateText, width - padding, headerCenterY);
+			ctx.fillText(dateText, width - padding, brandY);
 		}
 
 		ctx.textAlign = "left";
-		ctx.fillStyle = headerTextColor;
-		ctx.font = `700 ${16 * scale}px 'Roboto', sans-serif`;
+		ctx.fillStyle = brandTitleColor;
+		ctx.font = `600 ${22 * scale}px ${BRAND_FONT_STACK}`;
 
-		// 站点 Logo，效果对齐导航栏：Logo 在前，标题紧随其后
-		const logoGap = 8 * scale;
+		const logoGap = 10 * scale;
 		let logoW = 0;
 		let logoH = 0;
 		if (logoImg) {
@@ -410,90 +438,77 @@ async function generatePoster() {
 			siteTitle,
 			contentWidth -
 				(siteTitleX - padding) -
-				(dateWidth > 0 ? dateWidth + 16 * scale : 0),
+				(dateWidth > 0 ? dateWidth + 18 * scale : 0),
 		);
 
 		if (logoImg) {
-			// 以标题文字的实际字形高度作为居中基准，避免字体行高导致的视觉错位
 			const metrics = ctx.measureText(siteTitleText);
 			const ascent = metrics.actualBoundingBoxAscent;
 			const descent = metrics.actualBoundingBoxDescent;
 			const titleCenterY =
 				Number.isFinite(ascent) && Number.isFinite(descent)
-					? headerCenterY + (descent - ascent) / 2
-					: headerCenterY;
+					? brandY + (descent - ascent) / 2
+					: brandY;
 			ctx.drawImage(logoImg, padding, titleCenterY - logoH / 2, logoW, logoH);
 		}
+		ctx.fillText(siteTitleText, siteTitleX, brandY);
 
-		ctx.fillText(siteTitleText, siteTitleX, headerCenterY);
+		let drawY = coverHeight + 28 * scale + extraBreath * 0.35;
 
-		// Reset Y for drawing
-		let drawY = coverHeight + padding;
-
-		// Draw Title
+		// Title — 原简洁无衬线
 		ctx.textBaseline = "top";
 		ctx.textAlign = "left";
-		ctx.font = `700 ${24 * scale}px 'Roboto', sans-serif`;
-		ctx.fillStyle = "#111827";
+		ctx.font = `700 ${24 * scale}px ${bodyFont}`;
+		ctx.fillStyle = ink;
 		titleLines.forEach((line) => {
 			ctx.fillText(line, padding, drawY);
 			drawY += titleLineHeight;
 		});
-		drawY += 16 * scale - (titleLineHeight - 24 * scale); // Adjust for line-height diff
+		drawY += 22 * scale;
 
-		// Draw Description
-		if (description) {
-			// Draw vertical line
+		// Description — 无引用框，原字体 + 细竖线
+		if (description && displayDescLines.length) {
 			ctx.fillStyle = "#e5e7eb";
-			const descLineH = descHeight; // Approximate
-			// Extend the line slightly above and below the text
 			drawRoundedRect(
 				ctx,
 				padding,
-				drawY - 8 * scale,
-				4 * scale,
-				descLineH + 8 * scale,
-				2 * scale,
+				drawY - 2 * scale,
+				3 * scale,
+				descHeight + 4 * scale,
+				1.5 * scale,
 			);
 			ctx.fill();
 
-			ctx.font = `${14 * scale}px 'Roboto', sans-serif`;
-			ctx.fillStyle = "#4b5563";
-			const descLines = getLines(ctx, description, contentWidth - 16 * scale);
-			const maxDescLines = 6;
-
-			descLines.slice(0, maxDescLines).forEach((line) => {
-				ctx.fillText(line, padding + 16 * scale, drawY);
-				drawY += 25 * scale; // line height
+			ctx.font = `400 ${14 * scale}px ${bodyFont}`;
+			ctx.fillStyle = mutedInk;
+			displayDescLines.forEach((line) => {
+				ctx.fillText(line, padding + 14 * scale, drawY);
+				drawY += descLineHeight;
 			});
-			// drawY += 24 * scale; // Removed to reduce whitespace
+			drawY += 22 * scale;
 		} else {
-			drawY += 8 * scale;
+			drawY += 12 * scale;
 		}
 
-		// Draw Footer Divider
-		drawY += 8 * scale; // Spacing before line
+		// Footer divider
+		drawY += 8 * scale + extraBreath * 0.65;
 		ctx.beginPath();
-		ctx.strokeStyle = "#f3f4f6";
+		ctx.strokeStyle = ruleColor;
 		ctx.lineWidth = 1 * scale;
 		ctx.moveTo(padding, drawY);
 		ctx.lineTo(width - padding, drawY);
 		ctx.stroke();
-		drawY += 8 * scale; // Spacing after line
+		drawY += 18 * scale;
 
-		// Draw Footer Content
 		const footerY = drawY;
-		const qrSize = 64 * scale;
+		const qrSize = 68 * scale;
 		const qrX = width - padding - qrSize;
-		const authorY = footerY + 8 * scale;
+		const authorY = footerY + 4 * scale;
+		const avatarSize = 56 * scale;
 
-		// Left: Author
 		if (avatarImg) {
 			ctx.save();
-			const avatarSize = 64 * scale;
 			const avatarX = padding;
-
-			// Circle clip
 			ctx.beginPath();
 			ctx.arc(
 				avatarX + avatarSize / 2,
@@ -504,16 +519,14 @@ async function generatePoster() {
 			);
 			ctx.closePath();
 			ctx.clip();
-
 			ctx.drawImage(avatarImg, avatarX, authorY, avatarSize, avatarSize);
 			ctx.restore();
 
-			// Border for avatar
 			ctx.beginPath();
 			ctx.arc(
-				avatarX + (64 * scale) / 2,
-				authorY + (64 * scale) / 2,
-				(64 * scale) / 2,
+				avatarX + avatarSize / 2,
+				authorY + avatarSize / 2,
+				avatarSize / 2,
 				0,
 				Math.PI * 2,
 			);
@@ -523,60 +536,55 @@ async function generatePoster() {
 		}
 
 		const authorTextX =
-			padding + (resolvedAvatar ? 64 * scale + 16 * scale : 0);
-		const authorMaxWidth = qrX - 24 * scale - authorTextX;
-		const textCenterY = authorY + 32 * scale;
+			padding + (resolvedAvatar ? avatarSize + 14 * scale : 0);
+		const authorMaxWidth = qrX - 20 * scale - authorTextX;
+		const textCenterY = authorY + avatarSize / 2;
 
 		ctx.textAlign = "left";
 		ctx.textBaseline = "top";
-		ctx.fillStyle = "#9ca3af";
-		ctx.font = `${12 * scale}px 'Roboto', sans-serif`;
-		ctx.fillText(i18n(I18nKey.author), authorTextX, textCenterY - 20 * scale);
+		ctx.fillStyle = mutedInk;
+		ctx.font = `${11 * scale}px ${bodyFont}`;
+		ctx.fillText(i18n(I18nKey.author), authorTextX, textCenterY - 18 * scale);
 
-		ctx.fillStyle = "#1f2937";
-		ctx.font = `700 ${20 * scale}px 'Roboto', sans-serif`;
+		// 作者名保留艺术字
+		ctx.fillStyle = brandTitleColor;
+		ctx.font = `600 ${18 * scale}px ${BRAND_FONT_STACK}`;
 		ctx.fillText(
 			fitText(ctx, author, authorMaxWidth),
 			authorTextX,
-			textCenterY + 4 * scale,
+			textCenterY + 2 * scale,
 		);
 
-		// Right: QR Code
-		// QR Background/Shadow effect (simplified as border)
 		ctx.fillStyle = "#ffffff";
-		// Shadow simulation
-		ctx.shadowColor = "rgba(0, 0, 0, 0.05)";
+		ctx.shadowColor = "rgba(0, 0, 0, 0.04)";
 		ctx.shadowBlur = 4 * scale;
-		ctx.shadowOffsetY = 2 * scale;
+		ctx.shadowOffsetY = 1 * scale;
 		drawRoundedRect(ctx, qrX, footerY, qrSize, qrSize, 4 * scale);
 		ctx.fill();
-		ctx.shadowColor = "transparent"; // Reset shadow
+		ctx.shadowColor = "transparent";
 
-		// Draw QR
 		const qrInnerSize = 56 * scale;
-		const qrPadding = (qrSize - qrInnerSize) / 2;
+		const qrPad = (qrSize - qrInnerSize) / 2;
 		if (qrImg) {
 			ctx.drawImage(
 				qrImg,
-				qrX + qrPadding,
-				footerY + qrPadding,
+				qrX + qrPad,
+				footerY + qrPad,
 				qrInnerSize,
 				qrInnerSize,
 			);
 		}
 
-		// QR caption
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillStyle = "#9ca3af";
-		ctx.font = `${10 * scale}px 'Roboto', sans-serif`;
+		ctx.fillStyle = mutedInk;
+		ctx.font = `${10 * scale}px ${bodyFont}`;
 		ctx.fillText(
-			fitText(ctx, i18n(I18nKey.scanToRead), qrSize),
+			fitText(ctx, i18n(I18nKey.scanToRead), qrSize + 8 * scale),
 			qrX + qrSize / 2,
-			footerY + qrSize + 6 * scale,
+			footerY + qrSize + 8 * scale,
 		);
 
-		// Finalize
 		posterImage = canvas.toDataURL("image/png");
 		generating = false;
 	} catch (error) {
@@ -596,6 +604,12 @@ function downloadPoster() {
 
 function closeModal() {
 	showModal = false;
+}
+
+function handleKeydown(e: KeyboardEvent) {
+	if (e.key === "Escape" && showModal) {
+		closeModal();
+	}
 }
 
 let copied = false;
@@ -620,58 +634,160 @@ function portal(node: HTMLElement) {
 </script>
 
 <!-- Trigger Button -->
-<button 
-  class="btn-regular rounded-lg h-12 px-6 gap-2 hover:scale-105 active:scale-95 whitespace-nowrap"
+<button
+  type="button"
+  class="share-bar__action share-bar__action--poster"
   on:click={generatePoster}
-  aria-label="Generate Share Poster"
+  aria-label={i18n(I18nKey.shareArticle)}
 >
-  <Icon icon="lucide:share-2" />
+  <span class="share-bar__action-icon" aria-hidden="true">
+    <Icon icon="lucide:share-2" class="share-bar__action-glyph" />
+  </span>
   <span>{i18n(I18nKey.shareArticle)}</span>
 </button>
 
-
+<svelte:window on:keydown={handleKeydown} />
 
 <!-- Modal -->
 {#if showModal}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div use:portal class="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity" on:click={closeModal}>
-    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-[440px] w-full max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl transform transition-all" on:click={(e) => e.stopPropagation()}>
-      
-      <div class="p-6 flex justify-center bg-gray-50 dark:bg-gray-900 min-h-[200px] items-center">
+  <div
+    use:portal
+    class="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity"
+    role="dialog"
+    aria-modal="true"
+    aria-label={i18n(I18nKey.shareArticle)}
+    on:click={closeModal}
+  >
+    <div
+      class="relative overflow-hidden rounded-2xl max-w-[440px] w-full max-h-[92vh] flex flex-col shadow-2xl transform transition-all border border-black/8 bg-[#f3efe8] dark:bg-gray-900 dark:border-gray-700"
+      on:click={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        class="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-black/10 bg-white/95 text-gray-600 shadow-sm transition-colors hover:bg-white hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800/95 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+        on:click={closeModal}
+        aria-label={i18n(I18nKey.announcementClose)}
+        title={i18n(I18nKey.announcementClose)}
+      >
+        <Icon icon="lucide:x" class="h-3.5 w-3.5" />
+      </button>
+
+      <div class="px-3.5 pt-4 pb-2 flex justify-center items-center">
         {#if posterImage}
-          <img src={posterImage} alt="Poster" class="max-w-full h-auto shadow-lg rounded-lg" />
+          <img src={posterImage} alt="Poster" class="max-w-full h-auto rounded-xl shadow-[0_10px_28px_rgba(0,0,0,0.12)] ring-1 ring-black/6" />
         {:else}
-           <div class="flex flex-col items-center gap-3">
-             <div class="w-8 h-8 border-2 border-gray-200 rounded-full animate-spin" style="border-top-color: {themeColor}"></div>
-             <span class="text-sm text-gray-500">{i18n(I18nKey.generatingPoster)}</span>
+           <div class="flex flex-col items-center gap-3 py-16">
+             <div class="w-7 h-7 border-2 border-gray-200 rounded-full animate-spin" style="border-top-color: {themeColor}"></div>
+             <span class="text-sm text-gray-500 dark:text-gray-400">{i18n(I18nKey.generatingPoster)}</span>
            </div>
         {/if}
       </div>
       
-      <div class="p-4 border-t border-gray-100 dark:border-gray-700 grid grid-cols-2 gap-3">
-        <button 
-          class="py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          on:click={copyLink}
-        >
-          {#if copied}
-            <Icon icon="lucide:check" />
-            <span>{i18n(I18nKey.copied)}</span>
-          {:else}
-            <Icon icon="lucide:link" />
-            <span>{i18n(I18nKey.copyLink)}</span>
-          {/if}
-        </button>
-        <button 
-          class="py-3 text-white rounded-xl font-medium active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-90"
-          style="background-color: {themeColor};"
-          on:click={downloadPoster}
-          disabled={!posterImage}
-        >
-          <Icon icon="lucide:download" />
-          {i18n(I18nKey.savePoster)}
-        </button>
+      <div class="share-poster-modal__footer px-3.5 pb-3.5 pt-1">
+        <div class="grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            class="share-poster-modal__btn"
+            on:click={copyLink}
+          >
+            <span class="share-poster-modal__btn-icon" aria-hidden="true">
+              {#if copied}
+                <Icon icon="lucide:check" class="share-poster-modal__btn-glyph" />
+              {:else}
+                <Icon icon="lucide:link" class="share-poster-modal__btn-glyph" />
+              {/if}
+            </span>
+            <span>{copied ? i18n(I18nKey.copied) : i18n(I18nKey.copyLink)}</span>
+          </button>
+          <button
+            type="button"
+            class="share-poster-modal__btn share-poster-modal__btn--primary"
+            on:click={downloadPoster}
+            disabled={!posterImage}
+          >
+            <span class="share-poster-modal__btn-icon" aria-hidden="true">
+              <Icon icon="lucide:download" class="share-poster-modal__btn-glyph" />
+            </span>
+            <span>{i18n(I18nKey.savePoster)}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 {/if}
+
+<style>
+  :global(.share-poster-modal__btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.45rem;
+    border: 1px solid oklch(0% 0 0 / 0.08);
+    background: oklch(99% 0.004 260 / 0.92);
+    color: oklch(38% 0.02 260);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease;
+  }
+
+  :global(html.dark .share-poster-modal__btn) {
+    border-color: oklch(100% 0 0 / 0.1);
+    background: oklch(24% 0.02 260);
+    color: oklch(88% 0.01 260);
+  }
+
+  :global(.share-poster-modal__btn-icon) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 0.35rem;
+    background: oklch(96% 0.008 260);
+    color: oklch(48% 0.02 260);
+    flex-shrink: 0;
+  }
+
+  :global(html.dark .share-poster-modal__btn-icon) {
+    background: oklch(30% 0.02 260);
+    color: oklch(76% 0.02 260);
+  }
+
+  :global(.share-poster-modal__btn-glyph) {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  :global(.share-poster-modal__btn--primary) {
+    border-color: color-mix(in oklch, var(--primary) 35%, transparent);
+    background: color-mix(in oklch, var(--primary) 92%, white);
+    color: white;
+  }
+
+  :global(html.dark .share-poster-modal__btn--primary) {
+    background: color-mix(in oklch, var(--primary) 78%, black);
+    color: oklch(98% 0.01 260);
+  }
+
+  :global(.share-poster-modal__btn--primary .share-poster-modal__btn-icon) {
+    background: oklch(100% 0 0 / 0.16);
+    color: inherit;
+  }
+
+  :global(.share-poster-modal__btn:hover:not(:disabled)) {
+    border-color: color-mix(in oklch, var(--primary) 24%, oklch(0% 0 0 / 0.08));
+  }
+
+  :global(.share-poster-modal__btn:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
