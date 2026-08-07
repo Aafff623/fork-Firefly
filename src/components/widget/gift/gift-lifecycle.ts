@@ -21,7 +21,11 @@ const CARD_COLLAPSE_MS = 420;
 const GIFT_PERSIST = !import.meta.env.DEV;
 
 function prefersReducedMotion(): boolean {
-	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	return (
+		typeof window !== "undefined" &&
+		typeof window.matchMedia === "function" &&
+		window.matchMedia("(prefers-reduced-motion: reduce)").matches
+	);
 }
 
 function lsGet(key: string): string | null {
@@ -84,6 +88,9 @@ function fadeOutAnnouncementCard(card: HTMLElement | null, giftId: string): void
 	const collapseMs = prefersReducedMotion() ? 50 : CARD_COLLAPSE_MS;
 	const rect = card.getBoundingClientRect();
 	const cs = getComputedStyle(card);
+	const parent = card.parentElement;
+	// 收合期取消 flex gap 占位，避免下方卡「悬空」一截
+	if (parent) parent.setAttribute("data-gift-collapsing", "1");
 	card.style.boxSizing = "border-box";
 	card.style.height = `${rect.height}px`;
 	card.style.marginTop = cs.marginTop;
@@ -91,6 +98,7 @@ function fadeOutAnnouncementCard(card: HTMLElement | null, giftId: string): void
 	card.style.paddingTop = cs.paddingTop;
 	card.style.paddingBottom = cs.paddingBottom;
 	card.style.overflow = "hidden";
+	card.style.flexShrink = "0";
 	void card.offsetHeight;
 
 	card.classList.add("announcement-widget--fading");
@@ -106,13 +114,14 @@ function fadeOutAnnouncementCard(card: HTMLElement | null, giftId: string): void
 		if (done) return;
 		done = true;
 		card.removeEventListener("transitionend", onEnd);
-		if (!card.isConnected) return;
-		card.remove();
+		if (card.isConnected) card.remove();
+		parent?.removeAttribute("data-gift-collapsing");
 		notifySidebarLayout();
 	};
+	// 只认 height，避免 opacity 先结束掐断高度收合
 	const onEnd = (ev: TransitionEvent) => {
 		if (ev.target !== card) return;
-		if (ev.propertyName !== "height" && ev.propertyName !== "opacity") return;
+		if (ev.propertyName !== "height") return;
 		finish();
 	};
 	card.addEventListener("transitionend", onEnd);

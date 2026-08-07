@@ -1052,6 +1052,8 @@
 	pointer-events: none !important;
 	border-width: 0 !important;
 	box-shadow: none !important;
+	/* 抵消父级 flex gap-4 在零高节点两侧多出的一截空隙 */
+	margin-bottom: -1rem !important;
 	transition:
 		opacity 0.28s ease,
 		height 0.42s ease,
@@ -1059,6 +1061,11 @@
 		padding 0.42s ease,
 		border-width 0.42s ease,
 		box-shadow 0.28s ease !important;
+}
+
+/* 收合进行中：父容器标记，供调试与后续微调 */
+[data-gift-collapsing] > .announcement-widget--fading {
+	min-height: 0 !important;
 }
 
 .announcement-widget {
