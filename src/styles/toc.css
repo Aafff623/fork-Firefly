@@ -146,12 +146,6 @@
  */
 .toc-item.visible {
 	padding-left: 0.55rem;
-	background: color-mix(
-		in oklab,
-		var(--toc-focus-purple) calc(var(--toc-focus) * var(--toc-focus) * 6%),
-		transparent
-	);
-	border-radius: 4px;
 	box-shadow: inset 2.5px 0 0
 		color-mix(
 			in oklab,
@@ -199,8 +193,6 @@
 
 /* 中间高原带：主焦点紫色，同带内其它标题粉色，形成可辨的多项映射。 */
 .toc-item.toc-focus-primary {
-	background: color-mix(in oklab, var(--toc-focus-purple) 8%, transparent);
-	border-radius: 4px;
 	box-shadow: inset 2.5px 0 0 var(--toc-focus-purple);
 }
 
