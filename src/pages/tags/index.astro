@@ -5,6 +5,7 @@
  */
 import { Icon } from "astro-icon/components";
 import TagChalkSphere from "@/components/widget/TagChalkSphere.astro";
+import { tagAliases } from "@/config/tagAliases";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
@@ -21,7 +22,7 @@ const ranked = [...tags]
 ---
 
 <MainGridLayout title={i18n(I18nKey.tags)} description={i18n(I18nKey.allTags)}>
-  <div class="tags-page card-base px-6 py-5 mb-4 sm:px-8 sm:py-6">
+  <div class="tags-page card-base px-6 py-5 mb-4 sm:px-8 sm:py-6" data-tag-aliases={JSON.stringify(tagAliases)}>
     <header class="tags-page__head">
       <div class="tags-page__head-row">
         <div>
@@ -56,6 +57,18 @@ const ranked = [...tags]
             </div>
           )
         }
+      </div>
+      <div class="tags-page__search">
+        <Icon is:inline name="lucide:search" class="tags-page__search-icon" aria-hidden="true" />
+        <input
+          type="search"
+          class="tags-page__search-input"
+          data-tags-search-input
+          placeholder="搜索标签或别名…"
+          aria-label="搜索标签"
+          autocomplete="off"
+        />
+        <span class="tags-page__search-count" data-tags-search-count></span>
       </div>
     </header>
 
@@ -118,6 +131,47 @@ const ranked = [...tags]
     margin: 0;
     font-size: 0.85rem;
     color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .tags-page__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+  }
+
+  .tags-page__search-icon {
+    position: absolute;
+    left: 0.7rem;
+    width: 0.95rem;
+    height: 0.95rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+    pointer-events: none;
+  }
+
+  .tags-page__search-input {
+    width: 100%;
+    max-width: 20rem;
+    padding: 0.45rem 0.75rem 0.45rem 2rem;
+    font-size: 0.9rem;
+    color: var(--text-color, inherit);
+    background: color-mix(in oklch, var(--card-bg, #fff) 92%, transparent);
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 40%, transparent);
+    border-radius: 999px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .tags-page__search-input:focus {
+    border-color: color-mix(in oklch, var(--primary) 60%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 15%, transparent);
+  }
+
+  .tags-page__search-count {
+    font-size: 0.8rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+    white-space: nowrap;
   }
 
   .tags-page__mode {
@@ -291,5 +345,88 @@ const ranked = [...tags]
     }
     document.addEventListener("swup:contentReplaced", boot);
     document.addEventListener("swup:page:view", boot);
+  })();
+</script>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    function bootSearch() {
+      var page = document.querySelector(".tags-page");
+      var input = page && page.querySelector("[data-tags-search-input]");
+      var countEl = page && page.querySelector("[data-tags-search-count]");
+      var host = document.querySelector("[data-tags-page-sphere]");
+      if (!page || !input || !host) return;
+      if (input._searchBound) return;
+      input._searchBound = true;
+
+      var aliases = {};
+      try {
+        aliases = JSON.parse(page.getAttribute("data-tag-aliases") || "{}");
+      } catch (e) {}
+
+      function getItems() {
+        var fallback = host.querySelector("[data-tag-chalk-fallback]");
+        if (!fallback) return [];
+        return Array.prototype.map.call(
+          fallback.querySelectorAll("li"),
+          function (li) {
+            var a = li.querySelector("a, span");
+            var text = a
+              ? (a.textContent || "")
+                  .replace(/^#/, "")
+                  .replace(/\(\d+\)/, "")
+                  .trim()
+              : "";
+            return { li: li, name: text };
+          }
+        );
+      }
+
+      function filter(kw) {
+        var items = getItems();
+        var k = kw.toLowerCase().trim();
+        if (!k) {
+          items.forEach(function (it) { it.li.style.display = ""; });
+          if (countEl) countEl.textContent = "";
+          return;
+        }
+        var matched = 0;
+        items.forEach(function (it) {
+          var al = aliases[it.name] || [];
+          var hay = [it.name.toLowerCase()].concat(
+            al.map(function (x) { return String(x).toLowerCase(); })
+          );
+          var hit = hay.some(function (h) {
+            return h.indexOf(k) !== -1 || k.indexOf(h) !== -1;
+          });
+          it.li.style.display = hit ? "" : "none";
+          if (hit) matched++;
+        });
+        if (countEl) {
+          countEl.textContent = matched ? "匹配 " + matched + " 个" : "无匹配";
+        }
+      }
+
+      input.addEventListener("input", function () {
+        var kw = input.value;
+        var mode = host.getAttribute("data-view-mode") || "list";
+        if (
+          kw.trim() &&
+          mode !== "list" &&
+          typeof window.__setTagChalkSphereMode === "function"
+        ) {
+          window.__setTagChalkSphereMode(host, "list");
+        }
+        filter(kw);
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootSearch);
+    } else {
+      bootSearch();
+    }
+    document.addEventListener("swup:contentReplaced", bootSearch);
+    document.addEventListener("swup:page:view", bootSearch);
   })();
 </script>
