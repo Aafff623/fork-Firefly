@@ -269,7 +269,7 @@
 	transition:
 		opacity 0.35s ease,
 		filter 0.35s ease;
-	/* 轻微上下悬浮；悬停邀请另挂晃动，点击才溶解 */
+	/* 常驻仅慢自转；轻浮在容器；悬停改为原地抖胀邀请 */
 	animation: gift-float-3d 4.5s ease-in-out infinite;
 }
 
@@ -819,23 +819,32 @@
 	}
 }
 
-/* 悬停邀请：同形态 3D 轻晃（不切包装盒） */
+/* 悬停邀请：均匀缩放 + 平面轻晃（禁止非 uniform scale / 子级 filter，否则会压扁 3D） */
 @keyframes gift-box-invite-wiggle {
 	0%,
 	100% {
-		transform: translate(-50%, calc(-50% + 0px)) scale(var(--gift-3d-scale)) rotateZ(0deg);
+		transform: translate(-50%, -50%) scale(var(--gift-3d-scale)) rotateZ(0deg);
 	}
-	25% {
-		transform: translate(-50%, calc(-50% - 5px)) scale(calc(var(--gift-3d-scale) * 1.03))
-			rotateZ(-2.2deg);
+	12% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.042)) rotateZ(-4deg);
 	}
-	50% {
-		transform: translate(-50%, calc(-50% - 9px)) scale(calc(var(--gift-3d-scale) * 1.04))
-			rotateZ(0deg);
+	24% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.048)) rotateZ(4deg);
 	}
-	75% {
-		transform: translate(-50%, calc(-50% - 5px)) scale(calc(var(--gift-3d-scale) * 1.03))
-			rotateZ(2.2deg);
+	36% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.035)) rotateZ(-3.5deg);
+	}
+	48% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.045)) rotateZ(3.5deg);
+	}
+	60% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.028)) rotateZ(-2.5deg);
+	}
+	72% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.038)) rotateZ(2.5deg);
+	}
+	84% {
+		transform: translate(-50%, -50%) scale(calc(var(--gift-3d-scale) * 1.012)) rotateZ(-1deg);
 	}
 }
 
@@ -859,12 +868,18 @@
 	}
 }
 
-/* 悬停 / invite：只晃 3D，不溶解、不换包装 */
+/* 悬停 / invite：均匀抖胀 + 略快自转，不溶解、不换包装 */
 .gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 .gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container,
 .gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box-container {
-	animation: gift-box-invite-wiggle 0.75s ease-in-out infinite;
+	animation: gift-box-invite-wiggle 0.68s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
 	transition: none;
+}
+
+.gift-surprise:hover:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box,
+.gift-surprise:focus-within:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box,
+.gift-surprise.gift-surprise--invite:not(:has(.gift-surprise__check:checked)):not([data-gift-opened="true"]) .gift-box {
+	animation-duration: 14s;
 }
 
 /* 点击：3D 溶解；包装仅此时出现并快拆 */
