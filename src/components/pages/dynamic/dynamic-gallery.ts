@@ -14,10 +14,16 @@ export function registerDynamicGallery(): void {
 		private images: GalleryImage[] = [];
 
 		connectedCallback() {
-			if (this.dataset.ready) return;
 			const source = this.dataset.sourceId
 				? document.getElementById(this.dataset.sourceId)
 				: null;
+			// 已初始化时清掉 source 里 React 重渲出来的重复 img
+			if (this.dataset.ready) {
+				source
+					?.querySelectorAll<HTMLImageElement>("img")
+					.forEach((img) => img.remove());
+				return;
+			}
 			if (!source) return;
 			const elements = [...source.querySelectorAll<HTMLImageElement>("img")];
 			if (elements.length === 0) return;

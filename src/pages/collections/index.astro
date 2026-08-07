@@ -154,14 +154,14 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     font-size: 1.12rem;
     font-weight: 800;
     font-style: normal;
-    color: oklch(0.42 0.12 195);
+    color: color-mix(in oklch, var(--primary) 72%, oklch(0.28 0.02 70));
     text-decoration: none;
     letter-spacing: 0.01em;
     text-shadow: 0 1px 0 color-mix(in oklch, var(--card-bg) 85%, transparent);
   }
 
   :global(.dark) .collection-card__name {
-    color: oklch(0.78 0.1 195);
+    color: color-mix(in oklch, var(--primary) 55%, oklch(0.92 0.01 70));
   }
 
   .collection-card__desc {

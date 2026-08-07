@@ -1,5 +1,5 @@
 import { Check, Circle, Image as ImageIcon, MapPin, MessageCircle, Pin } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
 import {
 	detectDynamicKind,
@@ -144,18 +144,9 @@ function EntryBody({
 	const fullTime = formatFullTime(date, useLocalTz, timezone, lang || undefined);
 	const location = entry.location?.trim();
 
-	let html = entry.html || "";
-	if (entry.images?.length) {
-		const imgs = entry.images
-			.map(
-				(image) =>
-					`<img src="${image.src}" alt="${image.alt || ""}" loading="lazy"${
-						image.title ? ` title="${image.title}"` : ""
-					} />`,
-			)
-			.join("");
-		html += imgs;
-	}
+	const html = entry.html || "";
+	const mediaId = `${contentId}-media`;
+	const gallerySourceId = entry.images?.length ? mediaId : contentId;
 
 	useEffect(() => {
 		const el = document.getElementById(contentId);
@@ -171,6 +162,18 @@ function EntryBody({
 			}
 		}
 	}, [contentId, kind, html]);
+
+	// gallery 已 ready 时清空 staging，避免 React 重渲把同一张图又塞回正文旁
+	useLayoutEffect(() => {
+		if (!entry.images?.length) return;
+		const gallery = document.querySelector(
+			`dynamic-gallery[data-source-id="${mediaId}"]`,
+		) as HTMLElement | null;
+		const staging = document.getElementById(mediaId);
+		if (gallery?.dataset.ready === "true" && staging) {
+			staging.replaceChildren();
+		}
+	}, [entry.images, mediaId]);
 
 	return (
 		<div className="ff-tl-rich">
@@ -231,9 +234,23 @@ function EntryBody({
 				dangerouslySetInnerHTML={{ __html: html }}
 			/>
 
+			{entry.images?.length ? (
+				<div id={mediaId} className="dynamic-media-staging" hidden aria-hidden="true">
+					{entry.images.map((image) => (
+						<img
+							key={image.src}
+							src={image.src}
+							alt={image.alt || ""}
+							title={image.title || undefined}
+							loading="lazy"
+						/>
+					))}
+				</div>
+			) : null}
+
 			<dynamic-gallery
 				className="dynamic-gallery"
-				data-source-id={contentId}
+				data-source-id={gallerySourceId}
 				data-view-image={viewImageLabel}
 				data-select-image={selectImageLabel}
 				hidden

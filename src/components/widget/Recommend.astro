@@ -48,6 +48,12 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
 	category: (p.data.category || "NOTE").trim(),
 	published: formatDateToYYYYMMDD(p.data.published),
 }));
+
+const hideRowCategoryKeys =
+	initialRows.length > 0 &&
+	initialRows.every(
+		(row) => row.category.toLowerCase() === initialRows[0].category.toLowerCase(),
+	);
 ---
 
 <WidgetLayout
@@ -66,9 +72,17 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
     data-limit={String(limit)}
     data-empty-text={emptyText}
     data-issue={issue}
+    data-hide-row-keys={hideRowCategoryKeys ? "1" : "0"}
   >
     <header class="recommend-index__mast">
       <span class="recommend-index__issue" data-recommend-issue>{issue}</span>
+      <span
+        class="recommend-index__same-cat"
+        data-recommend-same-cat
+        hidden={!hideRowCategoryKeys}
+      >
+        {hideRowCategoryKeys ? initialRows[0].category : ""}
+      </span>
     </header>
 
     <div class="recommend-index__rows" data-recommend-rows>
@@ -80,7 +94,11 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
               class="recommend-index__row"
               title={post.title}
             >
-              <span class="recommend-index__key">{post.category}</span>
+              {
+                hideRowCategoryKeys ? null : (
+                  <span class="recommend-index__key">{post.category}</span>
+                )
+              }
               <span class="recommend-index__title">{post.title}</span>
               <span class="recommend-index__meta">{post.published}</span>
             </a>
@@ -154,20 +172,21 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
         .toLowerCase();
     }
 
-    function rowHtml(base, post) {
+    function rowHtml(base, post, hideKeys) {
       var href = base + "/posts/" + post.id + "/";
       var cat = (post.category || "NOTE").trim();
       var title = post.title || "";
       var meta = post.published || formatDate(post.publishedAt) || "";
+      var keyHtml = hideKeys
+        ? ""
+        : '<span class="recommend-index__key">' + cat + "</span>";
       return (
         '<a href="' +
         href +
         '" class="recommend-index__row" title="' +
         title.replace(/"/g, "&quot;") +
         '">' +
-        '<span class="recommend-index__key">' +
-        cat +
-        "</span>" +
+        keyHtml +
         '<span class="recommend-index__title"></span>' +
         '<span class="recommend-index__meta">' +
         meta +
@@ -182,6 +201,28 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
       var apiUrl = root.dataset.apiUrl || "";
       var base = apiUrl.replace(/\/api\/allPostMeta\.json$/, "");
       var emptyText = root.dataset.emptyText || "";
+      var hideKeys = false;
+      if (posts.length) {
+        var firstCat = String(posts[0].category || "NOTE")
+          .trim()
+          .toLowerCase();
+        hideKeys = posts.every(function (p) {
+          return (
+            String(p.category || "NOTE").trim().toLowerCase() === firstCat
+          );
+        });
+      }
+      root.dataset.hideRowKeys = hideKeys ? "1" : "0";
+      var sameCatEl = root.querySelector("[data-recommend-same-cat]");
+      if (sameCatEl) {
+        if (hideKeys && posts.length) {
+          sameCatEl.textContent = String(posts[0].category || "").trim();
+          sameCatEl.hidden = false;
+        } else {
+          sameCatEl.textContent = "";
+          sameCatEl.hidden = true;
+        }
+      }
 
       if (!posts.length) {
         rows.innerHTML =
@@ -195,7 +236,7 @@ const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => (
       var frag = document.createDocumentFragment();
       posts.forEach(function (post) {
         var wrap = document.createElement("div");
-        wrap.innerHTML = rowHtml(base, post);
+        wrap.innerHTML = rowHtml(base, post, hideKeys);
         var a = wrap.firstElementChild;
         if (!a) return;
         var titleEl = a.querySelector(".recommend-index__title");

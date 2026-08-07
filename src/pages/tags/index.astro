@@ -155,12 +155,16 @@ const ranked = [...tags]
     max-width: 20rem;
     padding: 0.45rem 0.75rem 0.45rem 2rem;
     font-size: 0.9rem;
-    color: var(--text-color, inherit);
+    color: color-mix(in oklab, var(--content-meta) 95%, transparent);
     background: color-mix(in oklch, var(--card-bg, #fff) 92%, transparent);
     border: 1px solid color-mix(in oklch, var(--line-divider, #000) 40%, transparent);
     border-radius: 999px;
     outline: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .tags-page__search-input::placeholder {
+    color: color-mix(in oklab, var(--content-meta) 65%, transparent);
   }
 
   .tags-page__search-input:focus {

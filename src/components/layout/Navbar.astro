@@ -333,15 +333,15 @@ const logoVariants = await Promise.all(
 		letter-spacing: inherit;
 	}
 
-	/* 顶栏樱花：默认粉色，开启时略提亮 */
+	/* 顶栏樱花：沉一点的粉，开启时略提亮但不刺眼 */
 	.sakura-nav-btn .sakura-nav-icon {
-		color: #f6b3c9; /* 浅粉，比品牌粉更淡 */
+		color: #c97a96;
 	}
 
 	.sakura-nav-btn[aria-pressed="true"] .sakura-nav-icon,
 	.sakura-nav-btn.is-sakura-on .sakura-nav-icon {
-		color: #f9c4d4;
-		filter: drop-shadow(0 0 0.28rem rgb(246 179 201 / 0.28));
+		color: #b86b8a;
+		filter: drop-shadow(0 0 0.2rem rgb(184 107 138 / 0.18));
 	}
 
 	/* 导航栏音乐钮：播放中显示主题色小圆点 */

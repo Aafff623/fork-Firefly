@@ -67,6 +67,19 @@ html.dark .recommend-index__wordmark {
 	color: var(--ri-muted);
 }
 
+.recommend-index__same-cat {
+	font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.62rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--ri-muted);
+	opacity: 0.9;
+}
+
+.recommend-index__same-cat[hidden] {
+	display: none !important;
+}
+
 .recommend-index__rows {
 	border-top: 1px solid var(--ri-rule);
 	flex: 1 1 auto;
