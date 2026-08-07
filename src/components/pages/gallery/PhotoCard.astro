@@ -5,12 +5,15 @@ interface Props {
 	src: string;
 	albumId: string;
 	alt?: string;
+	publishedAt?: string;
+	tags?: string[];
 }
 
-const { src, albumId, alt = "" } = Astro.props;
+const { src, albumId, alt = "", publishedAt, tags = [] } = Astro.props;
 
 // LQIP 渐变占位
 const lqipProps = getLqipProps(src, undefined, true);
+const dateLabel = publishedAt ? publishedAt.slice(0, 10) : "";
 ---
 
 <div class="gallery-photo-card break-inside-avoid mb-3">
@@ -28,5 +31,23 @@ const lqipProps = getLqipProps(src, undefined, true);
       decoding="async"
       class="w-full h-auto object-cover opacity-0 transition-all duration-500 ease-out group-hover:scale-105"
     />
+    {
+      dateLabel ? (
+        <span class="gallery-photo-card__date absolute left-2 bottom-2 z-10 rounded-md bg-black/45 px-1.5 py-0.5 text-[0.65rem] font-medium text-white/95 backdrop-blur-sm">
+          {dateLabel}
+        </span>
+      ) : null
+    }
+    {
+      tags.length > 0 ? (
+        <span class="gallery-photo-card__tags absolute right-2 top-2 z-10 flex max-w-[70%] flex-wrap justify-end gap-1">
+          {tags.slice(0, 2).map((t) => (
+            <span class="rounded-md bg-black/40 px-1.5 py-0.5 text-[0.6rem] text-white/90 backdrop-blur-sm">
+              {t}
+            </span>
+          ))}
+        </span>
+      ) : null
+    }
   </div>
 </div>

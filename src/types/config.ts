@@ -16,7 +16,11 @@ export type {
 export type { FontSelectionConfig } from "./fontConfig";
 export type { FooterConfig } from "./footerConfig";
 export type { FriendLink, FriendsPageConfig } from "./friendsConfig";
-export type { GalleryAlbum, GalleryConfig } from "./galleryConfig";
+export type {
+	GalleryAlbum,
+	GalleryConfig,
+	GalleryPhotoMeta,
+} from "./galleryConfig";
 export type { LicenseConfig } from "./licenseConfig";
 export type { LayeredClockConfig } from "./layeredClockConfig";
 export type { MermaidConfig } from "./mermaidConfig";

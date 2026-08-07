@@ -38,7 +38,7 @@ export const galleryConfig: GalleryConfig = {
 	 * /gallery 专属题材分类栏顺序（非全站文章分类）。
 	 * 未出现在任一相册 category 中的项不显示。
 	 */
-	categories: ["角色", "风景", "日常"],
+	categories: ["角色", "风景", "日常", "二次元人物"],
 
 	// 瀑布流最小列宽(px)，浏览器根据容器宽度自动计算列数，默认 240
 	// 值越小列数越多，值越大列数越少

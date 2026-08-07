@@ -1,3 +1,13 @@
+/** 单图侧车元数据（public/gallery/<albumId>/photos.json） */
+export type GalleryPhotoMeta = {
+	/** 相对相册目录的文件名，或完整 http(s) URL（对应 urls.txt） */
+	file: string;
+	/** ISO 日期或 YYYY-MM-DD；用于排序 */
+	publishedAt?: string;
+	tags?: string[];
+	caption?: string;
+};
+
 // 相册元信息（用户在配置文件中填写）
 export type GalleryAlbum = {
 	id: string; // URL slug + 目录名，如 "japan-2025"

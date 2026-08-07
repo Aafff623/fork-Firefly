@@ -6,7 +6,10 @@ import { galleryConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getAlbumCover, scanAlbumPhotos } from "@/utils/gallery-utils";
+import {
+	getAlbumCover,
+	scanAlbumPhotoEntries,
+} from "@/utils/gallery-utils";
 import { getLqipProps } from "@/utils/lqip-utils";
 import { url } from "@/utils/url-utils";
 
@@ -28,7 +31,8 @@ if (!albumMeta) {
 	return Astro.redirect("/404/");
 }
 
-const photos = scanAlbumPhotos(albumMeta.id);
+const photoEntries = scanAlbumPhotoEntries(albumMeta.id);
+const photos = photoEntries.map((e) => e.src);
 const cover = getAlbumCover(albumMeta, photos);
 const columnWidth = galleryConfig.columnWidth || 240;
 
@@ -138,8 +142,14 @@ const coverLqipProps = cover
               class="gallery-masonry"
               style={`column-count: 1; column-gap: 0.75rem; --col-width: ${columnWidth}px;`}
             >
-              {photos.map((photo) => (
-                <PhotoCard src={photo} albumId={albumMeta.id} />
+              {photoEntries.map((photo) => (
+                <PhotoCard
+                  src={photo.src}
+                  albumId={albumMeta.id}
+                  alt={photo.caption || ""}
+                  publishedAt={photo.publishedAt}
+                  tags={photo.tags}
+                />
               ))}
             </div>
           </EncryptedContent>
@@ -148,8 +158,14 @@ const coverLqipProps = cover
             class="gallery-masonry"
             style={`column-count: 1; column-gap: 0.75rem; --col-width: ${columnWidth}px;`}
           >
-            {photos.map((photo) => (
-              <PhotoCard src={photo} albumId={albumMeta.id} />
+            {photoEntries.map((photo) => (
+              <PhotoCard
+                src={photo.src}
+                albumId={albumMeta.id}
+                alt={photo.caption || ""}
+                publishedAt={photo.publishedAt}
+                tags={photo.tags}
+              />
             ))}
           </div>
         )
