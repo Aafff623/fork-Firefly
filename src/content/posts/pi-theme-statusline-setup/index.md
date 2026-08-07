@@ -3,7 +3,7 @@ title: pi 的脸也是能整的：主题挑一个，状态栏挑一个，别贪
 published: 2026-08-06
 updated: 2026-08-06T11:34:54
 description: pi 默认那张脸能用但想换。美化分两类：主题是 JSON 颜色方案，多装互不影响；状态栏是 TS 扩展，抢 footer 渲染权只能装一个。记录 Catppuccin + pi-inline-statusline 的最稳组合，以及两个真坑：glm 系列不支持 thinking、enabledModels 会反噬默认模型。
-image: ""
+image: ./cover.jpg
 tags: [Pi, 美化配置]
 themeTags: [pi-coding-agent, Catppuccin, pi-inline-statusline, theme, statusline, enabledModels, GLM-5.2]
 category: Agentic Coding

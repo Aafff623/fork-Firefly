@@ -3,7 +3,7 @@ title: pi coding agent 开荒：原生没长的器官，extension 一件件补
 published: 2026-08-06
 updated: 2026-08-06T01:54:38
 description: pi coding agent 走"极简内核 + 扩展补齐"路线：官方明言不带 MCP / 子 agent / plan 模式，靠 pi-mcp-adapter、pi-subagents、pi-hermes-memory 三包一件件补。记录 GLM-5.2 纯文本的视觉回退、LANG 非交互 bash 的坑、以及"版本号现场实测"的教训。
-image: ""
+image: ./cover.jpg
 tags: [Pi, AI Coding, extension, MCP]
 themeTags: [pi-coding-agent, GLM-5.2, pi-mcp-adapter, pi-subagents, pi-hermes-memory, 视觉回退, LANG]
 category: Agentic Coding

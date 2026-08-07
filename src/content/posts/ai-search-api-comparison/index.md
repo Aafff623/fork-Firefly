@@ -3,6 +3,7 @@ title: 五家 AI 搜索 API 怎么选：一张表 + 三处反直觉的价格真�
 published: 2026-08-07
 updated: 2026-08-07T00:09:09
 description: 给 Agent 配联网搜索，五家主流搜索 API（Bocha/Brave/Tavily/Exa/阿里云 IQS）按官方资料核实后的对比：能力矩阵、价格真相、分层选型。
+image: ./cover.jpg
 tags: [AI Agent, 搜索 API, 选型, Tavily, Exa, Bocha]
 category: Agentic Coding
 
