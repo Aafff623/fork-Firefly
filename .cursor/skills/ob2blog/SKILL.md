@@ -38,7 +38,7 @@ compatibility: Requires the Firefly project root (package.json with pnpm new-pos
 1. 在 `Firefly/` 根目录落盘；UTF-8；正文从 `##` 起，不造卡片/TOC HTML。  
 2. 默认 `.md`；要 Icon/JSX 才 `.mdx`。Callout 只出 github 五类。  
 3. **重建** frontmatter；禁 `prev*`/`next*`；禁 `image: api`。  
-4. 导入未声明时默认 `draft: false`（直接发布）；仅当用户明确要求草稿、或安全规则触发（如口令帖）才设 `draft: true`。勿改站点壁纸嵌视频。  
+4. 导入未声明时默认 `draft: false` 并落 `posts/<slug>/`（可进 git）。用户明确要求草稿 / 草稿箱 / 先本地调试 → 落 `posts/_draftbox/<slug>/` 且 `draft: true`，**禁止 git add 箱内正文、禁止 push**（见 `AGENTS.md` 草稿箱）。仅主题 demo 才用已跟踪路径 + `draft: true`。安全规则触发（如口令帖）同进草稿箱除非用户要求入库隐藏。勿改站点壁纸嵌视频。  
 5. **必须解析 Obsidian 附件**；`![[…]]` 不得留在正文。  
 6. **一致性：** 已映射文章每次动手前跑 `sync_check.py`；漂移先处理再改。  
 7. **本地改名必跟：** vault 改文件名/标题 → 同步博客 `title` + manifest 路径 + 动态锚文本（见下节）；默认保留 slug。  
@@ -79,11 +79,11 @@ vault 笔记**改文件名**或用户声明标题以本地为准时，博客必�
 本仓默认 vault（固定，见 `CONTEXT.md`）：`D:\OneDrive\Desktop\Notes\threetwoa_ob`（附件 `Assets/picture`）。
 
 ```bash
-# 机械预转换（秒级）
+# 机械预转换（秒级）—— --category 必填；先对照 CONTEXT.md 词表并向用户确认
 python .cursor/skills/ob2blog/scripts/prep_convert.py \
   --note "D:/OneDrive/Desktop/Notes/threetwoa_ob/.../note.md" \
   --slug my-slug \
-  --category "Agentic Coding" \
+  --category "指南" \
   --tags "AI,Cursor" \
   --apply
 
@@ -93,6 +93,8 @@ python .cursor/skills/ob2blog/scripts/sync_check.py --slug my-slug
 # 发布前校验
 python .cursor/skills/ob2blog/scripts/validate_post.py src/content/posts/<slug>/index.md
 ```
+
+**category 门禁**：未获用户确认不得调用 prep（勿默默写 `Agentic Coding` / `未分类`）。正式公开帖缺省时**停问**；仅草稿箱可暂用占位并在出箱前改实。收尾 `site-cascade` 后按 workflow 发 Agent 协作者评论。
 
 未加 `--apply` 时产物在 `.ob2blog/staging/<slug>/`（已 gitignore）。
 

@@ -30,9 +30,11 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 ## 输入 / 输出
 
 - 输入：`D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\{主题}.md`（素材笔记）+ `assets/`（可选配图）
-- 输出：`src/content/posts/{slug}/index.md` + `cover.*`(可选) + 附件拷贝
-- 收尾：`site-cascade`（最新动态/统计/分类标签/热力图）
-- 归档：每发布成功一个主题，将该目录从 `todo\` 移入 `Knowledge\Archive\` 留档（内容不改写）
+- 输出（分流）：
+  - **正式发**：`src/content/posts/{slug}/index.md` + `cover.*`(可选) + 附件拷贝
+  - **草稿箱**：`src/content/posts/_draftbox/{slug}/`（本地预览、**不 git add / 不 push**；见下「草稿箱」）
+- 收尾：正式发才跑 `site-cascade`（最新动态/统计/分类标签/热力图）；草稿箱不 emit 公开动态
+- 归档：每**正式发布成功**一个主题，将该目录从 `todo\` 移入 `Knowledge\Archive\` 留档（内容不改写）
 
 ## 调用方式
 
@@ -48,7 +50,10 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 2 定稿    → 读素材，按 humanizer-tta 校准语气；拆长文为可读章节；**成稿后强制过一遍 humanizer-tta（Depointify 去 AI 味，50 分评分 ≥45 才放行）**；再过「成帖红线」(见下)
 3 成帖    → 补 frontmatter(参考 ob2blog/assets/templates/frontmatter.yaml)：
             title/published/description/tags/category/slug/image/draft/lang/pinned/comment
-            slug 必须英文 kebab(小写字母数字连字符)，中文标题手传；category 从既有集合取
+            slug 必须英文 kebab(小写字母数字连字符)，中文标题手传
+            **category 门禁**：对照 CONTEXT.md「现行分类词表」；素材 `@blog` 已写死则采纳，
+            否则列出候选（既有 ∪「新建：名称」）**向用户确认后**才写；未确认不得落盘。
+            禁止因「AI/工具」一律填 Agentic Coding。
 4 落盘    → 建 src/content/posts/{slug}/；正文写 index.md；assets 图拷到 ./images/(ASCII 名)
             并改写引用，封面另拷 cover.jpg 写 FM（不进正文），图按「配图规范」统一 Web 化。
             跳过 prep_convert/sync_check(它们强依赖
@@ -102,15 +107,28 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 | 中文 | 可「无字底图 + 后期叠字」；叠字参与排版 |
 | 返工 | 长工程可先落稿；不默认因观感挑剔整组重做 |
 
+## 草稿箱（本仓「草稿」真义）
+
+园主定义：**草稿 = 本地可 `pnpm dev` 预览调试，但不入库、不 push**。  
+不要把「只设 `draft: true` 却 commit 进 `posts/<slug>/`」当成默认草稿——那只会藏生产首页，文件仍会到远端。
+
+| 动作 | 落盘 | Git / 级联 |
+|---|---|---|
+| 用户说草稿 / 草稿箱 / 先本地调试 | `_draftbox/<slug>/`，`draft: true` | **禁止** add 正文；不 emit 动态 |
+| 用户说出箱 / 可以发了 | 迁到 `posts/<slug>/`，通常 `draft: false` | validate → site-cascade → 确认后 push |
+| 主题 demo（少见） | 已跟踪的 `posts/draft.md` 一类 | 与草稿箱无关，勿混用 |
+
+约定真源：`AGENTS.md`「草稿箱」· `docs/agents/workflow.md` · `_draftbox/README.md`。
+
 ## 硬规则
 
-1. **默认 `draft: false`**：素材已过提炼关，除非用户明确要求草稿或素材含敏感/口令内容，否则直接发布进生产构建。
+1. **默认正式发 `draft: false` 且落 `posts/<slug>/`**：素材已过提炼关。用户明确要求草稿 / 草稿箱 / 先本地调试，或素材含敏感/口令 → **进 `_draftbox/`** 且 `draft: true`，不得 push 箱内正文。
 2. **重建 frontmatter**：不沿用素材里的临时字段；`slug` 用英文 kebab（小写字母数字连字符）。主题目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
-2b. **首页可见性（必做）**：`pinned: false`（不要写成常驻置顶）；必须写带时分的 `updated: YYYY-MM-DDTHH:mm:ss`（落盘当下），让站内「默认自动置顶」选中这篇。仅写 `published: YYYY-MM-DD` 同日会与旧帖撞成同一时间戳，首页看起来像没顶上去。常驻置顶（`pinned: true`）只在用户明确要求时才开。
+2b. **首页可见性（正式发必做）**：`pinned: false`（不要写成常驻置顶）；必须写带时分的 `updated: YYYY-MM-DDTHH:mm:ss`（落盘当下），让站内「默认自动置顶」选中这篇。仅写 `published: YYYY-MM-DD` 同日会与旧帖撞成同一时间戳，首页看起来像没顶上去。常驻置顶（`pinned: true`）只在用户明确要求时才开。草稿箱帖不要求抢首页置顶。
 3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。
-4. **素材只读 + 发布后归档**：output 只读素材、写博客；发布成功后把该主题目录从 `Knowledge\todo\` **移入 `Knowledge\Archive\`**（原样留档，不改写内容）。失败 / 未发布则不移动。
-5. **越权禁止**：只在 blog 仓库内落 posts + 级联索引；不碰站点布局/配置内核，不改其他文章。
-6. **发布闭环**：本地校验通过 → 用户确认 → push → 核线上（遵循 `docs/agents/workflow.md`）。
+4. **素材只读 + 正式发布后归档**：output 只读素材、写博客；**出箱并正式发布成功**后把该主题目录从 `Knowledge\todo\` **移入 `Knowledge\Archive\`**（原样留档，不改写内容）。失败 / 仍在草稿箱则不移动。
+5. **越权禁止**：只在 blog 仓库内落 posts（含 draftbox）+ 正式发时的级联索引；不碰站点布局/配置内核，不改其他文章。
+6. **发布闭环**：草稿箱止于本地预览；正式发：本地校验通过 → 用户确认 → push → 核线上（遵循 `docs/agents/workflow.md`）。
 
 ## 链接与引用处理
 
@@ -123,4 +141,4 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 交接约定
 
-素材笔记若带 `<!-- @blog: ... -->` 类标记（如建议 category/tags/封面），output 优先采纳；无标记则按内容推断并列出依据，供用户抽查。产出后向用户报告：文件树(素材→帖子) + frontmatter 决策 + 校验结果。
+素材笔记若带 `<!-- @blog: ... -->` 类标记（如建议 category/tags/封面），output 优先采纳；无标记则按内容推断并**列出候选请用户确认 category**（不得静默默认）。产出后向用户报告：文件树(素材→帖子) + frontmatter 决策（含 category 依据）+ 校验结果。正式发后走 `site-cascade`，并按 workflow 发 Agent 协作者评论。

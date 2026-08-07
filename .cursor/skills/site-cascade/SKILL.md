@@ -42,8 +42,11 @@ compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 1 确认触发帖（slug）→ 2 cascade_check.py
 → 3 若公开帖缺「新笔记」动态 → emit
 → 4 核对侧栏组件位置（只读/必要时修 enable）
-→ 5 汇报四表面验收项
+→ 5 Agent 协作者评论（当前工具 pnpm agent-comment → 刚 emit 的 /dynamic/{entryId}/；语气 humanizer-tta）
+→ 6 汇报四表面验收项 + 评论是否发出
 ```
+
+步骤 5 细则见 `dynamic-post` skill「Agent 协作者评论」与 `docs/agents/workflow.md` 同名小节。密钥不入库；代理 / 限流失败时在汇报里写明，勿假装已评。
 
 ### 1–2. 索引检查
 
@@ -58,7 +61,8 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-sav
 
 ### 3. 最新动态（新笔记）
 
-对 **`draft: false`** 的新帖（或用户明确要求），若尚无指向该帖的动态，则创建：
+对 **已出箱且 `draft: false`** 的新帖（或用户明确要求），若尚无指向该帖的动态，则创建。  
+**草稿箱**（`posts/_draftbox/`）本地 WIP：**不要** `--emit-dynamic`，也不要为进箱动作改侧栏/假统计。
 
 ```bash
 python .cursor/skills/site-cascade/scripts/cascade_check.py \
@@ -108,9 +112,10 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 
 ## 汇报模板
 
-- 触发 slug / draft  
+- 触发 slug / draft / **category（须已确认）**  
 - cascade_check 摘要（帖数、分类、标签、字数）  
 - 是否 emit 动态及路径；**是否含批注**（`--blurb` / description / 兜底）  
+- **协作者评论**：agent key / path / 成功或限流·代理失败原因  
 - 侧栏 / 热力 WARN  
 - 建议用户刷新的页面：`/` 、`/dynamic/`
 

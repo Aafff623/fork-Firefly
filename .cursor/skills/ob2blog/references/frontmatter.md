@@ -7,7 +7,8 @@
 | 字段 | 要求 |
 |------|------|
 | `title` `published` | 必填；日期 `YYYY-MM-DD`；**勿**为列表效果往 `title` 塞 emoji / 颜文字（见 [title-mood.md](title-mood.md)） |
-| `description` `image` `tags` `category` `slug` | 建议；`image` 用 `./cover.*`，**禁** `api` |
+| `description` `image` `tags` `slug` | 建议；`image` 用 `./cover.*`，**禁** `api` |
+| `category` | **必填（公开帖）**；对照 `CONTEXT.md` 现行分类词表，经用户确认；禁止静默默认 `Agentic Coding` |
 | `draft` | 导入未声明 → `false`（默认发布）；用户点名草稿 / 安全规则触发 → `true` |
 | `password` / `passwordHint` | 见下方启发式 |
 | `prev*` / `next*` | 禁止 |

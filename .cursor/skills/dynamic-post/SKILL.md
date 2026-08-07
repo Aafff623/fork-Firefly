@@ -122,26 +122,29 @@ im.save("public/assets/dynamic/名字.jpg", "JPEG", quality=85, optimize=True)
 
 dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` 预览。**不需要跑 site-cascade**（那是发新帖后的级联；动态本身不触发统计/热力图变化）。
 
-## Agent 协作者评论（可选，第 5 步）
+## Agent 协作者评论（默认必做，第 5 步）
 
-发布动态后，可用**当前发布工具自己的身份**在对应动态评论区附加一条评论（协作者点评 / 状态补充），形成「动态 + 我的视角」闭环。每个 AI 工具 agent 有独立 Waline 账号 + 昵称 + 头像 + 语气（见 blog `src/config/agentPersonas.ts`）。
+发布动态后，**必须**用当前发布工具自己的身份在对应动态评论区附一条短评（协作者点评 / 状态补充）。人格见 `src/config/agentPersonas.ts`；账密只在本机 Claude memory（如 `agent-comment-accounts.md`），**禁止写入仓库**。
 
-- **当前工具 key**：claude-code / cursor / pi / opencode / codex（自己用什么工具发布就用哪个 key；账密见各自 AGENTS.md「Agent 协作者评论」小节）
+- **当前工具 key**：claude-code / cursor / pi / opencode / codex
+- **语气**：先按 **humanizer-tta**（直接、有观点、去 AI 腔），再贴合 `agentPersonas[key].tone`；一两句口语即可，禁客服腔与模板总结
 - **调用**（在 blog 根）：
   ```bash
   MSYS_NO_PATHCONV=1 NODE_USE_ENV_PROXY=1 \
   npx tsx scripts/agent-comment.ts --agent <key> --comment "<内容>" --path "/dynamic/{entryId}/" --password <pw>
   ```
-- **entryId** = 刚落盘的动态文件名（如 `2026-08-07-093015`）；评论 path 按单条动态隔离
-- **必带两个 env**：`NODE_USE_ENV_PROXY=1`（Node fetch 走 `HTTPS_PROXY=127.0.0.1:7892`，否则 Vercel 直连超时）+ `MSYS_NO_PATHCONV=1`（防 Git Bash 把 `/dynamic/` 转义成 `C:/Program Files/Git/...`）
-- **限流**：Waline 同 IP 连续评论报 `Comment too fast!`，需间隔 ~60s
-- **语气**：按 `agentPersonas[key].tone` 的人格写评论（自己的风格，不模板化）
+  亦可用：`pnpm agent-comment --agent <key> --comment "…" --path "/dynamic/{entryId}/" --password <pw>`
+- **entryId** = 刚落盘的动态文件名（如 `2026-08-07-093015`）
+- **必带两个 env**：`NODE_USE_ENV_PROXY=1`（走本机代理，否则 Vercel 直连超时）+ `MSYS_NO_PATHCONV=1`（防 Git Bash 改写 `/dynamic/`）
+- **限流**：Waline 同 IP 连续评论报 `Comment too fast!`，间隔约 60s
+- 不在 CI 自动发评
 
 ## 验收
 
 - 刷新 `/dynamic/`，确认新动态在最顶部（除非有置顶）、时间正确、kind 标签符合预期。
 - 配图：缩略图尺寸合理（不撑满）、点击能开 Fancybox 大图。
 - 暗色模式扫一眼。
+- 协作者评论已出现在该条动态下（或已说明限流/代理失败原因）。
 
 ## 硬规则
 

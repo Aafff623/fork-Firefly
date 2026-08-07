@@ -55,8 +55,31 @@
 Content Collections（`src/content.config.ts`）：
 
 - `posts` — 博客文章（md/mdx；frontmatter 可含 `collections` 人工收录进合集）
+- `posts/_draftbox/` — **草稿箱**（gitignore；本地 DEV 可预览，不 push；出箱后迁到 `posts/<slug>/`）
 - `dynamic` — 动态/碎碎念（可接 Memos）
 - `spec` — 特殊页面 Markdown
+
+**草稿箱 ≠ `draft: true` demo**：箱内正文永不入库；主题示例帖 `posts/draft.md` 可跟踪且仅靠 FM 藏生产首页。见 `AGENTS.md` / `docs/agents/workflow.md`。
+
+### 现行分类词表（发帖门禁）
+
+文章 frontmatter `category` **必须**显式确认后再写盘（`ob2blog` / `knowledge-output`）。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
+
+| 分类 | 适用（启发式） |
+|---|---|
+| Agentic Coding | Agent 工程、CLI/IDE agent 工作流、编码 agent 实践（确属此类才用） |
+| 指南 | 教程、上手、配置说明、避坑指南 |
+| 中转 | 中转站 / 池子 / 额度 / 线路测评 |
+| skill 测评 | Skill / MCP / 插件测评 |
+| 前端开发 | 前端工程、主题/站点实现向 |
+| 写作 | 写作方法、叙事、成稿方法论（按需新建或选用） |
+| 功能 | 站点功能介绍（按需） |
+
+新建分类：先问园主中文名，再写入该帖 `category`（列表由 content 聚合，一般无需改配置）。
+
+### MD 附件引用（`::note`）
+
+正文用 `::note{file="notes/xxx.md"}`（文件在 `public/` 下）生成笔记附件卡；设置面板「附件引用框样式」默认 **关**（普通链接），用户可打开。预览/下载由 `NoteCardPreview` 负责。注意：这与 Docusaurus 提醒框 `:::note` **不是**同一语法。
 
 ### 合集（人工策展）
 
@@ -92,6 +115,23 @@ Content Collections（`src/content.config.ts`）：
 - 默认页面仍 **prerender/static**；`CF_WORKERS` → Cloudflare adapter，否则 → `@astrojs/vercel`（供 `prerender=false` API）
 - Vercel 项目：`fork-firefly`，已连 GitHub origin
 - 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind）
+
+## 本地双端口预览（运维记忆 · 2026-08）
+
+两套服务**彼此独立**；`ERR_CONNECTION_REFUSED`（-102）= 该端口上**没有进程在听**，不是页面/HTML 坏了。
+
+| 端口 | 用途 | 启动（仓库根） | URL |
+|---|---|---|---|
+| **4321** | 站点本体（Astro） | `pnpm dev` | http://127.0.0.1:4321/ |
+| **8090** | README 预览壳 | `python -m http.server 8090` | http://127.0.0.1:8090/preview-readme.html |
+
+**常见原因（本仓实录）：**
+
+1. **重开 Cursor / 会话结束** → 后台 `pnpm dev`、`python -m http.server` 不会自动复活；终端元数据仍可能标 `running`，但 PID 已死（僵尸元数据）。
+2. **只起了其中一个** → 例如只起了 4321，8090 仍 refused；或反过来。
+3. **进程被 aborted** → Agent/终端中止会话后端口立刻空掉（曾见 `pnpm dev` ready 后数分钟即 `aborted`）。
+
+**最快排查：** `Get-NetTCPConnection -LocalPort 4321,8090`（或 `netstat -ano | findstr ":4321 :8090"`）→ 空则在仓库根重起对应命令 → `curl.exe -sS -o nul -w "%{http_code}" http://127.0.0.1:<port>/…` 期望 200。勿用 `file://` 打开 `preview-readme.html`。
 
 ## 硬约束
 

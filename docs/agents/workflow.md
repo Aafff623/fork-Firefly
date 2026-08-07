@@ -19,7 +19,8 @@ Issue(.scratch/<feature>/)
 每个 project-init phase 或可部署改动完成后，按固定顺序验收，禁止跳步：
 
 ```text
-1. 本地启动预览     → pnpm dev（或 pnpm build && pnpm preview）
+1. 本地启动预览     → pnpm dev（或 pnpm build && pnpm preview）→ http://127.0.0.1:4321/
+   （若验 README 壳）→ 仓库根另起 python -m http.server 8090 → http://127.0.0.1:8090/preview-readme.html
 2. 本地校验验收     → 目视关键页 + pnpm check（按改动范围）
 3. 你确认无误后     → git commit（若需要）+ git push origin
 4. 触发 CI/Vercel 部署 → 等 Ready
@@ -29,6 +30,7 @@ Issue(.scratch/<feature>/)
 - **未完成本地预览与校验，不得 push。**
 - **未看过线上结果，不得宣称 phase / 部署完成。**
 - 仅改治理文档、不影响站点产物时：可省略浏览器预览，但仍需说明「无前端产物变更」。
+- **`ERR_CONNECTION_REFUSED`**：该端口无进程（常见于重开 Cursor / 会话 aborted / 只起了其中一个）。双端口说明见 `CONTEXT.md` →「本地双端口预览」。
 
 ## 门禁
 
@@ -52,23 +54,26 @@ Issue(.scratch/<feature>/)
 
 ```text
 Obsidian 笔记（固定 vault，见 CONTEXT.md）
-  → /ob2blog（图文→ src/content/posts/<slug>）
+  → /ob2blog（图文→ src/content/posts/<slug>；**category 必填且已确认**）
   → site-cascade（动态 / 统计 / 分类标签 / 热力图；笔记动态带 `>` 批注，可用 `--blurb`）
+  → Agent 协作者评论（当前工具 `pnpm agent-comment`，语气 humanizer-tta）
   → 本地预览 →（你确认后）commit / push → 核线上
 ```
 
-- Skill：`.cursor/skills/ob2blog/`、`.cursor/skills/site-cascade/`
+- Skill：`.cursor/skills/ob2blog/`、`.cursor/skills/site-cascade/`、`.cursor/skills/dynamic-post/`（评论步骤）
 - 笔记↔帖映射：`.ob2blog/manifest.json`
 - 列表卡标题情绪点缀（emoji/颜文字）：仅 `PostCard` 展示层 `src/utils/title-mood.ts`；**勿**写入 frontmatter `title`
 - 笔记型动态：标题链 + Markdown `>` 作者批注（`--blurb` 或帖子 description）
+- **分类门禁**：写盘前对照 `CONTEXT.md` 现行分类词表；未获用户确认的 `category` 不得落盘；禁止因「AI/工具相关」一律填 `Agentic Coding`
 
 ### 乙 · 会话/调研 → Knowledge → 帖
 
 ```text
 会话 / 调研结论
   → knowledge-extract（→ D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
-  → knowledge-output（→ src/content/posts/<slug>；无参数=todo 全部，带主题=仅指定；成稿后强制过 humanizer-tta 去 AI 味，评分 ≥45 才发布）
-  → site-cascade（同上；emit 须带批注）
+  → knowledge-output（→ 见下「草稿箱」分流；**成帖前确认 category**）
+  → （仅出箱/正式发）site-cascade（同上；emit 须带批注）
+  → Agent 协作者评论（同上）
   → 发布成功后素材移入 Knowledge\Archive\ 留档
   → 本地预览 →（你确认后）commit / push → 核线上
 ```
@@ -77,6 +82,47 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 - 与甲互补：素材未进 Obsidian 时走乙；已进 vault 需双边同步时再走甲
 - 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
 - 笔记型动态批注约定：同甲
+- **分类门禁**：同甲
+
+### Agent 协作者评论（发帖 / 发动态后必做）
+
+当前发布工具用自己的 Waline 身份评一条，形成「内容 + 协作者视角」闭环。
+
+| 项 | 约定 |
+|---|---|
+| 何时 | `site-cascade` emit 动态之后，或 `dynamic-post` 落盘之后 |
+| 谁 | 当前工具 key：`cursor` / `claude-code` / `pi` / `opencode` / `codex` |
+| 命令 | `pnpm agent-comment --agent <key> --comment "…" --path "/dynamic/{entryId}/"`（发帖级联动态优先评动态 path；也可 `/posts/{slug}/`） |
+| 语气 | **humanizer-tta** + `src/config/agentPersonas.ts` 对应 `tone`；口语、有观点、去 AI 腔 |
+| 密钥 | 仅本机 Claude memory / 本地约定；**禁止写入仓库** |
+| 环境 | `NODE_USE_ENV_PROXY=1`、`MSYS_NO_PATHCONV=1`；Waline 限流约 60s |
+
+不在 CI 自动发评。
+
+### 草稿箱（本地预览 · 不进远端）
+
+园主定义的「草稿」：**本地能 `pnpm dev` 调试，但不进 git、不 push**。
+
+```text
+进箱：用户要草稿 / 先本地调试
+  → 落盘 src/content/posts/_draftbox/<slug>/（draft: true）
+  → 校验可跑；禁止 git add 箱内正文；不 emit 公开动态
+  → 本地打开 /posts/<slug>/ 预览
+
+出箱：用户说从草稿箱出来 / 可以发了
+  → 迁到 src/content/posts/<slug>/
+  → draft: false（除非仍要求草稿态 demo）
+  → validate + site-cascade（可 --emit-dynamic）
+  → 纳入 git → 确认后 push → 核线上
+```
+
+| 对照 | 草稿箱 `_draftbox/` | FM `draft: true` 且已跟踪（如 `posts/draft.md`） |
+|---|---|---|
+| Git | 忽略正文 | 可 commit |
+| 远端构建 | 无文件 | 有文件，生产列表过滤隐藏 |
+| 用途 | WIP 真文、本地调试 | 主题 demo / 刻意入库的隐藏帖 |
+
+箱内说明：`src/content/posts/_draftbox/README.md`。`.gitignore` 已忽略 `src/content/posts/_draftbox/**`，仅放行 `README.md`。
 
 ### 流程图/时序图用 Mermaid（别用文字代码块）
 
