@@ -1,0 +1,23 @@
+{
+  "skill_name": "wiki-post",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "fork-Firefly 的 GitHub Wiki 还是空的欢迎页。按使用者手册受众，起草 Home、_Sidebar、Getting-Started、FAQ 四页 Markdown，先不要推送到 .wiki.git。",
+      "expected_output": "Four draft Markdown pages (Home hub, Sidebar groups, Getting-Started with ports/commands, FAQ). Explicitly waits for publish authorization; links docs/AGENTS instead of pasting them; Chinese OK with ASCII slugs.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "对照 Oh My Zsh / FiraCode / VS Code 的 Wiki 形态，给我们仓设计一版页面树，并说明哪些内容必须留在 docs/ 不能进 Wiki。",
+      "expected_output": "Page tree with P0/P1/P2; audience chosen; SSOT table README/docs/Wiki; no dual-write of ADR/AGENTS; cites OMZ hub + FiraCode shards + VS Code contributor contrast.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把 Music / Pets / Waline 评论 做成三页 Wiki 草稿，并列出发布前 checklist。记住我说的是草稿，没说发布。",
+      "expected_output": "Three feature shard drafts with config paths; publish checklist present; must NOT run git push to .wiki.git or claim pages are live.",
+      "files": []
+    }
+  ]
+}

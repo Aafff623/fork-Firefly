@@ -71,9 +71,10 @@ pnpm new-d <content>
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
 | `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create`；产品版从 `1.0.0` 起；本地中英预览见 `preview-release.html` |
+| `wiki-post` | `.cursor/skills/wiki-post/` | GitHub Wiki 手册（Home/FAQ/功能页）；先模块盘点+起草，用户明确说「发布/推送 Wiki」才 push `.wiki.git`；与 `docs/` 不双写 |
 | `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画；源：[greensock/gsap-skills](https://github.com/greensock/gsap-skills)；`skills-lock.json` 可 `npx skills update` |
 
-分工：按源类型选路径（见下）→ 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`；发版走 `release-post`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。工作区根若为上一级 `blog/`，须为上述 skill 建 **junction**（与 `ob2blog` 同做法），否则斜杠命令发现不到。
+分工：按源类型选路径（见下）→ 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`；发版走 `release-post`；建/改 GitHub Wiki 走 `wiki-post`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。工作区根若为上一级 `blog/`，须为上述 skill 建 **junction**（与 `ob2blog` 同做法），否则斜杠命令发现不到。
 
 列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；甲乙成帖都**勿**写入 frontmatter `title`（见 `ob2blog` / `knowledge-output` 的 `references/title-mood.md`）。
 
