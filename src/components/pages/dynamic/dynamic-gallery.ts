@@ -61,12 +61,8 @@ export function registerDynamicGallery(): void {
 						String(index + 1),
 					),
 				);
-				// 只有一张图时，点击直接打开大图查看
-				if (this.images.length === 1) {
-					button.addEventListener("click", () => this.openLightbox(0));
-				} else {
-					button.addEventListener("click", () => this.open(index));
-				}
+				// 单图 / 多图：点缩略图都直接 Fancybox 灯箱（与下方单图动态一致）
+				button.addEventListener("click", () => this.openLightbox(index));
 				const container =
 					element.closest<HTMLElement>("center") ??
 					element.closest<HTMLElement>("figure") ??
