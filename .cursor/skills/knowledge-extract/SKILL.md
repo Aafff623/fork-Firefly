@@ -1,23 +1,40 @@
 ---
 name: knowledge-extract
 description: >-
-  把会话/讨论/调研成果提炼成高密度、符合人味、可直接归档的知识笔记(Markdown)。
+  把会话/讨论/调研/BibiGPT 音视频原料提炼成高密度、符合人味、可直接归档的知识笔记(Markdown)。
   触发词：知识提炼、整理成笔记/文章、归档会话、博客园文章、沉淀经验、把这次讨论写成文章、
-  提取要点、总结成 md、"knowledge extract"、"extract"、"写篇博客"、"记录下来"、回顾本会话。
+  提取要点、总结成 md、"knowledge extract"、"extract"、"写篇博客"、"记录下来"、回顾本会话、
+  BibiGPT、bibigpt、视频总结原料、音视频总结、这段是 BibiGPT 导出。
   本机环境产出到 D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\（含 assets 图），并输出文件树 + section 设计，
   便于后续交接 knowledge-output → site-cascade；发布后由 knowledge-output 移入 Knowledge\Archive\ 留档。
-  任何"把这段对话/这次调研变成可复用知识资产"的诉求都该触发本技能。
+  任何"把这段对话/这次调研/这段视频原料变成可复用知识资产"的诉求都该触发本技能。
 ---
 
-# knowledge-extract — 会话 → 知识笔记
+# knowledge-extract — 素材 → 知识笔记
 
-把一段对话、一次调研或一套踩坑经历，压缩成「有重点、有人味、能带走」的 Markdown 知识笔记。核心不是复述，是**提炼出读者能真正带走的东西**。
+把一段对话、一次调研、一套踩坑经历，或一份 **BibiGPT 等高保真原料**，压缩成「有重点、有人味、能带走」的 Markdown 知识笔记。核心不是复述，是**提炼出读者能真正带走的东西**。
+
+## 素材来源模块（先识别再提炼）
+
+开跑前先判定来源；细则与 BibiGPT 专用流程见 [`references/source-modules.md`](references/source-modules.md)。
+
+| ID | 来源 | extract 要点 |
+|---|---|---|
+| `session` | 本会话 / Agent 调研 | 默认六步 |
+| `paste-md` | 粘贴 MD（非 vault） | 当原料读，仍提炼 |
+| `bibigpt` | BibiGPT 导出的音视频总结 | **先工具搜证，再提炼**；保证据，勿抽空心 |
+| `mixed` | 混合 | 有 bibigpt 就走搜证档 |
+
+已进 Obsidian vault 且要双边同步 → 改走 `ob2blog`，不经本技能。
+
+**`bibigpt` 一句记**：网页会员总结吃 Plus 额度；MCP/API 另计 credits。BibiGPT 只做翻译与结构化原料，时效数字与「官方承认」必须本机搜证。源头求厚、中间求准、成帖求人味。
 
 ## 工作流（六步）
 
 ```
+0 来源   → 识别 session / paste-md / bibigpt / mixed（见上表）；bibigpt 先列待核查项并搜证
 1 提炼   → 从上下文抽"能带走的价值"：结论、坑、可复用做法；删闲聊/临时计算/无实质内容
-2 取舍   → 详略得当：删繁就简，突出最有价值的点（本技能最重要的步骤）
+2 取舍   → 详略得当：删繁就简，突出最有价值的点（本技能最重要的步骤；bibigpt 见保证据差分）
 3 结构   → 高密度排版：表格+分点+层级标题+Mermaid 图，服务重点不堆砌
 4 风格化 → 按 humanizer-tta 校准语气；标题像人起的；去 AI 味
 5 落盘   → 按"落盘规范"写入 Knowledge 目录(本机)或直接给 md(云端)
@@ -119,4 +136,6 @@ D:\OneDrive\Desktop\Knowledge\todo\{时间戳}_{中文主题}\
 
 本技能产出 **Knowledge 笔记**(草稿级，`D:\OneDrive\Desktop\Knowledge\`)，不是 blog 成品。交接与发布走 **`knowledge-output` → `site-cascade`**（转正文/换 frontmatter/落 posts，再级联首页索引）。本技能不做发布。
 
-`ob2blog` **仅当**素材已入 Obsidian vault、需要 vault↔帖双边同步时再走；默认会话/调研产出不经 `ob2blog`。
+`ob2blog` **仅当**素材已入 Obsidian vault、需要 vault↔帖双边同步时再走；默认会话/调研/**BibiGPT 原料**产出不经 `ob2blog`。
+
+成帖分流：园主未指定时，`bibigpt` 源交给 output 后**默认进草稿箱**本地预览；明确「正式发 / 出箱」再迁 `posts/<slug>/` 并 cascade。category 仍须用户确认（`CONTEXT.md` 词表）。

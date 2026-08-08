@@ -18,6 +18,12 @@
       "prompt": "把这次讨论整理成博客文章发到我的 blog 项目里。",
       "expected_output": "识别为提炼+发布两段诉求；先按 knowledge-extract 提炼，提示发布交给 knowledge-output/ob2blog；不越权直接发布",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "这是 BibiGPT 导出的视频总结原料（附 BV 链接）。按 extract 走，别盲信里面的上下文数字和官方 Bug 说法。",
+      "expected_output": "识别来源模块 bibigpt；先工具搜证再提炼；笔记含核查/待核实；保证据不抽空心；落盘 Knowledge/todo；提示交接 knowledge-output 且默认草稿箱；不走 ob2blog；不调用 MCP 烧 API",
+      "files": []
     }
   ]
 }

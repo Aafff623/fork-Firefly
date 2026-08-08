@@ -66,12 +66,13 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 - 笔记型动态：标题链 + Markdown `>` 作者批注（`--blurb` 或帖子 description）
 - **分类门禁**：写盘前对照 `CONTEXT.md` 现行分类词表；未获用户确认的 `category` 不得落盘；禁止因「AI/工具相关」一律填 `Agentic Coding`
 
-### 乙 · 会话/调研 → Knowledge → 帖
+### 乙 · 会话/调研/BibiGPT → Knowledge → 帖
 
 ```text
-会话 / 调研结论
-  → knowledge-extract（→ D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
-  → knowledge-output（→ 见下「草稿箱」分流；**成帖前确认 category**）
+会话 / 调研结论 / BibiGPT 导出原料（+ 原片 URL）
+  → knowledge-extract（先识别来源模块；bibigpt → 搜证再提炼
+       → D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
+  → knowledge-output（→ 见下「草稿箱」分流；bibigpt 默认草稿箱；**成帖前确认 category**）
   → （仅出箱/正式发）site-cascade（同上；emit 须带批注）
   → Agent 协作者评论（同上）
   → 发布成功后素材移入 Knowledge\Archive\ 留档
@@ -80,6 +81,7 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 
 - Skill：`.cursor/skills/knowledge-extract/`、`.cursor/skills/knowledge-output/`、`.cursor/skills/site-cascade/`
 - 与甲互补：素材未进 Obsidian 时走乙；已进 vault 需双边同步时再走甲
+- **来源模块**：`session` / `paste-md` / `bibigpt` / `mixed`——见 `knowledge-extract/references/source-modules.md`。BibiGPT = 高保真原料（吃网页会员额度；勿默认 MCP 烧 API）；时效与「官方承认」须 Agent 搜证，不盲信片中数字
 - 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
 - 笔记型动态批注约定：同甲
 - **分类门禁**：同甲
