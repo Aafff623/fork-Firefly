@@ -6,24 +6,17 @@
   <sub>少写一点一次性代码，多留一点可复用结构 · standalone Firefly 二次开发</sub>
 </p>
 
-<!-- Badges: zinc label + flat · 可核验（site / license / last-commit）+ 栈事实 -->
+<!-- Badges: 两行紧凑 · 无分组标题（避免三栏段落外边距把信息密度撑稀） -->
 <p align="center">
   <a href="https://fork-firefly.vercel.app"><img src="https://img.shields.io/website?url=https%3A%2F%2Ffork-firefly.vercel.app&up_message=online&down_message=down&style=flat&label=site&labelColor=18181b&color=22c55e" alt="Site status"></a>
   <a href="https://github.com/Aafff623/fork-Firefly/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Aafff623/fork-Firefly?style=flat&labelColor=18181b&color=a1a1aa" alt="License"></a>
   <a href="https://github.com/Aafff623/fork-Firefly/commits/master"><img src="https://img.shields.io/github/last-commit/Aafff623/fork-Firefly?style=flat&logo=github&logoColor=white&labelColor=18181b&color=71717a" alt="Last commit"></a>
   <img src="https://img.shields.io/badge/Firefly-v6.15.3-18181b?style=flat&labelColor=27272a&color=c084fc" alt="Firefly version">
-</p>
-
-<p align="center">
-  <sub><b>RUNTIME</b></sub><br>
+  <br>
   <img src="https://img.shields.io/badge/Node.js-%3E%3D22-18181b?style=flat&logo=nodedotjs&logoColor=5FA04E&labelColor=27272a" alt="Node.js ≥22">
   <img src="https://img.shields.io/badge/pnpm-9.14.4-18181b?style=flat&logo=pnpm&logoColor=F69220&labelColor=27272a" alt="pnpm 9.14.4">
   <img src="https://img.shields.io/badge/Astro-7.1-18181b?style=flat&logo=astro&logoColor=FF5D01&labelColor=27272a" alt="Astro 7.1">
   <img src="https://img.shields.io/badge/TypeScript-6-18181b?style=flat&logo=typescript&logoColor=3178C6&labelColor=27272a" alt="TypeScript 6">
-</p>
-
-<p align="center">
-  <sub><b>UI · DELIVERY</b></sub><br>
   <img src="https://img.shields.io/badge/Svelte-5-18181b?style=flat&logo=svelte&logoColor=FF3E00&labelColor=27272a" alt="Svelte 5">
   <img src="https://img.shields.io/badge/Tailwind-4-18181b?style=flat&logo=tailwindcss&logoColor=06B6D4&labelColor=27272a" alt="Tailwind CSS 4">
   <img src="https://img.shields.io/badge/Deploy-Vercel-18181b?style=flat&logo=vercel&logoColor=white&labelColor=27272a" alt="Deploy Vercel">
@@ -85,7 +78,8 @@
 | Scripts | LQIP、字体子集、new-post / new-d、Showcase 截图 | `scripts/` |
 | Docs | CONTEXT / ADR / workflow / inventory（非运行时） | `docs/` · 根目录治理文件 |
 
-### Key docs and assets
+<details>
+<summary><strong>Key docs and assets</strong></summary>
 
 <a id="key-docs-and-assets"></a>
 
@@ -103,6 +97,8 @@
 | [capture-readme-showcase.py](scripts/capture-readme-showcase.py) | Playwright 重截 README Showcase |
 
 阅读顺序：`README` → `CONTEXT` → `AGENTS` → inventory → `docs/adr/` → `src/config/` / `src/content/`。
+
+</details>
 
 ## Features
 
