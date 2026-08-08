@@ -88,6 +88,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 配图规范
 
+- **Mermaid**：正文流程图默认横版（`flowchart LR`）；组内可竖、整图竖仅当横版过长。细则见 `docs/agents/workflow.md`「版式：横版优先」。
 - **封面**：优先用素材 `assets/` 里的达标封面；没有或不合格，按 `knowledge-extract` 的配图规范 + `firefly-minimax-media`/`prompt-craft` **style-taste** 用 MiniMax 生成（未点名风格默认 03 编辑静物；抽象主题用具象符号、克制配色、留白 ≥20% 给标题、生成后集中质检），不合格重生成。统一存 `cover.jpg`（模板示例的 `cover.webp` 不强制，实现以 `cover.jpg` 为准）。
 - **小节图**：素材 `assets/` 图拷到 `images/` 并改写引用（`./images/fig-*.jpg`）；缺图不硬凑。
 - **Web 化**：所有图转 JPG；RGBA 先压平（贴深色底）；超 ~1.5MB 的大图降宽到 ~1600px 再存；像素图缩放用最近邻（ffmpeg `scale=...:flags=neighbor` 或 PIL `Image.NEAREST`）。封面只在 FM `image` 字段，不重复进正文。
