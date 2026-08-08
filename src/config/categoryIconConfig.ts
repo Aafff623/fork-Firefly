@@ -11,6 +11,7 @@ export const categoryIconConfig = {
 		指南: "lucide:compass",
 		功能: "lucide:blocks",
 		中转: "lucide:waypoints",
+		羊毛揭秘: "lucide:scan-search",
 		"skill 测评": "lucide:flask-conical",
 		示例: "lucide:sparkles",
 		前端开发: "lucide:layout-dashboard",

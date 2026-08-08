@@ -16,6 +16,7 @@ export const tagAliases: Record<string, string[]> = {
 	Harness: ["框架", "脚手架", "外壳"],
 	extension: ["扩展", "插件"],
 	中转: ["relay", "代理", "proxy"],
+	羊毛揭秘: ["羊毛", "灰市", "套利"],
 	死循环: ["loop", "循环", "doom loop"],
 	记忆机制: ["memory", "长期记忆", "记忆"],
 	美化配置: ["theme", "主题", "美化"],

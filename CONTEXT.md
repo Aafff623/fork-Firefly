@@ -70,6 +70,7 @@ Content Collections（`src/content.config.ts`）：
 | Agentic Coding | Agent 工程、CLI/IDE agent 工作流、编码 agent 实践（确属此类才用） |
 | 指南 | 教程、上手、配置说明、避坑指南 |
 | 中转 | 中转站 / 池子 / 额度 / 线路测评 |
+| 羊毛揭秘 | 活动套利、灰市货架结构、羊毛链拆解（**不是**中转评测；渠道链接默认打码） |
 | skill 测评 | Skill / MCP / 插件测评 |
 | 前端开发 | 前端工程、主题/站点实现向 |
 | 写作 | 写作方法、叙事、成稿方法论（按需新建或选用） |
