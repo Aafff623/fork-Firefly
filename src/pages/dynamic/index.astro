@@ -35,9 +35,10 @@ const dataUrl = dynamicConfig.apiUrl?.startsWith("http")
 	? dynamicConfig.apiUrl
 	: url(dynamicConfig.apiUrl || "/api/dynamic.json");
 const memos = dynamicConfig.memos;
-/** 本地 content 模式：SSR 直出，避免客户端一直「正在加载动态」 */
-const initialEntries = memos?.enable ? undefined : await loadDynamicEntries();
-const entryCount = initialEntries?.length ?? 0;
+/** 全量只在服务端计数；hydration 只塞首批，其余客户端拉 /api/dynamic.json + 滚动追加 */
+const allEntries = memos?.enable ? undefined : await loadDynamicEntries();
+const entryCount = allEntries?.length ?? 0;
+const initialEntries = allEntries?.slice(0, itemsPerPage);
 
 const kindLegend = [
 	{ kind: "status", label: DYNAMIC_KIND_LABEL.status },
@@ -109,7 +110,7 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 							placeholder={i18n(I18nKey.dynamicSearch)}
 						/>
 					</label>
-					<label class="dynamic-year-select">
+					<label class="dynamic-form-select dynamic-year-select">
 						<span class="sr-only">{i18n(I18nKey.year)}</span>
 						<Icon is:inline name="lucide:calendar-days" />
 						<select data-year-select aria-label={i18n(I18nKey.year)}>
@@ -117,27 +118,23 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 						</select>
 						<Icon is:inline name="lucide:chevron-down" />
 					</label>
+					<label class="dynamic-form-select dynamic-kind-select">
+						<span class="sr-only">{i18n(I18nKey.dynamicKindFilter)}</span>
+						<Icon is:inline name="lucide:tags" />
+						<select
+							data-kind-select
+							aria-label={i18n(I18nKey.dynamicKindFilter)}
+						>
+							<option value="all">{i18n(I18nKey.dynamicAllKinds)}</option>
+							{
+								kindLegend.map(({ kind, label }) => (
+									<option value={kind}>{label}</option>
+								))
+							}
+						</select>
+						<Icon is:inline name="lucide:chevron-down" />
+					</label>
 				</div>
-				<ul class="dynamic-kind-legend" aria-label="动态类型图例">
-					{
-						kindLegend.map(({ kind, label }) => (
-							<li
-								class="dynamic-kind-legend-item"
-								data-kind={kind}
-								title={
-									kind === "note"
-										? "笔记 · completed"
-										: kind === "gallery"
-											? "图集 · in-progress"
-											: "动态 · pending"
-								}
-							>
-								<span class="dynamic-kind-dot" aria-hidden="true" />
-								<span>{label}</span>
-							</li>
-						))
-					}
-				</ul>
 			</div>
 		</header>
 
@@ -164,6 +161,7 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 			nextImageLabel={i18n(I18nKey.dynamicNextImage)}
 			viewImageLabel={i18n(I18nKey.dynamicViewImage)}
 			selectImageLabel={i18n(I18nKey.dynamicSelectImage)}
+			loadMoreLabel={i18n(I18nKey.dynamicLoadMore)}
 		/>
 	</section>
 </MainGridLayout>

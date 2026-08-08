@@ -13,15 +13,22 @@ export const dynamicConfig: DynamicConfig = {
 	// 是否为每条动态启用评论，需要先在 commentConfig.ts 启用评论系统
 	showComment: true,
 
-	// 每页显示的动态数量
-	itemsPerPage: 20,
+	// 滚动懒加载：每次追加条数（首屏同批 SSR，避免整表塞进 hydration）
+	itemsPerPage: 8,
 
 	/**
-	 * 公屏默认定位（只写地址，不写 IP）。
-	 * 不走 IP/代理反查；发帖机在别处时在 frontmatter 写 `location:` 覆盖。
-	 * 配图：正文用 `![](/assets/dynamic/xxx.jpg)`（文件放 public/assets/dynamic/）。
+	 * 发布时定位（方案 A / PRD dynamic-location）。
+	 * - home：常驻地，IP 失败或关闭 ipGeo 时回落
+	 * - ipGeo：发布脚本直连 IP 粗定位（绕开代理）；前端不定位
+	 * 单条仍可用 frontmatter / CLI `--location` 覆盖。
 	 */
-	defaultLocation: "太原 · 中北大学",
+	location: {
+		home: "山西 · 运城",
+		ipGeo: true,
+	},
+
+	/** @deprecated 兼容旧读路径；新逻辑以 location.home 为准 */
+	defaultLocation: "山西 · 运城",
 
 	// 动态数据 json 地址，本地默认 "/api/dynamic.json"
 	// 可改为第三方接口地址；数据结构可打开该地址参考

@@ -8,7 +8,11 @@ import {
 } from "@/utils/dynamic-utils";
 
 const markdownImagePattern = /!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)/g;
-const defaultLocation = (dynamicConfig.defaultLocation || "").trim();
+const defaultLocation = (
+	dynamicConfig.location?.home ||
+	dynamicConfig.defaultLocation ||
+	""
+).trim();
 
 export type DynamicEntryJson = {
 	id: string;

@@ -41,6 +41,8 @@ export const zh_CN: Translation = {
 	[Key.dynamicNoResults]: "没有找到匹配的动态",
 	[Key.dynamicLoading]: "正在加载动态",
 	[Key.dynamicAllYears]: "全部年份",
+	[Key.dynamicAllKinds]: "全部类型",
+	[Key.dynamicKindFilter]: "类型",
 	[Key.dynamicLoadMore]: "加载更多",
 	[Key.dynamicBackToList]: "返回动态列表",
 	[Key.dynamicProfile]: "查看 {name} 的资料",

@@ -41,6 +41,8 @@ export const ru: Translation = {
 	[Key.dynamicNoResults]: "Подходящие публикации не найдены",
 	[Key.dynamicLoading]: "Загрузка публикаций",
 	[Key.dynamicAllYears]: "Все годы",
+	[Key.dynamicAllKinds]: "Все типы",
+	[Key.dynamicKindFilter]: "Тип",
 	[Key.dynamicLoadMore]: "Загрузить ещё",
 	[Key.dynamicBackToList]: "Назад к публикациям",
 	[Key.dynamicProfile]: "Открыть профиль {name}",

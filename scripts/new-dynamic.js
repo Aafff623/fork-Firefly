@@ -3,18 +3,36 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteConfig } from "../src/config/siteConfig.ts";
+import { resolveDynamicLocation } from "./resolve-dynamic-location.mjs";
 
-const content = process.argv.slice(2).join(" ").trim();
+function parseArgs(argv) {
+	let locationOverride = "";
+	const parts = [];
+	for (let i = 0; i < argv.length; i++) {
+		const arg = argv[i];
+		if (arg === "--location" && argv[i + 1]) {
+			locationOverride = argv[++i];
+			continue;
+		}
+		if (arg.startsWith("--location=")) {
+			locationOverride = arg.slice("--location=".length);
+			continue;
+		}
+		parts.push(arg);
+	}
+	return { content: parts.join(" ").trim(), locationOverride };
+}
+
+const { content, locationOverride } = parseArgs(process.argv.slice(2));
 
 if (!content) {
 	console.error(
-		"Error: No dynamic content provided\nUsage: pnpm new-dynamic <content>",
+		"Error: No dynamic content provided\nUsage: pnpm new-dynamic [--location 文案] <content>",
 	);
 	process.exit(1);
 }
 
 const now = new Date();
-const pad = (value) => String(value).padStart(2, "0");
 const timezone = siteConfig.timezone || "Asia/Shanghai";
 const dateParts = new Intl.DateTimeFormat("en-CA", {
 	timeZone: timezone,
@@ -49,6 +67,16 @@ if (fs.existsSync(fullPath)) {
 	process.exit(1);
 }
 
-fs.writeFileSync(fullPath, `---\npublished: ${timestamp}\n---\n\n${content}\n`);
+const resolved = await resolveDynamicLocation({ override: locationOverride });
+const locationLine = resolved.location
+	? `location: ${resolved.location}\n`
+	: "";
 
-console.log(`Dynamic ${fullPath} created`);
+fs.writeFileSync(
+	fullPath,
+	`---\npublished: ${timestamp}\n${locationLine}---\n\n${content}\n`,
+);
+
+console.log(
+	`Dynamic ${fullPath} created (location=${resolved.location || "∅"} source=${resolved.source})`,
+);

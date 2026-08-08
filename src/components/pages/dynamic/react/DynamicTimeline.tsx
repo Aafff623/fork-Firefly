@@ -1,5 +1,5 @@
 import { Check, Circle, Image as ImageIcon, MapPin, MessageCircle, Pin } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
 import {
 	detectDynamicKind,
@@ -38,15 +38,17 @@ interface MemosConfig {
 
 export interface DynamicTimelineProps {
 	source: string;
+	/** 滚动懒加载每批条数（首屏 SSR 同批） */
 	itemsPerPage: number;
 	showComments: boolean;
 	emptyText: string;
 	noResultsText: string;
 	loadingText: string;
 	allYearsText: string;
+	loadMoreLabel: string;
 	timezone: string;
 	memos?: MemosConfig;
-	/** SSR 直出：有则首屏不转圈、本地模式跳过 fetch */
+	/** SSR 首批种子（勿塞全表，避免 hydration 膨胀） */
 	initialEntries?: DynamicData[];
 	profileName: string;
 	profileUrl: string;
@@ -303,11 +305,24 @@ function EntryBody({
 						type="button"
 						className="dynamic-comment-toggle btn-plain"
 						data-comment-toggle=""
+						aria-controls={`${anchorId}-replies`}
 					>
-						<MessageCircle className="size-4" />
-						<span>{commentsLabel}</span>
+						<span className="dynamic-comment-toggle-main">
+							<MessageCircle className="size-4" />
+							<span>{commentsLabel}</span>
+							<span
+								className="dynamic-comment-badge"
+								data-comment-badge=""
+								hidden
+							/>
+						</span>
 					</button>
-					<div className="dynamic-comment-panel" data-comment-panel="" hidden />
+					<div
+						id={`${anchorId}-replies`}
+						className="dynamic-comment-panel"
+						data-comment-panel=""
+						hidden
+					/>
 				</dynamic-inline-comments>
 			) : null}
 		</div>
@@ -347,6 +362,7 @@ export default function DynamicTimeline({
 	noResultsText,
 	loadingText,
 	allYearsText,
+	loadMoreLabel,
 	timezone,
 	memos,
 	initialEntries,
@@ -362,6 +378,7 @@ export default function DynamicTimeline({
 	viewImageLabel,
 	selectImageLabel,
 }: DynamicTimelineProps) {
+	const batch = Math.max(1, itemsPerPage);
 	const hasInitial = Array.isArray(initialEntries) && !memos?.enable;
 	const [entries, setEntries] = useState<DynamicData[]>(() =>
 		hasInitial ? (initialEntries as DynamicData[]) : [],
@@ -369,24 +386,27 @@ export default function DynamicTimeline({
 	const [filtered, setFiltered] = useState<DynamicData[]>(() =>
 		hasInitial ? (initialEntries as DynamicData[]) : [],
 	);
-	const [currentPage, setCurrentPage] = useState(1);
+	/** 已渲染条数：滚动触底再 +batch，而不是一次铺满 */
+	const [visibleCount, setVisibleCount] = useState(() =>
+		hasInitial ? Math.min(batch, (initialEntries as DynamicData[]).length) : batch,
+	);
 	const [loading, setLoading] = useState(!hasInitial);
+	/** 全量目录是否已从 API 就位（首批 SSR 期间勿把顶栏计数改成 8） */
+	const [catalogReady, setCatalogReady] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [query, setQuery] = useState("");
 	const [year, setYear] = useState("all");
+	/** all = 不限类型；status/note/gallery = 顶卡标签筛选 */
+	const [kindFilter, setKindFilter] = useState<"all" | DynamicKind>("all");
+	const sentinelRef = useRef<HTMLDivElement | null>(null);
 
 	const useLocalTz = source.startsWith("http") || Boolean(memos?.enable);
 
-	const pageEntries = useMemo(
-		() =>
-			filtered.slice(
-				(currentPage - 1) * itemsPerPage,
-				currentPage * itemsPerPage,
-			),
-		[filtered, currentPage, itemsPerPage],
+	const visibleEntries = useMemo(
+		() => filtered.slice(0, visibleCount),
+		[filtered, visibleCount],
 	);
-
-	const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+	const hasMore = visibleCount < filtered.length;
 
 	useEffect(() => {
 		registerDynamicGallery();
@@ -399,36 +419,31 @@ export default function DynamicTimeline({
 			"[data-dynamic-search]",
 		);
 		const yearSelect = page?.querySelector<HTMLSelectElement>("[data-year-select]");
+		const kindSelect = page?.querySelector<HTMLSelectElement>("[data-kind-select]");
 
 		const onSearch = () => setQuery(searchInput?.value.toLocaleLowerCase().trim() || "");
 		const onYear = () => setYear(yearSelect?.value || "all");
+		const onKind = () => {
+			const value = kindSelect?.value || "all";
+			setKindFilter(value === "all" ? "all" : (value as DynamicKind));
+		};
 
 		searchInput?.addEventListener("input", onSearch);
 		yearSelect?.addEventListener("change", onYear);
+		kindSelect?.addEventListener("change", onKind);
 
 		return () => {
 			searchInput?.removeEventListener("input", onSearch);
 			yearSelect?.removeEventListener("change", onYear);
+			kindSelect?.removeEventListener("change", onKind);
 		};
 	}, []);
 
-	// SSR 种子：hydrate 后同步计数/年份，不再为了首屏去 fetch
+	// 后台拉全量目录（~几十 KB）；首屏只用 SSR 小批，避免 1MB+ hydration
 	useEffect(() => {
-		if (!hasInitial || !initialEntries) return;
-		syncPageCount(initialEntries);
-		syncYearSelect(initialEntries, allYearsText);
-		const pageParam = Math.max(
-			1,
-			Number(new URL(window.location.href).searchParams.get("page")) || 1,
-		);
-		setCurrentPage(pageParam);
-	}, [hasInitial, initialEntries, allYearsText]);
-
-	useEffect(() => {
-		if (hasInitial) return;
 		let cancelled = false;
 		const controller = new AbortController();
-		const timer = window.setTimeout(() => controller.abort(), 8000);
+		const timer = window.setTimeout(() => controller.abort(), 10000);
 		(async () => {
 			try {
 				let data: DynamicData[];
@@ -441,17 +456,13 @@ export default function DynamicTimeline({
 				}
 				if (cancelled) return;
 				setEntries(data);
-				syncPageCount(data);
 				syncYearSelect(data, allYearsText);
-
-				const pageParam = Math.max(
-					1,
-					Number(new URL(window.location.href).searchParams.get("page")) || 1,
-				);
-				setCurrentPage(pageParam);
+				setCatalogReady(true);
 			} catch (error) {
 				console.error("Failed to load dynamics", error);
-				if (!cancelled) setFailed(true);
+				if (!cancelled && !hasInitial) setFailed(true);
+				// 有首批种子时即使全量失败也放行计数/懒加载
+				if (!cancelled) setCatalogReady(true);
 			} finally {
 				window.clearTimeout(timer);
 				if (!cancelled) setLoading(false);
@@ -462,30 +473,27 @@ export default function DynamicTimeline({
 			controller.abort();
 			window.clearTimeout(timer);
 		};
-	}, [hasInitial, source, memos, allYearsText]);
+	}, [source, memos, allYearsText, hasInitial]);
 
 	useEffect(() => {
-		const next = entries.filter(
-			(entry) =>
-				(year === "all" ||
-					String(new Date(entry.published).getUTCFullYear()) === year) &&
-				(!query || entry.searchText.includes(query)),
-		);
-		setFiltered(next);
-		setCurrentPage((page) => {
-			const max = Math.max(1, Math.ceil(next.length / itemsPerPage));
-			return Math.min(page, max);
+		const next = entries.filter((entry) => {
+			const yearOk =
+				year === "all" ||
+				String(new Date(entry.published).getUTCFullYear()) === year;
+			const queryOk = !query || entry.searchText.includes(query);
+			const kindOk =
+				kindFilter === "all" ||
+				detectDynamicKind(entry.html, entry.images?.length ?? 0) === kindFilter;
+			return yearOk && queryOk && kindOk;
 		});
-	}, [entries, query, year, itemsPerPage]);
+		setFiltered(next);
+		if (catalogReady) syncPageCount(next);
+		// 筛选变化：回到首批，避免继续挂着旧的超大 visibleCount
+		setVisibleCount(next.length === 0 ? 0 : Math.min(batch, next.length));
+	}, [entries, query, year, kindFilter, batch, catalogReady]);
 
 	useEffect(() => {
-		const plainTitle = (html: string, searchText: string) => {
-			if (typeof document !== "undefined" && html) {
-				const box = document.createElement("div");
-				box.innerHTML = html;
-				const text = (box.textContent || "").replace(/\s+/g, " ").trim();
-				if (text) return text.slice(0, 64);
-			}
+		const plainTitle = (_html: string, searchText: string) => {
 			const fallback = (searchText || "").trim();
 			return fallback ? fallback.slice(0, 64) : "动态";
 		};
@@ -513,12 +521,20 @@ export default function DynamicTimeline({
 		};
 	}, [filtered, loading]);
 
+	// 触底懒加载
 	useEffect(() => {
-		const current = new URL(window.location.href);
-		if (currentPage > 1) current.searchParams.set("page", String(currentPage));
-		else current.searchParams.delete("page");
-		history.replaceState(history.state, "", current);
-	}, [currentPage]);
+		const node = sentinelRef.current;
+		if (!node || !hasMore || loading) return;
+		const io = new IntersectionObserver(
+			(rows) => {
+				if (!rows.some((row) => row.isIntersecting)) return;
+				setVisibleCount((n) => Math.min(filtered.length, n + batch));
+			},
+			{ root: null, rootMargin: "280px 0px", threshold: 0 },
+		);
+		io.observe(node);
+		return () => io.disconnect();
+	}, [hasMore, loading, filtered.length, batch, visibleCount]);
 
 	useEffect(() => {
 		if (loading) return;
@@ -530,11 +546,7 @@ export default function DynamicTimeline({
 				(entry) => dynamicAnchor(entry.id) === anchorId,
 			);
 			if (anchorIndex < 0) return;
-			const page = Math.floor(anchorIndex / itemsPerPage) + 1;
-			if (page !== currentPage) {
-				setCurrentPage(page);
-				return;
-			}
+			setVisibleCount((n) => Math.max(n, anchorIndex + 1));
 			requestAnimationFrame(() => {
 				document.getElementById(anchorId)?.scrollIntoView({
 					behavior: "smooth",
@@ -546,7 +558,7 @@ export default function DynamicTimeline({
 		jumpToHash();
 		window.addEventListener("hashchange", jumpToHash);
 		return () => window.removeEventListener("hashchange", jumpToHash);
-	}, [loading, filtered, itemsPerPage, currentPage]);
+	}, [loading, filtered]);
 
 	if (loading) {
 		return (
@@ -576,10 +588,10 @@ export default function DynamicTimeline({
 	return (
 		<>
 			<Timeline size="sm" className="ff-tl--stagger" iconsize="sm">
-				{pageEntries.length === 0 ? (
+				{visibleEntries.length === 0 ? (
 					<TimelineEmpty>{noResultsText}</TimelineEmpty>
 				) : (
-					pageEntries.map((entry, index) => {
+					visibleEntries.map((entry, index) => {
 						const kind = detectDynamicKind(entry.html, entry.images?.length ?? 0);
 						const rail = dynamicKindToRail(kind);
 						const status = rail.statusClass as TimelineStatus;
@@ -600,7 +612,7 @@ export default function DynamicTimeline({
 								icon={kindIcon(kind)}
 								side={side}
 								pinned={entry.pinned}
-								showConnector={index !== pageEntries.length - 1}
+								showConnector={index !== visibleEntries.length - 1 || hasMore}
 							>
 								<article
 									className="ff-tl-article"
@@ -633,38 +645,16 @@ export default function DynamicTimeline({
 				)}
 			</Timeline>
 
-			{totalPages > 1 ? (
-				<nav className="ff-tl-pagination" aria-label="pagination">
-					<button
-						type="button"
-						className="btn-regular"
-						disabled={currentPage <= 1}
-						onClick={() => {
-							setCurrentPage((p) => Math.max(1, p - 1));
-							document
-								.querySelector(".dynamic-page")
-								?.scrollIntoView({ behavior: "smooth", block: "start" });
-						}}
-					>
-						‹
-					</button>
-					<span className="ff-tl-page-indicator">
-						{currentPage} / {totalPages}
-					</span>
-					<button
-						type="button"
-						className="btn-regular"
-						disabled={currentPage >= totalPages}
-						onClick={() => {
-							setCurrentPage((p) => Math.min(totalPages, p + 1));
-							document
-								.querySelector(".dynamic-page")
-								?.scrollIntoView({ behavior: "smooth", block: "start" });
-						}}
-					>
-						›
-					</button>
-				</nav>
+			{hasMore ? (
+				<div
+					ref={sentinelRef}
+					className="dynamic-load-more"
+					role="status"
+					aria-live="polite"
+				>
+					<span className="dynamic-loading-spinner" aria-hidden="true" />
+					<span>{loadMoreLabel}</span>
+				</div>
 			) : null}
 		</>
 	);

@@ -12,13 +12,11 @@ const { src } = Astro.props;
 
 <dynamic-inline-comments class="dynamic-inline-comments" data-src={src}>
 	<button type="button" class="dynamic-comment-toggle btn-plain" data-comment-toggle>
-		<Icon is:inline name="lucide:message-circle" />
-		<span>{i18n(I18nKey.comments)}</span>
-		<Icon
-			is:inline
-			name="lucide:chevron-down"
-			class="dynamic-comment-chevron"
-		/>
+		<span class="dynamic-comment-toggle-main">
+			<Icon is:inline name="lucide:message-circle" />
+			<span>{i18n(I18nKey.comments)}</span>
+			<span class="dynamic-comment-badge" data-comment-badge hidden></span>
+		</span>
 	</button>
 	<div class="dynamic-comment-panel" data-comment-panel hidden></div>
 </dynamic-inline-comments>

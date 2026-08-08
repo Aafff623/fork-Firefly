@@ -41,6 +41,8 @@ export const ko: Translation = {
 	[Key.dynamicNoResults]: "일치하는 일상이 없습니다",
 	[Key.dynamicLoading]: "일상을 불러오는 중",
 	[Key.dynamicAllYears]: "모든 연도",
+	[Key.dynamicAllKinds]: "모든 유형",
+	[Key.dynamicKindFilter]: "유형",
 	[Key.dynamicLoadMore]: "더 보기",
 	[Key.dynamicBackToList]: "일상 목록으로",
 	[Key.dynamicProfile]: "{name}님의 프로필 보기",
