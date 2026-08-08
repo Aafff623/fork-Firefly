@@ -36,6 +36,8 @@
 | 侧边栏小组件 / widget | 无差别「插件」 |
 | 配置文件 `*Config.ts` | 「后台设置」（本站无 CMS 后台） |
 | 合集 / collections | 人工策展的主题聚合页（区别于 AI 标的分类 category） |
+| 草稿箱 / draftbox | `posts/_draftbox/`：本地可预览、gitignore 不 push；出箱后再入库 |
+| 草稿（园主口径） | 进草稿箱，不是「commit 后靠 draft:true 藏首页」 |
 | 静态部署 | 除非启用 CF_WORKERS，不说「SSR 站」 |
 
 ## 部署

@@ -106,6 +106,22 @@ Agent 不得假定其它 vault 根路径；用户显式给出新路径时再更�
 
 仅当素材**已入** Obsidian vault、需要双边同步时，才改走甲路 `ob2blog`；默认会话产出不经 `ob2blog`。
 
+### 草稿箱（draftbox · 本地可预览，不进远端）
+
+本仓对「草稿」的定义：**留在本地供 `pnpm dev` 调试预览，不 `git add` / 不 push**。不是「进仓库但 `draft: true` 藏首页」——那种主题 demo（如 `posts/draft.md`）与草稿箱无关。
+
+| 项 | 约定 |
+|---|---|
+| 路径 | `src/content/posts/_draftbox/<slug>/` |
+| Git | `.gitignore` 忽略箱内正文（仅 `_draftbox/README.md` 入库） |
+| FM | 箱内帖必须 `draft: true` |
+| 本地 | DEV 可打开 `/posts/<slug>/`（路由剥 `_draftbox/` 前缀）；进列表，且可参与默认置顶大卡 |
+| 线上 | 箱内文件不在远端 → Vercel 构建无此文 |
+| 进箱 | 用户说「草稿 / 草稿箱 / 先本地调试」→ 落盘 `_draftbox/`，禁止 commit 正文 |
+| 出箱 | 用户说「从草稿箱出来 / 可以发了」→ 迁到 `posts/<slug>/`，按需 `draft: false`，再 cascade → 确认后 push |
+
+细则：`docs/agents/workflow.md`「草稿箱」；箱内说明：`src/content/posts/_draftbox/README.md`。
+
 ### Issue tracker
 
 本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。

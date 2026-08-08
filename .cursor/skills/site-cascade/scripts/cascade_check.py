@@ -86,6 +86,9 @@ def load_posts(repo: Path) -> list[dict]:
             continue
         if path.name.startswith("_"):
             continue
+        # 草稿箱说明 / 杂项 README 不计入帖
+        if path.name.lower() == "readme.md":
+            continue
         text = path.read_text(encoding="utf-8")
         meta = parse_fm(text)
         if not meta.get("title"):
@@ -93,10 +96,13 @@ def load_posts(repo: Path) -> list[dict]:
         body = FM_RE.sub("", text, count=1)
         slug = meta.get("slug") or path.parent.name if path.name.startswith("index.") else path.stem
         if path.name.startswith("index.") and not meta.get("slug"):
-            # posts/<slug>/index.md → relative posix from posts/
+            # posts/<slug>/index.md 或 posts/_draftbox/<slug>/index.md
             rel = path.parent.relative_to(root).as_posix()
+            if rel.startswith("_draftbox/"):
+                rel = rel[len("_draftbox/") :]
             slug = rel
         draft = (meta.get("draft") or "false").lower() == "true"
+        in_draftbox = "_draftbox" in path.relative_to(root).as_posix().split("/")
         published = meta.get("published") or ""
         posts.append(
             {
@@ -104,6 +110,7 @@ def load_posts(repo: Path) -> list[dict]:
                 "title": meta.get("title") or "",
                 "slug": slug,
                 "draft": draft,
+                "draftbox": in_draftbox,
                 "published": published,
                 "description": (meta.get("description") or "").strip(),
                 "category": (meta.get("category") or "").strip(),
@@ -247,6 +254,10 @@ def build_report(repo: Path, slug: str | None) -> dict:
                 "inHeatmap": bool(DATE_RE.match(match["published"] or "")) and not match["draft"],
                 "categoryOnBar": bool(match["category"]) and not match["draft"],
             }
+            if match.get("draftbox"):
+                warnings.append(
+                    f"{slug} is in posts/_draftbox/ — local-only; do not commit/push or emit-dynamic"
+                )
             if match["draft"]:
                 warnings.append(
                     f"{slug} is draft=true — hidden from prod stats/heatmap/category counts"
@@ -302,6 +313,13 @@ def main() -> int:
             print("ERROR: slug not found", file=sys.stderr)
             return 2
         post = focus["post"]
+        if post.get("draftbox"):
+            print(
+                "ERROR: refuse to emit dynamic for draftbox post "
+                "(graduate out of posts/_draftbox/ first)",
+                file=sys.stderr,
+            )
+            return 2
         if post["draft"]:
             print(
                 "ERROR: refuse to emit dynamic for draft post "

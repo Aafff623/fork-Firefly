@@ -21,8 +21,10 @@ export function getAutoPinnedPostId(
 	let bestId: string | null = null;
 	let bestTime = Number.NEGATIVE_INFINITY;
 	for (const post of posts) {
-		// 草稿永不参与默认置顶（本地 DEV 也会列出草稿，但不能抢置顶）
-		if (post.data.pinned || post.data.draft) continue;
+		if (post.data.pinned) continue;
+		// 生产：草稿不抢默认置顶大卡。
+		// 本地 DEV：草稿（含 _draftbox）要能顶到首页，方便调试预览。
+		if (post.data.draft && import.meta.env.PROD) continue;
 		const time = getEffectivePostTime(post.data);
 		// 时间相同则 id 字典序更大者胜，保证结果稳定
 		if (
@@ -60,8 +62,13 @@ async function getRawSortedPosts() {
 	});
 
 	const autoPinnedId = getAutoPinnedPostId(allBlogPosts);
+	// 生产藏草稿常驻置顶；DEV 保留，便于草稿箱本地调试
 	const stickyPosts = allBlogPosts
-		.filter((post) => post.data.pinned && !post.data.draft)
+		.filter((post) => {
+			if (!post.data.pinned) return false;
+			if (post.data.draft && import.meta.env.PROD) return false;
+			return true;
+		})
 		.sort(compareByEffectiveTimeDesc);
 	const autoPosts = autoPinnedId
 		? allBlogPosts.filter((post) => post.id === autoPinnedId)

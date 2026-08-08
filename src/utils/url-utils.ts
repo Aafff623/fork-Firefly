@@ -9,6 +9,15 @@ export function removeFileExtension(id: string): string {
 	return id.replace(/\.(md|mdx|markdown)$/i, "");
 }
 
+/**
+ * 内容 id → 对外 slug。
+ * 草稿箱路径 `posts/_draftbox/<slug>/` 在本地预览时剥掉 `_draftbox/` 前缀，
+ * 毕业迁出后 URL 不变。
+ */
+export function toPostSlug(id: string): string {
+	return removeFileExtension(id).replace(/^_draftbox\//, "");
+}
+
 export function pathsEqual(path1: string, path2: string): boolean {
 	const normalizedPath1 = path1.replace(/^\/|\/$/g, "").toLowerCase();
 	const normalizedPath2 = path2.replace(/^\/|\/$/g, "").toLowerCase();
@@ -34,9 +43,7 @@ function joinUrl(...parts: string[]): string {
 }
 
 export function getPostUrlBySlug(slug: string): string {
-	// 移除文件扩展名（如 .md, .mdx 等）
-	const slugWithoutExt = removeFileExtension(slug);
-	return url(`/posts/${slugWithoutExt}/`);
+	return url(`/posts/${toPostSlug(slug)}/`);
 }
 
 export function getTagUrl(tag: string): string {

@@ -11,7 +11,7 @@ import { getRelatedPosts, getSortedPosts } from "@utils/content-utils";
 import {
 	getFileDirFromPath,
 	getPostUrlBySlug,
-	removeFileExtension,
+	toPostSlug,
 } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import dayjs from "dayjs";
@@ -30,8 +30,8 @@ import { url } from "@/utils/url-utils";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 	return blogEntries.map((entry) => {
-		// 将 id 转换为 slug（移除扩展名）以匹配路由参数
-		const slug = removeFileExtension(entry.id);
+		// id → slug；草稿箱 `_draftbox/<slug>` 剥前缀，本地预览 URL 与毕业后一致
+		const slug = toPostSlug(entry.id);
 		return {
 			params: { slug },
 			props: { entry },
