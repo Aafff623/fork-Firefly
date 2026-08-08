@@ -41,7 +41,7 @@ pi 官方把美化拆成两块，机制完全不同，装法、共存性也截�
 - **主题挑 `@sherif-fanous/pi-catppuccin`** —— Catppuccin 是公认最护眼的配色，社区维护活跃，一次带四个变体（Mocha / Macchiato / Frappe / Latte），深浅全覆盖。
 - **状态栏挑 `pi-inline-statusline`** —— 单行、响应式、信息不丢，默认 Tokyo Night 预设就很好看，零配置即用。
 
-这套组合的好处是**互不冲突、立刻见效、不喜欢能干净卸**。激进派想一步到位也可以上 `@rokiy/pi-ui`（带 Boxed Editor 那个 ╭─╮ 包裹），但它和状态栏是二选一，第一轮不建议冒险。
+这套组合的好处是**互不冲突,装上立刻见效**。真不喜欢,`pi remove` 一条命令干净卸掉,不留尾巴。激进派想一步到位也可以上 `@rokiy/pi-ui`(带 Boxed Editor 那个 ╭─╮ 包裹),但它和状态栏是二选一,第一轮不建议冒险。
 
 装完跑起来长这样，底部一行信息密度恰到好处，又不挤：
 
@@ -95,14 +95,7 @@ zhipu 全家桶（glm-4-flash / glm-5-turbo / glm-5.2）在 `pi --list-models` �
 
 ## 几个能继续挖的方向
 
-美化到这儿只是开了个头，pi 还有一堆没碰的能力，列出来下次有兴致再挖：
-
-- **shell-aliases** —— 自定义快捷命令，`c` 直接等于 `git commit` 那种
-- **keybindings** —— 改键位，把不顺手的快捷键挪地方
-- **prompt-templates** —— 常用 prompt 存成模板，`/template` 一键调
-- **Boxed Editor 外观** —— `@rokiy/pi-ui` 那套一体化 UI，但要替换现在的状态栏
-
-这些都没装，等主题和状态栏用顺手了再决定要不要继续往上堆。**美化这事最怕一次堆太多，出了问题都不知道是哪个包的锅。**
+美化到这儿只是开了个头,pi 还有一堆没碰的能力。比如 `shell-aliases` 能把 `c` 直接等于 `git commit`;`keybindings` 改键位,挪不顺手的快捷键;`prompt-templates` 把常用 prompt 存成模板,`/template` 一键调;还有 `@rokiy/pi-ui` 那套带 Boxed Editor 的一体化 UI,不过它要替换现在的状态栏。这些都没装,等主题和状态栏用顺手了再决定要不要继续往上堆。**美化这事最怕一次堆太多,出了问题都不知道是哪个包的锅。**
 
 ## 一条速查
 
