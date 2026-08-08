@@ -125,6 +125,7 @@ Content Collections（`src/content.config.ts`）：
 |---|---|---|---|
 | **4321** | 站点本体（Astro） | `pnpm dev` | http://127.0.0.1:4321/ |
 | **8090** | README 预览壳 | `python -m http.server 8090` | http://127.0.0.1:8090/preview-readme.html |
+| **8090** | Release notes 预览（中英双栏） | 同上 | http://127.0.0.1:8090/preview-release.html |
 
 **常见原因（本仓实录）：**
 
