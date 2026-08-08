@@ -37,8 +37,7 @@
 	transition:
 		color 140ms cubic-bezier(0.2, 0.8, 0.2, 1),
 		opacity 140ms cubic-bezier(0.2, 0.8, 0.2, 1),
-		padding-left 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
-		box-shadow 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
+		padding-left 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
 	width: 100%;
 	min-width: 0;
 	flex-shrink: 0;
@@ -49,6 +48,25 @@
 	padding: 0.35rem 0.15rem 0.35rem 0.35rem;
 	min-height: 1.85rem;
 	background: transparent;
+	border: none;
+	box-shadow: none;
+	outline: none;
+}
+
+/* 左紫竖线：用伪元素，避免 inset box-shadow 在部分 DPR 下出现上下发丝线 */
+.toc-item::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.28rem;
+	bottom: 0.28rem;
+	width: 2.5px;
+	border-radius: 1px;
+	background: transparent;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 140ms cubic-bezier(0.2, 0.8, 0.2, 1),
+		background-color 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .toc-item:hover {
@@ -143,15 +161,18 @@
 /*
  * 焦点高亮：中间高原满色，两侧立方陡降（跨度大、对比强）。
  * --toc-focus ∈ [0,1]
+ * 无背景块、无上下边框；只亮左竖线 + 文字色。
  */
 .toc-item.visible {
 	padding-left: 0.55rem;
-	box-shadow: inset 2.5px 0 0
-		color-mix(
-			in oklab,
-			var(--toc-focus-purple) calc(var(--toc-focus) * var(--toc-focus) * 100%),
-			transparent
-		);
+	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.toc-item.visible::before {
+	opacity: calc(var(--toc-focus) * var(--toc-focus));
+	background: var(--toc-focus-purple);
 }
 
 .toc-item.visible.toc-level-1 {
@@ -193,7 +214,14 @@
 
 /* 中间高原带：主焦点紫色，同带内其它标题粉色，形成可辨的多项映射。 */
 .toc-item.toc-focus-primary {
-	box-shadow: inset 2.5px 0 0 var(--toc-focus-purple);
+	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.toc-item.toc-focus-primary::before {
+	opacity: 1;
+	background: var(--toc-focus-purple);
 }
 
 .toc-item.toc-focus-primary .toc-label,
@@ -210,7 +238,14 @@
 }
 
 .toc-item.toc-focus-band {
-	box-shadow: inset 2.5px 0 0 var(--toc-focus-pink);
+	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.toc-item.toc-focus-band::before {
+	opacity: 1;
+	background: var(--toc-focus-pink);
 }
 
 .toc-item.toc-focus-band .toc-label,
@@ -231,8 +266,9 @@
 	--toc-focus-pink: oklch(0.8 0.15 350);
 }
 
-/* 保留 DOM 节点供 TOCManager 定位，视觉隐藏 */
+/* 保留 DOM 节点供 TOCManager 定位；彻底不绘制（旧版是整块背景高亮，易看成上下细线） */
 .toc-active-indicator {
+	display: none !important;
 	position: absolute;
 	width: 0;
 	height: 0;
@@ -241,6 +277,7 @@
 	overflow: hidden;
 	box-shadow: none;
 	background: transparent;
+	border: none;
 	z-index: -1;
 }
 
