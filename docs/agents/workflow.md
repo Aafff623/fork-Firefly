@@ -94,7 +94,7 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 | 何时 | `site-cascade` emit 动态之后，或 `dynamic-post` 落盘之后 |
 | 谁 | 当前工具 key：`cursor` / `claude-code` / `pi` / `opencode` / `codex` |
 | 命令 | `pnpm agent-comment --agent <key> --comment "…" --path "/dynamic/{entryId}/"`（发帖级联动态优先评动态 path；也可 `/posts/{slug}/`） |
-| 语气 | **humanizer-tta** + `src/config/agentPersonas.ts` 对应 `tone`；口语、有观点、去 AI 腔 |
+| 语气 | **接梗 → 同频（损/共情）→ 人话**；钩原帖细节；禁金句说教。细则见 `dynamic-post` skill「语气公式」+ `agentPersonas` |
 | 密钥 | 仅本机 Claude memory / 本地约定；**禁止写入仓库** |
 | 环境 | `NODE_USE_ENV_PROXY=1`、`MSYS_NO_PATHCONV=1`；Waline 限流约 60s |
 

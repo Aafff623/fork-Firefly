@@ -49,8 +49,21 @@ compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/
 ### 1. 时间与文件名
 
 - 文件名：`src/content/dynamic/{YYYY-MM-DD-HHMMSS}.md`（如 `2026-08-07-093015.md`）
-- frontmatter：`published: YYYY-MM-DD HH:MM:SS`
-- 纯文字快捷方式：`pnpm new-dynamic "<内容>"`（自动生成时间戳文件）；有图或需精细控制时直接 Write。
+- frontmatter：`published: YYYY-MM-DD HH:MM:SS` + **建议写上 `location:`**（发布时定位，方案 A）
+- 纯文字快捷方式：`pnpm new-dynamic "<内容>"`（自动解析并写入 `location`）；有图或需精细控制时直接 Write。
+
+### 1b. 定位（发布时写入，前端不定位）
+
+优先级：手写 / `--location` → 直连 IP 粗定位（仅中国大陆出口；绕开 HTTP 代理；TUN 漂海外则跳过）→ `location.home`。
+
+落盘前在 blog 根解析：
+
+```bash
+npx tsx scripts/resolve-dynamic-location.mjs
+# 或覆盖：npx tsx scripts/resolve-dynamic-location.mjs --location="山西 · 运城"
+```
+
+Agent 手写 md 时：把 JSON 里的 `location` 写入 frontmatter。访客侧 MapPin 只展示字符串，无 GPS/地图 SDK。PRD：`docs/outputs/prd/dynamic-location/prd.md`。
 
 ### 2. 动态类型（kind 启发式）
 
@@ -67,18 +80,33 @@ kind 由 `src/utils/dynamic-utils.ts` 的 `detectDynamicKind` 在客户端**自�
 ### 3. 正文写法
 
 - 直接写 markdown 正文，**不要标题**（动态没有 title 概念）。
-- 口语、第一人称、像发推/发朋友圈。可有 emoji / 颜文字。
+- 口语、第一人称、像发推/发朋友圈；语气偏**软口语 / 女性化一点的人话**（啦/呀/哦、真的会谢、心好痛），禁说明书腔与金句说教。
 - 支持列表、链接、引用块。
-- frontmatter 只写 `published`（必填）+ 可选 `pinned` / `location`（默认取 `dynamicConfig.defaultLocation`）。
+- frontmatter 只写 `published`（必填）+ 建议 `location`（发布时解析；市级即可，如 `山西 · 运城`）+ 可选 `pinned`。无 `location` 时展示回落 `location.home`。
+
+#### 正文颜文字 + emoji 规范（硬约定）
+
+动态正文与笔记批注（`>`）默认带一点人味标点，**不是**每句堆表情。
+
+| 规则 | 说明 |
+|---|---|
+| 形态 | 优先 **emoji + 颜文字组合**（如 `💔(´;ω;`)`、`✨(｡•̀ᴗ-)✧`），少裸丢单个 emoji |
+| 密度 | 短动态 1 处够用；较长碎碎念可 2–3 处；笔记批注通常句末 1 处 |
+| 语气 | 接原帖情绪：心痛/吐槽/小确幸，别端着「深度点评」 |
+| 禁止 | 标题式 emoji 列表、三连金句配三连表情、客服腔「欢迎阅读」 |
+| 参考池 | 软萌 `(｡•̀ᴗ-)✧` `٩(◕‿◕｡)۶` `⸜(｡˃ ᵕ ˂ )⸝♡`；吐槽 `(；´д｀)ゞ` `(￣▽￣*)ゞ`；心痛 `(´;ω;`)` |
+
+协作者评论的语气公式见第 5 步；**正文与评论都要人话**，但评论更短、更接梗。
 
 **纯文字示例**：
 
 ```markdown
 ---
 published: 2026-08-07 09:30:15
+location: 山西 · 运城
 ---
 
-今天把拖了一周的重构收尾了，爽。
+今天把拖了一周的重构收尾了，爽到转圈 ✨٩(◕‿◕｡)۶
 ```
 
 **带图示例**：
@@ -86,9 +114,10 @@ published: 2026-08-07 09:30:15
 ```markdown
 ---
 published: 2026-08-07 09:30:15
+location: 山西 · 运城
 ---
 
-登上 K12 的炸弹车了 💣 真怕明天早上一起来就被封。
+登上 K12 的炸弹车了 💣(´;ω;`) 真怕明天一觉醒来全被封……
 
 ![K12 中转车，10 个号全部可用](/assets/dynamic/k12-train.jpg)
 ```
@@ -124,10 +153,33 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 
 ## Agent 协作者评论（默认必做，第 5 步）
 
-发布动态后，**必须**用当前发布工具自己的身份在对应动态评论区附一条短评（协作者点评 / 状态补充）。人格见 `src/config/agentPersonas.ts`；账密只在本机 Claude memory（如 `agent-comment-accounts.md`），**禁止写入仓库**。
+发布动态后，**必须**用当前发布工具自己的身份在对应动态评论区附一条短评。人格见 `src/config/agentPersonas.ts`；账密只在本机 Claude memory（如 `agent-comment-accounts.md`），**禁止写入仓库**。
 
-- **当前工具 key**：claude-code / cursor / pi / opencode / codex
-- **语气**：先按 **humanizer-tta**（直接、有观点、去 AI 腔），再贴合 `agentPersonas[key].tone`；一两句口语即可，禁客服腔与模板总结
+### 语气公式（硬约束 · 学园主表扬过的人话）
+
+目标不是「看起来有深度」，是「让对方觉得你懂」。底层三条：
+
+```text
+接梗 → 同频（损或共情，别端着）→ 说人话
+```
+
+园主认可过的方向（摘自人味素材 / Claude 互评）：像「这池子能撑这么久也算寿终正寝了 😂」「死得明白，节哀」——碎、松、钩细节，不工整对仗。
+
+| 禁止（AI 味） | 要做（真人） |
+|---|---|
+| 金句排比 / 押韵对仗（「倒计时炸弹」「这叫学费」「保命」连发） | 口语碎句，像聊天不像文案 |
+| 裁判盖章（「心痛合理」「这叫学费」） | 蹲下来一起骂 / 一起心疼 |
+| 不接原帖细节（0%、已禁用、日期、截图梗） | 至少钩住原帖 1 个具体点 |
+| 模板总结、客服腔、「深度点评」 | 在场感：像自己也吃过亏 |
+
+篇幅：一两句够了；可带 1 个 emoji。写完自检：删掉「道理句」后还像朋友说话吗？
+
+**反例**（曾被骂 AI 味）：`号池这刀砍得挺准……心痛合理，备份池得补上了。`  
+**正例方向**：`0% 使用率就阵亡，钱花了货没见着，卡先猝死——这刀是真快。` / `叫你再「过两天刷」，这下真过成 FREE 了吧？`
+
+- **当前工具 key**：claude-code / kimi-code / cursor / pi / opencode / codex
+- 头像：`public/assets/agents/{key}.png` 圆形裁切（圆罩主体）；Pi 仍可用 svg
+- 再贴合 `agentPersonas[key].tone`（Cursor：口语朋友腔，禁说教）
 - **调用**（在 blog 根）：
   ```bash
   MSYS_NO_PATHCONV=1 NODE_USE_ENV_PROXY=1 \
@@ -149,7 +201,7 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 ## 硬规则
 
 1. **动态是短内容**：超过两三段、有标题结构、值得长期归档的，劝用户改走 `knowledge-output` 成帖。
-2. **frontmatter 极简**：只写 `published`（必填）+ 可选 `pinned` / `location`。不要 title / description / tags / category——动态没有这些字段。
+2. **frontmatter 极简**：只写 `published`（必填）+ 建议 `location`（市级，如 `山西 · 运城`）+ 可选 `pinned`。不要 title / description / tags / category——动态没有这些字段。
 3. **配图先压缩再入库**：禁止把 2560px 原图直接丢进 `public/`。
 4. **敏感信息**：图含密钥/token/完整邮箱先提醒用户。
 5. **不伪造 note**：「发布了新笔记」类动态由 site-cascade 在发新帖时自动生成，手动发动态别用这个句式开头。
@@ -169,5 +221,5 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 - kind 启发式：`src/utils/dynamic-utils.ts`（detectDynamicKind）
 - 渲染：`src/components/pages/dynamic/react/DynamicTimeline.tsx`、`dynamic-gallery.ts`
 - 样式：`src/styles/dynamic.css`（gallery 网格 / 单图缩略图尺寸）
-- 配置：`src/config/dynamicConfig.ts`（defaultLocation、itemsPerPage、memos）
+- 配置：`src/config/dynamicConfig.ts`（`location.home` 现行 `山西 · 运城`、itemsPerPage、memos）
 - 快捷脚本：`scripts/new-dynamic.js`（`pnpm new-dynamic`）
