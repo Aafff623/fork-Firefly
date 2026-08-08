@@ -83,6 +83,7 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 - 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
 - 笔记型动态批注约定：同甲
 - **分类门禁**：同甲
+- **小节标题防 AI 味**：禁止 `一句话收束` / `核心要点` / `综上所述` 等课件收尾腔；要通俗有创意（判断/边界/怎么选）。细则：`knowledge-output` → 成帖红线 #2 + `references/heading-anti-ai.md`
 
 ### Agent 协作者评论（发帖 / 发动态后必做）
 
