@@ -28,7 +28,7 @@
 - 配置优先于改布局；大文件（`Layout.astro` 等）非必要不拆。
 - 中文沟通；代码与提交 Conventional Commits。
 - project-init 与上游文档冲突时：**覆盖式更新**本仓治理文件，并在对话里声明冲突点。
-- **README 本地预览壳**：根目录 `preview-readme.{html,css,js}`；仓库根 `python -m http.server 8090`，打开 http://127.0.0.1:8090/preview-readme.html（勿用 `file://`）。
+- **本地预览壳（8090）**：`preview-readme.{html,css,js}` → README；`preview-release.{html,css,js}` + `release-notes/*.md` → Release 中英双栏。仓库根 `python -m http.server 8090`（勿用 `file://`）。
 - **交付闭环**：本地预览 → 校验 → push → 核线上（见 `docs/agents/workflow.md`）。
 
 ## Agent skills
@@ -42,8 +42,10 @@
 | `knowledge-output` | Knowledge 素材 → `posts/<slug>`（草稿进 `_draftbox/`，不 push）；正式发收尾接 `site-cascade` |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |
 | `firefly-minimax-media` | MiniMax 出图·配音·音乐·短视频（额度门禁 + 落盘脚本） |
+| `release-post` | GitHub Release notes / SemVer；本地中英预览 `preview-release.html` |
 
 出封面/语音/BGM/短片前读 `firefly-minimax-media/SKILL.md`；先跑 `scripts/check_quota.py`。  
+发版前读 `release-post/SKILL.md`；先起草，用户说「发布」才 `gh release create`。  
 工作区根若为上一级 `blog/`，须在 `blog/.cursor/skills/` 建 junction 指向本表 skill（见 `AGENTS.md`）。
 
 ### Issue tracker
