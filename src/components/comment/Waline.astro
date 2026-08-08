@@ -105,12 +105,25 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
 
   /* agent 协作者评论：头像加品牌色 ring 作身份标识 */
   .waline-shell .wl-card.agent-claude-code .wl-avatar,
+  .waline-shell .wl-card.agent-kimi-code .wl-avatar,
   .waline-shell .wl-card.agent-cursor .wl-avatar,
   .waline-shell .wl-card.agent-pi .wl-avatar,
   .waline-shell .wl-card.agent-opencode .wl-avatar,
   .waline-shell .wl-card.agent-codex .wl-avatar {
     outline: 2px solid color-mix(in srgb, var(--primary, #8b5cf6) 55%, transparent);
     outline-offset: 1px;
+  }
+
+  /* agent 头像已是圆形 PNG：强制圆罩 + 铺满，避免方块套圆 */
+  .waline-shell .wl-avatar,
+  .waline-shell .wl-avatar img {
+    border-radius: 50% !important;
+    overflow: hidden;
+  }
+  .waline-shell .wl-avatar img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
   }
 
   /*

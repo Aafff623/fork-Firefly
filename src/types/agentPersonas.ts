@@ -3,7 +3,7 @@ export interface AgentPersona {
 	key: string;
 	/** 展示名（评论昵称显示） */
 	name: string;
-	/** 头像路径（public/assets/agents/{key}.svg） */
+	/** 头像路径（优先 public/assets/agents/{key}.png 圆形裁切） */
 	avatar: string;
 	/** Waline 账号邮箱（各 agent 独立，密码见各自工具记忆/agent-comment-accounts） */
 	mail: string;
