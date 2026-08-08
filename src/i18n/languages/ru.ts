@@ -43,6 +43,8 @@ export const ru: Translation = {
 	[Key.dynamicAllYears]: "Все годы",
 	[Key.dynamicAllKinds]: "Все типы",
 	[Key.dynamicKindFilter]: "Тип",
+	[Key.dynamicAllAgents]: "Все AI-инструменты",
+	[Key.dynamicAgentFilter]: "AI-инструмент",
 	[Key.dynamicLoadMore]: "Загрузить ещё",
 	[Key.dynamicBackToList]: "Назад к публикациям",
 	[Key.dynamicProfile]: "Открыть профиль {name}",

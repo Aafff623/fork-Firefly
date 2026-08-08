@@ -42,6 +42,8 @@ enum I18nKey {
 	dynamicAllYears = "dynamicAllYears",
 	dynamicAllKinds = "dynamicAllKinds",
 	dynamicKindFilter = "dynamicKindFilter",
+	dynamicAllAgents = "dynamicAllAgents",
+	dynamicAgentFilter = "dynamicAgentFilter",
 	dynamicLoadMore = "dynamicLoadMore",
 	dynamicBackToList = "dynamicBackToList",
 	dynamicProfile = "dynamicProfile",

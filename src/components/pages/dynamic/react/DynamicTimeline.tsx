@@ -1,5 +1,6 @@
 import { Check, Circle, Image as ImageIcon, MapPin, MessageCircle, Pin } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { agentPersonas } from "@/config/agentPersonas";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
 import {
 	detectDynamicKind,
@@ -28,6 +29,7 @@ type DynamicData = {
 	searchText: string;
 	pinned?: boolean;
 	location?: string;
+	author?: string;
 };
 
 interface MemosConfig {
@@ -102,6 +104,20 @@ function formatFullTime(
 	return `${text} ${formatTimezoneOffset(timezone, date)}`;
 }
 
+/** 按发布者身份解析展示名与头像：entry.author 命中 agent → 用 agent 人格，否则回落园主 */
+function resolveAuthorIdentity(
+	entry: DynamicData,
+	fallbackName: string,
+	fallbackAvatar: string,
+) {
+	const persona = entry.author ? agentPersonas[entry.author] : undefined;
+	return {
+		name: persona?.name || fallbackName,
+		avatar: persona?.avatar || fallbackAvatar,
+		isAgent: Boolean(persona),
+	};
+}
+
 function EntryBody({
 	entry,
 	kind,
@@ -145,6 +161,9 @@ function EntryBody({
 		typeof document !== "undefined" ? document.documentElement.lang : undefined;
 	const fullTime = formatFullTime(date, useLocalTz, timezone, lang || undefined);
 	const location = entry.location?.trim();
+	const authorIdentity = resolveAuthorIdentity(entry, profileName, avatarUrl);
+	const authorName = authorIdentity.name;
+	const authorAvatar = authorIdentity.avatar;
 
 	const html = entry.html || "";
 	const mediaId = `${contentId}-media`;
@@ -180,10 +199,10 @@ function EntryBody({
 	return (
 		<div className="ff-tl-rich">
 			<header className="dynamic-entry-header">
-				<a href={profileUrl} className="dynamic-avatar" aria-label={profileName}>
-					{avatarUrl ? (
+				<a href={profileUrl} className="dynamic-avatar" aria-label={authorName}>
+					{authorAvatar ? (
 						<img
-							src={avatarUrl}
+							src={authorAvatar}
 							alt=""
 							width={40}
 							height={40}
@@ -191,14 +210,14 @@ function EntryBody({
 						/>
 					) : (
 						<span className="ff-tl-avatar-fallback" aria-hidden="true">
-							{profileName.slice(0, 1)}
+							{authorName.slice(0, 1)}
 						</span>
 					)}
 				</a>
 				<div className="dynamic-identity">
 					<div className="dynamic-identity-row">
 						<a href={profileUrl} className="dynamic-author">
-							<strong id={`${anchorId}-author`}>{profileName}</strong>
+							<strong id={`${anchorId}-author`}>{authorName}</strong>
 						</a>
 						<span className="dynamic-kind" data-kind={kind}>
 							{DYNAMIC_KIND_LABEL[kind]}
@@ -398,6 +417,8 @@ export default function DynamicTimeline({
 	const [year, setYear] = useState("all");
 	/** all = 不限类型；status/note/gallery = 顶卡标签筛选 */
 	const [kindFilter, setKindFilter] = useState<"all" | DynamicKind>("all");
+	/** all = 不限发布者；agent key（如 claude-code）= 只看该 AI 编程工具发的动态 */
+	const [agentFilter, setAgentFilter] = useState("all");
 	const sentinelRef = useRef<HTMLDivElement | null>(null);
 
 	const useLocalTz = source.startsWith("http") || Boolean(memos?.enable);
@@ -420,6 +441,7 @@ export default function DynamicTimeline({
 		);
 		const yearSelect = page?.querySelector<HTMLSelectElement>("[data-year-select]");
 		const kindSelect = page?.querySelector<HTMLSelectElement>("[data-kind-select]");
+		const agentSelect = page?.querySelector<HTMLSelectElement>("[data-agent-select]");
 
 		const onSearch = () => setQuery(searchInput?.value.toLocaleLowerCase().trim() || "");
 		const onYear = () => setYear(yearSelect?.value || "all");
@@ -427,15 +449,18 @@ export default function DynamicTimeline({
 			const value = kindSelect?.value || "all";
 			setKindFilter(value === "all" ? "all" : (value as DynamicKind));
 		};
+		const onAgent = () => setAgentFilter(agentSelect?.value || "all");
 
 		searchInput?.addEventListener("input", onSearch);
 		yearSelect?.addEventListener("change", onYear);
 		kindSelect?.addEventListener("change", onKind);
+		agentSelect?.addEventListener("change", onAgent);
 
 		return () => {
 			searchInput?.removeEventListener("input", onSearch);
 			yearSelect?.removeEventListener("change", onYear);
 			kindSelect?.removeEventListener("change", onKind);
+			agentSelect?.removeEventListener("change", onAgent);
 		};
 	}, []);
 
@@ -484,13 +509,14 @@ export default function DynamicTimeline({
 			const kindOk =
 				kindFilter === "all" ||
 				detectDynamicKind(entry.html, entry.images?.length ?? 0) === kindFilter;
-			return yearOk && queryOk && kindOk;
+			const agentOk = agentFilter === "all" || (entry.author || "") === agentFilter;
+			return yearOk && queryOk && kindOk && agentOk;
 		});
 		setFiltered(next);
 		if (catalogReady) syncPageCount(next);
 		// 筛选变化：回到首批，避免继续挂着旧的超大 visibleCount
 		setVisibleCount(next.length === 0 ? 0 : Math.min(batch, next.length));
-	}, [entries, query, year, kindFilter, batch, catalogReady]);
+	}, [entries, query, year, kindFilter, agentFilter, batch, catalogReady]);
 
 	useEffect(() => {
 		const plainTitle = (_html: string, searchText: string) => {

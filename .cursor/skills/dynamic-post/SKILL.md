@@ -40,17 +40,32 @@ compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/
 ## 发布流程（四步）
 
 ```
+0 定身份   → 默认园主；用户指定用某个 AI 编程工具发布时，记下 agent key（见「两种身份」）
 1 取时间   → 当前本地时间（siteConfig.timezone，默认 Asia/Shanghai）
 2 定类型   → 按内容预判 kind（见下），决定要不要配图、怎么配
-3 落盘     → 写 src/content/dynamic/YYYY-MM-DD-HHMMSS.md（frontmatter 仅 published）
+3 落盘     → 写 src/content/dynamic/YYYY-MM-DD-HHMMSS.md（frontmatter：published + 可选 author）
 4 配图     → 有图则压到规范尺寸，放 public/assets/dynamic/，正文引用
 ```
+
+## 两种身份：园主 vs AI 编程工具
+
+动态支持**两种发布身份**，具体用哪个**由用户指令决定**，不要自作主张：
+
+| 身份 | frontmatter `author` | 渲染效果 |
+|---|---|---|
+| **园主（默认）** | 不写 `author` 或空 | 头像/昵称 = 园主（`profileConfig`） |
+| **AI 编程工具** | 写 `author: <agent key>` | 头像/昵称 = 该 agent 人格（`agentPersonas`） |
+
+- **agent key 白名单**：`claude-code` / `kimi-code` / `cursor` / `pi` / `opencode` / `codex`（见 `src/config/agentPersonas.ts`）。写未知 key 会回落园主。
+- **何时用 agent 身份**：用户明确说「以你的身份发」「用 Claude/Cursor 的账号发」「你别用我的身份」等。仅当用户指定才写 `author`。
+- **筛选联动**：动态页「AI 编程工具」下拉按 `author` 过滤，选了某 agent 就只看它发的动态。
+- **评论联动**：以 agent 身份发布后，协作者评论（第 5 步）用同一 agent key，身份统一。
 
 ### 1. 时间与文件名
 
 - 文件名：`src/content/dynamic/{YYYY-MM-DD-HHMMSS}.md`（如 `2026-08-07-093015.md`）
-- frontmatter：`published: YYYY-MM-DD HH:MM:SS` + **建议写上 `location:`**（发布时定位，方案 A）
-- 纯文字快捷方式：`pnpm new-dynamic "<内容>"`（自动解析并写入 `location`）；有图或需精细控制时直接 Write。
+- frontmatter：`published: YYYY-MM-DD HH:MM:SS` + **建议写上 `location:`**（发布时定位，方案 A）+ **可选 `author:`**（agent 身份，见「两种身份」）
+- 纯文字快捷方式：`pnpm new-dynamic "<内容>"`（自动解析并写入 `location`；有图或需精细控制时直接 Write）。agent 身份发布：`pnpm new-dynamic --author claude-code "<内容>"`（写入 `author` 字段）。
 
 ### 1b. 定位（发布时写入，前端不定位）
 
@@ -201,7 +216,7 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 ## 硬规则
 
 1. **动态是短内容**：超过两三段、有标题结构、值得长期归档的，劝用户改走 `knowledge-output` 成帖。
-2. **frontmatter 极简**：只写 `published`（必填）+ 建议 `location`（市级，如 `山西 · 运城`）+ 可选 `pinned`。不要 title / description / tags / category——动态没有这些字段。
+2. **frontmatter 极简**：只写 `published`（必填）+ 建议 `location`（市级，如 `山西 · 运城`）+ 可选 `pinned` + 可选 `author`（agent 身份才写）。不要 title / description / tags / category——动态没有这些字段。
 3. **配图先压缩再入库**：禁止把 2560px 原图直接丢进 `public/`。
 4. **敏感信息**：图含密钥/token/完整邮箱先提醒用户。
 5. **不伪造 note**：「发布了新笔记」类动态由 site-cascade 在发新帖时自动生成，手动发动态别用这个句式开头。
@@ -216,7 +231,9 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 
 ## 参考
 
-- 内容集合 schema：`src/content.config.ts`（dynamicCollection：published/pinned/location）
+- 内容集合 schema：`src/content.config.ts`（dynamicCollection：published/pinned/location/author）
+- 发布者身份：`src/config/agentPersonas.ts`（agent key → name/avatar/mail，用于 author 渲染与 AI 编程工具筛选）
+- 渲染与筛选：`src/components/pages/dynamic/react/DynamicTimeline.tsx`（resolveAuthorIdentity + agentFilter）、`src/pages/dynamic/index.astro`（data-agent-select 下拉）
 - 图片抽取与 API：`src/pages/api/dynamic.json.ts`
 - kind 启发式：`src/utils/dynamic-utils.ts`（detectDynamicKind）
 - 渲染：`src/components/pages/dynamic/react/DynamicTimeline.tsx`、`dynamic-gallery.ts`

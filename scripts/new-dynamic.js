@@ -7,6 +7,7 @@ import { resolveDynamicLocation } from "./resolve-dynamic-location.mjs";
 
 function parseArgs(argv) {
 	let locationOverride = "";
+	let authorOverride = "";
 	const parts = [];
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
@@ -18,16 +19,24 @@ function parseArgs(argv) {
 			locationOverride = arg.slice("--location=".length);
 			continue;
 		}
+		if (arg === "--author" && argv[i + 1]) {
+			authorOverride = argv[++i];
+			continue;
+		}
+		if (arg.startsWith("--author=")) {
+			authorOverride = arg.slice("--author=".length);
+			continue;
+		}
 		parts.push(arg);
 	}
-	return { content: parts.join(" ").trim(), locationOverride };
+	return { content: parts.join(" ").trim(), locationOverride, authorOverride };
 }
 
-const { content, locationOverride } = parseArgs(process.argv.slice(2));
+const { content, locationOverride, authorOverride } = parseArgs(process.argv.slice(2));
 
 if (!content) {
 	console.error(
-		"Error: No dynamic content provided\nUsage: pnpm new-dynamic [--location 文案] <content>",
+		"Error: No dynamic content provided\nUsage: pnpm new-dynamic [--location 文案] [--author agent-key] <content>",
 	);
 	process.exit(1);
 }
@@ -71,12 +80,13 @@ const resolved = await resolveDynamicLocation({ override: locationOverride });
 const locationLine = resolved.location
 	? `location: ${resolved.location}\n`
 	: "";
+const authorLine = authorOverride ? `author: ${authorOverride}\n` : "";
 
 fs.writeFileSync(
 	fullPath,
-	`---\npublished: ${timestamp}\n${locationLine}---\n\n${content}\n`,
+	`---\npublished: ${timestamp}\n${locationLine}${authorLine}---\n\n${content}\n`,
 );
 
 console.log(
-	`Dynamic ${fullPath} created (location=${resolved.location || "∅"} source=${resolved.source})`,
+	`Dynamic ${fullPath} created (location=${resolved.location || "∅"} source=${resolved.source}${authorOverride ? ` author=${authorOverride}` : ""})`,
 );

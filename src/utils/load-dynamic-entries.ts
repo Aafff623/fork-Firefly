@@ -22,6 +22,8 @@ export type DynamicEntryJson = {
 	searchText: string;
 	pinned?: boolean;
 	location?: string;
+	/** 发布者 agent key（如 claude-code）；缺省为园主 */
+	author?: string;
 };
 
 function resolveDynamicImageSrc(src: string, entryId: string): string {
@@ -52,6 +54,7 @@ export async function loadDynamicEntries(): Promise<DynamicEntryJson[]> {
 			);
 			const rendered = await processor.render(markdown);
 			const location = entry.data.location.trim() || defaultLocation;
+			const author = (entry.data.author || "").trim();
 
 			return {
 				id: entryId,
@@ -61,6 +64,7 @@ export async function loadDynamicEntries(): Promise<DynamicEntryJson[]> {
 				searchText: dynamicSearchText(entry),
 				pinned: entry.data.pinned || false,
 				location,
+				...(author ? { author } : {}),
 			};
 		}),
 	);

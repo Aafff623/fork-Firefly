@@ -43,6 +43,8 @@ export const en: Translation = {
 	[Key.dynamicAllYears]: "All years",
 	[Key.dynamicAllKinds]: "All types",
 	[Key.dynamicKindFilter]: "Type",
+	[Key.dynamicAllAgents]: "All AI coding tools",
+	[Key.dynamicAgentFilter]: "AI coding tool",
 	[Key.dynamicLoadMore]: "Load more",
 	[Key.dynamicBackToList]: "Back to moments",
 	[Key.dynamicProfile]: "View {name}'s profile",

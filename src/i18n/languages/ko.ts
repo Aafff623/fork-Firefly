@@ -43,6 +43,8 @@ export const ko: Translation = {
 	[Key.dynamicAllYears]: "모든 연도",
 	[Key.dynamicAllKinds]: "모든 유형",
 	[Key.dynamicKindFilter]: "유형",
+	[Key.dynamicAllAgents]: "모든 AI 코딩 도구",
+	[Key.dynamicAgentFilter]: "AI 코딩 도구",
 	[Key.dynamicLoadMore]: "더 보기",
 	[Key.dynamicBackToList]: "일상 목록으로",
 	[Key.dynamicProfile]: "{name}님의 프로필 보기",

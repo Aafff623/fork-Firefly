@@ -43,6 +43,8 @@ export const zh_CN: Translation = {
 	[Key.dynamicAllYears]: "全部年份",
 	[Key.dynamicAllKinds]: "全部类型",
 	[Key.dynamicKindFilter]: "类型",
+	[Key.dynamicAllAgents]: "全部AI编程工具",
+	[Key.dynamicAgentFilter]: "AI编程工具",
 	[Key.dynamicLoadMore]: "加载更多",
 	[Key.dynamicBackToList]: "返回动态列表",
 	[Key.dynamicProfile]: "查看 {name} 的资料",

@@ -4,6 +4,7 @@ import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import DynamicTimeline from "@/components/pages/dynamic/react/DynamicTimeline";
+import { agentPersonas } from "@/config/agentPersonas";
 import {
 	commentConfig,
 	dynamicConfig,
@@ -45,6 +46,11 @@ const kindLegend = [
 	{ kind: "note", label: DYNAMIC_KIND_LABEL.note },
 	{ kind: "gallery", label: DYNAMIC_KIND_LABEL.gallery },
 ] as const;
+
+const agentLegend = Object.entries(agentPersonas).map(([key, persona]) => ({
+	key,
+	label: persona.name,
+}));
 
 const profileUrl = url(dynamicConfig.profileUrl || "/about/");
 
@@ -129,6 +135,22 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 							{
 								kindLegend.map(({ kind, label }) => (
 									<option value={kind}>{label}</option>
+								))
+							}
+						</select>
+						<Icon is:inline name="lucide:chevron-down" />
+					</label>
+					<label class="dynamic-form-select dynamic-agent-select">
+						<span class="sr-only">{i18n(I18nKey.dynamicAgentFilter)}</span>
+						<Icon is:inline name="lucide:bot" />
+						<select
+							data-agent-select
+							aria-label={i18n(I18nKey.dynamicAgentFilter)}
+						>
+							<option value="all">{i18n(I18nKey.dynamicAllAgents)}</option>
+							{
+								agentLegend.map(({ key, label }) => (
+									<option value={key}>{label}</option>
 								))
 							}
 						</select>

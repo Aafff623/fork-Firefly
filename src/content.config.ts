@@ -35,6 +35,7 @@ type DynamicData = {
 	published: Date;
 	pinned: boolean;
 	location: string;
+	author?: string;
 };
 
 type ContentCollection<T> = CollectionConfig<
@@ -96,6 +97,8 @@ const dynamicCollection: ContentCollection<DynamicData> = defineCollection({
 		published: z.date(),
 		pinned: z.boolean().optional().default(false),
 		location: z.string().optional().default(""),
+		/** 发布者身份：缺省为园主；填 agent key（如 claude-code）则以该 agent 身份发布 */
+		author: z.string().optional().default(""),
 	}),
 });
 
