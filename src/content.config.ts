@@ -43,7 +43,16 @@ type ContentCollection<T> = CollectionConfig<
 >;
 
 const postsCollection: ContentCollection<PostData> = defineCollection({
-	loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
+	// Non-post markdown under posts/ must not enter the collection (breaks Vercel build).
+	// Keep: real posts + DEV draftbox entries. Skip: draftbox README, sidecar docs under images/.
+	loader: glob({
+		pattern: [
+			"**/*.{md,mdx}",
+			"!_draftbox/README.md",
+			"!**/images/**/*.{md,mdx}",
+		],
+		base: "./src/content/posts",
+	}),
 	schema: z.object({
 		title: z.string(),
 		published: z.date(),
