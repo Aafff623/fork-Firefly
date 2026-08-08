@@ -84,18 +84,32 @@
 .dynamic-count {
 	display: inline-flex;
 	align-items: baseline;
-	gap: 0.28rem;
+	gap: 0.35rem;
 	flex-shrink: 0;
 	color: color-mix(in oklab, var(--content-meta) 88%, transparent);
 	font-size: 0.78rem;
 	white-space: nowrap;
 }
 
+/* 筛选统计数字：大号衬线艺术字；后面「动态」保持正文小字 */
 .dynamic-count strong {
-	font-size: 0.95rem;
-	font-weight: 700;
+	font-family: "Playfair Display", "Instrument Serif", Georgia, "Times New Roman",
+		serif;
+	font-size: clamp(1.9rem, 3.4vw, 2.65rem);
+	font-weight: 600;
+	font-style: italic;
+	line-height: 0.92;
+	letter-spacing: -0.03em;
 	color: var(--primary);
 	font-variant-numeric: tabular-nums;
+}
+
+.dynamic-count > span {
+	font-size: 0.78rem;
+	font-weight: 400;
+	font-style: normal;
+	line-height: 1.2;
+	color: color-mix(in oklab, var(--content-meta) 88%, transparent);
 }
 
 .dynamic-toolbar {
@@ -520,6 +534,13 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	object-position: center;
+}
+
+/* agent 品牌方图/logo：contain 避免圆裁把主体切没 */
+.dynamic-avatar[data-agent] img {
+	object-fit: contain;
+	background: color-mix(in oklab, var(--content-meta) 10%, transparent);
 }
 
 .dynamic-identity {
@@ -585,6 +606,163 @@
 	background: color-mix(in oklab, var(--primary) 9%, transparent);
 	color: var(--primary);
 	font-weight: 600;
+}
+
+/* 身份徽标：园主 / AI 协作者，点击跳 /agents/ */
+.dynamic-author-badge {
+	display: inline-flex;
+	align-items: center;
+	font-size: 0.62rem;
+	font-weight: 600;
+	padding: 0.1rem 0.42rem;
+	border-radius: 999px;
+	border: 1px solid color-mix(in oklab, var(--primary) 32%, transparent);
+	background: color-mix(in oklab, var(--primary) 9%, transparent);
+	color: var(--primary);
+	text-decoration: none;
+}
+
+.dynamic-author-badge[data-agent] {
+	border-color: color-mix(in oklab, var(--dyn-kind-gallery) 42%, transparent);
+	background: color-mix(in oklab, var(--dyn-kind-gallery) 12%, transparent);
+	color: var(--dyn-kind-gallery);
+}
+
+.dynamic-author-badge:hover {
+	filter: brightness(1.08);
+}
+
+/* 「作者阅过」：仅 DEV 小红花手动盖章（生产无按钮无章） */
+.ff-tl-article {
+	position: relative;
+}
+
+/* 给右上角小红花留空，避免压住定位文案 */
+.ff-tl-article:has(.dynamic-seal-flower),
+.ff-tl-article:has(.dynamic-seal.is-visible),
+.ff-tl-article:has(.dynamic-seal.is-stamping) {
+	--dynamic-seal-gutter: 2.6rem;
+}
+
+.ff-tl-article:has(.dynamic-seal-flower) .dynamic-entry-header,
+.ff-tl-article:has(.dynamic-seal.is-visible) .dynamic-entry-header,
+.ff-tl-article:has(.dynamic-seal.is-stamping) .dynamic-entry-header {
+	padding-right: var(--dynamic-seal-gutter);
+}
+
+.dynamic-seal-flower {
+	position: absolute;
+	top: 0.28rem;
+	right: 0.28rem;
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.7rem;
+	height: 1.7rem;
+	padding: 0;
+	border: 1px solid color-mix(in oklab, #e0483d 36%, transparent);
+	border-radius: 999px;
+	background: color-mix(in oklab, #e0483d 10%, transparent);
+	color: #e0483d;
+	cursor: pointer;
+	transition:
+		transform 0.18s ease,
+		background 0.18s ease,
+		box-shadow 0.18s ease;
+}
+
+.dynamic-seal-flower:hover {
+	transform: scale(1.08) rotate(-8deg);
+	background: color-mix(in oklab, #e0483d 18%, transparent);
+	box-shadow: 0 4px 14px color-mix(in oklab, #e0483d 22%, transparent);
+}
+
+.dynamic-seal-flower:focus-visible {
+	outline: 2px solid color-mix(in oklab, #e0483d 55%, transparent);
+	outline-offset: 2px;
+}
+
+.dynamic-seal {
+	display: none;
+	position: absolute;
+	top: 0.32rem;
+	right: 0.28rem;
+	z-index: 3;
+	padding: 0.16rem 0.5rem;
+	border: 2px solid color-mix(in oklab, #e0483d 72%, transparent);
+	border-radius: 0.3rem;
+	color: color-mix(in oklab, #e0483d 82%, transparent);
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	transform: rotate(-12deg);
+	background: color-mix(in oklab, #e0483d 6%, transparent);
+	box-shadow: 0 0 0 1px color-mix(in oklab, #e0483d 18%, transparent) inset;
+	pointer-events: none;
+	user-select: none;
+}
+
+.dynamic-seal.is-visible,
+.dynamic-seal.is-stamping {
+	display: inline-block;
+}
+
+/* 已盖章：章本身可点撤销 */
+.dynamic-seal.is-action {
+	pointer-events: auto;
+	cursor: pointer;
+	font: inherit;
+	letter-spacing: 0.12em;
+	line-height: 1.2;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.dynamic-seal.is-action:hover {
+	filter: brightness(1.08);
+	box-shadow:
+		0 0 0 1px color-mix(in oklab, #e0483d 28%, transparent) inset,
+		0 2px 10px color-mix(in oklab, #e0483d 18%, transparent);
+}
+
+.dynamic-seal.is-action:focus-visible {
+	outline: 2px solid color-mix(in oklab, #e0483d 55%, transparent);
+	outline-offset: 2px;
+}
+
+@keyframes dynamic-seal-stamp {
+	0% {
+		opacity: 0;
+		transform: rotate(-18deg) scale(2.35);
+		filter: blur(1px);
+	}
+	55% {
+		opacity: 1;
+		transform: rotate(-10deg) scale(0.9);
+		filter: blur(0);
+	}
+	78% {
+		transform: rotate(-13deg) scale(1.06);
+	}
+	100% {
+		opacity: 1;
+		transform: rotate(-12deg) scale(1);
+	}
+}
+
+.dynamic-seal.is-stamping {
+	animation: dynamic-seal-stamp 0.62s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dynamic-seal.is-stamping {
+		animation: none;
+	}
+
+	.dynamic-seal-flower:hover {
+		transform: none;
+	}
 }
 
 .dynamic-meta {
@@ -857,6 +1035,45 @@
 	margin-top: 0.55rem;
 }
 
+/* 园主/访客写作框：点「评论」后挂 Waline iframe */
+.dynamic-comment-composer {
+	margin-top: 0.65rem;
+	border-radius: 0.7rem;
+	overflow: hidden;
+	border: 1px solid color-mix(in oklab, var(--content-meta) 12%, transparent);
+	background: color-mix(in oklab, var(--content-meta) 3.5%, transparent);
+}
+
+.dynamic-comment-composer-frame {
+	display: block;
+	width: 100%;
+	min-height: 240px;
+	height: 280px;
+	border: 0;
+	background: transparent;
+}
+
+.dynamic-agent-comment.is-owner {
+	border-color: color-mix(in oklab, var(--primary) 28%, transparent);
+	background: color-mix(in oklab, var(--primary) 7%, transparent);
+}
+
+.dynamic-agent-comment-role {
+	font-size: 0.68rem;
+	font-weight: 650;
+	padding: 0.08rem 0.4rem;
+	border-radius: 999px;
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 12%, transparent);
+	border: 1px solid color-mix(in oklab, var(--primary) 22%, transparent);
+	line-height: 1.3;
+}
+
+:root.dark .dynamic-comment-composer {
+	border-color: color-mix(in oklab, #fff 12%, transparent);
+	background: color-mix(in oklab, #fff 4%, transparent);
+}
+
 /* 正常回复流：头像 + 昵称/时间 + 多行正文，一条一条往下冒 */
 .dynamic-agent-comments {
 	display: flex;
@@ -896,7 +1113,7 @@
 	height: 2.25rem;
 	flex: 0 0 2.25rem;
 	border-radius: 50%;
-	object-fit: cover;
+	object-fit: contain;
 	object-position: center;
 	background: color-mix(in oklab, var(--content-meta) 10%, transparent);
 }
@@ -919,7 +1136,8 @@
 .dynamic-agent-comment-name {
 	font-size: 0.84rem;
 	font-weight: 650;
-	color: var(--content);
+	/* 注意：主题里没有 --content，正文色真源是 --deep-text */
+	color: var(--deep-text);
 	line-height: 1.3;
 }
 
@@ -933,15 +1151,29 @@
 	margin: 0;
 	font-size: 0.88rem;
 	line-height: 1.55;
-	color: color-mix(in oklab, var(--content) 92%, var(--content-meta));
+	color: color-mix(in oklab, var(--deep-text) 94%, var(--content-meta));
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 	word-break: break-word;
 }
 
 :root.dark .dynamic-agent-comment {
-	background: color-mix(in oklab, #fff 4.5%, transparent);
-	border-color: color-mix(in oklab, #fff 8%, transparent);
+	background: color-mix(in oklab, #fff 8%, transparent);
+	border-color: color-mix(in oklab, #fff 14%, transparent);
+}
+
+:root.dark .dynamic-agent-comment-name {
+	color: oklch(0.93 0.01 260);
+}
+
+:root.dark .dynamic-agent-comment-text {
+	/* 暗色下强制高对比，避免无效 var / 继承把字糊进底 */
+	color: oklch(0.90 0.01 260);
+}
+
+:root.dark .dynamic-agent-comments.is-loading,
+:root.dark .dynamic-agent-comments.is-empty {
+	color: oklch(0.78 0.01 260);
 }
 
 :root.dark .dynamic-comment-badge {

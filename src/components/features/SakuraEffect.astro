@@ -541,6 +541,14 @@
 		if (window.sakuraInitialized) {
 			return;
 		}
+		// 动态评论 iframe / 嵌入壳：禁止 Intro，避免点「评论」误触发飘花
+		if (
+			window.self !== window.top ||
+			document.querySelector(".dynamic-comment-embed") ||
+			/^\/dynamic\/comments\/?/.test(window.location.pathname)
+		) {
+			return;
+		}
 		window.sakuraInitialized = true;
 
 		let introTimer: ReturnType<typeof setTimeout> | null = null;

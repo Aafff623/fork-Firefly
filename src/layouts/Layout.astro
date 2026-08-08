@@ -43,9 +43,12 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	postSlug?: string;
+	/** iframe 嵌入（如动态评论写作框）：跳过樱花 Intro 等整页特效 */
+	embed?: boolean;
 }
 
-let { title, description, lang, setOGTypeArticle, postSlug } = Astro.props;
+let { title, description, lang, setOGTypeArticle, postSlug, embed } =
+	Astro.props;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
 // Swup can update the body for each page visit, but it's after the page transition, causing a delay for banner height change
@@ -684,15 +687,18 @@ const siteLang = lang.replace("_", "-");
 
 
 
-    <!-- Sakura Effect -->
-    <SakuraEffect />
+    <!-- Sakura Effect：嵌入页不要 Intro，否则点开评论 iframe 就满屏飘花 -->
+    {!embed && <SakuraEffect />}
 
-    <!-- Fancybox Manager -->
-    <FancyboxManager />
-    <NoteCardPreview />
-
-    <!-- Tab 代码块交互 -->
-    <CodeGroupManager />
+    {
+      !embed && (
+        <>
+          <FancyboxManager />
+          <NoteCardPreview />
+          <CodeGroupManager />
+        </>
+      )
+    }
   </body>
 </html>
 
@@ -1157,7 +1163,11 @@ function disableAnimation() {
       }
 
     });
-    window.swup.hooks.on("visit:start", (visit: { to: { url: string } }) => {
+    window.swup.hooks.on("visit:start", (visit: { to: { url: string }; animation: { wait: boolean } }) => {
+      // 先等目标页 HTML 就绪再离场，避免 is-animating 把主栏 opacity:0 后空等 fetch（中间大块留白）
+      // 见 swup VisitAnimation.wait：https://swup.js.org/options/#animation
+      visit.animation.wait = true;
+
       // Start progress bar
       const progressBar = document.getElementById("progress-bar");
       if (progressBar) {
@@ -1349,10 +1359,10 @@ function disableAnimation() {
       updateMainGridCols();
       updateSidebarComponentsVisibility();
 
-      // hide the temp high element when the transition is done
+      // 过渡结束收起撑高条（此前误写成 remove("hidden")，白区会被额外拉长）
       const heightExtend = document.getElementById("page-height-extend");
       if (heightExtend) {
-        heightExtend.classList.remove("hidden");
+        heightExtend.classList.add("hidden");
       }
 
       // 移动端 banner/全屏模式：非首页隐藏壁纸，首页恢复

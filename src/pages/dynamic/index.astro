@@ -44,7 +44,6 @@ const initialEntries = allEntries?.slice(0, itemsPerPage);
 const kindLegend = [
 	{ kind: "status", label: DYNAMIC_KIND_LABEL.status },
 	{ kind: "note", label: DYNAMIC_KIND_LABEL.note },
-	{ kind: "gallery", label: DYNAMIC_KIND_LABEL.gallery },
 ] as const;
 
 const agentLegend = Object.entries(agentPersonas).map(([key, persona]) => ({
@@ -142,12 +141,14 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 					</label>
 					<label class="dynamic-form-select dynamic-agent-select">
 						<span class="sr-only">{i18n(I18nKey.dynamicAgentFilter)}</span>
-						<Icon is:inline name="lucide:bot" />
+						<Icon is:inline name="lucide:users" />
 						<select
 							data-agent-select
 							aria-label={i18n(I18nKey.dynamicAgentFilter)}
 						>
 							<option value="all">{i18n(I18nKey.dynamicAllAgents)}</option>
+							{/* 园主置顶：无 author 字段的动态归园主，别只剩 AI 没大没小 */}
+							<option value="owner">{i18n(I18nKey.agentsOwner)}</option>
 							{
 								agentLegend.map(({ key, label }) => (
 									<option value={key}>{label}</option>
@@ -177,6 +178,7 @@ const avatarUrl = await resolveAvatarUrl(profileConfig.avatar || "");
 			{avatarUrl}
 			commentsLabel={i18n(I18nKey.comments)}
 			pinnedLabel={i18n(I18nKey.pinned)}
+			ownerBadgeLabel={i18n(I18nKey.agentsOwner)}
 			collapseGalleryLabel={i18n(I18nKey.dynamicCollapseGallery)}
 			viewOriginalLabel={i18n(I18nKey.dynamicViewOriginal)}
 			prevImageLabel={i18n(I18nKey.dynamicPreviousImage)}

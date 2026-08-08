@@ -103,6 +103,42 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     --waline-font-size: 1.05rem;
   }
 
+  /* 昵称 / 邮箱 / 网址：强制一行三列，别叠成三层高楼 */
+  .waline-shell .wl-header {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch;
+    gap: 0.45rem;
+    margin: 0 0 0.35rem;
+  }
+
+  .waline-shell .wl-header-item {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0.15rem 0 !important;
+    border-bottom: none !important;
+  }
+
+  .waline-shell .wl-header label {
+    display: block;
+    margin: 0 0 0.15rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    opacity: 0.78;
+  }
+
+  .waline-shell .wl-header input {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    font-size: 0.86rem !important;
+    line-height: 1.35;
+    padding: 0.28rem 0.4rem !important;
+  }
+
   /* agent 协作者评论：头像加品牌色 ring 作身份标识 */
   .waline-shell .wl-card.agent-claude-code .wl-avatar,
   .waline-shell .wl-card.agent-kimi-code .wl-avatar,

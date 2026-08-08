@@ -1,12 +1,12 @@
 import type { CollectionEntry } from "astro:content";
 
-export type DynamicKind = "gallery" | "note" | "status";
+/** 只有两类：笔记（发文联动）· 动态（主动碎碎念）；多图只是展示形态，不当分类 */
+export type DynamicKind = "note" | "status";
 
 /** 对齐 shadcn-timeline 节点气质（博客 kind → rail class） */
 export type DynamicRailStatus = "completed" | "in-progress" | "pending";
 
 export const DYNAMIC_KIND_LABEL: Record<DynamicKind, string> = {
-	gallery: "图集",
 	note: "笔记",
 	status: "动态",
 };
@@ -16,34 +16,24 @@ export type DynamicRailMeta = {
 	label: string;
 };
 
-/** kind → shadcn rail 视觉：note≈completed · gallery≈in-progress · status≈pending */
+/** kind → shadcn rail 视觉：note≈completed · status≈pending */
 export const dynamicKindToRail = (kind: DynamicKind): DynamicRailMeta => {
-	switch (kind) {
-		case "note":
-			return { statusClass: "completed", label: DYNAMIC_KIND_LABEL.note };
-		case "gallery":
-			return {
-				statusClass: "in-progress",
-				label: DYNAMIC_KIND_LABEL.gallery,
-			};
-		default:
-			return { statusClass: "pending", label: DYNAMIC_KIND_LABEL.status };
+	if (kind === "note") {
+		return { statusClass: "completed", label: DYNAMIC_KIND_LABEL.note };
 	}
+	return { statusClass: "pending", label: DYNAMIC_KIND_LABEL.status };
 };
 
-/** 客户端启发式：图集 / 笔记 / 动态（不改 schema） */
+/**
+ * 客户端启发式（不改 schema）：
+ * - note：发文级联「发布了新笔记」或正文链到 /posts/
+ * - status：其余（含多图吐槽；多图仍走缩略网格，只是不算「图集」类）
+ */
 export const detectDynamicKind = (
 	html: string,
-	imageCount = 0,
+	_imageCount = 0,
 ): DynamicKind => {
 	const safeHtml = html || "";
-	if (
-		imageCount > 1 ||
-		/\bdynamic-gallery\b/i.test(safeHtml) ||
-		(safeHtml.match(/<img\b/gi) || []).length > 1
-	) {
-		return "gallery";
-	}
 	if (/发布了新笔记/.test(safeHtml) || /\/posts\//.test(safeHtml)) {
 		return "note";
 	}

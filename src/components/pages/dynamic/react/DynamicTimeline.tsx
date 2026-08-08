@@ -1,4 +1,4 @@
-import { Check, Circle, Image as ImageIcon, MapPin, MessageCircle, Pin } from "lucide-react";
+import { Check, Circle, Flower2, MapPin, MessageCircle, Pin } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { agentPersonas } from "@/config/agentPersonas";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
@@ -12,8 +12,17 @@ import {
 import { fetchMemos } from "@/utils/memos-adapter";
 import { registerDynamicGallery } from "../dynamic-gallery";
 import { registerDynamicInlineComments } from "../dynamic-inline-comments";
+import {
+	burstOwnerSealConfetti,
+	clearOwnerSeal,
+	persistOwnerSeal,
+	readOwnerSeals,
+} from "../dynamic-owner-seal";
 import { Timeline, TimelineEmpty, TimelineItem } from "./timeline";
 import type { TimelineColor, TimelineSide, TimelineStatus } from "./types";
+
+/** 小红花盖章仅本地 DEV；生产构建整段裁掉 */
+const OWNER_SEAL_DEV = import.meta.env.DEV;
 
 type DynamicImage = {
 	alt: string;
@@ -31,6 +40,9 @@ type DynamicData = {
 	location?: string;
 	author?: string;
 };
+
+/** 角色名录页（徽标跳转目标） */
+const AGENTS_URL = "/agents/";
 
 interface MemosConfig {
 	enable: boolean;
@@ -57,6 +69,7 @@ export interface DynamicTimelineProps {
 	avatarUrl: string;
 	commentsLabel: string;
 	pinnedLabel: string;
+	ownerBadgeLabel: string;
 	collapseGalleryLabel: string;
 	viewOriginalLabel: string;
 	prevImageLabel: string;
@@ -67,13 +80,11 @@ export interface DynamicTimelineProps {
 
 function kindIcon(kind: DynamicKind) {
 	if (kind === "note") return <Check className="ff-tl-dot-svg" strokeWidth={2.5} />;
-	if (kind === "gallery") return <ImageIcon className="ff-tl-dot-svg" strokeWidth={2} />;
 	return <Circle className="ff-tl-dot-svg" strokeWidth={2} />;
 }
 
 function kindColor(kind: DynamicKind): TimelineColor {
 	if (kind === "note") return "primary";
-	if (kind === "gallery") return "secondary";
 	return "muted";
 }
 
@@ -130,6 +141,7 @@ function EntryBody({
 	avatarUrl,
 	commentsLabel,
 	pinnedLabel,
+	ownerBadgeLabel,
 	collapseGalleryLabel,
 	viewOriginalLabel,
 	prevImageLabel,
@@ -148,6 +160,7 @@ function EntryBody({
 	avatarUrl: string;
 	commentsLabel: string;
 	pinnedLabel: string;
+	ownerBadgeLabel: string;
 	collapseGalleryLabel: string;
 	viewOriginalLabel: string;
 	prevImageLabel: string;
@@ -164,6 +177,8 @@ function EntryBody({
 	const authorIdentity = resolveAuthorIdentity(entry, profileName, avatarUrl);
 	const authorName = authorIdentity.name;
 	const authorAvatar = authorIdentity.avatar;
+	/** agent 身份点头像/昵称进协作者页；园主仍进个人页 */
+	const identityHref = authorIdentity.isAgent ? AGENTS_URL : profileUrl;
 
 	const html = entry.html || "";
 	const mediaId = `${contentId}-media`;
@@ -199,7 +214,12 @@ function EntryBody({
 	return (
 		<div className="ff-tl-rich">
 			<header className="dynamic-entry-header">
-				<a href={profileUrl} className="dynamic-avatar" aria-label={authorName}>
+				<a
+					href={identityHref}
+					className="dynamic-avatar"
+					aria-label={authorName}
+					data-agent={authorIdentity.isAgent || undefined}
+				>
 					{authorAvatar ? (
 						<img
 							src={authorAvatar}
@@ -216,8 +236,16 @@ function EntryBody({
 				</a>
 				<div className="dynamic-identity">
 					<div className="dynamic-identity-row">
-						<a href={profileUrl} className="dynamic-author">
+						<a href={identityHref} className="dynamic-author">
 							<strong id={`${anchorId}-author`}>{authorName}</strong>
+						</a>
+						<a
+							href={AGENTS_URL}
+							className="dynamic-author-badge"
+							data-agent={authorIdentity.isAgent || undefined}
+							title={`${authorName} · ${authorIdentity.isAgent ? "AI 协作者" : ownerBadgeLabel}`}
+						>
+							{authorIdentity.isAgent ? authorName : ownerBadgeLabel}
 						</a>
 						<span className="dynamic-kind" data-kind={kind}>
 							{DYNAMIC_KIND_LABEL[kind]}
@@ -319,6 +347,9 @@ function EntryBody({
 				<dynamic-inline-comments
 					className="dynamic-inline-comments"
 					data-src={`/dynamic/comments/?path=${encodeURIComponent(`/dynamic/${entry.id}/`)}`}
+					data-author={entry.author || undefined}
+					data-owner-name={profileName}
+					data-owner-avatar={avatarUrl}
 				>
 					<button
 						type="button"
@@ -390,6 +421,7 @@ export default function DynamicTimeline({
 	avatarUrl,
 	commentsLabel,
 	pinnedLabel,
+	ownerBadgeLabel,
 	collapseGalleryLabel,
 	viewOriginalLabel,
 	prevImageLabel,
@@ -415,11 +447,45 @@ export default function DynamicTimeline({
 	const [failed, setFailed] = useState(false);
 	const [query, setQuery] = useState("");
 	const [year, setYear] = useState("all");
-	/** all = 不限类型；status/note/gallery = 顶卡标签筛选 */
+	/** all = 不限类型；status/note = 顶卡标签筛选（无图集） */
 	const [kindFilter, setKindFilter] = useState<"all" | DynamicKind>("all");
-	/** all = 不限发布者；agent key（如 claude-code）= 只看该 AI 编程工具发的动态 */
+	/** all = 不限；owner = 园主（无 author）；其余 = agent key */
 	const [agentFilter, setAgentFilter] = useState("all");
+	/** DEV：已盖「作者阅过」的动态 id */
+	const [sealedIds, setSealedIds] = useState<Set<string>>(() =>
+		OWNER_SEAL_DEV ? readOwnerSeals() : new Set(),
+	);
+	const [stampingId, setStampingId] = useState<string | null>(null);
 	const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+	const stampOwnerSeal = (entryId: string, fromBtn: HTMLElement) => {
+		if (!OWNER_SEAL_DEV || sealedIds.has(entryId) || stampingId) return;
+		const card =
+			fromBtn.closest<HTMLElement>(".ff-tl-article") || fromBtn;
+		// 先启动取样（函数内同步 capture），再卸按钮，避免原点掉到左上角
+		void burstOwnerSealConfetti(card);
+		setStampingId(entryId);
+		persistOwnerSeal(entryId);
+		setSealedIds((prev) => {
+			const next = new Set(prev);
+			next.add(entryId);
+			return next;
+		});
+		window.setTimeout(() => {
+			setStampingId((cur) => (cur === entryId ? null : cur));
+		}, 700);
+	};
+
+	const unstampOwnerSeal = (entryId: string) => {
+		if (!OWNER_SEAL_DEV || !sealedIds.has(entryId) || stampingId) return;
+		clearOwnerSeal(entryId);
+		setSealedIds((prev) => {
+			const next = new Set(prev);
+			next.delete(entryId);
+			return next;
+		});
+		setStampingId(null);
+	};
 
 	const useLocalTz = source.startsWith("http") || Boolean(memos?.enable);
 
@@ -509,7 +575,10 @@ export default function DynamicTimeline({
 			const kindOk =
 				kindFilter === "all" ||
 				detectDynamicKind(entry.html, entry.images?.length ?? 0) === kindFilter;
-			const agentOk = agentFilter === "all" || (entry.author || "") === agentFilter;
+			const authorKey = entry.author || "";
+			const agentOk =
+				agentFilter === "all" ||
+				(agentFilter === "owner" ? !authorKey : authorKey === agentFilter);
 			return yearOk && queryOk && kindOk && agentOk;
 		});
 		setFiltered(next);
@@ -645,6 +714,40 @@ export default function DynamicTimeline({
 									data-note-layout={kind === "note" ? "split" : undefined}
 									aria-labelledby={`${anchorId}-author`}
 								>
+									{OWNER_SEAL_DEV &&
+									entry.author &&
+									agentPersonas[entry.author] ? (
+										sealedIds.has(entry.id) ? (
+											<button
+												type="button"
+												className={[
+													"dynamic-seal",
+													"is-visible",
+													"is-action",
+													stampingId === entry.id ? "is-stamping" : "",
+												]
+													.filter(Boolean)
+													.join(" ")}
+												title="撤销「作者阅过」（再点一次）"
+												aria-label="撤销作者阅过"
+												onClick={() => unstampOwnerSeal(entry.id)}
+											>
+												作者阅过
+											</button>
+										) : (
+											<button
+												type="button"
+												className="dynamic-seal-flower"
+												title="盖章「作者阅过」（仅本地 DEV）"
+												aria-label="盖章：作者阅过"
+												onClick={(e) =>
+													stampOwnerSeal(entry.id, e.currentTarget)
+												}
+											>
+												<Flower2 className="size-4" aria-hidden="true" />
+											</button>
+										)
+									) : null}
 									<EntryBody
 										entry={entry}
 										kind={kind}
@@ -657,6 +760,7 @@ export default function DynamicTimeline({
 										avatarUrl={avatarUrl}
 										commentsLabel={commentsLabel}
 										pinnedLabel={pinnedLabel}
+										ownerBadgeLabel={ownerBadgeLabel}
 										collapseGalleryLabel={collapseGalleryLabel}
 										viewOriginalLabel={viewOriginalLabel}
 										prevImageLabel={prevImageLabel}

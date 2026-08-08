@@ -121,6 +121,8 @@ export const siteConfig: SiteConfig = {
 		anime: true,
 		// 动态页面开关
 		dynamic: true,
+		// 角色名录页面开关（园主 + AI 协作者）
+		agents: true,
 	},
 
 	/**

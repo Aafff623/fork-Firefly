@@ -55,6 +55,11 @@ enum I18nKey {
 	dynamicViewImage = "dynamicViewImage",
 	dynamicSelectImage = "dynamicSelectImage",
 
+	// 角色名录（园主 + AI 协作者）
+	agents = "agents",
+	agentsDescription = "agentsDescription",
+	agentsOwner = "agentsOwner",
+
 	// 公告栏
 	announcement = "announcement",
 	announcementClose = "announcementClose",

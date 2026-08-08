@@ -11,11 +11,15 @@ if (
 ) {
 	return Astro.redirect("/404/");
 }
+
+/** 与时间线 data-src 对齐；客户端 waline-boot 也会再读一遍 ?path= */
+const customPath =
+	Astro.url.searchParams.get("path")?.trim() || "/dynamic/";
 ---
 
-<Layout title="">
+<Layout title="" embed>
 	<main class="dynamic-comment-embed">
-		<Comment customPath="/dynamic/" />
+		<Comment customPath={customPath} />
 	</main>
 </Layout>
 
@@ -42,6 +46,42 @@ if (
 	};
 	new ResizeObserver(reportHeight).observe(document.body);
 	window.addEventListener("load", reportHeight);
+
+	/** 园主/访客点提交后通知时间线刷新紧凑列表（列表在父页渲染，iframe 里卡片已藏） */
+	document.addEventListener(
+		"click",
+		(event) => {
+			const target = event.target as HTMLElement | null;
+			const submit = target?.closest?.(
+				".wl-btn[type='submit'], button.wl-btn, .wl-editor .wl-btn",
+			);
+			if (!submit) return;
+			window.setTimeout(() => {
+				window.parent.postMessage(
+					{ type: "dynamic-comment-posted" },
+					window.location.origin,
+				);
+				reportHeight();
+			}, 1400);
+		},
+		true,
+	);
+
+	/** 父页点评论区外：若正文为空则回 blur-empty，让时间线收起写作框 */
+	window.addEventListener("message", (event) => {
+		if (
+			event.origin !== window.location.origin ||
+			event.data?.type !== "dynamic-comment-probe-empty"
+		) {
+			return;
+		}
+		const editor = document.querySelector<HTMLTextAreaElement>("textarea.wl-editor");
+		if (editor?.value.trim()) return;
+		window.parent.postMessage(
+			{ type: "dynamic-comment-blur-empty" },
+			window.location.origin,
+		);
+	});
 </script>
 
 <style is:global>
@@ -55,5 +95,45 @@ if (
 		margin: 0;
 		border: 0;
 		box-shadow: none;
+		padding: 0.75rem 0.85rem 0.5rem;
+		background: color-mix(in oklab, var(--card-bg, #fff) 88%, transparent);
+	}
+
+	/* 嵌入态只要写作框：标题与评论列表由时间线紧凑卡负责 */
+	.dynamic-comment-embed #post-comments > .relative.z-10.mb-6 {
+		display: none;
+	}
+
+	.dynamic-comment-embed #post-comments > .absolute {
+		display: none;
+	}
+
+	.dynamic-comment-embed .wl-cards {
+		display: none !important;
+	}
+
+	.dynamic-comment-embed .wl-empty {
+		display: none !important;
+	}
+
+	/* 嵌入态不要底部「评论 / 排序 / Powered by」占高度 */
+	.dynamic-comment-embed .wl-meta,
+	.dynamic-comment-embed .wl-count,
+	.dynamic-comment-embed .wl-power {
+		display: none !important;
+	}
+
+	/* 嵌入框更窄：三字段仍挤一行，字再收一点 */
+	.dynamic-comment-embed .wl-header {
+		gap: 0.35rem;
+	}
+
+	.dynamic-comment-embed .wl-header label {
+		font-size: 0.68rem;
+	}
+
+	.dynamic-comment-embed .wl-header input {
+		font-size: 0.8rem !important;
+		padding: 0.22rem 0.32rem !important;
 	}
 </style>

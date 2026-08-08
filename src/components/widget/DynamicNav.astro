@@ -1,6 +1,6 @@
 ---
 /**
- * /dynamic/ 右栏：ChatGPT 风时间分组目录（A）+ 滚动高亮（D）
+ * /dynamic/ 右栏：年 → 月 → 日 折叠目录 + 滚动高亮
  * SSR 种子 + DynamicTimeline 经 CustomEvent `firefly:dynamic-nav` 增量同步。
  */
 import { Icon } from "astro-icon/components";
@@ -84,30 +84,127 @@ const initialItems =
 	}
 
 	.dynamic-nav__scroll {
-		max-height: min(52vh, 28rem);
+		max-height: min(42vh, 22rem);
 		overflow-x: hidden;
 		overflow-y: auto;
 		margin: 0 -0.15rem;
-		padding: 0.1rem 0.15rem 0.35rem;
+		padding: 0.15rem 0.2rem 0.4rem;
 		scrollbar-width: thin;
 	}
 
-	.dynamic-nav__group + .dynamic-nav__group {
-		margin-top: 0.55rem;
+	.dynamic-nav__year + .dynamic-nav__year {
+		margin-top: 0.45rem;
 	}
 
-	.dynamic-nav__group-title {
-		position: sticky;
-		top: 0;
-		z-index: 1;
-		margin: 0 0 0.28rem;
-		padding: 0.2rem 0.35rem;
-		font-size: 0.68rem;
-		font-weight: 650;
-		letter-spacing: 0.04em;
-		color: color-mix(in oklab, var(--content-meta) 92%, transparent);
-		background: color-mix(in oklab, var(--card-bg, #fff) 92%, transparent);
-		backdrop-filter: blur(6px);
+	/* 折叠行：无框，箭头 + 文字同一行 */
+	.dynamic-nav__fold {
+		display: flex !important;
+		flex-direction: row !important;
+		flex-wrap: nowrap !important;
+		align-items: center;
+		gap: 0.4rem;
+		width: 100%;
+		margin: 0;
+		padding: 0.28rem 0.15rem;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
+		color: color-mix(in oklab, var(--deep-text, #222) 86%, var(--content-meta));
+		cursor: pointer;
+		text-align: left;
+		font: inherit;
+		transition: color 140ms ease, opacity 140ms ease;
+	}
+
+	.dynamic-nav__fold::before {
+		content: "";
+		flex: 0 0 auto;
+		width: 0.38rem;
+		height: 0.38rem;
+		margin-top: -0.08rem;
+		border-right: 1.5px solid currentColor;
+		border-bottom: 1.5px solid currentColor;
+		transform: rotate(-45deg);
+		opacity: 0.55;
+		transition: transform 160ms ease, opacity 140ms ease;
+	}
+
+	.dynamic-nav__fold.is-open::before {
+		transform: rotate(45deg);
+		opacity: 0.85;
+		margin-top: -0.02rem;
+	}
+
+	.dynamic-nav__fold:hover {
+		color: var(--primary);
+	}
+
+	.dynamic-nav__fold:hover::before {
+		opacity: 1;
+	}
+
+	.dynamic-nav__fold:focus-visible {
+		outline: none;
+		color: var(--primary);
+	}
+
+	.dynamic-nav__fold.is-open {
+		color: color-mix(in oklab, var(--deep-text, #222) 92%, var(--primary));
+	}
+
+	.dynamic-nav__fold.is-year {
+		font-size: 0.84rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		padding-top: 0.2rem;
+		padding-bottom: 0.2rem;
+	}
+
+	.dynamic-nav__fold.is-month {
+		font-size: 0.76rem;
+		font-weight: 600;
+		padding: 0.18rem 0.1rem;
+		opacity: 0.92;
+	}
+
+	.dynamic-nav__fold-label {
+		flex: 1 1 auto;
+		min-width: 0;
+		line-height: 1.25;
+		white-space: nowrap;
+	}
+
+	.dynamic-nav__group-count {
+		flex: 0 0 auto;
+		min-width: 0;
+		padding: 0;
+		border-radius: 0;
+		font-size: 0.66rem;
+		font-variant-numeric: tabular-nums;
+		font-weight: 550;
+		line-height: 1.3;
+		color: color-mix(in oklab, var(--content-meta) 78%, transparent);
+		background: transparent;
+	}
+
+	.dynamic-nav__fold.is-open .dynamic-nav__group-count,
+	.dynamic-nav__fold:hover .dynamic-nav__group-count {
+		color: color-mix(in oklab, var(--primary) 72%, var(--content-meta));
+	}
+
+	.dynamic-nav__year-body {
+		margin: 0.1rem 0 0.05rem;
+		padding: 0 0 0 0.85rem;
+		border-left: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.08rem;
+	}
+
+	.dynamic-nav__month .dynamic-axis {
+		margin-top: 0.12rem;
+		padding-left: 0.7rem;
 	}
 
 	.dynamic-nav__list {

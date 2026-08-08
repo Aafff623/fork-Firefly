@@ -176,15 +176,53 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 
 	const isInside = (target: EventTarget | null) =>
 		target instanceof Node && panel.contains(target);
+	const editorEmpty = () => !editor.value.trim();
 	const setExpanded = (expanded: boolean) => {
 		panel.classList.toggle("waline-editor-expanded", expanded);
 	};
+	/** 嵌入动态时间线时：失焦且无正文 → 通知父页收起整块写作框 */
+	const notifyParentCollapseIfEmpty = () => {
+		if (!editorEmpty()) return;
+		if (window.parent === window) return;
+		window.parent.postMessage(
+			{ type: "dynamic-comment-blur-empty" },
+			window.location.origin,
+		);
+	};
 
 	document.addEventListener("focusin", (event) => {
-		setExpanded(isInside(event.target));
+		if (isInside(event.target)) {
+			setExpanded(true);
+			return;
+		}
+		// 有字就保持展开，别一点外面昵称区就缩回去
+		if (editorEmpty()) setExpanded(false);
 	});
 	document.addEventListener("pointerdown", (event) => {
-		setExpanded(isInside(event.target));
+		const target = event.target;
+		if (isInside(target)) {
+			setExpanded(true);
+			return;
+		}
+		// 表情/GIF 面板常挂在 panel 外，别误判成失焦
+		if (
+			target instanceof Element &&
+			target.closest(
+				".wl-emoji, .wl-gif, .wl-gif-popup, .wl-panel, [data-waline]",
+			)
+		) {
+			return;
+		}
+		if (editorEmpty()) setExpanded(false);
+	});
+	// 焦点落到父页面（点评论框外）且无正文 → 折叠并收起 iframe
+	window.addEventListener("blur", () => {
+		window.setTimeout(() => {
+			if (document.hasFocus()) return;
+			if (!editorEmpty()) return;
+			setExpanded(false);
+			notifyParentCollapseIfEmpty();
+		}, 40);
 	});
 	root.addEventListener("waline-editor-reset", () => setExpanded(false));
 

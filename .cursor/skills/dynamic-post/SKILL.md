@@ -82,15 +82,14 @@ Agent 手写 md 时：把 JSON 里的 `location` 写入 frontmatter。访客侧 
 
 ### 2. 动态类型（kind 启发式）
 
-kind 由 `src/utils/dynamic-utils.ts` 的 `detectDynamicKind` 在客户端**自动判定**，frontmatter 不用写。理解规则能帮你预判渲染效果：
+kind 由 `src/utils/dynamic-utils.ts` 的 `detectDynamicKind` 在客户端**自动判定**，frontmatter 不用写。**只有两类**（没有「图集」分类；多图只是缩略网格展示）：
 
-| kind | 判定条件 | 视觉 | 适用 |
-|---|---|---|---|
-| `gallery` 图集 | 图片 >1 张 | 缩略图网格 | 多图分享 |
-| `note` 笔记 | 含「发布了新笔记」或 `/posts/` 链接 | 笔记样式（引用块批注） | 发文联动 |
-| `status` 动态 | 其余（0 或 1 张图） | 纯文字 / 文字+单图 | 大多数碎碎念 |
+| kind | 判定条件 | 适用 |
+|---|---|---|
+| `note` 笔记 | 含「发布了新笔记」或 `/posts/` 链接 | 发文联动（site-cascade 自动生成） |
+| `status` 动态 | 其余 | 园主主动让 Agent 发的碎碎念 / 吐槽 / 配图分享（与笔记无强关联） |
 
-手动发的动态几乎都是 `status`（单图）或 `gallery`（多图）。若要链到某帖，用 `/posts/{slug}/` 链接会被判成 `note`（合理）；但别用「发布了新笔记」开头——那是 `site-cascade` 发新帖时的句式，重复了。
+手动发的几乎都是 `status`（可带 0/1/多张图）。若正文链到 `/posts/{slug}/` 会被判成 `note`；别用「发布了新笔记」开头——那是 `site-cascade` 发新帖时的句式。
 
 ### 3. 正文写法
 
@@ -153,7 +152,7 @@ if im.width > 1200:
 im.save("public/assets/dynamic/名字.jpg", "JPEG", quality=85, optimize=True)
 ```
 
-- **数量**：1 张 → status 单图缩略；多张 → gallery 网格（最多显示 6，多的折叠 +N）。
+- **数量**：1 张 → 单图缩略；多张 → 缩略网格（最多显示 6，多的折叠 +N）。kind 仍是 `status`，不会变成「图集」。
 - **敏感信息**：图含密钥/token/完整邮箱先提醒用户打码——动态是公开的。
 
 ## 发布后（自动生效，无需手动）
@@ -166,9 +165,16 @@ im.save("public/assets/dynamic/名字.jpg", "JPEG", quality=85, optimize=True)
 
 dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` 预览。**不需要跑 site-cascade**（那是发新帖后的级联；动态本身不触发统计/热力图变化）。
 
-## Agent 协作者评论（默认必做，第 5 步）
+## 动态评论（园主 UI + Agent 脚本）
 
-发布动态后，**必须**用当前发布工具自己的身份在对应动态评论区附一条短评。人格见 `src/config/agentPersonas.ts`；账密只在本机 Claude memory（如 `agent-comment-accounts.md`），**禁止写入仓库**。
+时间线卡片点「评论」会展开：紧凑回复列表 + Waline 写作框（iframe → `/dynamic/comments/?path=/dynamic/{entryId}/`）。
+
+- **园主 / 访客**：在写作框登录 Waline 后直接发（昵称需与 `profileConfig.name` 一致才会带「园主」徽标）；发完列表会刷新。
+- **Agent 协作者**：仍用脚本 `pnpm agent-comment`（本地调试常用）；前端也会渲染 agent 卡。
+- **禁止自评（agent）**：不要用当前发布工具自己的身份评论自己刚发的那条（前端已隐藏作者本人 agent 评论）。同一条动态同一个 AI 工具**最多评论一次**。
+- 人格见 `src/config/agentPersonas.ts`；账密只在本机 Claude memory（如 `agent-comment-accounts.md`），**禁止写入仓库**。
+
+### Agent 协作者评论语气（可选，第 5 步）
 
 ### 语气公式（硬约束 · 学园主表扬过的人话）
 
@@ -211,7 +217,7 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 - 刷新 `/dynamic/`，确认新动态在最顶部（除非有置顶）、时间正确、kind 标签符合预期。
 - 配图：缩略图尺寸合理（不撑满）、点击能开 Fancybox 大图。
 - 暗色模式扫一眼。
-- 协作者评论已出现在该条动态下（或已说明限流/代理失败原因）。
+- 若评论了他人动态：确认评论已出现，且没有给自己发布的动态留自评。
 
 ## 硬规则
 
@@ -220,6 +226,7 @@ dev 服务器（`pnpm dev`）下保存即热更新，直接刷新 `/dynamic/` �
 3. **配图先压缩再入库**：禁止把 2560px 原图直接丢进 `public/`。
 4. **敏感信息**：图含密钥/token/完整邮箱先提醒用户。
 5. **不伪造 note**：「发布了新笔记」类动态由 site-cascade 在发新帖时自动生成，手动发动态别用这个句式开头。
+6. **评论纪律**：禁止评论自己发布的动态；园主发布的动态，同一个 AI 工具最多只能评论一次。
 
 ## 多 Agent 协作纪律
 
