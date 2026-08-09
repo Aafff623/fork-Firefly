@@ -2,6 +2,11 @@
 /**
  * Banner 模式下的正文氛围全屏层：fixed 垫底，与横幅并存。
  * syncWithBanner：听 firefly:banner-slide 同帧换图；否则独立 interval 轮播。
+ *
+ * 首屏优化（参考横幅 Q1 轮播的「只物化当前张 + data 清单 + 运行时注入」）：
+ * HTML/CSS 只物化第 0 张（当前活动层），其余帧 URL 存进 data-slide-manifest，
+ * 由 banner 事件驱动时按需创建、切换前 decode、切换后释放旧层——
+ * 非当前背景不再随首屏 HTML 触发下载。
  */
 import { backgroundWallpaper } from "@/config";
 
@@ -15,10 +20,13 @@ const carouselEnable = atmo?.carousel?.enable === true && slides.length > 1;
 const syncWithBanner = atmo?.carousel?.syncWithBanner === true;
 const interval = Math.max(atmo?.carousel?.interval ?? 5000, 3000);
 
-const slideMeta = slides.map((s, i) => ({
+/** 全量帧清单（含 src/tile），构建期写入 data 属性；首屏只渲染第 0 张 */
+const slideManifest = slides.map((s, i) => ({
 	id: s.id,
 	label: s.label,
 	pairBannerIndex: s.pairBannerIndex ?? i, // 默认按下标配对
+	tile: s.tile === true,
+	src: s.src,
 }));
 ---
 
@@ -30,22 +38,24 @@ const slideMeta = slides.map((s, i) => ({
 			data-carousel={carouselEnable ? "true" : "false"}
 			data-sync-banner={syncWithBanner ? "true" : "false"}
 			data-interval={String(interval)}
+			data-slide-manifest={JSON.stringify(slideManifest)}
 			style={`--atmo-opacity: ${opacity}; --atmo-veil: ${veil};`}
 		>
-			{slides.map((slide, i) => (
+			{/* 首屏只物化第 0 张（当前活动层）；其余帧在 data-slide-manifest，由脚本按需创建 */}
+			{slides[0] && (
 				<div
-					class:list={["atmo-slide", i === 0 && "active"]}
-					data-id={slide.id}
-					data-label={slide.label}
-					data-pair={String(slide.pairBannerIndex ?? i)}
-					data-tile={slide.tile ? "true" : "false"}
+					class:list={["atmo-slide", "active"]}
+					data-id={slides[0].id}
+					data-label={slides[0].label}
+					data-pair={String(slides[0].pairBannerIndex ?? 0)}
+					data-tile={slides[0].tile ? "true" : "false"}
 					style={
-						slide.tile
-							? `background-image: url('${slide.src}'); background-color: #f3f4f6;`
-							: `background-image: url('${slide.src}');`
+						slides[0].tile
+							? `background-image: url('${slides[0].src}'); background-color: #f3f4f6;`
+							: `background-image: url('${slides[0].src}');`
 					}
 				/>
-			))}
+			)}
 			<div class="atmo-veil"></div>
 		</div>
 
@@ -67,7 +77,7 @@ const slideMeta = slides.map((s, i) => ({
 
 		<script
 			is:inline
-			define:vars={{ slideMeta, carouselEnable, syncWithBanner, interval }}
+			define:vars={{ carouselEnable, syncWithBanner, interval }}
 		>
 			(function () {
 				// 幂等 guard：层常驻（Swup 容器外），脚本每次导航被重执行，但只初始化一次，防 listener/timer 累积
@@ -77,42 +87,185 @@ const slideMeta = slides.map((s, i) => ({
 				var layer = document.getElementById("atmosphere-layer");
 				if (!layer) return;
 
-				var slides = layer.querySelectorAll(".atmo-slide");
-				if (!slides.length) return;
+				// 构建期只写清单；运行时解析后移除，避免长清单留在 DOM
+				var manifest = [];
+				var raw = layer.getAttribute("data-slide-manifest");
+				if (raw) {
+					try {
+						var parsed = JSON.parse(raw);
+						if (Array.isArray(parsed)) manifest = parsed;
+					} catch (e) { /* 解析失败：保留首帧，轮播自然退化 */ }
+				}
+				layer.removeAttribute("data-slide-manifest");
+				if (!manifest.length) return;
 
+				var veil = layer.querySelector(".atmo-veil");
 				var badgeText = document.getElementById("atmosphere-badge-text");
 				var dots = document.querySelectorAll("#atmosphere-badge-dots .dot");
 				var index = 0;
+				var currentActive = 0;
+				var requestToken = 0;
 				var timer = null;
 				var reduceMotion =
 					typeof window.matchMedia === "function" &&
 					window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+				// 略大于 CSS 1s 淡入淡出，切换完成后才释放旧层
+				var FADE_MS = 1100;
+				// 已物化 slide 元素池：slideIndex -> element
+				var pool = {};
+				// 正在物化（预载/解码中）的回调队列：slideIndex -> [cb, ...]
+				var pending = {};
+				// 正在淡出窗口内的旧层索引，防 prune 抢删打断淡出
+				var fadingOut = {};
 
-				function showBySlideIndex(i) {
-					index = ((i % slides.length) + slides.length) % slides.length;
-					for (var k = 0; k < slides.length; k++) {
-						slides[k].classList.toggle("active", k === index);
+				function normalize(i) {
+					return ((i % manifest.length) + manifest.length) % manifest.length;
+				}
+
+				function getMeta(i) {
+					return manifest[normalize(i)] || null;
+				}
+
+				function flushPending(i, err, div) {
+					var q = pending[i];
+					if (!q) return;
+					delete pending[i];
+					for (var k = 0; k < q.length; k++) {
+						if (q[k]) q[k](err, div);
+					}
+				}
+
+				/**
+				 * 按需物化第 i 张：新建元素（含 background-image）→ 预载 Image → decode →
+				 * 挂到 veil 之前。挂载前元素在 DOM 外，不触发背景图下载。
+				 */
+				function ensureSlide(i, cb) {
+					i = normalize(i);
+					if (pool[i]) {
+						if (cb) cb(null, pool[i]);
+						return pool[i];
+					}
+					if (pending[i]) {
+						if (cb) pending[i].push(cb);
+						return null;
+					}
+					pending[i] = cb ? [cb] : [];
+					var meta = getMeta(i);
+					if (!meta) {
+						flushPending(i, new Error("no-manifest"), null);
+						return null;
+					}
+					var div = document.createElement("div");
+					div.className = "atmo-slide";
+					div.setAttribute("data-id", meta.id);
+					if (meta.label) div.setAttribute("data-label", meta.label);
+					div.setAttribute("data-pair", String(meta.pairBannerIndex));
+					if (meta.tile) div.setAttribute("data-tile", "true");
+					div.style.backgroundImage = "url('" + meta.src + "')";
+					if (meta.tile) div.style.backgroundColor = "#f3f4f6";
+
+					var img = new Image();
+					img.decoding = "async";
+					img.onload = function () {
+						layer.insertBefore(div, veil);
+						pool[i] = div;
+						var done = function () { flushPending(i, null, div); };
+						if (typeof img.decode === "function") {
+							img.decode().then(done, done);
+						} else {
+							done();
+						}
+					};
+					img.onerror = function () {
+						flushPending(i, new Error("load-failed"), null);
+					};
+					img.src = meta.src;
+					return null;
+				}
+
+				/** 释放第 i 张：从 DOM 移除并从池中删除 */
+				function releaseSlide(i) {
+					i = normalize(i);
+					var el = pool[i];
+					if (!el) return;
+					delete pool[i];
+					if (el.parentNode) el.parentNode.removeChild(el);
+				}
+
+				/** 清理既非当前、又非预热目标、也不在淡出窗口内的空闲层 */
+				function prune() {
+					var preloadTarget = normalize(currentActive + 1);
+					for (var key in pool) {
+						var i = Number(key);
+						if (i === currentActive || i === preloadTarget) continue;
+						if (fadingOut[i]) continue;
+						releaseSlide(i);
+					}
+				}
+
+				function updateBadge() {
+					var meta = getMeta(index);
+					if (badgeText && meta) {
+						badgeText.textContent = meta.id + " · " + meta.label;
 					}
 					for (var d = 0; d < dots.length; d++) {
 						dots[d].classList.toggle("on", d === index);
 					}
-					var meta = slideMeta[index];
-					if (badgeText && meta) {
-						badgeText.textContent = meta.id + " · " + meta.label;
+				}
+
+				/** 激活第 i 张：旧层同帧淡出，新层淡入；淡出结束释放旧层 */
+				function activate(i) {
+					i = normalize(i);
+					var el = pool[i];
+					if (!el) return;
+					if (currentActive === i) return;
+					var prev = currentActive;
+					var prevEl = pool[prev];
+					if (prevEl) {
+						prevEl.classList.remove("active");
+						fadingOut[prev] = true;
 					}
+					el.classList.add("active");
+					currentActive = i;
+					window.setTimeout(function () {
+						delete fadingOut[prev];
+						if (currentActive !== prev) releaseSlide(prev);
+					}, FADE_MS);
+					// 预热下一帧（顺序轮播时切换即时）
+					preload(i + 1);
+					prune();
+				}
+
+				function preload(i) {
+					ensureSlide(i, function () {});
+				}
+
+				function showBySlideIndex(i) {
+					index = normalize(i);
+					updateBadge();
+					var token = ++requestToken;
+					if (pool[index]) {
+						activate(index);
+						return;
+					}
+					ensureSlide(index, function (err, el) {
+						if (token !== requestToken) return; // 已被更新的切换请求取代
+						if (!el) return; // 加载失败：保持当前层不变
+						activate(index);
+					});
 				}
 
 				/** 按横幅下标找配对 slide；找不到则 clamp */
 				function showByBannerIndex(bannerIndex) {
 					var found = -1;
-					for (var i = 0; i < slideMeta.length; i++) {
-						if (slideMeta[i].pairBannerIndex === bannerIndex) {
+					for (var i = 0; i < manifest.length; i++) {
+						if (manifest[i].pairBannerIndex === bannerIndex) {
 							found = i;
 							break;
 						}
 					}
 					if (found < 0) {
-						found = Math.max(0, Math.min(bannerIndex, slides.length - 1));
+						found = Math.max(0, Math.min(bannerIndex, manifest.length - 1));
 					}
 					showBySlideIndex(found);
 				}
@@ -123,7 +276,7 @@ const slideMeta = slides.map((s, i) => ({
 
 				function startIndependent() {
 					if (syncWithBanner) return;
-					if (!carouselEnable || reduceMotion || slides.length < 2) return;
+					if (!carouselEnable || reduceMotion || manifest.length < 2) return;
 					stopIndependent();
 					timer = window.setInterval(next, interval);
 				}
@@ -144,13 +297,15 @@ const slideMeta = slides.map((s, i) => ({
 				function rebindDom() {
 					layer = document.getElementById("atmosphere-layer");
 					if (!layer) return false;
-					slides = layer.querySelectorAll(".atmo-slide");
+					veil = layer.querySelector(".atmo-veil");
 					badgeText = document.getElementById("atmosphere-badge-text");
 					dots = document.querySelectorAll("#atmosphere-badge-dots .dot");
-					return slides.length > 0;
+					return true;
 				}
 
 				showBySlideIndex(0);
+				// 预热相邻下一帧，保证首次切换与横幅同帧（对应横幅 autoplay 预热下一张）
+				if (manifest.length > 1) preload(1);
 
 				if (syncWithBanner) {
 					window.addEventListener("firefly:banner-slide", onBannerSlide);
