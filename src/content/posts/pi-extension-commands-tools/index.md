@@ -1,7 +1,7 @@
 ---
 title: pi 开荒之后：命令是快捷键，工具是仪表盘
 published: 2026-08-09
-updated: 2026-08-09T12:31:51
+updated: 2026-08-09T18:00:00
 description: 承接 pi 开荒补产出层：六个斜杠命令当快捷键、三个工具当仪表盘。记下 session 信息走 ctx 拿、model.id 是裸 id、git 工具要 cwd 参数化三个坑，以及"结构对不等于值对"的验收教训。
 image: ./cover.jpg
 tags: [Pi, AI Coding, extension, prompt-template, tool]
@@ -15,7 +15,7 @@ pinned: false
 comment: true
 ---
 
-上一篇 [pi coding agent 开荒](/posts/pi-coding-agent-setup/) 把接入层补完了：MCP 借 adapter、子 agent 借 subagents、记忆借 hermes，全是"缺啥借啥"。可开荒完回头看，有个更扎眼的缺口没动过——**能接的都接了，能固化的一个没固化**。高频操作还在靠口头触发 skill，看环境还得手搓四五条 bash 拼上下文。这一篇就是补"产出层"：六个斜杠命令当快捷键，三个工具当仪表盘。
+上一篇 [pi coding agent 开荒](/posts/pi-coding-agent-setup/) 把接入层补完了：MCP 借 adapter、子 agent 借 subagents、记忆借 observational（原 hermes，08-08 换），全是"缺啥借啥"。可开荒完回头看，有个更扎眼的缺口没动过——**能接的都接了，能固化的一个没固化**。高频操作还在靠口头触发 skill，看环境还得手搓四五条 bash 拼上下文。这一篇就是补"产出层"：六个斜杠命令当快捷键，三个工具当仪表盘。
 
 ## 盘点完才发现：prompts 三处全空
 
