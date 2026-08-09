@@ -3,7 +3,6 @@ import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 import CoverImage from "@/components/common/CoverImage.astro";
-import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
 import PostMetadata from "@/components/layout/PostMeta.astro";
 import PostStats from "@/components/layout/PostStats.astro";
 import { siteConfig } from "@/config";
@@ -56,21 +55,6 @@ const {
 const isPinnedCard = pinKind === "sticky" || pinKind === "auto" || !!pinned;
 /** Letter/Night 皮肤：仅默认置顶或常驻置顶 */
 const useLetterSkin = pinKind === "sticky" || pinKind === "auto";
-/** 置顶管理园主 GitHub login（与评论系统无关） */
-const adminLogins = ["Aafff623"];
-const pinAdminLabels = {
-	menu: i18n(I18nKey.pinAdminMenu),
-	setSticky: i18n(I18nKey.pinAdminSetSticky),
-	unsetSticky: i18n(I18nKey.pinAdminUnsetSticky),
-	confirmSet: i18n(I18nKey.pinAdminConfirmSet),
-	confirmUnset: i18n(I18nKey.pinAdminConfirmUnset),
-	confirmSetDesc: i18n(I18nKey.pinAdminConfirmSetDesc),
-	confirmUnsetDesc: i18n(I18nKey.pinAdminConfirmUnsetDesc),
-	confirmOk: i18n(I18nKey.pinAdminConfirmOk),
-	confirmCancel: i18n(I18nKey.pinAdminConfirmCancel),
-	devHint: i18n(I18nKey.pinAdminDevHint),
-	prodHint: i18n(I18nKey.pinAdminProdHint),
-};
 const className = Astro.props.class;
 /** 仅列表展示点缀；frontmatter title 保持干净 */
 const listTitle = decorateListTitle(title, entry.id);
@@ -189,15 +173,24 @@ const publishedLabel = formatDateToYYYYMMDD(published);
           )
         }
       </a>
-      <PostPinAdmin
-        client:load
-        postId={entry.id}
-        filePath={entry.filePath || ""}
-        sticky={!!pinned}
-        adminLogins={adminLogins}
-        isDev={import.meta.env.DEV}
-        labels={pinAdminLabels}
-      />
+      <div class="pin-admin" data-post-pin-admin hidden>
+        <button
+          type="button"
+          class:list={["pin-chip", { "pin-chip--sticky": !!pinned }]}
+          data-post-pin-trigger
+          data-post-id={entry.id}
+          data-file-path={entry.filePath || ""}
+          data-sticky={String(!!pinned)}
+          title={pinned ? i18n(I18nKey.pinAdminUnsetSticky) : i18n(I18nKey.pinAdminSetSticky)}
+          aria-label={pinned ? i18n(I18nKey.pinAdminUnsetSticky) : i18n(I18nKey.pinAdminSetSticky)}
+        >
+          <Icon
+            is:inline
+            name={pinned ? "lucide:pin" : "lucide:pin-off"}
+            class="pin-chip__icon"
+          />
+        </button>
+      </div>
     </div>
 
     <!-- metadata -->
