@@ -10,7 +10,7 @@ type WalineInitConfig = Record<string, unknown>;
  * Swup 离页时 disposeWaline() 统一销毁，避免 Vue 实例 + 监听器/observer 跨跳累积。
  */
 interface WalineRuntime {
-	/** document/window 事件统一挂在此 signal，dispose 时 abort 即全部移除 */
+	/** document/window + 元素级监听统一挂在此 signal，dispose 时 abort 即全部移除 */
 	abort: AbortController | null;
 	/** 本次 boot 创建的所有 MutationObserver / ResizeObserver */
 	observers: Set<MutationObserver | ResizeObserver>;
@@ -25,6 +25,28 @@ interface WalineRuntime {
 
 let walineRuntime: WalineRuntime | null = null;
 
+/**
+ * 任意 EventTarget（元素级 / document / window）上挂监听统一走此处：
+ * 运行时活跃时绑定 runtime 的 AbortSignal，dispose 时随 abort 一次性移除。
+ * 这样即使目标元素（如 #waline 容器）本身不被移除，其监听也能被彻底解除，
+ * 避免旧评论 DOM 上的元素级 listener 随跨跳累积。
+ */
+function addSignalListener(
+	target: EventTarget,
+	type: string,
+	handler: EventListener,
+	options?: boolean | AddEventListenerOptions,
+): void {
+	const signal = walineRuntime?.abort?.signal;
+	if (signal) {
+		const merged =
+			typeof options === "boolean" ? { capture: options } : options;
+		target.addEventListener(type, handler, { ...merged, signal });
+	} else {
+		target.addEventListener(type, handler, options);
+	}
+}
+
 /** 在 document/window 上挂监听；运行时活跃时走 AbortController，dispose 时随 abort 移除 */
 function onPageTarget(
 	target: Document | Window,
@@ -32,12 +54,7 @@ function onPageTarget(
 	handler: EventListener,
 	options?: AddEventListenerOptions,
 ): void {
-	const signal = walineRuntime?.abort?.signal;
-	if (signal) {
-		target.addEventListener(type, handler, { ...options, signal });
-	} else {
-		target.addEventListener(type, handler, options);
-	}
+	addSignalListener(target, type, handler, options);
 }
 
 /** 把 observer 记入本次 runtime，dispose 时统一 disconnect */
@@ -67,10 +84,12 @@ function createRuntime(shellEl: HTMLElement, rootEl: HTMLElement): WalineRuntime
 
 /**
  * 销毁当前 Waline runtime（幂等，连续调用不抛错、不重复销毁）：
- * 1. abort 移除 document/window 事件
+ * 1. abort 移除 document/window 及元素级监听（本文件自加的监听全部带 signal）
  * 2. disconnect 所有 MutationObserver / ResizeObserver
- * 3. 调用 Waline 实例真实的 destroy() 卸载 Vue
- * 4. 重置宿主 shell 状态，保证下次可干净重 boot
+ * 3. 派发 autosize:destroy，释放 Waline 内部 autosize 模块级 Map 对 textarea 的引用
+ *    （Vue unmount 不会触发 autosize 销毁，旧 textarea 的元素级 input 监听与 window resize 监听会残存）
+ * 4. 调用 Waline 实例真实的 destroy() 卸载 Vue
+ * 5. 清空 #waline 容器、置空 runtime 全局引用，使旧评论 DOM 可 GC
  */
 export function disposeWaline(): void {
 	const rt = walineRuntime;
@@ -89,6 +108,20 @@ export function disposeWaline(): void {
 	}
 	rt.observers.clear();
 
+	// 在 Vue unmount 清空容器前先收集 textarea 引用，再派发 autosize:destroy：
+	// Waline bundle 里的 autosize 把每个 textarea 存进模块级 Map，并绑 input/autosize 事件 + window resize。
+	// 该销毁 handler 会移除这些监听、恢复样式并从 Map 删除，解除对旧评论 DOM 的唯一外部引用。
+	const root = rt.rootEl;
+	if (root instanceof HTMLElement) {
+		for (const textarea of root.querySelectorAll("textarea")) {
+			try {
+				textarea.dispatchEvent(new Event("autosize:destroy"));
+			} catch {
+				/* ignore */
+			}
+		}
+	}
+
 	if (rt.instance) {
 		try {
 			rt.instance.destroy();
@@ -102,11 +135,11 @@ export function disposeWaline(): void {
 	if (shell instanceof HTMLElement) {
 		shell.classList.remove("waline-ready");
 		shell.dataset.walineBooted = "0";
-		const root = shell.querySelector("#waline");
 		if (root instanceof HTMLElement) root.replaceChildren();
 	}
 	rt.shellEl = null;
 	rt.rootEl = null;
+	walineRuntime = null;
 }
 
 /** 清掉本地草稿里的巨型 Base64；并把历史 sticker Markdown 迁成短码 */
@@ -162,6 +195,8 @@ function scrubBase64Drafts() {
 
 function markWalineReady(shell: HTMLElement, root: HTMLElement) {
 	const reveal = () => {
+		// dispose 后（如 8s 兜底定时器迟到）不再改动旧 shell 状态
+		if (!isRuntimeActive()) return;
 		shell.classList.add("waline-ready");
 		const loading = shell.querySelector(".waline-loading");
 		loading?.remove();
@@ -248,8 +283,9 @@ function clearDraftAfterSubmit(root: HTMLElement) {
 	};
 
 	const form = root.querySelector("form");
-	form?.addEventListener("submit", markSubmitPending, true);
-	root.addEventListener(
+	if (form) addSignalListener(form, "submit", markSubmitPending, true);
+	addSignalListener(
+		root,
 		"click",
 		(event) => {
 			const target = event.target;
@@ -331,7 +367,7 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 			notifyParentCollapseIfEmpty();
 		}, 40);
 	});
-	root.addEventListener("waline-editor-reset", () => setExpanded(false));
+	addSignalListener(root, "waline-editor-reset", () => setExpanded(false));
 
 	setExpanded(isInside(document.activeElement));
 }
@@ -677,14 +713,14 @@ function attachPostInitHooks(
 
 		if (editor.dataset.emojiVisualBound !== "true") {
 			editor.dataset.emojiVisualBound = "true";
-			editor.addEventListener("input", syncContent);
-			editor.addEventListener("keyup", syncContent);
-			editor.addEventListener("click", syncContent);
-			editor.addEventListener("select", syncContent);
-			editor.addEventListener("focus", syncContent);
-			editor.addEventListener("blur", syncContent);
-			editor.addEventListener("scroll", syncPosition, { passive: true });
-			editor.addEventListener("waline-sticker-suggest-layout", () => {
+			addSignalListener(editor, "input", syncContent);
+			addSignalListener(editor, "keyup", syncContent);
+			addSignalListener(editor, "click", syncContent);
+			addSignalListener(editor, "select", syncContent);
+			addSignalListener(editor, "focus", syncContent);
+			addSignalListener(editor, "blur", syncContent);
+			addSignalListener(editor, "scroll", syncPosition, { passive: true });
+			addSignalListener(editor, "waline-sticker-suggest-layout", () => {
 				syncPosition();
 			});
 			editor.setAttribute("spellcheck", "false");
@@ -694,7 +730,8 @@ function attachPostInitHooks(
 			const ro = new ResizeObserver(syncPosition);
 			trackObserver(ro);
 			ro.observe(editor);
-			root.addEventListener(
+			addSignalListener(
+				root,
 				"click",
 				(event) => {
 					const target = event.target;
