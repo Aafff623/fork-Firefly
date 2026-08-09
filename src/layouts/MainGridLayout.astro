@@ -6,7 +6,9 @@ import SpritePet from "@components/features/SpritePet.svelte";
 import Footer from "@components/layout/Footer.astro";
 import Navbar from "@components/layout/Navbar.astro";
 import SideBar from "@components/layout/SideBar.astro";
-import type { MarkdownHeading } from "astro";
+import type { ImageMetadata, MarkdownHeading } from "astro";
+import { getImage } from "astro:assets";
+import * as path from "node:path";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
@@ -336,6 +338,80 @@ const hasMultipleImages =
 const showAtmosphereLayer =
 	backgroundWallpaper.atmosphere?.enable === true &&
 	(backgroundWallpaper.atmosphere.slides?.length ?? 0) > 0;
+
+/** 轮播其余帧：构建期算好优化 URL，首屏只 SSR 第 0 张，切页 HTML 少塞十几张 ImageWrapper */
+type LazyWallpaperSlide = {
+	src: string;
+	srcset?: string;
+	sizes: string;
+	position: string;
+};
+const wallpaperGlob = import.meta.glob<ImageMetadata>(
+	"../**/*.{png,jpg,jpeg,webp,avif}",
+	{ import: "default" },
+);
+async function resolveWallpaperSrc(
+	src: string,
+): Promise<ImageMetadata | string | null> {
+	if (
+		src.startsWith("http://") ||
+		src.startsWith("https://") ||
+		src.startsWith("data:")
+	) {
+		return src;
+	}
+	if (src.startsWith("/")) return src;
+	const key = path.normalize(path.join("../", src)).replace(/\\/g, "/");
+	const loader = wallpaperGlob[key];
+	if (!loader) {
+		console.error(`[wallpaper] lazy slide not found: ${src} (key=${key})`);
+		return null;
+	}
+	return loader();
+}
+async function buildLazyWallpaperSlides(
+	srcs: string[],
+	kind: "mobile" | "desktop",
+): Promise<LazyWallpaperSlide[]> {
+	const position = backgroundWallpaper.banner?.position ?? "center";
+	const widths = kind === "mobile" ? [640, 1080] : [1280, 1920];
+	const quality = kind === "mobile" ? mobileQuality : configQuality;
+	const out: LazyWallpaperSlide[] = [];
+	for (let i = 1; i < srcs.length; i++) {
+		const resolved = await resolveWallpaperSrc(srcs[i]);
+		if (!resolved) continue;
+		if (typeof resolved === "string") {
+			out.push({ src: resolved, sizes: "100vw", position });
+			continue;
+		}
+		const img = await getImage({
+			src: resolved,
+			widths,
+			format: "avif",
+			quality,
+		});
+		out.push({
+			src: img.src,
+			srcset: img.srcSet?.attribute,
+			sizes: "100vw",
+			position,
+		});
+	}
+	return out;
+}
+const lazyWallpaperRest = hasMultipleImages
+	? {
+			mobile: await buildLazyWallpaperSlides(
+				backgroundImages.mobile,
+				"mobile",
+			),
+			desktop: await buildLazyWallpaperSlides(
+				backgroundImages.desktop,
+				"desktop",
+			),
+		}
+	: { mobile: [] as LazyWallpaperSlide[], desktop: [] as LazyWallpaperSlide[] };
+const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
@@ -395,38 +471,40 @@ const showAtmosphereLayer =
          data-carousel-enabled={bannerCarouselEnabledDefault}
          data-carousel-switchable={bannerCarouselSwitchable}
          data-carousel-interval={bannerCarouselInterval}
-         data-carousel-effect={bannerCarouselEffect}>
-        {backgroundImages.mobile.map((src, index) => (
-            <div class:list={["slide-item block lg:hidden", index === 0 && "active"]} data-index={index}>
+         data-carousel-effect={bannerCarouselEffect}
+         data-carousel-rest={lazyWallpaperRestJson}>
+        {/* 首屏只 SSR 各端第 0 张；其余帧见 data-carousel-rest，由轮播脚本注入 */}
+        {backgroundImages.mobile[0] && (
+            <div class="slide-item block lg:hidden active" data-device="mobile" data-index={0}>
                 <ImageWrapper
                     alt="Mobile background image of the blog"
                     class="object-cover h-full w-full"
-                    src={src}
+                    src={backgroundImages.mobile[0]}
                     position={backgroundWallpaper.banner?.position}
                     widths={[640, 1080]}
                     sizes="100vw"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchpriority={index === 0 ? "high" : undefined}
+                    loading="lazy"
+                    fetchpriority="high"
                     quality={mobileQuality}
                 />
             </div>
-        ))}
-        {backgroundImages.desktop.map((src, index) => (
-            <div class:list={["slide-item hidden lg:block", index === 0 && "active"]} data-index={index}>
+        )}
+        {backgroundImages.desktop[0] && (
+            <div class="slide-item hidden lg:block active" data-device="desktop" data-index={0}>
                 <ImageWrapper
                     id="banner"
                     alt="Desktop background image of the blog"
                     class="object-cover h-full"
-                    src={src}
+                    src={backgroundImages.desktop[0]}
                     position={backgroundWallpaper.banner?.position}
                     widths={[1280, 1920]}
                     sizes="100vw"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchpriority={index === 0 ? "high" : undefined}
+                    loading="lazy"
+                    fetchpriority="high"
                     quality={configQuality}
                 />
             </div>
-        ))}
+        )}
     </div>
     ) : (
     /* 单图模式 */
@@ -479,6 +557,67 @@ const showAtmosphereLayer =
             var effect = container.dataset.carouselEffect || 'fade';
             var transitioning = false;
 
+            // 构建期只写 URL 清单；运行时仅物化当前设备的下一帧。
+            var rest = { mobile: [], desktop: [] };
+            var raw = container.getAttribute('data-carousel-rest');
+            if (raw) {
+                try {
+                    var parsed = JSON.parse(raw);
+                    if (parsed) rest = parsed;
+                } catch (e) { /* 保留首帧，轮播自然退化 */ }
+            }
+            container.removeAttribute('data-carousel-rest');
+
+            var catalogs = {
+                mobile: [null].concat(Array.isArray(rest.mobile) ? rest.mobile : []),
+                desktop: [null].concat(Array.isArray(rest.desktop) ? rest.desktop : [])
+            };
+
+            function getDeviceKind() {
+                return window.innerWidth >= 1024 ? 'desktop' : 'mobile';
+            }
+
+            function getTotalSlides() {
+                return catalogs[getDeviceKind()].length;
+            }
+
+            function ensureSlide(kind, index) {
+                var existing = container.querySelector(
+                    '.slide-item[data-device="' + kind + '"][data-index="' + index + '"]'
+                );
+                if (existing) return existing;
+
+                var item = catalogs[kind][index];
+                if (!item || !item.src) return null;
+
+                var div = document.createElement('div');
+                div.className = kind === 'desktop'
+                    ? 'slide-item hidden lg:block'
+                    : 'slide-item block lg:hidden';
+                div.setAttribute('data-device', kind);
+                div.setAttribute('data-index', String(index));
+
+                var img = document.createElement('img');
+                img.alt = 'Background image of the blog';
+                img.className = 'object-cover h-full w-full';
+                img.loading = 'eager';
+                img.fetchPriority = 'low';
+                img.decoding = 'async';
+                if (item.srcset) img.setAttribute('srcset', item.srcset);
+                if (item.sizes) img.sizes = item.sizes;
+                img.src = item.src;
+                img.style.objectPosition = item.position || 'center';
+                div.appendChild(img);
+                container.appendChild(div);
+                return div;
+            }
+
+            function preloadNextSlide(currentIndex) {
+                var total = getTotalSlides();
+                if (total <= 1) return;
+                ensureSlide(getDeviceKind(), (currentIndex + 1) % total);
+            }
+
             function isCarouselEnabled() {
                 if (!switchable) return defaultEnabled;
                 var stored = localStorage.getItem('bannerCarouselEnabled');
@@ -493,24 +632,21 @@ const showAtmosphereLayer =
 
             // 获取当前设备可见的 slide-item
             function getVisibleSlides() {
-                var all = container.querySelectorAll('.slide-item');
-                var isLg = window.innerWidth >= 1024;
+                var kind = getDeviceKind();
+                var all = container.querySelectorAll('.slide-item[data-device="' + kind + '"]');
                 var visible = [];
                 for (var i = 0; i < all.length; i++) {
-                    var el = all[i];
-                    if (isLg && el.classList.contains('lg:hidden')) continue;
-                    if (!isLg && el.classList.contains('hidden') && !el.classList.contains('lg:hidden')) continue;
-                    visible.push(el);
-                }
-                if (visible.length === 0) {
-                    for (var j = 0; j < all.length; j++) visible.push(all[j]);
+                    visible.push(all[i]);
                 }
                 return visible;
             }
 
             function getCurrentIndex(slides) {
                 for (var i = 0; i < slides.length; i++) {
-                    if (slides[i].classList.contains('active')) return i;
+                    if (slides[i].classList.contains('active')) {
+                        var index = parseInt(slides[i].getAttribute('data-index') || '0', 10);
+                        return Number.isNaN(index) ? 0 : index;
+                    }
                 }
                 return 0;
             }
@@ -528,44 +664,69 @@ const showAtmosphereLayer =
                 // Slide 效果需要 prev-waiting 辅助类
                 if (effect === 'slide') {
                     for (var i = 0; i < slides.length; i++) {
+                        var slideIndex = parseInt(slides[i].getAttribute('data-index') || '0', 10);
                         slides[i].classList.remove('prev-waiting');
-                        if (i < nextIndex) slides[i].classList.add('prev-waiting');
+                        if (slideIndex < nextIndex) slides[i].classList.add('prev-waiting');
                     }
                 }
                 if (effect === 'kenburns') {
                     // Ken Burns: 交叉淡入淡出，先激活新图再隐藏旧图
-                    slides[nextIndex].classList.add('active');
+                    for (var k = 0; k < slides.length; k++) {
+                        if (parseInt(slides[k].getAttribute('data-index') || '0', 10) === nextIndex) {
+                            slides[k].classList.add('active');
+                        }
+                    }
                     requestAnimationFrame(function() {
                         for (var j = 0; j < slides.length; j++) {
-                            if (j !== nextIndex) slides[j].classList.remove('active');
+                            if (parseInt(slides[j].getAttribute('data-index') || '0', 10) !== nextIndex) {
+                                slides[j].classList.remove('active');
+                            }
                         }
                     });
                 } else {
                     for (var j = 0; j < slides.length; j++) {
-                        if (j === nextIndex) slides[j].classList.add('active');
+                        if (parseInt(slides[j].getAttribute('data-index') || '0', 10) === nextIndex) slides[j].classList.add('active');
                         else slides[j].classList.remove('active');
                     }
                 }
-                emitBannerSlide(nextIndex, slides.length);
+                emitBannerSlide(nextIndex, getTotalSlides());
             }
 
             function changeToSlide(targetIndex, resetProgress) {
-                var slides = getVisibleSlides();
-                if (slides.length <= 1) return;
+                var total = getTotalSlides();
+                if (total <= 1) return;
                 if (transitioning) return;
 
                 var nextIndex = targetIndex;
-                if (nextIndex >= slides.length) nextIndex = 0;
-                else if (nextIndex < 0) nextIndex = slides.length - 1;
+                if (nextIndex >= total) nextIndex = 0;
+                else if (nextIndex < 0) nextIndex = total - 1;
 
+                var slides = getVisibleSlides();
                 var currentIndex = getCurrentIndex(slides);
                 if (nextIndex === currentIndex) return;
 
-                // 直接切换（CSS 处理过渡动画）
-                applySlideChange(slides, nextIndex);
+                var targetSlide = ensureSlide(getDeviceKind(), nextIndex);
+                if (!targetSlide) return;
 
-                if (resetProgress !== false && appState.isPlaying) {
-                    startAutoPlay();
+                function commitSlideChange() {
+                    transitioning = false;
+                    applySlideChange(getVisibleSlides(), nextIndex);
+                    preloadNextSlide(nextIndex);
+
+                    if (resetProgress !== false && appState.isPlaying) {
+                        startAutoPlay();
+                    }
+                }
+
+                var image = targetSlide.querySelector('img');
+                if (image && !image.complete) {
+                    transitioning = true;
+                    image.addEventListener('load', commitSlideChange, { once: true });
+                    image.addEventListener('error', function() {
+                        transitioning = false;
+                    }, { once: true });
+                } else {
+                    commitSlideChange();
                 }
             }
 
@@ -581,6 +742,8 @@ const showAtmosphereLayer =
                 if (!isCarouselEnabled()) return;
                 if (!isBannerWallpaperMode()) return;
 
+                var slides = getVisibleSlides();
+                preloadNextSlide(getCurrentIndex(slides));
                 appState.isPlaying = true;
                 appState.autoPlayTimer = setTimeout(function advance() {
                     if (!appState.isPlaying) return;
@@ -640,20 +803,11 @@ const showAtmosphereLayer =
                 }
             });
 
-            // 随机首张，并立刻同步氛围层
+            // 首帧固定为 SSR 的第 0 张，避免先请求一张再随机跳到另一张。
             var slides = getVisibleSlides();
             var bootIdx = 0;
-            if (slides.length > 1) {
-                bootIdx = Math.floor(Math.random() * slides.length);
-                for (var k = 0; k < slides.length; k++) {
-                    if (k === bootIdx) slides[k].classList.add('active');
-                    else slides[k].classList.remove('active');
-                }
-            } else if (slides.length === 1) {
-                bootIdx = 0;
-            }
             if (slides.length > 0) {
-                emitBannerSlide(bootIdx, slides.length);
+                emitBannerSlide(bootIdx, getTotalSlides());
             }
 
             // 启动
