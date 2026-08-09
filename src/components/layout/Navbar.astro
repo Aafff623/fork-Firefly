@@ -240,7 +240,7 @@ const logoVariants = await Promise.all(
             <div class="flex col-start-3 justify-self-end items-center gap-1.5 pl-2 lg:pl-4">
                 <!--<SearchPanel client:load>-->
                 <Search
-                    client:load
+                    client:idle
                 />
                 <a
                     href={githubRepoUrl}
@@ -295,7 +295,7 @@ const logoVariants = await Promise.all(
                         </button>
                 )}
                 {/* @ts-ignore */}
-                <LightDarkSwitch client:load></LightDarkSwitch>
+                <LightDarkSwitch client:idle></LightDarkSwitch>
                 <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90 lg:hidden!" id="nav-menu-switch">
                     <Icon is:inline name="lucide:menu" class="text-[1.25rem]"></Icon>
                 </button>
@@ -307,7 +307,7 @@ const logoVariants = await Promise.all(
             </div>
         )}
         <NavMenuPanel links={links}></NavMenuPanel>
-        <DisplaySettings client:load></DisplaySettings>
+        <DisplaySettings client:idle></DisplaySettings>
     </div>
 </div>
 
@@ -641,36 +641,70 @@ if (document.readyState === 'loading') {
 {
     import.meta.env.PROD && (
         <script is:inline data-swup-ignore-script define:vars={{ scriptUrl: url('/pagefind/pagefind.js') }}>
-            {/* 你的 loadPagefind 函数的完整内容放在这里 */}
-            async function loadPagefind() {
-                try {
-                    const response = await fetch(scriptUrl, { method: 'HEAD' });
-                    if (!response.ok) {
-                        throw new Error(`Pagefind script not found: ${response.status}`);
-                    }
-                    const pagefind = await import(scriptUrl);
-                    await pagefind.options({
-                        excerptLength: 20
-                    });
-                    window.pagefind = pagefind;
-                    document.dispatchEvent(new CustomEvent('pagefindready'));
-                    console.log('Pagefind loaded and initialized successfully, event dispatched.');
-                } catch (error) {
-                    console.error('Failed to load Pagefind:', error);
-                    window.pagefind = {
-                        search: () => Promise.resolve({ results: [] }),
-                        options: () => Promise.resolve(),
-                    };
-                    document.dispatchEvent(new CustomEvent('pagefindloaderror'));
-                    console.log('Pagefind load error, event dispatched.');
-                }
-            }
+            /**
+             * Pagefind 懒加载:首页不再预加载,首次「打开搜索 / 聚焦搜索框 / 进入 /search/」时才加载。
+             * 单例 promise 防重复;window.__loadPagefind 暴露给 search.astro 等复用。
+             */
+            (function () {
+                var pagefindLoadPromise = null;
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadPagefind);
-            } else {
-                loadPagefind();
-            }
+                function loadPagefind() {
+                    if (pagefindLoadPromise) return pagefindLoadPromise;
+                    pagefindLoadPromise = (async function () {
+                        try {
+                            const response = await fetch(scriptUrl, { method: 'HEAD' });
+                            if (!response.ok) {
+                                throw new Error('Pagefind script not found: ' + response.status);
+                            }
+                            const pagefind = await import(scriptUrl);
+                            await pagefind.options({
+                                excerptLength: 20
+                            });
+                            window.pagefind = pagefind;
+                            document.dispatchEvent(new CustomEvent('pagefindready'));
+                            console.log('Pagefind loaded and initialized successfully, event dispatched.');
+                        } catch (error) {
+                            console.error('Failed to load Pagefind:', error);
+                            window.pagefind = {
+                                search: function () { return Promise.resolve({ results: [] }); },
+                                options: function () { return Promise.resolve(); },
+                            };
+                            document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+                            console.log('Pagefind load error, event dispatched.');
+                        }
+                    })();
+                    return pagefindLoadPromise;
+                }
+
+                // 全局单例入口:search.astro 等复用同一加载
+                window.__loadPagefind = loadPagefind;
+
+                // 触发点 1:直接进入搜索页(/search/)
+                var normalizedPath = (location.pathname || '/').replace(/\/+$/, '');
+                if (normalizedPath.endsWith('/search')) {
+                    loadPagefind();
+                }
+
+                // 触发点 2:用户打开搜索(桌面展开钮 / 移动端搜索钮 / 搜索面板)
+                document.addEventListener('click', function (e) {
+                    var target = e.target;
+                    if (target && target.closest && target.closest(
+                        '#search-switch, #search-desktop-toggle, .practical-search-toggle, #search-desktop-input, #search-panel, #search-bar'
+                    )) {
+                        loadPagefind();
+                    }
+                }, { passive: true });
+
+                // 触发点 3:聚焦搜索输入框
+                document.addEventListener('focusin', function (e) {
+                    var target = e.target;
+                    if (target && target.closest && target.closest(
+                        '#search-desktop-input, #search-bar-inside input, #search-panel input'
+                    )) {
+                        loadPagefind();
+                    }
+                });
+            })();
         </script>
     )
 }
