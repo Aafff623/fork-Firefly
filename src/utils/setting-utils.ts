@@ -1461,7 +1461,7 @@ export function getSakuraIntroDurationMs(): number {
 /** 桌宠双击等：短暂飘樱，不写入常驻/钉住；已钉住则不动 */
 let sakuraBurstTimer: ReturnType<typeof setTimeout> | null = null;
 
-export function triggerSakuraBurst(durationMs = SAKURA_INTRO_MS): void {
+export function triggerSakuraBurst(durationMs: number = SAKURA_INTRO_MS): void {
 	if (typeof window === "undefined") return;
 	if (getSakuraPinned()) return;
 
@@ -1817,4 +1817,3 @@ export function initAvatarFrame(): void {
 	}
 	applyAvatarFrameToDocument(getStoredAvatarFrameId());
 }
-

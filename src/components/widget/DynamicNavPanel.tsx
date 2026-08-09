@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { MouseEvent, ReactElement } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { dynamicAnchor } from "@/utils/dynamic-utils";
 
@@ -137,7 +137,7 @@ export default function DynamicNavPanel({
 }: {
 	labels: DynamicNavLabels;
 	initialItems?: DynamicNavItem[];
-}) {
+}): ReactElement {
 	const seeded = Array.isArray(initialItems);
 	const [items, setItems] = useState<DynamicNavItem[]>(initialItems ?? []);
 	const [loading, setLoading] = useState(!seeded);

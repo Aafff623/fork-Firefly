@@ -3,14 +3,17 @@
  * 玩法对照灵感玩具「画圈甩 → 角速度发声」，实现与资产均为站内自写，非原作再分发。
  */
 
-export const TAU = Math.PI * 2;
+export const TAU: number = Math.PI * 2;
 
 export function clamp(v: number, a: number, b: number): number {
 	return v < a ? a : v > b ? b : v;
 }
 
 /** 卡片尺寸下的绳长 / 自动甩半径 */
-export function sizeForCard(w: number, h: number) {
+export function sizeForCard(
+	w: number,
+	h: number,
+): { ropeLen: number; autoR: number } {
 	const minDim = Math.min(w, h);
 	const ropeLen = clamp(minDim * 0.28, 40, 68);
 	const autoR = clamp(ropeLen * 0.35, 14, 26);

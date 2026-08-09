@@ -88,7 +88,7 @@ export function detectTitleMood(title: string): TitleMood | null {
  * 列表展示用标题：偶发挂 emoji 或颜文字（按 seed 交替），中立原文返回。
  * @param seed 建议用 post id，保证同帖稳定、邻帖易错开类型
  */
-export function decorateListTitle(title: string, seed = title): string {
+export function decorateListTitle(title: string, seed: string = title): string {
 	const raw = title.trim();
 	if (!raw) return title;
 	if (HAS_EMOJI.test(raw) || HAS_KAOMOJI.test(raw)) return title;
