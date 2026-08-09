@@ -386,7 +386,6 @@ function initialActive(categoryName: string): {
 
     // 监听滚动更新提示图标
     scroll.addEventListener("scroll", updateScrollHint);
-    window.addEventListener("resize", updateScrollHint);
     updateScrollHint();
   }
 
@@ -428,17 +427,6 @@ function initialActive(categoryName: string): {
   updateCategoryBar();
   initCategoryBarInteractions();
   initScrollFeatures();
-  document.addEventListener("astro:page-load", () => {
-    updateCategoryBar();
-    initScrollFeatures();
-  });
-  document.addEventListener("swup:contentReplaced", () => {
-    updateCategoryBar();
-    // 某些 swup 生命周期下 URL/DOM 状态同步稍晚，下一帧再校正一次避免状态残留
-    requestAnimationFrame(() => {
-      updateCategoryBar();
-    });
-  });
 
   // 在 Swup 导航时提前更新状态，避免切换期间激活态闪烁
   function setupSwupEarlyUpdate() {
@@ -450,9 +438,32 @@ function initialActive(categoryName: string): {
       setActiveCategory(bar, targetUrl);
     });
   }
-  if (window.swup?.hooks) {
-    setupSwupEarlyUpdate();
-  } else {
-    document.addEventListener("swup:enable", setupSwupEarlyUpdate);
+
+  // 一次性注册 document/window 级监听与 Swup hook，避免脚本每次被重执行时重复累积。
+  // 元素级绑定（initCategoryBarInteractions / initScrollFeatures）仍每次重执行时重绑新 bar，
+  // 靠各自的 dataset guard 保证不重复。
+  if (!document.documentElement.hasAttribute("data-categorybar-global-bound")) {
+    document.documentElement.setAttribute("data-categorybar-global-bound", "1");
+
+    document.addEventListener("astro:page-load", () => {
+      updateCategoryBar();
+      initScrollFeatures();
+    });
+    document.addEventListener("swup:contentReplaced", () => {
+      updateCategoryBar();
+      // 某些 swup 生命周期下 URL/DOM 状态同步稍晚，下一帧再校正一次避免状态残留
+      requestAnimationFrame(() => {
+        updateCategoryBar();
+      });
+    });
+
+    // resize 监听只需注册一次；updateScrollHint 每次实时查询当前 bar，导航后依然有效
+    window.addEventListener("resize", updateScrollHint);
+
+    if (window.swup?.hooks) {
+      setupSwupEarlyUpdate();
+    } else {
+      document.addEventListener("swup:enable", setupSwupEarlyUpdate);
+    }
   }
 </script>
