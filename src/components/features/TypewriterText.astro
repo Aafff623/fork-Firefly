@@ -194,15 +194,18 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     runInitWithDelay();
   }
 
-  // 支持页面切换时重新初始化（兼容不同 swup 事件名）
-  document.addEventListener("swup:contentReplaced", runInitWithDelay);
-  document.addEventListener("swup:content:replace", runInitWithDelay);
-  document.addEventListener("swup:page:view", runInitWithDelay);
+  // 支持页面切换时重新初始化（兼容不同 swup 事件名）；幂等 guard 防 Swup 重执行脚本时重复注册
+  if (!window.__typewriterSwupBound) {
+    window.__typewriterSwupBound = true;
+    document.addEventListener("swup:contentReplaced", runInitWithDelay);
+    document.addEventListener("swup:content:replace", runInitWithDelay);
+    document.addEventListener("swup:page:view", runInitWithDelay);
 
-  // swup hooks（若可用）
-  if (typeof window !== "undefined" && window.swup?.hooks) {
-    window.swup.hooks.on("content:replace", runInitWithDelay);
-    window.swup.hooks.on("page:view", runInitWithDelay);
+    // swup hooks（若可用）
+    if (typeof window !== "undefined" && window.swup?.hooks) {
+      window.swup.hooks.on("content:replace", runInitWithDelay);
+      window.swup.hooks.on("page:view", runInitWithDelay);
+    }
   }
 </script>
 

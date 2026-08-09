@@ -470,7 +470,11 @@ function loadButtonScript() {
     });
 }
 
-loadButtonScript();
+// 幂等 guard：Swup 重执行脚本时只注册一次，避免 window/document listener 累积
+if (!window.__navbarButtonsBound) {
+    window.__navbarButtonsBound = true;
+    loadButtonScript();
+}
 </script>
 
 <script>

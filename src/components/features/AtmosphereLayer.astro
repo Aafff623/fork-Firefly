@@ -70,6 +70,10 @@ const slideMeta = slides.map((s, i) => ({
 			define:vars={{ slideMeta, carouselEnable, syncWithBanner, interval }}
 		>
 			(function () {
+				// 幂等 guard：层常驻（Swup 容器外），脚本每次导航被重执行，但只初始化一次，防 listener/timer 累积
+				if (window.__atmosphereLayerBound) return;
+				window.__atmosphereLayerBound = true;
+
 				var layer = document.getElementById("atmosphere-layer");
 				if (!layer) return;
 
