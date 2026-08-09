@@ -379,12 +379,17 @@ const skyAttrs: Record<string, string> = {
     }
 
     start();
-    document.addEventListener("swup:contentReplaced", function () {
-      setTimeout(start, 80);
-    });
-    document.addEventListener("astro:page-load", function () {
-      setTimeout(start, 80);
-    });
+
+    // swup/astro 导航后重起时钟；幂等 guard：SiteStats 桌面+移动双份渲染，document 监听只绑一次
+    if (!window.__lc7SwupBound) {
+      window.__lc7SwupBound = true;
+      document.addEventListener("swup:contentReplaced", function () {
+        setTimeout(start, 80);
+      });
+      document.addEventListener("astro:page-load", function () {
+        setTimeout(start, 80);
+      });
+    }
   })();
 </script>
 

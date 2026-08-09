@@ -407,12 +407,17 @@ const skyAttrs: Record<string, string> = {
     }
 
     start();
-    document.addEventListener("swup:contentReplaced", () => {
-      setTimeout(start, 80);
-    });
-    document.addEventListener("astro:page-load", () => {
-      setTimeout(start, 80);
-    });
+
+    // swup/astro 导航后重起时钟；幂等 guard：无论脚本被重执行几次或双份渲染，document 监听只绑一次
+    if (!window.__scSwupBound) {
+      window.__scSwupBound = true;
+      document.addEventListener("swup:contentReplaced", () => {
+        setTimeout(start, 80);
+      });
+      document.addEventListener("astro:page-load", () => {
+        setTimeout(start, 80);
+      });
+    }
   })();
 </script>
 

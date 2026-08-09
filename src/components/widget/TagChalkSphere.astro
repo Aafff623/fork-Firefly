@@ -957,12 +957,16 @@ const showMore = Boolean(moreHref && moreCount > 0);
       boot();
     }
 
-    document.addEventListener("swup:page:view", boot);
-    document.addEventListener("swup:enable", function () {
-      if (window.swup && window.swup.hooks) {
-        window.swup.hooks.on("page:view", boot);
-      }
-    });
+    // 跨页重挂 / 切换视图的事件只绑一次：左栏与 /tags/ 各有一份实例，防 swup 监听累积
+    if (!window.__tagChalkSphereBound) {
+      window.__tagChalkSphereBound = true;
+      document.addEventListener("swup:page:view", boot);
+      document.addEventListener("swup:enable", function () {
+        if (window.swup && window.swup.hooks) {
+          window.swup.hooks.on("page:view", boot);
+        }
+      });
+    }
   })();
 </script>
 
