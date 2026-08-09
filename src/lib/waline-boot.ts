@@ -1,9 +1,113 @@
-import { init } from "@waline/client/full";
+import { init, type WalineInstance } from "@waline/client/full";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 let swupHooksRegistered = false;
 
 type WalineInitConfig = Record<string, unknown>;
+
+/**
+ * Waline 生命周期控制器：记录本次 boot 的实例 / observer / 外部事件。
+ * Swup 离页时 disposeWaline() 统一销毁，避免 Vue 实例 + 监听器/observer 跨跳累积。
+ */
+interface WalineRuntime {
+	/** document/window 事件统一挂在此 signal，dispose 时 abort 即全部移除 */
+	abort: AbortController | null;
+	/** 本次 boot 创建的所有 MutationObserver / ResizeObserver */
+	observers: Set<MutationObserver | ResizeObserver>;
+	/** init() 返回的 Waline 实例 */
+	instance: WalineInstance | null;
+	/** 宿主 shell / root，dispose 时重置状态用 */
+	shellEl: HTMLElement | null;
+	rootEl: HTMLElement | null;
+	/** 已销毁标记：保证 disposeWaline 幂等 */
+	disposed: boolean;
+}
+
+let walineRuntime: WalineRuntime | null = null;
+
+/** 在 document/window 上挂监听；运行时活跃时走 AbortController，dispose 时随 abort 移除 */
+function onPageTarget(
+	target: Document | Window,
+	type: string,
+	handler: EventListener,
+	options?: AddEventListenerOptions,
+): void {
+	const signal = walineRuntime?.abort?.signal;
+	if (signal) {
+		target.addEventListener(type, handler, { ...options, signal });
+	} else {
+		target.addEventListener(type, handler, options);
+	}
+}
+
+/** 把 observer 记入本次 runtime，dispose 时统一 disconnect */
+function trackObserver(observer: MutationObserver | ResizeObserver): void {
+	if (walineRuntime) walineRuntime.observers.add(observer);
+}
+
+/** 当前是否有活跃（未销毁）的 runtime */
+function isRuntimeActive(): boolean {
+	return walineRuntime !== null && !walineRuntime.disposed;
+}
+
+function createRuntime(shellEl: HTMLElement, rootEl: HTMLElement): WalineRuntime {
+	// 防御：若上一个 runtime 未收尾（如异常/重 boot 路径），先统一销毁再重建
+	disposeWaline();
+	const rt: WalineRuntime = {
+		abort: new AbortController(),
+		observers: new Set(),
+		instance: null,
+		shellEl,
+		rootEl,
+		disposed: false,
+	};
+	walineRuntime = rt;
+	return rt;
+}
+
+/**
+ * 销毁当前 Waline runtime（幂等，连续调用不抛错、不重复销毁）：
+ * 1. abort 移除 document/window 事件
+ * 2. disconnect 所有 MutationObserver / ResizeObserver
+ * 3. 调用 Waline 实例真实的 destroy() 卸载 Vue
+ * 4. 重置宿主 shell 状态，保证下次可干净重 boot
+ */
+export function disposeWaline(): void {
+	const rt = walineRuntime;
+	if (!rt || rt.disposed) return;
+	rt.disposed = true;
+
+	rt.abort?.abort();
+	rt.abort = null;
+
+	for (const observer of rt.observers) {
+		try {
+			observer.disconnect();
+		} catch {
+			/* ignore */
+		}
+	}
+	rt.observers.clear();
+
+	if (rt.instance) {
+		try {
+			rt.instance.destroy();
+		} catch {
+			/* ignore */
+		}
+		rt.instance = null;
+	}
+
+	const shell = rt.shellEl;
+	if (shell instanceof HTMLElement) {
+		shell.classList.remove("waline-ready");
+		shell.dataset.walineBooted = "0";
+		const root = shell.querySelector("#waline");
+		if (root instanceof HTMLElement) root.replaceChildren();
+	}
+	rt.shellEl = null;
+	rt.rootEl = null;
+}
 
 /** 清掉本地草稿里的巨型 Base64；并把历史 sticker Markdown 迁成短码 */
 function scrubBase64Drafts() {
@@ -72,6 +176,7 @@ function markWalineReady(shell: HTMLElement, root: HTMLElement) {
 			requestAnimationFrame(reveal);
 		}
 	});
+	trackObserver(mo);
 	mo.observe(root, { childList: true, subtree: true });
 	setTimeout(() => {
 		mo.disconnect();
@@ -108,6 +213,7 @@ function hidePreviewAction(root: HTMLElement) {
 	};
 	apply();
 	const mo = new MutationObserver(() => apply());
+	trackObserver(mo);
 	mo.observe(root, { childList: true, subtree: true });
 	setTimeout(() => mo.disconnect(), 8000);
 }
@@ -163,6 +269,7 @@ function clearDraftAfterSubmit(root: HTMLElement) {
 		}
 		knownCardCount = cardCount;
 	});
+	trackObserver(mo);
 	mo.observe(root, { childList: true, subtree: true });
 }
 
@@ -190,7 +297,7 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 		);
 	};
 
-	document.addEventListener("focusin", (event) => {
+	onPageTarget(document, "focusin", (event) => {
 		if (isInside(event.target)) {
 			setExpanded(true);
 			return;
@@ -198,7 +305,7 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 		// 有字就保持展开，别一点外面昵称区就缩回去
 		if (editorEmpty()) setExpanded(false);
 	});
-	document.addEventListener("pointerdown", (event) => {
+	onPageTarget(document, "pointerdown", (event) => {
 		const target = event.target;
 		if (isInside(target)) {
 			setExpanded(true);
@@ -216,7 +323,7 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 		if (editorEmpty()) setExpanded(false);
 	});
 	// 焦点落到父页面（点评论框外）且无正文 → 折叠并收起 iframe
-	window.addEventListener("blur", () => {
+	onPageTarget(window, "blur", () => {
 		window.setTimeout(() => {
 			if (document.hasFocus()) return;
 			if (!editorEmpty()) return;
@@ -319,6 +426,8 @@ function attachPostInitHooks(
 	ensureUploadAnimation();
 
 	const attachEditorVisual = (): boolean => {
+		// 异步（loadEmojiMap）可能晚于离页 dispose 才执行：此时不再旁挂，避免重建 listener/observer
+		if (!isRuntimeActive()) return false;
 		const editor = root.querySelector("textarea.wl-editor");
 		if (!(editor instanceof HTMLTextAreaElement)) return false;
 		const host = editor.parentElement;
@@ -579,10 +688,12 @@ function attachPostInitHooks(
 				syncPosition();
 			});
 			editor.setAttribute("spellcheck", "false");
-			document.addEventListener("selectionchange", () => {
+			onPageTarget(document, "selectionchange", () => {
 				if (document.activeElement === editor) syncContent();
 			});
-			new ResizeObserver(syncPosition).observe(editor);
+			const ro = new ResizeObserver(syncPosition);
+			trackObserver(ro);
+			ro.observe(editor);
 			root.addEventListener(
 				"click",
 				(event) => {
@@ -605,6 +716,7 @@ function attachPostInitHooks(
 	const editorObserver = new MutationObserver(() => {
 		if (attachEditorVisual()) editorObserver.disconnect();
 	});
+	trackObserver(editorObserver);
 	if (!attachEditorVisual()) {
 		editorObserver.observe(root, { childList: true, subtree: true });
 		setTimeout(() => editorObserver.disconnect(), 8000);
@@ -686,11 +798,13 @@ export function bootWalineFromShell(shell?: Element | null): void {
 	};
 
 	try {
-		init(effectiveConfig as unknown as Parameters<typeof init>[0]);
+		const rt = createRuntime(shellEl, root);
+		rt.instance = init(effectiveConfig as unknown as Parameters<typeof init>[0]);
 		shellEl.dataset.walineBooted = "1";
 		markWalineReady(shellEl, root);
 		attachPostInitHooks(root, effectiveConfig);
 	} catch (error) {
+		disposeWaline();
 		console.error("[Waline] Failed to initialize:", error);
 		shellEl.classList.add("waline-ready");
 	}
@@ -717,6 +831,8 @@ export function registerWalineSwupHooks(): void {
 	swupHooksRegistered = true;
 
 	document.addEventListener("swup:page:view", () => scheduleWalineBoot(50));
+	// Swup 换页前销毁旧 Waline：Vue 实例 + observer + document/window 事件全部释放
+	document.addEventListener("astro:before-swap", disposeWaline);
 
 	const bindSwupHooks = () => {
 		const swup = (
