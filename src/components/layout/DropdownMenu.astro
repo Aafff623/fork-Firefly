@@ -218,17 +218,6 @@ const accentKey = navKey(processedLink.name);
 	 */
 	const INIT_KEY = "data-dropdown-nav-init";
 	const FORCE_CLOSED = "data-force-closed";
-	/** 首屏 idle 预热的重页（下拉里常见、HTML 较重） */
-	const IDLE_WARM_ROUTES = [
-		"/dynamic/",
-		"/gallery/",
-		"/anime/",
-		"/bangumi/",
-		"/agents/",
-		"/timeline/",
-		"/collections/",
-	];
-
 	function getDropdowns(): NodeListOf<Element> {
 		return document.querySelectorAll("[data-dropdown]");
 	}
@@ -258,22 +247,18 @@ const accentKey = navKey(processedLink.name);
 
 	function warmHeavyRoutesOnce() {
 		if (document.documentElement.hasAttribute("data-nav-warmed")) return;
-		const swup = window.swup as { preload?: (url: string) => unknown } | undefined;
-		if (!swup?.preload) return;
 		document.documentElement.setAttribute("data-nav-warmed", "1");
-		const run = () => {
-			IDLE_WARM_ROUTES.forEach((route) => preloadUrl(route));
-		};
-		const ric = (
-			window as Window & {
-				requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-			}
-		).requestIdleCallback;
-		if (typeof ric === "function") {
-			ric(run, { timeout: 2500 });
-		} else {
-			window.setTimeout(run, 1200);
-		}
+		// hover 意图预取：用户悬停到链接才预取该页，替代 idle 全量预取（省 ~4.7MB 无谓下载），
+		// 既保切页速度，又不提前下载用户没意图访问的重页。
+		document.addEventListener(
+			"pointerover",
+			(e) => {
+				const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+				if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+				preloadUrl(a.getAttribute("href") || a.href);
+			},
+			{ passive: true },
+		);
 	}
 
 	function closeDropdown(dropdown: Element, trigger: Element, menu: Element) {
