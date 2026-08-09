@@ -69,27 +69,33 @@ const config = {
   // 页面加载时初始化
   document.addEventListener("DOMContentLoaded", initTwikoo);
 
-  // Swup 页面切换后重新初始化
-  if (window.swup && window.swup.hooks) {
-    window.swup.hooks.on("content:replace", function () {
-      setTimeout(initTwikoo, 200);
-    });
-  } else {
-    document.addEventListener("swup:enable", function () {
-      if (window.swup && window.swup.hooks) {
-        window.swup.hooks.on("content:replace", function () {
-          setTimeout(initTwikoo, 200);
-        });
+  // 幂等 guard：该脚本为 is:inline（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积 swup hook / firefly:page:loaded 监听器。
+  if (!window.__twikooBound) {
+    window.__twikooBound = true;
+
+    // Swup 页面切换后重新初始化
+    if (window.swup && window.swup.hooks) {
+      window.swup.hooks.on("content:replace", function () {
+        setTimeout(initTwikoo, 200);
+      });
+    } else {
+      document.addEventListener("swup:enable", function () {
+        if (window.swup && window.swup.hooks) {
+          window.swup.hooks.on("content:replace", function () {
+            setTimeout(initTwikoo, 200);
+          });
+        }
+      });
+    }
+
+    // 自定义事件监听
+    document.addEventListener("firefly:page:loaded", function () {
+      const commentEl = document.getElementById("tcomment");
+      if (commentEl) {
+        console.log("[Twikoo] 通过自定义事件重新初始化");
+        initTwikoo();
       }
     });
   }
-
-  // 自定义事件监听
-  document.addEventListener("firefly:page:loaded", function () {
-    const commentEl = document.getElementById("tcomment");
-    if (commentEl) {
-      console.log("[Twikoo] 通过自定义事件重新初始化");
-      initTwikoo();
-    }
-  });
 </script>

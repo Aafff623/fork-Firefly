@@ -53,38 +53,44 @@
     return { group, index };
   }
 
-  document.addEventListener("click", (event) => {
-    const found = resolveTab(event.target);
-    if (found) activate(found.group, found.index);
-  });
+  // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积 document 级 click / keydown 监听器。
+  if (!window.__rcgGlobalBound) {
+    window.__rcgGlobalBound = true;
 
-  document.addEventListener("keydown", (event) => {
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    document.addEventListener("click", (event) => {
+      const found = resolveTab(event.target);
+      if (found) activate(found.group, found.index);
+    });
 
-    const found = resolveTab(event.target);
-    if (!found) return;
+    document.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
 
-    const count = getTabs(found.group).length;
-    let next: number;
+      const found = resolveTab(event.target);
+      if (!found) return;
 
-    switch (event.key) {
-      case "ArrowRight":
-        next = (found.index + 1) % count;
-        break;
-      case "ArrowLeft":
-        next = (found.index - 1 + count) % count;
-        break;
-      case "Home":
-        next = 0;
-        break;
-      case "End":
-        next = count - 1;
-        break;
-      default:
-        return;
-    }
+      const count = getTabs(found.group).length;
+      let next: number;
 
-    event.preventDefault();
-    activate(found.group, next, true);
-  });
+      switch (event.key) {
+        case "ArrowRight":
+          next = (found.index + 1) % count;
+          break;
+        case "ArrowLeft":
+          next = (found.index - 1 + count) % count;
+          break;
+        case "Home":
+          next = 0;
+          break;
+        case "End":
+          next = count - 1;
+          break;
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      activate(found.group, next, true);
+    });
+  }
 </script>

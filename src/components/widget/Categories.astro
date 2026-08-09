@@ -203,12 +203,17 @@ const postsLabel = i18n(I18nKey.postsCount);
   }
 
   updateCompactCategoryCards();
-  document.addEventListener("astro:page-load", updateCompactCategoryCards);
-  document.addEventListener("swup:contentReplaced", () => {
-    updateCompactCategoryCards();
-    // 某些 swup 生命周期下 DOM 状态同步稍晚，下一帧再校正一次
-    requestAnimationFrame(updateCompactCategoryCards);
-  });
+  // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积 astro:page-load / swup:contentReplaced 监听器。
+  if (!window.__catCompactBound) {
+    window.__catCompactBound = true;
+    document.addEventListener("astro:page-load", updateCompactCategoryCards);
+    document.addEventListener("swup:contentReplaced", () => {
+      updateCompactCategoryCards();
+      // 某些 swup 生命周期下 DOM 状态同步稍晚，下一帧再校正一次
+      requestAnimationFrame(updateCompactCategoryCards);
+    });
+  }
 </script>
 
 <style is:global>

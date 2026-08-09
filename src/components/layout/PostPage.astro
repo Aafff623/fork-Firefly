@@ -232,42 +232,49 @@ const pinAdminLabels = {
     setTimeout(initLayout, 50);
   });
 
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) {
-      setTimeout(initLayout, 100);
-    }
-  });
+  // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积下方 7 个 document/window 监听器（visibilitychange / layoutChange /
+  // resize / astro:page-load / astro:after-swap / swup:page:view / swup:contentReplaced）。
+  if (!window.__postPageLayoutBound) {
+    window.__postPageLayoutBound = true;
 
-  window.addEventListener("layoutChange", function (event) {
-    // @ts-ignore
-    const newLayout = event.detail.layout;
-    if (!document.getElementById("post-list-container")) return;
-    updatePostListLayout(newLayout);
-  });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) {
+        setTimeout(initLayout, 100);
+      }
+    });
 
-  let resizeTimeout: any;
-  window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function () {
-      initLayout();
-    }, 250);
-  });
+    window.addEventListener("layoutChange", function (event) {
+      // @ts-ignore
+      const newLayout = event.detail.layout;
+      if (!document.getElementById("post-list-container")) return;
+      updatePostListLayout(newLayout);
+    });
 
-  document.addEventListener("astro:page-load", function () {
-    setTimeout(initLayout, 50);
-  });
+    let resizeTimeout: any;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function () {
+        initLayout();
+      }, 250);
+    });
 
-  document.addEventListener("astro:after-swap", function () {
-    setTimeout(initLayout, 50);
-  });
+    document.addEventListener("astro:page-load", function () {
+      setTimeout(initLayout, 50);
+    });
 
-  // Swup 分页 / 站内切页：SSR 仍是默认 class，必须重套用户偏好
-  document.addEventListener("swup:page:view", function () {
-    setTimeout(initLayout, 50);
-  });
-  document.addEventListener("swup:contentReplaced", function () {
-    setTimeout(initLayout, 50);
-  });
+    document.addEventListener("astro:after-swap", function () {
+      setTimeout(initLayout, 50);
+    });
+
+    // Swup 分页 / 站内切页：SSR 仍是默认 class，必须重套用户偏好
+    document.addEventListener("swup:page:view", function () {
+      setTimeout(initLayout, 50);
+    });
+    document.addEventListener("swup:contentReplaced", function () {
+      setTimeout(initLayout, 50);
+    });
+  }
 
   setTimeout(initLayout, 0);
 

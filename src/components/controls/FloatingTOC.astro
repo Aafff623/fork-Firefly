@@ -193,6 +193,13 @@ const hideSidebarOnPostPage =
 
   // 设置自动关闭功能
   function setupAutoClose() {
+    // 幂等 guard：initFloatingTOC() 会在每次导航时被调用（swup:contentReplaced /
+    // astro:page-load / popstate / password:decrypted 都会触发），若不守卫，
+    // 每次都会重新注册下方 8 个 document/window 监听器并再次包装 history，
+    // 导致跨跳累积（实测约每跳 +8）。
+    if (window.__floatingTOCAutoCloseBound) return;
+    window.__floatingTOCAutoCloseBound = true;
+
     // 监听页面卸载和隐藏
     window.addEventListener("beforeunload", closeTOC);
     window.addEventListener("pagehide", closeTOC);
@@ -318,9 +325,12 @@ const hideSidebarOnPostPage =
       // 缺失或过时（加密未解密/异常情况）则自动回退 DOM 遍历重建。
       window.FloatingTOC.manager.attach();
 
-      // 设置点击事件 - 标记为 TOC 内部导航
+      // 设置点击事件 - 标记为 TOC 内部导航。
+      // 用 dataset guard：同一次导航内若 initFloatingTOC 被多次调用（事件有多个），
+      // 避免对同一 tocContent 重复绑定 capture 监听。
       const tocContent = document.getElementById("floating-toc-content");
-      if (tocContent) {
+      if (tocContent && !tocContent.dataset.clickBound) {
+        tocContent.dataset.clickBound = "1";
         tocContent.addEventListener("click", (e) => {
           const target = e.target as Element | null;
           const anchor = target?.closest('a[href^="#"]');

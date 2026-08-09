@@ -548,9 +548,14 @@ function bindNavbarBrandTitleDraw(root?: ParentNode | null) {
 
 function initNavbarBrandTitle() {
 	bindNavbarBrandTitleDraw(document);
-	document.addEventListener("swup:page:view", () => {
-		bindNavbarBrandTitleDraw(document);
-	});
+	// 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+	// 不守卫会跨跳累积 swup:page:view 监听器。
+	if (!window.__navbarBrandDrawBound) {
+		window.__navbarBrandDrawBound = true;
+		document.addEventListener("swup:page:view", () => {
+			bindNavbarBrandTitleDraw(document);
+		});
+	}
 }
 
 if (document.readyState === "loading") {
