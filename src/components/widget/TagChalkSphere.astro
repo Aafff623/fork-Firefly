@@ -231,6 +231,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
       if (el) {
         el._tagCloudInstance = null;
+        el._sphereItemsKey = null;
         el.innerHTML = "";
         el._tagInteract = null;
       }
@@ -821,7 +822,6 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
     function mountWith(el, nextItems, nextHrefMap, nextRadius) {
       if (!el || !window.TagCloud) return;
-      destroyCloud(el);
       var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
       var fallback = root && root.querySelector("[data-tag-chalk-fallback]");
       var normalized = normalizeItems(nextItems);
@@ -829,7 +829,9 @@ const showMore = Boolean(moreHref && moreCount > 0);
         (root && root.getAttribute("data-view-mode")) || "sphere";
 
       if (reducedMotion() || !normalized.length) {
+        destroyCloud(el);
         el._tagCloudInstance = null;
+        el._sphereItemsKey = null;
         markReady(root, true);
         applyViewMode(root, "list");
         if (fallback) fallback.hidden = false;
@@ -838,14 +840,44 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
       // 列表模式：不挂球，只露列表
       if (mode === "list") {
+        destroyCloud(el);
         el._tagCloudInstance = null;
+        el._sphereItemsKey = null;
         markReady(root, true);
         applyViewMode(root, "list");
         return;
       }
 
-      var htmlItems = toHtmlItems(normalized, nextHrefMap);
+      // 幂等：同一 el 已挂实例且标签数据未变 → 只恢复，不重建。
+      // swup 导航的 page:view / contentReplaced 会双重触发 __remountTagChalkSphere，
+      // 若每次无脑 new TagCloud，会在 window 上留下无法移除的 mousemove 监听 + 常驻 RAF 循环（库 destroy 不清理）。
       var r = Number(nextRadius) || 72;
+      var key =
+        normalized
+          .map(function (it) {
+            return it.name + "\x01" + it.kind;
+          })
+          .join("|") + "@" + r;
+      var existing = el._tagCloudInstance;
+      if (
+        existing &&
+        el._sphereItemsKey === key &&
+        existing.$el &&
+        document.documentElement.contains(existing.$el)
+      ) {
+        existing.paused = false;
+        if (typeof existing.resume === "function") existing.resume();
+        setIdleSpeed(existing);
+        if (fallback) fallback.hidden = true;
+        markReady(root, true);
+        applyViewMode(root, "sphere");
+        return;
+      }
+      el._sphereItemsKey = key;
+
+      destroyCloud(el);
+
+      var htmlItems = toHtmlItems(normalized, nextHrefMap);
       var instance = window.TagCloud("#" + el.id, htmlItems, {
         radius: r,
         maxSpeed: "slow",
@@ -864,6 +896,19 @@ const showMore = Boolean(moreHref && moreCount > 0);
           el._tagColorWatch = 0;
         }
         el._tagCloudInstance = null;
+        el._sphereItemsKey = null;
+        // TagCloud.destroy() 只摘 DOM / 清 list，不取消 RAF 循环；这里主动 cancel，
+        // 否则每个被替换的实例都会留下一个常驻 requestAnimationFrame（keep:true 下还挂着一个 window mousemove）。
+        if (
+          instance &&
+          instance.interval &&
+          typeof instance.interval.value === "number"
+        ) {
+          try {
+            cancelAnimationFrame(instance.interval.value);
+          } catch (e) {}
+          instance.interval = null;
+        }
         if (instance && typeof instance.destroy === "function") {
           instance.destroy();
         }
@@ -957,13 +1002,43 @@ const showMore = Boolean(moreHref && moreCount > 0);
       boot();
     }
 
+    // 离页清理：销毁容器已不在文档中的 TagCloud 实例（上一页遗留）。
+    // TagCloud.destroy() 不取消 RAF 循环，放任会让旧实例永久空转并留着 window mousemove，故先 cancel。
+    function sweepOrphanTagClouds() {
+      var tc = window.TagCloud;
+      if (!tc || !tc.list || !tc.list.length) return;
+      for (var i = tc.list.length - 1; i >= 0; i--) {
+        var entry = tc.list[i];
+        var container = entry && entry.container;
+        var inst = entry && entry.instance;
+        if (!container || !inst) continue;
+        if (document.documentElement.contains(container)) continue;
+        if (inst.interval && typeof inst.interval.value === "number") {
+          try {
+            cancelAnimationFrame(inst.interval.value);
+          } catch (e) {}
+          inst.interval = null;
+        }
+        try {
+          inst.destroy();
+        } catch (e) {}
+      }
+    }
+
     // 跨页重挂 / 切换视图的事件只绑一次：左栏与 /tags/ 各有一份实例，防 swup 监听累积
     if (!window.__tagChalkSphereBound) {
       window.__tagChalkSphereBound = true;
-      document.addEventListener("swup:page:view", boot);
+      document.addEventListener("swup:page:view", function () {
+        // 等本轮 page:view 同步处理器（各组件重挂）跑完再清离页实例，避免误杀刚挂上的
+        setTimeout(sweepOrphanTagClouds, 0);
+        boot();
+      });
       document.addEventListener("swup:enable", function () {
         if (window.swup && window.swup.hooks) {
-          window.swup.hooks.on("page:view", boot);
+          window.swup.hooks.on("page:view", function () {
+            setTimeout(sweepOrphanTagClouds, 0);
+            boot();
+          });
         }
       });
     }
