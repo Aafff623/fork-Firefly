@@ -80,7 +80,7 @@ if (!memos?.enable) {
 				data-memos-api={memos?.apiUrl || ""}
 				data-memos-parent={memos?.parent || ""}
 			>
-				<DynamicSidebar client:load apiUrl={apiUrl} limit={limit} {memos} />
+				<DynamicSidebar client:visible apiUrl={apiUrl} limit={limit} {memos} />
 				<a
 					class="btn-plain mt-1 flex items-center justify-center gap-1 rounded-lg px-1.5 py-1
 						text-sm accent-text-grad-rose font-semibold"
