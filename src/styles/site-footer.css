@@ -14,13 +14,13 @@
 	--sf-accent: var(--sf-leaf);
 	--sf-water-dot: oklch(0.62 0.12 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
-	--sf-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+	--sf-serif: Georgia, "Times New Roman", "Songti SC", serif;
 	/* 品牌 wordmark：对齐 GitHub profile 斜体展示衬线 */
-	--sf-display: "Playfair Display", Georgia, "Times New Roman", serif;
-	/* 花园简介：与笔名区分的园记体（中文小薇 / 英文 Cormorant） */
-	--sf-blurb-cn: "ZCOOL XiaoWei", "Source Han Serif SC", "Noto Serif SC", "Songti SC", serif;
-	--sf-blurb-en: "Cormorant Garamond", "Source Serif 4", Georgia, serif;
-	--sf-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+	--sf-display: Georgia, "Times New Roman", serif;
+	/* 花园简介：中文与英文都复用系统衬线，避免额外网络字体 */
+	--sf-blurb-cn: "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
+	--sf-blurb-en: Georgia, "Times New Roman", serif;
+	--sf-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, Consolas, monospace;
 	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	/* 局部景层：花田人物插画（复用 atmosphere 资产，不改全站） */
 	--sf-scape: url("/assets/atmosphere/ba-06-paired.jpg");
@@ -109,7 +109,7 @@ html.dark .site-footer {
 /* 暗色链接用干净无衬线，更利落可读；默认近白，悬停仍走绿色 */
 html.dark .site-footer__list a {
 	font-family:
-		"Inter",
+		var(--font-inter),
 		"Segoe UI",
 		system-ui,
 		-apple-system,
@@ -499,7 +499,7 @@ html.dark .site-footer__garden-tip {
 	font-weight: 400;
 }
 
-/* 中文园记：站酷小薇，偏手札标题感，不跟 Playfair 笔名撞车 */
+/* 中文园记：系统宋体回退，保留手札标题感 */
 .site-footer__blurb--cn {
 	font-family: var(--sf-blurb-cn);
 	font-size: clamp(0.95rem, 0.88rem + 0.22vw, 1.08rem);
@@ -507,7 +507,7 @@ html.dark .site-footer__garden-tip {
 	letter-spacing: 0.06em;
 }
 
-/* 英文园记：Cormorant 斜体，软衬线文学感 */
+/* 英文园记：系统 Georgia 斜体，保留软衬线文学感 */
 .site-footer__blurb--en {
 	font-family: var(--sf-blurb-en);
 	font-size: clamp(0.92rem, 0.86rem + 0.18vw, 1.02rem);

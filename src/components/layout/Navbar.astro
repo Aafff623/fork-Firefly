@@ -189,10 +189,6 @@ const logoVariants = await Promise.all(
     ]}>
         <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
             {/* 品牌名：与标签墙同系手写体 */}
-            <link
-              rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Ma+Shan+Zheng&display=swap"
-            />
             <a
               href={url('/')}
               class="btn-plain rounded-full h-13 px-3 md:px-5 font-bold active:scale-95 navbar-brand-ripple"
@@ -320,7 +316,7 @@ const logoVariants = await Promise.all(
 	.navbar-brand-title {
 		position: relative;
 		display: inline-block;
-		font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive;
+		font-family: var(--font-navbar-title, "Segoe Script", cursive);
 		font-weight: 700;
 		font-size: 1.35rem;
 		letter-spacing: 0.02em;

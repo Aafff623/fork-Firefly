@@ -31,19 +31,21 @@ export const fontsList: FontDefinition[] = [
 		name: "Zen Maru Gothic",
 		cssVariable: "--font-zen-maru-gothic",
 		provider: "fontsource",
-		weights: ["300", "400", "500", "600", "700"],
+		weights: ["700"],
 		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
+		subsets: ["latin"],
 		fallbacks: ["sans-serif"],
+		display: "swap",
 	},
 	{
 		name: "Inter",
 		cssVariable: "--font-inter",
 		provider: "fontsource",
-		weights: ["300", "400", "500", "600", "700"],
+		weights: ["400", "600", "700"],
 		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
+		subsets: ["latin"],
 		fallbacks: ["sans-serif"],
+		display: "swap",
 	},
 	{
 		name: "JetBrains Mono",
@@ -51,7 +53,7 @@ export const fontsList: FontDefinition[] = [
 		provider: "fontsource",
 		weights: ["400", "700"],
 		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
+		subsets: ["latin"],
 		fallbacks: [
 			"ui-monospace",
 			"SFMono-Regular",
@@ -62,6 +64,7 @@ export const fontsList: FontDefinition[] = [
 			"Courier New",
 			"monospace",
 		],
+		display: "swap",
 	},
 	// ─── 本地字体示例 ───
 	// 使用步骤：

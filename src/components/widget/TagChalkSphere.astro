@@ -75,12 +75,6 @@ const hrefByName = Object.fromEntries(
 const showMore = Boolean(moreHref && moreCount > 0);
 ---
 
-{/* Caveat：英文标签手写体；马善政补中文 */}
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Ma+Shan+Zheng&display=swap"
-/>
-
 <section
   class:list={[
     "tag-sphere",
@@ -1144,7 +1138,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
   .tag-sphere :global(.tagcloud--item),
   .tag-sphere :global(.tag-sphere__link) {
-    font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive !important;
+    font-family: var(--font-navbar-title, "Segoe Script", cursive) !important;
     letter-spacing: 0.02em;
     text-decoration: none !important;
     text-shadow: none !important;
@@ -1182,7 +1176,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 0.55rem;
-    font-family: "Caveat", "Ma Shan Zheng", "Segoe Script", cursive;
+    font-family: var(--font-navbar-title, "Segoe Script", cursive);
     font-size: 1.05rem;
   }
 

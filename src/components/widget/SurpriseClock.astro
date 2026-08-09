@@ -417,8 +417,6 @@ const skyAttrs: Record<string, string> = {
 </script>
 
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
-
   :global(.surprise-clock-widget.card-base),
   :global(.surprise-clock-widget) {
     background: transparent !important;
@@ -446,7 +444,7 @@ const skyAttrs: Record<string, string> = {
     --sc-muted: rgb(0 0 0 / 0.32);
     --sc-bright: var(--primary);
     --sc-sky-night: oklch(0.22 0.06 265);
-    --sc-pixel: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
+    --sc-pixel: var(--font-jetbrains-mono), "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
     position: relative;
     display: flex;
     align-items: center;
