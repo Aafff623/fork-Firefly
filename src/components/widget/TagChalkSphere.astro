@@ -849,8 +849,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
 
       // 幂等：同一 el 已挂实例且标签数据未变 → 只恢复，不重建。
-      // swup 导航的 page:view / contentReplaced 会双重触发 __remountTagChalkSphere，
-      // 若每次无脑 new TagCloud，会在 window 上留下无法移除的 mousemove 监听 + 常驻 RAF 循环（库 destroy 不清理）。
+      // swup 导航的 page:view / contentReplaced 会双重触发 __remountTagChalkSphere。
+      // 即便重建，keep:false 也让 mousemove 只绑在 $el（随容器销毁 GC），window 层不会累积监听。
       var r = Number(nextRadius) || 72;
       var key =
         normalized
@@ -883,7 +883,9 @@ const showMore = Boolean(moreHref && moreCount > 0);
         maxSpeed: "slow",
         initSpeed: "slow",
         direction: 135,
-        keep: true,
+        // keep:false —— TagCloud._init 把 mousemove 绑到 $el（而非 window）：
+        // 每跳重建的新实例不再向 window 累积 mousemove 监听，旧容器销毁时监听随元素一并 GC。
+        keep: false,
         useHTML: true,
       });
       el._tagCloudInstance = instance || null;
@@ -898,7 +900,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
         el._tagCloudInstance = null;
         el._sphereItemsKey = null;
         // TagCloud.destroy() 只摘 DOM / 清 list，不取消 RAF 循环；这里主动 cancel，
-        // 否则每个被替换的实例都会留下一个常驻 requestAnimationFrame（keep:true 下还挂着一个 window mousemove）。
+        // 否则每个被替换的实例都会留下一个常驻 requestAnimationFrame。
+        // keep:false 时 mousemove 绑在 $el 上，RAF 一旦取消，旧实例整棵（含 $el 与元素级监听）即可被 GC。
         if (
           instance &&
           instance.interval &&
@@ -1003,7 +1006,8 @@ const showMore = Boolean(moreHref && moreCount > 0);
     }
 
     // 离页清理：销毁容器已不在文档中的 TagCloud 实例（上一页遗留）。
-    // TagCloud.destroy() 不取消 RAF 循环，放任会让旧实例永久空转并留着 window mousemove，故先 cancel。
+    // TagCloud.destroy() 不取消 RAF 循环；keep:false 虽已把 mousemove 收进 $el，
+    // 但放任 RAF 会让旧实例永久空转、整棵实例（含 $el 与元素级监听）无法被 GC，故仍先 cancel。
     function sweepOrphanTagClouds() {
       var tc = window.TagCloud;
       if (!tc || !tc.list || !tc.list.length) return;
