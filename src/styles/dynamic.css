@@ -828,6 +828,93 @@
 	background: color-mix(in oklab, var(--primary) 7%, var(--card-bg, #f7f5fb));
 }
 
+/* 连续「笔记」折叠：首条完整卡下的紧凑引用行 */
+.dynamic-note-folded {
+	margin: 0.65rem 0 0;
+	padding: 0.45rem 0 0;
+	border-top: 1px dashed color-mix(in oklab, var(--black) 12%, transparent);
+}
+
+.dynamic-note-folded__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.28rem;
+}
+
+.dynamic-note-folded__item {
+	margin: 0;
+	scroll-margin-top: 5.5rem;
+}
+
+.dynamic-note-folded__link {
+	display: grid;
+	grid-template-columns: 5.5rem minmax(0, 1fr);
+	gap: 0.45rem;
+	align-items: baseline;
+	padding: 0.28rem 0.55rem;
+	border-radius: 0.45rem;
+	border-left: 2px solid color-mix(in oklab, var(--primary) 36%, transparent);
+	background: color-mix(in oklab, var(--primary) 5%, var(--card-bg, #f7f5fb));
+	color: inherit;
+	text-decoration: none;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	transition: background 0.15s ease;
+}
+
+.dynamic-note-folded__link:hover {
+	background: color-mix(in oklab, var(--primary) 10%, var(--card-bg, #f7f5fb));
+}
+
+.dynamic-note-folded__time {
+	color: var(--black-50, rgb(0 0 0 / 48%));
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.dynamic-note-folded__title {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: rgb(0 0 0 / 72%);
+}
+
+.dynamic-note-folded__toggle {
+	margin-top: 0.4rem;
+	padding: 0.2rem 0.35rem;
+	font-size: 0.75rem;
+	color: var(--primary);
+	opacity: 0.88;
+}
+
+.dynamic-note-folded__toggle:hover {
+	opacity: 1;
+}
+
+:root.dark .dynamic-note-folded,
+html.dark .dynamic-note-folded {
+	border-top-color: color-mix(in oklab, var(--white) 14%, transparent);
+}
+
+:root.dark .dynamic-note-folded__link,
+html.dark .dynamic-note-folded__link {
+	background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+:root.dark .dynamic-note-folded__time,
+html.dark .dynamic-note-folded__time {
+	color: rgb(255 255 255 / 48%);
+}
+
+:root.dark .dynamic-note-folded__title,
+html.dark .dynamic-note-folded__title {
+	color: rgb(255 255 255 / 78%);
+}
+
 /* Gallery + comments (unchanged contracts) */
 .dynamic-gallery {
 	display: block;

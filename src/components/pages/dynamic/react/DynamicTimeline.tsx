@@ -10,11 +10,14 @@ import {
 import { agentPersonas } from "@/config/agentPersonas";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
 import {
-	detectDynamicKind,
 	DYNAMIC_KIND_LABEL,
-	dynamicAnchor,
-	dynamicKindToRail,
 	type DynamicKind,
+	detectDynamicKind,
+	dynamicAnchor,
+	dynamicEntryTitle,
+	dynamicKindToRail,
+	dynamicNoteFoldTitle,
+	groupConsecutiveNotes,
 } from "@/utils/dynamic-utils";
 import { fetchMemos } from "@/utils/memos-adapter";
 import { registerDynamicGallery } from "../dynamic-gallery";
@@ -120,6 +123,86 @@ function formatFullTime(
 		second: "2-digit",
 	}).format(date);
 	return `${text} ${formatTimezoneOffset(timezone, date)}`;
+}
+
+function formatShortDate(date: Date, useLocal: boolean): string {
+	if (useLocal) {
+		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+	}
+	return formatDateToYYYYMMDD(date);
+}
+
+function formatFoldMeta(
+	date: Date,
+	useLocal: boolean,
+	timezone: string,
+): string {
+	if (useLocal) {
+		return date.toLocaleString("zh-CN", {
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	}
+	return new Intl.DateTimeFormat("zh-CN", {
+		timeZone: timezone,
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		hourCycle: "h23",
+	}).format(date);
+}
+
+/** 连续笔记折叠块：小字引用行 + 展开 */
+function NoteFoldedBlock({
+	folded,
+	useLocalTz,
+	timezone,
+	onExpand,
+}: {
+	folded: DynamicData[];
+	useLocalTz: boolean;
+	timezone: string;
+	onExpand: () => void;
+}) {
+	if (folded.length === 0) return null;
+	return (
+		<div className="dynamic-note-folded">
+			<ol className="dynamic-note-folded__list">
+				{folded.map((entry) => {
+					const anchorId = dynamicAnchor(entry.id);
+					const date = new Date(entry.published);
+					const title = dynamicNoteFoldTitle(entry.html, entry.searchText);
+					return (
+						<li key={entry.id} id={anchorId} className="dynamic-note-folded__item">
+							<a
+								className="dynamic-note-folded__link"
+								href={`#${anchorId}`}
+								data-no-swup=""
+							>
+								<time
+									className="dynamic-note-folded__time"
+									dateTime={date.toISOString()}
+								>
+									{formatFoldMeta(date, useLocalTz, timezone)}
+								</time>
+								<span className="dynamic-note-folded__title">{title}</span>
+							</a>
+						</li>
+					);
+				})}
+			</ol>
+			<button
+				type="button"
+				className="dynamic-note-folded__toggle btn-plain"
+				onClick={onExpand}
+			>
+				展开 {folded.length} 条笔记
+			</button>
+		</div>
+	);
 }
 
 /** 按发布者身份解析展示名与头像：entry.author 命中 agent → 用 agent 人格，否则回落园主 */
@@ -458,6 +541,10 @@ export default function DynamicTimeline({
 	const [kindFilter, setKindFilter] = useState<"all" | DynamicKind>("all");
 	/** all = 不限；owner = 园主（无 author）；其余 = agent key */
 	const [agentFilter, setAgentFilter] = useState("all");
+	/** 已展开的连续笔记 run（key = head.id） */
+	const [expandedRunIds, setExpandedRunIds] = useState<Set<string>>(
+		() => new Set(),
+	);
 	/** DEV：已盖「作者阅过」的动态 id */
 	const [sealedIds, setSealedIds] = useState<Set<string>>(() =>
 		OWNER_SEAL_DEV ? readOwnerSeals() : new Set(),
@@ -496,11 +583,23 @@ export default function DynamicTimeline({
 
 	const useLocalTz = source.startsWith("http") || Boolean(memos?.enable);
 
-	const visibleEntries = useMemo(
-		() => filtered.slice(0, visibleCount),
-		[filtered, visibleCount],
+	/** 默认「全部」且无搜索时，连续笔记折叠 */
+	const collapseNotes =
+		year === "all" &&
+		kindFilter === "all" &&
+		agentFilter === "all" &&
+		!query;
+
+	const timelineRows = useMemo(
+		() => groupConsecutiveNotes(filtered, collapseNotes),
+		[filtered, collapseNotes],
 	);
-	const hasMore = visibleCount < filtered.length;
+
+	const visibleRows = useMemo(
+		() => timelineRows.slice(0, visibleCount),
+		[timelineRows, visibleCount],
+	);
+	const hasMore = visibleCount < timelineRows.length;
 
 	useEffect(() => {
 		registerDynamicGallery();
@@ -590,16 +689,16 @@ export default function DynamicTimeline({
 		});
 		setFiltered(next);
 		if (catalogReady) syncPageCount(next);
-		// 筛选变化：回到首批，避免继续挂着旧的超大 visibleCount
-		setVisibleCount(next.length === 0 ? 0 : Math.min(batch, next.length));
-	}, [entries, query, year, kindFilter, agentFilter, batch, catalogReady]);
+	}, [entries, query, year, kindFilter, agentFilter, catalogReady]);
+
+	// 筛选 / 折叠门禁变化：按 row 重置懒加载与展开态
+	useEffect(() => {
+		const rowsLen = groupConsecutiveNotes(filtered, collapseNotes).length;
+		setVisibleCount(rowsLen === 0 ? 0 : Math.min(batch, rowsLen));
+		setExpandedRunIds(new Set());
+	}, [filtered, collapseNotes, batch]);
 
 	useEffect(() => {
-		const plainTitle = (_html: string, searchText: string) => {
-			const fallback = (searchText || "").trim();
-			return fallback ? fallback.slice(0, 64) : "动态";
-		};
-
 		document.dispatchEvent(
 			new CustomEvent("firefly:dynamic-nav", {
 				detail: {
@@ -607,7 +706,7 @@ export default function DynamicTimeline({
 					items: filtered.map((entry) => ({
 						id: entry.id,
 						published: entry.published,
-						title: plainTitle(entry.html, entry.searchText),
+						title: dynamicEntryTitle(entry.html, entry.searchText),
 						pinned: Boolean(entry.pinned),
 					})),
 				},
@@ -623,20 +722,20 @@ export default function DynamicTimeline({
 		};
 	}, [filtered, loading]);
 
-	// 触底懒加载
+	// 触底懒加载（按 row）
 	useEffect(() => {
 		const node = sentinelRef.current;
 		if (!node || !hasMore || loading) return;
 		const io = new IntersectionObserver(
 			(rows) => {
 				if (!rows.some((row) => row.isIntersecting)) return;
-				setVisibleCount((n) => Math.min(filtered.length, n + batch));
+				setVisibleCount((n) => Math.min(timelineRows.length, n + batch));
 			},
 			{ root: null, rootMargin: "280px 0px", threshold: 0 },
 		);
 		io.observe(node);
 		return () => io.disconnect();
-	}, [hasMore, loading, filtered.length, batch, visibleCount]);
+	}, [hasMore, loading, timelineRows.length, batch, visibleCount]);
 
 	useEffect(() => {
 		if (loading) return;
@@ -644,23 +743,102 @@ export default function DynamicTimeline({
 		const jumpToHash = () => {
 			const anchorId = decodeURIComponent(window.location.hash.slice(1));
 			if (!anchorId) return;
-			const anchorIndex = filtered.findIndex(
+			const target = filtered.find(
 				(entry) => dynamicAnchor(entry.id) === anchorId,
 			);
-			if (anchorIndex < 0) return;
-			setVisibleCount((n) => Math.max(n, anchorIndex + 1));
-			requestAnimationFrame(() => {
+			if (!target) return;
+
+			const rows = groupConsecutiveNotes(filtered, collapseNotes);
+			let rowIndex = -1;
+			let expandHeadId: string | null = null;
+			for (let i = 0; i < rows.length; i++) {
+				const row = rows[i];
+				if (!row) continue;
+				if (row.type === "single") {
+					if (row.entry.id === target.id) {
+						rowIndex = i;
+						break;
+					}
+					continue;
+				}
+				if (row.head.id === target.id) {
+					rowIndex = i;
+					break;
+				}
+				if (row.folded.some((entry) => entry.id === target.id)) {
+					rowIndex = i;
+					expandHeadId = row.head.id;
+					break;
+				}
+			}
+			if (rowIndex < 0) return;
+			if (expandHeadId) {
+				setExpandedRunIds((prev) => {
+					const next = new Set(prev);
+					next.add(expandHeadId);
+					return next;
+				});
+			}
+			setVisibleCount((n) => Math.max(n, rowIndex + 1));
+			window.setTimeout(() => {
 				document.getElementById(anchorId)?.scrollIntoView({
 					behavior: "smooth",
 					block: "start",
 				});
-			});
+			}, expandHeadId ? 80 : 0);
 		};
 
 		jumpToHash();
 		window.addEventListener("hashchange", jumpToHash);
 		return () => window.removeEventListener("hashchange", jumpToHash);
-	}, [loading, filtered]);
+	}, [loading, filtered, collapseNotes]);
+
+	const renderSlots = useMemo(() => {
+		type Slot = {
+			key: string;
+			entry: DynamicData;
+			kind: DynamicKind;
+			folded?: DynamicData[];
+			runId?: string;
+			showCollapse?: boolean;
+		};
+		const slots: Slot[] = [];
+		for (const row of visibleRows) {
+			if (row.type === "single") {
+				slots.push({ key: row.entry.id, entry: row.entry, kind: row.kind });
+				continue;
+			}
+			const runExpanded = expandedRunIds.has(row.head.id);
+			if (runExpanded || row.folded.length === 0) {
+				slots.push({
+					key: row.head.id,
+					entry: row.head,
+					kind: "note",
+					runId: row.head.id,
+					showCollapse: row.folded.length > 0 && runExpanded,
+				});
+				if (runExpanded) {
+					for (const entry of row.folded) {
+						slots.push({
+							key: entry.id,
+							entry,
+							kind: "note",
+							runId: row.head.id,
+						});
+					}
+				}
+				continue;
+			}
+			slots.push({
+				key: row.head.id,
+				entry: row.head,
+				kind: "note",
+				folded: row.folded,
+				runId: row.head.id,
+			});
+		}
+		return slots;
+	}, [visibleRows, expandedRunIds]);
 
 	if (loading) {
 		return (
@@ -690,23 +868,21 @@ export default function DynamicTimeline({
 	return (
 		<>
 			<Timeline size="sm" className="ff-tl--stagger" iconsize="sm">
-				{visibleEntries.length === 0 ? (
+				{renderSlots.length === 0 ? (
 					<TimelineEmpty>{noResultsText}</TimelineEmpty>
 				) : (
-					visibleEntries.map((entry, index) => {
-						const kind = detectDynamicKind(entry.html, entry.images?.length ?? 0);
+					renderSlots.map((slot, index) => {
+						const { entry, kind } = slot;
 						const rail = dynamicKindToRail(kind);
 						const status = rail.statusClass as TimelineStatus;
 						const side: TimelineSide = index % 2 === 0 ? "left" : "right";
 						const anchorId = dynamicAnchor(entry.id);
 						const date = new Date(entry.published);
-						const shortDate = useLocalTz
-							? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-							: formatDateToYYYYMMDD(date);
+						const shortDate = formatShortDate(date, useLocalTz);
 
 						return (
 							<TimelineItem
-								key={entry.id}
+								key={slot.key}
 								id={anchorId}
 								date={shortDate}
 								status={status}
@@ -714,7 +890,7 @@ export default function DynamicTimeline({
 								icon={kindIcon(kind)}
 								side={side}
 								pinned={entry.pinned}
-								showConnector={index !== visibleEntries.length - 1 || hasMore}
+								showConnector={index !== renderSlots.length - 1 || hasMore}
 							>
 								<article
 									className="ff-tl-article"
@@ -775,6 +951,37 @@ export default function DynamicTimeline({
 										viewImageLabel={viewImageLabel}
 										selectImageLabel={selectImageLabel}
 									/>
+									{slot.folded?.length ? (
+										<NoteFoldedBlock
+											folded={slot.folded}
+											useLocalTz={useLocalTz}
+											timezone={timezone}
+											onExpand={() => {
+												if (!slot.runId) return;
+												setExpandedRunIds((prev) => {
+													const next = new Set(prev);
+													next.add(slot.runId as string);
+													return next;
+												});
+											}}
+										/>
+									) : null}
+									{slot.showCollapse && slot.runId ? (
+										<button
+											type="button"
+											className="dynamic-note-folded__toggle btn-plain"
+											onClick={() => {
+												const runId = slot.runId as string;
+												setExpandedRunIds((prev) => {
+													const next = new Set(prev);
+													next.delete(runId);
+													return next;
+												});
+											}}
+										>
+											收起笔记
+										</button>
+									) : null}
 								</article>
 							</TimelineItem>
 						);
