@@ -343,14 +343,14 @@ src/
 
 ---
 
-## 和同批笔记怎么摆
+## 相关阅读
 
 | 笔记 | 关系 |
 |---|---|
-| [删了流程 Skill，Codex 还是会写代码…](../2026-08-08_VibeCoding别把流程交给聊天框/) | 入门十步之后，别把流程只活在聊天框 |
-| [Vibecoding 的双轨](../2026-08-10_Vibecoding双轨机制/) | 工程化路线里的「一边干一边盯」 |
-| [Claude Code 四类 Loop](../2026-08-10_ClaudeCode四类循环工作流/) | 走到 Cursor/Claude Code 后，Loop 怎么交出去 |
-| [Prompt → Context → Harness → Loop](../2026-08-10_Prompt-Context-Harness-Loop四次迁移/) | 为什么瓶颈会从 Prompt 挪到 Harness/Loop |
-| [Vibe 编程 10 工具选型地图](../../2026-08-04_Vibe编程10工具选型地图/) | 工具怎么选；本篇是**怎么用** |
+| VibeCoding 别把流程交给聊天框（待发布） | 入门十步之后，别把流程只活在聊天框 |
+| Vibecoding 双轨机制（待发布） | 工程化路线里的「一边干一边盯」 |
+| [Claude Code 四类 Loop](/posts/claude-code-four-loops/) | 走到 Cursor/Claude Code 后，Loop 怎么交出去 |
+| Prompt → Context → Harness → Loop（待发布） | 为什么瓶颈会从 Prompt 挪到 Harness/Loop |
+| [Vibe 编程 10 工具选型地图](/posts/vibe-coding-tools-index/) | 工具怎么选；本篇是**怎么用** |
 
 十步走完，你会发现：难的从来不是「让 AI 写」，而是需求写清、范围砍准、Diff 看得懂、验收过得去、上线还能迭代。

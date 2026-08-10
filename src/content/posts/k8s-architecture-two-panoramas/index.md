@@ -1,7 +1,7 @@
 ---
 title: 两张全景图：K8s 架构怎么转、故障怎么查
 published: 2026-08-10
-updated: 2026-08-10T18:47:00
+updated: 2026-08-10T19:20:00
 description: 两张全景图把 K8s 架构和核心概念摊开。
 image: ./cover.jpg
 tags: [Kubernetes, 架构]

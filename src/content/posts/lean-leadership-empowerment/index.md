@@ -1,7 +1,7 @@
 ---
 title: 从控制者到赋能者：精益领导力先改自己
 published: 2026-08-10
-updated: 2026-08-10T18:53:00
+updated: 2026-08-10T19:26:00
 description: 精益领导力：从管人管事，走到现场赋能。
 image: ./cover.jpg
 tags: [精益, 领导力, Gemba]

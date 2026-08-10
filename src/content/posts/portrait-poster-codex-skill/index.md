@@ -1,8 +1,8 @@
 ---
 title: 一段 Prompt 只够用一次：我把它做成了会出人物海报的 AI 员工
 published: 2026-08-10
-updated: 2026-08-10T18:21:00
-description: 把人物海报 Prompt 收成 Codex Skill，下次直接调用。
+updated: 2026-08-10T18:31:00
+description: 人物海报 Prompt 一次够用，Skill 可复用：调研 → 确认卡 → GPT Image 2 出图，换人不重写整套版式。
 image: ./cover.jpg
 tags: [Codex, Skill, 海报]
 category: Agentic Coding
@@ -16,10 +16,6 @@ comment: true
 好看的人物海报不难。难的是换一个人名，还能保持同一套版式语法——竖构图、道具前伸、信息切片、底栏时间轴——并且事实别写错。
 
 有人把一段能跑的 Prompt 直接丢给同事：「照着改名字就行」。结果每人重查一遍资料、重填一遍字段，风格漂、年份错、脸还像隔壁那位。这篇原料的做法反过来：**先把 Prompt 拆成可复用的 Skill（岗位说明书 / SOP），再加确认闸门，最后才让 GPT Image 2 出图。**
-
-旁链（**不硬并**）：[仓颉蒸馏书](../2026-08-10_仓颉Skill_WorkBuddy蒸馏书教程/仓颉Skill加WorkBuddy：把书蒸成Agent能调用的能力.md) 是书→Skill；[MCP / Skills / CLI](../2026-08-10_MCP_Skills_CLI三者关系/一张图看懂：MCP、Skills、CLI.md) 讲分层选型；[西游黑金浮雕谱](../2026-08-10_西游人物谱黑金浮雕风/黑金浮雕西游人物谱：六节点转一圈看见的是人心.md) 是神魔造型，不是写实科学家立像。[Coze 历史人物海报](../2026-08-10_Coze历史人物科普海报工作流/输入一个名字：Coze三十秒出历史人物科普海报.md) 是扣子工作流；本篇钉的是 **Codex Skill + 确认卡**。[AGENTS.md](../2026-08-10_高质量AGENTS.md模板原则与6场景/好AGENTS.md不让Codex更聪明但少走偏.md) / [CLAUDE.md](../2026-08-10_CLAUDE.md模板原则与案例/给Claude-Code写份靠谱的CLAUDE.md：模板、五原则、五个坑.md) 可当「岗位说明书」旁证。
-
-Skill 的仓库路径原文**没给**——笔记不编造 GitHub。
 
 ---
 
@@ -74,13 +70,13 @@ Skill 的仓库路径原文**没给**——笔记不编造 GitHub。
 
 左稻田「艰难起步」，右未来城「造福人类」，中间稻穗前伸发光——叙事向更强。
 
-![袁隆平人物海报：过去与未来分屏版](././images/fig-01-01-yuan-longping-past-future-split.jpg)
+![袁隆平人物海报：过去与未来分屏版](./images/fig-01-01-yuan-longping-past-future-split.jpg)
 
 ### 稻田写实最终版
 
 金黄稻田、草帽、八块信息切片 + 底栏时间轴——更接近「系列可复用」的最终语法。
 
-![袁隆平人物海报：稻田写实最终版](././images/fig-04-04-yuan-longping-rice-field-final.jpg)
+![袁隆平人物海报：稻田写实最终版](./images/fig-04-04-yuan-longping-rice-field-final.jpg)
 
 交付物约定是三件套：**海报 PNG + `research.md` + 提示词文件**（后两件样例截图未给）。
 
@@ -94,35 +90,35 @@ Skill 的仓库路径原文**没给**——笔记不编造 GitHub。
 
 荒漠试验场，手持「理论计算稿本（机密）」卷宗，信息切片围着两弹节点。
 
-![邓稼先人物海报：绝密稿本道具前伸](././images/fig-05-05-deng-jiaxian-classified-manuscript.jpg)
+![邓稼先人物海报：绝密稿本道具前伸](./images/fig-05-05-deng-jiaxian-classified-manuscript.jpg)
 
 ### 钱学森：火箭模型前伸
 
 长征运载火箭模型 + 蓝图，身后发射与测控场景。
 
-![钱学森人物海报：火箭模型道具前伸](././images/fig-06-06-qian-xuesen-rocket-model.jpg)
+![钱学森人物海报：火箭模型道具前伸](./images/fig-06-06-qian-xuesen-rocket-model.jpg)
 
 ### 屠呦呦：两张构图都留
 
 实验室青蓝 HUD + 试管版：
 
-![屠呦呦人物海报：实验室试管版](././images/fig-03-03-tu-youyou-lab-test-tube.jpg)
+![屠呦呦人物海报：实验室试管版](./images/fig-03-03-tu-youyou-lab-test-tube.jpg)
 
 青蒿素瓶为主道具版（古籍 + 青蒿枝）：
 
-![屠呦呦人物海报：青蒿素瓶版](././images/fig-07-07-tu-youyou-artemisinin-bottle.jpg)
+![屠呦呦人物海报：青蒿素瓶版](./images/fig-07-07-tu-youyou-artemisinin-bottle.jpg)
 
 ### 爱迪生：白炽灯前伸
 
 暖金实验室，灯泡怼向镜头，切片覆盖门洛帕克到珍珠街发电站。
 
-![爱迪生人物海报：白炽灯泡道具前伸](././images/fig-08-08-edison-incandescent-bulb.jpg)
+![爱迪生人物海报：白炽灯泡道具前伸](./images/fig-08-08-edison-incandescent-bulb.jpg)
 
 ### 附件多出来的杨振宁（正文未展开）
 
 晶体/分子结构道具前伸，黑金宇宙底。正文案例列表没写他，样张仍归档备查。[^yang]
 
-![杨振宁人物海报样张（正文未展开）](././images/fig-02-02-yang-zhenning-crystal-lattice.jpg)
+![杨振宁人物海报样张（正文未展开）](./images/fig-02-02-yang-zhenning-crystal-lattice.jpg)
 
 评论回复确认生图模型是 **GPT Image 2**。同模型其他玩法见旁链玩法盘点 / 高张力海报——主题相关，交付形态不同。
 

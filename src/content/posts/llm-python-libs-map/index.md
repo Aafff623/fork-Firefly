@@ -1,7 +1,7 @@
 ---
 title: AI 大模型应用开发：Python 库八区地图
 published: 2026-08-10
-updated: 2026-08-10T18:49:00
+updated: 2026-08-10T19:22:00
 description: 大模型应用开发常用 Python 库地图，按层找轮子。
 image: ./cover.jpg
 tags: [Python, LLM, 库]

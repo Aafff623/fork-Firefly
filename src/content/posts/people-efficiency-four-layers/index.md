@@ -1,7 +1,7 @@
 ---
 title: 人效差，答案多半不在人身上
 published: 2026-08-10
-updated: 2026-08-10T18:55:00
+updated: 2026-08-10T19:28:00
 description: 人效提升的四层框架，别只在最表层抠工时。
 image: ./cover.jpg
 tags: [人效, 组织]

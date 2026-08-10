@@ -1,8 +1,8 @@
 ---
 title: 7 天烧掉 230 亿 Token：这 50 条 Codex 心得够用了
 published: 2026-08-10
-updated: 2026-08-10T18:13:00
-description: Codex 实战里攒下的五十条心得，能抄的抄，踩过的坑别再踩。
+updated: 2026-08-10T18:27:00
+description: 7 天烧掉 230 亿 Token 的实战清单：从 AI Native 思维到 AGENTS.md 与 Skill，50 条够你把 Codex 当默认执行者来用。
 image: ./cover.jpg
 tags: [Codex, 实践]
 category: Agentic Coding
@@ -15,19 +15,19 @@ comment: true
 
 看案例、听聚会，和真正把 Codex 当默认执行者，是两回事。
 
-生财有术圈友令狐峰（内容营销种草服务商）把完整目标丢给 Codex：持续调研、写代码、跑测试、开浏览器，最后交可直接用的文件或产品。7 天烧掉 **230 亿 Token**（约 **$2.6 万**），消耗一度排到榜一。落地数字也不含糊：可商用笔记日产 **100 → 1000**；内部提效工具开发期 **1 个月 → 3 天**；销售陪练考核系统 **1 天** 做出来。
+有位把 Codex 当默认执行者的实践者，把完整目标直接丢给 Codex：持续调研、写代码、跑测试、开浏览器，最后交可直接用的文件或产品。7 天烧掉 **230 亿 Token**（约 **$2.6 万**），消耗一度排到榜一。落地数字也不含糊：可商用笔记日产 **100 → 1000**；内部提效工具开发期 **1 个月 → 3 天**；销售陪练考核系统 **1 天** 做出来。
 
-下面 50 条按他原文六大部分完整收录——不是官方十条的翻版，是业务侧「敢把权限交出去」之后的实战清单。
+下面 50 条按原文六大部分收录——不是官方十条的翻版，是业务侧「敢把权限交出去」之后的实战清单。
 
-旁链（别硬并）：官方十条边界气质、Claude Code 四类 Loop、Prompt→Harness→Loop 四站、Vibe Coding 流程纪律——见文末。
+相关阅读：官方十条边界气质、[Claude Code 四类循环](/posts/claude-code-four-loops/)、Prompt→Harness→Loop 四站、Vibe Coding 流程纪律——见文末。
 
-![令狐峰 AI 落地流程总览](././images/fig-01-01-linghufeng-ai-landing-flow.jpg)
+![AI 落地流程总览](./images/fig-01-01-linghufeng-ai-landing-flow.jpg)
 
 ---
 
-## Part 1｜AI Native 的工作方式
+## AI Native 的工作方式
 
-![AI 协作：1个月→3天](././images/fig-02-02-ai-collab-1month-to-3days.jpg)
+![AI 协作：1个月→3天](./images/fig-02-02-ai-collab-1month-to-3days.jpg)
 
 1. 相信未来是一个**普通人靠想法也能暴富的时代**，前提是你学会无限烧 Token 的方式。
 
@@ -51,9 +51,9 @@ comment: true
 
 ---
 
-## Part 2｜从陌生行业开始做新项目
+## 从陌生行业开始做新项目
 
-![不懂行业反而是优势](././images/fig-03-03-outsider-advantage-tip11.jpg)
+![不懂行业反而是优势](./images/fig-03-03-outsider-advantage-tip11.jpg)
 
 11. **不懂一个行业有时反而是优势。** 你没有被旧规则限制，更容易让 AI 带着你从第一性原理重新拆解行业。
 
@@ -65,7 +65,7 @@ comment: true
 
 15. 简单任务可以交给便宜模型，关键判断、复杂编码和长期任务交给顶级模型。不要为了省小钱，浪费更多返工时间。
 
-![模型路由：Haiku / Sonnet / Opus](././images/fig-04-04-model-routing-haiku-sonnet-opus.jpg)
+![模型路由：Haiku / Sonnet / Opus](./images/fig-04-04-model-routing-haiku-sonnet-opus.jpg)
 
 16. 学会观察 Codex 的额度和重置时间。临近重置还有大量额度，就安排代码审计、竞品调研、批量测试等重任务。
 
@@ -75,7 +75,7 @@ comment: true
 
 ---
 
-## Part 3｜让 AI 从想法走到可交付结果
+## 让 AI 从想法走到可交付结果
 
 19. **目标要写结果，不要只写动作。** 不要说「研究一下竞品」，要说「交付竞品数据库、差异分析和可执行方案」。
 
@@ -85,7 +85,7 @@ comment: true
 
 22. 给 Codex 明确的完成标准。例如「页面能打开」不够，要写清楚响应速度、移动端效果、异常状态和测试要求。
 
-![完成标准：模糊 vs 细化验收](././images/fig-05-05-acceptance-vague-vs-detailed.jpg)
+![完成标准：模糊 vs 细化验收](./images/fig-05-05-acceptance-vague-vs-detailed.jpg)
 
 23. 不要只告诉 AI「做什么」，还要告诉它**「做到什么程度」。** 没有验收标准，AI 很容易交付一个看起来完成的半成品。
 
@@ -95,7 +95,7 @@ comment: true
 
 ---
 
-## Part 4｜把重复操作做成长期流程
+## 把重复操作做成长期流程
 
 26. **为长期项目编写 AGENTS.md。** 把项目规则、目录结构、禁区和验收方式写进去，避免每次重新解释。
 
@@ -109,7 +109,7 @@ comment: true
 
 ---
 
-## Part 5｜让 AI 完成调研、开发和测试
+## 让 AI 完成调研、开发和测试
 
 31. **遇到 Bug，不要只让 AI 猜原因。** 让它复现问题、读取日志、缩小范围、编写测试，最后验证修复。
 
@@ -135,7 +135,7 @@ comment: true
 
 ---
 
-## Part 6｜用复盘和配置提高长期效率
+## 用复盘和配置提高长期效率
 
 42. 让最好模型用最高推理做审查，执行用中等推理即可。
 
@@ -149,7 +149,7 @@ comment: true
 
 47. **建立自己的失败案例库。** AI 犯过的错误、无效提示词和项目踩坑，都应该沉淀成下一次的约束条件。
 
-48. 买一台性能更好的电脑，建议是 1 万元以上的 Mac，尤其是需要同时运行 Codex、浏览器、开发环境和 Docker 时。生产工具卡顿，会直接限制你的并行能力和思考速度。有段时间，他只能每天烧 30 亿 Token——因为电脑成了瓶颈。
+48. 买一台性能更好的电脑，建议是 1 万元以上的 Mac，尤其是需要同时运行 Codex、浏览器、开发环境和 Docker 时。生产工具卡顿，会直接限制你的并行能力和思考速度。有段时间，机器只能每天烧 30 亿 Token——因为电脑成了瓶颈。
 
 49. **不要为了烧 Token 而烧 Token。** 原文此处附「试试装一下这几个 Skill」配图清单（镜像文本未展开具体 Skill 名，以图为准）。
 
@@ -160,15 +160,3 @@ comment: true
 ## 先跑通一件重复的事
 
 别把这 50 条当收藏夹。挑一件每周必做的活，目标 + 验收 + 上下文一次说清，让 Codex 整段跑完；再把重复步骤写进 `AGENTS.md` / Skill。烧得出 Token 不难，烧成可复用流程才算数。
-
----
-
-## 旁链
-
-| 笔记 | 关系 |
-|---|---|
-| [`../2026-08-10_Codex官方高效用法10条/Codex官方十条：边界越清楚越像靠谱搭子.md`](../2026-08-10_Codex官方高效用法10条/Codex官方十条：边界越清楚越像靠谱搭子.md) | 官方 10 条：边界、Plan、Review；本篇偏业务侧 50 条实战 |
-| [`../2026-08-10_ClaudeCode四类循环工作流/Claude-Code四类Loop：你到底交出哪一段.md`](../2026-08-10_ClaudeCode四类循环工作流/Claude-Code四类Loop：你到底交出哪一段.md) | 四类 Loop：你交出停止条件还是整条流程 |
-| [`../2026-08-10_Prompt-Context-Harness-Loop四次迁移/Prompt到Loop：瓶颈外移的四站.md`](../2026-08-10_Prompt-Context-Harness-Loop四次迁移/Prompt到Loop：瓶颈外移的四站.md) | Prompt→Context→Harness→Loop 瓶颈外移 |
-| [`../2026-08-08_VibeCoding别把流程交给聊天框/VibeCoding别把流程交给聊天框.md`](../2026-08-08_VibeCoding别把流程交给聊天框/VibeCoding别把流程交给聊天框.md) | 删了流程 Skill 之后项目怎么烂 |
-| [`../2026-08-10_Vibecoding双轨机制/Vibecoding的双轨：一边干活一边有人盯着.md`](../2026-08-10_Vibecoding双轨机制/Vibecoding的双轨：一边干活一边有人盯着.md) | 执行轨 + 监工轨 |

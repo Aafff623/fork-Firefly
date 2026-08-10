@@ -1,7 +1,7 @@
 ---
 title: 100种普通人不知道的冷门职业（图鉴）
 published: 2026-08-10
-updated: 2026-08-10T18:59:00
+updated: 2026-08-10T19:32:00
 description: 一百种冷门职业图鉴，长见识也当选题库。
 image: ./cover.jpg
 tags: [职业, 图鉴]

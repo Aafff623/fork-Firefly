@@ -1,7 +1,7 @@
 ---
 title: 很多公司只会砍成本，高手从省钱走到赚钱
 published: 2026-08-10
-updated: 2026-08-10T18:57:00
+updated: 2026-08-10T19:30:00
 description: 降本增效四段位、十二种方法，按段位选招。
 image: ./cover.jpg
 tags: [降本增效, 经营]

@@ -1,8 +1,8 @@
 ---
 title: 扒开 Anthropic 教师 Skill 源码：生产级该长这样
 published: 2026-08-10
-updated: 2026-08-10T18:17:00
-description: 拆开 Anthropic K12 教师 Skills 源码，看教育向 skill 怎么组织。
+updated: 2026-08-10T18:29:00
+description: Anthropic 开源 k12-teacher-skills：JSON 内容源分离、学科 references 按需加载、density rules，生产级 Skill 该长这样。
 image: ./cover.jpg
 tags: [Skill, Anthropic, 教育]
 category: Agentic Coding
@@ -19,7 +19,7 @@ Anthropic 悄悄开了个仓库，叫 [k12-teacher-skills](https://github.com/an
 
 ![GitHub：anthropics/k12-teacher-skills](./images/fig-01-01-github-k12-teacher-skills.jpg)
 
-我一开始以为就是两个「AI 帮老师备课」的普通 skill，扒完源码之后有点绷不住——Anthropic 这次是亲自下场，把一份生产级 skill 该长成什么样，从心法到工程细节，明明白白摆在你面前了。
+一开始以为就是两个「AI 帮老师备课」的普通 skill，扒完源码之后有点绷不住——Anthropic 这次是亲自下场，把一份生产级 skill 该长成什么样，从心法到工程细节，明明白白摆在你面前了。
 
 做 skill 的人不看一眼真的可惜。
 
@@ -111,7 +111,7 @@ Skill 里最狠的一句约束是这个：
 | **R7** | 渐进脚手架——课内 Task 1→2→3 逐步撤支架 |
 | **R8** | UDL 默认值 + learner variables——没提障碍也默认配 sentence supports / 词汇表 |
 
-作者挑几条最有意思的展开：
+挑几条最有意思的展开：
 
 - **R6：Invisible modifications** —— 学生看到的作业单不能暴露自己是「哪一层」，Group A/B/C 只用组名，绝不能出现 Scaffolded / Guided / Independent 这种词
 - **R7：渐进脚手架** —— 一节课内 Task 1 有脚手架、Task 2 更轻、Task 3 撤掉，让学生逐步独立
@@ -128,7 +128,7 @@ Skill 里最狠的一句约束是这个：
 
 ## 三个惊艳设计，做 Skill 的人务必抄一遍作业
 
-看完源码，作者把它当 skill 工程学的教材反复读了两遍，扒出三个可以直接抄作业的设计。
+看完源码，读完可以把仓库当 skill 工程学的教材反复读了两遍，扒出三个可以直接抄作业的设计。
 
 ### 设计一：JSON-driven 内容源分离
 
@@ -265,7 +265,7 @@ Anthropic 甚至在 skill 描述里直接告诉模型：新课要分层不要重
 
 有老师问：这套东西国内老师能用吗？
 
-作者的判断分三档：
+对国内场景的判断分三档：
 
 1. **底层设计能借鉴**：JSON-driven 内容源分离、references 按需加载、density rules、师生语言分离——这些都是语言无关的工程模式，中文语文数学老师完全可以复用
 2. **或者国家中小学智慧教育平台**[^cn-gap]
@@ -294,32 +294,8 @@ Anthropic 甚至在 skill 描述里直接告诉模型：新课要分层不要重
 | MCP / Connector | `.mcp.json` + KG 调用规范 |
 | 评测 | `evals/` 目录里有完整框架 |
 
-作者给这个仓库 **95** 分，扣 5 分是因为 SKILL.md 写得太密、初读上手门槛偏高，但每一句都是干货。
+这个仓库值得 **95** 分，扣 5 分是因为 SKILL.md 写得太密、初读上手门槛偏高，但每一句都是干货。
 
-做 skill 的老板务必去 clone 一份，把两个 SKILL.md 逐字读完——读完 30k 字胜过看 30 篇教程。
-
----
-
-## 跟旁边几篇别搅成一锅
-
-| 旁链 | 它管啥 | 别跟本篇混的原因 |
-|---|---|---|
-| [不会写代码也能搭 Agent：Skills 按这七格收](../2026-08-10_Skills文件结构七目录/不会写代码也能搭Agent：Skills按这七格收.md) | Skills 目录怎么收纳 | 通用文件夹约定 ≠ 本仓教育垂类官方源码 |
-| [一张图看懂：MCP、Skills、CLI](../2026-08-10_MCP_Skills_CLI三者关系/一张图看懂：MCP、Skills、CLI.md) | 连接 / 方法 / 执行三件套 | 概念选型卡 ≠ K-12 产品架构拆解 |
-| [Awesome-AI-Skills / yichen-skills22](../2026-08-10_Awesome-AI-Skills_yichen-skills22/) | 社区技能清单 | 索引向；本篇是单仓深拆 |
-| [Agent 工程 20 概念 · 运行机制篇](../2026-08-10_Agent工程20概念_运行机制篇/) | Agent 运行机制词表 | 概念层；本篇是可 clone 的生产源码 |
-| [Claude Code 自动化十大 Skill](../2026-08-10_ClaudeCode自动化十大Skill/) | CC 自动化刀架 | 开发者工作流 ≠ 教师备课垂类 |
-
-高度同构才合并；本篇是 Anthropic 教育产品官方源码拆解，**新建不硬并**。
+做 Skill 的人务必去 clone 一份，把两个 SKILL.md 逐字读完——读完 30k 字胜过看 30 篇教程。
 
 ---
-
-## 附录：评论区择要
-
-| 谁 | 说啥 | 入档要点 |
-|---|---|---|
-| 田芮溪 | 别的模型可以用吗？ | 作者答：**skills 不挑模型**；另有评论「如果不能用，那是模型的问题」 |
-| 盐伟 / 陈九书 / 仨字名… | 开源安不安全 | 开源可审；不展开站队 |
-| 人文珞珈山 | 自搓语文学伴/数学学伴 vs 官方 | 自认小巫见大巫——侧面印证本仓工程密度 |
-
-评论区其余空评 / 表情不入档。

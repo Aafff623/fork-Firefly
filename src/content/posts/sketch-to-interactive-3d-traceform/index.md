@@ -17,7 +17,7 @@ comment: true
 
 链路是：**草图输入 → GPT-Image-2 形体解释 → Three.js 参数化建模 → 浏览器交互与 GLB 导出**。目标不是「一键还原真实物体」，而是把有限证据变成可讨论、可旋转、可继续争论的设计对象。
 
-旁链（**不硬并**）：开源产线 [img2threejs](../2026-08-10_img2threejs一张图变Threejs模型/扔一张参考图，吐出来的是可动画的Three.js工厂.md) 出的是规格 + TS 工厂；本篇钉的是 **Codex 编排闭环 + TRACEFORM 参数化工作台**。同模型出图向见文末 GPT Image2 海报 / 玩法盘点。
+旁链（**不硬并**）：开源产线 img2threejs（待发布）出的是规格 + TS 工厂；本篇钉的是 **Codex 编排闭环 + TRACEFORM 参数化工作台**。同模型出图向见文末 GPT Image2 海报 / 玩法盘点。
 
 ---
 
@@ -135,11 +135,11 @@ exporter.parse(
 
 | 旁链 | 它管啥 | 别并进这篇的原因 |
 |---|---|---|
-| [扔一张参考图，吐出来的是可动画的 Three.js 工厂](../2026-08-10_img2threejs一张图变Threejs模型/扔一张参考图，吐出来的是可动画的Three.js工厂.md) | 开源 img2threejs：图 → 规格 + TS 工厂 | 仓库 README 深挖 ≠ Codex 编排实践 / TRACEFORM 工作台 |
-| [一眼很猛：GPT Image2 七种高张力海报](../2026-08-10_GPT-Image2高张力海报7风格/一眼很猛：GPT-Image2七种高张力海报提示词.md) | 同模型海报冲击 | 出图玩法 ≠ 形体消歧义再进几何 |
-| [GPT Image2 案例 55–75](../2026-08-10_GPT-Image2玩法盘点_55-75/GPT-Image2案例55到75：抄完这批玩法就够用一阵.md) | 同模型提示词合集 | 配方库 ≠ 本篇闭环编排 |
-| [滚动就是运镜：sen-3d-resume](../2026-08-10_sen-3d-resume_3D网页简历/滚动就是运镜：sen-3d-resume把简历长在3D场景里.md) | 可交互 3D 简历壳 | 简历产品形态 ≠ 草图参数化原型 |
+| img2threejs 一张图变 Three.js 工厂（待发布） | 开源 img2threejs：图 → 规格 + TS 工厂 | 仓库 README 深挖 ≠ Codex 编排实践 / TRACEFORM 工作台 |
+| GPT Image2 七种高张力海报（待发布） | 同模型海报冲击 | 出图玩法 ≠ 形体消歧义再进几何 |
+| GPT Image2 案例 55–75（待发布） | 同模型提示词合集 | 配方库 ≠ 本篇闭环编排 |
+| sen-3d-resume 3D 网页简历（待发布） | 可交互 3D 简历壳 | 简历产品形态 ≠ 草图参数化原型 |
 
-本篇只归档 **TRACEFORM / `$build-sketch-to-3d`**：草图约束 → Image2 消歧义 → 确定性 Three.js → 参数旋钮 → 双端验证。要发帖再走 `knowledge-output`；此处不 commit、不 push。
+本篇归档 **TRACEFORM / `$build-sketch-to-3d`**：草图约束 → Image2 消歧义 → 确定性 Three.js → 参数旋钮 → 双端验证。
 
 [^skill-repo]: 文中提及 Skill 名 `$build-sketch-to-3d`，仓库位置未在原文给出——勿编造 GitHub URL。

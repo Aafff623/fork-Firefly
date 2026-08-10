@@ -1,8 +1,8 @@
 ---
 title: 想清楚用 Chat，做成品用 Work，改代码用 Codex
 published: 2026-08-10
-updated: 2026-08-10T18:15:00
-description: Chat、Work、Codex 各管什么，怎么选才不浪费订阅。
+updated: 2026-08-10T18:28:00
+description: 先选模式再选模型：想清楚用 Chat，做成品用 Work，改系统和代码用 Codex。
 image: ./cover.jpg
 tags: [ChatGPT, Codex, 选型]
 category: Agentic Coding
@@ -67,18 +67,3 @@ Instant 管「说得快」；Sol + 推理档管「想得深」；Terra / Luna �
 进了 Codex 还要写规矩、派活、少走偏，旁边几篇管用法，不跟本篇抢选型。
 
 ---
-
-## 跟旁边几篇别搅成一锅
-
-| 旁链 | 它管啥 | 别跟本篇混的原因 |
-|---|---|---|
-| [7 天烧掉 230 亿 Token：这 50 条 Codex 心得](../2026-08-10_Codex实战心得50条/7天烧掉230亿Token：这50条Codex心得够用了.md) | Codex 实战清单 | 用法心得 ≠ ChatGPT 三模式选型 |
-| [Codex 官方十条：边界越清楚越像靠谱搭子](../2026-08-10_Codex官方高效用法10条/Codex官方十条：边界越清楚越像靠谱搭子.md) | 派活边界 | 进 Codex 之后怎么用；本篇先问进哪个模式 |
-| [好 AGENTS.md 不让 Codex 更聪明，但少走偏](../2026-08-10_高质量AGENTS.md模板原则与6场景/好AGENTS.md不让Codex更聪明但少走偏.md) | 项目指令路由 | 仓库规矩文件 ≠ 产品界面模式 |
-| [一张图看懂：MCP、Skills、CLI](../2026-08-10_MCP_Skills_CLI三者关系/一张图看懂：MCP、Skills、CLI.md) | 连接 / 方法 / 执行 | 同是选型卡，对象不是 Chat/Work/Codex |
-| [Claude Code 四类 Loop：你到底交出哪一段](../2026-08-10_ClaudeCode四类循环工作流/Claude-Code四类Loop：你到底交出哪一段.md) | CC 交权 | 工具不同；本篇钉 ChatGPT 三模式 |
-| [手机里那九个 AI 其实是一个班](../2026-08-10_有趣的AI大模型一班/手机里那九个AI其实是一个班.md) | 消费侧模型拟人 | 点名梗 ≠ 模式/档位怎么选 |
-
-本篇只做「Chat = 想清楚 · Work = 做成品 · Codex = 改系统与代码」的图卡速记；原帖 URL 用户未给，按粘贴图卡处理。
-
-[^models]: 图中模型名（如 GPT-5.5 Instant / GPT-5.6 Sol / Terra / Luna）及推理档位按图面照录；**以账号、套餐与界面实际可选为准**。

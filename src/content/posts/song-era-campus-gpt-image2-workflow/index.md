@@ -17,7 +17,7 @@ comment: true
 
 单张图质量可以很好，但建筑数量、屋顶方向、院落比例和水体位置容易漂移——因为每次生成都在重新设计园区。真正的问题不是提示词长短，而是**状态管理**：布局合同、风格合同、固定机位、参考图顺序、失败返工。
 
-旁链（**不硬并**）：[草图→可交互 Three.js](../2026-08-10_草图到可交互3D_Codex_GPTImage2_Threejs/草图约束写成旋钮：Codex把椅子草图编成可交互Three.js.md) 钉单物体参数化；本篇钉的是**园区多机位 + 布局/风格合同**。[好 AGENTS.md](../2026-08-10_高质量AGENTS.md模板原则与6场景/好AGENTS.md不让Codex更聪明但少走偏.md) 讲通用路由原则；这里落到四个古代园区 skills。同模型其他交付见文末。
+旁链（**不硬并**）：[草图→可交互 Three.js](/posts/sketch-to-interactive-3d-traceform/) 钉单物体参数化；本篇钉的是**园区多机位 + 布局/风格合同**。[好 AGENTS.md 模板](/posts/agents-md-template-six-scenes/) 讲通用路由原则；这里落到四个古代园区 skills。同模型其他交付见文末。
 
 ![宋代建筑园区鸟瞰全景](././images/fig-01-01-aerial-birdseye-panorama.jpg)
 
@@ -205,10 +205,10 @@ and regenerate only the failing view.
 
 ## 同模型不同交付（旁链）
 
-- [GPT-Image2 玩法盘点 55–75](../2026-08-10_GPT-Image2玩法盘点_55-75/GPT-Image2案例55到75：抄完这批玩法就够用一阵.md)
-- [UI 分层切图](../2026-08-10_GPT-Image2_UI设计分层切图/3分钟交切图：GPT Image 2把UI从灵感图做成可编辑资产.md)
-- [高张力海报七风格](../2026-08-10_GPT-Image2高张力海报7风格/一眼很猛：GPT-Image2七种高张力海报提示词.md)
-- [竹林现代东方美术馆长 Prompt](../2026-08-10_GPT-Image2竹林现代东方美术馆/建筑消隐在竹里：GPT-Image2现代东方美术馆长Prompt.md)（建筑向单场景，非园区合同链）
+- GPT-Image2 玩法盘点 55–75（待发布）
+- [UI 分层切图](/posts/gpt-image2-ui-layer-slice/)
+- 高张力海报七风格（待发布）
+- 竹林现代东方美术馆长 Prompt（待发布，建筑向单场景，非园区合同链）
 
 [^layout-juxtapose]: 文称「总平面与效果图并置对照」；本套附件第 3 张与第 1 张鸟瞰 MD5 相同，未单独给出并置拼图。
 [^skills-route]: 文称有「四个 skills 的路由关系」示意；附件未单独给出架构图，正文不编造插图。

@@ -1,8 +1,8 @@
 ---
 title: 仓颉 Skill + WorkBuddy：把书蒸成 Agent 能直接调用的能力
 published: 2026-08-10
-updated: 2026-08-10T18:19:00
-description: 用仓颉 Skill 和 WorkBuddy 把书蒸馏成可复用能力包。
+updated: 2026-08-10T18:30:00
+description: 仓颉 Skill 挂 WorkBuddy，把 PDF/MD 资料蒸馏成可安装、可触发的 Agent Skills，收藏一万本不如蒸出一套能用的。
 image: ./cover.jpg
 tags: [Skill, WorkBuddy, 蒸馏]
 category: Agentic Coding
@@ -13,9 +13,9 @@ pinned: false
 comment: true
 ---
 
-收藏一万本，不如蒸出一套能触发的 Skill。袋鼠帝这篇保姆级教程，讲的是用开源仓颉 Skill（`cangjie-skill`）挂在腾讯 WorkBuddy 上，把 PDF/MD 资料蒸馏成可安装、可复用的 Agent Skills——不是再写一份读书笔记，也不是手写 `AGENTS.md`。
+收藏一万本，不如蒸出一套能触发的 Skill。这篇保姆级教程讲的是用开源仓颉 Skill（`cangjie-skill`）挂在腾讯 WorkBuddy 上，把 PDF/MD 资料蒸馏成可安装、可复用的 Agent Skills——不是再写一份读书笔记，也不是手写 `AGENTS.md`。
 
-仓库：[github.com/kangarooking/cangjie-skill](https://github.com/kangarooking/cangjie-skill)（文中时点约 **6.7K Star**）。作者自述：「蒸馏所有值得蒸馏的高价值内容」。
+仓库：[github.com/kangarooking/cangjie-skill](https://github.com/kangarooking/cangjie-skill)（文中时点约 **6.7K Star**）。仓库自述：「蒸馏所有值得蒸馏的高价值内容」。
 
 ![GitHub cangjie-skill 约 6.7k Star](./images/fig-01-01-github-cangjie-skill-6k7.jpg)
 
@@ -25,9 +25,9 @@ comment: true
 
 ## 先想清楚：蒸出来能干啥
 
-作者说一开始自己也想不出多少场景，后来在交流群里收了一波反馈[^missing-group]，挑了几类：
+一开始自己也想不出多少场景，后来在交流群里收了一波反馈[^missing-group]，挑了几类：
 
-| 场景 | 作者侧说法 |
+| 场景 | 场景说明 |
 |---|---|
 | 小红书商家投流指导 | 蒸馏+优化出 **10 个 Skill**（见下表） |
 | AI4science | 称获博士认可[^missing-ai4s] |
@@ -72,7 +72,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 
 ### 1. 准备资料：PDF → MD/TXT，一次一类
 
-示例书：《王川宝典》。作者称大佬推荐线：巴菲特、芒格、段永平，以及这本。
+示例书：《王川宝典》。文中称大佬推荐线：巴菲特、芒格、段永平，以及这本。
 
 - PDF 转 Markdown / TXT（文中：Google 搜「PDF 免费转 MD」等）
 - 图里有关键信息 → OCR；也可试豆包 **Seed-Evolving**，或收费但效果不错的 **Doc2X**
@@ -88,13 +88,13 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 
 ### 3. 找到仓颉 Skill →「去试试」；模型怎么选
 
-路径（作者口述）：技能 → 搜索「仓颉 skill」→ 推荐 → 仓颉 skill → **去试试**[^missing-wb-search]。
+路径（操作路径）：技能 → 搜索「仓颉 skill」→ 推荐 → 仓颉 skill → **去试试**[^missing-wb-search]。
 
 - 指令：让仓颉直接蒸馏；把书文件路径/内容丢进对话框
-- 可自定义 API / Coding Plan / 中转[^missing-api]——作者夸开放灵活
+- 可自定义 API / Coding Plan / 中转[^missing-api]——文中夸开放灵活
 - **耗 token**：蒸馏书本身就贵，别当闲聊额度
 
-| 模型选择（作者实测口径） | 用途 |
+| 模型选择（实测口径） | 用途 |
 |---|---|
 | **Hy3** | 限时免费，适合第一次试水 |
 | **DeepSeek V4 Flash**（WB 内置正式版） | 效果/速度/价格兼顾，本次开蒸选用 |
@@ -117,7 +117,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 
 ## 蒸完怎么用：确定性，不是「听着有点道理」
 
-作者演示：同一问题，加载《王川宝典》蒸馏 Skill 的答卷 vs 裸 **Kimi K3**（不挂工具）[^missing-kimi-cmp]。
+演示：同一问题，加载《王川宝典》蒸馏 Skill 的答卷 vs 裸 **Kimi K3**（不挂工具）[^missing-kimi-cmp]。
 
 他自己的对比结论：
 
@@ -134,7 +134,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 
 ## 视频蒸馏：预告，不是本期主菜
 
-作者称已用字节 **Seed-Evolving** 试过：视觉强 → 视频信息抽得更完整 → 视频蒸馏更稳。完整教程未展开，等三连催更[^missing-video]。
+文中称已用字节 **Seed-Evolving** 试过：视觉强 → 视频信息抽得更完整 → 视频蒸馏更稳。完整教程未展开，等三连催更[^missing-video]。
 
 ---
 
@@ -150,28 +150,3 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 （评论原文未完整收录在转载页；上表按作者征集反馈主题与文中论点择要，不当逐条引用。）
 
 ---
-
-## 跟旁边几篇别搅成一锅
-
-| 旁链 | 它管啥 | 别跟本篇混 |
-|---|---|---|
-| [一张图看懂：MCP、Skills、CLI](../2026-08-10_MCP_Skills_CLI三者关系/一张图看懂：MCP、Skills、CLI.md) | Skills 在三件套里的位置 | 概念层 ≠ 蒸馏实操 |
-| [给 Claude Code 写份靠谱的 CLAUDE.md](../2026-08-10_CLAUDE.md模板原则与案例/给Claude-Code写份靠谱的CLAUDE.md：模板、五原则、五个坑.md) | 手写仓库指令 | 写规矩 ≠ 从书蒸 Skill |
-| [好 AGENTS.md 不让 Codex 更聪明，但少走偏](../2026-08-10_高质量AGENTS.md模板原则与6场景/好AGENTS.md不让Codex更聪明但少走偏.md) | AGENTS 路由模板 | 同「指令生态」，产物不同 |
-| [7 天烧掉 230 亿 Token：这 50 条 Codex 心得](../2026-08-10_Codex实战心得50条/7天烧掉230亿Token：这50条Codex心得够用了.md) | Codex 实战清单 | 用法心得 ≠ 仓颉流水线 |
-| [Claude Code 四类 Loop](../2026-08-10_ClaudeCode四类循环工作流/Claude-Code四类Loop：你到底交出哪一段.md) | 交哪段权力 | Loop ≠ 蒸馏 |
-| [vibe-coding 怎么用](../2026-08-10_vibe-coding使用手册/vibe-coding怎么用：十步从一句话走到上线.md) | 一句话到上线 | 编码 vibe ≠ 知识蒸馏 |
-
----
-
-## 脚注：文称有图，附件未给
-
-[^missing-group]: 交流群收集场景——文称有图，附件未给。
-[^missing-ai4s]: AI4science 场景——文称有图，附件未给。
-[^missing-sell]: 卖 Skill ≈29.9——文称有图，附件未给。
-[^missing-spread]: 社群传播截图——文称有图，附件未给。
-[^missing-wb-search]: WorkBuddy 技能搜索界面——文称有图，附件未给。
-[^missing-api]: 自定义 API / Coding Plan——文称有图，附件未给。
-[^missing-credits]: 积分消耗细图（65 / 日领 100 / Kimi ~2000）——文称有图，附件未给；数字据正文保留。
-[^missing-kimi-cmp]: 同题裸 Kimi 对比答卷——文称有图，附件未给。
-[^missing-video]: 视频蒸馏 / Seed-Evolving 演示——文称有图，附件未给。

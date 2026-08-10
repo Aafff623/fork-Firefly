@@ -1,7 +1,7 @@
 ---
 title: 人物场景再精致，固定机位也只是会说话的插画
 published: 2026-08-10
-updated: 2026-08-10T18:33:00
+updated: 2026-08-10T19:17:00
 description: AI 漫剧可用的 36 种运镜提示词，按镜头意图分类。
 image: ./cover.jpg
 tags: [运镜, 提示词, 漫剧]

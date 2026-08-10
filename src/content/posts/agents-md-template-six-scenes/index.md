@@ -1,7 +1,7 @@
 ---
 title: 好 AGENTS.md 不让 Codex 更聪明，但少让它走偏
 published: 2026-08-10
-updated: 2026-08-10T18:11:00
+updated: 2026-08-10T18:22:00
 description: 高质量 AGENTS.md 的写法原则，外加六种场景怎么落。
 image: ./cover.jpg
 tags: [AGENTS.md, Codex]
@@ -15,9 +15,7 @@ comment: true
 
 一份好的 `AGENTS.md`，不会让 Codex 突然变得更聪明，却会显著减少它在错误方向上越走越远。
 
-旁链（同属项目指令、工具不同，分笔记不硬并）：Claude Code 用 `CLAUDE.md` → [`../2026-08-10_CLAUDE.md模板原则与案例/`](../2026-08-10_CLAUDE.md模板原则与案例/)；Codex 用本篇 `AGENTS.md`。四类 Loop 见 [`../2026-08-10_ClaudeCode四类循环工作流/`](../2026-08-10_ClaudeCode四类循环工作流/)。
-
----
+Claude Code 侧同类文件见 [CLAUDE.md 模板专篇](/posts/claude-md-template-principles/)；四类 Loop 见 [Claude Code 四类 Loop](/posts/claude-code-four-loops/)。
 
 ## 一、真正解决的是什么
 
@@ -47,8 +45,6 @@ Codex 会从项目根目录一路读取到当前工作目录，越靠近当前�
 ![Codex 如何按层级加载 AGENTS.md](./images/fig-01-01-codex-agents-layer-loading.jpg)
 
 这也是写好 `AGENTS.md` 的第一个关键：不要试图用一份巨型文件解释整个世界，要让规则跟着代码的边界走。
-
----
 
 ## 二、六条原则
 
@@ -158,8 +154,6 @@ repo/
 
 如果同类错误发生两次，就值得把修正写进 `AGENTS.md`。它不应成为愿望清单，而应成为项目经验的压缩包。
 
----
-
 ## 三、可直接改的通用模板
 
 ![AGENTS.md 模板七段](./images/fig-03-03-agents-template-seven-sections.jpg)
@@ -207,7 +201,7 @@ repo/
 - <语言或框架相关约定>。
 - <文件命名、导入、异常处理约定>。
 - 新增或修改公共接口时，同步更新类型、测试和文档。
-- 不为了“更整洁”修改与任务无关的格式或代码。
+- 不为了"更整洁"修改与任务无关的格式或代码。
 
 ## Testing and verification
 
@@ -238,8 +232,6 @@ repo/
 ```
 
 这份模板最重要的部分并不是标题数量，而是每条规则都能落到一个动作、一个边界或一个验收结果上。
-
----
 
 ## 四、六个场景的局部规则
 
@@ -339,8 +331,6 @@ Monorepo 的常见浪费，是一个小改动跑整库测试；常见事故，�
 
 Codex 官方文档说明，代码审查会寻找仓库中的 `AGENTS.md`，并遵循其中的 Review guidelines。对于支付、鉴权、隐私等特殊目录，还可以在更深层放置专门的审查规则，让检查标准跟着风险走。
 
----
-
 ## 五、五个反模式
 
 **把临时需求写成永久规则**  
@@ -357,8 +347,6 @@ Codex 官方文档说明，代码审查会寻找仓库中的 `AGENTS.md`，并�
 
 **把软要求写成绝对命令**  
 「永远不要重构」「所有改动必须跑全量测试」可能让 Codex 在简单任务上付出巨大成本。更好的表达是说明触发条件、例外和优先级。
-
----
 
 ## 六、怎么确认它真的生效
 
@@ -382,8 +370,6 @@ codex --cd services/payments --ask-for-approval never \
 3. 最关键的构建、测试和安全边界没有被遗漏或截断。
 
 Codex CLI 也提供 `/init` 来生成初始的 `AGENTS.md`。它适合解决「从零开始」，但生成之后仍要根据项目真实的构建、测试、审查和发布流程进行删改。脚手架只能提供栏目，不能替团队补上工程事实。
-
----
 
 ## 短、准、可验证就够起步
 
