@@ -75,6 +75,8 @@ MCP 里不想用的 server，`/mcp disable` 一行搞定，或写 `{disabled:tru
 | supabase / vercel | needs auth（OAuth 未授权） | `/mcp-auth` 按需授权 |
 | obsidian | server 端 inputSchema 校验失败 | 等 server 更新，不是 adapter 的锅 |
 | github | 401 token 过期 | 重新配置凭证 |
+| server 报 `must configure exactly one of command, url, socket` | 本地 server 与 imports 同名，`command`+`url` 字段级浅合并撞名 | 本地别重复配（让 imports 接管），或改名 / 换 transport |
+| tavily 等 401 | env 写了 `${KEY}` 但 pi **不解析 `${}` 插值** | 本地硬编码 key，别用 `${}`；改完 TUI `/reload` |
 | 其余 18 个 | 在线，146 tools | 正常用 |
 
 ## 三包七兆，九个小兵，命令就几条
@@ -115,7 +117,7 @@ pi 没有原生自动记忆，得自己搭。开荒时我两路并进：交接�
 
 1. 配置分两级：全局 `~/.pi/agent/settings.json`，项目 `.pi/settings.json`
 2. skills 三目录共享（`~/.claude/skills` + `~/.agents/skills` + `~/.pi/agent/skills`），不复制
-3. mcp.json 用 imports 软引用，别硬拷贝 server 定义
+3. mcp.json 用 imports 软引用，别硬拷贝 server 定义；但同名会撞（本地 + imports 浅合并触发 command/url 互斥）、`${}` 插值不解析、改完要 `/reload`
 4. 装包顺序：adapter → subagents → memory，逐个验证
 5. 装前备份：`cp settings.json settings.json.bak.<时间戳>`
 6. GLM-5.2 纯文本，看图走 MiniMax 视觉回退
