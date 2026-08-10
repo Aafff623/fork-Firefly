@@ -1,14 +1,17 @@
 ---
 /**
- * RepelText — agent-cfo landing DecodeHeadline 的 vanilla 复刻（丝滑版）
+ * RepelText — agent-cfo landing DecodeHeadline / use-pointer-repel 的 vanilla 复刻
  *
- * 效果（对照 decode-headline.tsx + use-pointer-repel.ts）：
- *   ① 逐词上浮淡入（opacity 0→1, y 14px→0, 词间 stagger）；结束后 clear 父级 transform
- *   ② 鼠标 110px 半径内字符被推开，离开后弹簧回位（共享 rAF）
+ * 对照 frontend/components/landing/use-pointer-repel.ts：
+ *   · 指针进入时才 measure；move/leave 时才跑 rAF；静止即停
+ *   · 弹簧参数：radius 110 / strength 2.8 / spring 0.11 / damping 0.78
  *
- * 用法：给目标元素加 class "repel-text"，本组件自动增强。
- * 可选 data-repel-radius / data-repel-strength（侧栏短名宜更小；横幅用默认）。
- * Swup 换页后自动重新扫描；尊重 prefers-reduced-motion。
+ * Firefly 差异（壁纸+氛围层更重，不能照搬首屏入场）：
+ *   · 默认不做逐词上浮（避免首屏卡顿）；要入场加 data-repel-enter="1"
+ *   · 首帧保留原文，idle/rAF 后再拆字（避免加载闪卡）
+ *   · 横幅拆字禁 text-shadow（继承到每个 .repel-char 会拖垮每帧绘制）
+ *
+ * 用法：class="repel-text"；可选 data-repel-radius / data-repel-strength
  */
 ---
 
@@ -20,6 +23,9 @@
 	.repel-word {
 		display: inline-block;
 		white-space: nowrap;
+	}
+
+	.repel-word.is-entering {
 		opacity: 0;
 		transform: translateY(14px);
 		animation: repel-word-in 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -35,15 +41,17 @@
 		display: inline-block;
 		transition: none !important;
 		transform: translate3d(0, 0, 0);
+		/* 阴影绝不能落到单字上：跟字位移时每帧重绘极贵 */
+		text-shadow: none !important;
 	}
 
 	/*
-	 * 横幅拆字标题：不用 24px 软阴影（跟字重绘极贵）。
-	 * 可读性用 1～3px 轻阴影；勿用父级 filter:drop-shadow（子字位移仍会重算滤镜）。
+	 * 横幅可读性靠 banner-dim，不靠大范围 soft shadow。
+	 * 覆盖 banner-title.css / layout-styles.css 里的 24px 阴影。
 	 */
 	.banner-title.repel-text,
 	.banner-post-title.repel-text {
-		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55) !important;
+		text-shadow: none !important;
 	}
 
 	@keyframes repel-word-in {
@@ -54,7 +62,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.repel-word {
+		.repel-word.is-entering {
 			opacity: 1;
 			transform: none;
 			animation: none;
@@ -63,13 +71,13 @@
 </style>
 
 <script>
+	/** 与 agent-cfo use-pointer-repel.ts 对齐 */
 	const REPEL_RADIUS = 110;
 	const REPEL_STRENGTH = 2.8;
 	const SPRING = 0.11;
 	const DAMPING = 0.78;
-	const WORD_STAGGER_MS = 55;
+	const WORD_STAGGER_MS = 40;
 	const WORD_IN_MS = 450;
-	/** 位移变化小于此值则跳过写 DOM（约 0.05px） */
 	const WRITE_EPS = 0.05;
 
 	interface RepelState {
@@ -79,7 +87,6 @@
 		vy: number;
 		centerX: number;
 		centerY: number;
-		/** 上次写入 DOM 的位移 */
 		wx: number;
 		wy: number;
 	}
@@ -92,6 +99,7 @@
 		willChangeOn: boolean;
 		radius: number;
 		strength: number;
+		measured: boolean;
 	}
 
 	function readNumberAttr(el: HTMLElement, name: string, fallback: number): number {
@@ -103,11 +111,21 @@
 
 	const abortByEl = new WeakMap<HTMLElement, AbortController>();
 	const observerByEl = new WeakMap<HTMLElement, ResizeObserver>();
-	/** 活跃斥力实例（共享一条 rAF） */
 	const scopes = new Set<RepelScope>();
 	let sharedFrame = 0;
+	let initScheduled = false;
 
-	// 按「词」切分：连续拉丁/数字算一个词，CJK 逐字成词（中文没有空格分词）
+	/** CJK / 全角：逐字成词；拉丁连续成词 */
+	function isCjkChar(ch: string): boolean {
+		const cp = ch.codePointAt(0) ?? 0;
+		return (
+			(cp >= 0x3400 && cp <= 0x9fff) ||
+			(cp >= 0xf900 && cp <= 0xfaff) ||
+			(cp >= 0x3000 && cp <= 0x303f) ||
+			(cp >= 0xff00 && cp <= 0xffef)
+		);
+	}
+
 	function splitWords(text: string): string[] {
 		const words: string[] = [];
 		let buf = "";
@@ -122,7 +140,7 @@
 				flush();
 				continue;
 			}
-			if (/[㐀-鿿豈-﫿　-〿＀-￯]/.test(ch)) {
+			if (isCjkChar(ch)) {
 				flush();
 				words.push(ch);
 			} else {
@@ -146,13 +164,13 @@
 		if (Math.abs(s.x - s.wx) < WRITE_EPS && Math.abs(s.y - s.wy) < WRITE_EPS) return;
 		s.wx = s.x;
 		s.wy = s.y;
-		const rx = Math.round(s.x * 100) / 100;
-		const ry = Math.round(s.y * 100) / 100;
-		element.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+		element.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0)`;
 	}
 
 	function tickScope(scope: RepelScope): boolean {
 		const { elements, states, pointer } = scope;
+		if (!scope.measured || elements.length === 0) return false;
+
 		let moving = false;
 		const n = elements.length;
 		for (let index = 0; index < n; index++) {
@@ -192,12 +210,7 @@
 			moving = moving || active;
 		}
 
-		if (moving || pointer.active) {
-			setCharsWillChange(scope, true);
-		} else {
-			setCharsWillChange(scope, false);
-		}
-
+		setCharsWillChange(scope, moving || pointer.active);
 		return moving;
 	}
 
@@ -211,40 +224,6 @@
 
 	function startShared() {
 		if (!sharedFrame) sharedFrame = requestAnimationFrame(sharedTick);
-	}
-
-	/** 入场结束：清掉父级 animation/transform（对齐 GSAP clearProps） */
-	function settleWords(el: HTMLElement, wordCount: number, signal: AbortSignal) {
-		const words = el.querySelectorAll<HTMLElement>(".repel-word");
-		const clearOne = (w: HTMLElement) => {
-			w.classList.add("is-settled");
-			w.style.animation = "none";
-			w.style.animationDelay = "";
-			w.style.opacity = "1";
-			w.style.transform = "none";
-		};
-
-		words.forEach((w, i) => {
-			const delay = i * WORD_STAGGER_MS;
-			const onEnd = (e: AnimationEvent) => {
-				if (e.target !== w) return;
-				clearOne(w);
-			};
-			w.addEventListener("animationend", onEnd, { signal, once: true });
-			// 兜底：个别浏览器 animationend 丢失时仍清 props
-			window.setTimeout(() => {
-				if (signal.aborted) return;
-				if (!w.classList.contains("is-settled")) clearOne(w);
-			}, delay + WORD_IN_MS + 40);
-		});
-
-		// 全部词结束后再量一次中心（入场 transform 已清）
-		const totalMs = Math.max(0, wordCount - 1) * WORD_STAGGER_MS + WORD_IN_MS + 60;
-		window.setTimeout(() => {
-			if (signal.aborted) return;
-			const scope = findScope(el);
-			if (scope) measureScope(scope);
-		}, totalMs);
 	}
 
 	function findScope(el: HTMLElement): RepelScope | undefined {
@@ -273,6 +252,39 @@
 				wy: prev?.wy ?? 0,
 			};
 		});
+		scope.measured = scope.elements.length > 0;
+	}
+
+	function settleWords(el: HTMLElement, wordCount: number, signal: AbortSignal) {
+		const words = el.querySelectorAll<HTMLElement>(".repel-word");
+		const clearOne = (w: HTMLElement) => {
+			w.classList.remove("is-entering");
+			w.classList.add("is-settled");
+			w.style.animation = "none";
+			w.style.animationDelay = "";
+			w.style.opacity = "1";
+			w.style.transform = "none";
+		};
+
+		words.forEach((w, i) => {
+			const delay = i * WORD_STAGGER_MS;
+			const onEnd = (e: AnimationEvent) => {
+				if (e.target !== w) return;
+				clearOne(w);
+			};
+			w.addEventListener("animationend", onEnd, { signal, once: true });
+			window.setTimeout(() => {
+				if (signal.aborted) return;
+				if (!w.classList.contains("is-settled")) clearOne(w);
+			}, delay + WORD_IN_MS + 40);
+		});
+
+		const totalMs = Math.max(0, wordCount - 1) * WORD_STAGGER_MS + WORD_IN_MS + 60;
+		window.setTimeout(() => {
+			if (signal.aborted) return;
+			const scope = findScope(el);
+			if (scope?.pointer.active) measureScope(scope);
+		}, totalMs);
 	}
 
 	function teardown(el: HTMLElement) {
@@ -289,44 +301,36 @@
 	}
 
 	function enhance(el: HTMLElement) {
-		// 已拆词且仍有字符节点 → 跳过；Swup 换入的新标题需重新增强
 		if (el.dataset.repelDone === "1" && el.querySelector(".repel-char")) return;
 
 		const text = (el.textContent || "").trim();
 		if (!text) return;
 
-		// 同元素重建时先卸旧监听 / observer，避免 Profile + banner 或 Swup 重扫泄漏
 		teardown(el);
-
 		el.dataset.repelDone = "1";
-		el.replaceChildren();
 
 		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const wantEnter = !reduced && el.getAttribute("data-repel-enter") === "1";
 		const words = splitWords(text);
+		const frag = document.createDocumentFragment();
 
 		words.forEach((word, i) => {
 			const w = document.createElement("span");
-			w.className = "repel-word";
-			w.style.animationDelay = `${i * WORD_STAGGER_MS}ms`;
+			w.className = wantEnter ? "repel-word is-entering" : "repel-word is-settled";
+			if (wantEnter) w.style.animationDelay = `${i * WORD_STAGGER_MS}ms`;
 			for (const ch of Array.from(word)) {
 				const c = document.createElement("span");
 				c.className = "repel-char";
 				c.textContent = ch;
 				w.appendChild(c);
 			}
-			el.appendChild(w);
-			if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+			frag.appendChild(w);
+			if (i < words.length - 1) frag.appendChild(document.createTextNode(" "));
 		});
 
-		if (reduced) {
-			el.querySelectorAll<HTMLElement>(".repel-word").forEach((w) => {
-				w.classList.add("is-settled");
-				w.style.animation = "none";
-				w.style.opacity = "1";
-				w.style.transform = "none";
-			});
-			return;
-		}
+		el.replaceChildren(frag);
+
+		if (reduced) return;
 
 		el.dataset.repelBound = "1";
 		const ac = new AbortController();
@@ -341,11 +345,13 @@
 			willChangeOn: false,
 			radius: readNumberAttr(el, "data-repel-radius", REPEL_RADIUS),
 			strength: readNumberAttr(el, "data-repel-strength", REPEL_STRENGTH),
+			measured: false,
 		};
 		scopes.add(scope);
 
-		settleWords(el, words.length, signal);
+		if (wantEnter) settleWords(el, words.length, signal);
 
+		// 对齐 use-pointer-repel：进入时才量中心，避免首屏强制布局
 		el.addEventListener(
 			"pointerenter",
 			() => {
@@ -353,10 +359,10 @@
 			},
 			{ signal },
 		);
-		// 只记坐标；写 DOM 全交给共享 rAF。passive 避免阻塞滚动合成
 		el.addEventListener(
 			"pointermove",
 			(e: PointerEvent) => {
+				if (!scope.measured) measureScope(scope);
 				scope.pointer.x = e.clientX;
 				scope.pointer.y = e.clientY;
 				scope.pointer.active = true;
@@ -374,40 +380,65 @@
 		);
 
 		if (typeof ResizeObserver !== "undefined") {
+			let resizeTimer = 0;
 			const ro = new ResizeObserver(() => {
-				measureScope(scope);
+				if (!scope.measured && !scope.pointer.active) return;
+				window.clearTimeout(resizeTimer);
+				resizeTimer = window.setTimeout(() => measureScope(scope), 80);
 			});
 			ro.observe(el);
 			observerByEl.set(el, ro);
 		}
-		measureScope(scope);
+	}
+
+	function pruneDisconnectedScopes() {
+		for (const scope of [...scopes]) {
+			if (scope.el.isConnected) continue;
+			teardown(scope.el);
+		}
 	}
 
 	function initRepelText() {
+		pruneDisconnectedScopes();
 		document.querySelectorAll(".repel-text").forEach((node) => enhance(node as HTMLElement));
 	}
 
+	/** 首屏先画原文，空闲后再拆字——消除「加载卡一下」 */
 	function scheduleInitRepelText() {
-		requestAnimationFrame(() => {
+		if (initScheduled) return;
+		initScheduled = true;
+		const run = () => {
+			initScheduled = false;
 			initRepelText();
-			// 横幅 overlay 经 Swup 替换后偶发晚一拍，再扫一次
-			window.setTimeout(initRepelText, 80);
-		});
+		};
+		const ric = (
+			window as Window & {
+				requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+			}
+		).requestIdleCallback;
+		if (typeof ric === "function") {
+			ric(run, { timeout: 200 });
+		} else {
+			requestAnimationFrame(() => requestAnimationFrame(run));
+		}
 	}
 
-	initRepelText();
-
-	document.addEventListener("swup:contentReplaced", scheduleInitRepelText);
-	document.addEventListener("swup:page:view", scheduleInitRepelText);
+	scheduleInitRepelText();
 
 	function bindSwupRepel() {
 		if (!window.swup?.hooks) return;
 		window.swup.hooks.on("content:replace", scheduleInitRepelText);
 		window.swup.hooks.on("page:view", scheduleInitRepelText);
 	}
-	if (window.swup?.hooks) {
-		bindSwupRepel();
-	} else {
-		document.addEventListener("swup:enable", bindSwupRepel);
+	// 幂等 guard：防 Swup 重执行脚本时重复注册 swup 监听器
+	if (!window.__repelSwupBound) {
+		window.__repelSwupBound = true;
+		document.addEventListener("swup:contentReplaced", scheduleInitRepelText);
+		document.addEventListener("swup:page:view", scheduleInitRepelText);
+		if (window.swup?.hooks) {
+			bindSwupRepel();
+		} else {
+			document.addEventListener("swup:enable", bindSwupRepel);
+		}
 	}
 </script>
