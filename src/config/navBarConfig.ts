@@ -68,6 +68,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 番组计划
 			LinkPresets.Bangumi,
+
+			// 问答助手
+			LinkPresets.Ask,
 		],
 	});
 
@@ -191,6 +194,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "/anime/",
 		icon: "lucide:tv",
 		pageKey: "anime",
+	},
+	Ask: {
+		name: "问答",
+		url: "/ask/",
+		icon: "lucide:bot-message-square",
 	},
 };
 
