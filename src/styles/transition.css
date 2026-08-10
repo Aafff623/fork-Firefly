@@ -33,7 +33,10 @@ html.is-leaving .transition-main {
         transform 120ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
-/* State: Animating (Entering) */
+/*
+ * 离场 / 进场都把主栏藏掉。配合 Layout 里 visit.animation.wait=true：
+ * 等下一页到了才开始离场，避免「主栏已透明、侧栏还在」的长空白窗。
+ */
 html.is-animating .transition-main {
     opacity: 0;
     transform: translateY(2rem);
@@ -43,6 +46,17 @@ html.is-animating .transition-main {
 html.is-animating.is-leaving .transition-leaving {
     transform: translateY(-2rem);
     opacity: 0;
+}
+
+/*
+ * 软导航进场时关掉 .onload-animation 二次淡入（否则主栏刚显又从 opacity:0 播一遍，像卡顿）。
+ * 硬刷新首屏仍走下方默认入场。
+ */
+html.is-changing .onload-animation,
+html.is-rendering .onload-animation {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 /* Swup Fade Fallback */
@@ -101,7 +115,8 @@ html.is-animating .transition-swup-fade {
 
 #progress-bar {
     --progress-height: 3px;
-    --progress-duration: 8s;
+    /* wait=true 时进度条覆盖真实等待；8s 假进度太拖，改短更贴手感 */
+    --progress-duration: 2.4s;
 
     position: fixed;
     top: 0;

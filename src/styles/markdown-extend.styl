@@ -521,6 +521,24 @@ html.note-cards-off
 .mermaid-wrapper
   text-align: center
 
+.mermaid-lazy-skeleton
+  width: 100%
+  min-height: 200px
+  border-radius: 0.5rem
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.04), rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.04))
+  background-size: 200% 100%
+  animation: mermaid-skel 1.2s ease-in-out infinite
+
+.dark .mermaid-lazy-skeleton
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.04))
+  background-size: 200% 100%
+
+@keyframes mermaid-skel
+  0%
+    background-position: 100% 0
+  100%
+    background-position: -100% 0
+
 .mermaid-svg-light,
 .mermaid-svg-dark
   display: flex
