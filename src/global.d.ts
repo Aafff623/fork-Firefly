@@ -86,6 +86,12 @@ declare global {
 		__profileWidgetBound?: boolean;
 		/** Twikoo swup hook / 自定义事件监听幂等 guard */
 		__twikooBound?: boolean;
+		/** RepelText swup 监听幂等 guard */
+		__repelSwupBound?: boolean;
+		/** TypewriterText swup 监听幂等 guard */
+		__typewriterSwupBound?: boolean;
+		/** Navbar 按钮 swup 监听幂等 guard */
+		__navbarButtonsBound?: boolean;
 	}
 
 	interface MediaQueryList {

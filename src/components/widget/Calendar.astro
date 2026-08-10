@@ -71,8 +71,8 @@ const postUrlPrefix = url("/posts/");
   contentPadding={false}
 >
   <!-- 笔记本日历：对照 bili-goat widgets/日历（GIF 封面 + 活页环 + 珊瑚点缀） -->
-  <!-- 首帧用体积最小的 02.gif，HTML 直接写 src，浏览器尽早拉取 -->
-  <link rel="preload" as="image" href="/assets/images/widgets/calendar/02.gif" fetchpriority="high" />
+  <!-- 首帧 02.gif 改 lazy：日历在侧栏非 LCP 元素，去掉 preload/eager 避免抢首屏带宽；
+       calendar-widget.js 的 IntersectionObserver 会在进视口时 warmPreload 兜底加载 -->
   <div class="calendar-shell">
     <header
       class="calendar-cover"
@@ -97,8 +97,7 @@ const postUrlPrefix = url("/posts/");
           width="360"
           height="200"
           decoding="async"
-          fetchpriority="high"
-          loading="eager"
+          loading="lazy"
           draggable="false"
         />
       </div>
