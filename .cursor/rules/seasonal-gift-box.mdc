@@ -23,7 +23,9 @@ alwaysApply: true
 
 1. **常驻**：3D 礼盒缓慢自转（不晃动）
 2. **悬停**：同形态 3D 轻晃邀请（**不**切到酒红包装盒）
-3. **点击**：confetti → 包装盒淡入并快速拆开 → 全屏信封 → 点「我已阅读」（或 Esc）→ 信封收起 → tsParticles → 侧栏卡高度同步收合（记 `gone`）
+3. **点击**：confetti（`ambient-fx` 预加载 `canvas-confetti`，从礼盒舞台原点爆发）→ 包装盒淡入并快速拆开 → 全屏信封 → 点「我已阅读」（或 Esc）→ 信封收起 → tsParticles → 侧栏卡高度同步收合（记 `gone`）
+4. **开盖时**：`.gift-surprise` 临时 `overflow: visible`，避免 CSS 金箔被侧栏卡裁切
 
-实现入口：`Announcement.astro` + `src/components/widget/gift/*` + `gift-surprise.css`。  
-换新惊喜：bump `announcementConfig.loveLetter.version`（或改 heading/message）；访客「已开启」/收卡标记按期号存 localStorage，新年份自动消失。
+实现入口：`Announcement.astro` + `src/components/widget/gift/*` + `gift-surprise.css` + `src/utils/ambient-fx.ts`。  
+换新惊喜：bump `announcementConfig.loveLetter.version`（或改 heading/message）；访客「已开启」/收卡标记按期号存 localStorage，新年份自动消失。  
+**DEV vs PROD**：`pnpm dev` 不读写 localStorage（礼盒可反复测）；生产一次性。线上复测礼花需清 `firefly-gift-*`，并注意系统「减少动态效果」会跳过 confetti。
