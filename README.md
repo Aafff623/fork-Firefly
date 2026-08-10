@@ -39,6 +39,7 @@
   · <a href="#quick-start">Quick start</a>
   · <a href="#workflows">Workflows</a>
   · <a href="#architecture">Architecture</a>
+  · <a href="#performance">Performance</a>
   · <a href="#tech-stack">Tech stack</a>
   · <a href="https://fork-firefly.vercel.app">Live</a>
   · <a href="https://github.com/Aafff623/fork-Firefly">Source</a>
@@ -112,6 +113,7 @@
 | --- | --- | --- |
 | Publishing | MD/MDX 成帖；草稿 / 置顶 / 密码文；RSS · Sitemap · OG · Pagefind | `src/content/` · `astro.config.mjs` |
 | Reading | list / grid / waterfall；Index-First TOC；亮暗色 / 色相 / 壁纸 | `PostPage.astro` · `displaySettingsConfig.ts` |
+| Performance | Swup 泄漏治理 · 图片按需物化 · 首屏 LCP 渲染门控优化 | `src/lib/page-lifecycle.ts` · `MainGridLayout.astro` |
 | Personal | Dynamic 时间线、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
 | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、站点统计、桌宠 | `src/components/widget/` |
 | Delivery | Vercel 默认；评论 / COS / 分析按配置启用 | `vercel.json` · `.env.example` |
@@ -420,6 +422,21 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 4. **Content collections** — `posts` / `dynamic` / `spec` 均经 schema 校验。
 5. **Motion with intent** — 微交互优先 CSS；重动画保留 reduced-motion。
 6. **Visual consistency** — 新页共享 token、导航、响应式与可访问状态（壳层中性灰 · 彩仅点缀）。
+7. **Performance as a feature** — 不阉割视觉换性能；只优化加载策略与生命周期（按需物化、离页销毁、首屏不被 JS 门控）。见下文 Performance。
+
+## Performance
+
+做过一轮系统性能专项（28+ perf commit）。**方法比数字重要**：先上探针拿证据，再改代码——瓶颈常在「画不出来」而非「下载慢」。
+
+| 指标（本地生产 build，5 次中位数） | 优化前 | 优化后 |
+| --- | --- | --- |
+| 移动 4G LCP | 27236 ms | 8332 ms（-69%） |
+| 桌面 LCP | 960 ms | 712 ms（-26%） |
+| 堆 / 监听器 / 节点净增（20 跳） | 18.9 MB · 14096 · 123642 | 9.7 MB · 9989 · 97240 |
+
+手段四类：Swup 泄漏治理（`src/lib/page-lifecycle.ts` per-page epoch 换页统一清理）· 图片按需物化（氛围层 / 桌宠 / 轮播 / 日历）· 覆盖率（islands idle、Pagefind 懒加载、内联脚本外置）· 渲染门控（首帧不被 `display:none` / JS reveal 拖住）。
+
+复测工具与踩坑（本地 server 锁 `dist`、`.astro` 缓存、旧部署探针数据）：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · 主仓 `docs/outputs/handoff/perf-optimization-2026-08-09.md`。
 
 ## Style and assets
 
