@@ -17,6 +17,33 @@ export const galleryConfig: GalleryConfig = {
 		// passwordHint: 密码提示，设置后在输入密码错误时显示（可选，需配合password使用）
 		// 每添加一个数组项就相当于添加了一个相册，记得在 public/gallery/ 目录下创建对应的子目录并放入图片
 		{
+			id: "anime-card",
+			name: "卡片风角色",
+			description: "二次元角色卡面风——半身立绘、边框感、收藏卡气质",
+			date: "2026-08-08",
+			category: "二次元人物",
+			tags: ["二次元人物", "卡片风"],
+			cover: "/gallery/anime-card/card-mm-01.jpg",
+		},
+		{
+			id: "anime-pixel",
+			name: "像素风角色",
+			description: "像素女孩与 RPG 精灵气质——点阵、低配色、卡通气",
+			date: "2026-08-08",
+			category: "二次元人物",
+			tags: ["二次元人物", "像素风"],
+			cover: "/gallery/anime-pixel/pixel-12.jpg",
+		},
+		{
+			id: "anime-mix",
+			name: "风格混搭角色",
+			description: "水彩、Q版、赛博、氛围立绘——同一墙里换着看",
+			date: "2026-08-08",
+			category: "二次元人物",
+			tags: ["二次元人物", "水彩", "Q版", "赛博"],
+			cover: "/gallery/anime-mix/style-watercolor-12.jpg",
+		},
+		{
 			id: "firefly-2026",
 			name: "Firefly 2026",
 			description: "生活碎片与灵感记录",
@@ -24,21 +51,13 @@ export const galleryConfig: GalleryConfig = {
 			category: "角色",
 			tags: ["角色", "灵感"],
 		},
-		{
-			id: "scenery",
-			name: "风景速写",
-			description: "竖横方混排的风景填充，用来演示瀑布与分类",
-			date: "2026-08-05",
-			category: "风景",
-			tags: ["风景", "旅行"],
-		},
 	],
 
 	/**
 	 * /gallery 专属题材分类栏顺序（非全站文章分类）。
 	 * 未出现在任一相册 category 中的项不显示。
 	 */
-	categories: ["角色", "风景", "日常", "二次元人物"],
+	categories: ["二次元人物", "角色", "日常"],
 
 	// 瀑布流最小列宽(px)，浏览器根据容器宽度自动计算列数，默认 240
 	// 值越小列数越多，值越大列数越少
@@ -47,6 +66,6 @@ export const galleryConfig: GalleryConfig = {
 	// 首页照片瀑布墙（CSS columns；不含 demo 画库）；无限画布由 App 图标全屏打开
 	homeMasonry: {
 		enabled: true,
-		maxItems: 48,
+		maxItems: 72,
 	},
 };
