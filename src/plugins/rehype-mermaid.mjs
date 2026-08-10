@@ -1,3 +1,6 @@
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { assertSafeSvgForDom, initMerman, renderSvg } from "@mermanjs/web";
 import { h } from "hastscript";
@@ -23,14 +26,9 @@ await initMerman({
 	},
 });
 
-/**
- * 在构建时将 Mermaid 源码渲染为浅色和深色两套静态 SVG
- *
- * @param {string} mermaidCode - Mermaid 图表源码
- * @param {object} themeConfig - { lightTheme, darkTheme } 主题名
- * @param {number} diagramIndex - 当前文档中的图表序号
- * @returns {{ lightSvg: string, darkSvg: string }}
- */
+const MERMAID_OUT_DIR = path.join(process.cwd(), "public/generated/mermaid");
+const MERMAID_PUBLIC_PREFIX = "/generated/mermaid";
+
 /**
  * 移除 SVG 内联 style 中的 max-width 限制，
  * 使图表能根据容器宽度自适应缩放
@@ -39,28 +37,63 @@ function removeSvgMaxWidth(svg) {
 	return svg.replace(/(<svg[^>]*style="[^"]*?)max-width:\s*[^;]+;?/, "$1");
 }
 
-function buildMermaidSvgs(mermaidCode, themeConfig, diagramIndex) {
-	const lightSvg = renderSvg(mermaidCode, {
-		host_theme: { preset: themeConfig.lightTheme },
-		svg: {
-			diagram_id: `mermaid-${diagramIndex}-light`,
-			pipeline: "parity",
-		},
-	});
-	const darkSvg = renderSvg(mermaidCode, {
-		host_theme: { preset: themeConfig.darkTheme },
-		svg: {
-			diagram_id: `mermaid-${diagramIndex}-dark`,
-			pipeline: "parity",
-		},
-	});
+function persistMermaidSvg(hash, kind, svg) {
+	mkdirSync(MERMAID_OUT_DIR, { recursive: true });
+	const fileName = `${hash}-${kind}.svg`;
+	const filePath = path.join(MERMAID_OUT_DIR, fileName);
+	if (!existsSync(filePath)) {
+		writeFileSync(filePath, svg, "utf8");
+	}
+	return `${MERMAID_PUBLIC_PREFIX}/${fileName}`;
+}
+
+/**
+ * 在构建时将 Mermaid 源码渲染为浅色和深色两套静态 SVG（落盘，HTML 仅挂 URL）
+ *
+ * @param {string} mermaidCode - Mermaid 图表源码
+ * @param {object} themeConfig - { lightTheme, darkTheme } 主题名
+ * @param {number} diagramIndex - 当前文档中的图表序号
+ * @returns {{ lightSrc: string, darkSrc: string, hash: string }}
+ */
+function buildMermaidSvgAssets(mermaidCode, themeConfig, diagramIndex) {
+	const lightSvg = removeSvgMaxWidth(
+		renderSvg(mermaidCode, {
+			host_theme: { preset: themeConfig.lightTheme },
+			svg: {
+				diagram_id: `mermaid-${diagramIndex}-light`,
+				pipeline: "parity",
+			},
+		}),
+	);
+	const darkSvg = removeSvgMaxWidth(
+		renderSvg(mermaidCode, {
+			host_theme: { preset: themeConfig.darkTheme },
+			svg: {
+				diagram_id: `mermaid-${diagramIndex}-dark`,
+				pipeline: "parity",
+			},
+		}),
+	);
 
 	assertSafeSvgForDom(lightSvg);
 	assertSafeSvgForDom(darkSvg);
 
+	const hash = createHash("sha1")
+		.update(
+			[
+				mermaidCode,
+				themeConfig.lightTheme,
+				themeConfig.darkTheme,
+				"v2-lazy",
+			].join("\0"),
+		)
+		.digest("hex")
+		.slice(0, 16);
+
 	return {
-		lightSvg: removeSvgMaxWidth(lightSvg),
-		darkSvg: removeSvgMaxWidth(darkSvg),
+		hash,
+		lightSrc: persistMermaidSvg(hash, "light", lightSvg),
+		darkSrc: persistMermaidSvg(hash, "dark", darkSvg),
 	};
 }
 
@@ -86,16 +119,31 @@ export function rehypeMermaid(options = {}) {
 				return;
 			}
 
+			// 已懒挂载则跳过（visit 会再次碰到我们写入的子树时靠 class 不匹配即可）
+			if (
+				node.children?.some(
+					(c) =>
+						c.type === "element" &&
+						(c.properties?.dataMermaidLazy ||
+							c.properties?.["data-mermaid-lazy"]),
+				)
+			) {
+				return;
+			}
+
 			// 优先使用 data-mermaid-code 属性，为空时从子节点文本提取（MDX 兼容）
-			let mermaidCode = node.properties["data-mermaid-code"] || "";
+			let mermaidCode =
+				node.properties["data-mermaid-code"] ||
+				node.properties.dataMermaidCode ||
+				"";
 			if (!mermaidCode) {
 				mermaidCode = extractText(node).trim();
 			}
 
-			let lightSvg;
-			let darkSvg;
+			let lightSrc;
+			let darkSrc;
 			try {
-				({ lightSvg, darkSvg } = buildMermaidSvgs(
+				({ lightSrc, darkSrc } = buildMermaidSvgAssets(
 					mermaidCode,
 					themeConfig,
 					diagramIndex,
@@ -126,17 +174,26 @@ export function rehypeMermaid(options = {}) {
 				return;
 			}
 
-			// 替换为静态 SVG（浅色 + 深色双版本，CSS 控制显示）
+			// HTML 只挂 URL；进视口后再由 panzoom 脚本 fetch 注入（削帖子 HTML 体积）
 			node.properties = { class: `${DIAGRAM_CONTAINER} ${MERMAID_CONTAINER}` };
 			node.children = [
-				h("div", { class: `${DIAGRAM_WRAPPER} ${MERMAID_WRAPPER}` }, [
-					h("div", { class: MERMAID_SVG_LIGHT }, [
-						{ type: "raw", value: lightSvg },
-					]),
-					h("div", { class: MERMAID_SVG_DARK }, [
-						{ type: "raw", value: darkSvg },
-					]),
-				]),
+				h(
+					"div",
+					{
+						class: `${DIAGRAM_WRAPPER} ${MERMAID_WRAPPER}`,
+						"data-mermaid-lazy": "1",
+						"data-light-src": lightSrc,
+						"data-dark-src": darkSrc,
+					},
+					[
+						h("div", {
+							class: "mermaid-lazy-skeleton",
+							"aria-hidden": "true",
+						}),
+						h("div", { class: MERMAID_SVG_LIGHT }),
+						h("div", { class: MERMAID_SVG_DARK }),
+					],
+				),
 			];
 		});
 	};

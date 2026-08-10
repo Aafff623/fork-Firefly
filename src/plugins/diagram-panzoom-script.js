@@ -28,7 +28,6 @@
 
 	function initInteraction(container) {
 		if (container.dataset.pzInit === "true") return;
-		container.dataset.pzInit = "true";
 
 		// 收集所有可操作的目标元素（Mermaid 有 light+dark 两个 SVG）
 		var targets = Array.from(
@@ -42,7 +41,9 @@
 			);
 			if (single) targets = [single];
 		}
+		// 懒注入尚未完成时不要锁死 pzInit，否则 hydrate 后无法挂交互
 		if (targets.length === 0) return;
+		container.dataset.pzInit = "true";
 
 		// 动态获取当前可见目标（主题切换后自动跟随）
 		const getActiveTarget = () => selectTarget(container) || targets[0];
@@ -333,7 +334,67 @@
 		});
 	}
 
-	// 暴露 re-init 入口，供 PlantUML 重试等场景调用
+	/** Mermaid：构建期 SVG 落盘，进视口后再 fetch 注入，避免帖子 HTML 双份内联 */
+	function hydrateMermaid(container) {
+		var wrap = container.querySelector("[data-mermaid-lazy]");
+		if (!wrap || wrap.dataset.mermaidHydrated === "1") return Promise.resolve();
+		var lightSrc = wrap.getAttribute("data-light-src");
+		var darkSrc = wrap.getAttribute("data-dark-src");
+		if (!lightSrc || !darkSrc) return Promise.resolve();
+		wrap.dataset.mermaidHydrated = "1";
+		return Promise.all([
+			fetch(lightSrc).then(function (r) {
+				if (!r.ok) throw new Error("mermaid light " + r.status);
+				return r.text();
+			}),
+			fetch(darkSrc).then(function (r) {
+				if (!r.ok) throw new Error("mermaid dark " + r.status);
+				return r.text();
+			}),
+		])
+			.then(function (pair) {
+				var lightBox = wrap.querySelector(".mermaid-svg-light");
+				var darkBox = wrap.querySelector(".mermaid-svg-dark");
+				if (lightBox) lightBox.innerHTML = pair[0];
+				if (darkBox) darkBox.innerHTML = pair[1];
+				var sk = wrap.querySelector(".mermaid-lazy-skeleton");
+				if (sk) sk.remove();
+				window._diagramPanZoomReinit(container);
+			})
+			.catch(function () {
+				wrap.dataset.mermaidHydrated = "0";
+			});
+	}
+
+	function observeMermaidLazy() {
+		var nodes = document.querySelectorAll(
+			".mermaid-diagram-container [data-mermaid-lazy]:not([data-mermaid-hydrated='1'])",
+		);
+		if (!nodes.length) return;
+		if (!("IntersectionObserver" in window)) {
+			nodes.forEach(function (wrap) {
+				var c = wrap.closest(".diagram-container");
+				if (c) hydrateMermaid(c);
+			});
+			return;
+		}
+		var io = new IntersectionObserver(
+			function (entries) {
+				entries.forEach(function (entry) {
+					if (!entry.isIntersecting) return;
+					io.unobserve(entry.target);
+					var c = entry.target.closest(".diagram-container");
+					if (c) hydrateMermaid(c);
+				});
+			},
+			{ rootMargin: "240px 0px" },
+		);
+		nodes.forEach(function (wrap) {
+			io.observe(wrap);
+		});
+	}
+
+	// 暴露 re-init 入口，供 PlantUML 重试 / Mermaid 懒注入等场景调用
 	window._diagramPanZoomReinit = (container) => {
 		// 清理旧的控制栏，避免重复（类名与 utils/diagramConstants.js 保持同步）
 		const oldControls = container.querySelector(".diagram-controls");
@@ -345,15 +406,27 @@
 	document.addEventListener("astro:before-preparation", closeAll);
 	document.addEventListener("astro:page-load", () => {
 		closeAll();
+		observeMermaidLazy();
 		initAll();
 	});
 	// 加密文章解密后，内容注入 DOM，需要重新初始化 pan-zoom
 	document.addEventListener("password:decrypted", () => {
-		setTimeout(initAll, 100);
+		setTimeout(() => {
+			observeMermaidLazy();
+			initAll();
+		}, 100);
 	});
 	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", initAll, { once: true });
+		document.addEventListener(
+			"DOMContentLoaded",
+			() => {
+				observeMermaidLazy();
+				initAll();
+			},
+			{ once: true },
+		);
 	} else {
+		observeMermaidLazy();
 		initAll();
 	}
 })();
