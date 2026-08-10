@@ -24,6 +24,8 @@ Claude Code 要是只停在「你问一句，它改一次」，那还是聊天�
 
 顺带覆盖 `/goal`、`/loop`、`/schedule`、SKILL.md、代码审查和 Token 边界。
 
+![Claude Code 四类 Loop 速查卡](./images/fig-01-01-claude-code-loops-guide.jpg)
+
 ## Loop 到底在转什么
 
 Agent 持续重复：**获取上下文 → 行动 → 验证 → 迭代**，直到停止条件成立。

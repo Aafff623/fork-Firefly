@@ -17,6 +17,8 @@ MCP、Skills、CLI，分别解决「连接、方法、执行」三类问题。MC
 
 它们分别是什么？彼此什么关系？怎么选？下面按图四段展开，文案尽量跟图面走，不当完整教程。
 
+![MCP、Skills、CLI 分工图](./images/fig-01-01-mcp-skills-cli-one-image.jpg)
+
 ## 三件东西，各管一块
 
 | 件 | 图面定义 | 典型能力 | 像 AI 的… |

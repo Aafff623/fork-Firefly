@@ -21,6 +21,8 @@ comment: true
 
 下面这张「CLAUDE CODE 项目结构」信息图把左树右说明一次摊开；文案尽量跟图面走。
 
+![Claude Code 项目结构信息图](./images/fig-01-01-claude-code-project-structure.jpg)
+
 ## 总览：一张树看完落点
 
 图左是推荐树，图右是八块作用。路径示意（与图一致）：
