@@ -27,7 +27,7 @@ import { url } from "@/utils/url-utils";
   };
 </script>
 
-<script is:inline define:vars={{ homeUrl: url("/") }}>
+<script is:inline data-swup-ignore-script define:vars={{ homeUrl: url("/") }}>
   function updateBackToHomeVisibility() {
     const btn = document.getElementById("back-to-home-btn");
     if (!btn) return;

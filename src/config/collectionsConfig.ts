@@ -12,6 +12,7 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 当前嵌套：
  * - `ai-coding-tools` ← tool-claude-code / kimi / opencode / cursor / pi
  * - `course-geektime` ← 四门极客时间课
+ * 一级另含：`wool-freebies`（薅羊毛专区）等
  */
 export const collectionsConfig: CollectionsConfig = {
 	items: [
@@ -146,6 +147,25 @@ export const collectionsConfig: CollectionsConfig = {
 			description: "Skill、MCP 与相关工具链的实测与横评。",
 			emoji: "🔌",
 			cover: "/assets/collections/mcp-recommend.jpg",
+		},
+
+		// ── tta 系列技能（一级 · 自研 skill 规范与迭代）──
+		{
+			slug: "tta-skills",
+			name: "tta 系列技能",
+			description: "自研 tta 系列 AI skill 的规范、迭代与实战。",
+			emoji: "🛠️",
+			cover: "/assets/collections/tta-skills.jpg",
+		},
+
+		// ── 羊毛 / 限免情报（一级）──
+		{
+			slug: "wool-freebies",
+			name: "薅羊毛专区",
+			description:
+				"各厂商 AI 订阅、模型限免、申请试用与积分活动的可维护情报汇总（以博客文章收录）。",
+			emoji: "🎟️",
+			cover: "/assets/collections/wool-freebies.jpg",
 		},
 	],
 };

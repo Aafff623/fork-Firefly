@@ -49,17 +49,8 @@ import FloatingButton from "@/components/common/FloatingButton.astro";
     };
   }
   // ... existing initialization logic ...
-  // 页面加载完成后初始化
-  document.addEventListener("DOMContentLoaded", () => {
-    new BackToTopManager();
-  });
-
-  // 如果页面已经加载完成，立即初始化
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      new BackToTopManager();
-    });
-  } else {
-    new BackToTopManager();
+  // 幂等初始化：无论 Swup 是否重执行本脚本，只创建一个管理器，避免 scroll listener 累积
+  if (!window.__backToTopManager) {
+    window.__backToTopManager = new BackToTopManager();
   }
 </script>

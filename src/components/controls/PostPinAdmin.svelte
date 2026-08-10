@@ -6,7 +6,6 @@
  * 园主置顶入口：挂在卡片内容区，确认框 portal 到 body，兼容 list / card。
  */
 import { onMount } from "svelte";
-import Icon from "@/components/common/Icon.svelte";
 import {
 	DEV_OWNER_KEY,
 	LEGACY_SESSION_KEY,
@@ -18,9 +17,6 @@ import {
 } from "@/utils/admin-auth";
 
 interface Props {
-	postId: string;
-	filePath?: string;
-	sticky: boolean;
 	adminLogins?: string[];
 	isDev?: boolean;
 	labels: {
@@ -38,10 +34,12 @@ interface Props {
 	};
 }
 
+interface PinTarget {
+	postId: string;
+	filePath: string;
+}
+
 const {
-	postId,
-	filePath = "",
-	sticky,
 	adminLogins = [],
 	isDev = false,
 	labels,
@@ -52,6 +50,7 @@ let busy = $state(false);
 let status = $state<"idle" | "error" | "success">("idle");
 let hint = $state("");
 let pending = $state<boolean | null>(null);
+let target = $state<PinTarget | null>(null);
 
 function portal(node: HTMLElement) {
 	const parent = document.body;
@@ -71,11 +70,10 @@ function syncAdmin() {
 		!!localStorage.getItem(SESSION_KEY) ||
 		!!localStorage.getItem(LEGACY_SESSION_KEY) ||
 		isDevOwnerFlag();
-	if (!hasSession && !isDev) {
-		isAdmin = false;
-		return;
-	}
-	isAdmin = readAdminViewer(adminLogins).isAdmin;
+	isAdmin = hasSession || isDev ? readAdminViewer(adminLogins).isAdmin : false;
+	document.querySelectorAll<HTMLElement>("[data-post-pin-admin]").forEach((node) => {
+		node.hidden = !isAdmin;
+	});
 }
 
 function isDevOwnerFlag(): boolean {
@@ -86,13 +84,28 @@ function isDevOwnerFlag(): boolean {
 	}
 }
 
-function openConfirm(next: boolean, e: MouseEvent) {
+function openConfirm(next: boolean, nextTarget: PinTarget, e: MouseEvent) {
 	e.preventDefault();
 	e.stopPropagation();
 	if (busy) return;
 	status = "idle";
 	hint = "";
+	target = nextTarget;
 	pending = next;
+}
+
+function onDocumentClick(e: MouseEvent) {
+	const origin = e.target as Element | null;
+	const trigger = origin?.closest<HTMLElement>("[data-post-pin-trigger]");
+	if (!trigger || !isAdmin) return;
+	openConfirm(
+		trigger.dataset.sticky !== "true",
+		{
+			postId: trigger.dataset.postId || "",
+			filePath: trigger.dataset.filePath || "",
+		},
+		e,
+	);
 }
 
 function closeConfirm(e?: MouseEvent) {
@@ -100,18 +113,19 @@ function closeConfirm(e?: MouseEvent) {
 	e?.stopPropagation();
 	if (busy) return;
 	pending = null;
+	target = null;
 	status = "idle";
 }
 
 async function confirmPending(e: MouseEvent) {
 	e.preventDefault();
 	e.stopPropagation();
-	if (pending === null || busy) return;
+	if (pending === null || !target || busy) return;
 	await setSticky(pending);
 }
 
 async function setSticky(next: boolean) {
-	if (busy) return;
+	if (busy || !target) return;
 	busy = true;
 	status = "idle";
 	hint = "";
@@ -119,7 +133,11 @@ async function setSticky(next: boolean) {
 		const res = await fetch("/api/admin/pin/", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ postId, pinned: next, filePath }),
+			body: JSON.stringify({
+				postId: target.postId,
+				pinned: next,
+				filePath: target.filePath,
+			}),
 		});
 		const data = (await res.json().catch(() => ({}))) as {
 			ok?: boolean;
@@ -175,36 +193,22 @@ onMount(() => {
 	window.addEventListener("storage", onStorage);
 	window.addEventListener("focus", syncAdmin);
 	window.addEventListener("keydown", onKeydown);
+	document.addEventListener("click", onDocumentClick);
+	const onPageView = () => syncAdmin();
+	document.addEventListener("swup:page:view", onPageView);
 	const timer = window.setInterval(syncAdmin, 2000);
 	return () => {
 		window.removeEventListener("storage", onStorage);
 		window.removeEventListener("focus", syncAdmin);
 		window.removeEventListener("keydown", onKeydown);
+		document.removeEventListener("click", onDocumentClick);
+		document.removeEventListener("swup:page:view", onPageView);
 		window.clearInterval(timer);
 	};
 });
 </script>
 
-{#if isAdmin}
-	<div class="pin-admin">
-		<button
-			type="button"
-			class="pin-chip"
-			class:pin-chip--sticky={sticky}
-			disabled={busy}
-			title={sticky ? labels.unsetSticky : labels.setSticky}
-			aria-label={sticky ? labels.unsetSticky : labels.setSticky}
-			onclick={(e) => openConfirm(!sticky, e)}
-		>
-			<Icon
-				icon={sticky ? "lucide:pin" : "lucide:pin-off"}
-				class="pin-chip__icon"
-			/>
-		</button>
-	</div>
-{/if}
-
-{#if isAdmin && pending !== null}
+{#if isAdmin && pending !== null && target}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		use:portal
@@ -280,13 +284,13 @@ onMount(() => {
 {/if}
 
 <style>
-	.pin-admin {
+	:global(.pin-admin) {
 		position: static;
 		flex-shrink: 0;
 		z-index: 2;
 	}
 
-	.pin-chip {
+	:global(.pin-chip) {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -305,42 +309,42 @@ onMount(() => {
 			transform 0.16s ease;
 	}
 
-	.pin-chip__icon {
+	:global(.pin-chip__icon) {
 		display: block;
 		flex-shrink: 0;
 	}
 
-	.pin-chip--sticky {
+	:global(.pin-chip--sticky) {
 		color: var(--primary);
 		background: color-mix(in srgb, var(--primary) 14%, transparent);
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent);
 	}
 
 	@media (hover: hover) {
-		.pin-chip:hover:not(:disabled) {
+		:global(.pin-chip:hover:not(:disabled)) {
 			color: var(--primary);
 			background: color-mix(in srgb, var(--primary) 10%, transparent);
 		}
 
-		.pin-chip--sticky:hover:not(:disabled) {
+		:global(.pin-chip--sticky:hover:not(:disabled)) {
 			background: color-mix(in srgb, var(--primary) 20%, transparent);
 		}
 	}
 
-	.pin-chip:focus {
+	:global(.pin-chip:focus) {
 		outline: none;
 	}
 
-	.pin-chip:focus-visible {
+	:global(.pin-chip:focus-visible) {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
 	}
 
-	.pin-chip:active:not(:disabled) {
+	:global(.pin-chip:active:not(:disabled)) {
 		transform: scale(0.94);
 	}
 
-	.pin-chip:disabled {
+	:global(.pin-chip:disabled) {
 		opacity: 0.45;
 		cursor: not-allowed;
 	}

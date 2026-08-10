@@ -218,9 +218,47 @@ const accentKey = navKey(processedLink.name);
 	 */
 	const INIT_KEY = "data-dropdown-nav-init";
 	const FORCE_CLOSED = "data-force-closed";
-
 	function getDropdowns(): NodeListOf<Element> {
 		return document.querySelectorAll("[data-dropdown]");
+	}
+
+	function preloadUrl(raw: string) {
+		if (!raw || raw.startsWith("#") || raw.startsWith("mailto:")) return;
+		try {
+			const u = new URL(raw, window.location.origin);
+			if (u.origin !== window.location.origin) return;
+			const path = `${u.pathname}${u.search}`;
+			const swup = window.swup as { preload?: (url: string) => unknown } | undefined;
+			if (swup?.preload) {
+				void swup.preload(path);
+			}
+		} catch {
+			/* ignore bad href */
+		}
+	}
+
+	function preloadDropdownLinks(dropdown: Element) {
+		dropdown.querySelectorAll("a[href]").forEach((node) => {
+			const a = node as HTMLAnchorElement;
+			if (a.target === "_blank" || a.hasAttribute("download")) return;
+			preloadUrl(a.getAttribute("href") || a.href);
+		});
+	}
+
+	function warmHeavyRoutesOnce() {
+		if (document.documentElement.hasAttribute("data-nav-warmed")) return;
+		document.documentElement.setAttribute("data-nav-warmed", "1");
+		// hover 意图预取：用户悬停到链接才预取该页，替代 idle 全量预取（省 ~4.7MB 无谓下载），
+		// 既保切页速度，又不提前下载用户没意图访问的重页。
+		document.addEventListener(
+			"pointerover",
+			(e) => {
+				const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+				if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+				preloadUrl(a.getAttribute("href") || a.href);
+			},
+			{ passive: true },
+		);
 	}
 
 	function closeDropdown(dropdown: Element, trigger: Element, menu: Element) {
@@ -322,10 +360,15 @@ const accentKey = navKey(processedLink.name);
 			dropdown.removeAttribute(FORCE_CLOSED);
 		});
 
-		// 再次移入：清 force-closed，恢复 :hover；关掉其它项残留 focus
+		// 再次移入：清 force-closed，恢复 :hover；关掉其它项残留 focus；预取子链
 		dropdown.addEventListener("pointerenter", () => {
 			dropdown.removeAttribute(FORCE_CLOSED);
 			closeOthers(dropdown);
+			preloadDropdownLinks(dropdown);
+		});
+
+		trigger.addEventListener("focus", () => {
+			preloadDropdownLinks(dropdown);
 		});
 
 		// 纯鼠标点击后主动 blur，避免 focus-within 粘住；键盘操作不 blur
@@ -398,6 +441,7 @@ const accentKey = navKey(processedLink.name);
 		// 换页一开始就收，避免过渡动画期间菜单还挂着
 		hooks.on("visit:start", forceCloseAll);
 		hooks.on("content:replace", initNavbarDropdowns);
+		warmHeavyRoutesOnce();
 	}
 
 	if (document.readyState === "loading") {
@@ -406,6 +450,11 @@ const accentKey = navKey(processedLink.name);
 		initNavbarDropdowns();
 	}
 
-	document.addEventListener("swup:enable", bindSwupDropdownClose);
+	// 一次性注册 swup:enable 监听，避免脚本每次被 Swup 重执行时重复累积
+	if (!document.documentElement.hasAttribute("data-dropdown-global-bound")) {
+		document.documentElement.setAttribute("data-dropdown-global-bound", "1");
+		document.addEventListener("swup:enable", bindSwupDropdownClose);
+	}
 	bindSwupDropdownClose();
+	warmHeavyRoutesOnce();
 </script>

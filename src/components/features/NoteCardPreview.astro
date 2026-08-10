@@ -79,20 +79,26 @@
 		document.body.style.overflow = "";
 	}
 
-	document.addEventListener("click", (e) => {
-		// 开关关闭态：不拦截，走浏览器默认（普通超链接下载/跳转）
-		if (document.documentElement.classList.contains("note-cards-off")) {
-			return;
-		}
-		const card = (e.target as HTMLElement).closest<HTMLElement>(SELECTOR);
-		if (!card) return;
-		e.preventDefault();
-		open(card.getAttribute("data-note-preview")!);
-	});
+	// 一次性注册 document 级监听（事件委托，新内容无需重绑定），
+	// 避免脚本每次被 Swup 重执行时重复累积。
+	if (!document.documentElement.hasAttribute("data-note-preview-bound")) {
+		document.documentElement.setAttribute("data-note-preview-bound", "1");
 
-	document.addEventListener("keydown", (e) => {
-		if (e.key === "Escape") close();
-	});
+		document.addEventListener("click", (e) => {
+			// 开关关闭态：不拦截，走浏览器默认（普通超链接下载/跳转）
+			if (document.documentElement.classList.contains("note-cards-off")) {
+				return;
+			}
+			const card = (e.target as HTMLElement).closest<HTMLElement>(SELECTOR);
+			if (!card) return;
+			e.preventDefault();
+			open(card.getAttribute("data-note-preview")!);
+		});
 
-	document.addEventListener("swup:visit:start", close);
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") close();
+		});
+
+		document.addEventListener("swup:visit:start", close);
+	}
 </script>

@@ -281,7 +281,7 @@ const metrics = [
   }
 </style>
 
-<script is:inline>
+<script is:inline data-swup-ignore-script>
   (function () {
     function calcRunningDays(startStr) {
       if (!startStr) return 0;
@@ -311,8 +311,13 @@ const metrics = [
     } else {
       updateRunningDays();
     }
-    document.addEventListener("swup:contentReplaced", function () {
-      setTimeout(updateRunningDays, 50);
-    });
+
+    // 幂等 guard：SiteStats 桌面右栏 + 移动底栏双份渲染，防 swup 监听累积
+    if (!window.__siteStatsBound) {
+      window.__siteStatsBound = true;
+      document.addEventListener("swup:contentReplaced", function () {
+        setTimeout(updateRunningDays, 50);
+      });
+    }
   })();
 </script>

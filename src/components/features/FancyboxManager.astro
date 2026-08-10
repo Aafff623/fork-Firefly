@@ -191,16 +191,21 @@ import "@/styles/fancybox-custom.css";
     revokeAllSvgBlobUrls();
   }
 
-  // 初始化
-  setup();
+  // 初始化 + Swup 生命周期整合。
+  // 脚本每次导航都会被 SwupScriptsPlugin 重执行：整体加幂等 guard，只在首次真正初始化；
+  // 后续导航由 swup:content:replace 等监听驱动重新 setup。
+  if (!document.documentElement.hasAttribute("data-fancybox-bound")) {
+    document.documentElement.setAttribute("data-fancybox-bound", "1");
 
-  // Swup 生命周期整合
-  document.addEventListener("swup:content:replace", setup);
-  document.addEventListener("dynamic-gallery:ready", setup);
-  document.addEventListener("swup:visit:start", cleanupFancybox);
+    setup();
 
-  // 加密文章解密后重新绑定灯箱
-  document.addEventListener("password:decrypted", () => {
-    setTimeout(setup, 200);
-  });
+    document.addEventListener("swup:content:replace", setup);
+    document.addEventListener("dynamic-gallery:ready", setup);
+    document.addEventListener("swup:visit:start", cleanupFancybox);
+
+    // 加密文章解密后重新绑定灯箱
+    document.addEventListener("password:decrypted", () => {
+      setTimeout(setup, 200);
+    });
+  }
 </script>

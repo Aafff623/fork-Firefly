@@ -257,5 +257,10 @@ const remoteReferrerPolicy =
 	}
 
 	initCoverImages();
-	document.addEventListener('astro:page-load', initCoverImages);
+	// 幂等 guard：该脚本为内联模块脚本，每次被 Swup 重执行都会重新运行，
+	// 不守卫会跨跳累积 astro:page-load 监听器（旧监听仍会调用 initCoverImages）。
+	if (!window.__coverImageBound) {
+		window.__coverImageBound = true;
+		document.addEventListener('astro:page-load', initCoverImages);
+	}
 </script>

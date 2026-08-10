@@ -43,8 +43,8 @@
 
 .banner-post-title.repel-text {
     animation: none;
-    /* 软大阴影改轻阴影，见 RepelText 全局样式 */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    /* 拆字后禁阴影，见 RepelText；可读性靠 banner-dim */
+    text-shadow: none;
 }
 
 .banner-page-title {

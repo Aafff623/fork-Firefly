@@ -1,5 +1,12 @@
 import { Check, Circle, Flower2, MapPin, MessageCircle, Pin } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+	type ReactElement,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { agentPersonas } from "@/config/agentPersonas";
 import { formatDateToYYYYMMDD, formatTimezoneOffset } from "@/utils/date-utils";
 import {
@@ -428,7 +435,7 @@ export default function DynamicTimeline({
 	nextImageLabel,
 	viewImageLabel,
 	selectImageLabel,
-}: DynamicTimelineProps) {
+}: DynamicTimelineProps): ReactElement {
 	const batch = Math.max(1, itemsPerPage);
 	const hasInitial = Array.isArray(initialEntries) && !memos?.enable;
 	const [entries, setEntries] = useState<DynamicData[]>(() =>

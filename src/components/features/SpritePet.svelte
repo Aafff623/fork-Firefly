@@ -475,17 +475,27 @@ function waitMs(ms: number) {
 	});
 }
 
-function preloadPetSheets() {
-	const ids = new Set<BuiltinPetId>([defaultPetId, postPetId]);
-	if (isOverrideMode && isPickerPetId(visitorSelection)) {
-		ids.add(visitorSelection);
-	}
-	for (const id of ids) {
-		const sheet = findBuiltinPet(id);
+/** 按皮去重的预取表：同一 spritesheet 只发起一次请求（失败也 resolve，不阻塞换皮） */
+const petSheetLoaders = new Map<BuiltinPetId, Promise<void>>();
+
+function ensurePetSheetLoaded(petId: BuiltinPetId): Promise<void> {
+	const cached = petSheetLoaders.get(petId);
+	if (cached) return cached;
+	const sheet = findBuiltinPet(petId);
+	const loading = new Promise<void>((resolve) => {
 		const img = new Image();
 		img.decoding = "async";
+		img.onload = () => resolve();
+		img.onerror = () => resolve();
 		img.src = url(sheet.spritesheetPath);
-	}
+	});
+	petSheetLoaders.set(petId, loading);
+	return loading;
+}
+
+/** 仅预取当前路由/场景实际使用的那一套；postPetId 等其余皮在换皮时按需加载 */
+function preloadActivePetSheet(): Promise<void> {
+	return ensurePetSheetLoaded(activePetId);
 }
 
 function clearTransientAndGaze() {
@@ -520,6 +530,9 @@ async function syncPetFromPath(
 		return false;
 	}
 
+	// 按需预取目标皮：换皮一开始就发起请求（去重），淡出期间等它就绪，避免淡入闪空帧
+	const sheetReady = ensurePetSheetLoaded(next);
+
 	const gen = ++skinSwapGen;
 	clearTransientAndGaze();
 
@@ -529,6 +542,9 @@ async function syncPetFromPath(
 		await waitMs(SKIN_CROSSFADE_MS);
 		if (gen !== skinSwapGen) return false;
 	}
+
+	await sheetReady;
+	if (gen !== skinSwapGen) return false;
 
 	activePetId = next;
 	// 等一帧让 background-image / background-size 落地再淡入
@@ -545,7 +561,6 @@ async function syncPetFromPath(
 /** 设置面板改选后：更新覆盖态并换皮 */
 async function applyVisitorSelection(next: StoredPetSelection) {
 	visitorSelection = next;
-	preloadPetSheets();
 	const swapped = await syncPetFromPath(window.location.pathname);
 	if (isPostViewportMode()) {
 		applyPostViewportLock();
@@ -1455,7 +1470,7 @@ function mountPetToBody(el: HTMLElement | null) {
 }
 
 onMount(() => {
-	preloadPetSheets();
+	void preloadActivePetSheet();
 	void syncPetFromPath();
 	const hadStored = loadStoredPosition();
 	if (isPostViewportMode()) {

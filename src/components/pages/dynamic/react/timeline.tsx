@@ -9,6 +9,19 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import * as React from "react";
 import type { TimelineColor, TimelineSide, TimelineStatus } from "./types";
 import { cn } from "./utils";
+
+type TimelineVariantSchema = {
+	size: {
+		sm: string;
+		md: string;
+		lg: string;
+	};
+};
+
+type ForwardRefComponent<Element, Props> = React.ForwardRefExoticComponent<
+	React.PropsWithoutRef<Props> & React.RefAttributes<Element>
+>;
+
 // Astro SSR 注入的 window 桩缺 addEventListener/removeEventListener，
 // framer-motion 的 projection 会因此崩；SSR 下补空实现（客户端桩本来就有，不受影响）
 if (typeof window !== "undefined" && typeof (window as unknown as Record<string, unknown>).addEventListener !== "function") {
@@ -30,7 +43,7 @@ const timelineVariants = cva("ff-tl relative flex w-full flex-col", {
 	defaultVariants: {
 		size: "md",
 	},
-});
+}) as ReturnType<typeof cva<TimelineVariantSchema>>;
 
 interface TimelineProps
 	extends React.HTMLAttributes<HTMLOListElement>,
@@ -70,7 +83,7 @@ const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
 			</ol>
 		);
 	},
-);
+) as ForwardRefComponent<HTMLOListElement, TimelineProps>;
 Timeline.displayName = "Timeline";
 
 interface TimelineItemProps extends Omit<HTMLMotionProps<"li">, "ref"> {
@@ -286,7 +299,7 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 			</motion.li>
 		);
 	},
-);
+) as ForwardRefComponent<HTMLLIElement, TimelineItemProps>;
 TimelineItem.displayName = "TimelineItem";
 
 interface TimelineTimeProps extends React.HTMLAttributes<HTMLTimeElement> {
@@ -327,7 +340,7 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
 			</time>
 		);
 	},
-);
+) as ForwardRefComponent<HTMLTimeElement, TimelineTimeProps>;
 TimelineTime.displayName = "TimelineTime";
 
 const TimelineConnector = React.forwardRef<
@@ -353,7 +366,13 @@ const TimelineConnector = React.forwardRef<
 		)}
 		{...props}
 	/>
-));
+)) as ForwardRefComponent<
+	HTMLDivElement,
+	React.HTMLAttributes<HTMLDivElement> & {
+		status?: TimelineStatus;
+		color?: TimelineColor;
+	}
+>;
 TimelineConnector.displayName = "TimelineConnector";
 
 const TimelineHeader = React.forwardRef<
@@ -361,7 +380,7 @@ const TimelineHeader = React.forwardRef<
 	React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
 	<div ref={ref} className={cn("ff-tl-header", className)} {...props} />
-));
+)) as ForwardRefComponent<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>;
 TimelineHeader.displayName = "TimelineHeader";
 
 const TimelineTitle = React.forwardRef<
@@ -371,7 +390,10 @@ const TimelineTitle = React.forwardRef<
 	<h3 ref={ref} className={cn("ff-tl-title", className)} {...props}>
 		{children}
 	</h3>
-));
+)) as ForwardRefComponent<
+	HTMLHeadingElement,
+	React.HTMLAttributes<HTMLHeadingElement>
+>;
 TimelineTitle.displayName = "TimelineTitle";
 
 const TimelineIcon = ({
@@ -384,7 +406,7 @@ const TimelineIcon = ({
 	color?: TimelineColor;
 	status?: TimelineStatus | "error";
 	iconSize?: "sm" | "md" | "lg";
-}) => {
+}): React.JSX.Element => {
 	const resolvedColor =
 		color ||
 		(status === "completed"
@@ -413,7 +435,10 @@ const TimelineDescription = React.forwardRef<
 	React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
 	<p ref={ref} className={cn("ff-tl-desc", className)} {...props} />
-));
+)) as ForwardRefComponent<
+	HTMLParagraphElement,
+	React.HTMLAttributes<HTMLParagraphElement>
+>;
 TimelineDescription.displayName = "TimelineDescription";
 
 const TimelineContent = React.forwardRef<
@@ -421,7 +446,7 @@ const TimelineContent = React.forwardRef<
 	React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
 	<div ref={ref} className={cn("ff-tl-content", className)} {...props} />
-));
+)) as ForwardRefComponent<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>;
 TimelineContent.displayName = "TimelineContent";
 
 const TimelineEmpty = React.forwardRef<
@@ -435,7 +460,7 @@ const TimelineEmpty = React.forwardRef<
 	>
 		<p>{children || "No timeline items to display"}</p>
 	</div>
-));
+)) as ForwardRefComponent<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>;
 TimelineEmpty.displayName = "TimelineEmpty";
 
 export {

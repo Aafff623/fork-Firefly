@@ -1,8 +1,11 @@
 ﻿---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
+import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
 import PostCard from "@/components/layout/PostCard.astro";
 import { displaySettingsConfig, siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
 import { getPostPinKind } from "@/utils/content-utils";
 
 interface Props {
@@ -34,6 +37,19 @@ const initialLayoutClass =
 	defaultLayout === "card"
 		? "card-mode"
 		: "flex flex-col gap-4 md:gap-4 list-mode";
+const pinAdminLabels = {
+	menu: i18n(I18nKey.pinAdminMenu),
+	setSticky: i18n(I18nKey.pinAdminSetSticky),
+	unsetSticky: i18n(I18nKey.pinAdminUnsetSticky),
+	confirmSet: i18n(I18nKey.pinAdminConfirmSet),
+	confirmUnset: i18n(I18nKey.pinAdminConfirmUnset),
+	confirmSetDesc: i18n(I18nKey.pinAdminConfirmSetDesc),
+	confirmUnsetDesc: i18n(I18nKey.pinAdminConfirmUnsetDesc),
+	confirmOk: i18n(I18nKey.pinAdminConfirmOk),
+	confirmCancel: i18n(I18nKey.pinAdminConfirmCancel),
+	devHint: i18n(I18nKey.pinAdminDevHint),
+	prodHint: i18n(I18nKey.pinAdminProdHint),
+};
 ---
 
 <div
@@ -70,6 +86,13 @@ const initialLayoutClass =
     })
   }
 </div>
+
+<PostPinAdmin
+  client:load
+  adminLogins={["Aafff623"]}
+  isDev={import.meta.env.DEV}
+  labels={pinAdminLabels}
+/>
 
 <!-- 立即执行脚本：防止刷新时的布局闪烁 -->
 <script is:inline define:vars={{ defaultLayout, mobileDefaultLayout, layoutSwitchable }}>
@@ -209,42 +232,49 @@ const initialLayoutClass =
     setTimeout(initLayout, 50);
   });
 
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) {
-      setTimeout(initLayout, 100);
-    }
-  });
+  // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积下方 7 个 document/window 监听器（visibilitychange / layoutChange /
+  // resize / astro:page-load / astro:after-swap / swup:page:view / swup:contentReplaced）。
+  if (!window.__postPageLayoutBound) {
+    window.__postPageLayoutBound = true;
 
-  window.addEventListener("layoutChange", function (event) {
-    // @ts-ignore
-    const newLayout = event.detail.layout;
-    if (!document.getElementById("post-list-container")) return;
-    updatePostListLayout(newLayout);
-  });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) {
+        setTimeout(initLayout, 100);
+      }
+    });
 
-  let resizeTimeout: any;
-  window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function () {
-      initLayout();
-    }, 250);
-  });
+    window.addEventListener("layoutChange", function (event) {
+      // @ts-ignore
+      const newLayout = event.detail.layout;
+      if (!document.getElementById("post-list-container")) return;
+      updatePostListLayout(newLayout);
+    });
 
-  document.addEventListener("astro:page-load", function () {
-    setTimeout(initLayout, 50);
-  });
+    let resizeTimeout: any;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function () {
+        initLayout();
+      }, 250);
+    });
 
-  document.addEventListener("astro:after-swap", function () {
-    setTimeout(initLayout, 50);
-  });
+    document.addEventListener("astro:page-load", function () {
+      setTimeout(initLayout, 50);
+    });
 
-  // Swup 分页 / 站内切页：SSR 仍是默认 class，必须重套用户偏好
-  document.addEventListener("swup:page:view", function () {
-    setTimeout(initLayout, 50);
-  });
-  document.addEventListener("swup:contentReplaced", function () {
-    setTimeout(initLayout, 50);
-  });
+    document.addEventListener("astro:after-swap", function () {
+      setTimeout(initLayout, 50);
+    });
+
+    // Swup 分页 / 站内切页：SSR 仍是默认 class，必须重套用户偏好
+    document.addEventListener("swup:page:view", function () {
+      setTimeout(initLayout, 50);
+    });
+    document.addEventListener("swup:contentReplaced", function () {
+      setTimeout(initLayout, 50);
+    });
+  }
 
   setTimeout(initLayout, 0);
 

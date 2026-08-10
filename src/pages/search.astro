@@ -17,7 +17,11 @@ const description = "";
 
 {import.meta.env.PROD && (
 <script is:inline define:vars={{ scriptUrl: url('/pagefind/pagefind.js') }}>
-    if (!window.pagefind) {
+    // 复用 Navbar 暴露的全局单例懒加载(Swup 导航重执行此脚本时幂等);
+    // 若 Navbar 未定义则自行加载兜底
+    if (window.__loadPagefind) {
+        window.__loadPagefind();
+    } else if (!window.pagefind) {
         async function loadPagefind() {
             const url = scriptUrl.replace(/\/$/, "")
             try {

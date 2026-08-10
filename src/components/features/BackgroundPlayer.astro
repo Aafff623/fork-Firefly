@@ -34,7 +34,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			>
 				<video
 					id="bg-player-video"
-					preload="metadata"
+					preload="none"
 					playsinline
 					webkit-playsinline
 					class="absolute inset-0 size-full min-w-full min-h-full object-cover"
@@ -344,22 +344,12 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			if (nextBtn) nextBtn.style.display = "none";
 		}
 
-		// 悬停播放钮 / 空闲时预缓冲
+		// 只在用户悬停或键盘聚焦播放钮后预缓冲，不在页面空闲时抢跑视频。
 		var playBtn = document.getElementById("bg-player-toggle");
 		if (playBtn) {
 			playBtn.addEventListener("pointerenter", primeCurrent, { once: true });
 			playBtn.addEventListener("focus", primeCurrent, { once: true });
 		}
-		var idleId = 0;
-		function schedulePrime() {
-			if (typeof requestIdleCallback === "function") {
-				idleId = requestIdleCallback(function () { primeCurrent(); }, { timeout: 2500 });
-			} else {
-				idleId = setTimeout(primeCurrent, 1800);
-			}
-		}
-		if (document.readyState === "complete") schedulePrime();
-		else window.addEventListener("load", schedulePrime, { once: true });
 
 		function cleanup() {
 			if (!isPlaying) {
@@ -368,10 +358,6 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			}
 			document.body.removeAttribute("data-bg-video-loading");
 			document.documentElement.removeAttribute("data-bg-video-loading");
-			if (idleId) {
-				if (typeof cancelIdleCallback === "function") cancelIdleCallback(idleId);
-				else clearTimeout(idleId);
-			}
 		}
 		document.addEventListener("astro:before-swap", cleanup);
 	})();

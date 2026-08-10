@@ -23,9 +23,19 @@ interface Props {
 	focusTags?: string[];
 	/** 二级主题标签（Agent）；仅聚焦态展示 */
 	focusThemeTags?: string[];
+	/**
+	 * 仅列表（无立体球）：给移动底栏用，避免与左栏再 SSR 一份 TagChalkSphere 巨型脚本。
+	 */
+	listOnly?: boolean;
 }
-const { class: className, style, widgetConfig, focusTags, focusThemeTags } =
-	Astro.props;
+const {
+	class: className,
+	style,
+	widgetConfig,
+	focusTags,
+	focusThemeTags,
+	listOnly = false,
+} = Astro.props;
 
 const maxVisible = Math.max(
 	1,
@@ -106,34 +116,37 @@ const catalogJson = JSON.stringify(
   class:list={["tags-widget", { "tags-widget--focus": isFocusMode }, className]}
   style={style}
 >
-  <div slot="title-icon" class="tags-widget__mode" data-tag-wall-mode-toggle>
-    <button
-      type="button"
-      class="tags-widget__mode-btn"
-      data-tag-wall-mode="sphere"
-      aria-label="立体球模式"
-      title="立体球"
-      aria-pressed="true"
-    >
-      <Icon is:inline name="lucide:globe" class="tags-widget__mode-icon tags-widget__mode-icon--globe" />
-    </button>
-    <button
-      type="button"
-      class="tags-widget__mode-btn"
-      data-tag-wall-mode="list"
-      aria-label="列表模式"
-      title="列表"
-      aria-pressed="false"
-    >
-      <Icon is:inline name="lucide:list" class="tags-widget__mode-icon" />
-    </button>
-  </div>
+  {!listOnly && (
+    <div slot="title-icon" class="tags-widget__mode" data-tag-wall-mode-toggle>
+      <button
+        type="button"
+        class="tags-widget__mode-btn"
+        data-tag-wall-mode="sphere"
+        aria-label="立体球模式"
+        title="立体球"
+        aria-pressed="true"
+      >
+        <Icon is:inline name="lucide:globe" class="tags-widget__mode-icon tags-widget__mode-icon--globe" />
+      </button>
+      <button
+        type="button"
+        class="tags-widget__mode-btn"
+        data-tag-wall-mode="list"
+        aria-label="列表模式"
+        title="列表"
+        aria-pressed="false"
+      >
+        <Icon is:inline name="lucide:list" class="tags-widget__mode-icon" />
+      </button>
+    </div>
+  )}
   <div
     class="tags-widget__body"
     data-tag-wall
     data-tag-wall-focus={isFocusMode ? "1" : "0"}
-    data-tags-catalog={catalogJson}
+    data-tags-catalog={listOnly ? undefined : catalogJson}
     data-max-visible={String(maxVisible)}
+    data-tag-wall-list-only={listOnly ? "1" : undefined}
   >
     <p
       class:list={["tags-widget__empty", { "is-visible": emptyFocus }]}
@@ -143,7 +156,36 @@ const catalogJson = JSON.stringify(
       {emptyLabel}
     </p>
     {
-      !emptyFocus && (
+      !emptyFocus && listOnly && (
+        <ul class="tags-widget__plain-list" data-tag-wall-plain-list>
+          {sphereTags.map((t) => (
+            <li>
+              <a
+                href={url(`/timeline/?tag=${encodeURIComponent(t.name)}`)}
+                class:list={[
+                  "tags-widget__plain-link",
+                  t.kind === "theme" && "tags-widget__plain-link--theme",
+                ]}
+              >
+                <span>{t.name}</span>
+                {t.kind !== "theme" && t.count > 0 && (
+                  <span class="tags-widget__plain-count">{t.count}</span>
+                )}
+              </a>
+            </li>
+          ))}
+          {showMore && (
+            <li>
+              <a class="tags-widget__plain-more" href={tagsIndexUrl}>
+                … +{hiddenCount}
+              </a>
+            </li>
+          )}
+        </ul>
+      )
+    }
+    {
+      !emptyFocus && !listOnly && (
         <TagChalkSphere
           class="tags-widget__sphere"
           compact
@@ -171,6 +213,50 @@ const catalogJson = JSON.stringify(
 
   .tags-widget__empty.is-visible {
     display: block;
+  }
+
+  .tags-widget__plain-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.15rem 0.1rem 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tags-widget__plain-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.28rem 0.45rem;
+    border-radius: 0.45rem;
+    font-size: 0.82rem;
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+  }
+
+  .tags-widget__plain-link:hover {
+    background: color-mix(in oklch, var(--primary) 12%, transparent);
+  }
+
+  .tags-widget__plain-link--theme {
+    opacity: 0.72;
+    pointer-events: none;
+  }
+
+  .tags-widget__plain-count {
+    font-size: 0.72rem;
+    opacity: 0.55;
+  }
+
+  .tags-widget__plain-more {
+    display: block;
+    padding: 0.28rem 0.45rem;
+    font-size: 0.78rem;
+    opacity: 0.7;
+    text-decoration: none;
   }
 
   html.dark .tags-widget__empty {

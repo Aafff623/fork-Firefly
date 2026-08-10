@@ -28,12 +28,11 @@ html.is-page-transitioning .banner-home-text-overlay {
     word-break: break-word;
 }
 
-/* 与侧栏 Profile 一致：交给 .repel-word 入场，避免父级 fade 抢走动画 */
+/* 与侧栏 Profile 一致：关掉父级 fade；阴影由 RepelText 全局禁掉（拆字后跟字重绘极贵） */
 .banner-title.repel-text,
 .banner-post-title.repel-text {
     animation: none;
-    /* 大范围软阴影跟拆字重绘极贵；轻阴影由 RepelText 全局样式统一 */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    text-shadow: none;
 }
 
 .banner-subtitle {
@@ -899,7 +898,10 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
 	background-position: center;
 	background-repeat: no-repeat;
 	opacity: 0;
-	transition: opacity 1s ease;
+	/* 非当前层不参与绘制；淡出 1s 结束才收起（visibility 0s linear 1s），
+	   与淡入（visibility 0s）配合保持原有交叉淡化，且不打断切页动画 */
+	visibility: hidden;
+	transition: opacity 1s ease, visibility 0s linear 1s;
 	will-change: opacity;
 }
 
@@ -910,6 +912,8 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
 
 #atmosphere-layer .atmo-slide.active {
 	opacity: 1;
+	visibility: visible;
+	transition: opacity 1s ease, visibility 0s;
 }
 
 #atmosphere-layer .atmo-veil {

@@ -70,6 +70,22 @@ declare global {
 		sakuraManager?: SakuraManagerLike;
 		/** 樱花特效初始化守卫,确保只初始化一次(Swup 切页重跑脚本时复用) */
 		sakuraInitialized?: boolean;
+		/** 悬浮 TOC 自动关闭 wiring 幂等 guard：防跨跳重复注册 document/window 监听器 */
+		__floatingTOCAutoCloseBound?: boolean;
+		/** 封面图 astro:page-load 监听幂等 guard */
+		__coverImageBound?: boolean;
+		/** 代码组 document click/keydown 监听幂等 guard */
+		__rcgGlobalBound?: boolean;
+		/** Navbar 品牌标题 swup:page:view 监听幂等 guard */
+		__navbarBrandDrawBound?: boolean;
+		/** 文章列表布局页面级监听幂等 guard */
+		__postPageLayoutBound?: boolean;
+		/** 紧凑分类卡 swup 监听幂等 guard */
+		__catCompactBound?: boolean;
+		/** 侧栏 Profile widget swup 监听幂等 guard */
+		__profileWidgetBound?: boolean;
+		/** Twikoo swup hook / 自定义事件监听幂等 guard */
+		__twikooBound?: boolean;
 	}
 
 	interface MediaQueryList {

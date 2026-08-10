@@ -91,7 +91,9 @@ Content Collections（`src/content.config.ts`）：
 | 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / Vibe / Agentic Coding / Skill·MCP 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / Vibe / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+
+`wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
 ## Obsidian 写作源（固定）
 
 | 项 | 值 |

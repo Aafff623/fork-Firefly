@@ -1,11 +1,11 @@
 ---
 title: pi 默认是个失忆的 agent，我扒了扒它靠什么记住事
 published: 2026-08-07
-updated: 2026-08-07T12:34:41
-description: pi 原生不带长期记忆，关掉会话就失忆。扒了一遍 pi-hermes-memory 扩展的三层架构、policy-only 注入策略、Standing Instructions 和六个后台机制，顺手把 Claude Code 的记忆同步了过来。
+updated: 2026-08-09T18:00:00
+description: pi 原生不带长期记忆，关掉会话就失忆。扒了一遍 pi-hermes-memory 扩展的三层架构、policy-only 注入策略、Standing Instructions 和六个后台机制（⚠️ 该扩展已于 2026-08-08 换 pi-observational-memory，本文留作历史参考）。
 image: ./cover.png
 tags: [Pi, AI Coding, 记忆机制, extension]
-themeTags: [pi-hermes-memory, 记忆机制, policy-only, standing-instructions, auto-consolidation, FTS5]
+themeTags: [pi-hermes-memory, pi-observational-memory, 记忆机制, policy-only, standing-instructions, auto-consolidation, FTS5, 已迁移]
 category: Agentic Coding
 collections: [tool-pi]
 draft: false
@@ -14,6 +14,8 @@ slug: pi-agent-memory-mechanism
 pinned: false
 comment: true
 ---
+
+> **⚠️ 已迁移声明（2026-08-09）**：本文扒的是 `pi-hermes-memory` 的架构（FTS5 / policy-only / Standing Instructions / 六个后台机制）。但该扩展已于 2026-08-08 **卸载**——它会破坏多行粘贴（把长文本拆成多条消息喂给模型，断章取义）。当前已换 `pi-observational-memory`（观察式记忆 + 分层压缩，会话收尾自动记录，`recall(id)` 回溯）。**下面的架构分析留作历史参考，别照着装 hermes。** 迁移详情见 [pi 开荒篇·后来长出的器官](/posts/pi-coding-agent-setup/)。
 
 用 pi 用了一阵，有个别扭的事一直没解决：关掉会话再开，它把你忘得干干净净。上次踩的坑、交代过的偏好、刚配好的 provider，全没了。每开一个新会话，等于跟一个失忆的人重新认识。
 

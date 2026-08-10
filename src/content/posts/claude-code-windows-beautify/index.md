@@ -64,6 +64,8 @@ tweakcc 不是"皮肤包"，它是**直接改 Claude Code 的程序本体**。�
 
 因为动的是本体，**Claude Code 一升级补丁就会被覆盖**，但配置还在——升级后重跑一遍 `npx tweakcc --apply` 就行（它自己会先恢复备份，保证从干净状态重新 patch）。注意它官方验证过的版本是 2.1.162，现在跑在 2.1.220 上，个别非系统提示类的 patch 可能失效，得留意。
 
+> **2026-08-09 实测更新**：文章发布没几天，Claude Code 悄悄升到 2.1.224，天气思考动画果然又没了。这次验证方法都齐了——`claude --version` 只剩一行（没有 `(tweakcc)` 注入的版本行），`~/.tweakcc/config.json` 里的 `ccVersion` 还停在 2.1.220，一眼确认补丁被覆盖。重跑 `npx tweakcc --apply` 却报 `EBUSY：claude.exe locked`——claude 本体正开着，Windows 锁住 exe 不让写。所以顺序很重要：**先完全退出 Claude Code，再在新终端跑 apply**。跑完 `claude --version` 恢复两行输出，天气动画和思考动词随机一起回来。
+
 它到底能改什么？挑值钱的几个：
 
 **内置 7 套主题色**，截图里这套紫调对应 Dark mode。这套配色的逻辑很清晰：紫管结构（分隔线、提示符、autoAccept），蓝管身份（模型名、权限请求），橙管强调（Claude 品牌色、路径高亮），红管警示（错误、diff 删除）。

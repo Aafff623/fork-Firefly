@@ -295,9 +295,14 @@ function socialBrandKey(name: string, icon: string): string {
   } else {
     bootProfileWidget();
   }
-  document.addEventListener("swup:contentReplaced", bootProfileWidget);
-  document.addEventListener("swup:content:replace", bootProfileWidget);
-  document.addEventListener("swup:page:view", bootProfileWidget);
+  // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
+  // 不守卫会跨跳累积 3 个 swup 监听器（bootProfileWidget 本身幂等）。
+  if (!window.__profileWidgetBound) {
+    window.__profileWidgetBound = true;
+    document.addEventListener("swup:contentReplaced", bootProfileWidget);
+    document.addEventListener("swup:content:replace", bootProfileWidget);
+    document.addEventListener("swup:page:view", bootProfileWidget);
+  }
 </script>
 
 <style>

@@ -410,7 +410,7 @@ export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
 			};
 		});
 
-	scored.sort((a, b) => b.score - a.score);
+	scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score);
 	return scored.slice(0, Math.max(1, maxCount)).map((s) => ({
 		id: s.post.id,
 		data: s.post.data,

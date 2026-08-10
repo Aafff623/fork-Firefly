@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# Mermaid 构建期落盘的主题 SVG（rehype-mermaid 生成，勿入库）
+public/generated/
+
 # generated types
 .astro/
 

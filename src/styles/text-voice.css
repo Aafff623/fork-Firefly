@@ -5,8 +5,6 @@
  * - Profile 轮播：格言保留本文件墨光 UI；近况另用像素打字机 UI（整段切换）
  */
 
-@import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
-
 @property --voice-sheen-hue {
 	syntax: "<number>";
 	inherits: true;
@@ -151,7 +149,7 @@
 	max-width: 100%;
 	padding-inline: 0.15rem;
 	text-align: center;
-	font-family: "DotGothic16", "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
+	font-family: var(--font-jetbrains-mono), "Sarasa UI SC", "Microsoft YaHei UI", ui-monospace, monospace;
 	font-size: 0.7rem;
 	font-style: normal;
 	font-weight: 400;
