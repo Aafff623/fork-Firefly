@@ -3,6 +3,50 @@
 .custom-md {
   overflow-wrap: break-word;
 
+  /*
+   * 正文插图（密度友好）：
+   * - 默认：只跟内容栏宽（max-width:100%），信息密度高的横图/方图保持适中栏宽铺满。
+   * - 竖幅（JS 标 .md-img--tall）：等比例限高，避免海报/立绘按栏宽撑出整屏高度。
+   * - 单击 Fancybox 看原图；勿用 HTML 强行拉满。
+   * image-grid / wiki 卡在各自规则里覆盖。
+   */
+  img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    margin-inline: auto;
+    margin-block: 1rem;
+    object-fit: contain;
+    border-radius: calc(var(--radius-large) - 0.5rem);
+  }
+
+  /* 竖幅 / 海报：限高，宽度随比例收回 */
+  img.md-img--tall {
+    max-height: min(62vh, 30rem);
+  }
+
+  /* 典型 AI 竖海报导出（偏窄画布 + 高瘦）：再收一档，信息量通常不如信息图 */
+  img.md-img--poster {
+    max-height: min(52vh, 24rem);
+    max-width: min(100%, 22rem);
+  }
+
+  .card-wiki-link img {
+    display: inline-block;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    object-fit: unset;
+  }
+
+  .card-wiki-link img.md-img--tall,
+  .card-wiki-link img.md-img--poster {
+    max-height: none;
+    max-width: none;
+  }
+
   body.sticky-navbar & {
     [id] {
       scroll-margin-top: 5.5rem;
@@ -187,6 +231,10 @@
           @apply object-cover w-full grow rounded-xl m-0;
           /* 使图片自动填满所在网格高度（自适应裁剪居中，不拉伸变形） */
           height: 100%;
+          max-width: none;
+          max-height: none;
+          margin-block: 0;
+          object-fit: cover;
         }
         
         figcaption {

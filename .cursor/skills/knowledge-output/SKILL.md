@@ -1,7 +1,9 @@
 ---
 name: knowledge-output
 description: >-
-  把 knowledge-extract 提炼出的素材笔记(位于 D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\)
+  把 knowledge-extract 提炼出的素材笔记
+  （位于 D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{时间戳_短题}\，
+  兼容历史扁平 todo\{时间戳_主题}\）
   输出成 Firefly 博客文章，落盘到 src/content/posts/{slug}/，发布成功后将素材移入 Knowledge\Archive\ 留档。
   触发词：发布笔记、把知识笔记发到博客、knowledge output、素材转博客、提取完发出去、把 todo 里的笔记写成博客文章。
   调用方式：无参数 = 处理 todo 全部主题；带参数(/knowledge-output {主题A} {主题B}) = 只处理指定主题。
@@ -20,38 +22,46 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 | 维度 | ob2blog | knowledge-output（本技能） |
 |---|---|---|
-| 源 | Obsidian vault `D:\...\Notes\threetwoa_ob` | `D:\OneDrive\Desktop\Knowledge\{时间戳_主题}\` 素材笔记 |
-| 依赖 | wiki 链接 `![[…]]`、附件映射、manifest 一致性 | 无；素材是独立 md + 可选 assets 图 |
+| 源 | Obsidian vault `D:\...\Notes\threetwoa_ob` | `D:\OneDrive\Desktop\Knowledge\todo\…` 素材笔记 |
+| 依赖 | wiki 链接 `![[…]]`、附件映射、manifest 一致性 | 无；素材是独立 md + 可选 assets / source |
 | 真源约束 | Obsidian = 真源，双边同步 | 素材即草稿；博客落盘后素材可留档 |
 | 复用 | — | 复用 ob2blog 的 frontmatter.yaml + validate_post.py |
 
 两者互补不冲突：**extract 产出素材 → output 产出成品 → 走 site-cascade**。
 
+素材库 Theme/facet 与来源索引真源：`knowledge-extract/references/theme-taxonomy.md`、`source-modules.md`（含 `wechat`）。
+
 ## 输入 / 输出
 
-- 输入：`D:\OneDrive\Desktop\Knowledge\todo\{时间戳_主题}\{主题}.md`（素材笔记）+ `assets/`（可选配图）
+- 输入（优先新规范）：
+  `D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{时间戳_短题}\{短题}.md`
+  + `assets/`（笔记图）+ 可选 `source/`（公众号等原文，**成帖默认不整篇搬进 posts**，除非用户要求保留附录）
+- 兼容输入：历史扁平 `todo\{时间戳_主题}\{主题}.md`
 - 输出（分流）：
   - **正式发**：`src/content/posts/{slug}/index.md` + `cover.*`(可选) + 附件拷贝
   - **草稿箱**：`src/content/posts/_draftbox/{slug}/`（本地预览、**不 git add / 不 push**；见下「草稿箱」）
 - 收尾：正式发才跑 `site-cascade`（最新动态/统计/分类标签/热力图）；草稿箱不 emit 公开动态
-- 归档：每**正式发布成功**一个主题，将该目录从 `todo\` 移入 `Knowledge\Archive\` 留档（内容不改写）
+- 归档：每**正式发布成功**一个主题，将该**单篇目录**从 `todo\…` 移入 `Archive\{Theme}\{facet}\…`（无 Theme 的旧扁平稿可仍入 `Archive\` 根）；内容不改写
 
 ## 调用方式
 
-- `knowledge-output`（无参数）：遍历 `Knowledge\todo\` 下**全部**主题，逐个发布
+- `knowledge-output`（无参数）：递归遍历 `Knowledge\todo\` 下**全部**单篇目录（含 `{Theme}/{facet}/…` 与扁平遗留），逐个发布
 - `knowledge-output {主题}`（带一个或多个主题名）：只处理匹配的主题
 
-匹配规则：参数可以是完整目录名（如 `2026-08-05_Matt-Pocock-工程方法论`）或主题名子串（如 `Matt-Pocock`）；多个参数逐个匹配。无匹配时列出 todo 现有主题供用户确认。批量处理按目录序逐个执行，单个失败不阻断其余。
+匹配规则：参数可以是完整单篇目录名（如 `2026-08-05_Matt-Pocock-工程方法论`）、Theme ID（如 `claude-code`）、facet、或短题子串（如 `Matt-Pocock`）；多个参数逐个匹配。无匹配时列出 todo 现有 Theme/单篇供用户确认。批量处理按路径序逐个执行，单个失败不阻断其余。
 
 ## 工作流（六步）
 
 ```
-1 选材    → 按调用方式从 Knowledge\todo\ 定位素材（无参数=全部；有参数=仅匹配的主题），确认内容完整度(缺关键结论先回 extract 补齐)
-2 定稿    → 读素材，按 humanizer-tta 校准语气；拆长文为可读章节；**成稿后强制过一遍 humanizer-tta（Depointify 去 AI 味，50 分评分 ≥45 才放行）**；再过「成帖红线」(见下)
+1 选材    → 按调用方式从 Knowledge\todo\ 递归定位素材（无参数=全部；有参数=仅匹配），
+            读文首 YAML / @knowledge 的 source·theme·facet；确认内容完整度(缺关键结论先回 extract 补齐)
+2 定稿    → 读素材主体（非 source/ 原文）；按 humanizer-tta 校准语气；拆长文为可读章节；
+            **成稿后强制过一遍 humanizer-tta（Depointify 去 AI 味，50 分评分 ≥45 才放行）**；再过「成帖红线」(见下)
 3 成帖    → 补 frontmatter(参考 ob2blog/assets/templates/frontmatter.yaml)：
             title/published/description/tags/category/slug/image/draft/lang/pinned/comment
             slug 必须英文 kebab(小写字母数字连字符)，中文标题手传
-            **category 门禁**：对照 CONTEXT.md「现行分类词表」；素材 `@blog` 已写死则采纳，
+            **category 门禁**：对照 CONTEXT.md「现行分类词表」；可参考 Theme→category 启发式
+            （theme-taxonomy.md），素材 `@blog` 已写死则采纳，
             否则列出候选（既有 ∪「新建：名称」）**向用户确认后**才写；未确认不得落盘。
             禁止因「AI/工具」一律填 Agentic Coding。
 4 落盘    → 建 src/content/posts/{slug}/；正文写 index.md；assets 图拷到 ./images/(ASCII 名)
@@ -61,7 +71,7 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 5 校验    → python .cursor/skills/ob2blog/scripts/validate_post.py src/content/posts/{slug}/index.md
 6 收尾    → 调 site-cascade（公开帖 `--emit-dynamic`，推荐 `--blurb "作者批注"`；未传则用 description）；提示用户 pnpm dev 预览；未获准不 commit/push
 6b 动态同步（可选）→ 用户若要求「同时在动态里加内容」，改用独立的 `dynamic-post` 技能发布
-7 归档    → 每发布成功一个主题，将其目录从 Knowledge\todo\ 移入 Knowledge\Archive\（原样留档，不改内容；失败/未发布不移动）
+7 归档    → 每发布成功一个单篇，将其目录从 todo 树移入 Archive（保留 Theme/facet；原样留档）；失败/未发布不移动
 ```
 
 笔记型动态正文须含 `>` 批注块（见 `site-cascade`）；勿只 emit 单行「发布了新笔记」。
@@ -88,11 +98,12 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 配图规范
 
+- **正文显示（站点）**：默认跟内容栏宽（信息密度高的横/方图不压）；仅竖幅/竖海报等比例限高。单击 Fancybox，`Esc` / 点留白关闭。细则与好例见 `docs/agents/workflow.md`「正文插图显示」。成帖不要用 HTML 强行拉满；原图可保留较高像素供灯箱。
 - **Mermaid**：正文流程图默认横版（`flowchart LR`）；组内可竖、整图竖仅当横版过长。细则见 `docs/agents/workflow.md`「版式：横版优先」。
 - **封面**：优先用素材 `assets/` 里的达标封面；没有或不合格，按 `knowledge-extract` 的配图规范 + `firefly-minimax-media`/`prompt-craft` **style-taste** 用 MiniMax 生成（未点名风格默认 03 编辑静物；抽象主题用具象符号、克制配色、留白 ≥20% 给标题、生成后集中质检），不合格重生成。统一存 `cover.jpg`（模板示例的 `cover.webp` 不强制，实现以 `cover.jpg` 为准）。
 - **小节图**：素材 `assets/` 图拷到 `images/` 并改写引用（`./images/fig-*.jpg`）；缺图不硬凑。
 - **Web 化**：所有图转 JPG；RGBA 先压平（贴深色底）；超 ~1.5MB 的大图降宽到 ~1600px 再存；像素图缩放用最近邻（ffmpeg `scale=...:flags=neighbor` 或 PIL `Image.NEAREST`）。封面只在 FM `image` 字段，不重复进正文。
-- **质检**：封面 / 配图逐张 review（布局错乱？对比度暗淡？主题一眼可读？图标可辨？），宁缺毋滥。
+- **质检**：封面 / 配图逐张 review（布局错乱？对比度暗淡？主题一眼可读？图标可辨？）；本地预览确认竖图未撑满视口。宁缺毋滥。
 
 ### 索引帖 / 章节信息图（补充）
 
@@ -127,11 +138,11 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 硬规则
 
-1. **默认正式发 `draft: false` 且落 `posts/<slug>/`**：素材已过提炼关。用户明确要求草稿 / 草稿箱 / 先本地调试，素材含敏感/口令，或素材标明 **BibiGPT / `bibigpt` 来源**（园主默认先本地预览）→ **进 `_draftbox/`** 且 `draft: true`，不得 push 箱内正文。
-2. **重建 frontmatter**：不沿用素材里的临时字段；`slug` 用英文 kebab（小写字母数字连字符）。主题目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
+1. **默认正式发 `draft: false` 且落 `posts/<slug>/`**：素材已过提炼关。用户明确要求草稿 / 草稿箱 / 先本地调试，素材含敏感/口令，或素材标明 **BibiGPT / `bibigpt` / 公众号 / `wechat` 来源**（园主默认先本地预览）→ **进 `_draftbox/`** 且 `draft: true`，不得 push 箱内正文。
+2. **重建 frontmatter**：不沿用素材里的临时字段（可保留对 `source`/`theme`/`facet` 的引用到描述或 `@blog`）；`slug` 用英文 kebab（小写字母数字连字符）。单篇目录名若本身 ASCII（如 `2026-08-01_foo`）则取去时间戳部分；否则按主题语义手取英文 slug（如「ClaudeCode的Windows美化与配置」→ `claude-code-windows-beautify`）。
 2b. **首页可见性（正式发必做）**：`pinned: false`（不要写成常驻置顶）；必须写带时分的 `updated: YYYY-MM-DDTHH:mm:ss`（落盘当下），让站内「默认自动置顶」选中这篇。仅写 `published: YYYY-MM-DD` 同日会与旧帖撞成同一时间戳，首页看起来像没顶上去。常驻置顶（`pinned: true`）只在用户明确要求时才开。草稿箱帖不要求抢首页置顶。
-3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。
-4. **素材只读 + 正式发布后归档**：output 只读素材、写博客；**出箱并正式发布成功**后把该主题目录从 `Knowledge\todo\` **移入 `Knowledge\Archive\`**（原样留档，不改写内容）。失败 / 仍在草稿箱则不移动。
+3. **图片处理**：素材 `assets/` 图片拷入帖子 `images/`（ASCII 名）并改写引用；封面另存 `cover.jpg` 写 FM，不进正文。统一做 Web 化（见「配图规范」）：RGBA 压平贴深色底、转 JPG、大图降宽、像素图最近邻缩放。缺图用占位封面或跳过，不硬凑。`source/images/` 默认不整包进帖，除非用户要求附录原文图。
+4. **素材只读 + 正式发布后归档**：output 只读素材、写博客；**出箱并正式发布成功**后把该**单篇目录**从 `Knowledge\todo\…` **移入 `Knowledge\Archive\{Theme}\{facet}\…`**（无层级的旧稿可入 `Archive\` 根；原样留档，不改写内容）。失败 / 仍在草稿箱则不移动。
 5. **越权禁止**：只在 blog 仓库内落 posts（含 draftbox）+ 正式发时的级联索引；不碰站点布局/配置内核，不改其他文章。
 6. **发布闭环**：草稿箱止于本地预览；正式发：本地校验通过 → 用户确认 → push → 核线上（遵循 `docs/agents/workflow.md`）。
 
@@ -146,4 +157,4 @@ compatibility: 需在 Firefly 项目根(含 src/content.config.ts)下执行；Py
 
 ## 交接约定
 
-素材笔记若带 `<!-- @blog: ... -->` 类标记（如建议 category/tags/封面），output 优先采纳；无标记则按内容推断并**列出候选请用户确认 category**（不得静默默认）。产出后向用户报告：文件树(素材→帖子) + frontmatter 决策（含 category 依据）+ 校验结果。正式发后走 `site-cascade`，并按 workflow 发 Agent 协作者评论。
+素材笔记若带 `<!-- @blog: ... -->` 或文首 YAML（`source` / `theme` / `facet` / 建议 category·tags·封面），output 优先采纳；无标记则按内容与 Theme→category 启发式推断并**列出候选请用户确认 category**（不得静默默认）。产出后向用户报告：文件树(素材→帖子) + frontmatter 决策（含 category 依据与 Theme）+ 校验结果。正式发后走 `site-cascade`，并按 workflow 发 Agent 协作者评论。

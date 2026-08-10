@@ -1,17 +1,50 @@
 # 素材来源模块（extract 入口）
 
-extract 开跑前先识别**素材从哪来**。来源决定：要不要先搜证、证据删多狠、封面优先扒哪。
+extract 开跑前先识别**素材从哪来**，并挂上 **Theme / facet** 分类（见 [`theme-taxonomy.md`](theme-taxonomy.md)）。  
+来源决定：要不要先搜证、证据删多狠、是否 Multi-Agent、封面优先扒哪。  
+分类决定：落在 `Knowledge/todo` 的哪一层目录、日后怎么检索。
 
-## 来源一览
+---
 
-| ID | 来源 | 典型输入 | extract 额外动作 |
-|---|---|---|---|
-| `session` | 本会话讨论 / Agent 调研 | 对话上下文、踩坑经历 | 默认六步；删闲聊与工具痕迹 |
-| `paste-md` | 粘贴的普通 Markdown（非 vault） | 用户贴正文 / 文件路径 | 当原料读；仍走提炼，不经 ob2blog |
-| `bibigpt` | BibiGPT 音视频总结原料 | 自定义 Prompt 导出的胖 MD；可选原片 URL | **先搜证再提炼**（见下） |
-| `mixed` | 以上混合 | 例：BibiGPT + 会话补充 | 按最严规则合并（有 bibigpt 就走搜证） |
+## 索引 A · 来源（source）
+
+| ID | 来源 | 典型输入 | extract 额外动作 | 专章 |
+|---|---|---|---|---|
+| `session` | 本会话讨论 / Agent 调研 | 对话上下文、踩坑经历 | 默认六步；删闲聊与工具痕迹 | — |
+| `paste-md` | 粘贴的普通 Markdown（非 vault） | 用户贴正文 / 文件路径 | 当原料读；仍走提炼，不经 ob2blog | — |
+| `bibigpt` | BibiGPT 音视频总结原料 | 自定义 Prompt 导出的胖 MD；可选原片 URL | **先搜证再提炼** | 下文「模块：bibigpt」 |
+| `wechat` | 微信公众号文章 | 链接 / 导出 MD+图 / 浏览器可打开页 | **Multi-Agent 归档+分类+提炼+TTA**；原文进 `source/` | [`wechat-mp.md`](wechat-mp.md) |
+| `mixed` | 以上混合 | 例：公众号 + 会话补充 | 按最严规则合并（有 bibigpt 就搜证；有 wechat 就走归档分层） | — |
 
 已进 Obsidian vault、要双边同步 → **不要**走 extract，改 `ob2blog`。
+
+### 来源判定启发式
+
+1. 含 `mp.weixin.qq.com` / 用户说「公众号」→ `wechat`  
+2. 含 BibiGPT / 时间轴字幕腔 / BV 链接总结 → `bibigpt`  
+3. 仅本会话上下文 → `session`  
+4. 用户丢来一篇无关会话的 MD → `paste-md`  
+5. 多种同时出现 → `mixed`，并在笔记 YAML 里用 `source` 写主来源、正文交代辅来源  
+
+---
+
+## 索引 B · 分类（Theme → facet）
+
+完整词表与路径规范：[`theme-taxonomy.md`](theme-taxonomy.md)。
+
+```text
+todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
+```
+
+| 层级 | 是什么 | 例子 |
+|---|---|---|
+| **Theme** | 长期知识桶（产品/领域） | `claude-code`、`cursor`、`ppt-visual` |
+| **facet** | 桶内切面 | `architecture`、`skill`、`mcp`、`agent` |
+| **单篇** | 一次提炼交付 | `2026-08-11_Skills文件结构七目录` |
+
+开跑顺序：**source → theme → facet → 落盘**。未定 Theme 不得写进 `misc/inbox` 以外的路径；`misc` 仅临时。
+
+公众号等重内容：先 Archive 保真，再按 Theme 归桶；近 7 日同 Theme 撞题走去重（见 theme-taxonomy「近几天话题去重」）。
 
 ---
 
@@ -45,11 +78,12 @@ Prompt 正文真源：会话里已定稿的「Firefly 博客原料 · TTA 版」
 
 ```text
 识别来源 = bibigpt
-  → 收下原料 MD（可另存 todo/{日期_主题}/source.bibigpt.md 备查，可选）
+  → 定 Theme/facet（theme-taxonomy）
+  → 收下原料 MD（可另存 source.bibigpt.md 备查，可选）
   → 列出待核查断言（版本号、上下文数字、仓库名、「官方承认」、时效数据）
   → 工具搜证（WebSearch / 官方 docs / GitHub / 平台 API）；写「我查过什么」节
   → 再跑提炼六步：论点可压，证据与待核实标记尽量留
-  → 落盘 Knowledge/todo/… ；@blog 便签写清源片链接与核查日期
+  → 落盘 Knowledge/todo/{Theme}/{facet}/… ；YAML + @blog 便签写清源片链接与核查日期
   → 交接 knowledge-output（默认草稿箱，除非用户明确正式发）
 ```
 
@@ -89,3 +123,11 @@ BibiGPT 已经薄过一轮的摘要 → extract 禁止再抽成空心条；缺�
 角色：音视频→知识原料记录员，不是省流课代表。  
 必出块：片子是啥 / 能带走的点（带证据）/ 时间轴细拆 / 证据表 / 名词表 / 照做清单 / 水分与坑 / 博客切入 / `@blog` 便签。  
 禁：终稿散文、半角时间戳冒号、无证据硬定论。
+
+---
+
+## 模块：`wechat`（摘要）
+
+完整流程、四角色 Multi-Agent、source/ 保真约定 → [`wechat-mp.md`](wechat-mp.md)。
+
+一句记：**原文与配图进 `source/` 求全；主体笔记求薄并过 TTA；目录按 Theme/facet；近 7 日撞题先去重。**

@@ -38,7 +38,7 @@
 | Skill | 用途 |
 |---|---|
 | `ob2blog` | Obsidian/MD → 本仓帖（vault 附件、结构 / FM / 媒体） |
-| `knowledge-extract` | 会话/调研 → Knowledge 素材笔记（不直接发帖） |
+| `knowledge-extract` | 会话/调研/BibiGPT/公众号 → Knowledge 素材（Theme/facet；不直接发帖） |
 | `knowledge-output` | Knowledge 素材 → `posts/<slug>`（草稿进 `_draftbox/`，不 push）；正式发收尾接 `site-cascade` |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |
 | `firefly-minimax-media` | MiniMax 出图·配音·音乐·短视频（额度门禁 + 落盘脚本） |
