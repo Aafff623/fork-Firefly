@@ -125,14 +125,14 @@ comment: true
 
 | 旁链 | 它管啥 | 跟本篇的边界 |
 |---|---|---|
-| [一张图看懂：MCP、Skills、CLI](../2026-08-10_MCP_Skills_CLI三者关系/一张图看懂：MCP、Skills、CLI.md) | 连接 / 方法 / 执行 | 工具层 ≠ Python 库地图 |
-| [Agent 工程 20 概念（上）](../2026-08-10_Agent工程20概念_运行机制篇/Agent工程20概念上篇：运行机制一次讲清.md) | Agent / Harness / Loop 词表 | 概念词表 ≠ 库选型 |
-| [Prompt → Context → Harness → Loop](../2026-08-10_Prompt-Context-Harness-Loop四次迁移/Prompt到Loop：瓶颈外移的四站.md) | 能力瓶颈四站外移 | 叙事框架 ≠ 八区库表 |
-| [Claude Code 四类 Loop](../2026-08-10_ClaudeCode四类循环工作流/Claude-Code四类Loop：你到底交出哪一段.md) | CC 交权循环 | 工作流交权 ≠ 应用库盘点 |
-| [8 种主流 Agent 架构](../2026-08-10_8种主流Agent架构优劣对照/) | 架构形态对照 | 架构篇；本篇是实现侧库 |
-| [10 种软件架构风格](../2026-08-10_10种软件架构风格/) | 通用软件架构 | 通用架构 ≠ LLM Python 库 |
-| [企业 AI 落地七层](../2026-08-10_企业AI落地七层结构/) | 企业落地分层 | 落地分层 ≠ 库地图 |
-| [企业 AI 员工五件脏活](../2026-08-10_企业AI员工五件脏活与落地链路/) | 脏活与链路 | 业务脏活 ≠ 库速查 |
+| [一张图看懂：MCP、Skills、CLI](/posts/mcp-skills-cli-relationship/) | 连接 / 方法 / 执行 | 工具层 ≠ Python 库地图 |
+| Agent 工程 20 概念（上）（待发布） | Agent / Harness / Loop 词表 | 概念词表 ≠ 库选型 |
+| Prompt → Context → Harness → Loop（待发布） | 能力瓶颈四站外移 | 叙事框架 ≠ 八区库表 |
+| [Claude Code 四类 Loop](/posts/claude-code-four-loops/) | CC 交权循环 | 工作流交权 ≠ 应用库盘点 |
+| 8 种主流 Agent 架构（待发布） | 架构形态对照 | 架构篇；本篇是实现侧库 |
+| 10 种软件架构风格（待发布） | 通用软件架构 | 通用架构 ≠ LLM Python 库 |
+| 企业 AI 落地七层（待发布） | 企业落地分层 | 落地分层 ≠ 库地图 |
+| 企业 AI 员工五件脏活（待发布） | 脏活与链路 | 业务脏活 ≠ 库速查 |
 
 本篇只做「库名 + 图面一句」的选型地图；原帖 URL 用户未给，按粘贴图卡处理。[^open-q]
 
