@@ -52,13 +52,12 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     bgMotion && (
       <video
         class="garden-note__motion"
-        src={bgMotion}
+        data-src={bgMotion}
         poster={bgUrl}
         muted
         loop
         playsinline
-        autoplay
-        preload="metadata"
+        preload="none"
         aria-hidden="true"
       />
     )
@@ -71,6 +70,58 @@ const widgetStyle = [style, `--garden-note-bg: url('${bgUrl}')`]
     </a>
   </div>
 </WidgetLayout>
+
+{/* 首屏 LCP 优化：装饰背景视频等 LCP 落定后再加载+播放（data-src 惰性注入），
+    避免 518KB 视频在 LCP 窗口抢带宽/解码。视觉不变，仅推迟启动时机。 */}
+{bgMotion && (
+  <script is:inline>
+    (function () {
+      function startGardenNoteMotion() {
+        var vids = document.querySelectorAll("video.garden-note__motion[data-src]");
+        for (var i = 0; i < vids.length; i++) {
+          var v = vids[i];
+          if (v.getAttribute("data-started")) continue;
+          v.setAttribute("data-started", "1");
+          v.src = v.getAttribute("data-src");
+          v.removeAttribute("data-src");
+          v.load();
+          var p = v.play();
+          if (p && typeof p.catch === "function") p.catch(function () {});
+        }
+      }
+      // 等 LCP 落定（最大内容绘制完成）再启动；无 LCP API 则回退 load+延时
+      var started = false;
+      function once() {
+        if (started) return;
+        started = true;
+        startGardenNoteMotion();
+      }
+      if (typeof PerformanceObserver === "function") {
+        try {
+          var obs = new PerformanceObserver(function () {
+            // 每次 LCP 候选都重置一个短空闲定时器，最后一帧后启动
+            if (window.__gnMotionTimer) clearTimeout(window.__gnMotionTimer);
+            window.__gnMotionTimer = setTimeout(function () {
+              obs.disconnect();
+              once();
+            }, 800);
+          });
+          obs.observe({ type: "largest-contentful-paint", buffered: true });
+          // 兜底：8s 内无 LCP 也启动
+          setTimeout(once, 8000);
+        } catch (e) {
+          setTimeout(once, 3000);
+        }
+      } else if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(once, { timeout: 4000 });
+      } else {
+        window.addEventListener("load", function () {
+          setTimeout(once, 2000);
+        });
+      }
+    })();
+  </script>
+)}
 
 <style>
   /*
