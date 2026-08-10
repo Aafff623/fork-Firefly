@@ -51,24 +51,45 @@ const pages = [
     padding: 1.25rem 2.5rem;
     border-radius: 0.75rem;
     border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    /* 多色氛围：青 + 琥珀 + 淡紫，不再单紫铺底 */
     background:
       radial-gradient(
-        circle at 30% 20%,
-        color-mix(in oklab, var(--primary) 14%, transparent),
+        circle at 22% 18%,
+        color-mix(in oklab, #0d9488 22%, transparent),
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 78% 72%,
+        color-mix(in oklab, #d97706 16%, transparent),
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 55% 40%,
+        color-mix(in oklab, var(--primary) 10%, transparent),
         transparent 55%
       ),
-      color-mix(in oklab, #9980fa 22%, var(--card-bg));
+      color-mix(in oklab, #334155 8%, var(--card-bg));
     overflow: visible;
   }
 
   :root.dark .about-flip__stage {
     background:
       radial-gradient(
-        circle at 30% 20%,
-        color-mix(in oklab, var(--primary) 20%, transparent),
+        circle at 22% 18%,
+        color-mix(in oklab, #2dd4bf 18%, transparent),
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 78% 72%,
+        color-mix(in oklab, #fbbf24 12%, transparent),
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 55% 40%,
+        color-mix(in oklab, var(--primary) 14%, transparent),
         transparent 55%
       ),
-      color-mix(in oklab, #9980fa 18%, #1a1528);
+      color-mix(in oklab, #1e293b 55%, #0f172a);
   }
 
   .about-flip__book {
@@ -80,13 +101,15 @@ const pages = [
     transform-style: preserve-3d;
     perspective: 1000px;
     transition: transform 0.8s ease;
-    margin-right: 2.5rem;
+    /* 合上时偏右：展开向左翻页后整体视觉居中 */
+    margin-right: 0;
+    transform: translateX(2.75rem);
     cursor: pointer;
     outline: none;
   }
 
   .about-flip__book:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, #0d9488 45%, transparent);
     border-radius: 0.35rem;
   }
 
@@ -132,7 +155,8 @@ const pages = [
 
   .about-flip__book:hover,
   .about-flip__book.is-open {
-    transform: translateX(3.25rem);
+    /* 翻开后继续右移，补偿页面向左展开，使展开态居中 */
+    transform: translateX(5.25rem);
   }
 
   .about-flip__hint {
@@ -151,12 +175,13 @@ const pages = [
     }
 
     .about-flip__book {
-      margin-right: 1rem;
+      margin-right: 0;
+      transform: translateX(1.35rem);
     }
 
     .about-flip__book:hover,
     .about-flip__book.is-open {
-      transform: translateX(1.75rem);
+      transform: translateX(2.85rem);
     }
   }
 
@@ -168,7 +193,7 @@ const pages = [
 
     .about-flip__book:hover,
     .about-flip__book.is-open {
-      transform: none;
+      transform: translateX(2.75rem);
     }
 
     .about-flip__book:hover .about-flip__page--c,

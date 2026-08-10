@@ -12,7 +12,7 @@
 
 | 项 | 结果 |
 | --- | --- |
-| Best run | **87.7839 / 100** · **#26 / 132** · SLA 0 · precision 0 |
+| Best run | 官方最佳 **87.7839 / 100** · **#26 / 132** · SLA 0 · precision 0；自测锚点 87.6933（4k–8k / 8k–16k / 16k–32k 吞吐 20.39 / 18.29 / 14.61 tok/s） |
 | 目标 | 固定国产 DCU、concurrency=1 下抬升长上下文 Qwen 吞吐（TTFT/TPOT P99 SLA） |
 | 栈 | vLLM 0.18.1 · Qwen3.5-27B BF16 · Hygon DCU (gfx936) · SCNet |
 | 我的焦点 | shared-gate fusion · SwiGLU HIP · GDN launch packing · Gather-FA · LPK prefetch |
@@ -35,7 +35,7 @@
 | 证据 | Spectral idle 冻结；CPU↔SUPA 链误差低于 1e-4；公开 NS64 Pred/GT；Agent 日志 35+ 段（abort / NO_SIGNAL，禁止静默 promote） |
 | vs v8 | 相对 formal v8（0.035302）：公开 L2 约 **+0.53%** 误差下降；Spectral ms 有意保持不变 |
 
-[源码](https://github.com/Aafff623) · [赛事主页](https://ai4scompetition.intern-ai.org.cn/)
+[源码](https://github.com/Aafff623/fandou-ai4s) · [赛事主页](https://ai4scompetition.intern-ai.org.cn/)
 
 <img class="about-banner" src="https://raw.githubusercontent.com/Aafff623/Aafff623/main/assets/comp-ai4s-ketan.webp" alt="书生国智科探挑战赛" loading="lazy" />
 
