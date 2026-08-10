@@ -1,5 +1,6 @@
 ---
 import Live2DWidget from "@components/features/Live2DWidget.astro";
+import LiveChatWidget from "@components/widget/LiveChatWidget.astro";
 
 import SpineModel from "@components/features/SpineModel.astro";
 import SpritePet from "@components/features/SpritePet.svelte";
@@ -1267,7 +1268,22 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
     )}
 </div>
 
+<LiveChatWidget />
+
 <FloatingControls headings={headings} encrypted={encrypted} />
+
+<!-- 宠物点击 → 弹出 LiveChat 浮窗（事件委托，swup 换页后无需重绑） -->
+<script is:inline data-swup-ignore-script>
+    (function initPetLiveChatTrigger() {
+        document.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!(target instanceof Element)) return;
+            var petRoot = target.closest('[data-pet-id]');
+            if (!petRoot) return;
+            window.dispatchEvent(new CustomEvent('pet:livechat:toggle'));
+        });
+    })();
+</script>
 
 <!--
     触屏设备上让代码块的复制按钮默认隐藏，点一下代码块才显形。
