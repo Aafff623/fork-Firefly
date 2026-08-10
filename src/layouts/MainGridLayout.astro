@@ -456,7 +456,9 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 	(isFullscreenMode && !isWallpaperSwitchable) ? 'wallpaper-fullscreen' : '',
 ]} style={
 	isWallpaperSwitchable
-		? `top: -${BANNER_HEIGHT_EXTEND}vh; display: none; --overlay-opacity: ${backgroundWallpaper.overlay?.opacity ?? 0.8}; --overlay-z-index: ${backgroundWallpaper.overlay?.zIndex ?? -1}; --overlay-blur: ${backgroundWallpaper.overlay?.blur ?? 0}px;`
+		? isHomePageCheck
+			? `top: -${BANNER_HEIGHT_EXTEND}vh; --overlay-opacity: ${backgroundWallpaper.overlay?.opacity ?? 0.8}; --overlay-z-index: ${backgroundWallpaper.overlay?.zIndex ?? -1}; --overlay-blur: ${backgroundWallpaper.overlay?.blur ?? 0}px;`
+			: `top: -${BANNER_HEIGHT_EXTEND}vh; display: none; --overlay-opacity: ${backgroundWallpaper.overlay?.opacity ?? 0.8}; --overlay-z-index: ${backgroundWallpaper.overlay?.zIndex ?? -1}; --overlay-blur: ${backgroundWallpaper.overlay?.blur ?? 0}px;`
 		: isOverlayMode
 			? `--overlay-opacity: ${backgroundWallpaper.overlay?.opacity ?? 0.8}; --overlay-z-index: ${backgroundWallpaper.overlay?.zIndex ?? -1}; --overlay-blur: ${backgroundWallpaper.overlay?.blur ?? 0}px;`
 			: isFullscreenMode
@@ -487,6 +489,8 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
                     fetchpriority="high"
                     quality={mobileQuality}
                     formats={["avif", "webp"]}
+                    fadeIn={false}
+                    showLqip={false}
                 />
             </div>
         )}
@@ -503,6 +507,8 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
                     loading="lazy"
                     fetchpriority="high"
                     quality={configQuality}
+                    fadeIn={false}
+                    showLqip={false}
                 />
             </div>
         )}
@@ -522,6 +528,8 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
                     loading="eager"
                     fetchpriority="high"
                     quality={mobileQuality}
+                    fadeIn={false}
+                    showLqip={false}
                 />
             </div>
         )}
@@ -538,6 +546,8 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
                     loading="eager"
                     fetchpriority="high"
                     quality={configQuality}
+                    fadeIn={false}
+                    showLqip={false}
                 />
             </div>
         )}
