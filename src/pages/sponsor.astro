@@ -29,6 +29,9 @@ const description =
 const sponsors = sponsorConfig.sponsors || [];
 const showSponsorsList = sponsorConfig.showSponsorsList !== false;
 const sponsorDateLocale = siteConfig.lang?.startsWith("zh") ? "zh-CN" : "en-US";
+const qrZoomHint = siteConfig.lang?.startsWith("zh")
+	? "双击放大"
+	: "Double-click to enlarge";
 
 function formatSponsorDate(date: string) {
 	return new Date(date).toLocaleDateString(sponsorDateLocale, {
@@ -107,19 +110,31 @@ function getQrLqipProps(qrCode: string) {
               )}
 
               {method.qrCode && (
-                <div class="sponsor-qr-slot relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-3 shadow-md mb-3 overflow-hidden ring-1 ring-black/5">
+                <div
+                  class="sponsor-qr-slot relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-3 shadow-md mb-3 overflow-hidden ring-1 ring-black/5 cursor-zoom-in select-none"
+                  data-sponsor-qr-zoom
+                  data-src={url(method.qrCode)}
+                  data-caption={method.name}
+                  role="button"
+                  tabindex="0"
+                  title={qrZoomHint}
+                  aria-label={`${method.name} ${i18n(I18nKey.scanToSponsor)}，${qrZoomHint}`}
+                >
                   <div class="lqip-placeholder absolute inset-0 rounded-lg pointer-events-none" style={getQrLqipProps(method.qrCode).style} aria-hidden="true"></div>
                   <img
                     src={url(method.qrCode)}
                     alt={`${method.name} ${i18n(I18nKey.scanToSponsor)}`}
-                    class="sponsor-qr-image relative w-full h-full object-contain opacity-0 transition-opacity duration-500 ease-out"
+                    class="sponsor-qr-image relative w-full h-full object-contain opacity-0 transition-opacity duration-500 ease-out pointer-events-none"
                     loading="lazy"
+                    draggable="false"
                   />
                 </div>
               )}
               {method.qrCode && (
                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                   {i18n(I18nKey.scanToSponsor)}
+                  <span class="mx-1 opacity-40" aria-hidden="true">·</span>
+                  <span class="text-(--primary)/80">{qrZoomHint}</span>
                 </p>
               )}
 
@@ -522,4 +537,76 @@ function getQrLqipProps(qrCode: string) {
   .sponsor-method-wechat .sponsor-qr-slot {
     box-shadow: 0 8px 24px color-mix(in srgb, var(--sponsor-accent) 14%, transparent);
   }
+
+  .sponsor-qr-slot[data-sponsor-qr-zoom]:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--sponsor-accent, var(--primary)) 70%, transparent);
+    outline-offset: 3px;
+  }
+
+  .sponsor-qr-slot[data-sponsor-qr-zoom]:active {
+    transform: scale(0.98);
+  }
 </style>
+
+<script>
+  async function openSponsorQrLightbox(src: string, caption: string) {
+    const { Fancybox } = await import("@fancyapps/ui");
+    Fancybox.show(
+      [
+        {
+          src,
+          type: "image",
+          caption: caption || undefined,
+        },
+      ],
+      {
+        animated: true,
+        dragToClose: true,
+        caption: true,
+        Toolbar: {
+          display: {
+            left: ["infobar"],
+            middle: ["zoomIn", "zoomOut", "toggle1to1"],
+            right: ["close"],
+          },
+        },
+        Panzoom: {
+          maxScale: 5,
+          minScale: 1,
+        },
+      },
+    );
+  }
+
+  function bindSponsorQrZoom(root: ParentNode = document) {
+    const slots = root.querySelectorAll<HTMLElement>("[data-sponsor-qr-zoom]");
+    for (const slot of slots) {
+      if (slot.dataset.qrZoomBound === "1") continue;
+      slot.dataset.qrZoomBound = "1";
+
+      const open = () => {
+        const src = slot.getAttribute("data-src");
+        if (!src) return;
+        const caption = slot.getAttribute("data-caption") || "";
+        void openSponsorQrLightbox(src, caption);
+      };
+
+      slot.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        open();
+      });
+
+      slot.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open();
+        }
+      });
+    }
+  }
+
+  bindSponsorQrZoom();
+  document.addEventListener("swup:content:replace", () => {
+    bindSponsorQrZoom();
+  });
+</script>
