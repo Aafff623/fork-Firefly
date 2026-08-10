@@ -224,6 +224,16 @@ const getComponentProps = (
 			...baseProps,
 			focusTags: Astro.props.postTags ?? [],
 			focusThemeTags: Astro.props.postThemeTags ?? [],
+			// 移动底栏只出列表，避免与左栏再挂一份球体脚本
+			listOnly: side === SIDEBAR_SIDE.BOTTOM,
+		};
+	}
+
+	// 移动底栏标签：列表态，砍掉第二份 TagChalkSphere inline
+	if (config.type === "tags" && side === SIDEBAR_SIDE.BOTTOM) {
+		return {
+			...baseProps,
+			listOnly: true,
 		};
 	}
 
