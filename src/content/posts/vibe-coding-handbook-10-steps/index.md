@@ -21,7 +21,7 @@ comment: true
 
 ## 01｜先搞清楚 vibe coding 是啥、用啥、怎么开
 
-![01 vibe coding 使用手册总览](././images/fig-01-01-vibe-coding-overview.jpg)
+![01 vibe coding 使用手册总览](./images/fig-01-01-vibe-coding-overview.jpg)
 
 **定义（图上原话大意）：** 用自然语言描述软件意图，让 AI 帮你生成、修改、调试代码。不必先会写代码，但要能描述目标、判断结果、持续迭代。
 
@@ -57,7 +57,7 @@ comment: true
 
 ## 02｜先写需求：一句想法不是软件需求
 
-![02 先写需求](././images/fig-02-02-write-requirements.jpg)
+![02 先写需求](./images/fig-02-02-write-requirements.jpg)
 
 AI 最怕的不是任务难，而是你说得太模糊。
 
@@ -87,7 +87,7 @@ AI 最怕的不是任务难，而是你说得太模糊。
 
 ## 03｜先砍范围：怎么定义 MVP
 
-![03 先砍范围定义 MVP](././images/fig-03-03-define-mvp.jpg)
+![03 先砍范围定义 MVP](./images/fig-03-03-define-mvp.jpg)
 
 Vibe coding 最容易失败的地方，是一上来做太大。先做最小闭环，再逐步变复杂。
 
@@ -118,7 +118,7 @@ Vibe coding 最容易失败的地方，是一上来做太大。先做最小闭�
 
 ## 04｜选技术路线：让 AI 用什么方式搭项目
 
-![04 选技术路线](././images/fig-04-04-tech-route.jpg)
+![04 选技术路线](./images/fig-04-04-tech-route.jpg)
 
 ### 三种路线
 
@@ -148,7 +148,7 @@ Vibe coding 最容易失败的地方，是一上来做太大。先做最小闭�
 
 ## 05｜先搭骨架：第一轮别追求做完
 
-![05 先搭骨架](././images/fig-05-05-scaffold.jpg)
+![05 先搭骨架](./images/fig-05-05-scaffold.jpg)
 
 第一轮目标不是做完，而是搭出一个能继续生长的项目骨架。
 
@@ -193,7 +193,7 @@ src/
 
 ## 06｜页面怎么做：别只做「正常显示」
 
-![06 页面怎么做六种状态](././images/fig-06-06-page-states.jpg)
+![06 页面怎么做六种状态](./images/fig-06-06-page-states.jpg)
 
 真实软件页面至少要把状态说清楚。
 
@@ -222,7 +222,7 @@ src/
 
 ## 07｜报错了怎么办：和 AI 一起进修复循环
 
-![07 报错了怎么办调试闭环](././images/fig-07-07-debug-loop.jpg)
+![07 报错了怎么办调试闭环](./images/fig-07-07-debug-loop.jpg)
 
 报错不是失败。报错是让 AI 进入修复循环的入口。
 
@@ -253,7 +253,7 @@ src/
 
 ## 08｜看 Diff：真正危险的是你不知道它改了什么
 
-![08 看 Diff](././images/fig-08-08-read-diff.jpg)
+![08 看 Diff](./images/fig-08-08-read-diff.jpg)
 
 真正危险的不是 AI 改错，而是你完全不知道它改了什么。
 
@@ -282,7 +282,7 @@ src/
 
 ## 09｜怎么验收：从「能跑」到「真能用」
 
-![09 怎么验收](././images/fig-09-09-acceptance.jpg)
+![09 怎么验收](./images/fig-09-09-acceptance.jpg)
 
 ### 手动验收 6 问
 
@@ -311,7 +311,7 @@ src/
 
 ## 10｜上线与迭代：本地能跑 ≠ 上线能用
 
-![10 上线与迭代](././images/fig-10-10-deploy-iterate.jpg)
+![10 上线与迭代](./images/fig-10-10-deploy-iterate.jpg)
 
 软件真正进入「真实世界」，是上线之后。
 

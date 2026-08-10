@@ -19,7 +19,7 @@ comment: true
 
 旁链（**不硬并**）：[草图→可交互 Three.js](/posts/sketch-to-interactive-3d-traceform/) 钉单物体参数化；本篇钉的是**园区多机位 + 布局/风格合同**。[好 AGENTS.md 模板](/posts/agents-md-template-six-scenes/) 讲通用路由原则；这里落到四个古代园区 skills。同模型其他交付见文末。
 
-![宋代建筑园区鸟瞰全景](././images/fig-01-01-aerial-birdseye-panorama.jpg)
+![宋代建筑园区鸟瞰全景](./images/fig-01-01-aerial-birdseye-panorama.jpg)
 
 ---
 
@@ -37,7 +37,7 @@ Codex 在这里不是「帮我写一段提示词」的聊天工具，而是工�
 
 项目首先生成严格俯视的园区线框图，把南侧主入口、南北主轴、中央大殿、西侧水院、东侧书院、北侧后园、围墙、连廊和道路固定下来。
 
-![园区正交总平面线框图](././images/fig-02-02-orthographic-site-plan-wireframe.jpg)
+![园区正交总平面线框图](./images/fig-02-02-orthographic-site-plan-wireframe.jpg)
 
 与图片同时保存的 `LAYOUT_LOCK.md` 明确规定：后续可以改变机位、天气、季节、灯光和人物活动，但不能移动、旋转或增删主要建筑，也不能改变庭院、水体、连廊和入口关系。
 
@@ -52,7 +52,7 @@ on a white background. No shading, photorealism, labels, dimensions,
 logo or watermark.
 ```
 
-![鸟瞰全景（文称并置位；附件为重复鸟瞰）](././images/fig-03-03-aerial-birdseye-panorama-repeat.jpg)
+![鸟瞰全景（文称并置位；附件为重复鸟瞰）](./images/fig-03-03-aerial-birdseye-panorama-repeat.jpg)
 
 [^layout-juxtapose]
 
@@ -73,7 +73,7 @@ logo or watermark.
 
 主入口图被选为风格母图。之后每个机位都按固定顺序输入：总平面线框、风格母图、可选的已批准局部视角。GPT Image 2 的图像编辑能力使「参考既有设计并改变视角或氛围」成为可执行路径，而不是每次从文本重新开始。
 
-![宋代风格主入口母图](././images/fig-04-04-main-gate-style-master.jpg)
+![宋代风格主入口母图](./images/fig-04-04-main-gate-style-master.jpg)
 
 本阶段 Prompt 不使用抽象的「古风」，而是明确屋面、木构、墙体、铺地、植物和排除项：
 
@@ -86,9 +86,9 @@ ornate Ming-Qing motifs, Japanese shrine markers, fantasy roofs, neon,
 readable text and watermarks.
 ```
 
-![雨夜廊院风格延伸](././images/fig-05-05-rain-night-corridor-courtyard.jpg)
+![雨夜廊院风格延伸](./images/fig-05-05-rain-night-corridor-courtyard.jpg)
 
-![庭院日景风格延伸](././images/fig-06-06-courtyard-style-extension-day.jpg)
+![庭院日景风格延伸](./images/fig-06-06-courtyard-style-extension-day.jpg)
 
 ---
 
@@ -123,9 +123,9 @@ Preserve complete layout, architecture, materials and landmarks.
 
 最终方案包含八个独立机位：总体鸟瞰、主入口、中央庭院、水院廊桥、书院内院、中央夜景、北侧后园和临水茶亭。每个机位都有独立效果图，也有独立透视线框图，不把多个视角合并成一张交付图。
 
-![中央庭院日景机位](././images/fig-07-07-central-courtyard-day.jpg)
+![中央庭院日景机位](./images/fig-07-07-central-courtyard-day.jpg)
 
-![独立透视线框图](././images/fig-08-08-perspective-wireframe-courtyard.jpg)
+![独立透视线框图](./images/fig-08-08-perspective-wireframe-courtyard.jpg)
 
 线框图通过图像编辑从已批准效果图转换而来，要求保持原机位、屋顶、柱网、墙体、庭院、水体和景观轮廓，只移除颜色、材质、光影和人物。这些线框适合概念沟通，但不能替代从统一三维模型导出的工程投影。
 
@@ -139,7 +139,7 @@ no collage, split screen or text.
 
 夜景使用白天中央庭院作为第三张参考图，只改变光线和活动：
 
-![中央庭院夜景](././images/fig-09-09-central-courtyard-night.jpg)
+![中央庭院夜景](./images/fig-09-09-central-courtyard-night.jpg)
 
 ---
 
@@ -163,9 +163,9 @@ Classify each finding as blocker, major or minor. Name the exact file
 and regenerate only the failing view.
 ```
 
-![水院/后园视角审计示意](././images/fig-10-10-water-courtyard-rear-garden-audit.jpg)
+![水院/后园视角审计示意](./images/fig-10-10-water-courtyard-rear-garden-audit.jpg)
 
-![临水亭审计示意](././images/fig-11-11-waterside-pavilion-audit.jpg)
+![临水亭审计示意](./images/fig-11-11-waterside-pavilion-audit.jpg)
 
 ---
 

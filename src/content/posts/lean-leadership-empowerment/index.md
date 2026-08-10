@@ -21,7 +21,7 @@ comment: true
 
 旁链提醒：同日队列里还有「人效差，答案多半不在人身上」「很多公司只会砍成本，高手从省钱走到赚钱」——相关，但**不硬并**。人效篇拆分子分母与四层对症；降本篇讲暴力→管控→流程→经营路径；这边讲**领导角色怎么转身**（Gemba / 教练 / A3 / Kotter）。
 
-![01｜精益领导力转型：传统管理者 vs 精益领导者；认知→行为→文化](././images/fig-01-01-lean-leadership-transform.jpg)
+![01｜精益领导力转型：传统管理者 vs 精益领导者；认知→行为→文化](./images/fig-01-01-lean-leadership-transform.jpg)
 
 ---
 
@@ -75,7 +75,7 @@ comment: true
 
 ## 02 现场走动管理 Gemba Walk
 
-![02｜Gemba Walk：三原则 + 五步法；答案/改善/成长都在现场](././images/fig-02-02-gemba-walk.jpg)
+![02｜Gemba Walk：三原则 + 五步法；答案/改善/成长都在现场](./images/fig-02-02-gemba-walk.jpg)
 
 精益领导者的核心实践之一，就是 Gemba Walk——现场走动管理。Gemba 是日语「现场」的意思，指真实发生工作的地方。
 
@@ -133,7 +133,7 @@ comment: true
 
 ## 03 教练式领导
 
-![03｜教练式领导：核心理念、提问技巧、GROW、关键行为](././images/fig-03-03-coaching-leadership.jpg)
+![03｜教练式领导：核心理念、提问技巧、GROW、关键行为](./images/fig-03-03-coaching-leadership.jpg)
 
 精益领导者的核心技能之一，是教练式领导。不是告诉员工怎么做，而是引导员工自己找到方法。
 
@@ -193,7 +193,7 @@ comment: true
 
 ## 04 问题解决引导
 
-![04｜问题解决引导：角色不是/而是；A3 六阶段引导提问](././images/fig-04-04-problem-solving-facilitation.jpg)
+![04｜问题解决引导：角色不是/而是；A3 六阶段引导提问](./images/fig-04-04-problem-solving-facilitation.jpg)
 
 精益领导者在问题解决中，不是「解题者」，是「引导者」。
 
@@ -252,7 +252,7 @@ A3 报告是丰田发明的问题解决方法，因为报告写在 A3 纸上而�
 
 ## 05 团队赋能与激励
 
-![05｜团队赋能与激励：四维度 + 内/外激励 + 心理安全/全员参与](././images/fig-05-05-team-empowerment.jpg)
+![05｜团队赋能与激励：四维度 + 内/外激励 + 心理安全/全员参与](./images/fig-05-05-team-empowerment.jpg)
 
 精益领导力的核心目标，是赋能团队。团队有能力、有动力、有环境，精益才能持续。
 
@@ -328,7 +328,7 @@ A3 报告是丰田发明的问题解决方法，因为报告写在 A3 纸上而�
 
 ## 06 变革领导力
 
-![06｜变革领导力：五类阻力 + Kotter 八步 + 关键行为](././images/fig-06-06-change-leadership.jpg)
+![06｜变革领导力：五类阻力 + Kotter 八步 + 关键行为](./images/fig-06-06-change-leadership.jpg)
 
 精益推行，本质上是一场变革。变革需要领导力，而且是特殊的领导力——变革领导力。
 
