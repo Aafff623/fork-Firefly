@@ -18,6 +18,13 @@ export function isBrowsePostPath(
 	return /\/posts\//.test(pathname);
 }
 
+/** 动态页（含 /dynamic/comments）：左溢出即失衡，不依赖日历下空隙 */
+export function isDynamicPath(
+	pathname = typeof window !== "undefined" ? window.location.pathname : "",
+): boolean {
+	return /\/dynamic(\/|$)/.test(pathname);
+}
+
 function resolveCalendarEl(): HTMLElement | null {
 	const byId = document.getElementById("calendar-widget");
 	if (byId instanceof HTMLElement) return byId;
@@ -67,6 +74,10 @@ export function isSidebarImbalanced(
 	const leftOverflows =
 		estimateLeftStickyBottom(left) > window.innerHeight + 4;
 	if (!leftOverflows) return false;
+
+	// 动态页右侧有「动态目录」抬高日历，底边空隙常不足 minGap；
+	// 左栏裁切时仍应折叠分类，不依赖日历下留白。
+	if (isDynamicPath()) return true;
 
 	const calendar = resolveCalendarEl();
 	if (!calendar || calendar.getClientRects().length === 0) {

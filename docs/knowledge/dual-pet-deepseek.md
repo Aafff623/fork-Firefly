@@ -34,7 +34,7 @@
 | 滚动 | 贴卡坐标**不夹视口**：卡滚出则宠离开视野；约 **2.4s** 后再换到仍可见的卡；无可见卡则视口角兜底 |
 | 拖拽 | 松手后约 **2s** 强制钻洞回游走 |
 | 文章页 | OpenPet，不游走，钉视口角 |
-| 侧栏失衡 | 浏览页左 sticky 裁切 + 日历下空隙 ≥ `balanceParkMinGapPx`（默认 160）：分类墙手风琴收起，宠强制 `dock` 日历并停 roam；滚回平衡后恢复 |
+| 侧栏失衡 | 浏览页左 sticky 裁切 + 日历下空隙 ≥ `balanceParkMinGapPx`（默认 160）：分类墙手风琴收起，宠强制 `dock` 日历并停 roam；滚回平衡后恢复。**例外**：`/dynamic` 路径下左溢出即失衡（不依赖日历空隙；右侧有动态目录抬高日历） |
 
 配置：`spritePetConfig.roam`（含 `nearMoveMaxPx` / `nearMoveMs` / `balanceParkMinGapPx`）。
 
