@@ -31,7 +31,7 @@ comment: true
 | 懂 UI 结构 | 导航 / 卡片 / Tab | 顶栏、内容区、底栏各归其位，不是一张海报硬塞控件 |
 | 分层可编辑 | 背景 / 组件 / 图标 / 文字 | 导出 PNG 分层，能改、能交、能进 Figma |
 
-底下一行流程也写死了：`prompt → screen → refine → layers`。别指望一句提示词同时搞定构图和像素级细节。
+底下一行流程也写死了：`prompt → screen → refine → layers`。别指望一句提示词同时完成构图和像素级细节。
 
 ---
 
