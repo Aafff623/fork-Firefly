@@ -34,8 +34,9 @@ export const collectionsConfig: CollectionsConfig = {
 		},
 		{
 			slug: "vibe-tutorial-index",
-			name: "Vibe Coding 教程索引",
-			description: "鱼皮 vibe-coding 系列导读：基础、技巧、工具与 OpenClaw 索引。",
+			name: "鱼皮VibeCoding",
+			description:
+				"鱼皮 Vibe Coding 系列导读：基础、工具、实战部署、模型、学习、变现与热文索引。",
 			emoji: "🚀",
 			cover: "/assets/collections/vibe-coding.jpg",
 		},
