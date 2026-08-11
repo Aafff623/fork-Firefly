@@ -167,5 +167,15 @@ export const collectionsConfig: CollectionsConfig = {
 			emoji: "🎟️",
 			cover: "/assets/collections/wool-freebies.jpg",
 		},
+
+		// ── 小林coding 学习笔记（一级）──
+		{
+			slug: "xiaolincoding",
+			name: "小林coding",
+			description:
+				"小林coding 图解 / 面经的个人学习笔记与导读合集（非原文镜像）。",
+			emoji: "📗",
+			cover: "/assets/collections/xiaolincoding.jpg",
+		},
 	],
 };
