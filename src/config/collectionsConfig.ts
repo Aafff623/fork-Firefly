@@ -169,6 +169,16 @@ export const collectionsConfig: CollectionsConfig = {
 			cover: "/assets/collections/wool-freebies.jpg",
 		},
 
+		// ── CSDN 技术教程（一级）──
+		{
+			slug: "csdn-tech-tutorials",
+			name: "CSDN技术教程",
+			description:
+				"从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记。",
+			emoji: "📘",
+			cover: "/assets/collections/csdn-tech-tutorials.jpg",
+		},
+
 		// ── 小林coding 学习笔记（一级）──
 		{
 			slug: "xiaolincoding",

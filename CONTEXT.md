@@ -1,4 +1,4 @@
-# CONTEXT.md
+﻿# CONTEXT.md
 
 > 本仓领域事实单一来源。术语与硬约束以本文为准。主题使用文档见 `docs/official/`（gitignore，不提交）；路由索引见 `docs/knowledge/official-docs.tree.json`。
 
@@ -91,9 +91,11 @@ Content Collections（`src/content.config.ts`）：
 | 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
 
 `wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
+
+`csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记；frontmatter 写 `collections: [csdn-tech-tutorials]`。
 ## Obsidian 写作源（固定）
 
 | 项 | 值 |
