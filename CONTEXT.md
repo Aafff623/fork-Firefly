@@ -118,6 +118,7 @@ Content Collections（`src/content.config.ts`）：
 | 根 | `D:\OneDrive\Desktop\Knowledge` |
 | 待发布 | `todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/`（新规范） |
 | 已发布 | `Archive/{Theme}/{facet}/…` |
+| 小林coding 离线 | `Archive/xiaolincoding/source/`（私有检索；禁批量发帖；站上仅导览合集） |
 | 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读；新 extract 勿再写扁平根 |
 | 来源索引 | `session` / `paste-md` / `bibigpt` / `wechat` / `mixed` |
 | Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md` |
