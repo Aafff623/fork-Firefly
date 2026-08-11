@@ -1,7 +1,7 @@
 {
 	"name": "firefly",
 	"installCommand": "pnpm install",
-	"buildCommand": "EDGEONE=1 pnpm build",
+	"buildCommand": "EDGEONE=1 pnpm run build:edgeone",
 	"outputDirectory": ".edgeone",
 	"nodeVersion": "22.17.1"
 }

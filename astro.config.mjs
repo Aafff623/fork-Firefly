@@ -120,6 +120,9 @@ export default defineConfig({
 
 	adapter,
 
+	// EdgeOne CI 内存紧：限制并行预渲染，避免 exit 137（OOM/SIGKILL）
+	...(process.env.EDGEONE ? { build: { concurrency: 1 } } : {}),
+
 	// 本地 dev 绑定 IPv4：Node 默认仅监听 [::1]，浏览器 localhost(IPv4) 会拒连
 	server: {
 		host: "127.0.0.1",

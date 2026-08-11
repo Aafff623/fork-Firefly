@@ -13,7 +13,8 @@
 1. 腾讯云实名 → EdgeOne / Makers → 导入 GitHub 仓库 `Aafff623/fork-Firefly`。
 2. 生产分支：与 Vercel Production **相同**分支。
 3. 加速区选 **全球可用区（不含中国大陆）**（免 ICP，可绑自定义域名）。
-4. 构建以仓库根 `edgeone.json` 为准（`EDGEONE=1 pnpm build`，Node 22）。
+4. 构建以仓库根 `edgeone.json` 为准（`EDGEONE=1 pnpm run build:edgeone`，Node 22.17+）。  
+   该脚本跳过 LQIP 重算与字体子集（用仓库已提交产物），并在 `astro.config` 里把 `build.concurrency` 设为 `1`，避免 CI `exit 137` OOM。
 5. 环境变量（从 Vercel / 本地 `.env` 抄，勿入库）：
    - `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_BUCKET` / `COS_REGION` / `COS_PUBLIC_BASE_URL`（评论大图）
    - 可选：`DEEPSEEK_*`、`MAXKB_*`
