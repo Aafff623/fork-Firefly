@@ -3,5 +3,5 @@
 	"installCommand": "pnpm install",
 	"buildCommand": "EDGEONE=1 pnpm build",
 	"outputDirectory": ".edgeone",
-	"nodeVersion": "22.11.0"
+	"nodeVersion": "22.17.1"
 }
