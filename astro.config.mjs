@@ -6,6 +6,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import vercel from "@astrojs/vercel";
+import edgeoneAdapter from "@edgeone/astro";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
@@ -60,13 +61,15 @@ if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
 }
 
-// CF Workers → Cloudflare adapter；其余（本地 / Vercel）→ Vercel adapter
+// EDGEONE=1 → EdgeOne Pages；CF_WORKERS → Cloudflare；其余（本地 / Vercel）→ Vercel
 // 供 /api/comment-image、/api/admin/pin 等 prerender=false 路由使用
-const adapter = process.env.CF_WORKERS
-	? cloudflare({
-			prerenderEnvironment: "node",
-		})
-	: vercel();
+const adapter = process.env.EDGEONE
+	? edgeoneAdapter({ outDir: ".edgeone" })
+	: process.env.CF_WORKERS
+		? cloudflare({
+				prerenderEnvironment: "node",
+			})
+		: vercel();
 
 // https://astro.build/config
 export default defineConfig({
@@ -327,7 +330,26 @@ export default defineConfig({
 			},
 		},
 		optimizeDeps: {
-			include: ["@lottiefiles/dotlottie-web"],
+			include: [
+				"@lottiefiles/dotlottie-web",
+				"@heroui-pro/react/chat-conversation",
+				"@heroui-pro/react/prompt-input",
+				"@heroui-pro/react/markdown",
+				"motion",
+				"react-aria-components",
+			],
+		},
+		ssr: {
+			noExternal: [
+				"@heroui-pro/react",
+				"@heroui/react",
+				"@heroui/styles",
+				"motion",
+				"react-aria-components",
+				"react-markdown",
+				"shiki",
+				"streamdown",
+			],
 		},
 		assetsInclude: ["**/*.wasm"],
 		resolve: {

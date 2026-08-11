@@ -6,36 +6,67 @@
 import { Icon } from "astro-icon/components";
 
 const reach = [
-	{ label: "Blog", href: "/", icon: "lucide:book-open" },
+	{ label: "Blog", href: "https://my-blogs-roan-seven.vercel.app/", icon: "lucide:book-open", external: true },
+	{ label: "Garden", href: "/", icon: "lucide:trees" },
+	{ label: "GitHub", href: "https://github.com/Aafff623", icon: "lucide:github", external: true },
+	{ label: "Email", href: "mailto:laiyif68@gmail.com", icon: "lucide:mail" },
 	{
-		label: "Digital Garden",
-		href: "https://threetwoa-digital-garden.vercel.app/",
-		icon: "lucide:trees",
+		label: "Bilibili",
+		href: "https://space.bilibili.com/549916339",
+		icon: "simple-icons:bilibili",
 		external: true,
 	},
-	{ label: "Email", href: "mailto:laiyif68@gmail.com", icon: "lucide:mail" },
+	{
+		label: "X",
+		href: "https://x.com/FanLaiyi26341",
+		icon: "simple-icons:x",
+		external: true,
+	},
+	{
+		label: "Telegram",
+		href: "https://t.me/threetwoa",
+		icon: "simple-icons:telegram",
+		external: true,
+	},
+	{
+		label: "YouTube",
+		href: "https://www.youtube.com/@laiyiFan-23",
+		icon: "simple-icons:youtube",
+		external: true,
+	},
 ] as const;
 
+/** accent 索引对应 about.astro 的 --about-a* 色板 */
 const nowRows = [
 	{
 		icon: "lucide:blocks",
 		title: "构建与实践",
 		body: "可维护的大系统与中间件；remix 新兴开源范式（OpenClaw、Hermes Agent、OpenHands、DeerFlow）；长线数字花园与插件生态",
+		accent: 0,
 	},
 	{
 		icon: "lucide:wallet",
 		title: "实战点数",
 		body: "支付、数据库、微信、阿里云、UniApp；轮换 PM / FDE / 全栈 / 黑客松帽子",
+		accent: 1,
 	},
 	{
 		icon: "lucide:git-branch",
 		title: "开源折腾",
 		body: "挖自己的仓与热点项目；跟 B 站创作者（如 IT咖啡馆）学，clone / 改 / fork / 帮忙维护",
+		accent: 2,
 	},
 	{
 		icon: "lucide:cpu",
 		title: "评测与能力包",
-		body: "亲手评国产模型（DeepSeek、GLM、Kimi）与海外三大家（Anthropic、OpenAI、xAI）；MiniMax / 阶跃能力包接入 Agent 工作流",
+		body: "亲手评国产模型（DeepSeek、GLM、Kimi）与海外三大家（Anthropic、OpenAI、xAI）；MiniMax / 阶跃能力包（图、视频、TTS、音乐）接入 Agent 工作流，外加自定义 workflow、实用 Skills、MCP",
+		accent: 3,
+	},
+	{
+		icon: "lucide:sparkles",
+		title: "My TTA Skills",
+		body: "自用小工具箱：tta-cover · tta-draw-ui · tta-frontend · tta-html · tta-motion · tta-ppt · tta-tone · tta-visual——封面、UI、前端、可分享 HTML、动效、PPT、文风与讲解图",
+		accent: 4,
 	},
 ] as const;
 ---
@@ -75,7 +106,7 @@ const nowRows = [
 </div>
 
 <section class="about-block" aria-labelledby="about-now-heading">
-  <h2 id="about-now-heading" class="about-section-title" data-about-h2="01 · Now">
+  <h2 id="about-now-heading" class="about-section-title" data-about-h2="01 · Now" data-accent="0">
     <Icon is:inline name="lucide:sparkles" class="about-h2-icon" aria-hidden="true" />
     <span>01 · Now</span>
   </h2>
@@ -83,7 +114,7 @@ const nowRows = [
   <ul class="about-icon-list">
     {
       nowRows.map((row) => (
-        <li class="about-icon-row">
+        <li class="about-icon-row" data-accent={row.accent}>
           <span class="about-icon-row__glyph" aria-hidden="true">
             <Icon is:inline name={row.icon} />
           </span>
@@ -95,7 +126,7 @@ const nowRows = [
       ))
     }
   </ul>
-  <p class="about-aside">
+  <p class="about-aside" data-accent="1">
     <span class="about-aside__glyph" aria-hidden="true">
       <Icon is:inline name="lucide:bike" />
     </span>

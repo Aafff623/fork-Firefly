@@ -60,6 +60,9 @@ export const spritePetConfig: SpritePetConfig = {
 		portalHoldMs: 160,
 		scrollLeaveDelayMs: 2_400,
 		resumeAfterDragMs: 2_000,
+		nearMoveMaxPx: 420,
+		nearMoveMs: 520,
+		balanceParkMinGapPx: 160,
 		pauseWhenPinned: false,
 	},
 

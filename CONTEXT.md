@@ -91,9 +91,11 @@ Content Collections（`src/content.config.ts`）：
 | 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / Vibe / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
 
 `wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
+
+`csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记；frontmatter 写 `collections: [csdn-tech-tutorials]`。
 ## Obsidian 写作源（固定）
 
 | 项 | 值 |
@@ -109,15 +111,39 @@ Content Collections（`src/content.config.ts`）：
 | 路径 | 源 | 技能链 |
 |---|---|---|
 | 甲 | Obsidian vault | `ob2blog` → **`site-cascade`** |
-| 乙 | 会话/调研素材 | `knowledge-extract` → `knowledge-output` → **`site-cascade`** |
+| 乙 | 会话/调研/BibiGPT/公众号 | `knowledge-extract` → `knowledge-output` → **`site-cascade`** |
+
+### Knowledge 素材库（仓外）
+
+| 项 | 值 |
+|---|---|
+| 根 | `D:\OneDrive\Desktop\Knowledge` |
+| 待发布 | `todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/`（新规范） |
+| 已发布 | `Archive/{Theme}/{facet}/…` |
+| 小林coding 离线 | `Archive/xiaolincoding/source/`（私有检索；禁批量发帖；站上仅导览合集） |
+| 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读；新 extract 勿再写扁平根 |
+| 来源索引 | `session` / `paste-md` / `bibigpt` / `wechat` / `mixed` |
+| Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md` |
+| 公众号流 | 同目录 `wechat-mp.md`（Multi-Agent + `source/` 保真 + TTA） |
+
+**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 仍走上文「现行分类词表」并经园主确认。
 
 勿再写成单一 `/ob2blog`。细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。
 
 ## 部署事实
 
-- 默认页面仍 **prerender/static**；`CF_WORKERS` → Cloudflare adapter，否则 → `@astrojs/vercel`（供 `prerender=false` API）
+- 默认页面仍 **prerender/static**；adapter 三选一：
+  - 默认 / Vercel CI → `@astrojs/vercel`
+  - `CF_WORKERS=1` → `@astrojs/cloudflare`
+  - `EDGEONE=1` → `@edgeone/astro`（产物 `.edgeone/`；构建见根目录 `edgeone.json`）
+- **双入口（2026-08）**：
+  - **国内主入口（目标）**：`https://threetwoa.live` → 腾讯云 EdgeOne Pages（加速区先用「全球不含中国大陆」，免 ICP；域名在 Name.com）
+  - **海外/备用**：`https://fork-firefly.vercel.app` → Vercel Hobby（保留，不立刻下线）
+  - 旧域 `threetwoa.me`（Namecheap）不续；绑域与 SSL 未完成前，`siteConfig.site_url` 仍指向 Vercel；SSL 绿后再改成 `https://threetwoa.live`
 - Vercel 项目：`fork-firefly`，已连 GitHub origin
-- 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind）
+- 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind → sync 到 adapter 静态目录）
+- 操作清单：`docs/agents/edgeone-domain-runbook.md`
+- 交付验收（国内推广）：除 Vercel 外，须核同学能否打开 `https://threetwoa.live`（未绑域前勿宣称国内入口完成）
 
 ## 本地双端口预览（运维记忆 · 2026-08）
 
@@ -155,7 +181,8 @@ Content Collections（`src/content.config.ts`）：
 | Firefly | 上游主题名；本仓为其独立二次开发站（非 fork） |
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
-| 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；与 Spine/Live2D 互斥 |
+| 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；浏览侧栏失衡时分类折叠 + 宠钉日历（`sidebarBalance`）；与 Spine/Live2D 互斥；**点击触发问答浮窗**（见下） |
+| 问答助手 | 基于 **MaxKB** 的站点 RAG：`/ask` 为 HeroUI Pro React 岛 + 同源 `/api/ask`（本站检索 + SSE）；桌宠点击弹 `LiveChatWidget`（实现路径可能仍直连本机 MaxKB）；上云见 `docs/ask-maxkb-cloud-plan.md`；**无 `siteConfig.pages.ask` 开关**（文件存在性生效）；浮窗强依赖桌宠 `enable` |
 | 站点音乐 | 默认 `musicConfig.mode=local`（ADR-0002）；导航栏音符=音频面板，三角播放=横幅背景视频，二者互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |

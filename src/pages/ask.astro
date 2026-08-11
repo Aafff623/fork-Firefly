@@ -1,20 +1,14 @@
 ---
+import AskChat from "@/components/ask/AskChat";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
+import "@/styles/ask-heroui.css";
 
 const title = "站点问答助手";
 const description = "基于站点内容回答你的问题，欢迎来问。";
 ---
 
 <MainGridLayout title={title} description={description}>
-    <div class="min-h-[80vh]">
-        <iframe
-            src="http://localhost:8080/chat/2777601d60679239"
-            width="100%"
-            height="750"
-            frameborder="0"
-            class="w-full overflow-hidden rounded-xl border border-skin-card-border"
-            title="站点问答助手"
-            allow="microphone"
-        ></iframe>
-    </div>
+	<div class="card-base z-10 relative w-full">
+		<AskChat client:load />
+	</div>
 </MainGridLayout>

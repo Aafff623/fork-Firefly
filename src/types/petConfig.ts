@@ -20,6 +20,18 @@ export type SpritePetRoamConfig = {
 	scrollLeaveDelayMs: number;
 	/** 用户松开拖拽后，多久再恢复卡片游走（ms）；快速倒计时，约 2s */
 	resumeAfterDragMs: number;
+	/**
+	 * 近距小跑阈值（px，视口距离）。
+	 * 同栏且距离 ≤ 此值时插值小跑；否则 / 跨栏 / reduced-motion 走钻洞。
+	 */
+	nearMoveMaxPx: number;
+	/** 近距小跑插值时长（ms） */
+	nearMoveMs: number;
+	/**
+	 * 侧栏失衡：日历底到视口底空隙 ≥ 此值（px）时钉宠停游走。
+	 * 默认 160。
+	 */
+	balanceParkMinGapPx: number;
 	/** @deprecated 已改为钻洞换位，保留字段兼容旧配置 */
 	moveDurationMs?: number;
 	/**

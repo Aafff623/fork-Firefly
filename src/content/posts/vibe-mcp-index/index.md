@@ -96,4 +96,4 @@ image: ./cover.jpg
 | 本篇 | **薄索引** + 精炼摘要；步骤与代码以原文为准 |
 | 呈现 | 封面 + 模块小长条配图；步骤与代码以原文为准 |
 | 对照 | 结构对齐 [OpenClaw 索引](/posts/openclaw-tutorial-index/)，章节数远少于 OpenClaw |
-| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [工具栈三岔](/posts/vibe-coding-tools-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) |
+| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [工具栈三岔](/posts/vibe-coding-tools-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [编程学习](/posts/vibe-learning-index/) · [项目实战](/posts/vibe-projects-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) |

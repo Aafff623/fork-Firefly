@@ -40,6 +40,71 @@ export const detectDynamicKind = (
 	return "status";
 };
 
+/** 供连续笔记折叠：至少要有 html（+ 可选 images 供 kind 启发式） */
+export type DynamicNoteGroupable = {
+	html: string;
+	images?: Array<{ alt?: string; src: string; title?: string }>;
+};
+
+export type NoteTimelineRow<T extends DynamicNoteGroupable> =
+	| { type: "single"; entry: T; kind: DynamicKind }
+	| { type: "note-run"; head: T; folded: T[] };
+
+/**
+ * 「全部」筛选下把连续 note 收成 run：首条 head，后续进 folded。
+ * enable=false 时一对一 single（不折叠）。
+ */
+export const groupConsecutiveNotes = <T extends DynamicNoteGroupable>(
+	entries: T[],
+	enable: boolean,
+): NoteTimelineRow<T>[] => {
+	if (!enable) {
+		return entries.map((entry) => ({
+			type: "single" as const,
+			entry,
+			kind: detectDynamicKind(entry.html, entry.images?.length ?? 0),
+		}));
+	}
+	const rows: NoteTimelineRow<T>[] = [];
+	for (const entry of entries) {
+		const kind = detectDynamicKind(entry.html, entry.images?.length ?? 0);
+		const last = rows[rows.length - 1];
+		if (kind === "note" && last?.type === "note-run") {
+			last.folded.push(entry);
+			continue;
+		}
+		if (kind === "note") {
+			rows.push({ type: "note-run", head: entry, folded: [] });
+			continue;
+		}
+		rows.push({ type: "single", entry, kind });
+	}
+	return rows;
+};
+
+/** 时间线/导航用短标题（去 HTML） */
+export const dynamicEntryTitle = (html: string, searchText: string): string => {
+	const text = (html || "")
+		.replace(/<[^>]+>/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+	if (text) return text.slice(0, 64);
+	const fallback = (searchText || "").trim();
+	return fallback ? fallback.slice(0, 64) : "动态";
+};
+
+/** 折叠行展示：去掉「发布了新笔记」前缀 */
+export const dynamicNoteFoldTitle = (
+	html: string,
+	searchText: string,
+): string => {
+	const raw = dynamicEntryTitle(html, searchText).replace(
+		/^发布了新笔记[：:]\s*/,
+		"",
+	);
+	return raw || "笔记";
+};
+
 export const sortDynamics = (
 	entries: CollectionEntry<"dynamic">[],
 ): CollectionEntry<"dynamic">[] =>

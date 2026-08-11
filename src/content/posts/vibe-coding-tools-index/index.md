@@ -1,7 +1,7 @@
 ---
 title: 工具栈三岔：浏览器 · 编辑器 · 终端
 published: 2026-08-04
-updated: 2026-08-04T22:00:00
+updated: 2026-08-11T11:20:00
 description: Vibe「10 编程工具」选型地图：零代码 / AI 编辑器 / CLI 三大类对照，Cursor·Claude Code·Codex 专题入口，链回原文。
 tags: [Vibe Coding, 教程索引, 编程工具, Cursor]
 themeTags: [索引摘要, 鱼皮, ai-guide]
@@ -162,4 +162,4 @@ Git / 部署 / MCP / Agent Skills / 规范驱动开发等周边：让主工具�
 | 本篇 | 索引 + 精炼摘要；步骤与截图以原文为准 |
 | 未做 | 不镜像全文、不搬运图床整包 |
 | OpenClaw | 07 与实战 OpenClaw 文链到本站 [OpenClaw 索引](/posts/openclaw-tutorial-index/) |
-| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) · [Cursor 与 Claude 规范迁移](/posts/cursor-claude-harness-migration/) |
+| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [模型横评](/posts/vibe-models-index/) · [项目实战](/posts/vibe-projects-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [编程学习](/posts/vibe-learning-index/) · [概念与热文](/posts/vibe-concepts-hotposts-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) · [Cursor 与 Claude 规范迁移](/posts/cursor-claude-harness-migration/) · [合集 鱼皮VibeCoding](/collections/vibe-tutorial-index/) |

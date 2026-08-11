@@ -79,7 +79,7 @@ const headingIcons = [
             <FlipComicBook />
 
             <section class="about-stats-block" aria-labelledby="about-stats-heading">
-              <h2 id="about-stats-heading" class="about-section-title" data-about-h2="07 · Stats">
+              <h2 id="about-stats-heading" class="about-section-title" data-about-h2="07 · Stats" data-accent="5">
                 <Icon is:inline name="lucide:bar-chart-3" class="about-h2-icon" aria-hidden="true" />
                 <span>07 · Stats</span>
               </h2>
@@ -218,6 +218,22 @@ const headingIcons = [
 
   .about-panel {
     padding: 1.35rem 1.5rem 1.75rem;
+    /* 主题色仍跟站点 --primary（紫），辅色系拉开层次 */
+    --about-a0: #0d9488; /* teal */
+    --about-a1: #d97706; /* amber */
+    --about-a2: #7c3aed; /* violet · 主题锚 */
+    --about-a3: #0284c7; /* sky */
+    --about-a4: #e11d48; /* rose */
+    --about-a5: #65a30d; /* lime */
+  }
+
+  :global(:root.dark) .about-panel {
+    --about-a0: #2dd4bf;
+    --about-a1: #fbbf24;
+    --about-a2: #a78bfa;
+    --about-a3: #38bdf8;
+    --about-a4: #fb7185;
+    --about-a5: #a3e635;
   }
 
   @media (min-width: 768px) {
@@ -288,18 +304,43 @@ const headingIcons = [
     font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
     font-size: 0.95rem;
     letter-spacing: 0.02em;
-    color: var(--primary);
+    color: var(--about-section-accent, var(--about-a2, var(--primary)));
     margin-top: 1.75rem;
     margin-bottom: 0.65rem;
     border: 0;
     padding: 0;
   }
 
+  .about-section-title[data-accent="0"],
+  :global(.about-md h2:nth-of-type(6n + 1)) {
+    --about-section-accent: var(--about-a0);
+  }
+  .about-section-title[data-accent="1"],
+  :global(.about-md h2:nth-of-type(6n + 2)) {
+    --about-section-accent: var(--about-a1);
+  }
+  .about-section-title[data-accent="2"],
+  :global(.about-md h2:nth-of-type(6n + 3)) {
+    --about-section-accent: var(--about-a2);
+  }
+  .about-section-title[data-accent="3"],
+  :global(.about-md h2:nth-of-type(6n + 4)) {
+    --about-section-accent: var(--about-a3);
+  }
+  .about-section-title[data-accent="4"],
+  :global(.about-md h2:nth-of-type(6n + 5)) {
+    --about-section-accent: var(--about-a4);
+  }
+  .about-section-title[data-accent="5"],
+  :global(.about-md h2:nth-of-type(6n)) {
+    --about-section-accent: var(--about-a5);
+  }
+
   :global(.about-h2-icon) {
     width: 1.05em;
     height: 1.05em;
     flex-shrink: 0;
-    color: var(--primary);
+    color: currentColor;
   }
 
   :global(.about-md h2:first-of-type) {
@@ -384,8 +425,8 @@ const headingIcons = [
     gap: 0.35rem;
     padding: 0.28rem 0.7rem;
     border-radius: 999px;
-    border: 1px solid color-mix(in oklab, var(--primary) 28%, var(--line-color));
-    background: color-mix(in oklab, var(--primary) 7%, var(--card-bg));
+    border: 1px solid color-mix(in oklab, var(--chip-accent, var(--about-a2)) 32%, var(--line-color));
+    background: color-mix(in oklab, var(--chip-accent, var(--about-a2)) 8%, var(--card-bg));
     color: var(--deep-text);
     font-size: 0.82rem;
     font-weight: 550;
@@ -393,15 +434,22 @@ const headingIcons = [
     transition: background 0.15s ease, border-color 0.15s ease;
   }
 
+  :global(.about-reach a:nth-child(6n + 1)) { --chip-accent: var(--about-a2); }
+  :global(.about-reach a:nth-child(6n + 2)) { --chip-accent: var(--about-a0); }
+  :global(.about-reach a:nth-child(6n + 3)) { --chip-accent: var(--about-a3); }
+  :global(.about-reach a:nth-child(6n + 4)) { --chip-accent: var(--about-a1); }
+  :global(.about-reach a:nth-child(6n + 5)) { --chip-accent: var(--about-a4); }
+  :global(.about-reach a:nth-child(6n + 6)) { --chip-accent: var(--about-a5); }
+
   :global(.about-reach a:hover) {
-    background: color-mix(in oklab, var(--primary) 14%, var(--card-bg));
-    border-color: color-mix(in oklab, var(--primary) 45%, var(--line-color));
+    background: color-mix(in oklab, var(--chip-accent, var(--about-a2)) 16%, var(--card-bg));
+    border-color: color-mix(in oklab, var(--chip-accent, var(--about-a2)) 50%, var(--line-color));
   }
 
   :global(.about-reach__icon) {
     width: 0.95em;
     height: 0.95em;
-    color: var(--primary);
+    color: var(--chip-accent, var(--about-a2));
   }
 
   :global(.about-block__lead) {
@@ -420,15 +468,23 @@ const headingIcons = [
   }
 
   :global(.about-icon-row) {
+    --row-accent: var(--about-a2);
     display: grid;
     grid-template-columns: 2rem minmax(0, 1fr);
     gap: 0.7rem;
     align-items: start;
     padding: 0.65rem 0.75rem;
     border-radius: 0.55rem;
-    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
-    background: color-mix(in oklab, var(--primary) 4%, var(--card-bg));
+    border: 1px solid color-mix(in oklab, var(--row-accent) 22%, var(--line-color));
+    background: color-mix(in oklab, var(--row-accent) 6%, var(--card-bg));
   }
+
+  :global(.about-icon-row[data-accent="0"]) { --row-accent: var(--about-a0); }
+  :global(.about-icon-row[data-accent="1"]) { --row-accent: var(--about-a1); }
+  :global(.about-icon-row[data-accent="2"]) { --row-accent: var(--about-a2); }
+  :global(.about-icon-row[data-accent="3"]) { --row-accent: var(--about-a3); }
+  :global(.about-icon-row[data-accent="4"]) { --row-accent: var(--about-a4); }
+  :global(.about-icon-row[data-accent="5"]) { --row-accent: var(--about-a5); }
 
   :global(.about-icon-row__glyph) {
     display: inline-flex;
@@ -437,8 +493,8 @@ const headingIcons = [
     width: 2rem;
     height: 2rem;
     border-radius: 0.45rem;
-    background: color-mix(in oklab, var(--primary) 12%, var(--card-bg));
-    color: var(--primary);
+    background: color-mix(in oklab, var(--row-accent) 16%, var(--card-bg));
+    color: var(--row-accent);
   }
 
   :global(.about-icon-row__glyph svg) {
@@ -465,6 +521,7 @@ const headingIcons = [
   }
 
   :global(.about-aside) {
+    --row-accent: var(--about-a1);
     display: flex;
     align-items: flex-start;
     gap: 0.55rem;
@@ -474,10 +531,13 @@ const headingIcons = [
     color: color-mix(in oklab, var(--content-meta) 95%, transparent);
   }
 
+  :global(.about-aside[data-accent="0"]) { --row-accent: var(--about-a0); }
+  :global(.about-aside[data-accent="1"]) { --row-accent: var(--about-a1); }
+
   :global(.about-aside__glyph) {
     display: inline-flex;
     margin-top: 0.15rem;
-    color: var(--primary);
+    color: var(--row-accent);
   }
 
   :global(.about-aside__glyph svg) {
@@ -501,7 +561,7 @@ const headingIcons = [
   }
 
   :global(.about-md table th) {
-    background: color-mix(in oklab, var(--primary) 8%, var(--card-bg));
+    background: color-mix(in oklab, var(--about-a3) 10%, var(--card-bg));
     font-weight: 600;
     white-space: nowrap;
   }
@@ -518,8 +578,8 @@ const headingIcons = [
     margin: 0.75rem 0 1rem;
     padding: 0.55rem 0.85rem;
     border-radius: 0.55rem;
-    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
-    background: color-mix(in oklab, var(--primary) 4%, var(--card-bg));
+    border: 1px solid color-mix(in oklab, var(--about-a0) 28%, var(--line-color));
+    background: color-mix(in oklab, var(--about-a0) 6%, var(--card-bg));
   }
 
   :global(.about-md .about-stack > summary) {
@@ -527,7 +587,7 @@ const headingIcons = [
     font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
     font-size: 0.82rem;
     letter-spacing: 0.02em;
-    color: var(--primary);
+    color: var(--about-a0);
     font-weight: 600;
     list-style: none;
   }
@@ -546,6 +606,13 @@ const headingIcons = [
 
   :global(.about-md .about-stack[open] > summary) {
     margin-bottom: 0.45rem;
+  }
+
+  /* Agent tip callout：青绿强调，跳出紫色 */
+  :global(.about-md .markdown-alert),
+  :global(.about-md .callout) {
+    margin: 0.75rem 0 1rem;
+    border-left-color: var(--about-a0);
   }
 
   .about-stats {
@@ -574,10 +641,5 @@ const headingIcons = [
   :global(:root.dark) .about-stats__dark {
     display: inline;
     background: #0d1117;
-  }
-
-  :global(.about-md .markdown-alert),
-  :global(.about-md .callout) {
-    margin: 0.75rem 0 1rem;
   }
 </style>

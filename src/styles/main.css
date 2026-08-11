@@ -552,8 +552,10 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     }
 }
 
-.custom-md img, #post-cover img {
-    @apply cursor-zoom-in
+/* 灯箱入口光标；正文限高见 markdown.css「正文插图」 */
+.custom-md img,
+#post-cover img {
+    @apply cursor-zoom-in;
 }
 
 ::selection {

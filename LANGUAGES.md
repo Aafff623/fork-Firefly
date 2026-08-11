@@ -38,6 +38,11 @@
 | 合集 / collections | 人工策展的主题聚合页（区别于 AI 标的分类 category） |
 | 草稿箱 / draftbox | `posts/_draftbox/`：本地可预览、gitignore 不 push；出箱后再入库 |
 | 草稿（园主口径） | 进草稿箱，不是「commit 后靠 draft:true 藏首页」 |
+| Knowledge Theme | 素材库一级桶（如 `claude-code`）；路径 `todo/{Theme}/{facet}/…` |
+| facet | Theme 下切面（如 `skill` / `mcp` / `architecture`）；≠ 博客 tags |
+| source（extract） | 素材来源模块 ID：`session` / `paste-md` / `bibigpt` / `wechat` / `mixed` |
+| 公众号归档 `source/` | 单篇目录内原文+原图保真层；主体笔记另文件且须过 TTA |
+| 正文插图限高 | 仅竖幅/海报收版面；横/方信息图跟栏宽；单击 Fancybox 看原图 |
 | 静态部署 | 除非启用 CF_WORKERS，不说「SSR 站」 |
 
 ## 部署

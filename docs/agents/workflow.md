@@ -23,8 +23,9 @@ Issue(.scratch/<feature>/)
    （若验 README 壳）→ 仓库根另起 python -m http.server 8090 → http://127.0.0.1:8090/preview-readme.html
 2. 本地校验验收     → 目视关键页 + pnpm check（按改动范围）
 3. 你确认无误后     → git commit（若需要）+ git push origin
-4. 触发 CI/Vercel 部署 → 等 Ready
-5. 打开线上公网     → https://fork-firefly.vercel.app 再核一遍
+4. 触发 CI/Vercel 部署 → 等 Ready；若改动含 EdgeOne 适配，同时核腾讯云 EdgeOne 构建
+5. 打开线上公网     → https://fork-firefly.vercel.app ；国内入口就绪后另核 https://threetwoa.me
+   （绑域清单见 docs/agents/edgeone-domain-runbook.md）
 ```
 
 - **未完成本地预览与校验，不得 push。**
@@ -66,26 +67,36 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 - 笔记型动态：标题链 + Markdown `>` 作者批注（`--blurb` 或帖子 description）
 - **分类门禁**：写盘前对照 `CONTEXT.md` 现行分类词表；未获用户确认的 `category` 不得落盘；禁止因「AI/工具相关」一律填 `Agentic Coding`
 
-### 乙 · 会话/调研/BibiGPT → Knowledge → 帖
+### 乙 · 会话/调研/BibiGPT/公众号 → Knowledge → 帖
 
 ```text
-会话 / 调研结论 / BibiGPT 导出原料（+ 原片 URL）
-  → knowledge-extract（先识别来源模块；bibigpt → 搜证再提炼
-       → D:\OneDrive\Desktop\Knowledge\todo\{日期_主题}\）
-  → knowledge-output（→ 见下「草稿箱」分流；bibigpt 默认草稿箱；**成帖前确认 category**）
+会话 / 调研结论 / BibiGPT 导出 / 微信公众号（+ 原链或导出图文）
+  → knowledge-extract
+       · 先挂索引：source（来源）+ Theme/facet（素材分类）
+       · bibigpt → 搜证再提炼
+       · wechat → Multi-Agent（Archive∥Classify → Extract → TTA）；原文+图进 source/
+       → D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{日期_短题}\
+  → knowledge-output（→ 见下「草稿箱」分流；bibigpt / wechat 默认草稿箱；**成帖前确认 category**）
   → （仅出箱/正式发）site-cascade（同上；emit 须带批注）
   → Agent 协作者评论（同上）
-  → 发布成功后素材移入 Knowledge\Archive\ 留档
+  → 发布成功后素材移入 Knowledge\Archive\{Theme}\{facet}\… 留档
   → 本地预览 →（你确认后）commit / push → 核线上
 ```
 
 - Skill：`.cursor/skills/knowledge-extract/`、`.cursor/skills/knowledge-output/`、`.cursor/skills/site-cascade/`
 - 与甲互补：素材未进 Obsidian 时走乙；已进 vault 需双边同步时再走甲
-- **来源模块**：`session` / `paste-md` / `bibigpt` / `mixed`——见 `knowledge-extract/references/source-modules.md`。BibiGPT = 高保真原料（吃网页会员额度；勿默认 MCP 烧 API）；时效与「官方承认」须 Agent 搜证，不盲信片中数字
+- **来源模块**：`session` / `paste-md` / `bibigpt` / `wechat` / `mixed`——见 `knowledge-extract/references/source-modules.md`
+  - BibiGPT = 高保真原料（吃网页会员额度；勿默认 MCP 烧 API）；时效与「官方承认」须 Agent 搜证
+  - 公众号 = 图文专业但正文偏重、数日内易撞题 → 必须 `source/` 保真 + Theme 归桶 + 近 7 日去重 + humanizer-tta；流程见 `references/wechat-mp.md`
+- **素材分类（Theme → facet）**：管 Knowledge 检索，**不是**博客 `category`。词表与路径：`knowledge-extract/references/theme-taxonomy.md`（例：`claude-code` / `skill`）。历史扁平 `todo/{日期_主题}/` 只读兼容；新 extract 写三层路径
 - 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
 - 笔记型动态批注约定：同甲
-- **分类门禁**：同甲
+- **分类门禁**：同甲（站点 category 仍须确认；可参考 Theme→category 启发式，禁止默填 Agentic Coding）
 - **小节标题防 AI 味**：禁止 `一句话收束` / `核心要点` / `综上所述` 等课件收尾腔；要通俗有创意（判断/边界/怎么选）。细则：`knowledge-output` → 成帖红线 #2 + `references/heading-anti-ai.md`
+
+#### 乙 · 公众号 Multi-Agent（摘要）
+
+父 Agent 开 Multi-Task，四岗：`Archive`（原文+图无损）∥ `Classify`（Theme/facet + 去重）→ `Extract`（薄笔记）→ `TTA`（humanizer-tta）。成功标准与反例见 `wechat-mp.md`。
 
 ### Agent 协作者评论（发帖 / 发动态后必做）
 
@@ -151,6 +162,20 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 | 3 · 才允许整图竖 | 仅当横版节点链实在过长（经验：**主轴节点 / 阶段 ≥ 6～7**，或横拉后单行拥挤到标签互叠），先压缩文案 / 合并节点；仍不够再改 `TB`，并视作「横版延伸」——不是一上来就竖排 |
 
 禁止：三层架构、三步流程这种短链直接 `flowchart TB` 上下堆。Agent 写帖 / 改图时默认按本条出图。
+
+### 正文插图显示（站点渲染 · 密度友好）
+
+成帖后默认**跟内容栏宽**；只压缩「竖、空、却撑满屏」的图。参考观感：`/posts/people-efficiency-four-layers/`（横/方信息图栏宽铺满 = OK）。
+
+| 类型 | 判定（运行时） | 版面 |
+|---|---|---|
+| 横图 / 方图（信息密度常高） | `高/宽 ≤ 1.15` | `max-width: 100%`，**不限高** |
+| 竖幅 | `高/宽 > 1.15` → `.md-img--tall` | 等比例 `max-height: min(62vh, 30rem)` |
+| 典型竖海报（信息量常偏少） | 竖且 `宽≤900` 且 `高/宽≥1.28` → `.md-img--poster` | 再收：`max-height: min(52vh, 24rem)`、`max-width: min(100%, 22rem)` |
+| 放大 / 关闭 | 单击 Fancybox；`Esc` 或点周围留白关闭（`FancyboxManager`） |
+| 成帖侧 | 仍 Web 化落盘；**不要**为限高裁切原图；例外：`image-grid`、wiki 卡 |
+
+实现：`src/styles/markdown.css` + `FancyboxManager.classifyContentImages`。质检时对照：信息图应接近栏宽；单人海报/立绘不应整屏只有一张图。
 
 ### 配图素材来源分级（先扒现成，再生成）
 

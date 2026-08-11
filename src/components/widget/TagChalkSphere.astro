@@ -138,12 +138,12 @@ const showMore = Boolean(moreHref && moreCount > 0);
     var SCRIPT_SRC =
       "https://cdn.jsdelivr.net/npm/TagCloud@2.5.0/dist/TagCloud.min.js";
     var DRAG_PX = 6;
-    // 闲置慢 / 拖拽快（数值档，库内 slow=0.5 仍偏快）
+    // 闲置慢转；拖拽跟手但别飞（用户反馈 5.5 / 0.42 过灵敏）
     var IDLE_MAX_SPEED = 0.28;
-    var DRAG_MAX_SPEED = 5.5;
+    var DRAG_MAX_SPEED = 1.85;
     var IDLE_DIV = 5;
-    // 越小越灵敏；1.15→0.42 ≈ ×2.7
-    var DRAG_DIV = 0.42;
+    // 越大越钝：鼠标位移 / DRAG_DIV → 角速度
+    var DRAG_DIV = 1.35;
     // 进墙首次悬停 0.5s；墙内再换签 1s；整墙离开后再进又回到 0.5s
     var HOVER_FIRST_MS = 500;
     var HOVER_NEXT_MS = 500;
@@ -1227,7 +1227,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     text-shadow: none !important;
     padding: 2px 4px;
     border-radius: 4px;
-    font-size: 1.28em !important;
+    font-size: 1.12em !important;
     line-height: 1.15;
   }
 
@@ -1247,7 +1247,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
   .tag-sphere :global(.tag-sphere__link--theme) {
     color: oklch(0.72 0.015 80) !important;
     font-weight: 500 !important;
-    font-size: 1.18em !important;
+    font-size: 1.05em !important;
     cursor: default;
     text-shadow: 0 1px 2px rgb(0 0 0 / 0.4) !important;
   }

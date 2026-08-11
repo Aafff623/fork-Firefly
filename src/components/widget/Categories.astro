@@ -59,7 +59,11 @@ const postsLabel = i18n(I18nKey.postsCount);
   showTitle={showTitle}
   id="categories"
   isCollapsed={false}
-  class:list={["categories-widget", className]}
+  class:list={[
+    "categories-widget",
+    !isCompact && "categories-widget--foldable",
+    className,
+  ]}
   style={style}
 >
   <Icon
@@ -69,6 +73,17 @@ const postsLabel = i18n(I18nKey.postsCount);
     class="widget-title-icon"
     aria-hidden="true"
   />
+  {
+    !isCompact && (
+      <Icon
+        slot="title-icon"
+        is:inline
+        name="lucide:chevron-down"
+        class="widget-title-icon cat-fold-chevron"
+        aria-hidden="true"
+      />
+    )
+  }
 
   {
     isCompact ? (
@@ -202,17 +217,94 @@ const postsLabel = i18n(I18nKey.postsCount);
     });
   }
 
+  /** 浏览页分类墙手风琴：失衡自动收、平衡自动展；手动钉住折叠跳过自动展开 */
+  function setCategoriesFolded(widget, folded) {
+    widget.classList.toggle("categories-widget--folded", folded);
+    widget.dataset.folded = folded ? "true" : "false";
+    const title = widget.querySelector(".widget-title");
+    if (title) {
+      title.setAttribute("aria-expanded", folded ? "false" : "true");
+    }
+    document.dispatchEvent(new CustomEvent("firefly:sidebar-layout"));
+  }
+
+  function bindCategoriesBalanceFold() {
+    document
+      .querySelectorAll(
+        "widget-layout.categories-widget.categories-widget--foldable",
+      )
+      .forEach((widget) => {
+        if (widget.dataset.balanceFoldBound === "true") return;
+        widget.dataset.balanceFoldBound = "true";
+        widget.dataset.folded = "false";
+        widget.dataset.userPinned = "false";
+
+        const title = widget.querySelector(".widget-title");
+        if (title) {
+          title.classList.add("cat-fold-title");
+          title.setAttribute("role", "button");
+          title.setAttribute("tabindex", "0");
+          title.setAttribute("aria-expanded", "true");
+          title.setAttribute("aria-controls", "categories");
+          const toggle = () => {
+            const next = widget.dataset.folded !== "true";
+            setCategoriesFolded(widget, next);
+            // 手动收起 = 钉住；手动展开 = 清钉，允许之后自动展开
+            widget.dataset.userPinned = next ? "true" : "false";
+          };
+          title.addEventListener("click", (e) => {
+            e.preventDefault();
+            toggle();
+          });
+          title.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggle();
+            }
+          });
+        }
+      });
+  }
+
+  function onSidebarImbalance() {
+    document
+      .querySelectorAll(
+        "widget-layout.categories-widget.categories-widget--foldable",
+      )
+      .forEach((widget) => {
+        setCategoriesFolded(widget, true);
+      });
+  }
+
+  function onSidebarBalance() {
+    document
+      .querySelectorAll(
+        "widget-layout.categories-widget.categories-widget--foldable",
+      )
+      .forEach((widget) => {
+        if (widget.dataset.userPinned === "true") return;
+        setCategoriesFolded(widget, false);
+      });
+  }
+
   updateCompactCategoryCards();
+  bindCategoriesBalanceFold();
   // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
   // 不守卫会跨跳累积 astro:page-load / swup:contentReplaced 监听器。
   if (!window.__catCompactBound) {
     window.__catCompactBound = true;
-    document.addEventListener("astro:page-load", updateCompactCategoryCards);
+    document.addEventListener("astro:page-load", () => {
+      updateCompactCategoryCards();
+      bindCategoriesBalanceFold();
+    });
     document.addEventListener("swup:contentReplaced", () => {
       updateCompactCategoryCards();
+      bindCategoriesBalanceFold();
       // 某些 swup 生命周期下 DOM 状态同步稍晚，下一帧再校正一次
       requestAnimationFrame(updateCompactCategoryCards);
     });
+    document.addEventListener("firefly:sidebar-imbalance", onSidebarImbalance);
+    document.addEventListener("firefly:sidebar-balance", onSidebarBalance);
   }
 </script>
 
@@ -242,6 +334,62 @@ const postsLabel = i18n(I18nKey.postsCount);
 
   widget-layout.categories-widget .collapse-wrapper {
     padding-top: 0.15rem;
+  }
+
+  /* 浏览页手风琴：标题可点；收起后仅留标题条，消除半截裁切 */
+  widget-layout.categories-widget.categories-widget--foldable .cat-fold-title {
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0.35rem;
+  }
+
+  widget-layout.categories-widget.categories-widget--foldable
+    .cat-fold-title:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 0.35rem;
+  }
+
+  widget-layout.categories-widget .cat-fold-chevron {
+    transition: transform 0.22s ease;
+    opacity: 0.72;
+  }
+
+  widget-layout.categories-widget.categories-widget--folded .cat-fold-chevron {
+    transform: rotate(-90deg);
+  }
+
+  widget-layout.categories-widget.categories-widget--folded {
+    padding-bottom: 0.35rem !important;
+  }
+
+  widget-layout.categories-widget.categories-widget--folded .collapse-wrapper {
+    height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      height 0.22s ease,
+      opacity 0.18s ease,
+      padding 0.22s ease;
+  }
+
+  widget-layout.categories-widget.categories-widget--foldable
+    .collapse-wrapper {
+    transition:
+      height 0.22s ease,
+      opacity 0.18s ease,
+      padding 0.22s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    widget-layout.categories-widget .cat-fold-chevron,
+    widget-layout.categories-widget.categories-widget--foldable
+      .collapse-wrapper {
+      transition: none;
+    }
   }
 
   .cat-cork {

@@ -22,7 +22,13 @@
     {
       "id": 4,
       "prompt": "这是 BibiGPT 导出的视频总结原料（附 BV 链接）。按 extract 走，别盲信里面的上下文数字和官方 Bug 说法。",
-      "expected_output": "识别来源模块 bibigpt；先工具搜证再提炼；笔记含核查/待核实；保证据不抽空心；落盘 Knowledge/todo；提示交接 knowledge-output 且默认草稿箱；不走 ob2blog；不调用 MCP 烧 API",
+      "expected_output": "识别来源模块 bibigpt；先定 theme/facet；先工具搜证再提炼；笔记含核查/待核实；保证据不抽空心；落盘 Knowledge/todo/{Theme}/{facet}/…；提示交接 knowledge-output 且默认草稿箱；不走 ob2blog；不调用 MCP 烧 API",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "这篇微信公众号讲 Claude Code 的 Skill 写法，链接 mp.weixin.qq.com/…，帮我按公众号流程归档并提炼。",
+      "expected_output": "识别 source=wechat；Multi-Agent（Archive/Classify/Extract/TTA）；原文+配图完整进 source/ 且 MD 相对路径引用；theme=claude-code facet=skill（或等价）；主体笔记过 humanizer-tta；近 7 日去重；落盘 todo/{Theme}/{facet}/{日期}_{短题}/；默认交接 output 进草稿箱；不走 ob2blog",
       "files": []
     }
   ]

@@ -894,6 +894,8 @@
 
 .gift-surprise:has(.gift-surprise__check:checked) {
 	z-index: 24;
+	/* 开盖瞬间放行金箔纸屑飞出，避免被侧栏卡 overflow:hidden 吃掉 */
+	overflow: visible;
 }
 
 /* ── 舞台金光：hover 渐亮「待拆期待感」，点开瞬间脉冲一次 ── */

@@ -1,7 +1,7 @@
 ## 02 · Agent workflow
 
 > [!TIP] Harness > Prompt
-> Coding Agent 是一支舰队，不是单一工具。**Grok** 侦察实时热点；**GPT** 深研需求；Go 拼车开 **Claude Code**（DeepSeek v4 Flash + 完整 MiniMax 能力包）；**Kimi Code**、中转 **OpenCode**、**Pi / GLM** 走轻量道；**Cursor** 收尾与长维护。复用成熟 playbook，把自定义工作流接到真项目——Matt 的 Skill 流管资产，各 CLI 自带记忆与 slash，`.agent` 配置跨工具同步。**约束层比提示词更重要**：scoped task、仓库规则、可复现命令、测试、文档、最终 diff review。设计决策和每一次 merge，都归我。
+> Coding Agent 是一支舰队，不是单一工具。**Grok** 侦察实时热点；**GPT** 深研需求；Go 拼车开 **Claude Code**（DeepSeek v4 Flash + 完整 MiniMax 能力包）；**Kimi Code**（拼车 K3）、中转 **OpenCode**（GPT-5.6）、**Pi / GLM** 走轻量道；**Cursor** 收尾与长维护。复用成熟 playbook，把自定义工作流接到真项目——Matt 的 Skill 流管资产，各 CLI 自带记忆与 slash，`.agent` 配置跨工具同步。**约束层比提示词更重要**：scoped task、仓库规则、可复现命令、测试、文档、最终 diff review。设计决策和每一次 merge，都归我。
 
 <details class="about-stack">
 <summary>技术栈速览</summary>

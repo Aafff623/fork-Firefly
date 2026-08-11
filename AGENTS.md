@@ -66,8 +66,8 @@ pnpm new-d <content>
 | Skill | 路径 | 何时用 |
 |---|---|---|
 | `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian→本仓帖 + 双边一致性（`prep_convert` / `sync_check` / manifest）；旧名 `firefly-md-to-post` |
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT 原料→Knowledge 素材笔记（`D:\OneDrive\Desktop\Knowledge\todo\`）；来源模块见 skill `references/source-modules.md`；不直接发帖 |
-| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo 素材→`src/content/posts/<slug>`；无参数=全部，带主题=仅指定；发布后移入 Archive；收尾接 `site-cascade` |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT/公众号→Knowledge 素材（`todo/{Theme}/{facet}/{日期_短题}/`）；来源+Theme 双索引见 `references/source-modules.md` + `theme-taxonomy.md`；公众号见 `wechat-mp.md`；不直接发帖 |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo 素材（含 Theme 树与扁平遗留）→`src/content/posts/<slug>`；无参数=全部，带主题=仅指定；发布后移入 Archive；收尾接 `site-cascade` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
 | `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create`；产品版从 `1.0.0` 起；本地中英预览见 `preview-release.html` |
@@ -96,17 +96,19 @@ pnpm new-d <content>
 
 Agent 不得假定其它 vault 根路径；用户显式给出新路径时再更新 `CONTEXT.md` + `.ob2blog/manifest.json`。
 
-**乙 · 会话/调研/BibiGPT → Knowledge → 帖**
+**乙 · 会话/调研/BibiGPT/公众号 → Knowledge → 帖**
 
 ```text
-用户：整理会话 / 写篇博客 / 丢 BibiGPT 导出（非 Obsidian）
-  → knowledge-extract（识别来源；bibigpt 先搜证再提炼 → Knowledge/todo/{日期_主题}/）
-  → knowledge-output（转正文 + frontmatter；bibigpt 默认 _draftbox；出箱后正式发再 Archive）
-  → （仅正式发）收尾调用 site-cascade
-  → 本地预览刷新（pnpm dev）
+用户：整理会话 / 写篇博客 / 丢 BibiGPT 导出 / 公众号链接或导出（非 Obsidian）
+ → knowledge-extract（source + Theme/facet；bibigpt 先搜证；wechat 走 Multi-Agent+source/ 保真+TTA
+      → Knowledge/todo/{Theme}/{facet}/{日期_短题}/）
+ → knowledge-output（转正文 + frontmatter；bibigpt/wechat 默认 _draftbox；出箱后正式发再 Archive）
+ → （仅正式发）收尾调用 site-cascade
+ → 本地预览刷新（pnpm dev）
 ```
 
-仅当素材**已入** Obsidian vault、需要双边同步时，才改走甲路 `ob2blog`；默认会话 / BibiGPT 原料不经 `ob2blog`。
+仅当素材**已入** Obsidian vault、需要双边同步时，才改走甲路 `ob2blog`；默认会话 / BibiGPT / 公众号原料不经 `ob2blog`。  
+Knowledge 资产结构与 Theme 词表：仓外 `D:\OneDrive\Desktop\Knowledge\README.md` + skill `theme-taxonomy.md`。
 
 ### 草稿箱（draftbox · 本地可预览，不进远端）
 

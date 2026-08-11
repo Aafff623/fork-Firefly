@@ -79,6 +79,9 @@ import "@/styles/fancybox-custom.css";
       },
       animated: true,
       dragToClose: true,
+      // 正文缩略图：单击/双击打开；ESC 或点周围留白（backdrop）关闭
+      backdropClick: "close",
+      contentClick: "toggleZoom",
       keyboard: {
         Escape: "close",
         Delete: "close",
@@ -140,6 +143,33 @@ import "@/styles/fancybox-custom.css";
     await Promise.allSettled(promises);
   }
 
+  /**
+   * 按自然尺寸给正文图打标：横图/方图（信息图常见）不限高；
+   * 竖幅限高；偏窄竖海报导出再收一档。避免「信息少却整屏大」。
+   */
+  function classifyContentImages() {
+    document.querySelectorAll<HTMLImageElement>(".custom-md img").forEach((img) => {
+      if (img.closest(".card-wiki-link") || img.closest(".image-grid")) return;
+
+      const apply = () => {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        if (!w || !h) return;
+        img.classList.remove("md-img--tall", "md-img--poster");
+        const ratio = h / w;
+        if (ratio <= 1.15) return; // 横图 / 接近方图：保持栏宽，不限高
+        img.classList.add("md-img--tall");
+        // 典型竖海报导出：画布偏窄且明显高瘦
+        if (ratio >= 1.28 && w <= 900) {
+          img.classList.add("md-img--poster");
+        }
+      };
+
+      if (img.complete && img.naturalWidth) apply();
+      else img.addEventListener("load", apply, { once: true });
+    });
+  }
+
   async function setup() {
     if (!document.querySelector(IMG_SELECTOR) && !document.querySelector(LINK_SELECTOR)) return;
 
@@ -151,6 +181,7 @@ import "@/styles/fancybox-custom.css";
     const commonOptions = getCommonOptions();
 
     await preprocessSvgImages();
+    classifyContentImages();
 
     // Dynamic galleries expose their images through the toolbar button. Remove
     // previous bindings before re-binding after client-rendered content appears.

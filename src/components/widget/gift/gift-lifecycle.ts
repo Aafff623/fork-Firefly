@@ -6,6 +6,7 @@
  * PROD（Vercel 等）：按 opened / seen / gone 三键走一次性惊喜。
  */
 import {
+	preloadConfetti,
 	triggerConfettiBurst,
 	triggerTsParticlesCelebrate,
 } from "@/utils/ambient-fx";
@@ -427,6 +428,17 @@ function initGiftCardLifecycle(): void {
 		badge.hidden = !opened;
 	};
 
+	// 悬停/聚焦时预拉 confetti 分包，避免生产环境首点开盖还在等 chunk
+	const warmConfetti = () => preloadConfetti();
+	root.addEventListener("pointerenter", warmConfetti, { once: true });
+	root.addEventListener("focusin", warmConfetti, { once: true });
+	// 空闲时也预拉一份（不挡首屏）
+	if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+		window.requestIdleCallback(() => preloadConfetti(), { timeout: 2500 });
+	} else {
+		setTimeout(() => preloadConfetti(), 1200);
+	}
+
 	check.addEventListener("change", () => {
 		if (!check.checked) {
 			// 不允许合盖：强制保持打开（全屏阅读中）
@@ -434,8 +446,9 @@ function initGiftCardLifecycle(): void {
 			return;
 		}
 		if (hit instanceof HTMLElement) hit.style.pointerEvents = "none";
-		// E08：开盖瞬间 canvas-confetti（与盒边 CSS 碎屑并存）
-		void triggerConfettiBurst();
+		// E08：开盖瞬间 canvas-confetti（从礼盒舞台爆开；与盒边 CSS 碎屑并存）
+		const stage = root.querySelector(".gift-surprise__stage") || root;
+		void triggerConfettiBurst(stage);
 		openFullscreenEnvelope(root, overlay, giftId);
 	});
 

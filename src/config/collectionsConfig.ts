@@ -34,8 +34,9 @@ export const collectionsConfig: CollectionsConfig = {
 		},
 		{
 			slug: "vibe-tutorial-index",
-			name: "Vibe Coding 教程索引",
-			description: "鱼皮 vibe-coding 系列导读：基础、技巧、工具与 OpenClaw 索引。",
+			name: "鱼皮VibeCoding",
+			description:
+				"鱼皮 Vibe Coding 系列导读：基础、工具、实战部署、模型、学习、变现与热文索引。",
 			emoji: "🚀",
 			cover: "/assets/collections/vibe-coding.jpg",
 		},
@@ -166,6 +167,26 @@ export const collectionsConfig: CollectionsConfig = {
 				"各厂商 AI 订阅、模型限免、申请试用与积分活动的可维护情报汇总（以博客文章收录）。",
 			emoji: "🎟️",
 			cover: "/assets/collections/wool-freebies.jpg",
+		},
+
+		// ── CSDN 技术教程（一级）──
+		{
+			slug: "csdn-tech-tutorials",
+			name: "CSDN技术教程",
+			description:
+				"从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记。",
+			emoji: "📘",
+			cover: "/assets/collections/csdn-tech-tutorials.jpg",
+		},
+
+		// ── 小林coding 学习笔记（一级）──
+		{
+			slug: "xiaolincoding",
+			name: "小林coding",
+			description:
+				"小林coding 图解 / 面经的个人学习笔记与导读合集（非原文镜像）。",
+			emoji: "📗",
+			cover: "/assets/collections/xiaolincoding.jpg",
 		},
 	],
 };

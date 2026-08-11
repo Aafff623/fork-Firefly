@@ -24,6 +24,7 @@ pnpm-debug.log*
 .DS_Store
 
 .vercel
+.edgeone
 
 package-lock.json
 bun.lockb

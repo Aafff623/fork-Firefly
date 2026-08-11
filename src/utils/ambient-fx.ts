@@ -138,38 +138,100 @@ export function triggerPetYzhanByTheme(): void {
 	void triggerYzhanBurst(mode);
 }
 
-/** E08：礼盒开盖短促 confetti */
-export async function triggerConfettiBurst(): Promise<void> {
+type ConfettiFn = (typeof import("canvas-confetti"))["default"];
+
+let confettiModulePromise: Promise<ConfettiFn> | null = null;
+
+async function loadConfetti(): Promise<ConfettiFn | null> {
+	if (!confettiModulePromise) {
+		confettiModulePromise = import("canvas-confetti")
+			.then((mod) => {
+				const fn =
+					typeof mod.default === "function"
+						? mod.default
+						: typeof (mod as unknown as ConfettiFn) === "function"
+							? (mod as unknown as ConfettiFn)
+							: null;
+				if (!fn) throw new Error("canvas-confetti export missing");
+				return fn;
+			})
+			.catch((err) => {
+				confettiModulePromise = null;
+				throw err;
+			});
+	}
+	try {
+		return await confettiModulePromise;
+	} catch (err) {
+		console.warn("[ambient-fx] canvas-confetti load failed", err);
+		return null;
+	}
+}
+
+/** 提前拉 confetti chunk，避免开盖瞬间还在等网络（生产首点常见） */
+export function preloadConfetti(): void {
+	if (!isAmbientEnabled() || !ambientFxConfig.giftConfettiEnable) return;
+	if (prefersReducedMotion()) return;
+	void loadConfetti();
+}
+
+function originFromElement(el: Element | null | undefined): { x: number; y: number } {
+	if (!(el instanceof Element) || typeof window === "undefined") {
+		return { x: 0.5, y: 0.42 };
+	}
+	const r = el.getBoundingClientRect();
+	const vw = Math.max(window.innerWidth, 1);
+	const vh = Math.max(window.innerHeight, 1);
+	return {
+		x: Math.min(0.92, Math.max(0.08, (r.left + r.width / 2) / vw)),
+		y: Math.min(0.85, Math.max(0.12, (r.top + r.height / 2) / vh)),
+	};
+}
+
+/** E08：礼盒开盖短促 confetti（可传入礼盒舞台，从侧栏位置爆开） */
+export async function triggerConfettiBurst(
+	originEl?: Element | null,
+): Promise<void> {
 	if (!isAmbientEnabled() || !ambientFxConfig.giftConfettiEnable) return;
 	if (prefersReducedMotion()) return;
 
-	const confetti = (await import("canvas-confetti")).default;
-	const colors = ["#ffb7c5", "#ff9ec4", "#ffe4ec", "#fdfaf3", "#a63d52", "#ecd9ae"];
+	const confetti = await loadConfetti();
+	if (!confetti) return;
 
-	confetti({
-		particleCount: 70,
-		spread: 68,
-		startVelocity: 38,
-		origin: { y: 0.42, x: 0.5 },
-		colors,
-		zIndex: 12000,
-	});
-	confetti({
-		particleCount: 40,
-		angle: 60,
-		spread: 55,
-		origin: { x: 0.15, y: 0.55 },
-		colors,
-		zIndex: 12000,
-	});
-	confetti({
-		particleCount: 40,
-		angle: 120,
-		spread: 55,
-		origin: { x: 0.85, y: 0.55 },
-		colors,
-		zIndex: 12000,
-	});
+	const colors = ["#ffb7c5", "#ff9ec4", "#ffe4ec", "#fdfaf3", "#a63d52", "#ecd9ae"];
+	const o = originFromElement(originEl);
+
+	try {
+		confetti({
+			particleCount: 80,
+			spread: 72,
+			startVelocity: 42,
+			origin: o,
+			colors,
+			zIndex: 12000,
+			disableForReducedMotion: true,
+		});
+		confetti({
+			particleCount: 36,
+			angle: 60,
+			spread: 55,
+			origin: { x: Math.max(0.06, o.x - 0.12), y: o.y + 0.06 },
+			colors,
+			zIndex: 12000,
+			disableForReducedMotion: true,
+		});
+		confetti({
+			particleCount: 36,
+			angle: 120,
+			spread: 55,
+			origin: { x: Math.min(0.94, o.x + 0.12), y: o.y + 0.06 },
+			colors,
+			zIndex: 12000,
+			disableForReducedMotion: true,
+		});
+	} catch (err) {
+		console.warn("[ambient-fx] confetti burst failed", err);
+	}
 }
 
 function ensureTspHost(): HTMLElement {

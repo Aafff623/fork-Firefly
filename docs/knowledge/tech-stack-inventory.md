@@ -70,8 +70,9 @@
 
 | 项 | 包 / 文件 | 角色 | 状态 | 入口 |
 |---|---|---|---|---|
-| 默认部署 | `@astrojs/vercel` · `vercel.json` | 静态 + 少量 API | 现行 | 无 `CF_WORKERS` 时 |
+| 默认部署 | `@astrojs/vercel` · `vercel.json` | 静态 + 少量 API | 现行 | 无 `CF_WORKERS` / `EDGEONE` 时 |
 | Cloudflare | `@astrojs/cloudflare` · `wrangler` · `wrangler.jsonc` | 可选 adapter | 备选 | `CF_WORKERS=1` |
+| EdgeOne Pages | `@edgeone/astro` · `edgeone.json` | 国内主入口（`threetwoa.live`） | 落地中 | `EDGEONE=1` |
 | RSS / Sitemap | `@astrojs/rss` · `@astrojs/sitemap` | 订阅与索引 | 现行 | `src/pages/rss*` · config |
 
 ## Site integrations（运行时 / 配置门控）
@@ -96,7 +97,7 @@
 | Skill | 路径 | 角色 |
 |---|---|---|
 | `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian vault → `posts/<slug>` |
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研 → Knowledge 素材 |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT/公众号 → Knowledge（Theme/facet 树） |
 | `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge → 成帖 |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联（动态/统计/分类标签/热力图） |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频 |

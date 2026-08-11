@@ -1811,6 +1811,13 @@ function disableAnimation() {
     updateSidebarStickySpacing();
   });
 
+  // 浏览页侧栏失衡：分类折叠 + 宠钉日历（文章页早退）
+  import { bootSidebarBalance } from "@/lib/sidebar/sidebarBalance";
+  import { spritePetConfig } from "@/config";
+  bootSidebarBalance({
+    minGapPx: spritePetConfig.roam?.balanceParkMinGapPx ?? 160,
+  });
+
   // Initialize wallpaper mode
   import { initWallpaperMode, initThemeListener, initAvatarFrame } from "@/utils/setting-utils";
 

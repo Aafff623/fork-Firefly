@@ -1,9 +1,7 @@
 ---
 /**
- * 站点底栏 · 专业四栏（品牌 / 漫步 / 园径 / 连结）
- * + V2「园丁浇水」状态胶囊（水滴 + 羽毛）
- * + 花园状态行 · V4 邮戳章与衬线 wordmark
- * 保留 RSS / Sitemap / Powered by Astro & Firefly；自定义 HTML 注入槽仍可用
+ * 站点底栏 · 三层结构（顶带 / 导航 / 底条）
+ * 学 name.com 分区与扫视效率；保留数字花园人设与浇水彩蛋
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -16,11 +14,9 @@ import { url } from "@/utils/url-utils";
 const currentYear = new Date().getFullYear();
 const wordmark =
 	siteConfig.navbar?.title || profileConfig.name || siteConfig.title;
-/* 数字花园话语；少网名自称（版权行仍用 name） */
-const brandBlurbCn =
-	"数字花园里，枝叶随写随长；余白留给路过的你。少写一点代码，多留一点可复用的架构。";
-const brandBlurbEn =
-	"A digital garden that grows with notes — grow slow, leave room for wanderers. Code less, architect more.";
+/* 园记压到一行钩子；英文次级短句 */
+const brandBlurbCn = "数字花园里，枝叶随写随长；余白留给路过的你。";
+const brandBlurbEn = "Grow slow, leave room for wanderers.";
 const showFriends = siteConfig.pages?.friends !== false;
 
 const startYear = Number(
@@ -51,7 +47,7 @@ const gardenDays = Math.max(
 	Math.floor((Date.now() - startDate.getTime()) / 86400000) + 1,
 );
 
-/** 花园状态轮换短文案（构建时取一条，免客户端 JS） */
+/** 花园状态轮换短文案 → 浇水 title，不占顶区 */
 const gardenTips = [
 	"今日林间微风，亦宜浇水",
 	"少写一行代码，多种一棵念头",
@@ -65,8 +61,8 @@ const gardenTip = gardenTips[gardenDays % gardenTips.length];
 const githubLink = profileConfig.links.find((l) =>
 	/github/i.test(l.name + l.url),
 );
-const emailLink = profileConfig.links.find((l) =>
-	/^mailto:/i.test(l.url) || /email|mail/i.test(l.name),
+const emailLink = profileConfig.links.find(
+	(l) => /^mailto:/i.test(l.url) || /email|mail/i.test(l.name),
 );
 
 let customFooterHtml = "";
@@ -87,121 +83,43 @@ if (footerConfig.enable) {
 		);
 	}
 }
+
+const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一浇`;
 ---
 
 <footer class="site-footer">
-  <!-- 局部景层：复用氛围插画，避免只靠全站 atmosphere 透色 -->
+  <!-- 局部景层：复用氛围插画，压低干扰 -->
   <div class="site-footer__scape" aria-hidden="true"></div>
   <div class="site-footer__veil" aria-hidden="true"></div>
-  <!-- 两侧树木装饰（不占交互层） -->
   <div class="site-footer__tree site-footer__tree--left" aria-hidden="true"></div>
   <div class="site-footer__tree site-footer__tree--right" aria-hidden="true"></div>
   <div class="site-footer__petals" aria-hidden="true"></div>
   <div class="site-footer__mist" aria-hidden="true"></div>
+
   <div class="site-footer__inner">
-    <div class="site-footer__grid">
+    <!-- 1 · 顶带：品牌左 / 状态 + 浇水右 -->
+    <div class="site-footer__top">
       <div class="site-footer__brand">
         <div class="site-footer__wordmark">{wordmark}</div>
         <div class="site-footer__blurb-stack">
           <p class="site-footer__blurb site-footer__blurb--cn">{brandBlurbCn}</p>
           <p class="site-footer__blurb site-footer__blurb--en">{brandBlurbEn}</p>
         </div>
-        <p class="site-footer__garden-status">
-          <span class="site-footer__garden-chip">建站第 {gardenDays} 天</span>
-          <span class="site-footer__garden-sep" aria-hidden="true">·</span>
-          <span class="site-footer__garden-chip">{postCount} 篇文章</span>
-          <span class="site-footer__garden-sep" aria-hidden="true">·</span>
-          <span class="site-footer__garden-tip">{gardenTip}</span>
-        </p>
       </div>
 
-      <nav class="site-footer__col" aria-label="漫步">
-        <h3 class="site-footer__col-title">
-          <span class="site-footer__col-title-cn">漫步</span>
-          <span class="site-footer__col-title-en">Explore</span>
-        </h3>
-        <ul class="site-footer__list">
-          <li><a href={url("/")}>首页</a></li>
-          <li><a href={url("/timeline/")}>时间轴</a></li>
-          <li><a href={url("/tags/")}>标签</a></li>
-          <li><a href={url("/about/")}>关于</a></li>
-        </ul>
-      </nav>
+      <div class="site-footer__top-right">
+        <p class="site-footer__garden-status">
+          <span class="site-footer__garden-chip">建站第 {gardenDays} 天</span>
+          <span class="site-footer__garden-chip">{postCount} 篇文章</span>
+        </p>
 
-      <nav class="site-footer__col" aria-label="园径">
-        <h3 class="site-footer__col-title">
-          <span class="site-footer__col-title-cn">园径</span>
-          <span class="site-footer__col-title-en">Paths</span>
-        </h3>
-        <ul class="site-footer__list">
-          <li><a href={url("/dynamic/")}>动态</a></li>
-          <li><a href={url("/categories/")}>分类</a></li>
-          <li><a href={url("/timeline/")}>时间轴</a></li>
-          {
-            showFriends ? (
-              <li><a href={url("/friends/")}>友链</a></li>
-            ) : (
-              <li><a href={url("/tags/")}>标签墙</a></li>
-            )
-          }
-        </ul>
-      </nav>
-
-      <nav class="site-footer__col" aria-label="连结">
-        <h3 class="site-footer__col-title">
-          <span class="site-footer__col-title-cn">连结</span>
-          <span class="site-footer__col-title-en">Connect</span>
-        </h3>
-        <ul class="site-footer__list">
-          <li>
-            <a href={url("rss.xml")} target="_blank" rel="noopener noreferrer">RSS</a>
-          </li>
-          <li>
-            <a
-              href={url("sitemap-index.xml")}
-              target="_blank"
-              rel="noopener noreferrer">Sitemap</a
-            >
-          </li>
-          {
-            githubLink && (
-              <li>
-                <a href={githubLink.url} target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
-              </li>
-            )
-          }
-          {
-            emailLink && (
-              <li>
-                <a href={emailLink.url}>邮箱</a>
-              </li>
-            )
-          }
-        </ul>
-      </nav>
-    </div>
-
-    {
-      customFooterHtml && (
-        <div class="site-footer__custom" set:html={customFooterHtml} />
-      )
-    }
-
-    <div class="site-footer__legal">
-      <div class="site-footer__legal-left">
-        <span class="site-footer__copy">
-          &copy; <span id="copyright-year">{currentYear}</span>{" "}
-          {profileConfig.name}
-        </span>
         <div class="site-footer__water-wrap">
           <button
             type="button"
             id="footer-water-btn"
             class="site-footer__water"
-            title="以最新文章更新日计 · 点我浇一浇"
-            aria-label={`上次浇灌 ${wateredOn}，点击播放浇水动画`}
+            title={waterTitle}
+            aria-label={`上次浇灌 ${wateredOn}，${gardenTip}，点击播放浇水动画`}
           >
             <span class="site-footer__water-icons" aria-hidden="true">
               <Icon is:inline name="lucide:droplets" class="site-footer__icon-drop" />
@@ -259,6 +177,216 @@ if (footerConfig.enable) {
             </svg>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- 顶带 → 导航过渡：规则线 + 极淡点阵 -->
+    <div class="site-footer__band" aria-hidden="true"></div>
+
+    <!-- 2 · 中区：五列均匀铺开，左右留白 -->
+    <div class="site-footer__nav">
+      <nav class="site-footer__col" aria-label="漫步">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">漫步</span>
+          <span class="site-footer__col-title-en">Explore</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li>
+            <a href={url("/")}>
+              <Icon is:inline name="lucide:home" class="site-footer__link-icon" aria-hidden="true" />
+              首页
+            </a>
+          </li>
+          <li>
+            <a href={url("/about/")}>
+              <Icon is:inline name="lucide:user" class="site-footer__link-icon" aria-hidden="true" />
+              关于
+            </a>
+          </li>
+          <li>
+            <a href={url("/tags/")}>
+              <Icon is:inline name="lucide:tags" class="site-footer__link-icon" aria-hidden="true" />
+              标签
+            </a>
+          </li>
+          {
+            showFriends ? (
+              <li>
+                <a href={url("/friends/")}>
+                  <Icon is:inline name="lucide:link-2" class="site-footer__link-icon" aria-hidden="true" />
+                  友链
+                </a>
+              </li>
+            ) : (
+              <li>
+                <a href={url("/search/")}>
+                  <Icon is:inline name="lucide:search" class="site-footer__link-icon" aria-hidden="true" />
+                  搜索
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="园径">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">园径</span>
+          <span class="site-footer__col-title-en">Paths</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li>
+            <a href={url("/dynamic/")}>
+              <Icon is:inline name="lucide:activity" class="site-footer__link-icon" aria-hidden="true" />
+              动态
+            </a>
+          </li>
+          <li>
+            <a href={url("/categories/")}>
+              <Icon is:inline name="lucide:folder-tree" class="site-footer__link-icon" aria-hidden="true" />
+              分类
+            </a>
+          </li>
+          <li>
+            <a href={url("/timeline/")}>
+              <Icon is:inline name="lucide:calendar-range" class="site-footer__link-icon" aria-hidden="true" />
+              时间轴
+            </a>
+          </li>
+          <li>
+            <a href={url("/collections/")}>
+              <Icon is:inline name="lucide:library" class="site-footer__link-icon" aria-hidden="true" />
+              合集
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="园趣">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">园趣</span>
+          <span class="site-footer__col-title-en">Leisure</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li>
+            <a href={url("/gallery/")}>
+              <Icon is:inline name="lucide:images" class="site-footer__link-icon" aria-hidden="true" />
+              相册
+            </a>
+          </li>
+          <li>
+            <a href={url("/anime/")}>
+              <Icon is:inline name="lucide:clapperboard" class="site-footer__link-icon" aria-hidden="true" />
+              追番
+            </a>
+          </li>
+          <li>
+            <a href={url("/guestbook/")}>
+              <Icon is:inline name="lucide:message-square-heart" class="site-footer__link-icon" aria-hidden="true" />
+              留言
+            </a>
+          </li>
+          <li>
+            <a href={url("/bangumi/")}>
+              <Icon is:inline name="lucide:tv" class="site-footer__link-icon" aria-hidden="true" />
+              Bangumi
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="工具">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">工具</span>
+          <span class="site-footer__col-title-en">Tools</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li>
+            <a href={url("/search/")}>
+              <Icon is:inline name="lucide:search" class="site-footer__link-icon" aria-hidden="true" />
+              搜索
+            </a>
+          </li>
+          <li>
+            <a href={url("/ask/")}>
+              <Icon is:inline name="lucide:bot-message-square" class="site-footer__link-icon" aria-hidden="true" />
+              问答
+            </a>
+          </li>
+          <li>
+            <a href={url("/agents/")}>
+              <Icon is:inline name="lucide:bot" class="site-footer__link-icon" aria-hidden="true" />
+              Agents
+            </a>
+          </li>
+          <li>
+            <a href={url("/sponsor/")}>
+              <Icon is:inline name="lucide:heart-handshake" class="site-footer__link-icon" aria-hidden="true" />
+              赞助
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="连结">
+        <h3 class="site-footer__col-title">
+          <span class="site-footer__col-title-cn">连结</span>
+          <span class="site-footer__col-title-en">Connect</span>
+        </h3>
+        <ul class="site-footer__list">
+          <li>
+            <a href={url("rss.xml")} target="_blank" rel="noopener noreferrer">
+              <Icon is:inline name="lucide:rss" class="site-footer__link-icon" aria-hidden="true" />
+              RSS
+            </a>
+          </li>
+          <li>
+            <a
+              href={url("sitemap-index.xml")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon is:inline name="lucide:map" class="site-footer__link-icon" aria-hidden="true" />
+              Sitemap
+            </a>
+          </li>
+          {
+            githubLink && (
+              <li>
+                <a href={githubLink.url} target="_blank" rel="noopener noreferrer">
+                  <Icon is:inline name="lucide:github" class="site-footer__link-icon" aria-hidden="true" />
+                  GitHub
+                </a>
+              </li>
+            )
+          }
+          {
+            emailLink && (
+              <li>
+                <a href={emailLink.url}>
+                  <Icon is:inline name="lucide:mail" class="site-footer__link-icon" aria-hidden="true" />
+                  邮箱
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </nav>
+    </div>
+
+    {
+      customFooterHtml && (
+        <div class="site-footer__custom" set:html={customFooterHtml} />
+      )
+    }
+
+    <!-- 3 · 底条：版权 + 署名（浇水只在顶带） -->
+    <div class="site-footer__legal">
+      <div class="site-footer__legal-left">
+        <span class="site-footer__copy">
+          &copy; <span id="copyright-year">{currentYear}</span>{" "}
+          {profileConfig.name}
+        </span>
       </div>
 
       <div class="site-footer__legal-right">

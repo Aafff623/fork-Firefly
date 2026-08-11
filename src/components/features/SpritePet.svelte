@@ -35,6 +35,16 @@ import {
 	type PetRoamFacing,
 	type PetRoamResolvedAnchor,
 } from "@/lib/pets/petRoamAnchors";
+import {
+	canPlayByPriority,
+	getPetPagePersonaDef,
+	resolvePostReadMood,
+	type PetScenarioPriority,
+} from "@/lib/pets/petScenarios";
+import {
+	SIDEBAR_BALANCE_EVENT,
+	SIDEBAR_IMBALANCE_EVENT,
+} from "@/lib/sidebar/sidebarBalance";
 import type { SpritePetRoamConfig } from "@/types/petConfig";
 import { triggerPetYzhanByTheme } from "@/utils/ambient-fx";
 import { url } from "@/utils/url-utils";
@@ -87,6 +97,8 @@ let {
 		portalHoldMs: 160,
 		scrollLeaveDelayMs: 2_400,
 		resumeAfterDragMs: 2_000,
+		nearMoveMaxPx: 420,
+		nearMoveMs: 520,
 		pauseWhenPinned: false,
 	},
 	zIndex = 1000,
@@ -259,15 +271,21 @@ let scrollLeaveTimer: ReturnType<typeof setTimeout> | null = null;
 let resumeAfterDragTimer: ReturnType<typeof setTimeout> | null = null;
 let roamMoving = false;
 let roamLoopActive = false;
+/** 浏览页侧栏失衡：钉日历下并停游走（文章页不进） */
+let balanceParkActive = false;
 /** 本轮 5s 倒计时锁定的下一张卡；拖拽会作废，松开后 2s 再重新随机 */
 let plannedRoamTargetId: PetRoamAnchorId | null = null;
-/** 钻洞换位代数：滚动/定时并发时只让最后一次落地 */
+/** 钻洞/近距换位代数：滚动/定时并发时只让最后一次落地 */
 let roamPortalGen = 0;
 
 let playbackTimer: ReturnType<typeof setTimeout> | null = null;
 let transientTimer: ReturnType<typeof setTimeout> | null = null;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let readScrollTimer: ReturnType<typeof setTimeout> | null = null;
+/** 当前瞬态动作优先级；结束后清 null */
+let activeScenarioPriority: PetScenarioPriority | null = null;
+/** Tab 后台：停表，回前台再恢复 */
+let pageVisible = true;
 let suppressClick = false;
 let lastClickAt = 0;
 let scenarioCooldownUntil = 0;
@@ -377,7 +395,7 @@ function stopPlayback() {
 
 function startPlayback(state: PetAnimationState) {
 	stopPlayback();
-	if (!spriteEl) return;
+	if (!spriteEl || !pageVisible) return;
 
 	if (state === "idle" && stickyLook !== undefined && effectiveLookFollow) {
 		applyGazeFrame(stickyLook);
@@ -395,6 +413,10 @@ function startPlayback(state: PetAnimationState) {
 	// 仅 idle 环境动作变慢；点击/拖拽等瞬态仍原速
 	const pace = state === "idle" ? effectiveIdlePace : 1;
 	const tick = () => {
+		if (!pageVisible) {
+			stopPlayback();
+			return;
+		}
 		const next = getPetAnimationPlaybackTickAtElapsedMs(
 			state,
 			Math.max(0, (performance.now() - startedAt) / pace),
@@ -412,16 +434,21 @@ function playTransient(
 	state: PetAnimationState,
 	loops = 3,
 	onDone?: () => void,
+	priority: PetScenarioPriority = "ui",
 ) {
+	if (!pageVisible) return;
 	if (!effectiveMotion && state !== "idle") return;
+	if (!canPlayByPriority(activeScenarioPriority, priority)) return;
 	if (transientTimer) clearTimeout(transientTimer);
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
+	activeScenarioPriority = priority;
 	animationState = state;
 	transientTimer = setTimeout(() => {
 		animationState = "idle";
 		transientTimer = null;
+		activeScenarioPriority = null;
 		onDone?.();
 	}, getPetAnimationDurationMs(state) * loops);
 }
@@ -503,6 +530,7 @@ function clearTransientAndGaze() {
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
+	activeScenarioPriority = null;
 	if (transientTimer) {
 		clearTimeout(transientTimer);
 		transientTimer = null;
@@ -511,13 +539,24 @@ function clearTransientAndGaze() {
 
 /**
  * 按路由（或访客覆盖）换皮；交叉淡化后切换 spritesheet。
+ * 进文 / 回浏览带换班前导动作（running / waving），避免「突然换人」感。
  * 返回是否发生了切换（Promise，供 Swup 钩子 await）。
  */
 async function syncPetFromPath(
 	pathname = window.location.pathname,
 ): Promise<boolean> {
+	const prevPath = routePathname;
 	routePathname = pathname;
 	const next = resolveActivePetId(visitorSelection, pathname);
+	const swappingToPost =
+		next !== activePetId &&
+		isPostPath(pathname) &&
+		!isPostPath(prevPath);
+	const swappingFromPost =
+		next !== activePetId &&
+		!isPostPath(pathname) &&
+		isPostPath(prevPath);
+
 	updateHidden();
 	if (isPostViewportMode(pathname)) {
 		applyPostViewportLock(pathname);
@@ -537,6 +576,22 @@ async function syncPetFromPath(
 	clearTransientAndGaze();
 
 	const useFade = effectiveMotion && !prefersReducedMotion;
+
+	// 换班前导：进文跑步离开，回浏览挥手告别
+	if (useFade && effectiveMotion) {
+		if (swappingToPost) {
+			animationState = "running";
+			activeScenarioPriority = "route";
+			await waitMs(220);
+			if (gen !== skinSwapGen) return false;
+		} else if (swappingFromPost) {
+			animationState = "waving";
+			activeScenarioPriority = "route";
+			await waitMs(280);
+			if (gen !== skinSwapGen) return false;
+		}
+	}
+
 	if (useFade) {
 		skinOpacity = 0;
 		await waitMs(SKIN_CROSSFADE_MS);
@@ -555,6 +610,7 @@ async function syncPetFromPath(
 	if (useFade) {
 		await waitMs(SKIN_CROSSFADE_MS);
 	}
+	activeScenarioPriority = null;
 	return gen === skinSwapGen;
 }
 
@@ -571,7 +627,12 @@ async function applyVisitorSelection(next: StoredPetSelection) {
 		startRoamLoop();
 	}
 	if (swapped && effectiveMotion) {
-		playTransient(isOverrideMode ? "waving" : "review", 2);
+		playTransient(
+			isOverrideMode ? "waving" : "review",
+			2,
+			undefined,
+			"route",
+		);
 	}
 }
 
@@ -586,11 +647,14 @@ function pulseForThemeChange() {
 function reactToRoute() {
 	if (!reactToSiteUi || !effectiveMotion || hidden) return;
 	if (is404Page()) {
-		if (canTriggerScenario("404", 20_000)) playTransient("failed", 4);
+		if (canTriggerScenario("404", 20_000)) {
+			playTransient("failed", 4, undefined, "hard");
+		}
 		return;
 	}
-	if (isPostPath() && canTriggerScenario("post-open", 12_000)) {
-		playTransient("review", 3);
+	const persona = getPetPagePersonaDef(window.location.pathname, false);
+	if (canTriggerScenario(`persona-${persona.id}`, 8_000)) {
+		playTransient(persona.onEnterAction, 2, undefined, "route");
 	}
 }
 
@@ -603,7 +667,7 @@ function resetIdleTimer() {
 			return;
 		}
 		if (canTriggerScenario("long-idle", 60_000)) {
-			playTransient("waiting", 3);
+			playTransient("waiting", 3, undefined, "ambient");
 		}
 		resetIdleTimer();
 	}, IDLE_WAITING_MS);
@@ -764,13 +828,33 @@ function dockToCard(
 }
 
 /**
+ * 浏览态无侧栏锚点时的兜底：视口角（position/offset），保证可见。
+ * 避免 about/相册等页长期停在「无坐标」中间态。
+ */
+function parkAtBrowseFallback(wave = true) {
+	if (userPinnedPosition || isPostPath() || hidden) return;
+	clearDockHost();
+	dockMode = "free";
+	currentAnchorId = null;
+	plannedRoamTargetId = null;
+	posX = null;
+	posY = null;
+	skinOpacity = 1;
+	if (rootEl) mountPetToBody(rootEl);
+	if (wave && effectiveMotion && canTriggerScenario("fallback-park", 12_000)) {
+		playTransient("waving", 2, undefined, "ambient");
+	}
+}
+
+/**
  * 贴在侧栏「最新动态」卡片角（须在视口内）。
- * 失败则尝试任意可见侧栏卡角；禁止用视口右下当长期落点。
+ * 失败则尝试任意可见侧栏卡角；再失败走视口角兜底。
  */
 function placeNearDynamicsWidget(): boolean {
 	const dynamics = findVisibleAnchorById("dynamics", effectiveSize, height);
 	if (!dynamics) return false;
 	dockToCard(dynamics.el, dynamics.corner, dynamics.id, dynamics.facing);
+	skinOpacity = 1;
 	return true;
 }
 
@@ -781,40 +865,71 @@ function placeOnAnyVisibleAnchor(): boolean {
 		pickNextRoamAnchor(visible, null);
 	if (!pick) return false;
 	dockToCard(pick.el, pick.corner, pick.id, pick.facing);
+	skinOpacity = 1;
 	return true;
 }
 
-/** 浏览态默认落点：侧栏卡片角；找不到锚点时继续重试，不钉死窗口角 */
+/** 浏览态默认落点：侧栏卡片角；找不到锚点时钉视口角兜底 */
 function applyBrowseDefaultPlacement() {
 	if (userPinnedPosition || isPostPath()) return;
 	if (placeNearDynamicsWidget()) return;
 	if (placeOnAnyVisibleAnchor()) return;
-	// 暂留 null 仅作首帧占位；schedule 会再贴卡片
-	posX = null;
-	posY = null;
-	currentAnchorId = null;
+	parkAtBrowseFallback(true);
 }
 
 function scheduleBrowseDefaultPlacement() {
 	if (userPinnedPosition || isPostPath()) return;
-	const tryPlace = () => {
+	const tryPlace = (isFinal: boolean) => {
 		if (userPinnedPosition || isPostPath()) return;
 		if (placeNearDynamicsWidget()) return;
 		if (placeOnAnyVisibleAnchor()) return;
+		if (isFinal) parkAtBrowseFallback(true);
 	};
-	requestAnimationFrame(tryPlace);
-	window.setTimeout(tryPlace, 120);
-	window.setTimeout(tryPlace, 360);
-	window.setTimeout(tryPlace, 800);
-	window.setTimeout(tryPlace, 1600);
+	requestAnimationFrame(() => tryPlace(false));
+	window.setTimeout(() => tryPlace(false), 120);
+	window.setTimeout(() => tryPlace(false), 360);
+	window.setTimeout(() => tryPlace(false), 800);
+	window.setTimeout(() => tryPlace(true), 1600);
 }
 
 function canRoamNow(): boolean {
+	if (!pageVisible) return false;
 	if (!roam.enable || hidden) return false;
 	if (!canRoamOnBrowse()) return false;
+	if (balanceParkActive) return false;
 	if (roam.pauseWhenPinned && userPinnedPosition) return false;
 	if (dragging || roamMoving) return false;
 	return true;
+}
+
+/** 失衡：强制贴日历并停 roam；无可见日历则视口右下兜底 */
+function enterBalancePark() {
+	if (typeof window === "undefined" || isPostPath()) return;
+	balanceParkActive = true;
+	stopRoamLoop();
+	clearScrollLeaveTimer();
+	clearPlannedRoamTarget();
+	if (userPinnedPosition || hidden || dragging) return;
+	const calendar = findVisibleAnchorById("calendar", effectiveSize, height);
+	if (calendar) {
+		dockToCard(
+			calendar.el,
+			calendar.corner,
+			calendar.id,
+			calendar.facing,
+		);
+		skinOpacity = 1;
+		return;
+	}
+	parkAtBrowseFallback(false);
+}
+
+function exitBalancePark() {
+	if (!balanceParkActive) return;
+	balanceParkActive = false;
+	if (typeof window === "undefined" || isPostPath()) return;
+	if (userPinnedPosition || hidden || dragging) return;
+	startRoamLoop();
 }
 
 function clearScrollLeaveTimer() {
@@ -877,15 +992,20 @@ function scheduleResumeRoamAfterDrag() {
 		} catch {
 			/* ignore */
 		}
+		// 失衡钉宠优先于拖后回游走
+		if (balanceParkActive) {
+			enterBalancePark();
+			return;
+		}
 		void (async () => {
 			const visible = listVisibleRoamAnchors(effectiveSize, height);
 			// 拖后目标与原先计划无关：视口内重新随机（可含拖前那张卡）
 			const target =
 				pickNextRoamAnchor(visible, null) ?? visible[0] ?? null;
 			if (target) {
-				await roamToAnchor(target);
+				await roamToAnchor(target, true);
 			} else {
-				placeOnAnyVisibleAnchor();
+				parkAtBrowseFallback(true);
 			}
 			startRoamLoop();
 		})();
@@ -974,9 +1094,14 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 				pet.portalArrivalLoops > 0
 			) {
 				// 落地再亮一会儿特殊形态，再回 idle
-				playTransient(portalState, pet.portalArrivalLoops);
+				playTransient(
+					portalState,
+					pet.portalArrivalLoops,
+					undefined,
+					"ambient",
+				);
 			} else {
-				playTransient(target.arrivalAction, 1);
+				playTransient(target.arrivalAction, 1, undefined, "ambient");
 			}
 		} else {
 			animationState = "idle";
@@ -989,9 +1114,107 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 	}
 }
 
-async function roamToAnchor(target: PetRoamResolvedAnchor) {
+async function roamToAnchor(
+	target: PetRoamResolvedAnchor,
+	forcePortal = false,
+) {
 	if (!canRoamNow() && !roamMoving) return;
-	await portalToAnchor(target);
+	if (forcePortal || prefersReducedMotion || !effectiveMotion) {
+		await portalToAnchor(target);
+		return;
+	}
+
+	const fromX = dockMode === "card" ? dockFixedX : (posX ?? dockFixedX);
+	const fromY = dockMode === "card" ? dockFixedY : (posY ?? dockFixedY);
+	const dist = Math.hypot(target.x - fromX, target.y - fromY);
+	const nearMax = roam.nearMoveMaxPx ?? 420;
+	const sameColumn =
+		(dockFacing === "right" && target.facing === "right") ||
+		(dockFacing === "left" && target.facing === "left") ||
+		currentAnchorId == null;
+
+	// 近距且同侧朝向（同栏）：小跑；跨栏 / 过远：钻洞
+	if (dist <= nearMax && sameColumn) {
+		await runToAnchor(target);
+	} else {
+		await portalToAnchor(target);
+	}
+}
+
+/**
+ * 近距小跑：视口坐标插值 + running-left/right，到达后播 arrivalAction。
+ */
+async function runToAnchor(target: PetRoamResolvedAnchor) {
+	const gen = ++roamPortalGen;
+	const moveMs = Math.max(280, roam.nearMoveMs ?? 520);
+	const dirRun: PetAnimationState =
+		target.facing === "right" ? "running-right" : "running-left";
+
+	roamMoving = true;
+	gazeActive = false;
+	stickyLook = undefined;
+	lookDirection = undefined;
+	stopPlayback();
+	animationState = dirRun;
+
+	const startX = dockMode === "card" ? dockFixedX : (posX ?? target.x);
+	const startY = dockMode === "card" ? dockFixedY : (posY ?? target.y);
+
+	// 先卸成 free fixed，再插值，避免贴卡同步打架
+	clearDockHost();
+	dockMode = "free";
+	posX = startX;
+	posY = startY;
+	if (rootEl) mountPetToBody(rootEl);
+
+	const startedAt = performance.now();
+	await new Promise<void>((resolve) => {
+		const step = () => {
+			if (gen !== roamPortalGen) {
+				resolve();
+				return;
+			}
+			const t = Math.min(1, (performance.now() - startedAt) / moveMs);
+			// ease-out quad
+			const e = 1 - (1 - t) * (1 - t);
+			posX = Math.round(startX + (target.x - startX) * e);
+			posY = Math.round(startY + (target.y - startY) * e);
+			if (t < 1) {
+				requestAnimationFrame(step);
+			} else {
+				resolve();
+			}
+		};
+		requestAnimationFrame(step);
+	});
+
+	if (gen !== roamPortalGen) {
+		roamMoving = false;
+		return;
+	}
+
+	dockToCard(target.el, target.corner, target.id, target.facing);
+	skinOpacity = 1;
+
+	if (effectiveMotion) {
+		const seq = pet.portalArrivalSequence;
+		if (seq && seq.length > 0) {
+			playSequence(
+				seq.map((step) => ({
+					state: step.state === "facing-run" ? dirRun : step.state,
+					loops: step.loops ?? 2,
+				})),
+			);
+		} else {
+			playTransient(target.arrivalAction, 1, undefined, "ambient");
+		}
+	} else {
+		animationState = "idle";
+	}
+
+	if (gen === roamPortalGen) {
+		roamMoving = false;
+	}
 }
 
 async function performRoamStep() {
@@ -999,6 +1222,7 @@ async function performRoamStep() {
 	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	if (visible.length === 0) {
 		clearPlannedRoamTarget();
+		parkAtBrowseFallback(false);
 		return;
 	}
 
@@ -1042,6 +1266,7 @@ function scheduleNextRoam() {
 
 function startRoamLoop() {
 	if (!roam.enable) return;
+	if (balanceParkActive) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
 	if (!canRoamOnBrowse() || hidden) return;
 	if (roamLoopActive) return;
@@ -1055,6 +1280,7 @@ function startRoamLoop() {
  */
 function onScrollRoamCheck() {
 	if (!roam.enable || hidden || !canRoamOnBrowse()) return;
+	if (balanceParkActive) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
 	if (roamMoving) return;
 
@@ -1063,8 +1289,13 @@ function onScrollRoamCheck() {
 		currentAnchorId != null &&
 		visible.some((a) => a.id === currentAnchorId);
 
-	if (ok || visible.length === 0) {
+	if (ok) {
 		clearScrollLeaveTimer();
+		return;
+	}
+	if (visible.length === 0) {
+		clearScrollLeaveTimer();
+		parkAtBrowseFallback(false);
 		return;
 	}
 
@@ -1074,7 +1305,10 @@ function onScrollRoamCheck() {
 		scrollLeaveTimer = null;
 		if (!canRoamNow()) return;
 		const still = listVisibleRoamAnchors(effectiveSize, height);
-		if (still.length === 0) return;
+		if (still.length === 0) {
+			parkAtBrowseFallback(false);
+			return;
+		}
 		if (
 			currentAnchorId != null &&
 			still.some((a) => a.id === currentAnchorId)
@@ -1082,7 +1316,8 @@ function onScrollRoamCheck() {
 			return;
 		}
 		const target = pickNextRoamAnchor(still, null) ?? still[0];
-		if (target) void roamToAnchor(target);
+		// 滚出换卡：目标不可预测，强制钻洞
+		if (target) void roamToAnchor(target, true);
 	}, delay);
 }
 
@@ -1426,7 +1661,9 @@ function onSitePointerDown(event: Event) {
 
 	for (const rule of SITE_UI_REACTIONS) {
 		if (target.closest(rule.selector)) {
-			playTransient(rule.state, 3);
+			if (canTriggerScenario(`ui-${rule.state}`, 4_000)) {
+				playTransient(rule.state, 3, undefined, "ui");
+			}
 			return;
 		}
 	}
@@ -1531,12 +1768,18 @@ onMount(() => {
 		if (dockMode === "card") {
 			syncCardDockFixedPos();
 		}
+		if (balanceParkActive && !isPostPath()) {
+			enterBalancePark();
+			return;
+		}
 		if (!userPinnedPosition && !isPostPath() && dockMode !== "card") {
 			if (placeNearDynamicsWidget()) {
 				startRoamLoop();
 				return;
 			}
-			placeOnAnyVisibleAnchor();
+			if (!placeOnAnyVisibleAnchor()) {
+				parkAtBrowseFallback(false);
+			}
 		}
 		if (!hidden && !isPostPath()) startRoamLoop();
 		else stopRoamLoop();
@@ -1555,12 +1798,29 @@ onMount(() => {
 			syncCardDockFixedPos();
 		}
 		onScrollRoamCheck();
-		if (!reactToSiteUi || !effectiveMotion || !isPostPath()) return;
+		if (!reactToSiteUi || !effectiveMotion || !isPostPath() || hidden) {
+			return;
+		}
 		if (readScrollTimer) return;
 		readScrollTimer = setTimeout(() => {
 			readScrollTimer = null;
-			if (canTriggerScenario("read-scroll", 14_000)) {
-				playTransient("waiting", 2);
+			if (!isPostPath() || hidden || !pageVisible) return;
+			const doc = document.documentElement;
+			const maxScroll = Math.max(
+				1,
+				doc.scrollHeight - window.innerHeight,
+			);
+			const progress = window.scrollY / maxScroll;
+			const mood = resolvePostReadMood(progress);
+			if (!mood) return;
+			const key =
+				mood === "waving"
+					? "read-start"
+					: mood === "waiting"
+						? "read-end"
+						: "read-mid";
+			if (canTriggerScenario(key, 14_000)) {
+				playTransient(mood, 2, undefined, "ambient");
 			}
 		}, READ_SCROLL_TRIGGER_MS);
 	};
@@ -1576,7 +1836,7 @@ onMount(() => {
 	const onSwupLeave = () => {
 		if (!reactToSiteUi || !effectiveMotion) return;
 		if (canTriggerScenario("swup-leave", 3_000)) {
-			playTransient("running", 2);
+			playTransient("running", 2, undefined, "route");
 		}
 	};
 	const onSwupArrive = () => {
@@ -1589,21 +1849,27 @@ onMount(() => {
 			if (window.location.pathname !== pathAtStart) return;
 			if (isPostViewportMode()) {
 				// syncPetFromPath 已钉视口；这里只保证游走关掉
+				balanceParkActive = false;
 				stopRoamLoop();
+			} else if (balanceParkActive) {
+				enterBalancePark();
 			} else if (!userPinnedPosition) {
 				scheduleBrowseDefaultPlacement();
 				startRoamLoop();
 			}
+			// 换班完成后再播 persona，避免抢动画
+			const persona = getPetPagePersonaDef(
+				pathAtStart,
+				is404Page(),
+			);
 			if (swapped) {
-				// 换皮后：进文 review，回列表 waving（与淡入衔接）
-				if (isPostPath()) {
-					if (canTriggerScenario("post-open", 12_000)) {
-						playTransient("review", 3);
-					} else {
-						animationState = "idle";
-					}
-				} else if (canTriggerScenario("browse-return", 6_000)) {
-					playTransient("waving", 2);
+				if (canTriggerScenario(`shift-${persona.id}`, 10_000)) {
+					playTransient(
+						persona.onEnterAction,
+						isPostPath(pathAtStart) ? 3 : 2,
+						undefined,
+						"route",
+					);
 				} else {
 					animationState = "idle";
 				}
@@ -1631,7 +1897,7 @@ onMount(() => {
 			(entries) => {
 				if (!entries.some((entry) => entry.isIntersecting)) return;
 				if (canTriggerScenario("footer", 20_000)) {
-					playTransient("waving", 3);
+					playTransient("waving", 3, undefined, "ambient");
 				}
 			},
 			{ threshold: 0.35 },
@@ -1644,7 +1910,7 @@ onMount(() => {
 		const detail = (event as CustomEvent<{ playing?: boolean }>).detail;
 		if (!detail?.playing) return;
 		if (canTriggerScenario("bg-player", 10_000)) {
-			playTransient("jumping", 3);
+			playTransient("jumping", 3, undefined, "ambient");
 		}
 	};
 	window.addEventListener("bg-player-state-change", onBgPlayer);
@@ -1655,19 +1921,19 @@ onMount(() => {
 		switch (detail.scenario) {
 			case "search-empty":
 				if (canTriggerScenario("search-empty", 8_000)) {
-					playTransient("failed", 3);
+					playTransient("failed", 3, undefined, "hard");
 				}
 				break;
 			case "copy-fail":
 			case "form-fail":
 				if (canTriggerScenario("fail", 6_000)) {
-					playTransient("failed", 3);
+					playTransient("failed", 3, undefined, "hard");
 				}
 				break;
 			case "like":
 			case "comment-ok":
 				if (canTriggerScenario("celebrate", 6_000)) {
-					playTransient("jumping", 3);
+					playTransient("jumping", 3, undefined, "ui");
 				}
 				break;
 			default:
@@ -1691,19 +1957,76 @@ onMount(() => {
 	window.addEventListener("firefly:pet-change", onPetChange);
 
 	const onInvalid = () => {
-		if (canTriggerScenario("form-fail", 6_000)) playTransient("failed", 3);
+		if (canTriggerScenario("form-fail", 6_000)) {
+			playTransient("failed", 3, undefined, "hard");
+		}
 	};
 	document.addEventListener("invalid", onInvalid, true);
+
+	const onVisibility = () => {
+		pageVisible = document.visibilityState === "visible";
+		if (!pageVisible) {
+			stopPlayback();
+			stopRoamLoop();
+			if (idleTimer) {
+				clearTimeout(idleTimer);
+				idleTimer = null;
+			}
+			if (readScrollTimer) {
+				clearTimeout(readScrollTimer);
+				readScrollTimer = null;
+			}
+			return;
+		}
+		// 回前台：恢复 idle 与浏览态游走
+		skinOpacity = 1;
+		if (effectiveMotion) {
+			startPlayback("idle");
+		}
+		resetIdleTimer();
+		if (
+			canRoamOnBrowse() &&
+			!userPinnedPosition &&
+			!hidden &&
+			!balanceParkActive
+		) {
+			startRoamLoop();
+		} else if (balanceParkActive && !isPostPath()) {
+			enterBalancePark();
+		}
+	};
+	document.addEventListener("visibilitychange", onVisibility);
+
+	const onSidebarImbalance = () => {
+		if (isPostPath()) return;
+		enterBalancePark();
+	};
+	const onSidebarBalance = () => {
+		if (isPostPath()) {
+			balanceParkActive = false;
+			return;
+		}
+		exitBalancePark();
+	};
+	document.addEventListener(SIDEBAR_IMBALANCE_EVENT, onSidebarImbalance);
+	document.addEventListener(SIDEBAR_BALANCE_EVENT, onSidebarBalance);
+	// 晚挂载：对齐当前失衡态（html class 由 boot 维护）
+	if (
+		!isPostPath() &&
+		document.documentElement.classList.contains("sidebar-imbalanced")
+	) {
+		enterBalancePark();
+	}
 
 	if (effectiveMotion) {
 		playTransient("waving", 2, () => {
 			setTimeout(() => reactToRoute(), 120);
-		});
+		}, "route");
 	} else {
 		reactToRoute();
 	}
 	resetIdleTimer();
-	if (canRoamOnBrowse() && !userPinnedPosition) {
+	if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
 		startRoamLoop();
 	}
 
@@ -1724,6 +2047,12 @@ onMount(() => {
 		window.removeEventListener("firefly:pet-scenario", onPetScenario);
 		window.removeEventListener("firefly:pet-change", onPetChange);
 		document.removeEventListener("invalid", onInvalid, true);
+		document.removeEventListener("visibilitychange", onVisibility);
+		document.removeEventListener(
+			SIDEBAR_IMBALANCE_EVENT,
+			onSidebarImbalance,
+		);
+		document.removeEventListener(SIDEBAR_BALANCE_EVENT, onSidebarBalance);
 		footerObserver?.disconnect();
 		if (idleTimer) clearTimeout(idleTimer);
 		if (readScrollTimer) clearTimeout(readScrollTimer);
