@@ -1,41 +1,41 @@
-/* 站点 Footer · 专业四栏 + V2 浇水胶囊 + V4 邮戳
- * 全宽底栏带：局部景层 + 可读性雾罩；树木/花瓣点缀；法律行安静
+/* 站点 Footer · 三层（顶带 / 导航 / 底条）
+ * 学 name.com 分区与扫视；保留花园景层但压干扰
  */
 
 .site-footer {
-	/* 森林绿文字氛围 + 水色水滴 */
 	--sf-forest: oklch(0.38 0.07 145);
 	--sf-moss: oklch(0.48 0.08 150);
 	--sf-leaf: oklch(0.52 0.1 145);
 	--sf-ink: var(--sf-forest);
-	--sf-muted: oklch(0.46 0.05 148);
+	--sf-muted: oklch(0.42 0.04 148);
 	--sf-faint: oklch(0.88 0.02 145 / 0.65);
 	--sf-rule: oklch(0.82 0.03 145 / 0.55);
 	--sf-accent: var(--sf-leaf);
 	--sf-water-dot: oklch(0.62 0.12 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
 	--sf-serif: Georgia, "Times New Roman", "Songti SC", serif;
-	/* 品牌 wordmark：对齐 GitHub profile 斜体展示衬线 */
 	--sf-display: Georgia, "Times New Roman", serif;
-	/* 花园简介：中文与英文都复用系统衬线，避免额外网络字体 */
 	--sf-blurb-cn: "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
 	--sf-blurb-en: Georgia, "Times New Roman", serif;
+	--sf-sans:
+		var(--font-inter),
+		"Segoe UI",
+		system-ui,
+		-apple-system,
+		sans-serif;
 	--sf-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, Consolas, monospace;
 	--sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
-	/* 局部景层：花田人物插画（复用 atmosphere 资产，不改全站） */
 	--sf-scape: url("/assets/atmosphere/ba-06-paired.jpg");
 
 	position: relative;
 	isolation: isolate;
-	/* 相对内容栏 full-bleed 到视口，树木贴左右边无白边 */
 	width: 100vw;
 	max-width: 100vw;
 	margin: 2.75rem 0 0;
 	margin-left: calc(50% - 50vw);
-	padding: 2.85rem 0 1.75rem;
+	padding: 2.5rem 0 0;
 	min-width: 0;
 	overflow: hidden;
-	/* 底栏带略实一点：压住全站 atmosphere 透色，文字仍靠 veil */
 	background: linear-gradient(
 		180deg,
 		oklch(0.95 0.018 145 / 0.55) 0%,
@@ -46,7 +46,6 @@
 	border: none;
 	border-radius: 0;
 	box-shadow: none;
-	border-top: none;
 	box-sizing: border-box;
 }
 
@@ -69,28 +68,10 @@
 	opacity: 0.95;
 }
 
-.site-footer::after {
-	content: "";
-	position: absolute;
-	top: 2px;
-	left: 8%;
-	right: 8%;
-	height: 1px;
-	z-index: 2;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		oklch(0.55 0.04 145 / 0.42),
-		transparent
-	);
-	pointer-events: none;
-}
-
 html.dark .site-footer {
-	/* 暗色：正文走近白中性色，告别浅绿撞深绿底 */
 	--sf-forest: oklch(0.94 0.008 95);
 	--sf-moss: oklch(0.82 0.012 95);
-	--sf-leaf: oklch(0.8 0.05 145); /* 仅作点缀色 */
+	--sf-leaf: oklch(0.8 0.05 145);
 	--sf-ink: oklch(0.94 0.006 95);
 	--sf-muted: oklch(0.78 0.01 95);
 	--sf-faint: oklch(0.5 0.01 95 / 0.45);
@@ -106,41 +87,19 @@ html.dark .site-footer {
 	);
 }
 
-/* 暗色链接用干净无衬线，更利落可读；默认近白，悬停仍走绿色 */
-html.dark .site-footer__list a {
-	font-family:
-		var(--font-inter),
-		"Segoe UI",
-		system-ui,
-		-apple-system,
-		sans-serif;
-	font-weight: 450;
-	letter-spacing: 0.015em;
-	color: var(--sf-ink);
-}
-
-html.dark .site-footer__blurb {
-	color: var(--sf-muted);
-}
-
-html.dark .site-footer__col-title {
-	color: oklch(0.7 0.01 95);
-	letter-spacing: 0.12em;
-}
-
 .site-footer__inner {
 	position: relative;
 	z-index: 1;
 	width: 100%;
 	max-width: none;
 	margin: 0;
-	/* 正文仍在安全区内，与主栏 padding 对齐 */
-	padding-left: clamp(1rem, 3vw, 2rem);
-	padding-right: clamp(1rem, 3vw, 2rem);
+	/* 左右对称留白，别挤成中间一小撮 */
+	padding-left: clamp(1.5rem, 5vw, 4rem);
+	padding-right: clamp(1.5rem, 5vw, 4rem);
 	box-sizing: border-box;
 }
 
-/* 局部景层：底部锚定花田插画，顶部 mask 淡出，细节可读但不抢正文 */
+/* —— 景层：压透明度，文字优先 —— */
 .site-footer__scape {
 	position: absolute;
 	inset: 0;
@@ -150,43 +109,28 @@ html.dark .site-footer__col-title {
 	background-size: cover;
 	background-position: 38% 78%;
 	background-repeat: no-repeat;
-	opacity: 0.48;
+	opacity: 0.3;
 	-webkit-mask-image: linear-gradient(
 		180deg,
 		transparent 0%,
-		rgba(0, 0, 0, 0.28) 22%,
-		rgba(0, 0, 0, 0.72) 55%,
-		rgba(0, 0, 0, 0.95) 100%
+		rgba(0, 0, 0, 0.18) 16%,
+		rgba(0, 0, 0, 0.55) 48%,
+		rgba(0, 0, 0, 0.88) 100%
 	);
 	mask-image: linear-gradient(
 		180deg,
 		transparent 0%,
-		rgba(0, 0, 0, 0.28) 22%,
-		rgba(0, 0, 0, 0.72) 55%,
-		rgba(0, 0, 0, 0.95) 100%
+		rgba(0, 0, 0, 0.18) 16%,
+		rgba(0, 0, 0, 0.55) 48%,
+		rgba(0, 0, 0, 0.88) 100%
 	);
 }
 
 html.dark .site-footer__scape {
-	opacity: 0.34;
+	opacity: 0.22;
 	filter: brightness(0.68) saturate(0.88) contrast(1.05);
-	-webkit-mask-image: linear-gradient(
-		180deg,
-		transparent 0%,
-		rgba(0, 0, 0, 0.22) 18%,
-		rgba(0, 0, 0, 0.62) 52%,
-		rgba(0, 0, 0, 0.9) 100%
-	);
-	mask-image: linear-gradient(
-		180deg,
-		transparent 0%,
-		rgba(0, 0, 0, 0.22) 18%,
-		rgba(0, 0, 0, 0.62) 52%,
-		rgba(0, 0, 0, 0.9) 100%
-	);
 }
 
-/* 可读性雾罩：压对比、留柔光，保证 wordmark / 链接够清晰 */
 .site-footer__veil {
 	position: absolute;
 	inset: 0;
@@ -195,10 +139,10 @@ html.dark .site-footer__scape {
 	background:
 		linear-gradient(
 			180deg,
-			oklch(0.97 0.012 145 / 0.82) 0%,
-			oklch(0.95 0.018 148 / 0.52) 38%,
-			oklch(0.93 0.022 150 / 0.28) 72%,
-			oklch(0.91 0.028 152 / 0.18) 100%
+			oklch(0.97 0.012 145 / 0.88) 0%,
+			oklch(0.95 0.018 148 / 0.62) 32%,
+			oklch(0.93 0.022 150 / 0.42) 58%,
+			oklch(0.91 0.028 152 / 0.28) 100%
 		),
 		radial-gradient(
 			ellipse 90% 55% at 50% 0%,
@@ -211,10 +155,10 @@ html.dark .site-footer__veil {
 	background:
 		linear-gradient(
 			180deg,
-			oklch(0.18 0.012 145 / 0.9) 0%,
-			oklch(0.17 0.014 148 / 0.72) 40%,
-			oklch(0.16 0.016 150 / 0.48) 72%,
-			oklch(0.15 0.018 152 / 0.32) 100%
+			oklch(0.18 0.012 145 / 0.92) 0%,
+			oklch(0.17 0.014 148 / 0.78) 36%,
+			oklch(0.16 0.016 150 / 0.55) 68%,
+			oklch(0.15 0.018 152 / 0.38) 100%
 		),
 		radial-gradient(
 			ellipse 90% 50% at 50% 0%,
@@ -223,7 +167,6 @@ html.dark .site-footer__veil {
 		);
 }
 
-/* 两侧简化树干 + 树冠：贴视口左右，略抬对比作景深边框 */
 .site-footer__tree {
 	position: absolute;
 	top: 0.5rem;
@@ -231,7 +174,7 @@ html.dark .site-footer__veil {
 	width: clamp(5.5rem, 14vw, 11rem);
 	pointer-events: none;
 	z-index: 0;
-	opacity: 0.26;
+	opacity: 0.16;
 }
 
 .site-footer__tree--left {
@@ -244,7 +187,6 @@ html.dark .site-footer__veil {
 }
 
 .site-footer__tree::before {
-	/* 树干 */
 	content: "";
 	position: absolute;
 	left: 42%;
@@ -260,7 +202,6 @@ html.dark .site-footer__veil {
 }
 
 .site-footer__tree::after {
-	/* 树冠三团 + 侧枝点缀 */
 	content: "";
 	position: absolute;
 	left: 8%;
@@ -277,10 +218,9 @@ html.dark .site-footer__veil {
 }
 
 html.dark .site-footer__tree {
-	opacity: 0.36;
+	opacity: 0.24;
 }
 
-/* 暗色：树干/树冠提亮，避免深色值叠深底看不见 */
 html.dark .site-footer__tree::before {
 	background: linear-gradient(
 		180deg,
@@ -298,125 +238,135 @@ html.dark .site-footer__tree::after {
 		radial-gradient(circle at 82% 36%, oklch(0.66 0.07 150 / 0.44) 0 16%, transparent 18%);
 }
 
-@media (max-width: 720px) {
-	.site-footer__tree {
-		opacity: 0.18;
-		width: clamp(3.25rem, 18vw, 5rem);
-	}
-
-	html.dark .site-footer__tree {
-		opacity: 0.28;
-	}
-
-	.site-footer__scape {
-		opacity: 0.36;
-		background-position: 30% 82%;
-	}
-
-	html.dark .site-footer__scape {
-		opacity: 0.26;
-	}
-}
-
-.site-footer__grid {
-	display: grid;
-	/* 品牌略宽 + 三列导航等分 */
-	grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
-	gap: 2.25rem clamp(1.5rem, 3vw, 3rem);
-	padding-bottom: 2.15rem;
-	border-bottom: 1px solid var(--sf-faint);
-	width: 100%;
-}
-
-.site-footer__brand {
-	min-width: 0;
-}
-
-/* 花瓣/光斑点缀：CSS 径向叠层，不另增资产 */
 .site-footer__petals {
 	position: absolute;
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	opacity: 0.55;
+	opacity: 0.35;
 	background:
 		radial-gradient(circle 3px at 12% 28%, oklch(0.78 0.12 15 / 0.55), transparent 70%),
 		radial-gradient(circle 2.5px at 22% 62%, oklch(0.82 0.1 350 / 0.45), transparent 70%),
 		radial-gradient(circle 3.5px at 48% 22%, oklch(0.86 0.08 20 / 0.4), transparent 70%),
-		radial-gradient(circle 2px at 58% 48%, oklch(0.8 0.11 350 / 0.5), transparent 70%),
-		radial-gradient(circle 4px at 72% 34%, oklch(0.84 0.09 15 / 0.38), transparent 70%),
-		radial-gradient(circle 2.5px at 86% 58%, oklch(0.8 0.1 350 / 0.42), transparent 70%),
-		radial-gradient(circle 3px at 34% 78%, oklch(0.88 0.06 95 / 0.35), transparent 70%),
-		radial-gradient(circle 2px at 78% 82%, oklch(0.82 0.08 20 / 0.4), transparent 70%),
-		radial-gradient(ellipse 40% 20% at 65% 18%, oklch(0.95 0.03 95 / 0.28), transparent 70%);
+		radial-gradient(circle 2px at 72% 34%, oklch(0.84 0.09 15 / 0.38), transparent 70%),
+		radial-gradient(circle 2.5px at 86% 58%, oklch(0.8 0.1 350 / 0.42), transparent 70%);
 }
 
 html.dark .site-footer__petals {
-	opacity: 0.4;
-	background:
-		radial-gradient(circle 3px at 12% 28%, oklch(0.72 0.08 15 / 0.45), transparent 70%),
-		radial-gradient(circle 2.5px at 22% 62%, oklch(0.7 0.07 350 / 0.38), transparent 70%),
-		radial-gradient(circle 3.5px at 48% 22%, oklch(0.78 0.05 20 / 0.32), transparent 70%),
-		radial-gradient(circle 2px at 58% 48%, oklch(0.74 0.08 350 / 0.4), transparent 70%),
-		radial-gradient(circle 4px at 72% 34%, oklch(0.76 0.06 15 / 0.3), transparent 70%),
-		radial-gradient(circle 2.5px at 86% 58%, oklch(0.72 0.07 350 / 0.35), transparent 70%),
-		radial-gradient(circle 3px at 34% 78%, oklch(0.8 0.04 95 / 0.28), transparent 70%),
-		radial-gradient(circle 2px at 78% 82%, oklch(0.74 0.05 20 / 0.32), transparent 70%),
-		radial-gradient(ellipse 40% 20% at 65% 18%, oklch(0.55 0.04 95 / 0.22), transparent 70%);
+	opacity: 0.28;
 }
 
-/* 底栏轻雾波纹装饰 + 底部雾化 */
 .site-footer__mist {
 	position: absolute;
 	inset: auto 0 0 0;
-	height: 48%;
+	height: 36%;
 	z-index: 0;
 	pointer-events: none;
 	background:
 		radial-gradient(
 			ellipse 70% 80% at 18% 100%,
-			color-mix(in oklch, var(--sf-moss) 18%, transparent),
+			color-mix(in oklch, var(--sf-moss) 14%, transparent),
 			transparent 70%
 		),
-		radial-gradient(
-			ellipse 55% 70% at 82% 100%,
-			color-mix(in oklch, var(--sf-water-dot) 16%, transparent),
-			transparent 68%
-		),
-		linear-gradient(
-			0deg,
-			oklch(0.94 0.02 145 / 0.35) 0%,
-			transparent 65%
-		);
-	opacity: 0.95;
+		linear-gradient(0deg, oklch(0.94 0.02 145 / 0.28) 0%, transparent 65%);
+	opacity: 0.9;
 }
 
 html.dark .site-footer__mist {
-	opacity: 1;
 	background:
 		radial-gradient(
 			ellipse 70% 80% at 18% 100%,
-			color-mix(in oklch, var(--sf-moss) 26%, transparent),
+			color-mix(in oklch, var(--sf-moss) 20%, transparent),
 			transparent 70%
 		),
-		radial-gradient(
-			ellipse 55% 70% at 82% 100%,
-			color-mix(in oklch, var(--sf-water-dot) 22%, transparent),
-			transparent 68%
-		),
-		linear-gradient(
-			0deg,
-			oklch(0.14 0.014 150 / 0.45) 0%,
-			transparent 65%
-		);
+		linear-gradient(0deg, oklch(0.14 0.014 150 / 0.4) 0%, transparent 65%);
+}
+
+/* —— 1 · 顶带 —— */
+.site-footer__top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1.5rem 2.5rem;
+	padding-bottom: 0.35rem;
+	overflow: visible;
+}
+
+.site-footer__brand {
+	min-width: 0;
+	flex: 1 1 16rem;
+	max-width: min(36rem, 100%);
+}
+
+.site-footer__wordmark {
+	font-family: var(--sf-display);
+	font-weight: 500;
+	font-style: italic;
+	font-size: clamp(1.65rem, 1.35rem + 0.7vw, 2.1rem);
+	letter-spacing: 0.03em;
+	line-height: 1.12;
+	color: var(--sf-forest);
+}
+
+.site-footer__blurb-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 0.28rem;
+	margin: 0.65rem 0 0;
+	max-width: min(28rem, 100%);
+}
+
+.site-footer__blurb {
+	margin: 0;
+	font-weight: 400;
+}
+
+.site-footer__blurb--cn {
+	font-family: var(--sf-blurb-cn);
+	font-size: clamp(1rem, 0.92rem + 0.28vw, 1.15rem);
+	line-height: 1.65;
+	letter-spacing: 0.04em;
+	color: var(--deep-text);
+}
+
+.site-footer__blurb--en {
+	font-family: var(--sf-blurb-en);
+	font-size: clamp(0.9rem, 0.85rem + 0.15vw, 1rem);
+	font-style: italic;
+	font-weight: 500;
+	line-height: 1.45;
+	letter-spacing: 0.015em;
+	opacity: 0.85;
+	color: color-mix(in oklch, var(--deep-text) 78%, var(--sf-moss));
+}
+
+html.dark .site-footer__blurb--cn {
+	color: var(--sf-ink);
+}
+
+html.dark .site-footer__blurb--en {
+	color: color-mix(in oklch, var(--sf-ink) 85%, var(--sf-moss));
+}
+
+.site-footer__top-right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 0.75rem;
+	flex: 0 1 auto;
+	min-width: 0;
+	/* 浇水壶舞台 absolute 上浮约 7.25rem，须留空以免被 footer overflow 裁切 */
+	padding-top: 8.25rem;
 }
 
 .site-footer__garden-status {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.35rem 0.45rem;
-	margin: 0.85rem 0 0;
+	justify-content: flex-end;
+	gap: 0.4rem;
+	margin: 0;
 	font-size: 0.72rem;
 	letter-spacing: 0.02em;
 	color: var(--sf-muted);
@@ -426,7 +376,7 @@ html.dark .site-footer__mist {
 .site-footer__garden-chip {
 	display: inline-flex;
 	align-items: center;
-	padding: 0.12rem 0.48rem;
+	padding: 0.14rem 0.52rem;
 	border-radius: 999px;
 	border: 1px solid color-mix(in oklch, var(--sf-leaf) 32%, transparent);
 	background: color-mix(in oklch, var(--sf-leaf) 8%, transparent);
@@ -439,92 +389,70 @@ html.dark .site-footer__garden-chip {
 	color: var(--sf-muted);
 }
 
-html.dark .site-footer__garden-tip {
-	color: var(--sf-muted);
+/* —— 顶带 → 导航过渡带 —— */
+.site-footer__band {
+	position: relative;
+	height: 1.15rem;
+	margin: 1.1rem 0 0.35rem;
+	border-top: 1px solid var(--sf-faint);
+	/* 极淡点阵，不抢戏 */
+	background-image: radial-gradient(
+		circle 1px,
+		color-mix(in oklch, var(--sf-moss) 28%, transparent) 0.6px,
+		transparent 1.1px
+	);
+	background-size: 7px 7px;
+	background-repeat: repeat;
+	-webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent);
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent);
+	opacity: 0.7;
+	pointer-events: none;
 }
 
-.site-footer__garden-sep {
-	opacity: 0.45;
-	user-select: none;
+html.dark .site-footer__band {
+	opacity: 0.55;
+	background-image: radial-gradient(
+		circle 1px,
+		oklch(100% 0 0 / 0.22) 0.6px,
+		transparent 1.1px
+	);
 }
 
-.site-footer__garden-tip {
-	font-family: var(--sf-serif);
-	font-style: italic;
-	color: color-mix(in oklch, var(--sf-moss) 78%, var(--sf-muted));
+/* —— 2 · 中区五列导航（铺满 inner，字号整体抬一档） —— */
+.site-footer__nav {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	justify-content: stretch;
+	column-gap: clamp(1.5rem, 2.8vw, 3.25rem);
+	row-gap: 2rem;
+	max-width: none;
+	margin-inline: 0;
+	padding: 1.35rem 0 2.6rem;
+	width: 100%;
+	box-sizing: border-box;
+	position: relative;
 }
 
-.site-footer__wordmark {
-	font-family: var(--sf-display);
-	font-weight: 500;
-	font-style: italic;
-	font-size: clamp(1.55rem, 1.3rem + 0.55vw, 1.9rem);
-	letter-spacing: 0.03em;
-	line-height: 1.12;
-	color: var(--sf-forest);
+.site-footer__nav::before {
+	content: "";
+	position: absolute;
+	inset: 0 -0.5rem;
+	z-index: -1;
+	pointer-events: none;
+	border-radius: 0.5rem;
+	background: linear-gradient(
+		180deg,
+		oklch(0.97 0.01 145 / 0.35) 0%,
+		oklch(0.95 0.015 148 / 0.18) 100%
+	);
 }
 
-.site-footer__garden-mark {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 0.12rem;
-	font-family: var(--sf-serif);
-	font-size: 0.62rem;
-	font-style: italic;
-	letter-spacing: 0.04em;
-	color: var(--sf-moss);
-	opacity: 0.55; /* 降权，不与导航抢视线 */
-	line-height: 1.3;
-	text-align: right;
-}
-
-.site-footer__garden-mark-en {
-	font-size: 0.56rem;
-	opacity: 0.8;
-	font-style: italic;
-}
-
-.site-footer__blurb-stack {
-	display: flex;
-	flex-direction: column;
-	gap: 0.45rem;
-	margin: 0.85rem 0 0;
-	max-width: min(30rem, 100%);
-}
-
-.site-footer__blurb {
-	margin: 0;
-	color: var(--deep-text);
-	font-weight: 400;
-}
-
-/* 中文园记：系统宋体回退，保留手札标题感 */
-.site-footer__blurb--cn {
-	font-family: var(--sf-blurb-cn);
-	font-size: clamp(0.95rem, 0.88rem + 0.22vw, 1.08rem);
-	line-height: 1.75;
-	letter-spacing: 0.06em;
-}
-
-/* 英文园记：系统 Georgia 斜体，保留软衬线文学感 */
-.site-footer__blurb--en {
-	font-family: var(--sf-blurb-en);
-	font-size: clamp(0.92rem, 0.86rem + 0.18vw, 1.02rem);
-	font-style: italic;
-	font-weight: 500;
-	line-height: 1.55;
-	letter-spacing: 0.015em;
-	opacity: 0.9;
-	color: color-mix(in oklch, var(--deep-text) 82%, var(--sf-moss));
-}
-
-html.dark .site-footer__blurb--cn {
-	color: var(--sf-ink);
-}
-
-html.dark .site-footer__blurb--en {
-	color: color-mix(in oklch, var(--sf-ink) 88%, var(--sf-moss));
+html.dark .site-footer__nav::before {
+	background: linear-gradient(
+		180deg,
+		oklch(0.16 0.01 145 / 0.35) 0%,
+		oklch(0.15 0.012 148 / 0.12) 100%
+	);
 }
 
 .site-footer__col-title {
@@ -532,11 +460,11 @@ html.dark .site-footer__blurb--en {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 0.2rem;
-	margin: 0.15rem 0 1rem;
-	padding-bottom: 0.45rem;
+	gap: 0.22rem;
+	margin: 0.15rem 0 1.15rem;
+	padding-bottom: 0.55rem;
 	font-family: var(--sf-mono);
-	font-size: 0.64rem;
+	font-size: 0.72rem;
 	font-weight: 500;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
@@ -544,15 +472,24 @@ html.dark .site-footer__blurb--en {
 }
 
 .site-footer__col-title-cn {
-	font-size: 0.72rem;
-	letter-spacing: 0.18em;
+	/* 艺术衬线：与 wordmark / 园记同一路，别用等宽工业感 */
+	font-family: var(--sf-blurb-cn);
+	font-size: clamp(1.05rem, 0.95rem + 0.35vw, 1.28rem);
+	font-weight: 500;
+	font-style: italic;
+	letter-spacing: 0.22em;
+	line-height: 1.25;
+	color: color-mix(in oklch, var(--sf-ink) 78%, var(--sf-moss));
 }
 
 .site-footer__col-title-en {
-	font-size: 0.58rem;
-	letter-spacing: 0.12em;
-	opacity: 0.75;
+	font-size: clamp(0.52rem, 0.48rem + 0.08vw, 0.6rem);
+	letter-spacing: 0.14em;
+	opacity: 0.65;
 	text-transform: uppercase;
+	font-weight: 450;
+	/* 相对中文栏题略往右错开，别顶齐「漫」字左缘 */
+	margin-left: 0.65rem;
 }
 
 .site-footer__col-title::after {
@@ -560,10 +497,20 @@ html.dark .site-footer__blurb--en {
 	position: absolute;
 	left: 0;
 	bottom: 0;
-	width: 1.35rem;
-	height: 1px;
+	width: 2.4rem;
+	height: 1.5px;
 	background: color-mix(in oklch, var(--sf-accent) 55%, var(--sf-muted));
-	opacity: 0.7;
+	opacity: 0.75;
+}
+
+html.dark .site-footer__col-title {
+	color: oklch(0.7 0.01 95);
+	letter-spacing: 0.12em;
+}
+
+html.dark .site-footer__col-title-cn {
+	color: oklch(0.9 0.012 95);
+	font-style: italic;
 }
 
 .site-footer__list {
@@ -572,16 +519,18 @@ html.dark .site-footer__blurb--en {
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 0.62rem;
+	gap: 0.88rem;
 }
 
 .site-footer__list a {
 	position: relative;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
 	width: fit-content;
-	/* 默认：站点黑；悬停再变绿 + 下划线 */
+	font-family: var(--sf-sans);
 	color: var(--deep-text);
-	font-size: 0.9rem;
+	font-size: clamp(1rem, 0.94rem + 0.22vw, 1.12rem);
 	font-weight: 450;
 	letter-spacing: 0.01em;
 	text-decoration: none;
@@ -589,6 +538,12 @@ html.dark .site-footer__blurb--en {
 		color 0.22s var(--sf-ease),
 		transform 0.22s var(--sf-ease),
 		opacity 0.22s var(--sf-ease);
+}
+
+html.dark .site-footer__list a {
+	font-weight: 450;
+	letter-spacing: 0.015em;
+	color: var(--sf-ink);
 }
 
 .site-footer__list a::after {
@@ -621,8 +576,21 @@ html.dark .site-footer__blurb--en {
 	border-radius: 2px;
 }
 
+.site-footer__link-icon {
+	width: 1.2rem;
+	height: 1.2rem;
+	flex-shrink: 0;
+	opacity: 0.72;
+	color: var(--sf-moss);
+}
+
+.site-footer__list a:hover .site-footer__link-icon {
+	opacity: 1;
+	color: var(--sf-accent);
+}
+
 .site-footer__custom {
-	margin: 1rem 0 0;
+	margin: 0.25rem 0 0;
 	padding: 0.65rem 0;
 	font-size: 0.8rem;
 	letter-spacing: 0.02em;
@@ -630,14 +598,25 @@ html.dark .site-footer__blurb--en {
 	text-align: center;
 }
 
+/* —— 3 · 底条 —— */
 .site-footer__legal {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
 	align-items: center;
-	gap: 1.1rem 1.75rem;
-	padding-top: 1.4rem;
-	width: 100%;
+	gap: 1rem 1.75rem;
+	/* 背景拉通到与 inner 同宽；正文左右与导航对齐 */
+	margin-left: calc(-1 * clamp(1.5rem, 5vw, 4rem));
+	margin-right: calc(-1 * clamp(1.5rem, 5vw, 4rem));
+	padding: 1.2rem clamp(1.5rem, 5vw, 4rem) 1.5rem;
+	width: calc(100% + 2 * clamp(1.5rem, 5vw, 4rem));
+	box-sizing: border-box;
+	border-top: 1px solid var(--sf-faint);
+	background: color-mix(in oklch, var(--sf-moss) 6%, oklch(0.92 0.02 148 / 0.55));
+}
+
+html.dark .site-footer__legal {
+	background: color-mix(in oklch, var(--sf-ink) 4%, oklch(0.14 0.012 150 / 0.72));
 }
 
 .site-footer__legal-left {
@@ -657,14 +636,109 @@ html.dark .site-footer__blurb--en {
 	opacity: 0.9;
 }
 
-/* 浇水胶囊 + 旁侧舞台（相对定位锚点） */
+.site-footer__legal-right {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 1rem 1.15rem;
+}
+
+.site-footer__garden-mark {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 0.1rem;
+	font-family: var(--sf-serif);
+	font-size: 0.58rem;
+	font-style: italic;
+	letter-spacing: 0.04em;
+	color: var(--sf-moss);
+	opacity: 0.5;
+	line-height: 1.3;
+	text-align: right;
+}
+
+.site-footer__garden-mark-en {
+	font-size: 0.52rem;
+	opacity: 0.8;
+}
+
+.site-footer__powered {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.3rem 0.4rem;
+	font-family: var(--sf-mono);
+	font-size: 0.58rem;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--sf-muted);
+	opacity: 0.72;
+}
+
+.site-footer__powered a {
+	color: var(--sf-accent);
+	font-weight: 600;
+	text-decoration: none;
+	transition: opacity 0.2s var(--sf-ease);
+}
+
+.site-footer__powered a:hover {
+	opacity: 0.78;
+	text-decoration: none;
+}
+
+.site-footer__powered a:focus-visible {
+	outline: 2px solid var(--sf-accent);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+.site-footer__sep {
+	opacity: 0.45;
+	user-select: none;
+}
+
+.site-footer__stamp {
+	position: relative;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 2.85rem;
+	height: 2.85rem;
+	border: 1px solid color-mix(in oklch, var(--sf-muted) 42%, transparent);
+	border-radius: 50%;
+	font-family: var(--sf-mono);
+	font-size: 0.4rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-align: center;
+	line-height: 1.25;
+	color: color-mix(in oklch, var(--sf-muted) 88%, var(--sf-ink));
+	transform: rotate(-9deg);
+	opacity: 0.42;
+	flex-shrink: 0;
+	user-select: none;
+	box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--sf-muted) 14%, transparent);
+}
+
+@media (min-width: 1280px) {
+	.site-footer__stamp {
+		display: inline-flex;
+	}
+}
+
+/* —— 浇水胶囊（顶带） —— */
 .site-footer__water-wrap {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
+	/* 舞台向上弹出，祖先勿裁切 */
+	overflow: visible;
+	z-index: 5;
 }
 
-/* V2 浇水胶囊 —— 分层玻璃 + 水光 hover + 浇灌涟漪脉冲；可点击 */
 .site-footer__water {
 	display: inline-flex;
 	align-items: center;
@@ -683,7 +757,6 @@ html.dark .site-footer__blurb--en {
 	);
 	backdrop-filter: blur(10px) saturate(1.25);
 	-webkit-backdrop-filter: blur(10px) saturate(1.25);
-	/* 顶部内高光 + 底部软投影，撑起玻璃体积感 */
 	box-shadow:
 		inset 0 1px 0 oklch(100% 0 0 / 0.45),
 		0 4px 14px oklch(0.4 0.05 230 / 0.1);
@@ -725,7 +798,6 @@ html.dark .site-footer__blurb--en {
 	border-color: color-mix(in oklch, var(--sf-water-dot) 55%, transparent);
 	background: color-mix(in oklch, var(--sf-water-dot) 10%, oklch(100% 0 0 / 0.3));
 	color: color-mix(in oklch, var(--sf-water-dot) 65%, var(--sf-muted));
-	/* 水环从胶囊边缘扩散一圈，替代静态描边 */
 	animation: sf-water-ring-pulse 1.15s ease-out infinite;
 }
 
@@ -778,7 +850,6 @@ html.dark .site-footer__water.is-watering {
 	background: color-mix(in oklch, var(--sf-water-dot) 14%, oklch(100% 0 0 / 0.06));
 }
 
-/* 旁侧小舞台：贴胶囊上方 */
 .site-footer__water-stage {
 	position: absolute;
 	left: 50%;
@@ -792,11 +863,8 @@ html.dark .site-footer__water.is-watering {
 	height: 7.25rem;
 	padding: 0.35rem 0.4rem 0.25rem;
 	border-radius: 1rem;
-	/* 全透明舞台：无底、无框、无阴影，浇水动画直接浮在页面上 */
 	background: transparent;
 	border: none;
-	backdrop-filter: none;
-	-webkit-backdrop-filter: none;
 	box-shadow: none;
 	opacity: 0;
 	visibility: hidden;
@@ -814,13 +882,6 @@ html.dark .site-footer__water.is-watering {
 	transform: translateX(-50%) translateY(0) scale(1);
 }
 
-html.dark .site-footer__water-stage {
-	/* 与亮色一致：全透明，无底板无阴影 */
-	background: transparent;
-	box-shadow: none;
-}
-
-/* 幼苗脚下的水光晕：承接透明舞台，给动画一个「落点」 */
 .site-footer__water-stage::after {
 	content: "";
 	position: absolute;
@@ -879,37 +940,6 @@ html.dark .site-footer__water-stage {
 	}
 }
 
-@media (max-width: 640px) {
-	.site-footer__water-stage {
-		left: 0;
-		transform: translateX(0) translateY(6px) scale(0.92);
-	}
-
-	.site-footer__water-stage.is-open {
-		transform: translateX(0) translateY(0) scale(1);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.site-footer__water-stage,
-	.site-footer__water-sprout {
-		transition: none;
-	}
-
-	.site-footer__water-sprout.is-thirsty {
-		animation: none;
-	}
-
-	.site-footer__water.is-watering {
-		animation: none;
-		box-shadow: 0 0 0 3px var(--sf-water-ring);
-	}
-
-	.site-footer__water.is-watering .site-footer__icon-drop {
-		animation: none;
-	}
-}
-
 .site-footer__water-icons {
 	display: inline-flex;
 	align-items: center;
@@ -930,7 +960,7 @@ html.dark .site-footer__water-stage {
 
 .site-footer__icon-feather {
 	opacity: 0.9;
-	color: var(--sf-moss); /* 羽毛用森绿，水滴保持水色 */
+	color: var(--sf-moss);
 	animation: sf-feather-tilt 3.2s ease-in-out infinite;
 }
 
@@ -954,10 +984,100 @@ html.dark .site-footer__water-stage {
 	}
 }
 
+/* —— 响应式 —— */
+@media (max-width: 899px) {
+	.site-footer__top {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.site-footer__top-right {
+		align-items: flex-start;
+		padding-top: 7.5rem;
+	}
+
+	.site-footer__garden-status {
+		justify-content: flex-start;
+	}
+
+	.site-footer__nav {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		column-gap: clamp(1.25rem, 3vw, 2rem);
+		padding: 1.1rem 0 2rem;
+	}
+}
+
+@media (max-width: 720px) {
+	.site-footer {
+		padding: 2rem 0 0;
+		margin-left: 0;
+		margin-right: 0;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.site-footer__tree {
+		opacity: 0.12;
+		width: clamp(3.25rem, 18vw, 5rem);
+	}
+
+	html.dark .site-footer__tree {
+		opacity: 0.18;
+	}
+
+	.site-footer__scape {
+		opacity: 0.22;
+		background-position: 30% 82%;
+	}
+
+	html.dark .site-footer__scape {
+		opacity: 0.16;
+	}
+
+	.site-footer__petals {
+		opacity: 0.18;
+	}
+
+	.site-footer__blurb--en {
+		display: none;
+	}
+
+	.site-footer__nav {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 1.35rem;
+		padding: 1rem 0 1.6rem;
+	}
+
+	.site-footer__legal {
+		flex-direction: column;
+		align-items: flex-start;
+		margin-left: calc(-1 * clamp(1.5rem, 5vw, 4rem));
+		margin-right: calc(-1 * clamp(1.5rem, 5vw, 4rem));
+		padding-left: clamp(1.5rem, 5vw, 4rem);
+		padding-right: clamp(1.5rem, 5vw, 4rem);
+	}
+
+	.site-footer__legal-right {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.site-footer__water-stage {
+		left: 0;
+		transform: translateX(0) translateY(6px) scale(0.92);
+	}
+
+	.site-footer__water-stage.is-open {
+		transform: translateX(0) translateY(0) scale(1);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.site-footer__list a,
 	.site-footer__list a::after,
-	.site-footer__water {
+	.site-footer__water,
+	.site-footer__water-stage,
+	.site-footer__water-sprout {
 		transition: none;
 	}
 
@@ -966,104 +1086,22 @@ html.dark .site-footer__water-stage {
 	}
 
 	.site-footer__icon-drop,
-	.site-footer__icon-feather {
+	.site-footer__icon-feather,
+	.site-footer__water-sprout.is-thirsty {
 		animation: none;
 	}
-}
 
-.site-footer__legal-right {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 1rem 1.15rem;
-}
-
-.site-footer__powered {
-	display: inline-flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 0.3rem 0.4rem;
-	font-family: var(--sf-mono);
-	font-size: 0.58rem;
-	letter-spacing: 0.07em;
-	text-transform: uppercase;
-	color: var(--sf-muted);
-	opacity: 0.72; /* 对比度下调 */
-}
-
-.site-footer__powered a {
-	color: var(--sf-accent);
-	font-weight: 600;
-	text-decoration: none;
-	transition: opacity 0.2s var(--sf-ease);
-}
-
-.site-footer__powered a:hover {
-	opacity: 0.78;
-	text-decoration: none;
-}
-
-.site-footer__powered a:focus-visible {
-	outline: 2px solid var(--sf-accent);
-	outline-offset: 3px;
-	border-radius: 2px;
-}
-
-.site-footer__sep {
-	opacity: 0.45;
-	user-select: none;
-}
-
-/* V4 邮戳 —— 双环印章（缩小降权） */
-.site-footer__stamp {
-	position: relative;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 2.85rem;
-	height: 2.85rem;
-	border: 1px solid color-mix(in oklch, var(--sf-muted) 42%, transparent);
-	border-radius: 50%;
-	font-family: var(--sf-mono);
-	font-size: 0.4rem;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	text-align: center;
-	line-height: 1.25;
-	color: color-mix(in oklch, var(--sf-muted) 88%, var(--sf-ink));
-	transform: rotate(-9deg);
-	opacity: 0.48;
-	flex-shrink: 0;
-	user-select: none;
-	box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--sf-muted) 14%, transparent);
-}
-
-@media (max-width: 720px) {
-	.site-footer {
-		padding: 2.15rem 0 1.35rem;
-		margin-left: 0;
-		margin-right: 0;
+	.site-footer__water.is-watering {
+		animation: none;
+		box-shadow: 0 0 0 3px var(--sf-water-ring);
 	}
 
-	.site-footer::after {
-		left: 6%;
-		right: 6%;
+	.site-footer__water.is-watering .site-footer__icon-drop {
+		animation: none;
 	}
 
-	.site-footer__grid {
-		grid-template-columns: 1fr;
-		gap: 1.65rem;
-		padding-bottom: 1.65rem;
-	}
-
-	.site-footer__legal {
-		flex-direction: column;
-		align-items: flex-start;
-	}
-
-	.site-footer__legal-right {
-		width: 100%;
-		justify-content: space-between;
+	.site-footer__petals,
+	.site-footer__band {
+		opacity: 0.12;
 	}
 }
