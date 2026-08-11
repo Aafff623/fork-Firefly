@@ -23,8 +23,9 @@ Issue(.scratch/<feature>/)
    （若验 README 壳）→ 仓库根另起 python -m http.server 8090 → http://127.0.0.1:8090/preview-readme.html
 2. 本地校验验收     → 目视关键页 + pnpm check（按改动范围）
 3. 你确认无误后     → git commit（若需要）+ git push origin
-4. 触发 CI/Vercel 部署 → 等 Ready
-5. 打开线上公网     → https://fork-firefly.vercel.app 再核一遍
+4. 触发 CI/Vercel 部署 → 等 Ready；若改动含 EdgeOne 适配，同时核腾讯云 EdgeOne 构建
+5. 打开线上公网     → https://fork-firefly.vercel.app ；国内入口就绪后另核 https://threetwoa.me
+   （绑域清单见 docs/agents/edgeone-domain-runbook.md）
 ```
 
 - **未完成本地预览与校验，不得 push。**

@@ -70,8 +70,9 @@
 
 | 项 | 包 / 文件 | 角色 | 状态 | 入口 |
 |---|---|---|---|---|
-| 默认部署 | `@astrojs/vercel` · `vercel.json` | 静态 + 少量 API | 现行 | 无 `CF_WORKERS` 时 |
+| 默认部署 | `@astrojs/vercel` · `vercel.json` | 静态 + 少量 API | 现行 | 无 `CF_WORKERS` / `EDGEONE` 时 |
 | Cloudflare | `@astrojs/cloudflare` · `wrangler` · `wrangler.jsonc` | 可选 adapter | 备选 | `CF_WORKERS=1` |
+| EdgeOne Pages | `@edgeone/astro` · `edgeone.json` | 国内主入口（`threetwoa.live`） | 落地中 | `EDGEONE=1` |
 | RSS / Sitemap | `@astrojs/rss` · `@astrojs/sitemap` | 订阅与索引 | 现行 | `src/pages/rss*` · config |
 
 ## Site integrations（运行时 / 配置门控）

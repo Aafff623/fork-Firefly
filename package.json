@@ -30,6 +30,7 @@
 		"@astrojs/sitemap": "^3.7.3",
 		"@astrojs/svelte": "9.0.1",
 		"@astrojs/vercel": "^11.0.4",
+		"@edgeone/astro": "^1.1.5",
 		"@expressive-code/plugin-collapsible-sections": "^0.44.1",
 		"@expressive-code/plugin-line-numbers": "^0.44.1",
 		"@fancyapps/ui": "^6.1.14",
