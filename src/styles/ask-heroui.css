@@ -1,0 +1,1016 @@
+/* HeroUI Pro · /ask
+ * 色彩哲学（对齐本站「古建蓝+莫兰迪」笔记 × Grok 克制逻辑）：
+ * - 彩度留给底图与链接；UI 铬层近乎单色
+ * - 亮色：近墨字 #0F1419，非纯黑；暗色：近白字 #E7E9EA，非纯白
+ * - 层级靠表面明度差 + 细线，少阴影
+ * - 发送钮用「反相白/黑」当功能强调（Grok accent = white）
+ * - 链接/来源唯一色相：石青系（忌默认蓝紫）
+ */
+@import "@heroui/styles/css";
+@import "@heroui-pro/react/css";
+@import "katex/dist/katex.min.css";
+
+@source "../components/ask/**/*.{ts,tsx}";
+
+.ask-heroui-root {
+	/* —— Light：Grok 反相参考 + 莫兰迪雾底 —— */
+	--ask-fg: #0f1419;
+	--ask-fg-soft: #3d4450;
+	--ask-muted: #536471;
+	--ask-link: #1e7fa0; /* 石青 */
+	--ask-link-hover: #054f74; /* 靛青 */
+	--ask-surface-1: rgb(255 255 255 / 0.72);
+	--ask-surface-2: rgb(247 249 249 / 0.88);
+	--ask-hairline: rgb(15 20 25 / 0.1);
+	--ask-send-fg: #ffffff;
+	--ask-send-bg: #0f1419;
+	--ask-veil-solid: #f7f9f9;
+	--ask-veil: linear-gradient(
+		180deg,
+		rgb(255 245 223 / 0.55) 0%,
+		rgb(232 237 230 / 0.72) 38%,
+		rgb(247 249 249 / 0.88) 100%
+	);
+	--ask-bubble-user: #0f1419;
+	--ask-bubble-user-fg: #e7e9ea;
+	--ask-bubble-bot: rgb(255 255 255 / 0.78);
+
+	isolation: isolate;
+	position: relative;
+	--foreground: var(--ask-fg);
+	--muted: var(--ask-muted);
+	--accent: var(--ask-link);
+	--link: var(--ask-link);
+	color: var(--ask-fg);
+	background-color: #e8ede6;
+	border-radius: inherit;
+	height: min(98dvh, 1400px);
+	min-height: min(94dvh, 1200px);
+	overflow: hidden;
+}
+
+.ask-heroui-root.dark,
+.ask-heroui-root[data-theme="dark"] {
+	/* —— Dark：Grok 表面阶梯 —— */
+	--ask-fg: #e7e9ea;
+	--ask-fg-soft: #c8ccd2;
+	--ask-muted: #71767b;
+	--ask-link: #7bcbd9; /* 夜青亮青点缀 */
+	--ask-link-hover: #b0e4ed;
+	--ask-surface-1: #16181c;
+	--ask-surface-2: #1e2126;
+	--ask-hairline: #2f3336;
+	--ask-send-fg: #0f1419;
+	--ask-send-bg: #ffffff;
+	--ask-veil-solid: #0a0a0a;
+	--ask-veil: linear-gradient(
+		180deg,
+		rgb(10 10 10 / 0.55) 0%,
+		rgb(22 24 28 / 0.72) 45%,
+		rgb(10 10 10 / 0.88) 100%
+	);
+	--ask-bubble-user: #16181c;
+	--ask-bubble-user-fg: #e7e9ea;
+	--ask-bubble-bot: rgb(30 33 38 / 0.82);
+	background-color: #0a0a0a;
+}
+
+/* 底图：莫兰迪雾感花园（彩度在图里，不在 UI 铬层） */
+.ask-heroui-root::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background:
+		var(--ask-veil),
+		url("/assets/images/ask/ask-card-bg.jpg") center / cover no-repeat;
+	pointer-events: none;
+}
+
+.ask-heroui-root > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* 卡片角上的花园向导：退后，正文优先 */
+.ask-heroui-root > .ask-card-char {
+	position: absolute;
+	z-index: 0;
+	right: max(-0.35rem, 2%);
+	bottom: 5.25rem;
+	width: min(40%, 220px);
+	height: auto;
+	pointer-events: none;
+	user-select: none;
+	opacity: 0.34;
+	filter: saturate(0.72) brightness(0.97);
+	mix-blend-mode: multiply;
+	mask-image: radial-gradient(
+		ellipse 72% 78% at 58% 48%,
+		#000 40%,
+		transparent 88%
+	);
+	-webkit-mask-image: radial-gradient(
+		ellipse 72% 78% at 58% 48%,
+		#000 40%,
+		transparent 88%
+	);
+}
+
+.ask-heroui-root.dark > .ask-card-char,
+.ask-heroui-root[data-theme="dark"] > .ask-card-char {
+	opacity: 0.28;
+	filter: saturate(0.65) brightness(0.85);
+	mix-blend-mode: soft-light;
+}
+
+@media (max-width: 640px) {
+	.ask-heroui-root > .ask-card-char {
+		width: min(44%, 156px);
+		bottom: 5.75rem;
+		opacity: 0.26;
+	}
+}
+
+/* 对话区透明，让底图透出来 */
+.ask-heroui-root .chat-conversation,
+.ask-heroui-root [data-slot="chat-conversation"],
+.ask-heroui-root.bg-background {
+	background: transparent !important;
+}
+
+/* 覆盖 card-base：透出问答岛自己的底图 */
+.card-base:has(.ask-heroui-root) {
+	overflow: clip;
+	background: transparent;
+}
+
+/*
+ * HeroUI 默认 actions opacity:.5，悬停才到 1——在博客里不好找。
+ * 只调透明度，不改 color（仍用组件自带 var(--muted)）。
+ */
+.ask-heroui-root .chat-message__actions,
+.ask-heroui-root [data-slot="chat-message-actions"] {
+	opacity: 1;
+	color: var(--ask-muted);
+}
+
+/* —— AskMarkdown：富文本层次（加粗/斜体/引用/链接/标题） —— */
+.ask-heroui-root .ask-markdown {
+	width: 100%;
+	font-size: var(--text-sm, 0.875rem);
+	line-height: 1.7;
+	color: var(--ask-fg);
+}
+
+.ask-heroui-root .ask-markdown > :first-child {
+	margin-top: 0;
+}
+
+.ask-heroui-root .ask-markdown > :last-child {
+	margin-bottom: 0;
+}
+
+.ask-heroui-root .ask-markdown p {
+	margin: 0 0 0.75rem;
+}
+
+.ask-heroui-root .ask-markdown h1,
+.ask-heroui-root .ask-markdown h2,
+.ask-heroui-root .ask-markdown h3,
+.ask-heroui-root .ask-markdown h4 {
+	margin: 1rem 0 0.5rem;
+	font-weight: 650;
+	line-height: 1.35;
+	color: var(--ask-fg);
+}
+
+.ask-heroui-root .ask-markdown h1 {
+	font-size: 1.2rem;
+}
+.ask-heroui-root .ask-markdown h2 {
+	font-size: 1.1rem;
+}
+.ask-heroui-root .ask-markdown h3 {
+	font-size: 1.02rem;
+}
+.ask-heroui-root .ask-markdown h4 {
+	font-size: 0.95rem;
+}
+
+.ask-heroui-root .ask-markdown .ask-md-strong,
+.ask-heroui-root .ask-markdown strong {
+	font-weight: 700;
+	color: var(--ask-fg);
+}
+
+.ask-heroui-root .ask-markdown .ask-md-em,
+.ask-heroui-root .ask-markdown em {
+	font-style: italic;
+	color: color-mix(in oklab, var(--ask-fg) 78%, var(--ask-link));
+}
+
+.ask-heroui-root .ask-markdown a {
+	color: var(--ask-link);
+	font-weight: 550;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-thickness: 1.5px;
+}
+
+.ask-heroui-root .ask-markdown a:hover {
+	color: var(--ask-link-hover);
+	opacity: 1;
+}
+
+.ask-heroui-root .ask-markdown .ask-md-quote,
+.ask-heroui-root .ask-markdown blockquote {
+	margin: 0.55rem 0 0.85rem;
+	padding: 0.55rem 0.85rem;
+	border-inline-start: 3px solid color-mix(in oklab, var(--ask-link) 55%, transparent);
+	border-radius: 0 0.55rem 0.55rem 0;
+	background: color-mix(in oklab, var(--ask-link) 8%, var(--ask-surface-1));
+	color: color-mix(in oklab, var(--ask-fg) 88%, transparent);
+	font-style: normal;
+}
+
+.ask-heroui-root .ask-markdown .ask-md-quote p,
+.ask-heroui-root .ask-markdown blockquote p {
+	margin: 0.2rem 0;
+}
+
+.ask-heroui-root .ask-markdown ul,
+.ask-heroui-root .ask-markdown ol {
+	margin: 0 0 0.85rem;
+	padding-inline-start: 1.25rem;
+}
+
+.ask-heroui-root .ask-markdown li {
+	margin: 0.35rem 0;
+}
+
+.ask-heroui-root .ask-markdown li > ul,
+.ask-heroui-root .ask-markdown li > ol {
+	margin-bottom: 0.2rem;
+}
+
+.ask-heroui-root .ask-markdown code:not(pre code) {
+	border-radius: 0.35rem;
+	padding: 0.12rem 0.38rem;
+	background: color-mix(in oklab, var(--ask-surface-2) 88%, var(--ask-link));
+	font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+	font-size: 0.86em;
+	font-weight: 550;
+}
+
+.ask-heroui-root .ask-markdown pre {
+	margin: 0.55rem 0 0.85rem;
+	padding: 0.75rem 0.9rem;
+	overflow-x: auto;
+	border-radius: 0.65rem;
+	border: 1px solid var(--border);
+	background: var(--surface-secondary, var(--default));
+	font-size: 0.8rem;
+	line-height: 1.5;
+}
+
+.ask-heroui-root .ask-markdown hr {
+	margin: 1rem 0;
+	border: 0;
+	border-top: 1px solid var(--border);
+}
+
+.ask-heroui-root .ask-markdown .ask-md-table-wrap {
+	width: 100%;
+	overflow-x: auto;
+	margin-bottom: 0.75rem;
+	-webkit-overflow-scrolling: touch;
+}
+
+.ask-heroui-root .ask-markdown table {
+	border-collapse: collapse;
+	width: max-content;
+	min-width: 100%;
+	font-size: 0.875rem;
+}
+
+.ask-heroui-root .ask-markdown th,
+.ask-heroui-root .ask-markdown td {
+	border: 1px solid var(--border);
+	padding: 0.5rem 0.75rem;
+	text-align: start;
+	vertical-align: top;
+}
+
+.ask-heroui-root .ask-markdown th {
+	background: var(--surface-secondary, var(--default));
+	font-weight: 600;
+}
+
+.ask-heroui-root .ask-markdown .katex-display {
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 0.25rem 0;
+}
+
+/* —— 思考链命中列表 —— */
+.ask-heroui-root .ask-cot-hits {
+	margin: 0.4rem 0 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+}
+
+.ask-heroui-root .ask-cot-hits a {
+	color: var(--link, var(--accent));
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	font-weight: 500;
+}
+
+.ask-heroui-root .ask-cot-date {
+	margin-left: 0.45rem;
+	color: var(--muted);
+	font-size: 0.75rem;
+}
+
+.ask-heroui-root .ask-cot-hits p,
+.ask-heroui-root .ask-cot-muted {
+	margin: 0.2rem 0 0;
+	color: var(--muted);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+/* —— DEV 调试原文 —— */
+.ask-heroui-root .ask-debug {
+	margin-top: 0.35rem;
+}
+
+.ask-heroui-root .ask-debug-toggle {
+	font-size: 0.75rem;
+	color: var(--muted);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+.ask-heroui-root .ask-debug-pre {
+	margin: 0.4rem 0 0;
+	max-height: 240px;
+	overflow: auto;
+	padding: 0.65rem 0.75rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--border);
+	background: var(--surface-secondary, var(--default));
+	font-size: 0.75rem;
+	line-height: 1.45;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.ask-heroui-root .ask-action-hint {
+	margin: 0 0 0.55rem;
+	font-size: 0.75rem;
+	color: var(--muted);
+	text-align: center;
+}
+
+.ask-heroui-root .ask-action-active {
+	opacity: 1 !important;
+}
+
+/* 有用 / 不太对：未选中跟默认；选中用图标色 + 外边框 */
+.ask-heroui-root .ask-vote-up,
+.ask-heroui-root .ask-vote-down {
+	box-sizing: border-box;
+	border-radius: 999px;
+	outline: 1.5px solid transparent;
+	outline-offset: 2px;
+	transition:
+		color 0.15s ease,
+		outline-color 0.15s ease,
+		background-color 0.15s ease;
+}
+
+.ask-heroui-root .ask-vote-up.ask-action-active {
+	color: #e11d48 !important;
+	outline-color: #e11d48;
+	background: rgb(225 29 72 / 0.1);
+}
+
+.ask-heroui-root .ask-vote-down.ask-action-active {
+	color: #0f1419 !important;
+	outline-color: #0f1419;
+	background: rgb(15 20 25 / 0.08);
+}
+
+.ask-heroui-root.dark .ask-vote-down.ask-action-active,
+.ask-heroui-root[data-theme="dark"] .ask-vote-down.ask-action-active {
+	color: #e7e9ea !important;
+	outline-color: #e7e9ea;
+	background: rgb(231 233 234 / 0.1);
+}
+
+.ask-heroui-root .ask-vote-up.is-pop {
+	animation: ask-vote-pop 0.4s ease-out;
+}
+
+.ask-heroui-root .ask-vote-down.is-shake {
+	animation: ask-vote-shake 0.4s ease-in-out;
+}
+
+@keyframes ask-vote-pop {
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.12);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes ask-vote-shake {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(-2px);
+	}
+	75% {
+		transform: translateX(2px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ask-heroui-root .ask-vote-up.is-pop,
+	.ask-heroui-root .ask-vote-down.is-shake {
+		animation: none;
+	}
+}
+
+/* 建议区引导词 */
+.ask-heroui-root [data-slot="prompt-suggestion-group"] > div:first-child h3 {
+	margin: 0 0 0.35rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--muted, color-mix(in srgb, var(--foreground) 62%, transparent));
+	letter-spacing: 0.01em;
+}
+
+/* —— Grok：sources pill + ↳ 追问 —— */
+.ask-sources {
+	margin-top: 0.85rem;
+}
+
+.ask-sources-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	margin: 0;
+	padding: 0.28rem 0.7rem 0.28rem 0.35rem;
+	border: 1px solid color-mix(in srgb, var(--border, #e4e4e7) 85%, transparent);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--default, #f4f4f5) 72%, transparent);
+	color: var(--foreground);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition:
+		background-color 0.18s ease,
+		border-color 0.18s ease,
+		transform 0.18s ease;
+}
+
+.ask-sources-pill:hover {
+	background: color-mix(in srgb, var(--default, #e4e4e7) 88%, transparent);
+}
+
+.ask-sources-pill:active {
+	transform: scale(0.98);
+}
+
+.ask-sources-favicons {
+	display: inline-flex;
+	align-items: center;
+}
+
+.ask-sources-favicon {
+	width: 1.125rem;
+	height: 1.125rem;
+	border-radius: 999px;
+	border: 1.5px solid var(--surface, #fff);
+	background: var(--surface, #fff);
+	object-fit: cover;
+	margin-left: -0.35rem;
+}
+
+.ask-sources-favicon:first-child {
+	margin-left: 0;
+}
+
+.ask-sources-count {
+	letter-spacing: 0.01em;
+}
+
+.ask-sources-list {
+	list-style: none;
+	margin: 0.55rem 0 0;
+	padding: 0.35rem 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.ask-sources-list a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.35rem 0.45rem;
+	border-radius: 0.55rem;
+	color: var(--foreground);
+	text-decoration: none;
+	font-size: 0.8125rem;
+	transition: background-color 0.15s ease;
+}
+
+.ask-sources-list a:hover {
+	background: color-mix(in srgb, var(--default, #f4f4f5) 80%, transparent);
+}
+
+.ask-sources-list img {
+	border-radius: 999px;
+	flex-shrink: 0;
+}
+
+.ask-followups {
+	list-style: none;
+	margin: 0.85rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.ask-followup-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.55rem;
+	width: 100%;
+	margin: 0;
+	padding: 0.45rem 0.35rem;
+	border: 0;
+	border-radius: 0.55rem;
+	background: transparent;
+	color: var(--foreground);
+	font-size: 0.9375rem;
+	line-height: 1.45;
+	text-align: left;
+	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ask-followup-item:hover {
+	background: color-mix(in srgb, var(--default, #f4f4f5) 70%, transparent);
+}
+
+.ask-followup-arrow {
+	flex-shrink: 0;
+	opacity: 0.55;
+	font-size: 1rem;
+	line-height: 1.4;
+}
+
+/* —— Grok 输入条：胶囊内 +/输入/模型/麦 · 胶囊外发送圆钮 —— */
+.ask-grok-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+}
+
+.ask-grok-bar {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.15rem;
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 3.25rem;
+	background: var(--ask-surface-1);
+	border: 1px solid var(--ask-hairline);
+	border-radius: 999px;
+	padding: 0.35rem 0.55rem 0.35rem 0.4rem;
+	box-shadow: none;
+	backdrop-filter: blur(10px);
+}
+
+.ask-heroui-root.dark .ask-grok-bar,
+.ask-heroui-root[data-theme="dark"] .ask-grok-bar {
+	background: var(--ask-surface-1);
+	border-color: var(--ask-hairline);
+	box-shadow: none;
+}
+
+.ask-grok-plus-wrap,
+.ask-grok-model-wrap {
+	position: relative;
+	flex-shrink: 0;
+}
+
+.ask-grok-plus,
+.ask-grok-mic {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	cursor: pointer;
+	transition:
+		transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+		background-color 0.18s ease,
+		color 0.18s ease,
+		opacity 0.18s ease;
+}
+
+.ask-grok-plus {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+	color: var(--foreground);
+	background: transparent;
+}
+
+.ask-grok-plus:hover,
+.ask-grok-plus.is-open {
+	background: color-mix(in srgb, var(--default, #e4e4e7) 75%, transparent);
+}
+
+.ask-grok-plus:active {
+	transform: scale(0.92);
+}
+
+.ask-grok-input {
+	flex: 1;
+	min-width: 0;
+	min-height: 2.25rem;
+	max-height: 7rem;
+	margin: 0;
+	padding: 0.45rem 0.4rem;
+	border: 0;
+	outline: none;
+	resize: none;
+	background: transparent;
+	color: var(--foreground);
+	font: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.45;
+	field-sizing: content;
+}
+
+.ask-grok-input::placeholder {
+	color: var(--muted);
+}
+
+.ask-grok-aside {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.2rem;
+	flex-shrink: 0;
+}
+
+.ask-grok-model {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0.28rem 0.55rem 0.28rem 0.28rem;
+	border: 1px solid color-mix(in srgb, var(--border, #e4e4e7) 80%, transparent);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--surface, #fff) 70%, transparent);
+	color: var(--foreground);
+	font-size: 0.75rem;
+	font-weight: 500;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ask-grok-model:hover {
+	background: color-mix(in srgb, var(--default, #f4f4f5) 85%, transparent);
+}
+
+.ask-grok-model-avatar {
+	width: 1.125rem;
+	height: 1.125rem;
+	border-radius: 999px;
+	object-fit: cover;
+}
+
+.ask-grok-mic {
+	width: 2.1rem;
+	height: 2.1rem;
+	border-radius: 999px;
+	color: var(--muted);
+	background: transparent;
+}
+
+.ask-grok-mic:hover,
+.ask-grok-mic.is-live {
+	color: var(--foreground);
+	background: color-mix(in srgb, var(--default, #e4e4e7) 70%, transparent);
+}
+
+.ask-grok-mic.is-live {
+	color: var(--ask-link);
+}
+
+/* 发送钮：明确在胶囊外侧，不进 bar */
+.ask-grok-send {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 2.75rem;
+	width: 2.75rem;
+	height: 2.75rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	cursor: pointer;
+	color: var(--ask-send-fg);
+	background: var(--ask-send-bg);
+	box-shadow: none;
+	transition:
+		transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+		background-color 0.18s ease,
+		opacity 0.18s ease;
+}
+
+.ask-heroui-root.dark .ask-grok-send,
+.ask-heroui-root[data-theme="dark"] .ask-grok-send {
+	color: var(--ask-send-fg);
+	background: var(--ask-send-bg);
+}
+
+.ask-grok-send:hover:not(:disabled) {
+	transform: scale(1.04);
+	opacity: 0.92;
+}
+
+.ask-grok-send:active:not(:disabled) {
+	transform: scale(0.94);
+	opacity: 0.85;
+}
+
+.ask-grok-send:disabled {
+	opacity: 0.32;
+	cursor: not-allowed;
+	box-shadow: none;
+}
+
+.ask-grok-send.is-stop {
+	background: #f4212e;
+	color: #fff;
+}
+
+.ask-grok-menu {
+	position: absolute;
+	bottom: calc(100% + 0.45rem);
+	left: 0;
+	z-index: 50;
+	min-width: 14rem;
+	max-width: min(20rem, 72vw);
+	padding: 0.4rem;
+	border-radius: 0.9rem;
+	border: 1px solid color-mix(in srgb, var(--border, #e4e4e7) 85%, transparent);
+	background: var(--surface, #fff);
+	box-shadow: 0 16px 40px color-mix(in srgb, #000 16%, transparent);
+}
+
+.ask-grok-model-menu {
+	left: auto;
+	right: 0;
+	min-width: 12.5rem;
+	list-style: none;
+	margin: 0;
+}
+
+.ask-persona-menu {
+	min-width: min(17.5rem, 78vw);
+	padding: 0.35rem;
+}
+
+.ask-persona-item {
+	display: flex !important;
+	align-items: center;
+	gap: 0.65rem;
+	padding: 0.5rem 0.55rem !important;
+}
+
+.ask-persona-item img {
+	width: 1.85rem;
+	height: 1.85rem;
+	border-radius: 999px;
+	object-fit: cover;
+	flex-shrink: 0;
+	border: 1px solid var(--ask-hairline);
+}
+
+.ask-persona-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.12rem;
+	min-width: 0;
+	text-align: left;
+}
+
+.ask-persona-name {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--ask-fg);
+}
+
+.ask-persona-blurb {
+	font-size: 0.7rem;
+	color: var(--ask-muted);
+	line-height: 1.3;
+}
+
+.ask-grok-menu-title {
+	margin: 0.15rem 0.45rem 0.35rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.ask-grok-menu-item {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0.55rem 0.65rem;
+	border: 0;
+	border-radius: 0.55rem;
+	background: transparent;
+	color: var(--foreground);
+	font-size: 0.8125rem;
+	text-align: left;
+	cursor: pointer;
+	line-height: 1.35;
+}
+
+.ask-grok-menu-item:hover,
+.ask-grok-menu-item.is-active {
+	background: color-mix(in srgb, var(--default, #f4f4f5) 88%, transparent);
+}
+
+.ask-grok-mic-hint,
+.ask-grok-disclaimer {
+	margin: 0.45rem 0 0;
+	font-size: 0.72rem;
+	color: var(--muted);
+	text-align: center;
+}
+
+.ask-grok-mic-hint {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: calc(100% + 0.35rem);
+}
+
+/* —— 底部常驻 Grok 输入坞（无悬浮球） —— */
+.ask-heroui-root .ask-conversation-pad {
+	/* 助手头像贴左：左侧留白压到极小，右侧仍留一点呼吸 */
+	padding-bottom: 1rem;
+	padding-left: 0.35rem;
+	padding-right: 0.85rem;
+}
+
+/* 助手整行（头像 + 回复框）再往左收：缩小组件默认 gap */
+.ask-heroui-root .chat-message--assistant {
+	gap: 0.4rem;
+	width: 100%;
+}
+
+/* 默认 body 右侧 reserved 过大，略收一点让内容更靠左展开 */
+.ask-heroui-root .chat-message--assistant .chat-message__body {
+	padding-inline-end: 1.25rem;
+	min-width: 0;
+}
+
+.ask-heroui-root .chat-message__avatar {
+	margin-inline-start: 0;
+}
+
+@media (max-width: 640px) {
+	.ask-heroui-root .ask-conversation-pad {
+		padding-left: 0.25rem;
+		padding-right: 0.55rem;
+	}
+}
+
+.ask-grok-dock {
+	flex-shrink: 0;
+	padding: 0.65rem 1rem 1rem;
+	background: linear-gradient(
+		to top,
+		color-mix(in srgb, var(--ask-veil-solid, #fff) 55%, transparent) 50%,
+		transparent
+	);
+}
+
+/* 建议标题 / 正文：亮底更深、暗底更亮 */
+.ask-heroui-root [data-slot="prompt-suggestion-title"],
+.ask-heroui-root [data-slot="prompt-suggestion"] h2 {
+	color: var(--ask-fg) !important;
+}
+
+.ask-heroui-root [data-slot="prompt-suggestion-description"],
+.ask-heroui-root [data-slot="prompt-suggestion"] p {
+	color: var(--ask-fg-soft) !important;
+}
+
+.ask-heroui-root [data-slot="chat-message-content"],
+.ask-heroui-root .chat-message__content {
+	color: var(--ask-fg);
+}
+
+.ask-followup-item {
+	color: var(--ask-fg-soft);
+}
+
+.ask-followup-item:hover {
+	color: var(--ask-fg);
+}
+
+.ask-sources-pill {
+	color: var(--ask-fg);
+	background: var(--ask-surface-2);
+	border-color: var(--ask-hairline);
+}
+
+.ask-heroui-root.dark .ask-sources-pill,
+.ask-heroui-root[data-theme="dark"] .ask-sources-pill {
+	background: var(--ask-surface-2);
+	border-color: var(--ask-hairline);
+}
+
+.ask-sources-list a {
+	color: var(--ask-link);
+}
+
+.ask-grok-model {
+	border-color: var(--ask-hairline);
+	background: var(--ask-surface-2);
+	color: var(--ask-fg);
+}
+
+.ask-grok-menu {
+	background: var(--ask-surface-2);
+	border-color: var(--ask-hairline);
+	box-shadow: none;
+}
+
+.ask-grok-input {
+	color: var(--ask-fg);
+}
+
+.ask-grok-input::placeholder {
+	color: var(--ask-muted);
+}
+
+.ask-grok-disclaimer,
+.ask-action-hint {
+	color: var(--ask-muted);
+}
+
+.ask-grok-dock-inner {
+	margin-inline: auto;
+	width: 100%;
+	max-width: 714px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ask-grok-plus,
+	.ask-grok-mic,
+	.ask-grok-send,
+	.ask-sources-pill,
+	.ask-followup-item {
+		transition: none !important;
+	}
+}
+

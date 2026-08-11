@@ -1,15 +1,15 @@
 # MaxKB 智能问答助手 · 上云待办规划（2核4G 优先）
 
-> 状态：待执行（本机验证已通过）
-> 关联：`src/pages/ask.astro`（/ask 问答页，iframe 指向本机 localhost:8080 待改）
-> 本机 MaxKB：localhost:8080，管理员 `admin / Threetwoa_MaxKB_2026`，step-3.7-flash 模型 + ForkFirefly 知识库（61 篇文档）已验证
+> 状态：待执行（本机 `/ask` HeroUI 岛 + 同源代理已通；MaxKB 仍绑本机）
+> 关联：`src/pages/ask.astro` → `AskChat` React 岛；`src/pages/api/ask.ts`（session / retrieve / SSE chat）
+> 本机 MaxKB：localhost:8080，管理员见本地密管（勿入库），step-3.7-flash + 站点知识库已验证
 
 ---
 
 ## 0. 背景与目标
 
-- **现状**：本机 Docker 已跑通 MaxKB，模型（stepfun 3.7 flash）、知识库（站点 61 篇文档自动爬取）、应用（"站点问答助手"已关联知识库并发布）全部就绪；`/ask` 页已建（当前 iframe 指向 `localhost:8080`）。
-- **目标**：把 MaxKB 上云，开放给访客，在博客 `/ask` 页提供基于站点内容的智能问答。
+- **现状**：本机 Docker 已跑通 MaxKB；博客 `/ask` 已改为 **HeroUI Pro** 对话岛，经同源 `/api/ask` 代理（本站 posts 检索 + MaxKB `stream:true` SSE）。桌宠 `LiveChatWidget` 仍可能直连本机 MaxKB，与 `/ask` 不同路。
+- **目标**：把 MaxKB 上云，开放给访客；代理上游改为公网 MaxKB，去掉对本机 `127.0.0.1:8080` 的依赖。
 - **预算约束**：尽量 **2核4G**，低成本起步；官方推荐 4核8G，个人博客单用户问答 2核4G 够用。
 
 ---
@@ -73,7 +73,7 @@ docker run -d --name=maxkb --restart=always -p 8080:8080 \
 
 - 系统管理 → 模型管理 → 添加模型 → 供应商选 **OpenAI**
 - API 域名：`https://api.stepfun.com/step_plan/v1`
-- API Key：`69BFjSd5E0E3dmvOuzocWDktxX6eXtTKOQN00Fcob1bTmVi8EyKD0DlRON5FPovji`
+- API Key：见本地密管（勿入库）
 - 基础模型：`step-3.7-flash`（自定义输入后从下拉选中，回车添加）
 - 模型类型：大语言模型
 
@@ -97,13 +97,15 @@ docker run -d --name=maxkb --restart=always -p 8080:8080 \
 
 ---
 
-## 四、改 /ask 页公网地址
+## 四、改博客对接公网 MaxKB
 
-- 编辑 `src/pages/ask.astro`，把 iframe 的 `src` 从
-  `http://localhost:8080/chat/2777601d60679239`
-  改为
-  `http://<服务器IP>:8080/chat/<云端新链接>`（或域名形式，见第五节）
-- 重新 build/部署博客（Vercel 或本机 build）
+当前 `/ask` **不再用 iframe**，走同源代理：
+
+- 环境变量 / 配置：`MAXKB_API_BASE`（默认 `http://127.0.0.1:8080/chat/api`）、`MAXKB_ACCESS_TOKEN`
+- 上云后把 `MAXKB_API_BASE` 指到 `http(s)://<云端>/chat/api`，token 换成云端应用 access_token
+- 重新 build/部署博客（Vercel）；确认 `/api/ask/?action=session|retrieve|chat` 通
+
+桌宠 `LiveChatWidget` 若仍硬编码 `localhost:8080`，需另改或复用同一代理。
 
 ---
 
@@ -140,7 +142,7 @@ docker run -d --name=maxkb --restart=always -p 8080:8080 \
 - [ ] Web 知识库爬取完成（文档全部"成功"）
 - [ ] 应用关联知识库 + 保存 + 发布
 - [ ] 公开链接打开能基于站点内容回答（有知识来源引用）
-- [ ] `src/pages/ask.astro` iframe 改为公网地址，博客 `/ask` 页可对话
+- [ ] 博客 `MAXKB_API_BASE` / token 指向云端，`/ask` SSE 对话正常
 - [ ] 手机/无痕浏览器验证访客视角
 - [ ] （若做域名）HTTPS 生效，无 mixed-content 报错
 
@@ -155,7 +157,7 @@ docker run -d --name=maxkb --restart=always -p 8080:8080 \
 | 3 | 云端登录改密码 + 加 stepfun 模型 | 10 分钟 |
 | 4 | 云端建 Web 知识库（爬 fork-firefly.vercel.app），分批爬 | 30-60 分钟 |
 | 5 | 建应用关联知识库 + 保存发布 | 10 分钟 |
-| 6 | 改 `/ask` 页 iframe 为公网地址，重新部署博客 | 20 分钟 |
+| 6 | 配置博客 MaxKB 上游为公网并重新部署 | 20 分钟 |
 | 7 | （可选）域名 + HTTPS | 按需 |
 | 8 | 按第七节清单验收 | 20 分钟 |
 
