@@ -1,0 +1,1 @@
+import{tv as e}from"tailwind-variants";const s=e({slots:{base:"pressable-feedback",highlight:"pressable-feedback__highlight",holdConfirm:"pressable-feedback__hold-confirm",progressFeedback:"pressable-feedback__progress-feedback",ripple:"pressable-feedback__ripple"}});export{s as pressableFeedbackVariants};

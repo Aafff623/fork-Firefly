@@ -1,0 +1,2 @@
+"use client";
+import{dom as r}from"@heroui/react";import{useMemo as t}from"react";import{composeSlotClassName as e}from"../../utils/compose.js";import{textShimmerVariants as m}from"./text-shimmer.styles.js";import{jsx as s}from"react/jsx-runtime";const o=({children:o,className:i,...a})=>{const c=t(()=>m(),[]);return s(r.span,{className:e(c?.base,i),"data-slot":"text-shimmer",...a,children:o})};export{o as TextShimmer};

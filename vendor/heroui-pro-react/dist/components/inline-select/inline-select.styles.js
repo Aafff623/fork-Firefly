@@ -1,0 +1,1 @@
+import{tv as e}from"tailwind-variants";const i=e({slots:{base:"inline-select",indicator:"inline-select__indicator",popover:"inline-select__popover",trigger:"inline-select__trigger",value:"inline-select__value"}});export{i as inlineSelectVariants};

@@ -1,0 +1,1 @@
+import{CellSwitchRoot as t,CellSwitchTrigger as o,CellSwitchLabel as s,CellSwitchControl as e}from"./cell-switch.js";export{cellSwitchVariants}from"./cell-switch.styles.js";const l=Object.assign(t,{Control:e,Label:s,Root:t,Trigger:o});export{l as CellSwitch,e as CellSwitchControl,s as CellSwitchLabel,t as CellSwitchRoot,o as CellSwitchTrigger};

@@ -1,0 +1,1 @@
+import{tv as e}from"tailwind-variants";const u=e({slots:{base:"number-value",prefix:"number-value__prefix",suffix:"number-value__suffix",value:"number-value__value"}});export{u as numberValueVariants};

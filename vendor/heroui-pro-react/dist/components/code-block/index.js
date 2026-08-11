@@ -1,0 +1,1 @@
+import{CodeBlockRoot as o,CodeBlockHeader as e,CodeBlockCopyButton as t,CodeBlockCode as c}from"./code-block.js";export{codeBlockVariants}from"./code-block.styles.js";const s=Object.assign(o,{Code:c,CopyButton:t,Header:e,Root:o});export{s as CodeBlock,c as CodeBlockCode,t as CodeBlockCopyButton,e as CodeBlockHeader,o as CodeBlockRoot};

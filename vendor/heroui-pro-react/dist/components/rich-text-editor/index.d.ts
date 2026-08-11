@@ -1,0 +1,48 @@
+import type { ComponentProps } from "react";
+import { RichTextEditorActionButton, RichTextEditorBubbleMenu, RichTextEditorCharacterCount, RichTextEditorCommandButton, RichTextEditorContent, RichTextEditorFloatingMenu, RichTextEditorFooter, RichTextEditorLinkPopover, RichTextEditorRoot, RichTextEditorShell, RichTextEditorSuggestionMenu, RichTextEditorToggleButton, RichTextEditorToolbar, RichTextEditorToolbarGroup, RichTextEditorToolbarSeparator, filterRichTextEditorSuggestionItems, useRichTextEditor, useRichTextEditorState } from "./rich-text-editor";
+export declare const RichTextEditor: (({ children, className, defaultValue, editorOptions, extensions, isDisabled, isReadOnly, maxLength, onValueChange, placeholder, value, ...props }: import("./rich-text-editor").RichTextEditorRootProps) => import("react/jsx-runtime").JSX.Element) & {
+    ActionButton: ({ action, "aria-label": ariaLabel, children, className, isDisabled: isDisabledProp, isIconOnly, onPress, size: sizeProp, tooltip, variant, ...props }: import("./rich-text-editor").RichTextEditorActionButtonProps) => import("react/jsx-runtime").JSX.Element;
+    BubbleMenu: ({ "aria-label": ariaLabel, children, className, pluginKey, shouldShow, toolbarProps, ...props }: import("./rich-text-editor").RichTextEditorBubbleMenuProps) => import("react/jsx-runtime").JSX.Element | null;
+    CharacterCount: ({ children, className, showWords, ...props }: import("./rich-text-editor").RichTextEditorCharacterCountProps) => import("react/jsx-runtime").JSX.Element;
+    CommandButton: ({ "aria-label": ariaLabel, children, className, isActive: isActiveProp, isDisabled: isDisabledProp, isIconOnly, onCommand, onPress, size: sizeProp, tooltip, variant, ...props }: import("./rich-text-editor").RichTextEditorCommandButtonProps) => import("react/jsx-runtime").JSX.Element;
+    Content: ({ className, ...props }: import("./rich-text-editor").RichTextEditorContentProps) => import("react/jsx-runtime").JSX.Element;
+    FloatingMenu: ({ "aria-label": ariaLabel, children, className, pluginKey, shouldShow, toolbarProps, ...props }: import("./rich-text-editor").RichTextEditorFloatingMenuProps) => import("react/jsx-runtime").JSX.Element | null;
+    Footer: ({ children, className, ...props }: import("./rich-text-editor").RichTextEditorFooterProps) => import("react/jsx-runtime").JSX.Element;
+    LinkPopover: (({ children, isOpen: isOpenProp, onOpenChange, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverRootProps) => import("react/jsx-runtime").JSX.Element) & {
+        Actions: ({ children, className, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverActionsProps) => import("react/jsx-runtime").JSX.Element;
+        ApplyButton: ({ children, isDisabled: isDisabledProp, onPress, size, variant, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverApplyButtonProps) => import("react/jsx-runtime").JSX.Element;
+        Content: ({ children, className, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverContentProps) => import("react/jsx-runtime").JSX.Element;
+        Input: ({ "aria-label": ariaLabel, className, onChange, placeholder, variant, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverInputProps) => import("react/jsx-runtime").JSX.Element;
+        Root: ({ children, isOpen: isOpenProp, onOpenChange, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverRootProps) => import("react/jsx-runtime").JSX.Element;
+        Trigger: ({ "aria-label": ariaLabel, children, className, isDisabled: isDisabledProp, isIconOnly, size: sizeProp, tooltip, variant, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverTriggerProps) => import("react/jsx-runtime").JSX.Element;
+        UnsetButton: ({ children, isDisabled: isDisabledProp, onPress, size, variant, ...props }: import("./rich-text-editor").RichTextEditorLinkPopoverUnsetButtonProps) => import("react/jsx-runtime").JSX.Element;
+    };
+    Root: ({ children, className, defaultValue, editorOptions, extensions, isDisabled, isReadOnly, maxLength, onValueChange, placeholder, value, ...props }: import("./rich-text-editor").RichTextEditorRootProps) => import("react/jsx-runtime").JSX.Element;
+    Shell: ({ children, className, ...props }: import("./rich-text-editor").RichTextEditorShellProps) => import("react/jsx-runtime").JSX.Element;
+    SuggestionMenu: <TItem = import("./rich-text-editor").RichTextEditorSuggestionItem<unknown>>({ allow, allowSpaces, allowToIncludeChar, allowedPrefixes, char, children, className, decorationClass, decorationContent, decorationEmptyClass, decorationTag, findSuggestionMatch, items, maxHeight, onSelect, pluginKey, shouldResetDismissed, shouldShow, startOfLine, style, ...props }: import("./rich-text-editor").RichTextEditorSuggestionMenuProps<TItem>) => import("react/jsx-runtime").JSX.Element | null;
+    ToggleButton: ({ "aria-label": ariaLabel, children, className, command, isDisabled: isDisabledProp, isIconOnly, onPress, size: sizeProp, tooltip, variant, ...props }: import("./rich-text-editor").RichTextEditorToggleButtonProps) => import("react/jsx-runtime").JSX.Element;
+    Toolbar: ({ "aria-label": ariaLabel, children, className, orientation, ...props }: import("./rich-text-editor").RichTextEditorToolbarProps) => import("react/jsx-runtime").JSX.Element;
+    ToolbarGroup: ({ children, className, ...props }: import("./rich-text-editor").RichTextEditorToolbarGroupProps) => import("react/jsx-runtime").JSX.Element;
+    ToolbarSeparator: ({ className, ...props }: import("./rich-text-editor").RichTextEditorToolbarSeparatorProps) => import("react/jsx-runtime").JSX.Element;
+};
+export type RichTextEditor = {
+    ActionButtonProps: ComponentProps<typeof RichTextEditorActionButton>;
+    BubbleMenuProps: ComponentProps<typeof RichTextEditorBubbleMenu>;
+    CharacterCountProps: ComponentProps<typeof RichTextEditorCharacterCount>;
+    CommandButtonProps: ComponentProps<typeof RichTextEditorCommandButton>;
+    ContentProps: ComponentProps<typeof RichTextEditorContent>;
+    FloatingMenuProps: ComponentProps<typeof RichTextEditorFloatingMenu>;
+    FooterProps: ComponentProps<typeof RichTextEditorFooter>;
+    LinkPopoverProps: ComponentProps<typeof RichTextEditorLinkPopover>;
+    Props: ComponentProps<typeof RichTextEditorRoot>;
+    RootProps: ComponentProps<typeof RichTextEditorRoot>;
+    ShellProps: ComponentProps<typeof RichTextEditorShell>;
+    SuggestionMenuProps: ComponentProps<typeof RichTextEditorSuggestionMenu>;
+    ToggleButtonProps: ComponentProps<typeof RichTextEditorToggleButton>;
+    ToolbarGroupProps: ComponentProps<typeof RichTextEditorToolbarGroup>;
+    ToolbarProps: ComponentProps<typeof RichTextEditorToolbar>;
+    ToolbarSeparatorProps: ComponentProps<typeof RichTextEditorToolbarSeparator>;
+};
+export { RichTextEditorActionButton, RichTextEditorBubbleMenu, RichTextEditorCharacterCount, RichTextEditorCommandButton, RichTextEditorContent, RichTextEditorFloatingMenu, RichTextEditorFooter, RichTextEditorLinkPopover, RichTextEditorRoot, RichTextEditorShell, RichTextEditorSuggestionMenu, RichTextEditorToolbar, RichTextEditorToolbarGroup, RichTextEditorToolbarSeparator, RichTextEditorToggleButton, filterRichTextEditorSuggestionItems, useRichTextEditor, useRichTextEditorState, };
+export type { RichTextEditorActionButtonProps, RichTextEditorActionCommand, RichTextEditorBubbleMenuProps, RichTextEditorCharacterCountProps, RichTextEditorCommandButtonProps, RichTextEditorCommandState, RichTextEditorContentProps, RichTextEditorFloatingMenuProps, RichTextEditorFooterProps, RichTextEditorFormatCommand, RichTextEditorInstance, RichTextEditorLinkPopoverActionsProps, RichTextEditorLinkPopoverApplyButtonProps, RichTextEditorLinkPopoverContentProps, RichTextEditorLinkPopoverInputProps, RichTextEditorLinkPopoverRootProps, RichTextEditorLinkPopoverTriggerProps, RichTextEditorLinkPopoverUnsetButtonProps, RichTextEditorRootProps, RichTextEditorRootProps as RichTextEditorProps, RichTextEditorShellProps, RichTextEditorSuggestionCommandProps, RichTextEditorSuggestionItem, RichTextEditorSuggestionItemsProps, RichTextEditorSuggestionMenuProps, RichTextEditorSuggestionMenuRenderProps, RichTextEditorToolbarGroupProps, RichTextEditorToolbarProps, RichTextEditorToolbarSeparatorProps, RichTextEditorToggleButtonProps, RichTextEditorValueChangeDetails, } from "./rich-text-editor";
+export { richTextEditorVariants } from "./rich-text-editor.styles";

@@ -1,0 +1,1 @@
+import{TrendChipRoot as t,TrendChipSuffix as r,TrendChipPrefix as i,TrendChipIndicator as o}from"./trend-chip.js";export{trendChipVariants}from"./trend-chip.styles.js";const e=Object.assign(t,{Indicator:o,Prefix:i,Root:t,Suffix:r});export{e as TrendChip,o as TrendChipIndicator,i as TrendChipPrefix,t as TrendChipRoot,r as TrendChipSuffix};

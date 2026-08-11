@@ -1,0 +1,1 @@
+import{KPIGroupRoot as o,KPIGroupSeparator as r}from"./kpi-group.js";export{kpiGroupVariants}from"./kpi-group.styles.js";const p=Object.assign(o,{Root:o,Separator:r});export{p as KPIGroup,o as KPIGroupRoot,r as KPIGroupSeparator};

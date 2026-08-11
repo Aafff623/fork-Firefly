@@ -1,0 +1,1 @@
+import{tv as t}from"tailwind-variants";const o=t({slots:{bar:"floating-toc__bar",content:"floating-toc__content",item:"floating-toc__item",trigger:"floating-toc__trigger"}});export{o as floatingTocVariants};

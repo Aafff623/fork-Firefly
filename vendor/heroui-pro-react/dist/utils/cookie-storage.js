@@ -1,0 +1,2 @@
+"use client";
+function e(e){if("undefined"==typeof document)return null;const t=document.cookie.match(new RegExp(`(?:^|; )${e}=([^;]*)`));return null!=t?.[1]?decodeURIComponent(t[1]):null}function t(e,t,n=31536e3){"undefined"!=typeof document&&(document.cookie=`${e}=${encodeURIComponent(t)}; path=/; max-age=${n}; SameSite=Lax`)}function n(n=31536e3){return{getItem:t=>e(t)??("undefined"!=typeof localStorage?localStorage.getItem(t):null),setItem(e,o){t(e,o,n);try{localStorage.setItem(e,o)}catch{}}}}export{n as createCookieStorage,e as getCookie,t as setCookie};

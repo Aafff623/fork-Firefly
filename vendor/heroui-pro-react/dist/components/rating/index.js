@@ -1,0 +1,1 @@
+import{RatingRoot as t,RatingItem as r}from"./rating.js";export{RatingStarIcon}from"./rating.js";export{ratingVariants}from"./rating.styles.js";const o=Object.assign(t,{Item:r,Root:t});export{o as Rating,r as RatingItem,t as RatingRoot};

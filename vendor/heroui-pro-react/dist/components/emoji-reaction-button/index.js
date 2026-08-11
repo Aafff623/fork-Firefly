@@ -1,0 +1,1 @@
+import{EmojiReactionButtonRoot as o,EmojiReactionButtonEmoji as t,EmojiReactionButtonCount as e}from"./emoji-reaction-button.js";export{emojiReactionButtonVariants}from"./emoji-reaction-button.styles.js";const i=Object.assign(o,{Count:e,Emoji:t,Root:o});export{i as EmojiReactionButton,e as EmojiReactionButtonCount,t as EmojiReactionButtonEmoji,o as EmojiReactionButtonRoot};

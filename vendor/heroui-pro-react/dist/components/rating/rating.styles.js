@@ -1,0 +1,1 @@
+import{tv as i}from"tailwind-variants";const t=i({defaultVariants:{size:"md"},slots:{base:"rating",icon:"rating__icon",iconPartial:"rating__icon-partial",item:"rating__item"},variants:{size:{lg:{base:"rating--lg",item:"rating__item--lg"},md:{base:"rating--md",item:"rating__item--md"},sm:{base:"rating--sm",item:"rating__item--sm"}}}});export{t as ratingVariants};

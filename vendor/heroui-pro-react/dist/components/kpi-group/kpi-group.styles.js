@@ -1,0 +1,1 @@
+import{tv as a}from"tailwind-variants";const o=a({defaultVariants:{orientation:"horizontal"},slots:{base:"kpi-group",separator:"kpi-group__separator"},variants:{orientation:{horizontal:{base:"kpi-group--horizontal"},vertical:{base:"kpi-group--vertical"}}}});export{o as kpiGroupVariants};

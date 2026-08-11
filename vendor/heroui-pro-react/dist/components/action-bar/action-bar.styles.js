@@ -1,0 +1,1 @@
+import{tv as a}from"tailwind-variants";const r=a({slots:{base:"action-bar",content:"action-bar__content",label:"action-bar__label",prefix:"action-bar__prefix",suffix:"action-bar__suffix",wrapper:"action-bar__wrapper"}});export{r as actionBarVariants};

@@ -1,0 +1,1 @@
+import{tv as o}from"tailwind-variants";const t=o({slots:{base:"chat-conversation",content:"chat-conversation__content",scrollAnchor:"chat-conversation__scroll-anchor",scrollButton:"chat-conversation__scroll-button",scrollButtonContainer:"chat-conversation__scroll-button-container"}});export{t as chatConversationVariants};

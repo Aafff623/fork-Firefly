@@ -1,0 +1,2 @@
+"use client";
+import{useMemo as t}from"react";import{composeSlotClassName as r}from"../../utils/compose.js";import{chatAttachmentGroupVariants as a}from"./chat-attachment.styles.js";import{jsx as o}from"react/jsx-runtime";const s=({children:s,className:e,...m})=>{const c=t(()=>a(),[]);return o("div",{className:r(c?.base,e),"data-slot":"chat-attachment-group",...m,children:s})};export{s as ChatAttachmentGroupRoot};

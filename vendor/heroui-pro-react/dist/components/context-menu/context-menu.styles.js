@@ -1,0 +1,1 @@
+import{tv as t}from"tailwind-variants";const e=t({slots:{menu:"context-menu__menu",popover:"context-menu__popover",separator:"context-menu__separator",trigger:"context-menu__trigger"}});export{e as contextMenuVariants};

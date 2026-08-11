@@ -1,0 +1,1 @@
+import{tv as t}from"tailwind-variants";const i=t({slots:{actions:"kpi__actions",base:"kpi",chart:"kpi__chart",content:"kpi__content",footer:"kpi__footer",header:"kpi__header",icon:"kpi__icon",progress:"kpi__progress",separator:"kpi__separator",title:"kpi__title",trend:"kpi__trend",value:"kpi__value"}});export{i as kpiVariants};

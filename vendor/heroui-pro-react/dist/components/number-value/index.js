@@ -1,0 +1,1 @@
+import{NumberValueRoot as e,NumberValueSuffix as r,NumberValuePrefix as o}from"./number-value.js";export{numberValueVariants}from"./number-value.styles.js";const s=Object.assign(e,{Prefix:o,Root:e,Suffix:r});export{s as NumberValue,o as NumberValuePrefix,e as NumberValueRoot,r as NumberValueSuffix};

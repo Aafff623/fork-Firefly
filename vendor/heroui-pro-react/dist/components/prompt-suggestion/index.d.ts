@@ -1,0 +1,35 @@
+import type { ComponentProps } from "react";
+import { PromptSuggestionDescription, PromptSuggestionGroup, PromptSuggestionHeader, PromptSuggestionItem, PromptSuggestionItemDescription, PromptSuggestionItemFooter, PromptSuggestionItemMeta, PromptSuggestionItemTags, PromptSuggestionItemTitle, PromptSuggestionItems, PromptSuggestionRoot, PromptSuggestionTitle } from "./prompt-suggestion";
+export declare const PromptSuggestion: (({ children, className, variant, ...props }: import("./prompt-suggestion").PromptSuggestionRootProps) => import("react/jsx-runtime").JSX.Element) & {
+    Description: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionDescriptionProps) => import("react/jsx-runtime").JSX.Element;
+    Group: ({ children, className, description, label, ...props }: import("./prompt-suggestion").PromptSuggestionGroupProps) => import("react/jsx-runtime").JSX.Element;
+    Header: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionHeaderProps) => import("react/jsx-runtime").JSX.Element;
+    Item: ({ children, className, showEndIcon, ...props }: import("./prompt-suggestion").PromptSuggestionItemProps) => import("react/jsx-runtime").JSX.Element;
+    ItemDescription: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemDescriptionProps) => import("react/jsx-runtime").JSX.Element;
+    ItemFooter: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemFooterProps) => import("react/jsx-runtime").JSX.Element;
+    ItemMeta: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemMetaProps) => import("react/jsx-runtime").JSX.Element;
+    ItemTags: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemTagsProps) => import("react/jsx-runtime").JSX.Element;
+    ItemTitle: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemTitleProps) => import("react/jsx-runtime").JSX.Element;
+    Items: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionItemsProps) => import("react/jsx-runtime").JSX.Element;
+    Root: ({ children, className, variant, ...props }: import("./prompt-suggestion").PromptSuggestionRootProps) => import("react/jsx-runtime").JSX.Element;
+    Title: ({ children, className, ...props }: import("./prompt-suggestion").PromptSuggestionTitleProps) => import("react/jsx-runtime").JSX.Element;
+};
+export type PromptSuggestion = {
+    DescriptionProps: ComponentProps<typeof PromptSuggestionDescription>;
+    GroupProps: ComponentProps<typeof PromptSuggestionGroup>;
+    HeaderProps: ComponentProps<typeof PromptSuggestionHeader>;
+    ItemDescriptionProps: ComponentProps<typeof PromptSuggestionItemDescription>;
+    ItemFooterProps: ComponentProps<typeof PromptSuggestionItemFooter>;
+    ItemMetaProps: ComponentProps<typeof PromptSuggestionItemMeta>;
+    ItemProps: ComponentProps<typeof PromptSuggestionItem>;
+    ItemsProps: ComponentProps<typeof PromptSuggestionItems>;
+    ItemTagsProps: ComponentProps<typeof PromptSuggestionItemTags>;
+    ItemTitleProps: ComponentProps<typeof PromptSuggestionItemTitle>;
+    Props: ComponentProps<typeof PromptSuggestionRoot>;
+    RootProps: ComponentProps<typeof PromptSuggestionRoot>;
+    TitleProps: ComponentProps<typeof PromptSuggestionTitle>;
+};
+export { PromptSuggestionDescription, PromptSuggestionGroup, PromptSuggestionHeader, PromptSuggestionItem, PromptSuggestionItemDescription, PromptSuggestionItemFooter, PromptSuggestionItemMeta, PromptSuggestionItems, PromptSuggestionItemTags, PromptSuggestionItemTitle, PromptSuggestionRoot, PromptSuggestionTitle, };
+export type { PromptSuggestionDescriptionProps, PromptSuggestionGroupProps, PromptSuggestionHeaderProps, PromptSuggestionItemDescriptionProps, PromptSuggestionItemFooterProps, PromptSuggestionItemMetaProps, PromptSuggestionItemProps, PromptSuggestionItemsProps, PromptSuggestionItemTagsProps, PromptSuggestionItemTitleProps, PromptSuggestionProps, PromptSuggestionRootProps, PromptSuggestionTitleProps, } from "./prompt-suggestion";
+export { promptSuggestionVariants } from "./prompt-suggestion.styles";
+export type { PromptSuggestionVariants } from "./prompt-suggestion.styles";
