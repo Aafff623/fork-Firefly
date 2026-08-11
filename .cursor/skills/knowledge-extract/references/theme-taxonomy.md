@@ -58,6 +58,7 @@ dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "n
 | `biz-ai` | 企业 AI | `org` 阵型 · `layers` 七层结构 · `ops` 脏活落地 | 企业落地与组织 |
 | `wool` | 羊毛 / 限免 | `trial` 试用 · `plan` 套餐 | 限免、试用、套餐情报 |
 | `firefly-site` | 本站 / Firefly | `perf` 性能 · `content` 内容流 · `theme` 主题 | fork-Firefly 自身 |
+| `career` | 求职 / 面经 | `interview` 面经复盘 | 校招/社招面经、准备路径、多厂节奏与打法 |
 | `misc` | 未归桶 | `inbox` | **临时**；一周内应迁入实 Theme，禁止长期堆放 |
 
 ### facet 命名约定
@@ -75,6 +76,7 @@ dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "n
 | `frontend` / `firefly-site` | 前端开发 或 功能 |
 | `ppt-visual` / `ai-media` | 指南 / 写作 / 功能（按篇确认） |
 | `linux-ops` / `network` | 指南 |
+| `career` | 指南（求职/面经向；按篇确认） |
 
 禁止：「沾 AI 就填 Agentic Coding」。
 

@@ -96,7 +96,7 @@
 | Skill | 路径 | 角色 |
 |---|---|---|
 | `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian vault → `posts/<slug>` |
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研 → Knowledge 素材 |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT/公众号 → Knowledge（Theme/facet 树） |
 | `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge → 成帖 |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联（动态/统计/分类标签/热力图） |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频 |
