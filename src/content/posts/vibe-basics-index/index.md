@@ -1,7 +1,7 @@
 ---
 title: 对话即代码：Vibe 入门坐标
 published: 2026-08-04
-updated: 2026-08-04T22:00:00
+updated: 2026-08-11T11:20:00
 description: Vibe 00–02 基础必读 + 60/90 薄入口：概念、首作、路线图与 FAQ 的索引摘要，链回鱼皮 AI 导航 / GitHub。
 tags: [Vibe Coding, 教程索引, 鱼皮, ai-guide]
 themeTags: [索引摘要, 鱼皮, ai-guide]
@@ -78,6 +78,5 @@ FAQ 速查：概念（和传统编程区别、幻觉、MVP）→ 工具选型（
 |---|---|
 | 原作 | 程序员鱼皮 · [ai-guide](https://github.com/liyupi/ai-guide) · [AI 导航 /vibe](https://ai.codefather.cn/vibe) |
 | 本篇 | 基础必读 + 60/90 薄入口；索引 + 精炼摘要 |
-| 未做 | 不镜像全文、不搬运图床整包 |
-| 相关阅读 | [工具栈三岔](/posts/vibe-coding-tools-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) |
-| 后续 | 20 实战等模块尚未开写 |
+| 未做 | 不镜像全文、不搬运图床整包；70 概念与热文见 [概念与热文](/posts/vibe-concepts-hotposts-index/)，不在此重复 |
+| 相关阅读 | [工具栈三岔](/posts/vibe-coding-tools-index/) · [项目实战](/posts/vibe-projects-index/) · [模型横评](/posts/vibe-models-index/) · [对话与回路](/posts/vibe-coding-tips-index/) · [编程学习](/posts/vibe-learning-index/) · [产品变现](/posts/vibe-monetize-index/) · [概念与热文](/posts/vibe-concepts-hotposts-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) · [合集 鱼皮VibeCoding](/collections/vibe-tutorial-index/) |

@@ -1,7 +1,7 @@
 ---
 title: 对话与回路：Harness / Loop 笔记
 published: 2026-08-04
-updated: 2026-08-04T22:00:00
+updated: 2026-08-11T11:20:00
 description: Vibe「30 经验技巧」方法论索引：心法、上下文、Harness、Loop、成本与迁移，与 OpenClaw 落地互补。
 tags: [Vibe Coding, 教程索引, Harness, Loop Engineering]
 themeTags: [索引摘要, 鱼皮, ai-guide]
@@ -164,7 +164,7 @@ Anthropic 六步迁移法：验证 → 规则手册 → 试跑 → 全量翻译�
 | 原作 | 程序员鱼皮 · [ai-guide](https://github.com/liyupi/ai-guide) · [Vibe Coding](https://ai.codefather.cn/vibe) |
 | 本篇 | 索引 + 精炼摘要；步骤以原文为准 |
 | 呈现 | 章节小长条配图 + 表格 + 原文链接 |
-| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [工具栈三岔](/posts/vibe-coding-tools-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) |
+| 相关阅读 | [入门坐标](/posts/vibe-basics-index/) · [工具栈三岔](/posts/vibe-coding-tools-index/) · [项目实战](/posts/vibe-projects-index/) · [产品变现](/posts/vibe-monetize-index/) · [编程学习](/posts/vibe-learning-index/) · [概念与热文](/posts/vibe-concepts-hotposts-index/) · [MCP 薄笔记](/posts/vibe-mcp-index/) · [OpenClaw 索引](/posts/openclaw-tutorial-index/) · [合集 鱼皮VibeCoding](/collections/vibe-tutorial-index/) |
 | 未做 | 不镜像全文、不搬运图床 |
 
 部分章节 AI 导航暂无独立 `library` ID，深链以 GitHub 为准，并挂 [Vibe 系列总入口](https://ai.codefather.cn/vibe)。
