@@ -1,6 +1,6 @@
 {
 	"name": "firefly",
-	"installCommand": "pnpm install",
+	"installCommand": "pnpm install && pnpm rebuild @heroui-pro/react",
 	"buildCommand": "EDGEONE=1 pnpm build",
 	"outputDirectory": ".edgeone",
 	"nodeVersion": "22.17.1"

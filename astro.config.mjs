@@ -1,4 +1,6 @@
 import { setMaxListeners } from "node:events";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import cloudflare from "@astrojs/cloudflare";
 import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -56,6 +58,8 @@ import { remarkPlantuml } from "./src/plugins/remark-plantuml.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { remarkWikiLink } from "./src/plugins/remark-wiki-link.js";
 import { collectUsedFontCssVars } from "./src/utils/fontHelper";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
@@ -330,14 +334,8 @@ export default defineConfig({
 			},
 		},
 		optimizeDeps: {
-			include: [
-				"@lottiefiles/dotlottie-web",
-				"@heroui-pro/react/chat-conversation",
-				"@heroui-pro/react/prompt-input",
-				"@heroui-pro/react/markdown",
-				"motion",
-				"react-aria-components",
-			],
+			// 勿 include @heroui-pro 子路径：EdgeOne CI 上 resolve 会失败并拖垮构建
+			include: ["@lottiefiles/dotlottie-web", "motion", "react-aria-components"],
 		},
 		ssr: {
 			noExternal: [
@@ -355,6 +353,15 @@ export default defineConfig({
 		resolve: {
 			alias: {
 				"@rehype-callouts-theme": `rehype-callouts/theme/${siteConfig.post.rehypeCallouts.theme}`,
+				// EdgeOne/rolldown 对 package exports 的 style 条件解析不稳，直指 dist 文件
+				"@heroui-pro/react/css": path.resolve(
+					__dirname,
+					"node_modules/@heroui-pro/react/dist/css/index.css",
+				),
+				"@heroui/styles/css": path.resolve(
+					__dirname,
+					"node_modules/@heroui/styles/dist/index.css",
+				),
 			},
 		},
 		build: {
