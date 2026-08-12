@@ -144,7 +144,7 @@ export const collectionsConfig: CollectionsConfig = {
 			slug: "agentic-coding-core",
 			name: "Agentic Coding 核心长文",
 			description:
-				"由碎片帖合并的对照长文（statusline / MCP·Skills / 记忆等）。",
+				"碎片帖合并后的对照长文：statusline / MCP·Skills / 记忆 / Harness / 工具栈 / 视觉与 Vibe 总索引。",
 			emoji: "📎",
 			cover: "/assets/collections/agentic-coding.jpg",
 		},
