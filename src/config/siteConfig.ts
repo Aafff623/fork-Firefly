@@ -11,8 +11,8 @@ export const siteConfig: SiteConfig = {
 	// 站点副标题
 	subtitle: "code less, architect more",
 
-	// 站点 URL
-	site_url: "https://fork-firefly.vercel.app",
+	// 站点 URL（Phase 1 主入口：EdgeOne CDN → Vercel；推广用 www）
+	site_url: "https://www.threetwoa.live",
 
 	// 站点描述（对齐 GitHub bio / profile · 2026-08）
 	description:

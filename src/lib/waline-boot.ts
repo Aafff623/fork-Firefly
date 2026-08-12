@@ -788,7 +788,7 @@ async function imageUploader(
 		const msg =
 			data.error ||
 			(res.status === 503
-				? "未配置腾讯云 COS（COS_SECRET_ID 等），无法上传大图"
+				? "未配置图床（R2_* 或 COS_*），无法上传大图"
 				: "图片上传失败");
 		throw new Error(msg);
 	}

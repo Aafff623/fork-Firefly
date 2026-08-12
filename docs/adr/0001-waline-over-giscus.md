@@ -19,7 +19,7 @@
 - **停用 Giscus 作为线上评论方案**；GitHub Discussions 中的历史评论保留在仓库侧，博客页不再展示。
 - **清理本站为 Giscus 定制的脏资产**：导航鉴权组件、自定义主题 CSS、过重的 client 脚本；`Giscus.astro` 仅保留主题多后端所需的精简挂载，且默认不被加载。
 - 动图优先走 Waline **表情预设 + Giphy 搜索**。
-- 评论框「插图」按钮：Waline 默认 Base64 硬限制 **128KB**；本站用自定义 `imageUploader` + `/api/comment-image`（**腾讯云 COS** 服务端代理，≤5MB）绕过。未配置 `COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_BUCKET` 时大图上传不可用。
+- 评论框「插图」按钮：Waline 默认 Base64 硬限制 **128KB**；本站用自定义 `imageUploader` + `/api/comment-image`（优先 **Cloudflare R2**，回退腾讯云 COS；≤5MB）绕过。未配置 `R2_*` 且未配置 `COS_*` 时大图上传不可用。
 - 置顶管理等本地「园主」会话与评论系统解耦（`admin-auth` 新键名，兼容读取旧 `giscus-*` localStorage）。
 
 ## Consequences
@@ -50,5 +50,5 @@
 
 - 官方表情 CDN：`@waline/emojis@1.4.0`（不必整仓克隆进博客）。
 - Giphy：Waline 客户端默认集成；生产高流量时再替换自有 API Key（见 Waline Cookbook · search）。
-- 评论大图：腾讯云 COS（`COS_SECRET_ID` / `COS_SECRET_KEY` / `COS_BUCKET` / `COS_REGION`，可选 `COS_PUBLIC_BASE_URL`）；Bucket 公共读、禁止匿名写；密钥仅服务端。
+- 评论大图：优先 Cloudflare R2（`R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` / `R2_PUBLIC_BASE_URL`）；回退腾讯云 COS（`COS_*`）。密钥仅服务端；R2 公网域建议 `img.threetwoa.live`。
 - 关联：`docs/outputs/commit-history/master/2026-08-02-ui-giscus-widgets.md` 记录的是切换前合入摘要，不作为现行架构依据。

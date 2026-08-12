@@ -1,10 +1,10 @@
 /**
- * Waline 自定义图片上传代理（服务端持腾讯云 COS 密钥）。
- * GET  → { enabled }
+ * Waline 自定义图片上传代理（服务端持密钥）。
+ * GET  → { enabled, backend?: "r2"|"cos" }
  * POST → multipart `image` → { url }
  *
- * 使用 COS XML PutObject + 官方签名算法（Web Crypto），
- * 兼容 Astro Node（本地 / Vercel）与 CF Workers，不引入 cos SDK。
+ * 优先 Cloudflare R2（S3 兼容 SigV4）；未配 R2 时回退腾讯云 COS。
+ * 兼容 Astro Node（本地 / Vercel），不引入云厂商 SDK。
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -32,12 +32,24 @@ const RATE_MAX = 20;
 const rateHits = new Map<string, number[]>();
 
 type CosConfig = {
+	kind: "cos";
 	secretId: string;
 	secretKey: string;
 	bucket: string;
 	region: string;
 	publicBaseUrl: string;
 };
+
+type R2Config = {
+	kind: "r2";
+	accountId: string;
+	accessKeyId: string;
+	secretAccessKey: string;
+	bucket: string;
+	publicBaseUrl: string;
+};
+
+type UploadConfig = R2Config | CosConfig;
 
 function readEnvFile(): Record<string, string> {
 	try {
@@ -70,6 +82,26 @@ function env(name: string, file: Record<string, string>): string {
 	).trim();
 }
 
+function getR2Config(): R2Config | null {
+	const file = readEnvFile();
+	const accountId = env("R2_ACCOUNT_ID", file);
+	const accessKeyId = env("R2_ACCESS_KEY_ID", file);
+	const secretAccessKey = env("R2_SECRET_ACCESS_KEY", file);
+	const bucket = env("R2_BUCKET", file);
+	const publicBaseUrl = env("R2_PUBLIC_BASE_URL", file).replace(/\/$/, "");
+	if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicBaseUrl) {
+		return null;
+	}
+	return {
+		kind: "r2",
+		accountId,
+		accessKeyId,
+		secretAccessKey,
+		bucket,
+		publicBaseUrl,
+	};
+}
+
 function getCosConfig(): CosConfig | null {
 	const file = readEnvFile();
 	const secretId = env("COS_SECRET_ID", file);
@@ -80,7 +112,19 @@ function getCosConfig(): CosConfig | null {
 	const custom = env("COS_PUBLIC_BASE_URL", file).replace(/\/$/, "");
 	const publicBaseUrl =
 		custom || `https://${bucket}.cos.${region}.myqcloud.com`;
-	return { secretId, secretKey, bucket, region, publicBaseUrl };
+	return {
+		kind: "cos",
+		secretId,
+		secretKey,
+		bucket,
+		region,
+		publicBaseUrl,
+	};
+}
+
+/** R2 优先，否则 COS */
+function getUploadConfig(): UploadConfig | null {
+	return getR2Config() || getCosConfig();
 }
 
 function toHex(buf: ArrayBuffer): string {
@@ -97,10 +141,7 @@ async function sha1Hex(message: string): Promise<string> {
 	return toHex(dig);
 }
 
-async function hmacSha1Hex(
-	key: string,
-	message: string,
-): Promise<string> {
+async function hmacSha1Hex(key: string, message: string): Promise<string> {
 	const enc = new TextEncoder();
 	const cryptoKey = await crypto.subtle.importKey(
 		"raw",
@@ -115,6 +156,37 @@ async function hmacSha1Hex(
 		enc.encode(message),
 	);
 	return toHex(sig);
+}
+
+async function sha256Hex(
+	data: string | ArrayBuffer | Uint8Array,
+): Promise<string> {
+	const bytes =
+		typeof data === "string"
+			? new TextEncoder().encode(data)
+			: data instanceof ArrayBuffer
+				? new Uint8Array(data)
+				: data;
+	const dig = await crypto.subtle.digest("SHA-256", bytes);
+	return toHex(dig);
+}
+
+async function hmacSha256(
+	key: ArrayBuffer | Uint8Array,
+	message: string,
+): Promise<ArrayBuffer> {
+	const cryptoKey = await crypto.subtle.importKey(
+		"raw",
+		key instanceof Uint8Array ? key : new Uint8Array(key),
+		{ name: "HMAC", hash: "SHA-256" },
+		false,
+		["sign"],
+	);
+	return crypto.subtle.sign(
+		"HMAC",
+		cryptoKey,
+		new TextEncoder().encode(message),
+	);
 }
 
 /** 对 object key 做路径编码（保留 /） */
@@ -145,7 +217,9 @@ async function cosAuthorization(opts: {
 		.map(([k, v]) => [k.toLowerCase(), v.trim()] as const)
 		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 	const headerList = headerEntries.map(([k]) => k).join(";");
-	const httpHeaders = headerEntries.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+	const httpHeaders = headerEntries
+		.map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+		.join("&");
 
 	const httpString = [
 		opts.method.toLowerCase(),
@@ -209,6 +283,90 @@ async function putObjectToCos(
 	}
 }
 
+/**
+ * R2 PutObject（AWS SigV4 · S3 兼容）
+ * @see https://developers.cloudflare.com/r2/api/s3/api/
+ */
+async function putObjectToR2(
+	cfg: R2Config,
+	objectKey: string,
+	body: ArrayBuffer,
+	contentType: string,
+): Promise<void> {
+	const method = "PUT";
+	const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
+	const pathname = `/${cfg.bucket}/${encodeObjectKey(objectKey)}`;
+	const region = "auto";
+	const service = "s3";
+	const now = new Date();
+	const amzDate = now
+		.toISOString()
+		.replace(/[-:]/g, "")
+		.replace(/\.\d{3}Z$/, "Z");
+	const dateStamp = amzDate.slice(0, 8);
+	const payloadHash = await sha256Hex(body);
+
+	const canonicalHeaders = [
+		`content-type:${contentType}`,
+		`host:${host}`,
+		`x-amz-content-sha256:${payloadHash}`,
+		`x-amz-date:${amzDate}`,
+		"",
+	].join("\n");
+	const signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date";
+	const canonicalRequest = [
+		method,
+		pathname,
+		"",
+		canonicalHeaders,
+		signedHeaders,
+		payloadHash,
+	].join("\n");
+
+	const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+	const stringToSign = [
+		"AWS4-HMAC-SHA256",
+		amzDate,
+		credentialScope,
+		await sha256Hex(canonicalRequest),
+	].join("\n");
+
+	const enc = new TextEncoder();
+	const kDate = await hmacSha256(
+		enc.encode(`AWS4${cfg.secretAccessKey}`),
+		dateStamp,
+	);
+	const kRegion = await hmacSha256(kDate, region);
+	const kService = await hmacSha256(kRegion, service);
+	const kSigning = await hmacSha256(kService, "aws4_request");
+	const signature = toHex(await hmacSha256(kSigning, stringToSign));
+
+	const authorization = [
+		`AWS4-HMAC-SHA256 Credential=${cfg.accessKeyId}/${credentialScope}`,
+		`SignedHeaders=${signedHeaders}`,
+		`Signature=${signature}`,
+	].join(", ");
+
+	const res = await fetch(`https://${host}${pathname}`, {
+		method,
+		headers: {
+			Host: host,
+			"Content-Type": contentType,
+			"x-amz-content-sha256": payloadHash,
+			"x-amz-date": amzDate,
+			Authorization: authorization,
+		},
+		body,
+	});
+
+	if (!res.ok) {
+		const text = await res.text().catch(() => "");
+		throw new Error(
+			`R2 HTTP ${res.status}${text ? `: ${text.slice(0, 200)}` : ""}`,
+		);
+	}
+}
+
 function clientIp(request: Request): string {
 	return (
 		request.headers.get("cf-connecting-ip") ||
@@ -243,17 +401,24 @@ function objectKeyFor(file: File): string {
 }
 
 export const GET: APIRoute = async () => {
-	return new Response(JSON.stringify({ enabled: !!getCosConfig() }), {
-		headers: { "Content-Type": "application/json; charset=utf-8" },
-	});
+	const cfg = getUploadConfig();
+	return new Response(
+		JSON.stringify({
+			enabled: !!cfg,
+			backend: cfg?.kind ?? null,
+		}),
+		{
+			headers: { "Content-Type": "application/json; charset=utf-8" },
+		},
+	);
 };
 
 export const POST: APIRoute = async ({ request }) => {
-	const cfg = getCosConfig();
+	const cfg = getUploadConfig();
 	if (!cfg) {
 		return new Response(
 			JSON.stringify({
-				error: "COS credentials not configured",
+				error: "R2/COS credentials not configured",
 				code: "NO_KEY",
 			}),
 			{ status: 503, headers: { "Content-Type": "application/json" } },
@@ -302,8 +467,13 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	const key = objectKeyFor(file);
+	const body = await file.arrayBuffer();
 	try {
-		await putObjectToCos(cfg, key, await file.arrayBuffer(), file.type);
+		if (cfg.kind === "r2") {
+			await putObjectToR2(cfg, key, body, file.type);
+		} else {
+			await putObjectToCos(cfg, key, body, file.type);
+		}
 	} catch (e) {
 		return new Response(
 			JSON.stringify({
