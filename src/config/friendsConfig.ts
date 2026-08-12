@@ -1,6 +1,6 @@
 import type { FriendLink, FriendsPageConfig } from "../types/friendsConfig";
 
-// 可以在src/content/spec/friends.md中编写友链页面下方的自定义内容
+// 可以在 src/content/spec/friends.mdx 中编写友链页面下方的自定义内容
 
 // 友链页面配置
 export const friendsPageConfig: FriendsPageConfig = {
@@ -20,8 +20,18 @@ export const friendsPageConfig: FriendsPageConfig = {
 	randomizeSort: false,
 };
 
-// 友链配置（当前为空，后续自行添加）
-export const friendsConfig: FriendLink[] = [];
+// 友链配置（按 weight 降序；enabled: false 可临时下架）
+export const friendsConfig: FriendLink[] = [
+	{
+		title: "SilverCode Nexus",
+		imgurl: "https://cdn.replow.org/replow-org/images/tx.jpg",
+		desc: "Replow的小站",
+		siteurl: "https://www.replow.org",
+		tags: ["个人站", "PHP", "建站"],
+		weight: 10,
+		enabled: true,
+	},
+];
 
 // 获取启用的友链并进行排序
 export const getEnabledFriends = (): FriendLink[] => {
