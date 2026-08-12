@@ -125,10 +125,10 @@ comment: true
 
 | 旁链 | 它管啥 | 跟本篇的边界 |
 |---|---|---|
-| [一张图看懂：MCP、Skills、CLI](/posts/mcp-skills-cli-relationship/) | 连接 / 方法 / 执行 | 工具层 ≠ Python 库地图 |
+| [一张图看懂：MCP、Skills、CLI](/posts/mcp-handbook/) | 连接 / 方法 / 执行 | 工具层 ≠ Python 库地图 |
 | Agent 工程 20 概念（上）（待发布） | Agent / Harness / Loop 词表 | 概念词表 ≠ 库选型 |
 | Prompt → Context → Harness → Loop（待发布） | 能力瓶颈四站外移 | 叙事框架 ≠ 八区库表 |
-| [Claude Code 四类 Loop](/posts/claude-code-four-loops/) | CC 交权循环 | 工作流交权 ≠ 应用库盘点 |
+| [Claude Code 四类 Loop](/posts/claude-code-handbook/) | CC 交权循环 | 工作流交权 ≠ 应用库盘点 |
 | 8 种主流 Agent 架构（待发布） | 架构形态对照 | 架构篇；本篇是实现侧库 |
 | 10 种软件架构风格（待发布） | 通用软件架构 | 通用架构 ≠ LLM Python 库 |
 | 企业 AI 落地七层（待发布） | 企业落地分层 | 落地分层 ≠ 库地图 |

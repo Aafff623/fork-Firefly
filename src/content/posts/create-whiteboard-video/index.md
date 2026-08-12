@@ -84,7 +84,7 @@ python scripts/video_project.py render <project.json> `
 
 不是二选一互斥：要「儿童故事白板片 + 旁白一体」看前者；要「已有分镜图快速做无声手绘轨」看后者。
 
-外部视频 Skill 选型地图另见 [六件视频 Agent Skills](/posts/six-video-agent-skills/)。
+外部视频 Skill 选型地图另见 [六件视频 Agent Skills](/posts/agent-skills-handbook/)。
 
 ## 值不值得 star 后再试
 

@@ -87,5 +87,5 @@ comment: true
 
 相关阅读：
 
-- [把高成本判断留给 Luna：OpenCode + DeepSeek + MiniMax 协作配置](/posts/opencode-luna-deepseek-minimax/)——那边讲委派分工，这篇讲纯文本模型怎么补视觉
+- [把高成本判断留给 Luna：OpenCode + DeepSeek + MiniMax 协作配置](/posts/opencode-handbook/)——那边讲委派分工，这篇讲纯文本模型怎么补视觉
 - [MiniMax 封面风格规范：通用与特定场景](/posts/minimax-cover-styles/)——同生态的封面出图规范

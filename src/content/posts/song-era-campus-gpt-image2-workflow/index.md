@@ -17,7 +17,7 @@ comment: true
 
 单张图质量可以很好，但建筑数量、屋顶方向、院落比例和水体位置容易漂移——因为每次生成都在重新设计园区。真正的问题不是提示词长短，而是**状态管理**：布局合同、风格合同、固定机位、参考图顺序、失败返工。
 
-旁链（**不硬并**）：[草图→可交互 Three.js](/posts/sketch-to-interactive-3d-traceform/) 钉单物体参数化；本篇钉的是**园区多机位 + 布局/风格合同**。[好 AGENTS.md 模板](/posts/agents-md-template-six-scenes/) 讲通用路由原则；这里落到四个古代园区 skills。同模型其他交付见文末。
+旁链（**不硬并**）：[草图→可交互 Three.js](/posts/sketch-to-interactive-3d-traceform/) 钉单物体参数化；本篇钉的是**园区多机位 + 布局/风格合同**。[好 AGENTS.md 模板](/posts/agents-md-handbook/) 讲通用路由原则；这里落到四个古代园区 skills。同模型其他交付见文末。
 
 ![宋代建筑园区鸟瞰全景](./images/fig-01-01-aerial-birdseye-panorama.jpg)
 

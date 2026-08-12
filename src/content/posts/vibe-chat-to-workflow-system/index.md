@@ -69,7 +69,7 @@ slash commands 已并入 Skills：`.claude/commands/review.md` 与 `.claude/skil
 
 ## 相关阅读
 
-- [CLAUDE.md 和 AGENTS.md：写给人的 README，不够](/posts/claude-md-agents-md-guide/)
-- [MCP、Skills、Plugin 不是三选一](/posts/mcp-skills-plugin-boundaries/)
+- [CLAUDE.md 和 AGENTS.md：写给人的 README，不够](/posts/claude-md-handbook/)
+- [MCP、Skills、Plugin 不是三选一](/posts/mcp-handbook/)
 
 > 素材来源：[CSDN 原文](https://blog.csdn.net/yangshangwei/article/details/158319117)

@@ -33,7 +33,7 @@ Firecrawl 把自己摆成 Web context API——官方原话是 search / scrape /
 旁路还有 Crawl / Map / Batch，选型时主看上面四块就够。
 
 接进工作流的常见口子：**SDK（Python / Node）· MCP · CLI / 云 API**。  
-MCP 只是插头之一——跟「MCP 和 Skills 别放一层比」那篇不打架：那边讲层位，这里讲**具体外设**。同批草稿见 [`mcp-vs-skills-layers`](/posts/mcp-vs-skills-layers/)。
+MCP 只是插头之一——跟「MCP 和 Skills 别放一层比」那篇不打架：那边讲层位，这里讲**具体外设**。同批草稿见 [`mcp-handbook`](/posts/mcp-handbook/)。
 
 ## 数字怎么读才不挨坑
 

@@ -360,10 +360,10 @@ Scope   1/1 2.1k tok
 
 | 旁链 | 怎么用 |
 |---|---|
-| [Claude Code 四类循环](/posts/claude-code-four-loops/) | 单体 Loop 类型学；本篇是「多个 loop 怎么连」 |
-| [Claude Code 项目结构分层](/posts/claude-code-project-structure/) | rules/commands/skills/agents 目录分层 ≠ graph 拓扑 |
-| [MCP / Skills / CLI](/posts/mcp-skills-cli-relationship/) | 能力入口；本篇讲编排 |
-| [CLAUDE.md 模板原则](/posts/claude-md-template-principles/) | 模板正文；dynamic workflows 另存 `.claude/workflows/` |
+| [Claude Code 四类循环](/posts/claude-code-handbook/) | 单体 Loop 类型学；本篇是「多个 loop 怎么连」 |
+| [Claude Code 项目结构分层](/posts/claude-code-handbook/) | rules/commands/skills/agents 目录分层 ≠ graph 拓扑 |
+| [MCP / Skills / CLI](/posts/mcp-handbook/) | 能力入口；本篇讲编排 |
+| [CLAUDE.md 模板原则](/posts/claude-md-handbook/) | 模板正文；dynamic workflows 另存 `.claude/workflows/` |
 | Agent 工程 20 概念（待发布） | Agent/Harness/Loop 词表 |
 | Prompt-Context-Harness-Loop 四次迁移（待发布） | 瓶颈外移叙事 |
 

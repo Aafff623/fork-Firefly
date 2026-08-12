@@ -349,7 +349,7 @@ src/
 |---|---|
 | VibeCoding 别把流程交给聊天框（待发布） | 入门十步之后，别把流程只活在聊天框 |
 | Vibecoding 双轨机制（待发布） | 工程化路线里的「一边干一边盯」 |
-| [Claude Code 四类 Loop](/posts/claude-code-four-loops/) | 走到 Cursor/Claude Code 后，Loop 怎么交出去 |
+| [Claude Code 四类 Loop](/posts/claude-code-handbook/) | 走到 Cursor/Claude Code 后，Loop 怎么交出去 |
 | Prompt → Context → Harness → Loop（待发布） | 为什么瓶颈会从 Prompt 挪到 Harness/Loop |
 | [Vibe 编程 10 工具选型地图](/posts/vibe-coding-tools-index/) | 工具怎么选；本篇是**怎么用** |
 

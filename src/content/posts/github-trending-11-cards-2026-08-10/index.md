@@ -249,7 +249,7 @@ Skills 分层与装机清单另见旁链 MCP/Skills/CLI、Claude Code 十大 Ski
 | 旁链 | 它管啥 |
 |---|---|
 | 六月 GitHub 开源 17 个口径（待发布） | 月份盘点，不是这日热榜卡 |
-| [MCP / Skills / CLI](/posts/mcp-skills-cli-relationship/) | 能力入口分层 |
+| [MCP / Skills / CLI](/posts/mcp-handbook/) | 能力入口分层 |
 | Claude Code 自动化十大 Skill（待发布） | 装机向清单 |
 | Skills 文件结构七目录（待发布） | 目录结构，不是日榜条目 |
 

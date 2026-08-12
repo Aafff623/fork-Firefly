@@ -50,4 +50,4 @@ updated: 2026-08-11T01:39:19
 
 ## 旁边几篇怎么并排
 
-同批还有软技能菜单 [未来人才八种能力](/posts/eight-future-capabilities/)，以及组织侧把隐性经验收进 Skill 的 [SOP 变 Skill](/posts/sop-to-skill/)——旁链互指即可，**不并成一篇**。MCP / Skills 分层另见工程向笔记，本篇只收职业叙事 + FDE 定义。
+同批还有软技能菜单 [未来人才八种能力](/posts/eight-future-capabilities/)，以及组织侧把隐性经验收进 Skill 的 [SOP 变 Skill](/posts/agent-skills-handbook/)——旁链互指即可，**不并成一篇**。MCP / Skills 分层另见工程向笔记，本篇只收职业叙事 + FDE 定义。
