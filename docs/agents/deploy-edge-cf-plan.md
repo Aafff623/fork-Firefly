@@ -1,7 +1,7 @@
 # Plan · 站点边缘架构（EdgeOne + Cloudflare + Vercel）
 
-> **版本**：2026-08-12 · v1  
-> **状态**：Phase 1 已落地；Phase CF 待执行；Phase ICP 后续优化  
+> **版本**：2026-08-12 · v1.1  
+> **状态**：Phase 1 ✅；Phase CF ✅（评论 R2 + `img`）；Phase ICP 后续优化（同学侧已可打开，含大陆后置）  
 > **产品**：threetwoa's blog（仓库 `fork-Firefly`）  
 > **相关**：[权益与成本](./architecture-cost-optimized.md) · [CF 能力表](./cloudflare-services-map.md) · [操作清单](./edgeone-domain-runbook.md) · [ICP 后续](./edgeone-mainland-icp-plan.md)
 
@@ -120,9 +120,9 @@
 | HTTPS | www / apex 证书已部署 |
 | 验收 | `https://www.threetwoa.live` 200，响应含 `EO-*`；推广用 **www** |
 
-仓库：`site_url` 本地已改为 `https://www.threetwoa.live`（**待园主确认后 commit/push**）。
+仓库：`site_url` 已改为 `https://www.threetwoa.live` 并随 master 上线。
 
-### Phase CF · 吃满 CF 免费档（⏳ 当前）
+### Phase CF · 吃满 CF 免费档（✅ 主路径通）
 
 | 步 | 动作 | 花费 | 产出 |
 |---|---|---|---|
@@ -138,15 +138,17 @@
 
 **Phase CF 验收：**
 
-- [ ] `https://img.threetwoa.live/...` 可公网读图  
-- [ ] 上传链路无密钥入库  
-- [ ] 主站仍 EO 200  
-- [ ] CF 月费 ≈ $0；无新增无必要腾讯叠加包  
-- [ ] 更新 CONTEXT / runbook 现状行  
+- [x] `https://img.threetwoa.live/...` 可公网读图（HTTPS active；空桶根路径 404 正常）  
+- [x] 上传链路无密钥入库（Vercel `R2_*`）  
+- [x] 主站仍 EO 200（`EO-*`）  
+- [x] CF 月费 ≈ $0；无新增无必要腾讯叠加包  
+- [x] `GET /api/comment-image/` → `backend:"r2"`  
+- [ ] 评论区实传小图（换令牌后建议再验）  
+- [x] 更新 CONTEXT / runbook / 本 Plan 现状行  
 
 ### Phase ICP · 大陆节点（📋 后续优化）
 
-不阻塞当前。完整门槛与步骤：[`edgeone-mainland-icp-plan.md`](./edgeone-mainland-icp-plan.md)。
+不阻塞当前。同学侧已可打开后，含大陆作为质量升级。完整门槛与步骤：[`edgeone-mainland-icp-plan.md`](./edgeone-mainland-icp-plan.md)。
 
 要点：约 60 日域名转出锁（估 2026-10-10）；需 ICP；`.live` 可否备案待系统确认；通过后**同一 EO 个人版**改加速区即可。
 
@@ -192,7 +194,7 @@
 | `edgeone-mainland-icp-plan.md` | ICP 后续优化 |
 | `CONTEXT.md` | 部署事实摘要 |
 
-代码侧待确认提交：`siteConfig.site_url` → `https://www.threetwoa.live`（及 RSS/文案同步）。
+`siteConfig.site_url` → `https://www.threetwoa.live` 已上线。
 
 ---
 
@@ -205,16 +207,16 @@
 | 2026-08-12 | ICP/含大陆 → 后续优化，不挡上线 |
 | 2026-08-12 | CF 定位从「调度中枢」改为「图床 + 免费防护」；调度可选 |
 | 2026-08-12 | 对照 EO 个人版月费权益：主站用满 EO，大图 R2，不重复购防护 |
+| 2026-08-12 | Phase CF 主路径验收通过（`backend:"r2"` + `EO-*`） |
 
 ---
 
-## 10. 下一步（立即）
+## 10. 收官后待办（非阻塞）
 
-1. 园主：腾讯云核对 **EO 下期续费金额 + 自动续费**（CF-0）  
-2. 园主按 [`phase-cf-today-checklist.md`](./phase-cf-today-checklist.md) 做 CF 加站 / NS / R2 / `img`  
-3. 仓库已接 R2 上传（`comment-image.ts`）；Vercel 配 `R2_*` 后 Redeploy  
-4. 另择：确认后 **commit/push `site_url`**  
-5. Phase ICP：满条件前只维护文档  
+1. 换掉会话中曾暴露的 R2 API 令牌，只更新 Vercel 环境变量  
+2. 评论区实传一张图做端到端确认  
+3. Phase ICP：满条件前只维护 [`edgeone-mainland-icp-plan.md`](./edgeone-mainland-icp-plan.md)  
+4. 另开任务：内容分类/合集治理；卡片封面迁 R2（正文插图后置）  
 
 ---
 

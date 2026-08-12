@@ -136,7 +136,7 @@ const SITE_FACTS_BLOCK = [
 	"- 产品：基于 CuteLeaf/Firefly 的个人博客二次开发（standalone）。",
 	"- 框架：Astro 静态输出；交互岛 Svelte；样式 Tailwind CSS；包管理 pnpm。",
 	"- 搜索 Pagefind；页面过渡 Swup。",
-	"- 部署首选 Vercel（仓库含 vercel.json）；线上 https://fork-firefly.vercel.app 。",
+	"- 部署：Vercel 源站 + EdgeOne CDN；线上主入口 https://www.threetwoa.live 。",
 	"- 本地：`pnpm install` → `pnpm dev`；生产构建 `pnpm build`。",
 	"- 配置优先改 `src/config/*`，勿把主题官方默认和本站现行配置混为一谈。",
 ].join("\n");

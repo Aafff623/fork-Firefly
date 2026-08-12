@@ -51,7 +51,9 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 
 ## 验收
 
-- [ ] `https://www.threetwoa.live` 仍 200，头里有 `EO-*`  
-- [ ] `https://img.threetwoa.live/` 或测一张上传图可开  
-- [ ] `GET /api/comment-image/` → `{"enabled":true,"backend":"r2"}`  
-- [ ] 评论区上传一张小图成功  
+- [x] `https://www.threetwoa.live` 仍 200，头里有 `EO-*`  
+- [x] `https://img.threetwoa.live/` HTTPS 可用（空桶根路径 404 正常）  
+- [x] `GET /api/comment-image/` → `{"enabled":true,"backend":"r2"}`  
+- [ ] 评论区上传一张小图成功（建议换已泄露令牌后再验）  
+
+> 2026-08-12 收官：Phase CF 主路径已通；ICP/含大陆后置。卡片封面迁 R2、内容分类治理另开任务。

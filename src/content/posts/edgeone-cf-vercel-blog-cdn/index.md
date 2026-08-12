@@ -1,7 +1,8 @@
 ---
 title: 博客上了 .live：EdgeOne 扛主站，Cloudflare 白嫖图床
 published: 2026-08-12
-description: 个人博客边缘三件套：Vercel 只构建，EdgeOne 个人版扛主站 CDN，Cloudflare 免费档专管 R2 图床。灰云指 EO、橙云只给 img，现金刚需基本是那个月费。
+updated: 2026-08-12
+description: 个人博客边缘三件套已落地：Vercel 只构建，EdgeOne 个人版扛主站 CDN，Cloudflare R2 管评论图床。灰云指 EO、橙云只给 img；同学侧已能打开，含大陆节点后置。
 image: ./cover.jpg
 tags: [EdgeOne, Cloudflare, R2, Vercel, CDN, 自定义域名, 图床]
 category: 指南
@@ -13,6 +14,8 @@ comment: true
 ---
 
 国内打开 `*.vercel.app` 经常抽风，自定义域名又想少花钱。这一轮把个人博客的边缘架构定成了三件套：**Vercel 只负责构建，EdgeOne 个人版扛主站 CDN，Cloudflare 免费档只干图床和防护**。现金刚需基本就是 EdgeOne 那个月费。
+
+同学侧实测已经能打开；含中国大陆节点、卡片封面整批迁 R2，都刻意后置，不挡这一刀收官。
 
 ![等轴微缩：主站走边缘加速，图床走对象存储](./images/fig-arch-overview.jpg)
 
@@ -32,7 +35,7 @@ comment: true
 
 ```text
 访客
-  ├─ www / @  → EdgeOne 个人版（灰云 DNS）→ Vercel 源站
+  ├─ www / @  → EdgeOne 个人版（DNS 灰云）→ Vercel 源站
   └─ img.     → Cloudflare 橙云 → R2（免出站）
 ```
 
@@ -53,7 +56,7 @@ comment: true
 ### 踩过的坑
 
 - **EdgeOne Pages 托管**：构建直接 OOM，放弃。Vercel 仍是唯一构建源。
-- **apex 解析**：Name.com 用 ANAME 指 EO 的 `threetwoa.live.eo.dnse2.com`；旧 A 记录（指向 Vercel IP）要删干净，否则 apex 还走老路。
+- **apex 解析**：Name.com 用 ANAME 指 EO；迁到 Cloudflare 后用两条灰云 A 指 EO Anycast IP。旧 Vercel A 记录要删干净。
 - **「缺 CNAME」误报**：控制台有时抱怨 apex，以实测响应头 `EO-*` 为准，别反复删记录。
 
 ### 实际落地
@@ -61,34 +64,30 @@ comment: true
 | 项 | 结果 |
 |---|---|
 | 域名 | Name.com 学生包 `threetwoa.live` |
-| Vercel | `www` + apex 绑定 Valid |
-| EdgeOne | 个人版；加速区「全球不含中国大陆」；源站用 Vercel 给的 `*.vercel-dns-017.com` |
-| DNS（迁 CF 前） | `www` CNAME → `www.threetwoa.live.eo.dnse2.com`；apex ANAME → EO |
+| Vercel | `www` + apex 绑定 Valid；唯一构建源 |
+| EdgeOne | 个人版；加速区「全球不含中国大陆」；源站 `*.vercel-dns-017.com` |
 | HTTPS | EO 免费证书已部署 |
 | 验收 | `www` / apex 200，带头 `EO-*`；对外推广优先 **www** |
 
-仓库侧站点 URL 已切到 `https://www.threetwoa.live`（确认后再 push）。
+`siteConfig.site_url` 已切到 `https://www.threetwoa.live` 并随仓库上线。
 
-## Phase CF：吃满免费档
+## Phase CF：图床吃满免费档
 
-目标：`img.threetwoa.live` 读图 + 新评论图写 R2；主站仍 EO；CF 账单 ≈ $0。
+目标：`img.threetwoa.live` + 评论图写 R2；主站仍 EO；CF 账单 ≈ $0。这轮已经跑通。
 
-| 步 | 做什么 | 注意 |
-|---|---|---|
-| CF-0 | 核对 EO 下期续费（体验价还是官价）与自动续费 | 账单可预期 |
-| CF-1 | CF 加站 Free；导入 DNS；注册商 NS 改成 CF | **www/@ 必须灰云** |
-| CF-2 | R2 桶 + API Token；自定义域 `img`（可橙云） | 密钥只进 Vercel 环境变量 |
-| CF-3 | Free 防护作用在 `img` | 别给 www 开橙云 |
-| CF-4 | 站内上传优先 R2，COS 回退旧图 | 代码侧已接好 |
-| CF-5/6 | Workers 预签名、DNS 面板统一到 CF | 可选；NS 传播中 |
+| 步 | 结果 |
+|---|---|
+| CF-0 | EO 按月续费保留；金额以控制台为准（体验价曾 9.9，官价常见 29.9） |
+| CF-1 | 站点 Free Active；NS 迁到 Cloudflare；`www`/`@` **全程灰云** |
+| CF-2 | 桶 `firefly-comment`；自定义域 `img.threetwoa.live`（橙云）；SSL active |
+| CF-3 | 防护只作用在 `img`；主站不点「代理 DNS 记录」 |
+| CF-4 | 站内上传优先 R2，COS 回退旧图；线上 `GET /api/comment-image/` → `backend:"r2"` |
 
-**最危险的一脚**：迁 NS 之后，若把 `www` 点成橙云，流量会被 CF 代理吃掉，已付费的 EdgeOne 主链等于白买。控制台那句「代理 DNS 记录」对主站就是坑。
+**最危险的一脚**：迁 NS 之后若把 `www` 点成橙云，流量会被 CF 代理吃掉，已付费的 EdgeOne 主链等于白买。控制台那句「代理 DNS 记录」对主站就是坑。
 
-写稿时 Cloudflare 还在检查 nameserver。传播完之前主站仍应 200；Active 后再开 R2 自定义域最稳。
+![控制台实拍：NS 校验阶段先别乱动橙云开关](./images/fig-ns-waiting.jpg)
 
-![控制台实拍：NS 还在校验，先别乱动橙云开关](./images/fig-ns-waiting.jpg)
-
-环境变量（Vercel + 本地）大概长这样：
+环境变量（Vercel + 本地）长这样，密钥只进环境变量、不入库：
 
 ```text
 R2_ACCOUNT_ID=
@@ -98,9 +97,16 @@ R2_BUCKET=firefly-comment
 R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 ```
 
-收尾验收：`img` 可读；评论上传接口回报 R2 后端；评论区传一张小图；`www` 响应头里仍能看到 `EO-*`。
+验收清单（已勾）：
+
+- [x] `https://www.threetwoa.live` 200，头里有 `EO-*`
+- [x] `img` 自定义域 HTTPS 可用（空桶根路径 404 正常）
+- [x] `/api/comment-image/` → `{"enabled":true,"backend":"r2"}`
+- [ ] 评论区实传一张小图（建议换令牌后再验）
 
 ![评论图进金属盒：R2 管存取，密钥不进前端仓](./images/fig-r2-storage.jpg)
+
+站内另有旧桶 `threetwoa-blog-assets`，留给以后「卡片封面 / 站级资产」；和评论桶分开，别混。
 
 ## 钱怎么算
 
@@ -117,12 +123,12 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 
 ## 含大陆节点：先挂着
 
-不挡当前上线。门槛大致是域名转出锁、能否备案、ICP 流程本身。通过后**同一套 EdgeOne 个人版**改加速区即可，不必另买一条 CDN。本轮只当后续优化。
+不挡当前上线。同学已经能打开，这一刀的目标达成了。备案、转出锁、含大陆加速区，以后当质量升级再做；通过后**同一套 EdgeOne 个人版**改加速区即可，不必另买一条 CDN。
 
 ## 炸了怎么退
 
-- 主站 DNS 炸了：把 `www` CNAME 改回 Vercel 的 `*.vercel-dns-017.com`。
-- 应急直链：原来的 `*.vercel.app`（国内仍可能污染，不推广）。
+- 主站 DNS 炸了：把 `www` CNAME 改回 Vercel 的 `*.vercel-dns-017.com`（或继续灰云指 EO）。
+- 应急直链：`https://fork-firefly.vercel.app`（国内仍可能污染，不推广）。
 - 双 CDN / 回源环：主站不经 CF；`img` 不回源到 www。
 
 ## 适合谁看
@@ -135,8 +141,9 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 |---|---|
 | 2026-08-11~12 | 放弃 EO Pages；Vercel 唯一构建 |
 | 2026-08-12 | Phase 1：EO + `.live` 主站打通 |
-| 2026-08-12 | ICP / 含大陆后置 |
+| 2026-08-12 | ICP / 含大陆后置；同学侧可打开即收官 |
 | 2026-08-12 | CF 定位：图床 + 免费防护，不是主站调度中枢 |
-| 2026-08-12 | 对照 EO 月费权益：主站用满 EO，大图 R2，不重复购防护 |
+| 2026-08-12 | 主站用满 EO，评论大图 R2；DNS 灰云指 EO，橙云只给 `img` |
+| 2026-08-12 | Phase CF 验收：`backend:"r2"` + `EO-*` 同时成立 |
 
-思路定了就不来回改架构；剩下的是等 NS Active，把 R2 和 `img` 接上，再 Redeploy 一轮环境变量。
+下一刀不在边缘架构：内容侧分类 / 合集 / 合并去重，以及卡片封面是否迁 R2，另开任务。边缘三件套这卷，先合上。
