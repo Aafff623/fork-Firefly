@@ -367,10 +367,53 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     max-height: 12rem;
     width: auto;
     height: auto;
-    margin: 0.75em 0 0.9em;
+    margin: 0;
     border-radius: 0.45rem;
     object-fit: contain;
     vertical-align: middle;
+  }
+
+  .waline-shell .waline-editor-visual-image-wrap,
+  .waline-shell .waline-editor-visual-uploading-wrap {
+    position: relative;
+    display: inline-block;
+    max-width: min(100%, 20rem);
+    margin: 0.75em 0 0.9em;
+    vertical-align: top;
+    pointer-events: none;
+  }
+
+  .waline-shell .waline-editor-visual-uploading-wrap {
+    max-width: none;
+  }
+
+  .waline-shell .waline-editor-visual-image-remove {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, #0f172a 72%, transparent);
+    color: #fff;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0.92;
+  }
+
+  .waline-shell .waline-editor-visual-image-remove:hover,
+  .waline-shell .waline-editor-visual-image-remove:focus-visible {
+    opacity: 1;
+    background: color-mix(in srgb, #0f172a 88%, transparent);
+    outline: none;
   }
 
   .waline-shell .waline-editor-visual-emoji {

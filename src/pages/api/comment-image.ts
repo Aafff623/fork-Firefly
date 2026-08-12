@@ -1,7 +1,8 @@
 /**
  * Waline 自定义图片上传代理（服务端持密钥）。
- * GET  → { enabled, backend?: "r2"|"cos" }
- * POST → multipart `image` → { url }
+ * GET    → { enabled, backend?: "r2"|"cos" }
+ * POST   → multipart `image` → { url }
+ * DELETE → JSON `{ url }` 或 `?url=` → 删除本会话图床对象（仅 `comment/` 前缀）
  *
  * 优先 Cloudflare R2（S3 兼容 SigV4）；未配 R2 时回退腾讯云 COS。
  * 兼容 Astro Node（本地 / Vercel），不引入云厂商 SDK。
@@ -367,6 +368,143 @@ async function putObjectToR2(
 	}
 }
 
+async function deleteObjectFromCos(
+	cfg: CosConfig,
+	objectKey: string,
+): Promise<void> {
+	const host = `${cfg.bucket}.cos.${cfg.region}.myqcloud.com`;
+	const pathname = `/${encodeObjectKey(objectKey)}`;
+	const headers: Record<string, string> = { host };
+	const authorization = await cosAuthorization({
+		secretId: cfg.secretId,
+		secretKey: cfg.secretKey,
+		method: "DELETE",
+		pathname,
+		headers,
+	});
+
+	const res = await fetch(`https://${host}${pathname}`, {
+		method: "DELETE",
+		headers: {
+			Host: host,
+			Authorization: authorization,
+		},
+	});
+
+	// 404：对象已不在，视为删除成功（幂等）
+	if (!res.ok && res.status !== 404) {
+		const text = await res.text().catch(() => "");
+		throw new Error(
+			`COS DELETE HTTP ${res.status}${text ? `: ${text.slice(0, 200)}` : ""}`,
+		);
+	}
+}
+
+async function deleteObjectFromR2(
+	cfg: R2Config,
+	objectKey: string,
+): Promise<void> {
+	const method = "DELETE";
+	const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
+	const pathname = `/${cfg.bucket}/${encodeObjectKey(objectKey)}`;
+	const region = "auto";
+	const service = "s3";
+	const now = new Date();
+	const amzDate = now
+		.toISOString()
+		.replace(/[-:]/g, "")
+		.replace(/\.\d{3}Z$/, "Z");
+	const dateStamp = amzDate.slice(0, 8);
+	const payloadHash = await sha256Hex("");
+
+	const canonicalHeaders = [
+		`host:${host}`,
+		`x-amz-content-sha256:${payloadHash}`,
+		`x-amz-date:${amzDate}`,
+		"",
+	].join("\n");
+	const signedHeaders = "host;x-amz-content-sha256;x-amz-date";
+	const canonicalRequest = [
+		method,
+		pathname,
+		"",
+		canonicalHeaders,
+		signedHeaders,
+		payloadHash,
+	].join("\n");
+
+	const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+	const stringToSign = [
+		"AWS4-HMAC-SHA256",
+		amzDate,
+		credentialScope,
+		await sha256Hex(canonicalRequest),
+	].join("\n");
+
+	const enc = new TextEncoder();
+	const kDate = await hmacSha256(
+		enc.encode(`AWS4${cfg.secretAccessKey}`),
+		dateStamp,
+	);
+	const kRegion = await hmacSha256(kDate, region);
+	const kService = await hmacSha256(kRegion, service);
+	const kSigning = await hmacSha256(kService, "aws4_request");
+	const signature = toHex(await hmacSha256(kSigning, stringToSign));
+
+	const authorization = [
+		`AWS4-HMAC-SHA256 Credential=${cfg.accessKeyId}/${credentialScope}`,
+		`SignedHeaders=${signedHeaders}`,
+		`Signature=${signature}`,
+	].join(", ");
+
+	const res = await fetch(`https://${host}${pathname}`, {
+		method,
+		headers: {
+			Host: host,
+			"x-amz-content-sha256": payloadHash,
+			"x-amz-date": amzDate,
+			Authorization: authorization,
+		},
+	});
+
+	if (!res.ok && res.status !== 404) {
+		const text = await res.text().catch(() => "");
+		throw new Error(
+			`R2 DELETE HTTP ${res.status}${text ? `: ${text.slice(0, 200)}` : ""}`,
+		);
+	}
+}
+
+/** 仅允许删除本站图床下 comment/ 前缀对象，防任意路径删除 */
+function objectKeyFromPublicUrl(
+	cfg: UploadConfig,
+	rawUrl: string,
+): string | null {
+	let parsed: URL;
+	try {
+		parsed = new URL(rawUrl);
+	} catch {
+		return null;
+	}
+	let base: URL;
+	try {
+		base = new URL(cfg.publicBaseUrl);
+	} catch {
+		return null;
+	}
+	if (parsed.origin !== base.origin) return null;
+
+	const basePath = base.pathname.replace(/\/+$/, "");
+	let path = decodeURIComponent(parsed.pathname);
+	if (basePath && basePath !== "/" && path.startsWith(basePath)) {
+		path = path.slice(basePath.length);
+	}
+	path = path.replace(/^\/+/, "");
+	if (!path.startsWith("comment/")) return null;
+	if (path.includes("..") || path.includes("//")) return null;
+	return path;
+}
+
 function clientIp(request: Request): string {
 	return (
 		request.headers.get("cf-connecting-ip") ||
@@ -485,6 +623,78 @@ export const POST: APIRoute = async ({ request }) => {
 
 	const url = `${cfg.publicBaseUrl}/${encodeObjectKey(key)}`;
 	return new Response(JSON.stringify({ url }), {
+		headers: { "Content-Type": "application/json; charset=utf-8" },
+	});
+};
+
+export const DELETE: APIRoute = async ({ request }) => {
+	const cfg = getUploadConfig();
+	if (!cfg) {
+		return new Response(
+			JSON.stringify({
+				error: "R2/COS credentials not configured",
+				code: "NO_KEY",
+			}),
+			{ status: 503, headers: { "Content-Type": "application/json" } },
+		);
+	}
+
+	if (!allowRate(clientIp(request))) {
+		return new Response(
+			JSON.stringify({ error: "Too many uploads, try later" }),
+			{ status: 429, headers: { "Content-Type": "application/json" } },
+		);
+	}
+
+	let rawUrl = "";
+	try {
+		const q = new URL(request.url).searchParams.get("url");
+		if (q) rawUrl = q;
+	} catch {
+		/* ignore */
+	}
+	if (!rawUrl) {
+		try {
+			const body = (await request.json()) as { url?: unknown };
+			if (typeof body?.url === "string") rawUrl = body.url;
+		} catch {
+			/* ignore */
+		}
+	}
+	rawUrl = rawUrl.trim();
+	if (!rawUrl) {
+		return new Response(JSON.stringify({ error: "Missing url" }), {
+			status: 400,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
+
+	const key = objectKeyFromPublicUrl(cfg, rawUrl);
+	if (!key) {
+		return new Response(
+			JSON.stringify({
+				error: "URL not allowed (must be comment/ under public base)",
+			}),
+			{ status: 403, headers: { "Content-Type": "application/json" } },
+		);
+	}
+
+	try {
+		if (cfg.kind === "r2") {
+			await deleteObjectFromR2(cfg, key);
+		} else {
+			await deleteObjectFromCos(cfg, key);
+		}
+	} catch (e) {
+		return new Response(
+			JSON.stringify({
+				error: e instanceof Error ? e.message : "Delete failed",
+			}),
+			{ status: 502, headers: { "Content-Type": "application/json" } },
+		);
+	}
+
+	return new Response(JSON.stringify({ ok: true, key }), {
 		headers: { "Content-Type": "application/json; charset=utf-8" },
 	});
 };

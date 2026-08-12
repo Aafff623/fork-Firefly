@@ -3,6 +3,13 @@ import { init, type WalineInstance } from "@waline/client/full";
 const MAX_BYTES = 5 * 1024 * 1024;
 let swupHooksRegistered = false;
 
+/** 本次会话评论区上传成功的图（仅这些允许 DELETE 同步删桶） */
+const managedCommentImageUrls = new Set<string>();
+/** 进行中的上传，取消占位时 abort */
+let activeUploadAbort: AbortController | null = null;
+/** 最近一次 boot 的 uploadApi，dispose 时清孤儿用 */
+let lastUploadApi = "";
+
 type WalineInitConfig = Record<string, unknown>;
 
 /**
@@ -92,6 +99,15 @@ function createRuntime(shellEl: HTMLElement, rootEl: HTMLElement): WalineRuntime
  * 5. 清空 #waline 容器、置空 runtime 全局引用，使旧评论 DOM 可 GC
  */
 export function disposeWaline(): void {
+	activeUploadAbort?.abort();
+	activeUploadAbort = null;
+	// 离页时草稿里未提交的会话上传图 → 同步删桶，避免孤儿占存储
+	if (lastUploadApi && managedCommentImageUrls.size > 0) {
+		for (const url of [...managedCommentImageUrls]) {
+			deleteCommentImage(lastUploadApi, url);
+		}
+	}
+	managedCommentImageUrls.clear();
 	const rt = walineRuntime;
 	if (!rt || rt.disposed) return;
 	rt.disposed = true;
@@ -269,6 +285,8 @@ function clearDraftAfterSubmit(root: HTMLElement) {
 	};
 
 	const clearForm = () => {
+		// 已进评论正文的图不再删桶；先摘掉托管集合，避免清空编辑器时误 DELETE
+		managedCommentImageUrls.clear();
 		clearField(".wl-nick");
 		clearField(".wl-mail");
 		clearField(".wl-link");
@@ -372,9 +390,52 @@ function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement)
 	setExpanded(isInside(document.activeElement));
 }
 
+function extractMarkdownImageUrls(text: string): Set<string> {
+	const urls = new Set<string>();
+	const re = /!\[[^\]]*]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+	for (const match of text.matchAll(re)) {
+		const url = match[1]?.trim();
+		if (url && /^https?:\/\//i.test(url)) urls.add(url);
+	}
+	return urls;
+}
+
+/** best-effort：编辑区撤销本会话上传图时，同步 DELETE 对象存储 */
+function deleteCommentImage(uploadApi: string, url: string): void {
+	if (!uploadApi || !url) return;
+	const endpoint = `${uploadApi.replace(/\/?$/, "/")}?url=${encodeURIComponent(url)}`;
+	void fetch(endpoint, {
+		method: "DELETE",
+		headers: { Origin: window.location.origin },
+	}).catch(() => {
+		/* ignore network errors */
+	});
+}
+
+function pruneRemovedManagedImages(
+	uploadApi: string,
+	editorValue: string,
+): void {
+	if (!uploadApi || managedCommentImageUrls.size === 0) return;
+	const stillPresent = extractMarkdownImageUrls(editorValue);
+	for (const url of [...managedCommentImageUrls]) {
+		if (stillPresent.has(url)) continue;
+		managedCommentImageUrls.delete(url);
+		deleteCommentImage(uploadApi, url);
+	}
+}
+
+function cancelActiveUploadIfPlaceholderGone(editorValue: string): void {
+	if (!activeUploadAbort) return;
+	if (/!\[正在上传/.test(editorValue)) return;
+	activeUploadAbort.abort();
+	activeUploadAbort = null;
+}
+
 function attachPostInitHooks(
 	root: HTMLElement,
 	effectiveConfig: WalineInitConfig,
+	uploadApi: string,
 ) {
 	hidePreviewAction(root);
 	clearDraftAfterSubmit(root);
@@ -522,6 +583,8 @@ function attachPostInitHooks(
 
 		const syncContent = () => {
 			const value = editor.value || "";
+			cancelActiveUploadIfPlaceholderGone(value);
+			pruneRemovedManagedImages(uploadApi, value);
 			const tokenPattern = /!\[([^\]]*)\]\(([^)\s]*)\)|:([a-z0-9_+-]+):/gi;
 			const matches = [...value.matchAll(tokenPattern)];
 			const visualMatches = matches.filter((match) => {
@@ -624,6 +687,38 @@ function attachPostInitHooks(
 				}
 			};
 
+			const removeMarkdownToken = (token: string, tokenStart: number) => {
+				const current = editor.value || "";
+				let next = current;
+				if (current.slice(tokenStart, tokenStart + token.length) === token) {
+					next =
+						current.slice(0, tokenStart) +
+						current.slice(tokenStart + token.length);
+				} else {
+					const idx = current.indexOf(token);
+					if (idx < 0) return;
+					next = current.slice(0, idx) + current.slice(idx + token.length);
+				}
+				editor.value = next.replace(/\n{3,}/g, "\n\n");
+				editor.dispatchEvent(new Event("input", { bubbles: true }));
+				editor.focus();
+			};
+
+			const makeRemoveButton = (token: string, tokenStart: number) => {
+				const btn = document.createElement("button");
+				btn.type = "button";
+				btn.className = "waline-editor-visual-image-remove";
+				btn.setAttribute("aria-label", "移除图片");
+				btn.title = "移除图片";
+				btn.textContent = "×";
+				btn.addEventListener("click", (event) => {
+					event.preventDefault();
+					event.stopPropagation();
+					removeMarkdownToken(token, tokenStart);
+				});
+				return btn;
+			};
+
 			let cursor = 0;
 			for (const match of matches) {
 				const start = match.index ?? 0;
@@ -665,7 +760,7 @@ function attachPostInitHooks(
 							template.style.maxHeight = "12rem";
 							template.style.width = "auto";
 							template.style.height = "auto";
-							template.style.margin = "0.75em 0 0.9em";
+							template.style.margin = "0";
 							template.style.objectFit = "contain";
 						}
 						template.addEventListener("load", () => {
@@ -678,15 +773,28 @@ function attachPostInitHooks(
 					if (imageNeedsSource || !image.getAttribute("src")) {
 						image.src = source;
 					}
-					appendVisualNode(image, start, tokenEnd);
+					if (match[3] || inlineSticker) {
+						appendVisualNode(image, start, tokenEnd);
+					} else {
+						const wrap = document.createElement("span");
+						wrap.className = "waline-editor-visual-image-wrap";
+						wrap.append(image);
+						if (/^https?:\/\//i.test(source)) {
+							wrap.append(makeRemoveButton(match[0], start));
+						}
+						appendVisualNode(wrap, start, tokenEnd);
+					}
 				} else if (!match[3] && /^正在上传(?:\s|$)/.test(match[1] || "")) {
+					const wrap = document.createElement("span");
+					wrap.className = "waline-editor-visual-uploading-wrap";
 					const uploading = document.createElement("span");
 					uploading.className = "waline-editor-visual-uploading";
 					const spinner = document.createElement("span");
 					spinner.className = "waline-editor-visual-uploading-spinner";
 					spinner.setAttribute("aria-hidden", "true");
 					uploading.append(spinner, document.createTextNode(match[1]));
-					appendVisualNode(uploading, start, tokenEnd);
+					wrap.append(uploading, makeRemoveButton(match[0], start));
+					appendVisualNode(wrap, start, tokenEnd);
 				} else if (match[3]) {
 					const ph = document.createElement("span");
 					ph.className = "waline-editor-visual-emoji";
@@ -773,26 +881,43 @@ async function imageUploader(
 	}
 	const form = new FormData();
 	form.append("image", file, file.name || "image.png");
-	const res = await fetch(uploadApi, {
-		method: "POST",
-		body: form,
-		headers: { Origin: window.location.origin },
-	});
-	let data: { url?: string; error?: string } = {};
+	activeUploadAbort?.abort();
+	const ac = new AbortController();
+	activeUploadAbort = ac;
 	try {
-		data = await res.json();
-	} catch {
-		/* ignore */
+		const res = await fetch(uploadApi, {
+			method: "POST",
+			body: form,
+			headers: { Origin: window.location.origin },
+			signal: ac.signal,
+		});
+		let data: { url?: string; error?: string } = {};
+		try {
+			data = await res.json();
+		} catch {
+			/* ignore */
+		}
+		if (!res.ok || !data.url) {
+			const msg =
+				data.error ||
+				(res.status === 503
+					? "未配置图床（R2_* 或 COS_*），无法上传大图"
+					: "图片上传失败");
+			throw new Error(msg);
+		}
+		managedCommentImageUrls.add(data.url);
+		return data.url;
+	} catch (error) {
+		if (
+			(error instanceof DOMException || error instanceof Error) &&
+			error.name === "AbortError"
+		) {
+			throw new Error("已取消上传");
+		}
+		throw error;
+	} finally {
+		if (activeUploadAbort === ac) activeUploadAbort = null;
 	}
-	if (!res.ok || !data.url) {
-		const msg =
-			data.error ||
-			(res.status === 503
-				? "未配置图床（R2_* 或 COS_*），无法上传大图"
-				: "图片上传失败");
-		throw new Error(msg);
-	}
-	return data.url;
 }
 
 export function bootWalineFromShell(shell?: Element | null): void {
@@ -815,6 +940,7 @@ export function bootWalineFromShell(shell?: Element | null): void {
 
 	const configJson = shellEl.dataset.walineConfig;
 	const uploadApi = shellEl.dataset.uploadApi ?? "";
+	lastUploadApi = uploadApi;
 	if (!configJson) return;
 
 	let config: WalineInitConfig;
@@ -839,7 +965,7 @@ export function bootWalineFromShell(shell?: Element | null): void {
 		rt.instance = init(effectiveConfig as unknown as Parameters<typeof init>[0]);
 		shellEl.dataset.walineBooted = "1";
 		markWalineReady(shellEl, root);
-		attachPostInitHooks(root, effectiveConfig);
+		attachPostInitHooks(root, effectiveConfig, uploadApi);
 	} catch (error) {
 		disposeWaline();
 		console.error("[Waline] Failed to initialize:", error);
