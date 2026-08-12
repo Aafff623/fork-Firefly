@@ -18,7 +18,7 @@ comment: true
 
 这样做的结果是，主控模型不用承担所有重复执行，子 Agent 也不用假装自己拥有视觉能力。真正重要的部分，是每次委派都把边界和工具权限重新写进任务契约里，避免子 Agent 依赖历史上下文。
 
-相关阅读：[Best Codex 中转：三把钥匙、一个 Luna](/posts/bestcodex-relay-luna/)——那边讲 Key 与额度；这篇讲接到 OpenCode 之后怎么分活。
+相关阅读：[Best Codex 中转：三把钥匙、一个 Luna](/posts/transit-relay-playbook/)——那边讲 Key 与额度；这篇讲接到 OpenCode 之后怎么分活。
 
 ## 这套组合为什么划算
 
