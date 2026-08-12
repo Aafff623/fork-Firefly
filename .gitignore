@@ -71,6 +71,35 @@ public/assets/images/widgets/calendar/_orig-backup/
 .hallmark/
 .wrangler/
 
+# Cloudflare/Workers official skills：skills-lock 锁定版本，本地 npx skills 安装；
+# 不 vendor 进仓（cloudflare 单包 300+ 文件）。.agents/skills 下为指向 .cursor/skills 的 junction。
+.cursor/skills/agents-sdk/
+.cursor/skills/cloudflare/
+.cursor/skills/cloudflare-email-service/
+.cursor/skills/cloudflare-one/
+.cursor/skills/cloudflare-one-migrations/
+.cursor/skills/durable-objects/
+.cursor/skills/sandbox-migrate-to-next/
+.cursor/skills/sandbox-next/
+.cursor/skills/sandbox-stable/
+.cursor/skills/turnstile-spin/
+.cursor/skills/web-perf/
+.cursor/skills/workers-best-practices/
+.cursor/skills/wrangler/
+.agents/skills/agents-sdk/
+.agents/skills/cloudflare/
+.agents/skills/cloudflare-email-service/
+.agents/skills/cloudflare-one/
+.agents/skills/cloudflare-one-migrations/
+.agents/skills/durable-objects/
+.agents/skills/sandbox-migrate-to-next/
+.agents/skills/sandbox-next/
+.agents/skills/sandbox-stable/
+.agents/skills/turnstile-spin/
+.agents/skills/web-perf/
+.agents/skills/workers-best-practices/
+.agents/skills/wrangler/
+
 # ob2blog staging + local fingerprint dumps (manifest.json is kept)
 .ob2blog/staging/
 .ob2blog/fp-*.txt
