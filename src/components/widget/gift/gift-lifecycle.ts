@@ -195,6 +195,8 @@ function openFullscreenEnvelope(
 
 		const expand = () => {
 			overlay.classList.add("is-expanded");
+			// E08：礼花跟全屏信封正中爆开（勿用侧栏舞台，否则偏左）
+			void triggerConfettiBurst();
 			const readyDelay = prefersReducedMotion() ? 0 : EXPAND_MS;
 			setTimeout(() => {
 				overlay.classList.add("is-ready");
@@ -446,9 +448,7 @@ function initGiftCardLifecycle(): void {
 			return;
 		}
 		if (hit instanceof HTMLElement) hit.style.pointerEvents = "none";
-		// E08：开盖瞬间 canvas-confetti（从礼盒舞台爆开；与盒边 CSS 碎屑并存）
-		const stage = root.querySelector(".gift-surprise__stage") || root;
-		void triggerConfettiBurst(stage);
+		// 开盖：侧栏 CSS 金箔碎屑；canvas-confetti 等信封扩到正中再爆（见 openFullscreenEnvelope）
 		openFullscreenEnvelope(root, overlay, giftId);
 	});
 

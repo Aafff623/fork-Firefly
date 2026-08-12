@@ -188,7 +188,7 @@ function originFromElement(el: Element | null | undefined): { x: number; y: numb
 	};
 }
 
-/** E08：礼盒开盖短促 confetti（可传入礼盒舞台，从侧栏位置爆开） */
+/** E08：礼盒开盖短促 confetti（默认视口正中，跟随全屏信封；也可传入元素作原点） */
 export async function triggerConfettiBurst(
 	originEl?: Element | null,
 ): Promise<void> {
@@ -199,7 +199,10 @@ export async function triggerConfettiBurst(
 	if (!confetti) return;
 
 	const colors = ["#ffb7c5", "#ff9ec4", "#ffe4ec", "#fdfaf3", "#a63d52", "#ecd9ae"];
-	const o = originFromElement(originEl);
+	// 无锚点 → 正中（信封落地）；有锚点则跟元素中心
+	const o = originEl
+		? originFromElement(originEl)
+		: { x: 0.5, y: 0.42 };
 
 	try {
 		confetti({
