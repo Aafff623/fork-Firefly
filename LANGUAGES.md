@@ -49,6 +49,7 @@
 
 | 用 | 说明 |
 |---|---|
-| Vercel 生产域 | https://fork-firefly.vercel.app |
+| 主入口（EdgeOne） | https://www.threetwoa.live |
+| Vercel 备用域 | https://fork-firefly.vercel.app |
 | origin | https://github.com/Aafff623/fork-Firefly.git |
 | upstream | https://github.com/CuteLeaf/Firefly.git |

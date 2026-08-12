@@ -24,7 +24,7 @@ Issue(.scratch/<feature>/)
 2. 本地校验验收     → 目视关键页 + pnpm check（按改动范围）
 3. 你确认无误后     → git commit（若需要）+ git push origin
 4. 触发 CI/Vercel 部署 → 等 Ready；若改动含 EdgeOne 适配，同时核腾讯云 EdgeOne 构建
-5. 打开线上公网     → https://fork-firefly.vercel.app ；国内入口就绪后另核 https://threetwoa.me
+5. 打开线上公网     → https://www.threetwoa.live ；备用 https://fork-firefly.vercel.app
    （绑域清单见 docs/agents/edgeone-domain-runbook.md）
 ```
 

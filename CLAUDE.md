@@ -14,7 +14,7 @@
 
 ## 本仓是什么
 
-基于 CuteLeaf/Firefly 主题的 **standalone** 个人博客二次开发（已脱离 fork 网络；仓库名仍可能带 `fork-` 历史前缀）。作者 **Aafff623 / threetwoa**。线上：https://fork-firefly.vercel.app
+基于 CuteLeaf/Firefly 主题的 **standalone** 个人博客二次开发（已脱离 fork 网络；仓库名仍可能带 `fork-` 历史前缀）。作者 **Aafff623 / threetwoa**。线上主入口：https://www.threetwoa.live（Vercel 备用：https://fork-firefly.vercel.app）
 
 ## 多 Agent 协作区（认死理防疑）
 

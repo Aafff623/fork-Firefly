@@ -23,7 +23,7 @@ alwaysApply: true
 
 1. **常驻**：3D 礼盒缓慢自转（不晃动）
 2. **悬停**：同形态 3D 轻晃邀请（**不**切到酒红包装盒）
-3. **点击**：confetti（`ambient-fx` 预加载 `canvas-confetti`，从礼盒舞台原点爆发）→ 包装盒淡入并快速拆开 → 全屏信封 → 点「我已阅读」（或 Esc）→ 信封收起 → tsParticles → 侧栏卡高度同步收合（记 `gone`）
+3. **点击**：包装盒淡入并快速拆开 → 全屏信封放大到正中 → confetti（`ambient-fx` 预加载 `canvas-confetti`，**从信封/视口正中爆发**；侧栏仅保留盒边 CSS 金箔）→ 点「我已阅读」（或 Esc）→ 信封收起 → tsParticles → 侧栏卡高度同步收合（记 `gone`）
 4. **开盖时**：`.gift-surprise` 临时 `overflow: visible`，避免 CSS 金箔被侧栏卡裁切
 
 实现入口：`Announcement.astro` + `src/components/widget/gift/*` + `gift-surprise.css` + `src/utils/ambient-fx.ts`。  
