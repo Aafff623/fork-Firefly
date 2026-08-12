@@ -5,7 +5,7 @@ updated: 2026-08-10T01:15:00
 description: fork 了一套成体系的 AI 技能（PPT、文风、插画、封面、HTML、动画、前端、UI 生成），逐个读完 SKILL.md，记下它本来的规范和流程，作为后续个性化改造的起点。
 image: ./cover.jpg
 tags: [AI Skills, tta 系列, SKILL.md, 工作流, skill 测评]
-category: tta-skills
+category: skill 测评
 collections: [tta-skills]
 draft: false
 lang: ''

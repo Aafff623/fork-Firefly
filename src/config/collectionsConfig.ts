@@ -140,6 +140,14 @@ export const collectionsConfig: CollectionsConfig = {
 			emoji: "💡",
 			cover: "/assets/collections/agentic-coding.jpg",
 		},
+		{
+			slug: "agentic-coding-core",
+			name: "Agentic Coding 核心长文",
+			description:
+				"由碎片帖合并的对照长文（statusline / MCP·Skills / 记忆等）。",
+			emoji: "📎",
+			cover: "/assets/collections/agentic-coding.jpg",
+		},
 
 		// ── 测评（一级）──
 		{
