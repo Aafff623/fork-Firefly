@@ -1,27 +1,33 @@
 ---
-// LiveChat 浮窗：点击宠物弹出，调 MaxKB API
+// LiveChat 漫画对话框：点击宠物弹出，调 MaxKB API
 ---
 
 <div id="livechat-widget" class="livechat-widget" aria-hidden="true">
-    <div class="livechat-inner">
-        <div class="livechat-header" id="livechat-header">
-            <div class="livechat-title">
-                <span class="livechat-dot"></span>
-                <span class="livechat-name">站点问答助手</span>
-                <span class="livechat-count" id="livechat-count"></span>
+    <!-- 折叠态：小气泡 -->
+    <div class="lc-bubble" id="lc-bubble">
+        <div class="lc-bubble-text">想问什么？</div>
+        <div class="lc-bubble-tail"></div>
+    </div>
+
+    <!-- 展开态：完整聊天面板 -->
+    <div class="lc-panel" id="lc-panel">
+        <div class="lc-panel-header" id="lc-panel-header">
+            <div class="lc-panel-title">
+                <span class="lc-panel-dot"></span>
+                <span class="lc-panel-name">站点问答助手</span>
             </div>
-            <button class="livechat-close" id="livechat-close" aria-label="收起">
+            <button class="lc-panel-close" id="lc-panel-close" aria-label="收起">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
         </div>
-        <div class="livechat-body" id="livechat-body">
-            <div class="livechat-messages" id="livechat-messages">
-                <div class="livechat-welcome" id="livechat-welcome">
-                    <div class="livechat-welcome-icon">问</div>
+        <div class="lc-panel-body" id="lc-panel-body">
+            <div class="lc-messages" id="livechat-messages">
+                <div class="lc-welcome" id="livechat-welcome">
+                    <div class="lc-welcome-icon">问</div>
                     <p>有什么想了解的？<br/>我基于博客内容回答</p>
                 </div>
             </div>
-            <div class="livechat-input-area">
+            <div class="lc-input-area">
                 <input
                     id="livechat-input"
                     type="text"
@@ -37,68 +43,125 @@
 </div>
 
 <style>
+    /* ===== 容器 ===== */
     .livechat-widget {
         position: fixed;
         bottom: 100px;
         right: 24px;
         z-index: 1050;
-        width: 360px;
-        max-width: calc(100vw - 48px);
-        opacity: 0;
-        transform: translateY(16px) scale(0.96);
         pointer-events: none;
+    }
+    .livechat-widget.bubble,
+    .livechat-widget.open {
+        pointer-events: auto;
+    }
+
+    /* ===== 折叠态：漫画小气泡 ===== */
+    .lc-bubble {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        opacity: 0;
+        transform: translateY(8px) scale(0.8);
+        transform-origin: bottom right;
         transition: opacity 0.25s var(--ease-decelerate, ease-out),
                     transform 0.25s var(--ease-decelerate, ease-out);
+        pointer-events: none;
     }
-    .livechat-widget.open {
+    .livechat-widget.bubble .lc-bubble {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    .livechat-widget.open .lc-bubble {
+        opacity: 0;
+        transform: translateY(8px) scale(0.8);
+        pointer-events: none;
+    }
+
+    .lc-bubble-text {
+        background: var(--card-bg);
+        border: 1px solid var(--line-divider);
+        border-radius: 1rem;
+        border-bottom-right-radius: 0.25rem;
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        color: var(--deep-text);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        white-space: nowrap;
+    }
+    .lc-bubble-text:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    .lc-bubble-tail {
+        position: absolute;
+        bottom: -6px;
+        right: 20px;
+        width: 12px;
+        height: 12px;
+        background: var(--card-bg);
+        border-right: 1px solid var(--line-divider);
+        border-bottom: 1px solid var(--line-divider);
+        transform: rotate(45deg);
+        border-bottom-right-radius: 3px;
+    }
+
+    /* ===== 展开态：聊天面板 ===== */
+    .lc-panel {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 340px;
+        max-width: calc(100vw - 48px);
+        opacity: 0;
+        transform: translateY(16px) scale(0.95);
+        transform-origin: bottom right;
+        transition: opacity 0.25s var(--ease-decelerate, ease-out),
+                    transform 0.25s var(--ease-decelerate, ease-out);
+        pointer-events: none;
+    }
+    .livechat-widget.open .lc-panel {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
     }
 
-    .livechat-inner {
-        border-radius: var(--radius-2xl, 1rem);
-        overflow: hidden;
-        background: var(--card-bg);
-        border: 1px solid var(--line-divider);
-        box-shadow: var(--shadow-2xl);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .livechat-header {
+    .lc-panel-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.75rem 1rem;
+        padding: 0.625rem 0.875rem;
         border-bottom: 1px solid var(--line-divider);
         cursor: pointer;
         user-select: none;
+        background: var(--card-bg);
+        border-radius: 1rem 1rem 0 0;
+        border: 1px solid var(--line-divider);
+        border-bottom: none;
     }
-    .livechat-title {
+    .lc-panel-title {
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
-    .livechat-dot {
+    .lc-panel-dot {
         width: 0.5rem; height: 0.5rem; border-radius: 50%;
         background: oklch(0.7 0.18 145);
-        animation: livechat-pulse 1.5s ease-in-out infinite;
+        animation: lc-pulse 1.5s ease-in-out infinite;
     }
-    @keyframes livechat-pulse {
+    @keyframes lc-pulse {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.4; }
     }
-    .livechat-name {
-        font-size: 0.875rem;
-        font-weight: 700;
+    .lc-panel-name {
+        font-size: 0.8125rem;
+        font-weight: 600;
         color: var(--deep-text);
     }
-    .livechat-count {
-        font-size: 0.75rem;
-        color: var(--content-meta);
-    }
-    .livechat-close {
+    .lc-panel-close {
         width: 1.5rem; height: 1.5rem;
         border: none; background: transparent;
         color: var(--content-meta);
@@ -106,55 +169,64 @@
         transition: transform 0.3s;
         display: flex; align-items: center; justify-content: center;
     }
-    .livechat-close svg { width: 1rem; height: 1rem; }
-    .livechat-widget.open .livechat-close { transform: rotate(180deg); }
+    .lc-panel-close svg { width: 0.875rem; height: 0.875rem; }
+    .livechat-widget.open .lc-panel-close { transform: rotate(180deg); }
 
-    .livechat-body {
+    .lc-panel-body {
         display: flex;
         flex-direction: column;
-        max-height: 420px;
-        transition: max-height 0.3s;
+        background: var(--card-bg);
+        border: 1px solid var(--line-divider);
+        border-top: none;
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
     }
 
-    .livechat-messages {
-        flex: 1;
+    .lc-messages {
         overflow-y: auto;
-        padding: 1rem;
+        padding: 0.875rem;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        min-height: 200px;
-        max-height: 320px;
+        gap: 0.625rem;
+        min-height: 180px;
+        max-height: 280px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-bg) transparent;
     }
+    .lc-messages::-webkit-scrollbar { width: 3px; }
+    .lc-messages::-webkit-scrollbar-track { background: transparent; }
+    .lc-messages::-webkit-scrollbar-thumb { background: var(--scrollbar-bg); border-radius: 2px; }
 
-    .livechat-welcome {
+    .lc-welcome {
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 1.5rem 0.75rem;
         color: var(--content-meta);
     }
-    .livechat-welcome-icon {
-        width: 3rem; height: 3rem;
-        margin: 0 auto 0.75rem;
-        border-radius: 0.75rem;
+    .lc-welcome-icon {
+        width: 2.5rem; height: 2.5rem;
+        margin: 0 auto 0.625rem;
+        border-radius: 0.625rem;
         display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 1.25rem; font-weight: 700;
+        color: white; font-size: 1rem; font-weight: 700;
         background: var(--primary-gradient);
     }
-    .livechat-welcome p { font-size: 0.8125rem; line-height: 1.6; }
+    .lc-welcome p { font-size: 0.75rem; line-height: 1.5; }
 
+    /* ===== 消息气泡 ===== */
     .lc-msg { display: flex; gap: 0.5rem; }
     .lc-msg.me { flex-direction: row-reverse; }
     .lc-msg-avatar {
-        width: 1.75rem; height: 1.75rem; border-radius: 0.375rem; flex-shrink: 0;
+        width: 1.625rem; height: 1.625rem; border-radius: 0.375rem; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 0.625rem; font-weight: 600;
+        color: white; font-size: 0.5625rem; font-weight: 600;
     }
     .lc-msg-avatar.ai { background: var(--primary-gradient); }
     .lc-msg-avatar.user { background: var(--accent-cool); }
-    .lc-msg-body { max-width: 80%; min-width: 0; }
+    .lc-msg-body { max-width: 82%; min-width: 0; }
     .lc-msg-bubble {
-        padding: 0.625rem 0.875rem; border-radius: 0.875rem;
-        font-size: 0.8125rem; line-height: 1.6;
+        padding: 0.5rem 0.75rem; border-radius: 0.75rem;
+        font-size: 0.75rem; line-height: 1.5;
         white-space: pre-wrap; word-break: break-word;
     }
     .lc-msg:not(.me) .lc-msg-bubble {
@@ -165,20 +237,20 @@
         background: var(--primary); color: white;
         border-bottom-right-radius: 0.25rem;
     }
-    .lc-msg-time { font-size: 0.625rem; color: var(--content-meta); margin-top: 0.1875rem; }
+    .lc-msg-time { font-size: 0.5625rem; color: var(--content-meta); margin-top: 0.125rem; }
     .lc-msg.me .lc-msg-time { text-align: right; }
 
     .lc-sources {
-        margin-top: 0.25rem; padding: 0.25rem 0.625rem; border-radius: 0.375rem;
-        background: var(--muted); font-size: 0.625rem; color: var(--content-meta);
-        line-height: 1.5;
+        margin-top: 0.25rem; padding: 0.25rem 0.5rem; border-radius: 0.375rem;
+        background: var(--muted); font-size: 0.5625rem; color: var(--content-meta);
+        line-height: 1.4;
     }
     .lc-sources a { color: var(--primary); text-decoration: none; }
     .lc-sources a:hover { text-decoration: underline; }
 
-    .lc-typing { display: flex; gap: 0.25rem; padding: 0.625rem 0.875rem; }
+    .lc-typing { display: flex; gap: 0.25rem; padding: 0.5rem 0.75rem; }
     .lc-typing span {
-        width: 0.375rem; height: 0.375rem; border-radius: 50%;
+        width: 0.3125rem; height: 0.3125rem; border-radius: 50%;
         background: var(--content-meta);
         animation: lc-bounce 1.2s ease-in-out infinite;
     }
@@ -195,35 +267,36 @@
     }
     .lc-animate { animation: lc-in 0.2s ease-out both; }
 
-    .livechat-input-area {
+    /* ===== 输入区 ===== */
+    .lc-input-area {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
+        gap: 0.375rem;
+        padding: 0.625rem 0.875rem;
         border-top: 1px solid var(--line-divider);
     }
-    .livechat-input-area input {
+    .lc-input-area input {
         flex: 1;
-        height: 2.25rem;
-        padding: 0 0.875rem;
-        border-radius: 0.625rem;
+        height: 2rem;
+        padding: 0 0.75rem;
+        border-radius: 0.5rem;
         background: var(--btn-regular-bg);
         color: var(--deep-text);
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         outline: none;
         border: 1px solid transparent;
         transition: border-color 0.2s;
     }
-    .livechat-input-area input:focus {
+    .lc-input-area input:focus {
         border-color: var(--primary);
     }
-    .livechat-input-area input::placeholder {
+    .lc-input-area input::placeholder {
         color: var(--content-meta);
     }
-    .livechat-input-area input:disabled { opacity: 0.5; }
-    .livechat-input-area button {
-        width: 2.25rem; height: 2.25rem;
-        border-radius: 0.625rem;
+    .lc-input-area input:disabled { opacity: 0.5; }
+    .lc-input-area button {
+        width: 2rem; height: 2rem;
+        border-radius: 0.5rem;
         border: none;
         display: flex; align-items: center; justify-content: center;
         color: white;
@@ -232,10 +305,10 @@
         transition: transform 0.15s;
         flex-shrink: 0;
     }
-    .livechat-input-area button:hover { transform: scale(1.05); }
-    .livechat-input-area button:active { transform: scale(0.95); }
-    .livechat-input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .livechat-input-area button svg { width: 1rem; height: 1rem; }
+    .lc-input-area button:hover { transform: scale(1.05); }
+    .lc-input-area button:active { transform: scale(0.95); }
+    .lc-input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .lc-input-area button svg { width: 0.875rem; height: 0.875rem; }
 </style>
 
 <script>
@@ -245,13 +318,13 @@
     let lcToken = null;
     let lcChatId = null;
     let lcLoading = false;
-    let lcMsgCount = 0;
 
     const widget = document.getElementById("livechat-widget");
+    const bubble = document.getElementById("lc-bubble");
+    const panel = document.getElementById("lc-panel");
     const messagesEl = document.getElementById("livechat-messages");
     const inputEl = document.getElementById("livechat-input");
     const sendBtn = document.getElementById("livechat-send");
-    const countEl = document.getElementById("livechat-count");
 
     function lcNow() {
         return new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
@@ -259,10 +332,6 @@
 
     function lcEscape(s) {
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    function lcUpdateCount() {
-        countEl.textContent = lcMsgCount > 0 ? `(${lcMsgCount})` : "";
     }
 
     function lcAddMsg(role, content, sources) {
@@ -273,7 +342,7 @@
         row.className = `lc-msg ${isMe ? "me" : ""} lc-animate`;
         let sourcesHtml = "";
         if (sources && sources.length) {
-            sourcesHtml = `<div class="lc-sources">📚 ${sources.map(s => `<a href="${s.url}" target="_blank">${lcEscape(s.title)}</a>`).join(" · ")}</div>`;
+            sourcesHtml = `<div class="lc-sources">${sources.map(s => `<a href="${s.url}" target="_blank">${lcEscape(s.title)}</a>`).join(" · ")}</div>`;
         }
         row.innerHTML = `
             <div class="lc-msg-avatar ${isMe ? "user" : "ai"}">${isMe ? "我" : "问"}</div>
@@ -284,8 +353,6 @@
             </div>`;
         messagesEl.appendChild(row);
         messagesEl.scrollTop = messagesEl.scrollHeight;
-        lcMsgCount++;
-        lcUpdateCount();
     }
 
     function lcAddTyping() {
@@ -371,25 +438,45 @@
         inputEl.focus();
     }
 
-    // 打开/关闭
-    function lcOpen() {
-        widget.classList.add("open");
-        widget.setAttribute("aria-hidden", "false");
-        inputEl.focus();
+    // 三态：hidden → bubble → panel
+    // 点击宠物：hidden ↔ bubble
+    // 点击气泡：bubble → panel
+    // 点击面板头部：panel → bubble
+    let lcState = "hidden"; // hidden | bubble | panel
+
+    function lcSetState(state) {
+        lcState = state;
+        widget.classList.remove("open", "bubble");
+        if (state === "panel") {
+            widget.classList.add("open");
+            widget.setAttribute("aria-hidden", "false");
+            inputEl.focus();
+        } else if (state === "bubble") {
+            widget.classList.add("bubble");
+            widget.setAttribute("aria-hidden", "false");
+        } else {
+            widget.setAttribute("aria-hidden", "true");
+        }
     }
-    function lcClose() {
-        widget.classList.remove("open");
-        widget.setAttribute("aria-hidden", "true");
-    }
+
     function lcToggle() {
-        widget.classList.contains("open") ? lcClose() : lcOpen();
+        if (lcState === "hidden") {
+            lcSetState("bubble");
+        } else if (lcState === "bubble") {
+            lcSetState("hidden");
+        } else {
+            lcSetState("bubble");
+        }
     }
 
     // 监听宠物点击事件
     window.addEventListener("pet:livechat:toggle", lcToggle);
 
-    // 头部点击收起
-    document.getElementById("livechat-header").addEventListener("click", lcClose);
+    // 点击气泡展开面板
+    bubble.addEventListener("click", () => lcSetState("panel"));
+
+    // 头部点击收起回气泡
+    document.getElementById("lc-panel-header").addEventListener("click", () => lcSetState("bubble"));
 
     sendBtn.addEventListener("click", lcSend);
     inputEl.addEventListener("keydown", e => {
