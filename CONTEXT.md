@@ -141,7 +141,7 @@ Content Collections（`src/content.config.ts`）：
   - **Phase 1 主入口（已通）**：`https://www.threetwoa.live` → EdgeOne CDN（不含大陆）→ 回源 Vercel；HTTPS 已部署
   - **源站**：Vercel Hobby 项目 `fork-firefly`（唯一构建）
   - **EdgeOne**：站点加速 / zones 个人版；**不做 Pages Git 构建**（OOM 路径已放弃）
-  - **部署完整 Plan**：`docs/agents/deploy-edge-cf-plan.md`（Phase 1 已通 / Phase CF 待做 / Phase ICP 后续）
+  - **部署完整 Plan**：`docs/agents/deploy-edge-cf-plan.md`（Phase 1 已通 / Phase CF 主能力已通 / Phase ICP 后续）
   - **当前权益**：EdgeOne **个人版按月续费**（体验价曾 ¥9.9，官价常见 ¥29.9；以控制台为准）含约 50GB/300万次 + 基础安全；主站防护用满 EO，大图走 CF R2 省配额。详见 `docs/agents/architecture-cost-optimized.md` §0
   - **成本优化架构**：尽量吃 CF 免费档（R2 图床）；主站 EO；现金刚需约 EO 个人版月费 → `docs/agents/architecture-cost-optimized.md`
   - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2（`firefly-comment` / `threetwoa-blog-assets`）；主站灰云指 EO。调度仅可选。见 runbook §Phase CF
