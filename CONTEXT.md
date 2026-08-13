@@ -76,6 +76,7 @@ Content Collections（`src/content.config.ts`）：
 | 前端开发 | 前端工程、主题/站点实现向 |
 | 写作 | 写作方法、叙事、成稿方法论（按需新建或选用） |
 | 早报 | 按期 AI 资讯摘要（报刊式合集 `ai-morning-brief`；不是教程、不是羊毛拆解） |
+| 开源 | 按期 GitHub 项目解读（报刊式合集 `github-weekly-hot`；不是日更图卡，不是教程） |
 | 功能 | 站点功能介绍（按需） |
 
 新建分类：先问园主中文名，再写入该帖 `category`（列表由 content 聚合，一般无需改配置）。
@@ -93,11 +94,13 @@ Content Collections（`src/content.config.ts`）：
 | 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **AI 早报（`ai-morning-brief`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **AI 早报（`ai-morning-brief`）** / **GitHub 每周热榜（`github-weekly-hot`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
 
 `wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
 
 `ai-morning-brief`：报刊式按期 AI 早报；文章 category 用词表「早报」，frontmatter 写 `collections: [ai-morning-brief]`。主源为橘鸦Juya 早报 RSS（`https://daily.juya.uk/rss.xml`）；Agent 按园主焦点筛选后发判断，不转载橘鸦全文。B 站稿只链原页，禁转载口播。
+
+`github-weekly-hot`：报刊式按期 GitHub 热榜；文章 category 用词表「开源」，frontmatter 写 `collections: [github-weekly-hot]`，可加 `sourceLink` 指向该期 `{n}.html`。主源为 IT咖啡馆官方 Atom（`https://itcoffee66.github.io/githubweekly/feed.xml`，不要订仓库根 `rss.xml`）。周刊只当项目目录；正文只抽仓库名 + GitHub URL，判断来自 README / 许可证 / 最近 push。禁止搬 `_weekly/*.md`、口播、封面。B 站只作片单。已有日更卡 `github-trending-11-cards-*` 不要塞进本合集。
 
 `csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记；frontmatter 写 `collections: [csdn-tech-tutorials]`。
 ## Obsidian 写作源（固定）

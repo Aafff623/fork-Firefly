@@ -69,6 +69,7 @@ pnpm new-d <content>
 | `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT/公众号→Knowledge 素材（`todo/{Theme}/{facet}/{日期_短题}/`）；来源+Theme 双索引见 `references/source-modules.md` + `theme-taxonomy.md`；公众号见 `wechat-mp.md`；不直接发帖 |
 | `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo 素材（含 Theme 树与扁平遗留）→`src/content/posts/<slug>`；无参数=全部，带主题=仅指定；发布后移入 Archive；收尾接 `site-cascade` |
 | `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 橘鸦 RSS → 按园主焦点筛 3–7 条写成合集一期（不转载全文）；默认 `_draftbox/`；用户说「发」才出箱 + validate + `site-cascade` |
+| `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | IT咖啡馆周刊 RSS 当目录 → 抽仓库 URL，对 GitHub 自写合集一期（不搬原文）；默认 `_draftbox/`；用户说「发」才出箱 + validate + `site-cascade` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
 | `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create`；产品版从 `1.0.0` 起；本地中英预览见 `preview-release.html` |

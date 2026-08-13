@@ -12,7 +12,8 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 当前嵌套：
  * - `ai-coding-tools` ← tool-claude-code / kimi / opencode / cursor / pi
  * - `course-geektime` ← 四门极客时间课
- * 一级另含：`wool-freebies`（薅羊毛专区）、`ai-morning-brief`（AI 早报）等
+ * 一级另含：`wool-freebies`（薅羊毛专区）、`ai-morning-brief`（AI 早报）、
+ * `github-weekly-hot`（GitHub 每周热榜）等
  */
 export const collectionsConfig: CollectionsConfig = {
 	items: [
@@ -185,6 +186,16 @@ export const collectionsConfig: CollectionsConfig = {
 				"按期发行的 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。",
 			emoji: "🗞️",
 			cover: "/assets/collections/ai-morning-brief.jpg",
+		},
+
+		// ── GitHub 每周热榜（一级 · 报刊式按期）──
+		{
+			slug: "github-weekly-hot",
+			name: "GitHub 每周热榜",
+			description:
+				"按期自写的开源项目解读：项目列表可参考 IT咖啡馆周刊目录，正文只对 GitHub 公开页下判断。B 站视频只作片单。",
+			emoji: "⭐",
+			cover: "/assets/collections/github-weekly-hot.jpg",
 		},
 
 		// ── CSDN 技术教程（一级）──
