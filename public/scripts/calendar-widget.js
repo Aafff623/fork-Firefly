@@ -38,7 +38,22 @@
       .map(function (u) { return String(u || "").trim(); })
       .filter(Boolean);
     if (!gifs.length) {
-      gifs = ["/assets/images/widgets/calendar/02.gif"];
+      gifs = ["/assets/images/widgets/calendar/voxel/rose-cat-gardener.gif"];
+    }
+
+    function stillUrl(url) {
+      return String(url).replace(/\.gif(\?.*)?$/i, ".webp$1");
+    }
+
+    const reduceMotion = Boolean(
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
+    if (reduceMotion) {
+      const still = stillUrl(gifs[0]);
+      if (img.getAttribute("src") !== still) {
+        img.setAttribute("src", still);
+      }
+      return;
     }
 
     const cache = window.__calendarGifCache || (window.__calendarGifCache = Object.create(null));
@@ -93,6 +108,15 @@
       }
     }
 
+    function stillUrl(url) {
+      return String(url).replace(/\.gif(\?.*)?$/i, ".webp$1");
+    }
+
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      applyUrl(stillUrl(gifs[0]));
+      return;
+    }
+
     /** 会话期预热上限：单页最多请求 N 张不同 GIF，达到后仅在本已缓存集合内轮换 */
     const WARM_LIMIT = 3;
     function warmPreload(url) {
@@ -140,6 +164,8 @@
     let idx = 0;
     let switching = false;
     let primed = false;
+    let inView = false;
+    let interactionPaused = false;
 
     // 首帧：HTML 已写 src；首次进入视口才预热，失败则换下一张
     function primeFirstFrames() {
@@ -171,6 +197,7 @@
       if (window.__calendarCoverRotateTimer) {
         clearInterval(window.__calendarCoverRotateTimer);
       }
+      if (!inView || interactionPaused) return;
       window.__calendarCoverRotateTimer = setInterval(function () {
         if (switching) return;
         // 离屏不轮询，省带宽/解码
@@ -215,16 +242,39 @@
     }
 
     function enterView() {
+      inView = true;
       primeFirstFrames();
       startTimer();
     }
 
     function leaveView() {
+      inView = false;
       if (window.__calendarCoverRotateTimer) {
         clearInterval(window.__calendarCoverRotateTimer);
         window.__calendarCoverRotateTimer = null;
       }
     }
+
+    function pauseForInteraction() {
+      interactionPaused = true;
+      if (window.__calendarCoverRotateTimer) {
+        clearInterval(window.__calendarCoverRotateTimer);
+        window.__calendarCoverRotateTimer = null;
+      }
+    }
+
+    function resumeAfterInteraction() {
+      interactionPaused = false;
+      startTimer();
+    }
+
+    // 自动轮播在悬停或键盘焦点进入时暂停，避免内容在阅读/操作中切换。
+    cover.addEventListener("mouseenter", pauseForInteraction);
+    cover.addEventListener("mouseleave", resumeAfterInteraction);
+    cover.addEventListener("focusin", pauseForInteraction);
+    cover.addEventListener("focusout", function (event) {
+      if (!cover.contains(event.relatedTarget)) resumeAfterInteraction();
+    });
 
     if (typeof IntersectionObserver === "function") {
       const observer = new IntersectionObserver(function (entries) {

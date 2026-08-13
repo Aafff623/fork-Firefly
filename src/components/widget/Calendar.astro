@@ -70,29 +70,23 @@ const postUrlPrefix = url("/posts/");
   style={style}
   contentPadding={false}
 >
-  <!-- 笔记本日历：对照 bili-goat widgets/日历（GIF 封面 + 活页环 + 珊瑚点缀） -->
-  <!-- 首帧 02.gif 改 lazy：日历在侧栏非 LCP 元素，去掉 preload/eager 避免抢首屏带宽；
+  <!-- 笔记本日历：3D 像素角色 GIF 封面 + 活页环 + 珊瑚点缀 -->
+  <!-- 首帧保持 lazy：日历在侧栏非 LCP 元素，去掉 preload/eager 避免抢首屏带宽；
        calendar-widget.js 的 IntersectionObserver 会在进视口时 warmPreload 兜底加载 -->
   <div class="calendar-shell">
     <header
       class="calendar-cover"
       data-cover-gifs={JSON.stringify([
-        "/assets/images/widgets/calendar/02.gif",
-        "/assets/images/widgets/calendar/03.gif",
-        "/assets/images/widgets/calendar/09.gif",
-        "/assets/images/widgets/calendar/08.gif",
-        "/assets/images/widgets/calendar/04.gif",
-        "/assets/images/widgets/calendar/06.gif",
-        "/assets/images/widgets/calendar/07.gif",
-        "/assets/images/widgets/calendar/01.gif",
-        "/assets/images/widgets/calendar/05.gif",
+        "/assets/images/widgets/calendar/voxel/rose-cat-gardener.gif",
+        "/assets/images/widgets/calendar/voxel/cyan-data-cube.gif",
+        "/assets/images/widgets/calendar/voxel/violet-firefly-lantern.gif",
       ])}
-      data-cover-interval-ms="4500"
+      data-cover-interval-ms="5200"
     >
       <div class="calendar-cover-media" aria-hidden="true">
         <img
           class="calendar-cover-img"
-          src="/assets/images/widgets/calendar/02.gif"
+          src="/assets/images/widgets/calendar/voxel/rose-cat-gardener.gif"
           alt=""
           width="360"
           height="200"

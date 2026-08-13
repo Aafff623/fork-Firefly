@@ -1,31 +1,33 @@
-# 日历封面：像素粉发 idle · 认可观感
+# 日历封面：3D 像素数字花园 · 角色轮播
 
 ## 灵感来源
 
 - 对话：园主认可侧栏笔记本日历封面的一帧截图（2026-08-03）
 - 剪贴板原图：`C:\Users\Lenovo\AppData\Local\quickclipboard\clipboard_images\f3bad864b941771b.png`
 - 入库截图：[`assets/ref-loop-ok-2026-08-03.png`](./assets/ref-loop-ok-2026-08-03.png)
-- 当时画面素材：`public/assets/images/widgets/calendar/06.gif`（像素粉发角色 · 无缝闭环）
+- 旧参考素材：`public/assets/images/widgets/calendar/06.gif`（2D 像素粉发角色，已由新资产替换）
+- 2026-08-13 维护结论：不再展示风景封面；统一为 3D voxel / chibi 角色短循环
 
 ## 想要的感觉
 
-- **像素动漫人物**：圆润 16-bit / chibi，粉发双丸子，平静表情；主体居中偏上
-- **背景克制**：柔粉紫天空 + 少量樱花点，不抢前景，方便叠白字与翻月按钮
-- **与日历 UI 合拍**：浅色封面底 + 半透明日期区，动图像「封面纸」而不是另贴海报
-- **循环观感**：idle 闭环（轻浮 / 呼吸），单圈内不突然跳帧；多图可轮询
+- **3D 像素角色**：圆润 voxel / chibi，以旧像素人物的粉、青、紫原型为谱系，不复刻具体形象
+- **日期安全区**：角色放在右侧，左侧维持低纹理、低亮度负空间，保证日期与翻月按钮可读
+- **背景克制**：花园工作台、数据门与萤火灯笼只服务角色叙事，不使用纯风景封面
+- **循环观感**：锁定机位的 idle 闭环（呼吸、眨眼、微光），单圈内不突然跳帧
+- **性能边界**：360×202、10fps、约 3.1s、128 色；单张目标不超过 300 KB
 
-气质关键词：`soft · pixel · sakura · calm · calendar-banner-safe`
+气质关键词：`voxel · character-led · calm · garden-tech · calendar-banner-safe`
 
 ## 可能落点
 
 - 组件：`src/components/widget/Calendar.astro` 封面区（`.calendar-cover-media`）
-- 资产：`public/assets/images/widgets/calendar/*.gif`
-- 轮询：`data-cover-gifs` + 切换间隔（现约 4.5s）
-- 生成链路（若再扩池）：MiniMax 视频 → `scripts/video_to_seamless_gif.py`（ping-pong + xfade）
-- 提示词：`firefly-minimax-media` · prompt-craft **style-taste 17 卡通人物风**（与 01 像素场景区分；合集卡同族）
+- 资产：`public/assets/images/widgets/calendar/voxel/`
+- 轮询：`data-cover-gifs` + 切换间隔（现 5.2s）
+- 生成链路：角色概念图 → MiniMax `MiniMax-Hailuo-2.3` 图生视频 → `scripts/video_to_seamless_gif.py`（xfade）
+- 资产说明与复现参数：[`public/assets/images/widgets/calendar/voxel/README.md`](../../../public/assets/images/widgets/calendar/voxel/README.md)
 
-## 开放问题
+## 扩池规则
 
-- 01–04 旧 GIF 是否也要重做成同级无缝闭环，还是只保留轮询即可？
-- 轮询顺序 / 间隔是否按月份或节日加权（例如 520 优先人物向）？
-- 暗色模式下 scrim 是否需单独调一版参考截图？
+- 新封面必须是角色主导的 3D 像素场景，不得加入纯风景图。
+- 左侧 42% 保持日期安全区；运镜只允许锁定机位的微幅景深变化。
+- 入池前同时检查首尾闭环、浅色/暗色模式可读性、离屏停播和单张 300 KB 预算。
