@@ -1,46 +1,97 @@
 {
-  "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "installCommand": "pnpm install",
-  "framework": "astro",
-  "redirects": [
-    {
-      "source": "/archive/:path*",
-      "destination": "/timeline/:path*",
-      "statusCode": 308
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    },
-    {
-      "source": "/_astro/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ],
-  "cleanUrls": true
+	"buildCommand": "pnpm build",
+	"outputDirectory": "dist",
+	"installCommand": "pnpm install",
+	"framework": "astro",
+	"redirects": [
+		{
+			"source": "/archive/:path*",
+			"destination": "/timeline/:path*",
+			"statusCode": 308
+		}
+	],
+	"headers": [
+		{
+			"source": "/(.*)",
+			"headers": [
+				{
+					"key": "X-Content-Type-Options",
+					"value": "nosniff"
+				},
+				{
+					"key": "X-Frame-Options",
+					"value": "SAMEORIGIN"
+				},
+				{
+					"key": "X-XSS-Protection",
+					"value": "1; mode=block"
+				},
+				{
+					"key": "Referrer-Policy",
+					"value": "strict-origin-when-cross-origin"
+				},
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=0, must-revalidate"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=3600, stale-while-revalidate=86400"
+				}
+			]
+		},
+		{
+			"source": "/api/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "private, no-store"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "private, no-store"
+				}
+			]
+		},
+		{
+			"source": "/_astro/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=31536000, immutable"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=31536000, immutable"
+				}
+			]
+		},
+		{
+			"source": "/pagefind/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=0, must-revalidate"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/assets/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=604800, stale-while-revalidate=2592000"
+				}
+			]
+		}
+	],
+	"cleanUrls": true
 }

@@ -3,5 +3,43 @@
 	"installCommand": "pnpm install",
 	"buildCommand": "EDGEONE=1 pnpm run build:edgeone",
 	"outputDirectory": ".edgeone",
-	"nodeVersion": "22.17.1"
+	"nodeVersion": "22.17.1",
+	"headers": [
+		{
+			"source": "/api/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "private, no-store"
+				}
+			]
+		},
+		{
+			"source": "/_astro/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=31536000, immutable"
+				}
+			]
+		},
+		{
+			"source": "/pagefind/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		},
+		{
+			"source": "/assets/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		}
+	]
 }
