@@ -199,7 +199,7 @@ Content Collections（`src/content.config.ts`）：
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
 | 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；浏览侧栏失衡时分类折叠 + 宠钉日历（`sidebarBalance`）；与 Spine/Live2D 互斥；**点击触发问答浮窗**（见下） |
-| 问答助手 | 基于 **MaxKB** 的站点 RAG：`/ask` 为 HeroUI Pro React 岛 + 同源 `/api/ask`（本站检索 + SSE）；桌宠点击弹 `LiveChatWidget`（实现路径可能仍直连本机 MaxKB）；上云见 `docs/ask-maxkb-cloud-plan.md`；**无 `siteConfig.pages.ask` 开关**（文件存在性生效）；浮窗强依赖桌宠 `enable` |
+| 问答助手 | 基于 **MaxKB** 的站点 RAG：`/ask` 为 HeroUI Pro React 岛 + 同源 `/api/ask`（本站检索 + SSE）；桌宠点击弹 `LiveChatWidget`（仍直连本机 MaxKB）。**`siteConfig.pages.ask`**：现行 `!import.meta.env.PROD`（DEV 开 / 生产关）。上云见 `docs/ask-maxkb-cloud-plan.md`；浮窗强依赖桌宠 `enable` 且仅 ask 开时挂载 |
 | 站点音乐 | 默认 `musicConfig.mode=local`（ADR-0002）；导航栏音符=音频面板，三角播放=横幅背景视频，二者互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
@@ -208,7 +208,8 @@ Content Collections（`src/content.config.ts`）：
 
 ## 已知缺口（非阻塞）
 
-- demo 文章 / 原作者 Bangumi·追番 ID 仍在配置中，后续可关页面或改 ID
+- 主题 demo 帖已 `draft: true`（生产列表隐藏，DEV 仍可开）；Bangumi 页已关，追番 ID 仍可后续改
+- 统计 GA / Clarity / Umami / 51la 配置全空，等园主给 ID 再填 `analyticsConfig`（不造假 ID）
 - 评论系统现行 `type: "waline"`（ADR-0001）；勿再按 `none` 理解
 - 音乐默认 `local`（ADR-0002）；勿再默认假定公共 Meting 在线
 - 本地 pnpm 若走 npmmirror，部分包可能 404；安装可用官方 registry

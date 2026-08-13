@@ -1,5 +1,7 @@
 # Firefly 性能优化专项 · 交接文档(Kimi K3 接手)
 
+> **历史快照，已由 [`perf-optimization-2026-08-13-v3.md`](./perf-optimization-2026-08-13-v3.md) 接替。** 本文保留 V2 决策与旧分支证据，不再代表 `master` 当前验收状态。
+
 > 面向接手的 Kimi K3:这是 Firefly 博客性能优化专项的完整上下文。读完本文即可无缝接续。
 > 最后更新:2026-08-10｜分支:`optimize-blog-performance`｜交接方:Claude Code(执行方)+ 用户(园主)
 
