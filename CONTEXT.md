@@ -75,6 +75,7 @@ Content Collections（`src/content.config.ts`）：
 | skill 测评 | Skill / MCP / 插件测评 |
 | 前端开发 | 前端工程、主题/站点实现向 |
 | 写作 | 写作方法、叙事、成稿方法论（按需新建或选用） |
+| 早报 | 按期 AI 资讯摘要（报刊式合集 `ai-morning-brief`；不是教程、不是羊毛拆解） |
 | 功能 | 站点功能介绍（按需） |
 
 新建分类：先问园主中文名，再写入该帖 `category`（列表由 content 聚合，一般无需改配置）。
@@ -92,9 +93,11 @@ Content Collections（`src/content.config.ts`）：
 | 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **AI 早报（`ai-morning-brief`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
 
 `wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
+
+`ai-morning-brief`：报刊式按期 AI 早报；文章 category 用词表「早报」，frontmatter 写 `collections: [ai-morning-brief]`。主源为橘鸦Juya 早报 RSS（`https://daily.juya.uk/rss.xml`）；Agent 按园主焦点筛选后发判断，不转载橘鸦全文。B 站稿只链原页，禁转载口播。
 
 `csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记；frontmatter 写 `collections: [csdn-tech-tutorials]`。
 ## Obsidian 写作源（固定）
@@ -143,8 +146,9 @@ Content Collections（`src/content.config.ts`）：
   - **EdgeOne**：站点加速 / zones 个人版；**不做 Pages Git 构建**（OOM 路径已放弃）
   - **部署完整 Plan**：`docs/agents/deploy-edge-cf-plan.md`（Phase 1 已通 / Phase CF 主能力已通 / Phase ICP 后续）
   - **当前权益**：EdgeOne **个人版按月续费**（体验价曾 ¥9.9，官价常见 ¥29.9；以控制台为准）含约 50GB/300万次 + 基础安全；主站防护用满 EO，大图走 CF R2 省配额。详见 `docs/agents/architecture-cost-optimized.md` §0
+  - **新图纪律**：封面与正文大图优先 `https://img.threetwoa.live`（R2 桶 `firefly-comment`），禁止再把大 jpg 推进 git；存量 pack 另开任务
   - **成本优化架构**：尽量吃 CF 免费档（R2 图床）；主站 EO；现金刚需约 EO 个人版月费 → `docs/agents/architecture-cost-optimized.md`
-  - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2（`firefly-comment` / `threetwoa-blog-assets`）；主站灰云指 EO。调度仅可选。见 runbook §Phase CF
+  - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2 桶 `firefly-comment`（`https://img.threetwoa.live`）。`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床。主站灰云指 EO。调度仅可选。见 runbook §Phase CF
   - **Phase ICP（后续优化）**：备案后 EdgeOne 含大陆节点 → `docs/agents/edgeone-mainland-icp-plan.md`
   - **备用直链**：`https://fork-firefly.vercel.app`（国内常因 DNS 污染打不开）
   - 旧域 `threetwoa.me` 不续

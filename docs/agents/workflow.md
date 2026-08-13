@@ -189,6 +189,10 @@ Obsidian 笔记（固定 vault，见 CONTEXT.md）
 
 只有确认官方 / 网图都没有，才动生图；动图尤甚——官方 README 的预览 gif 常是现成最优解。
 
+### 大图落盘（R2，不进 git）
+
+封面与正文大图优先走 Cloudflare R2（`img.` 子域，见 `CONTEXT.md` 部署事实 / `docs/agents/architecture-cost-optimized.md`）。**禁止**再把大 jpg/png/webp commit 进 `src/content/posts/**` 或 `public/` 撑 git pack。本地对照用的小图、LQIP、图标仍可入库。存量大图不在本条里搬迁，另开任务。
+
 ### 正文配图 / 索引帖信息图（MiniMax）
 
 索引帖、教程目录帖的「章节小长条 / 信息图」与卡片封面不同：要按章节主题拆元素与指向关系，不是吉祥物换姿势。**画风走 style-taste，不锁死单一材质**（曾误把「水彩」写成默认，已废止）。

@@ -12,7 +12,7 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 当前嵌套：
  * - `ai-coding-tools` ← tool-claude-code / kimi / opencode / cursor / pi
  * - `course-geektime` ← 四门极客时间课
- * 一级另含：`wool-freebies`（薅羊毛专区）等
+ * 一级另含：`wool-freebies`（薅羊毛专区）、`ai-morning-brief`（AI 早报）等
  */
 export const collectionsConfig: CollectionsConfig = {
 	items: [
@@ -175,6 +175,16 @@ export const collectionsConfig: CollectionsConfig = {
 				"各厂商 AI 订阅、模型限免、申请试用与积分活动的可维护情报汇总（以博客文章收录）。",
 			emoji: "🎟️",
 			cover: "/assets/collections/wool-freebies.jpg",
+		},
+
+		// ── AI 早报（一级 · 报刊式按期）──
+		{
+			slug: "ai-morning-brief",
+			name: "AI 早报",
+			description:
+				"按期发行的 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。",
+			emoji: "🗞️",
+			cover: "/assets/collections/ai-morning-brief.jpg",
 		},
 
 		// ── CSDN 技术教程（一级）──
