@@ -1,6 +1,20 @@
 > [!IMPORTANT]
-> **This repository’s canonical README is the Chinese [`README.md`](README.md)** (threetwoa's standalone Firefly blog: stack inventory, workflows, live site docs).  
-> The English text below is the **upstream CuteLeaf/Firefly theme** README kept for lineage reference — versions and demo links there may not match this fork.
+> **This repository's canonical and current README is the Chinese [`README.md`](README.md).** It documents threetwoa's standalone Firefly fork, its actual stack, workflows, performance evidence, and production topology.
+>
+> Production: <https://www.threetwoa.live>. Vercel fallback: <https://fork-firefly.vercel.app>. Delivery path: EdgeOne CDN → Vercel origin, with Cloudflare DNS and R2 image storage.
+> The English text below is the upstream CuteLeaf/Firefly README kept only for lineage reference. Its versions, defaults, and demo links do not describe this fork.
+
+## Current fork snapshot
+
+| Area | Current state |
+| --- | --- |
+| Core | Astro 7.1.3 · Svelte 5 · React 19 · TypeScript 6 · Tailwind CSS 4 · pnpm 9.14.4 |
+| Publishing | Markdown / MDX, Content Collections, Pagefind, RSS, Sitemap, Obsidian and Knowledge agent workflows |
+| Product | Dynamic timeline, Gallery, Waline, local music, SpritePet, responsive mobile reductions, optional Ask / LiveChat |
+| Delivery | `www.threetwoa.live` through EdgeOne CDN to Vercel; Cloudflare manages authoritative DNS and `img.threetwoa.live` R2 assets |
+| Operations | Production follows `master`; local checks, Vercel readiness, primary-domain verification, and R2 object checks are separate gates |
+
+Use [`README.md`](README.md), the [Wiki](https://github.com/Aafff623/fork-Firefly/wiki), and [`CONTEXT.md`](CONTEXT.md) for current instructions.
 
 ---
 

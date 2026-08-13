@@ -8,7 +8,7 @@
 
 <!-- Badges: 两行紧凑 · 无分组标题（避免三栏段落外边距把信息密度撑稀） -->
 <p align="center">
-  <a href="https://fork-firefly.vercel.app"><img src="https://img.shields.io/website?url=https%3A%2F%2Ffork-firefly.vercel.app&up_message=online&down_message=down&style=flat&label=site&labelColor=18181b&color=22c55e" alt="Site status"></a>
+  <a href="https://www.threetwoa.live"><img src="https://img.shields.io/website?url=https%3A%2F%2Fwww.threetwoa.live&up_message=online&down_message=down&style=flat&label=site&labelColor=18181b&color=22c55e" alt="Site status"></a>
   <a href="https://github.com/Aafff623/fork-Firefly/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Aafff623/fork-Firefly?style=flat&labelColor=18181b&color=a1a1aa" alt="License"></a>
   <a href="https://github.com/Aafff623/fork-Firefly/commits/master"><img src="https://img.shields.io/github/last-commit/Aafff623/fork-Firefly?style=flat&logo=github&logoColor=white&labelColor=18181b&color=71717a" alt="Last commit"></a>
   <img src="https://img.shields.io/badge/Firefly-v6.15.3-18181b?style=flat&labelColor=27272a&color=c084fc" alt="Firefly version">
@@ -19,7 +19,9 @@
   <img src="https://img.shields.io/badge/TypeScript-6-18181b?style=flat&logo=typescript&logoColor=3178C6&labelColor=27272a" alt="TypeScript 6">
   <img src="https://img.shields.io/badge/Svelte-5-18181b?style=flat&logo=svelte&logoColor=FF3E00&labelColor=27272a" alt="Svelte 5">
   <img src="https://img.shields.io/badge/Tailwind-4-18181b?style=flat&logo=tailwindcss&logoColor=06B6D4&labelColor=27272a" alt="Tailwind CSS 4">
-  <img src="https://img.shields.io/badge/Deploy-Vercel-18181b?style=flat&logo=vercel&logoColor=white&labelColor=27272a" alt="Deploy Vercel">
+  <img src="https://img.shields.io/badge/Origin-Vercel-18181b?style=flat&logo=vercel&logoColor=white&labelColor=27272a" alt="Vercel origin">
+  <img src="https://img.shields.io/badge/CDN-EdgeOne-18181b?style=flat&labelColor=27272a&color=00a4ff" alt="EdgeOne CDN">
+  <img src="https://img.shields.io/badge/Images-Cloudflare_R2-18181b?style=flat&logo=cloudflare&logoColor=F38020&labelColor=27272a" alt="Cloudflare R2 images">
   <a href="https://github.com/Aafff623/fork-Firefly"><img src="https://img.shields.io/badge/repo-Aafff623%2Ffork--Firefly-18181b?style=flat&logo=github&logoColor=white&labelColor=27272a" alt="GitHub repo"></a>
 </p>
 
@@ -41,7 +43,7 @@
   · <a href="#architecture">Architecture</a>
   · <a href="#performance">Performance</a>
   · <a href="#tech-stack">Tech stack</a>
-  · <a href="https://fork-firefly.vercel.app">Live</a>
+  · <a href="https://www.threetwoa.live">Live</a>
   · <a href="https://github.com/Aafff623/fork-Firefly">Source</a>
   · <a href="#key-docs-and-assets">Docs</a>
 </p>
@@ -49,7 +51,7 @@
 ---
 
 > [!TIP]
-> 本仓源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork network。保留上游主题的内容与页面能力，并叠加本仓品牌配置、组件、交互与 Vercel 交付约定。线上：<https://fork-firefly.vercel.app>
+> 本仓源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork network。保留上游主题的内容与页面能力，并叠加本仓品牌配置、组件、交互与多平台交付约定。主入口：<https://www.threetwoa.live>；Vercel 备用：<https://fork-firefly.vercel.app>。
 
 ## Project
 
@@ -64,7 +66,7 @@
 | Content | `posts` / `dynamic` / `spec` Content Collections |
 | Interaction | Svelte islands · Swup · progressive enhancement |
 | Integrations | Waline · Iconify · SpritePet · local music |
-| Deploy | Vercel 默认（`fork-firefly`）· Cloudflare adapter 可选 |
+| Delivery | `www.threetwoa.live` → EdgeOne CDN → Vercel origin；Cloudflare DNS + R2 图床 |
 
 ### Modules
 
@@ -74,15 +76,15 @@
 | Content | 文章 / 动态 / About·Friends 等特殊页；frontmatter schema | `src/content/` · `src/content.config.ts` |
 | Pages & layout | 路由页、网格壳、列表与文章页 | `src/pages/` · `src/layouts/` |
 | Components | 侧栏 widget、阅读控件、相册、动态时间线等 | `src/components/` |
+| Ask | HeroUI Pro 问答页、桌宠 LiveChat、同源安全代理与站内检索 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Plugins | KaTeX、Mermaid(merman)、PlantUML、Wiki Link、directive | `src/plugins/` |
 | Agent skills | 发文双路径、级联索引、MiniMax 媒体、GSAP | `.cursor/skills/` |
 | Scripts | LQIP、字体子集、new-post / new-d、Showcase 截图 | `scripts/` |
 | Docs | CONTEXT / ADR / workflow / inventory（非运行时） | `docs/` · 根目录治理文件 |
 
-<details>
-<summary><strong>Key docs and assets</strong></summary>
-
 <a id="key-docs-and-assets"></a>
+
+### Key docs and assets
 
 | 入口 | 用途 |
 | --- | --- |
@@ -93,13 +95,12 @@
 | [docs/knowledge/style-and-assets-inventory.md](docs/knowledge/style-and-assets-inventory.md) | 视觉 · 字体 · 图标 · 桌宠 · 曲库 · 静态资源 |
 | [docs/adr/](docs/adr/) | 长期架构决策（Waline / 本地音乐等） |
 | [docs/outputs/commit-history/](docs/outputs/commit-history/) | 已完成改动与视觉演进摘要 |
+| [docs/outputs/handoff/perf-optimization-2026-08-13-v3.md](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md) | 最新性能、移动端与兼容性验收 |
 | [assets/images/readme/](assets/images/readme/) | Banner、Features、Integrations、Workflow、架构 / 技术栈图、Showcase |
 | [preview-readme.html](preview-readme.html) | README 本地预览壳（**8090**；非产品站） |
 | [capture-readme-showcase.py](scripts/capture-readme-showcase.py) | Playwright 重截 README Showcase |
 
 阅读顺序：`README` → `CONTEXT` → `AGENTS` → inventory → `docs/adr/` → `src/config/` / `src/content/`。
-
-</details>
 
 ## Features
 
@@ -113,10 +114,11 @@
 | --- | --- | --- |
 | Publishing | MD/MDX 成帖；草稿 / 置顶 / 密码文；RSS · Sitemap · OG · Pagefind | `src/content/` · `astro.config.mjs` |
 | Reading | list / grid / waterfall；Index-First TOC；亮暗色 / 色相 / 壁纸 | `PostPage.astro` · `displaySettingsConfig.ts` |
-| Performance | Swup 泄漏治理 · 图片按需物化 · 首屏 LCP 渲染门控优化 | `src/lib/page-lifecycle.ts` · `MainGridLayout.astro` |
+| Performance | Swup 泄漏治理 · 图片按需物化 · 移动端组件裁剪 · 首屏 LCP 渲染门控 | `src/lib/page-lifecycle.ts` · `MainGridLayout.astro` |
+| Ask | `/ask` HeroUI Pro 聊天岛、站内检索、SSE、桌宠 LiveChat；默认生产关闭 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Personal | Dynamic 时间线、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
 | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、站点统计、桌宠 | `src/components/widget/` |
-| Delivery | Vercel 默认；评论 / COS / 分析按配置启用 | `vercel.json` · `.env.example` |
+| Delivery | EdgeOne CDN 主入口、Vercel 源站与回滚、Cloudflare R2 外置大图 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
 
 <details>
 <summary>Features 详表（Area · Capability · entry）</summary>
@@ -138,8 +140,8 @@
 | Integration | Comments | Waline（ADR-0001）：表情预设、Giphy、访客统计；`stickerSuggest` 已集成默认关 | `src/config/commentConfig.ts` |
 | Integration | Icons | `astro-icon` + Iconify（lucide 主，兼 fa7 / simple-icons / mdi / mingcute / material-symbols） | `astro.config.mjs` |
 | Integration | Pets & music | SpritePet 默认开；Live2D / Spine 备选互斥；音乐默认 local（ADR-0002） | `petConfig.ts` · `musicConfig.ts` · `pioConfig.ts` |
-| Integration | Media services | 评论大图 COS 代理上传；Fancybox 灯箱 | `.env.example` · `src/pages/api/` |
-| Integration | Delivery | Vercel 默认部署，Cloudflare adapter 可选 | `vercel.json` · `wrangler.jsonc` |
+| Integration | Media services | 评论大图优先 Cloudflare R2，保留 COS 兼容；Fancybox 灯箱 | `.env.example` · `src/pages/api/comment-image.ts` |
+| Integration | Delivery | EdgeOne CDN → Vercel origin；Cloudflare 管 DNS 与 R2 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
 | Integration | Localization | `zh_CN`、`zh_TW`、`en`、`ja`、`ru`、`ko` | `src/config/siteConfig.ts` |
 
 </details>
@@ -159,7 +161,7 @@
 | 音乐 | **local** 自托管曲库 | Meting API 备源 | `musicConfig.ts` · [ADR-0002](docs/adr/0002-local-music-default.md) |
 | 图标 | Iconify + **Lucide** 为主 | fa7 / simple-icons / mdi / mingcute / material-symbols | `astro.config.mjs` |
 | 动态源 | 本地 `content/dynamic` | 可选 Memos API | `dynamicConfig` |
-| 媒体 | Fancybox；评论大图走 COS 代理 | 未配密钥则大图不可用 | `/api/comment-image` · `.env.example` |
+| 媒体 | Fancybox；评论大图优先走 Cloudflare R2 | COS 兼容链保留；未配存储变量则上传不可用 | `/api/comment-image` · `.env.example` |
 
 <details>
 <summary>Integrations 完整对照（表情 · GIF · 分析等）</summary>
@@ -170,7 +172,7 @@
 | 表情包 | `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji | CDN 可换包 | `commentConfig.waline.emoji` |
 | GIF | Waline 客户端默认 **Giphy** search | 高流量时可换自有 API Key | `Waline.astro` |
 | 梗图建议 | `stickerSuggest` **已接线、默认 `enabled: false`** | 可开词表；可选 DeepSeek agent | `/api/comment-sticker-suggest` |
-| 评论大图 | 腾讯云 **COS** 服务端代理（绕过 128KB Base64） | 未配密钥则大图不可用 | `/api/comment-image` · `.env.example` |
+| 评论大图 | Cloudflare **R2** 服务端代理（绕过 128KB Base64） | COS 兼容链保留；删除 / 取消会同步清对象 | `/api/comment-image` · `.env.example` |
 | 图标 | **Iconify** via `astro-icon`；UI 以 **Lucide** 为主 | fa7 / simple-icons / mdi / mingcute / material-symbols | `astro.config.mjs` → `icon({ include })` |
 | 桌宠 | **SpritePet** 默认开（双 DeepSeek 皮） | Live2D / Spine；三者互斥 | [`petConfig.ts`](src/config/petConfig.ts) · `pioConfig.ts` |
 | 音乐 | **local** 自托管曲库 | Meting API 备源 | [`musicConfig.ts`](src/config/musicConfig.ts) · [ADR-0002](docs/adr/0002-local-music-default.md) |
@@ -204,19 +206,19 @@ python scripts/capture-readme-showcase.py
       <a href="assets/images/readme/showcase-home.png"><img alt="Home" src="assets/images/readme/showcase-home.png" width="100%"></a>
       <br><strong>Home</strong><br>
       <sub>文章卡片 · 双侧栏 · 壁纸横幅 · 分类条</sub><br>
-      <a href="https://fork-firefly.vercel.app/">Open</a>
+      <a href="https://www.threetwoa.live/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-post.png"><img alt="Post" src="assets/images/readme/showcase-post.png" width="100%"></a>
       <br><strong>Post</strong><br>
       <sub>Index-First TOC · 封面 · Markdown 扩展 · 公告礼盒</sub><br>
-      <a href="https://fork-firefly.vercel.app/posts/claude-code-windows-beautify/">Open</a>
+      <a href="https://www.threetwoa.live/posts/claude-code-windows-beautify/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-dynamic.png"><img alt="Dynamic" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
       <br><strong>Dynamic</strong><br>
       <sub>朋友圈式短动态 · 本地 content 时间线 · 一键发布</sub><br>
-      <a href="https://fork-firefly.vercel.app/dynamic/">Open</a>
+      <a href="https://www.threetwoa.live/dynamic/">Open</a>
     </td>
   </tr>
   <tr>
@@ -224,19 +226,19 @@ python scripts/capture-readme-showcase.py
       <a href="assets/images/readme/showcase-timeline.png"><img alt="Timeline" src="assets/images/readme/showcase-timeline.png" width="100%"></a>
       <br><strong>Timeline</strong><br>
       <sub>按年折叠 · 行列表 · 内容索引</sub><br>
-      <a href="https://fork-firefly.vercel.app/timeline/">Open</a>
+      <a href="https://www.threetwoa.live/timeline/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-about.png"><img alt="About" src="assets/images/readme/showcase-about.png" width="100%"></a>
       <br><strong>About</strong><br>
       <sub>Quote-Led · Now / Agent / 竞赛 · 纸质骑士分镜翻页</sub><br>
-      <a href="https://fork-firefly.vercel.app/about/">Open</a>
+      <a href="https://www.threetwoa.live/about/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-gallery.png"><img alt="Gallery" src="assets/images/readme/showcase-gallery.png" width="100%"></a>
       <br><strong>Gallery</strong><br>
       <sub>作品集手风琴 · 无限画布双模式</sub><br>
-      <a href="https://fork-firefly.vercel.app/gallery/">Open</a>
+      <a href="https://www.threetwoa.live/gallery/">Open</a>
     </td>
   </tr>
 </table>
@@ -252,7 +254,7 @@ pnpm install
 pnpm dev
 ```
 
-打开 <http://127.0.0.1:4321>。首次部署先走 [Configuration](#configuration)：站点身份与内容 → 再开评论 / COS / Memos。
+打开 <http://127.0.0.1:4321>。首次部署先走 [Configuration](#configuration)：站点身份与内容 → 再开评论 / R2 / Memos。
 
 | 命令 | 用途 |
 | --- | --- |
@@ -277,7 +279,7 @@ pnpm dev
 | 发文 · 甲 | Obsidian vault → `ob2blog` → `site-cascade` | vault 根见 `CONTEXT.md` |
 | 发文 · 乙 | Knowledge 素材 → `knowledge-extract` → `knowledge-output` → `site-cascade` | 默认会话产出走乙，不经 `ob2blog` |
 | 功能 | idea → Issue → PRD(draft) → 你批准 → handoff → 实施 | 未批准不写大规模功能代码 |
-| 交付 | 本地预览 → check/build → push → Vercel Ready → **再核线上** | 未本地验收不得 push |
+| 交付 | 本地预览 → check/build → push → Vercel Ready → EdgeOne / CF 链路复核 | 未本地验收不得 push；未核主域不宣称完成 |
 
 <details>
 <summary>Workflows 详表（内容目录 · Mermaid · 步骤全文）</summary>
@@ -299,7 +301,7 @@ flowchart LR
     C1[本地预览] --> C2[check与build]
     C2 --> C3[push]
     C3 --> C4[Vercel Ready]
-    C4 --> C5[再核线上]
+    C4 --> C5[EdgeOne主域与R2复核]
   end
 ```
 
@@ -332,13 +334,13 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 #### 交付闭环
 
-本地预览 → 本地校验 → 你确认后 push → 等 Vercel Ready → **打开线上再核**。未本地验收不得 push；未看线上不得宣称部署完成。
+本地预览 → 本地校验 → 你确认后 push → 等 Vercel Ready → **打开 `www.threetwoa.live` 再核 EdgeOne / R2 链路**。未本地验收不得 push；未看主域线上结果不得宣称部署完成。
 
 </details>
 
 ## Configuration
 
-从零部署按序推进：先跑通站点 → 填身份与内容 → 再开评论 / 动态源 / COS。配置优先于改布局内核。
+从零部署按序推进：先跑通站点 → 填身份与内容 → 再开评论 / 动态源 / R2。配置优先于改布局内核。
 
 1. **环境**：Node ≥ 22 · pnpm 9.14.4（`node --version` · `pnpm --version`）
 2. **安装**
@@ -364,19 +366,19 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
    ```
 
    frontmatter 由 [src/content.config.ts](src/content.config.ts) 校验；生产默认隐藏 `draft: true`。
-6. **集成**：需要密钥时复制 `.env.example` → `.env`（勿提交）。评论 Waline、桌宠 SpritePet、音乐 `local` 见 Integrations。
+6. **集成**：需要密钥时复制 `.env.example` → `.env`（勿提交）。评论 Waline、桌宠 SpritePet、音乐 `local`、R2 / COS 存储见 Integrations。
 7. **本地验证**：`pnpm check` · `pnpm type-check` · `pnpm build` · `pnpm preview` — 核对 `dist/`、Pagefind、RSS、Sitemap、主页面。
-8. **Vercel**
+8. **交付链**
 
    | Setting | Value |
    | --- | --- |
-   | Framework preset | Astro |
-   | Install command | `pnpm install` |
-   | Build command | `pnpm build` |
-   | Output directory | `dist` |
+   | Vercel origin | Astro · `pnpm build` · `dist` |
+   | EdgeOne CDN | `www.threetwoa.live` CNAME 到 EdgeOne，回源 Vercel |
+   | Cloudflare | `threetwoa.live` DNS + `img.threetwoa.live` R2 图床 |
+   | 备用入口 | `https://fork-firefly.vercel.app` |
 
-   评论 / COS 等变量在 Project Settings → Environment Variables 补齐后再部署。
-9. **上线复核**：首页 · 文章 · 搜索 · RSS · Sitemap · 评论 · 图片上传 · 移动端。UI 大改后重跑 `scripts/capture-readme-showcase.py`。
+   评论 / R2 / COS / Ask 等变量在 Vercel Project Settings → Environment Variables 补齐后再部署。
+9. **上线复核**：主域首页 · 文章 · 搜索 · RSS · Sitemap · 评论 · R2 图片 · 移动端；再抽查 Vercel 备用入口。UI 大改后重跑 `scripts/capture-readme-showcase.py`。
 
 <details>
 <summary>Configuration file map</summary>
@@ -412,7 +414,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | Authoring | 配置、文案、Markdown / MDX | `src/config` · `src/content` |
 | Composition | 页面、布局、组件、Markdown plugins | `src/pages` · `src/layouts` · `src/components` · `src/plugins` |
 | Build | SSG、LQIP、字体子集、Mermaid SVG、Pagefind | `pnpm build` 串起 |
-| Runtime | CDN + 轻量交互 | `dist` · Vercel · Swup · Svelte / React islands · Waline · SpritePet |
+| Runtime | CDN + 轻量交互 + 少量 API | EdgeOne CDN · Vercel origin · Swup · Svelte / React islands · Waline · SpritePet |
 
 ### Design principles
 
@@ -426,17 +428,21 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 ## Performance
 
-做过一轮系统性能专项（28+ perf commit）。**方法比数字重要**：先上探针拿证据，再改代码——瓶颈常在「画不出来」而非「下载慢」。
+性能专项已推进到 V3。**方法比单个跑分重要**：先用 LCP / CDP / 20-hop 探针确认瓶颈，再改加载策略、生命周期和移动端信息密度。最新结果如下，跨环境数字只作趋势判断，不伪装成严格 A/B。
 
-| 指标（本地生产 build，5 次中位数） | 优化前 | 优化后 |
-| --- | --- | --- |
-| 移动 4G LCP | 27236 ms | 8332 ms（-69%） |
-| 桌面 LCP | 960 ms | 712 ms（-26%） |
-| 堆 / 监听器 / 节点净增（20 跳） | 18.9 MB · 14096 · 123642 | 9.7 MB · 9989 · 97240 |
+| 指标 | 参考值 | 当前值 | 变化与口径 |
+| --- | ---: | ---: | --- |
+| 移动端 LCP | 3241 ms | 2221 ms | -31.5%；线上旧版 vs 本地当前版，趋势值 |
+| 桌面 LCP | 1696 ms | 420 ms | -75.2%；环境不可比，仅作方向验证 |
+| 移动端 DOM 节点 | 3597 | 3015 | -16.2% |
+| 桌面 DOM 节点 | 3598 | ≈3200 | -11.1% |
+| 移动端 forced layout | 3734 ms | 2590 ms | -30.6% |
+| TagCloud reflow | 723 ms | 140 ms | -80.6% |
+| CLS | — | 0 | 当前验收值 |
 
-手段四类：Swup 泄漏治理（`src/lib/page-lifecycle.ts` per-page epoch 换页统一清理）· 图片按需物化（氛围层 / 桌宠 / 轮播 / 日历）· 覆盖率（islands idle、Pagefind 懒加载、内联脚本外置）· 渲染门控（首帧不被 `display:none` / JS reveal 拖住）。
+移动端不是等比缩小 PC：RepelText 字符、TagCloud CDN / 动画、Calendar / Recommend 重复元数据请求和底部冗余侧栏都在小屏归零；主题切换长条从 `85×40` 收到 `35×35` icon。核心治理仍包括 Swup 生命周期统一清理、图片按需物化、Pagefind 懒加载、内联脚本外置和首屏渲染门控。
 
-复测工具与踩坑（本地 server 锁 `dist`、`.astro` 缓存、旧部署探针数据）：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · 主仓 `docs/outputs/handoff/perf-optimization-2026-08-09.md`。
+完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md)。
 
 ## Style and assets
 
@@ -478,8 +484,8 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | Fonts | Inter（全局）· Zen Maru（横幅）· JetBrains Mono（代码）· GreatVibes（本地子集） | 见 fontConfig | 品牌与可读性 |
 | Interaction | Swup · Iconify（Lucide 主）· Fancybox · Three.js（Gallery）· Framer Motion（动态时间线） | 全开 | 过渡、图标、灯箱、画廊 |
 | Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | `pnpm build` 串起 | 构建期把贵活做完 |
-| Delivery | `dist/` · Vercel（`@astrojs/vercel`）· Cloudflare adapter（可选） | Vercel 默认 | 静态出站 + 少量 API |
-| Site integrations | Waline + emoji/Giphy · SpritePet · local music · COS · analytics 槽位 | 前三项现行；分析 ID 多为空 | 配置门控 |
+| Delivery | Vercel origin（`@astrojs/vercel`）· EdgeOne CDN · Cloudflare DNS / R2 | 三者各司其职 | 静态出站 + 少量 API + 外置大图 |
+| Site integrations | Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 前三项现行；分析 ID 多为空 | 配置门控 |
 | Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
 | Agent tooling | `ob2blog` · knowledge-* · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
 
@@ -487,19 +493,19 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 ## Deploy
 
-本仓默认部署到 Vercel 项目 `fork-firefly`：
+当前生产链不是三家重复托管，而是分层协作：
 
-| Setting | Value |
-| --- | --- |
-| Framework | Astro |
-| Build command | `pnpm build` |
-| Install command | `pnpm install` |
-| Output directory | `dist` |
-| Project config | [vercel.json](vercel.json) |
+| 平台 | 当前职责 | 入口 / 配置 | 验收信号 |
+| --- | --- | --- | --- |
+| Vercel | Git `master` 自动构建、SSR/API 源站、海外备用与回滚 | [vercel.json](vercel.json) · `fork-firefly.vercel.app` | Production `Ready`，commit 对齐 `master` |
+| EdgeOne | `www.threetwoa.live` 的 CDN 与基础防护，回源 Vercel | DNS CNAME → `*.eo.dnse2.com` | HTTPS 200、`eo-cache-status`、静态资源 HIT |
+| Cloudflare | `threetwoa.live` 权威 DNS；`img.threetwoa.live` R2 图床 | [wrangler.jsonc](wrangler.jsonc) · R2 环境变量 | NS 指向 Cloudflare、对象 200、`cf-cache-status` |
 
-标准交付顺序：本地预览 → `pnpm check` / `pnpm type-check` → `pnpm build` → push → 等待 Vercel Ready → 复核线上页面。
+主入口是 <https://www.threetwoa.live>，Vercel 直链是 <https://fork-firefly.vercel.app>。当前未备案，不把 EdgeOne 的“全球不含中国大陆”链路写成大陆节点加速。
 
-Cloudflare 配置保留在 [wrangler.jsonc](wrangler.jsonc)，但启用 Cloudflare 时需要额外验证 API 路由与 Node runtime 依赖。
+[edgeone.json](edgeone.json) / `EDGEONE=1 pnpm run build:edgeone` 保留用于 EdgeOne Pages 适配与回归，不是当前生产主托管；`CF_WORKERS=1` 才会切 Cloudflare adapter，当前主链路不使用它。
+
+标准交付顺序：本地预览 → `pnpm check` / `pnpm type-check` → `pnpm build` → push `master` → 等 Vercel Ready → 核 `www.threetwoa.live` 首页 / 文章 / Pagefind / API → 抽查 R2 图片与缓存头。详细运行手册见 [docs/agents/edgeone-domain-runbook.md](docs/agents/edgeone-domain-runbook.md) 与 [docs/agents/architecture-cost-optimized.md](docs/agents/architecture-cost-optimized.md)。
 
 ## Project rules
 
@@ -516,7 +522,7 @@ Cloudflare 配置保留在 [wrangler.jsonc](wrangler.jsonc)，但启用 Cloudfla
 ## Author
 
 - GitHub: [Aafff623](https://github.com/Aafff623)
-- Blog: [threetwoa's blog](https://fork-firefly.vercel.app)
+- Blog: [threetwoa's blog](https://www.threetwoa.live)
 
 ## Acknowledgments
 
