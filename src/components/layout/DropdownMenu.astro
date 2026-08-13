@@ -158,7 +158,7 @@ const accentKey = navKey(processedLink.name);
 	}
 
 	.dropdown-menu {
-		@apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out transform translate-y-[-8px] z-50;
+		@apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-[opacity,visibility,transform] duration-150 ease-out transform translate-y-[-8px] z-50;
 	}
 
 	.dropdown-container:hover .dropdown-menu,

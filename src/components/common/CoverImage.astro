@@ -202,19 +202,10 @@ const remoteReferrerPolicy =
 	function initCoverImages() {
 		const containers = document.querySelectorAll('.cover-image-container');
 		containers.forEach((container) => {
-			if (container.hasAttribute('data-initialized')) return;
-			container.setAttribute('data-initialized', 'true');
-
-			const img = container.querySelector('img[data-cover-img]') as HTMLImageElement | null;
+			const img = container.querySelector('img[data-cover-img]') as
+				| (HTMLImageElement & { __coverImageEventsBound?: boolean })
+				| null;
 			if (!img) return;
-
-			// 解析API URL列表，用于按顺序重试
-			let apiUrls: string[] = [];
-			let currentApiIndex = 1; // 0号已由服务端设为img.src
-			const apiUrlsAttr = container.getAttribute('data-api-urls');
-			if (apiUrlsAttr) {
-				try { apiUrls = JSON.parse(apiUrlsAttr); } catch (_e) { /* ignore */ }
-			}
 
 			const hideLoading = () => {
 				container.setAttribute('data-loading', 'false');
@@ -223,44 +214,62 @@ const remoteReferrerPolicy =
 				if (placeholder) placeholder.classList.add('loaded');
 			};
 
+			let apiUrls: string[] = [];
+			let currentApiIndex = Number(img.dataset.coverApiIndex || "1");
+			const apiUrlsAttr = container.getAttribute('data-api-urls');
+			if (apiUrlsAttr) {
+				try { apiUrls = JSON.parse(apiUrlsAttr); } catch (_e) { /* ignore */ }
+			}
+
 			const showError = () => {
 				container.setAttribute('data-loading', 'false');
 				container.setAttribute('data-error', 'true');
 			};
 
-			// 统一的错误处理：尝试下一个API或显示错误提示
-			const onError = () => {
-				if (img.dataset.remote !== 'true') return;
+			const cleanupEvents = () => {
+				img.removeEventListener("load", onLoad);
+				img.removeEventListener("error", onError);
+				img.__coverImageEventsBound = false;
+			};
 
-				if (currentApiIndex < apiUrls.length) {
-					// 先绑定好事件，再更换src
-					img.addEventListener('load', hideLoading, { once: true });
-					img.addEventListener('error', onError, { once: true });
+			const onLoad = () => {
+				cleanupEvents();
+				hideLoading();
+			};
+
+			const onError = () => {
+				if (img.dataset.remote === 'true' && currentApiIndex < apiUrls.length) {
+					img.dataset.coverApiIndex = String(currentApiIndex + 1);
 					img.src = apiUrls[currentApiIndex];
 					currentApiIndex++;
 				} else {
+					cleanupEvents();
 					showError();
 				}
 			};
 
+			container.setAttribute('data-initialized', 'true');
+			if (!img.__coverImageEventsBound) {
+				img.__coverImageEventsBound = true;
+				img.addEventListener('load', onLoad);
+				img.addEventListener('error', onError);
+			}
+
 			if (img.complete) {
 				if (img.naturalWidth > 0) {
-					hideLoading();
+					onLoad();
 				} else {
 					onError();
 				}
-			} else {
-				img.addEventListener('load', hideLoading, { once: true });
-				img.addEventListener('error', onError, { once: true });
 			}
 		});
 	}
 
 	initCoverImages();
-	// 幂等 guard：该脚本为内联模块脚本，每次被 Swup 重执行都会重新运行，
-	// 不守卫会跨跳累积 astro:page-load 监听器（旧监听仍会调用 initCoverImages）。
+	// 幂等 guard：内联模块脚本每次被 Swup 重执行都会跑一遍；监听只绑一次。
 	if (!window.__coverImageBound) {
 		window.__coverImageBound = true;
 		document.addEventListener('astro:page-load', initCoverImages);
+		document.addEventListener('swup:contentReplaced', initCoverImages);
 	}
 </script>

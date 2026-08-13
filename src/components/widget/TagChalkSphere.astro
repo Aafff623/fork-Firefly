@@ -43,14 +43,11 @@ const initialMode = defaultMode === "list" ? "list" : "sphere";
 const source = tagsProp ?? (await getTagList());
 const ranked = [...source]
 	.map((t) => {
-		const rawKind =
-			"kind" in t ? (t as { kind?: string }).kind : undefined;
+		const rawKind = "kind" in t ? (t as { kind?: string }).kind : undefined;
 		return {
 			name: String(t.name).trim(),
 			count: Number(t.count) || 0,
-			kind: (rawKind === "theme" ? "theme" : "primary") as
-				| "primary"
-				| "theme",
+			kind: (rawKind === "theme" ? "theme" : "primary") as "primary" | "theme",
 		};
 	})
 	.filter((t) => t.name)
@@ -158,6 +155,15 @@ const showMore = Boolean(moreHref && moreCount > 0);
       );
     }
 
+    /** 触摸设备优先静态列表：少一份 CDN、逐帧动画和逐标签 DOM 写入。 */
+    function prefersStaticList() {
+      return (
+        reducedMotion() ||
+        (window.matchMedia &&
+          window.matchMedia("(hover: none), (pointer: coarse)").matches)
+      );
+    }
+
     function loadTagCloud(cb) {
       if (window.TagCloud) {
         cb();
@@ -165,7 +171,12 @@ const showMore = Boolean(moreHref && moreCount > 0);
       }
       var existed = document.querySelector('script[data-tagcloud-cdn="1"]');
       if (existed) {
+        if (existed.dataset.tagcloudFailed === "1") {
+          cb();
+          return;
+        }
         existed.addEventListener("load", cb, { once: true });
+        existed.addEventListener("error", cb, { once: true });
         return;
       }
       var s = document.createElement("script");
@@ -173,6 +184,10 @@ const showMore = Boolean(moreHref && moreCount > 0);
       s.async = true;
       s.dataset.tagcloudCdn = "1";
       s.onload = cb;
+      s.onerror = function () {
+        s.dataset.tagcloudFailed = "1";
+        cb();
+      };
       document.head.appendChild(s);
     }
 
@@ -216,25 +231,49 @@ const showMore = Boolean(moreHref && moreCount > 0);
       for (var i = 0; i < nodes.length; i++) {
         nodes[i].classList.remove("tag-sphere__item--focus");
       }
-      var instance = el._tagCloudInstance;
-      if (instance && typeof instance.resume === "function") instance.resume();
-      setIdleSpeed(instance);
+      if (el._skipResume) return;
+      if (el._tagVisSync) {
+        el._tagVisSync();
+      } else {
+        startTagCloudRaf(el._tagCloudInstance);
+        setIdleSpeed(el._tagCloudInstance);
+      }
     }
 
     function destroyCloud(el) {
-      if (el) clearHoverFocus(el);
-      if (el && el._tagCloudDestroy) {
+      if (!el) return;
+      el._skipResume = true;
+      clearHoverFocus(el);
+      el._skipResume = false;
+      stopTagCloudRaf(el._tagCloudInstance);
+      if (el._tagVisIo) {
+        try {
+          el._tagVisIo.disconnect();
+        } catch (e) {}
+        el._tagVisIo = null;
+      }
+      if (el._tagMetricsRo) {
+        try {
+          el._tagMetricsRo.disconnect();
+        } catch (e) {}
+        el._tagMetricsRo = null;
+      }
+      if (el._tagVisSync) {
+        document.removeEventListener("visibilitychange", el._tagVisSync);
+        el._tagVisSync = null;
+      }
+      el._tagVisBound = false;
+      el._tagMetricsBound = false;
+      if (el._tagCloudDestroy) {
         try {
           el._tagCloudDestroy();
         } catch (e) {}
         el._tagCloudDestroy = null;
       }
-      if (el) {
-        el._tagCloudInstance = null;
-        el._sphereItemsKey = null;
-        el.innerHTML = "";
-        el._tagInteract = null;
-      }
+      el._tagCloudInstance = null;
+      el._sphereItemsKey = null;
+      el.innerHTML = "";
+      el._tagInteract = null;
     }
 
     function normalizeItems(list) {
@@ -301,6 +340,119 @@ const showMore = Boolean(moreHref && moreCount > 0);
       instance.maxSpeed = DRAG_MAX_SPEED;
     }
 
+    function cacheItemMetrics(instance) {
+      if (!instance || !instance.items) return;
+      for (var i = 0; i < instance.items.length; i++) {
+        var e = instance.items[i];
+        var node = e.el;
+        if (!node) continue;
+        e._ow = node.offsetWidth;
+        e._oh = node.offsetHeight;
+        if (node.style && node.style.willChange) {
+          node.style.willChange = "transform";
+        }
+        if (node.style && node.style.filter) node.style.filter = "";
+      }
+    }
+
+    function stopTagCloudRaf(instance) {
+      if (!instance) return;
+      instance.paused = true;
+      if (typeof instance.pause === "function") instance.pause();
+      if (instance.interval && typeof instance.interval.value === "number") {
+        try {
+          cancelAnimationFrame(instance.interval.value);
+        } catch (e) {}
+        instance.interval = null;
+      }
+    }
+
+    function startTagCloudRaf(instance) {
+      if (!instance) return;
+      instance.paused = false;
+      if (typeof instance.resume === "function") instance.resume();
+      if (instance.interval && typeof instance.interval.value === "number") {
+        return;
+      }
+      if (typeof instance._requestInterval === "function") {
+        instance.interval = instance._requestInterval(function () {
+          instance._next.call(instance);
+        }, 10);
+      }
+    }
+
+    /** 库 _next 每帧读 offsetWidth；改走缓存，并去掉 IE filter 写入 */
+    function patchTagCloudNext(instance) {
+      if (!instance) return;
+      var proto = Object.getPrototypeOf(instance);
+      if (!proto || proto._fireflyNextPatched) return;
+      proto._fireflyNextPatched = true;
+      proto._next = function () {
+        var s = this;
+        if (s.paused) return;
+        if (!s.keep && !s.active) {
+          s.mouseX =
+            Math.abs(s.mouseX - s.mouseX0) < 1
+              ? s.mouseX0
+              : (s.mouseX + s.mouseX0) / 2;
+          s.mouseY =
+            Math.abs(s.mouseY - s.mouseY0) < 1
+              ? s.mouseY0
+              : (s.mouseY + s.mouseY0) / 2;
+        }
+        var angX =
+          -(Math.min(Math.max(-s.mouseY, -s.size), s.size) / s.radius) *
+          s.maxSpeed;
+        var angY =
+          (Math.min(Math.max(-s.mouseX, -s.size), s.size) / s.radius) *
+          s.maxSpeed;
+        if (s.config && s.config.reverseDirection) {
+          angX = -angX;
+          angY = -angY;
+        }
+        if (Math.abs(angX) <= 0.01 && Math.abs(angY) <= 0.01) return;
+        var n = Math.PI / 180;
+        var a = [
+          Math.sin(angX * n),
+          Math.cos(angX * n),
+          Math.sin(angY * n),
+          Math.cos(angY * n),
+        ];
+        var items = s.items || [];
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var x = item.x;
+          var y2 = item.y * a[1] + item.z * -a[0];
+          var z1 = item.y * a[0] + item.z * a[1];
+          var z2 = z1 * a[3] - x * a[2];
+          var r = (2 * s.depth) / (2 * s.depth + z2);
+          item.x = x * a[3] + z1 * a[2];
+          item.y = y2;
+          item.z = z2;
+          item.scale = r.toFixed(3);
+          var op = r * r - 0.25;
+          if (op > 1) op = 1;
+          if (op < 0) op = 0;
+          var node = item.el;
+          if (!node) continue;
+          var hw = (item._ow != null ? item._ow : node.offsetWidth) / 2;
+          var hh = (item._oh != null ? item._oh : node.offsetHeight) / 2;
+          var tr =
+            "translate3d(" +
+            (item.x - hw).toFixed(2) +
+            "px, " +
+            (item.y - hh).toFixed(2) +
+            "px, 0) scale(" +
+            item.scale +
+            ")";
+          node.style.WebkitTransform = tr;
+          node.style.transform = tr;
+          node.style.opacity = op.toFixed(3);
+          node.style.zIndex = String(Math.round(r * 1000));
+        }
+      };
+    }
+
     function disarmNativeLinkDrag(host) {
       if (!host || host._tagSphereDragArmed) return;
       host._tagSphereDragArmed = true;
@@ -317,7 +469,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     function applyViewMode(root, mode) {
       if (!root) return;
       var next = mode === "list" ? "list" : "sphere";
-      if (reducedMotion()) next = "list";
+      if (prefersStaticList()) next = "list";
       root.setAttribute("data-view-mode", next);
       var frame = root.querySelector("[data-tag-sphere-frame]");
       var fallback = root.querySelector("[data-tag-chalk-fallback]");
@@ -327,11 +479,12 @@ const showMore = Boolean(moreHref && moreCount > 0);
       if (next === "list") {
         if (fallback) fallback.hidden = false;
         if (frame) frame.setAttribute("hidden", "");
-        if (instance && typeof instance.pause === "function") instance.pause();
+        stopTagCloudRaf(instance);
       } else {
         if (fallback) fallback.hidden = true;
         if (frame) frame.removeAttribute("hidden");
-        if (instance && typeof instance.resume === "function") instance.resume();
+        if (cloudHost && cloudHost._tagVisSync) cloudHost._tagVisSync();
+        else startTagCloudRaf(instance);
       }
     }
 
@@ -401,14 +554,15 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (op < 0) op = 0;
         var node = e.el;
         if (!node) continue;
-        var n = (e.x - node.offsetWidth / 2).toFixed(2);
-        var o = (e.y - node.offsetHeight / 2).toFixed(2);
+        var hw = (e._ow != null ? e._ow : node.offsetWidth) / 2;
+        var hh = (e._oh != null ? e._oh : node.offsetHeight) / 2;
+        var n = (e.x - hw).toFixed(2);
+        var o = (e.y - hh).toFixed(2);
         var tr =
           "translate3d(" + n + "px, " + o + "px, 0) scale(" + r + ")";
         node.style.WebkitTransform = tr;
         node.style.transform = tr;
         node.style.opacity = String(op);
-        node.style.filter = "alpha(opacity=" + Math.round(op * 100) + ")";
         node.style.zIndex = String(Math.round(r * 1000));
       }
     }
@@ -433,8 +587,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (onDone) onDone(false);
         return;
       }
-      if (typeof instance.pause === "function") instance.pause();
-      instance.paused = true;
+      stopTagCloudRaf(instance);
       clearHoverTimers(el);
 
       var len =
@@ -555,9 +708,11 @@ const showMore = Boolean(moreHref && moreCount > 0);
         for (var i = 0; i < nodes.length; i++) {
           nodes[i].classList.remove("tag-sphere__item--focus");
         }
-        var instance = el._tagCloudInstance;
-        if (instance && typeof instance.resume === "function") instance.resume();
-        setIdleSpeed(instance);
+        if (el._tagVisSync) el._tagVisSync();
+        else {
+          startTagCloudRaf(el._tagCloudInstance);
+          setIdleSpeed(el._tagCloudInstance);
+        }
       }
 
       function fireFocus(itemEl) {
@@ -820,18 +975,127 @@ const showMore = Boolean(moreHref && moreCount > 0);
       root.setAttribute("data-ready", ready ? "1" : "0");
     }
 
+    function bindMetricsAndVisibility(el, root) {
+      if (!el) return;
+
+      if (!window.__tagSphereResizeBound) {
+        window.__tagSphereResizeBound = true;
+        var resizeTimer = 0;
+        function recacheAll() {
+          var clouds = document.querySelectorAll(
+            "[data-tag-chalk-sphere] .tag-sphere__cloud",
+          );
+          for (var i = 0; i < clouds.length; i++) {
+            cacheItemMetrics(clouds[i]._tagCloudInstance);
+          }
+        }
+        window.addEventListener("resize", function () {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(recacheAll, 120);
+        });
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(recacheAll).catch(function () {});
+        }
+      }
+
+      if (!el._tagMetricsBound && typeof ResizeObserver !== "undefined") {
+        el._tagMetricsBound = true;
+        var roTimer = 0;
+        var ro = new ResizeObserver(function () {
+          clearTimeout(roTimer);
+          roTimer = setTimeout(function () {
+            cacheItemMetrics(el._tagCloudInstance);
+          }, 80);
+        });
+        ro.observe(el);
+        el._tagMetricsRo = ro;
+      }
+
+      if (el._tagVisBound) {
+        el._tagVisRoot = root;
+        if (el._tagVisSync) el._tagVisSync();
+        return;
+      }
+      el._tagVisBound = true;
+      el._tagVisIntersecting = true;
+      el._tagVisRoot = root;
+
+      el._tagVisSync = function () {
+        var instance = el._tagCloudInstance;
+        if (!instance) return;
+        var host = el._tagVisRoot;
+        var off =
+          document.hidden ||
+          el._tagVisIntersecting === false ||
+          (host && host.getAttribute("data-view-mode") === "list");
+        if (off) {
+          if (el._focusHold) {
+            el._skipResume = true;
+            clearHoverFocus(el);
+            el._skipResume = false;
+          }
+          if (el._focusRaf) {
+            cancelAnimationFrame(el._focusRaf);
+            el._focusRaf = 0;
+          }
+          stopTagCloudRaf(instance);
+          return;
+        }
+        if (el._focusHold) {
+          stopTagCloudRaf(instance);
+          return;
+        }
+        startTagCloudRaf(instance);
+        setIdleSpeed(instance);
+      };
+
+      document.addEventListener("visibilitychange", el._tagVisSync);
+
+      if (typeof IntersectionObserver !== "undefined") {
+        var io = new IntersectionObserver(
+          function (entries) {
+            var hit = false;
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].isIntersecting) {
+                hit = true;
+                break;
+              }
+            }
+            el._tagVisIntersecting = hit;
+            el._tagVisSync();
+          },
+          { threshold: 0.01, rootMargin: "48px" },
+        );
+        var target =
+          (root && root.querySelector("[data-tag-sphere-frame]")) || el;
+        io.observe(target);
+        el._tagVisIo = io;
+      }
+
+      el._tagVisSync();
+    }
+
     function mountWith(el, nextItems, nextHrefMap, nextRadius) {
-      if (!el || !window.TagCloud) return;
+      if (!el) return;
       var root = el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
       var fallback = root && root.querySelector("[data-tag-chalk-fallback]");
       var normalized = normalizeItems(nextItems);
       var mode =
         (root && root.getAttribute("data-view-mode")) || "sphere";
 
-      if (reducedMotion() || !normalized.length) {
+      if (prefersStaticList() || !normalized.length) {
         destroyCloud(el);
         el._tagCloudInstance = null;
         el._sphereItemsKey = null;
+        markReady(root, true);
+        applyViewMode(root, "list");
+        if (fallback) fallback.hidden = false;
+        return;
+      }
+
+      // CDN 不可用时保持标签可访问，不能把组件留在 loading 空壳。
+      if (!window.TagCloud) {
+        destroyCloud(el);
         markReady(root, true);
         applyViewMode(root, "list");
         if (fallback) fallback.hidden = false;
@@ -865,17 +1129,18 @@ const showMore = Boolean(moreHref && moreCount > 0);
         existing.$el &&
         document.documentElement.contains(existing.$el)
       ) {
-        existing.paused = false;
-        if (typeof existing.resume === "function") existing.resume();
+        patchTagCloudNext(existing);
+        cacheItemMetrics(existing);
+        bindMetricsAndVisibility(el, root);
         setIdleSpeed(existing);
         if (fallback) fallback.hidden = true;
         markReady(root, true);
         applyViewMode(root, "sphere");
         return;
       }
-      el._sphereItemsKey = key;
-
       destroyCloud(el);
+      // destroyCloud 会清键；销毁完成后再记录，双 page:view 才能命中幂等路径。
+      el._sphereItemsKey = key;
 
       var htmlItems = toHtmlItems(normalized, nextHrefMap);
       var instance = window.TagCloud("#" + el.id, htmlItems, {
@@ -892,26 +1157,16 @@ const showMore = Boolean(moreHref && moreCount > 0);
       setIdleSpeed(instance);
 
       el._tagCloudDestroy = function () {
+        el._skipResume = true;
         clearHoverFocus(el);
+        el._skipResume = false;
         if (el._tagColorWatch) {
           cancelAnimationFrame(el._tagColorWatch);
           el._tagColorWatch = 0;
         }
         el._tagCloudInstance = null;
         el._sphereItemsKey = null;
-        // TagCloud.destroy() 只摘 DOM / 清 list，不取消 RAF 循环；这里主动 cancel，
-        // 否则每个被替换的实例都会留下一个常驻 requestAnimationFrame。
-        // keep:false 时 mousemove 绑在 $el 上，RAF 一旦取消，旧实例整棵（含 $el 与元素级监听）即可被 GC。
-        if (
-          instance &&
-          instance.interval &&
-          typeof instance.interval.value === "number"
-        ) {
-          try {
-            cancelAnimationFrame(instance.interval.value);
-          } catch (e) {}
-          instance.interval = null;
-        }
+        stopTagCloudRaf(instance);
         if (instance && typeof instance.destroy === "function") {
           instance.destroy();
         }
@@ -922,30 +1177,13 @@ const showMore = Boolean(moreHref && moreCount > 0);
         links[li].setAttribute("draggable", "false");
       }
 
-      function enhanceDepthStack() {
-        // 悬停转正中期间由 syncTagCloudStyles 接管，避免抢写 opacity
-        if (el._focusHold || el._focusTimer || el._focusRaf) {
-          el._tagColorWatch = requestAnimationFrame(enhanceDepthStack);
-          return;
-        }
-        var nodes = el.querySelectorAll(".tagcloud--item");
-        for (var i = 0; i < nodes.length; i++) {
-          var node = nodes[i];
-          if (node.style && node.style.color) node.style.color = "";
-          var tr = node.style.transform || node.style.webkitTransform || "";
-          var m = tr.match(/scale\(([\d.]+)\)/);
-          if (!m) continue;
-          var per = parseFloat(m[1]);
-          if (isNaN(per)) continue;
-          var alpha = Math.max(0, Math.min(1, per * per - 0.25));
-          alpha = Math.pow(alpha, 1.55);
-          node.style.opacity = String(alpha);
-          node.style.filter = "alpha(opacity=" + Math.round(alpha * 100) + ")";
-          node.style.zIndex = String(Math.round(per * 1000));
-        }
-        el._tagColorWatch = requestAnimationFrame(enhanceDepthStack);
-      }
-      enhanceDepthStack();
+      patchTagCloudNext(instance);
+      cacheItemMetrics(instance);
+      // mount 后最多 1 帧：等布局稳定再量一次宽高（不再常驻 rAF 抢写 opacity）
+      el._tagColorWatch = requestAnimationFrame(function () {
+        el._tagColorWatch = 0;
+        cacheItemMetrics(el._tagCloudInstance);
+      });
 
       var d = r * 2 + "px";
       el.style.width = d;
@@ -959,6 +1197,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
 
       bindDragAndClick(el, root);
       bindHoverFocus(el, root);
+      bindMetricsAndVisibility(el, root);
       if (fallback) fallback.hidden = true;
       markReady(root, true);
       applyViewMode(root, "sphere");
@@ -975,7 +1214,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     function boot() {
       var el = document.getElementById(cloudId);
       var root = el && el.closest("[data-tag-sphere], [data-tag-chalk-sphere]");
-      if (reducedMotion()) {
+      if (prefersStaticList()) {
         markReady(root, true);
         applyViewMode(root, "list");
         return;
@@ -994,6 +1233,10 @@ const showMore = Boolean(moreHref && moreCount > 0);
         if (raw) map = JSON.parse(raw);
       } catch (e) {}
       markReady(root, false);
+      if (prefersStaticList() || (root && root.getAttribute("data-view-mode") === "list")) {
+        mountWith(el, nextItems, map, r);
+        return;
+      }
       loadTagCloud(function () {
         mountWith(el, nextItems, map, r);
       });
@@ -1099,21 +1342,17 @@ const showMore = Boolean(moreHref && moreCount > 0);
     cursor: grabbing;
   }
 
-  /* 悬停触发后：目标黄高亮丝滑转到正中，其余发虚 */
+  /* 悬停触发后：目标黄高亮丝滑转到正中，其余发虚（不用 filter，避免和球动画抢合成） */
   .tag-sphere__frame.is-hover-focus
     :global(.tagcloud--item:not(.tag-sphere__item--focus)) {
     opacity: 0.28 !important;
-    filter: saturate(0.55) !important;
-    transition:
-      opacity 0.35s ease,
-      filter 0.35s ease;
+    transition: opacity 0.35s ease;
   }
 
   .tag-sphere__frame.is-hover-focus
     :global(.tagcloud--item.tag-sphere__item--focus) {
     z-index: 10000 !important;
     opacity: 1 !important;
-    filter: none !important;
   }
 
   .tag-sphere__frame.is-hover-focus
@@ -1121,10 +1360,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
   .tag-sphere__frame.is-hover-focus
     :global(.tag-sphere__item--focus .tag-sphere__link--theme) {
     color: oklch(0.9 0.18 95) !important;
-    text-shadow:
-      0 0 0.45rem oklch(0.85 0.16 95 / 0.85),
-      0 0 0.9rem oklch(0.78 0.14 85 / 0.45),
-      0 1px 2px rgb(0 0 0 / 0.4) !important;
+    text-shadow: 0 0 0.45rem oklch(0.85 0.16 95 / 0.85) !important;
     transition:
       color 0.28s ease,
       text-shadow 0.35s ease;

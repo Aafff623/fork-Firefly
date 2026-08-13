@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 /**
  * 站点底栏 · 三层结构（顶带 / 导航 / 底条）
  * 学 name.com 分区与扫视效率；保留数字花园人设与浇水彩蛋
@@ -6,8 +7,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Icon } from "astro-icon/components";
-import { getCollection } from "astro:content";
-import { footerConfig, profileConfig, siteConfig } from "@/config";
+import {
+	footerConfig,
+	navBarConfig,
+	profileConfig,
+	siteConfig,
+} from "@/config";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { url } from "@/utils/url-utils";
 
@@ -17,7 +22,20 @@ const wordmark =
 /* 园记压到一行钩子；英文次级短句 */
 const brandBlurbCn = "数字花园里，枝叶随写随长；余白留给路过的你。";
 const brandBlurbEn = "Grow slow, leave room for wanderers.";
-const showFriends = siteConfig.pages?.friends !== false;
+const pages = siteConfig.pages;
+const pageOn = (key: keyof NonNullable<typeof pages>) => pages?.[key] !== false;
+const showFriends = pageOn("friends");
+const showAsk = pageOn("ask");
+const showBangumi = pageOn("bangumi");
+const showGallery = pageOn("gallery");
+const showAnime = pageOn("anime");
+const showDynamic = pageOn("dynamic");
+const showGuestbook = pageOn("guestbook");
+const showSponsor = pageOn("sponsor");
+const showAgents = pageOn("agents");
+const digitalGardenUrl = navBarConfig.links
+	.flatMap((link) => link.children ?? [])
+	.find((link) => /digital garden|数字花园/i.test(link.name))?.url;
 
 const startYear = Number(
 	String(siteConfig.siteStartDate || "").slice(0, 4) || currentYear,
@@ -91,9 +109,6 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
   <!-- 局部景层：复用氛围插画，压低干扰 -->
   <div class="site-footer__scape" aria-hidden="true"></div>
   <div class="site-footer__veil" aria-hidden="true"></div>
-  <div class="site-footer__tree site-footer__tree--left" aria-hidden="true"></div>
-  <div class="site-footer__tree site-footer__tree--right" aria-hidden="true"></div>
-  <div class="site-footer__petals" aria-hidden="true"></div>
   <div class="site-footer__mist" aria-hidden="true"></div>
 
   <div class="site-footer__inner">
@@ -235,12 +250,16 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
           <span class="site-footer__col-title-en">Paths</span>
         </h3>
         <ul class="site-footer__list">
-          <li>
-            <a href={url("/dynamic/")}>
-              <Icon is:inline name="lucide:activity" class="site-footer__link-icon" aria-hidden="true" />
-              动态
-            </a>
-          </li>
+          {
+            showDynamic && (
+              <li>
+                <a href={url("/dynamic/")}>
+                  <Icon is:inline name="lucide:activity" class="site-footer__link-icon" aria-hidden="true" />
+                  动态
+                </a>
+              </li>
+            )
+          }
           <li>
             <a href={url("/categories/")}>
               <Icon is:inline name="lucide:folder-tree" class="site-footer__link-icon" aria-hidden="true" />
@@ -262,40 +281,56 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
         </ul>
       </nav>
 
-      <nav class="site-footer__col" aria-label="园趣">
+      <nav class="site-footer__col site-footer__col--mobile-secondary" aria-label="园趣">
         <h3 class="site-footer__col-title">
           <span class="site-footer__col-title-cn">园趣</span>
           <span class="site-footer__col-title-en">Leisure</span>
         </h3>
         <ul class="site-footer__list">
-          <li>
-            <a href={url("/gallery/")}>
-              <Icon is:inline name="lucide:images" class="site-footer__link-icon" aria-hidden="true" />
-              相册
-            </a>
-          </li>
-          <li>
-            <a href={url("/anime/")}>
-              <Icon is:inline name="lucide:clapperboard" class="site-footer__link-icon" aria-hidden="true" />
-              追番
-            </a>
-          </li>
-          <li>
-            <a href={url("/guestbook/")}>
-              <Icon is:inline name="lucide:message-square-heart" class="site-footer__link-icon" aria-hidden="true" />
-              留言
-            </a>
-          </li>
-          <li>
-            <a href={url("/bangumi/")}>
-              <Icon is:inline name="lucide:tv" class="site-footer__link-icon" aria-hidden="true" />
-              Bangumi
-            </a>
-          </li>
+          {
+            showGallery && (
+              <li>
+                <a href={url("/gallery/")}>
+                  <Icon is:inline name="lucide:images" class="site-footer__link-icon" aria-hidden="true" />
+                  相册
+                </a>
+              </li>
+            )
+          }
+          {
+            showAnime && (
+              <li>
+                <a href={url("/anime/")}>
+                  <Icon is:inline name="lucide:clapperboard" class="site-footer__link-icon" aria-hidden="true" />
+                  追番
+                </a>
+              </li>
+            )
+          }
+          {
+            showGuestbook && (
+              <li>
+                <a href={url("/guestbook/")}>
+                  <Icon is:inline name="lucide:message-square-heart" class="site-footer__link-icon" aria-hidden="true" />
+                  留言
+                </a>
+              </li>
+            )
+          }
+          {
+            showBangumi && (
+              <li>
+                <a href={url("/bangumi/")}>
+                  <Icon is:inline name="lucide:tv" class="site-footer__link-icon" aria-hidden="true" />
+                  Bangumi
+                </a>
+              </li>
+            )
+          }
         </ul>
       </nav>
 
-      <nav class="site-footer__col" aria-label="工具">
+      <nav class="site-footer__col site-footer__col--mobile-secondary" aria-label="工具">
         <h3 class="site-footer__col-title">
           <span class="site-footer__col-title-cn">工具</span>
           <span class="site-footer__col-title-en">Tools</span>
@@ -307,24 +342,36 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
               搜索
             </a>
           </li>
-          <li>
-            <a href={url("/ask/")}>
-              <Icon is:inline name="lucide:bot-message-square" class="site-footer__link-icon" aria-hidden="true" />
-              问答
-            </a>
-          </li>
-          <li>
-            <a href={url("/agents/")}>
-              <Icon is:inline name="lucide:bot" class="site-footer__link-icon" aria-hidden="true" />
-              Agents
-            </a>
-          </li>
-          <li>
-            <a href={url("/sponsor/")}>
-              <Icon is:inline name="lucide:heart-handshake" class="site-footer__link-icon" aria-hidden="true" />
-              赞助
-            </a>
-          </li>
+          {
+            showAsk && (
+              <li>
+                <a href={url("/ask/")}>
+                  <Icon is:inline name="lucide:bot-message-square" class="site-footer__link-icon" aria-hidden="true" />
+                  问答
+                </a>
+              </li>
+            )
+          }
+          {
+            showAgents && (
+              <li>
+                <a href={url("/agents/")}>
+                  <Icon is:inline name="lucide:bot" class="site-footer__link-icon" aria-hidden="true" />
+                  Agents
+                </a>
+              </li>
+            )
+          }
+          {
+            showSponsor && (
+              <li>
+                <a href={url("/sponsor/")}>
+                  <Icon is:inline name="lucide:heart-handshake" class="site-footer__link-icon" aria-hidden="true" />
+                  赞助
+                </a>
+              </li>
+            )
+          }
         </ul>
       </nav>
 
@@ -356,6 +403,16 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
                 <a href={githubLink.url} target="_blank" rel="noopener noreferrer">
                   <Icon is:inline name="lucide:github" class="site-footer__link-icon" aria-hidden="true" />
                   GitHub
+                </a>
+              </li>
+            )
+          }
+          {
+            digitalGardenUrl && (
+              <li>
+                <a href={digitalGardenUrl} target="_blank" rel="noopener noreferrer">
+                  <Icon is:inline name="lucide:trees" class="site-footer__link-icon" aria-hidden="true" />
+                  数字花园
                 </a>
               </li>
             )

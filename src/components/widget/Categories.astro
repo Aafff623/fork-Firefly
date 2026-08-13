@@ -27,6 +27,7 @@ const { class: className, style, widgetConfig, postCategory } = Astro.props;
 // 紧凑模式：右栏文章页分类卡。仅当 SideBar 传入 postCategory（含空串）时启用
 const isCompact = typeof postCategory === "string";
 const compactCategory = (postCategory || "").trim();
+const contentId = isCompact ? "categories-compact" : "categories";
 const uncategorizedUrl = `${url("/")}?uncategorized`;
 
 const showTitle = widgetConfig?.showTitle !== false;
@@ -57,7 +58,7 @@ const postsLabel = i18n(I18nKey.postsCount);
 <WidgetLayout
   name={i18n(I18nKey.categories)}
   showTitle={showTitle}
-  id="categories"
+  id={contentId}
   isCollapsed={false}
   class:list={[
     "categories-widget",
@@ -218,7 +219,7 @@ const postsLabel = i18n(I18nKey.postsCount);
   }
 
   /** 浏览页分类墙手风琴：失衡自动收、平衡自动展；手动钉住折叠跳过自动展开 */
-  function setCategoriesFolded(widget, folded) {
+  function setCategoriesFolded(widget: HTMLElement, folded: boolean) {
     widget.classList.toggle("categories-widget--folded", folded);
     widget.dataset.folded = folded ? "true" : "false";
     const title = widget.querySelector(".widget-title");
@@ -230,7 +231,7 @@ const postsLabel = i18n(I18nKey.postsCount);
 
   function bindCategoriesBalanceFold() {
     document
-      .querySelectorAll(
+      .querySelectorAll<HTMLElement>(
         "widget-layout.categories-widget.categories-widget--foldable",
       )
       .forEach((widget) => {
@@ -239,7 +240,7 @@ const postsLabel = i18n(I18nKey.postsCount);
         widget.dataset.folded = "false";
         widget.dataset.userPinned = "false";
 
-        const title = widget.querySelector(".widget-title");
+        const title = widget.querySelector<HTMLElement>(".widget-title");
         if (title) {
           title.classList.add("cat-fold-title");
           title.setAttribute("role", "button");
@@ -268,7 +269,7 @@ const postsLabel = i18n(I18nKey.postsCount);
 
   function onSidebarImbalance() {
     document
-      .querySelectorAll(
+      .querySelectorAll<HTMLElement>(
         "widget-layout.categories-widget.categories-widget--foldable",
       )
       .forEach((widget) => {
@@ -278,7 +279,7 @@ const postsLabel = i18n(I18nKey.postsCount);
 
   function onSidebarBalance() {
     document
-      .querySelectorAll(
+      .querySelectorAll<HTMLElement>(
         "widget-layout.categories-widget.categories-widget--foldable",
       )
       .forEach((widget) => {

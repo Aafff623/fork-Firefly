@@ -66,7 +66,7 @@ const isLast = page.currentPage >= page.lastPage;
     <!-- 移动端：上一页 / 当前 / 下一页 -->
     <div class="mobile-pagination flex items-center gap-3">
       <a
-        href={page.url.prev || "#"}
+        href={hasPrev ? page.url.prev : undefined}
         aria-label={i18n(I18nKey.paginationPrev)}
         aria-disabled={!hasPrev ? "true" : "false"}
         tabindex={!hasPrev ? "-1" : "0"}
@@ -90,7 +90,7 @@ const isLast = page.currentPage >= page.lastPage;
       </div>
 
       <a
-        href={page.url.next || "#"}
+        href={hasNext ? page.url.next : undefined}
         aria-label={i18n(I18nKey.paginationNext)}
         aria-disabled={!hasNext ? "true" : "false"}
         tabindex={!hasNext ? "-1" : "0"}
@@ -110,7 +110,7 @@ const isLast = page.currentPage >= page.lastPage;
     <!-- 桌面端：首页 · 上一页 · 页码 · 下一页 · 末页 -->
     <div class="desktop-pagination flex items-center gap-2.5">
       <a
-        href={isFirst ? "#" : url(getPageUrl(1))}
+        href={isFirst ? undefined : url(getPageUrl(1))}
         aria-label={`${i18n(I18nKey.paginationPage)} 1`}
         aria-disabled={isFirst ? "true" : "false"}
         tabindex={isFirst ? "-1" : "0"}
@@ -128,7 +128,7 @@ const isLast = page.currentPage >= page.lastPage;
       </a>
 
       <a
-        href={page.url.prev || "#"}
+        href={hasPrev ? page.url.prev : undefined}
         aria-label={i18n(I18nKey.paginationPrev)}
         aria-disabled={!hasPrev ? "true" : "false"}
         tabindex={!hasPrev ? "-1" : "0"}
@@ -175,7 +175,7 @@ const isLast = page.currentPage >= page.lastPage;
       }
 
       <a
-        href={page.url.next || "#"}
+        href={hasNext ? page.url.next : undefined}
         aria-label={i18n(I18nKey.paginationNext)}
         aria-disabled={!hasNext ? "true" : "false"}
         tabindex={!hasNext ? "-1" : "0"}
@@ -193,7 +193,7 @@ const isLast = page.currentPage >= page.lastPage;
       </a>
 
       <a
-        href={isLast ? "#" : url(getPageUrl(page.lastPage))}
+        href={isLast ? undefined : url(getPageUrl(page.lastPage))}
         aria-label={`${i18n(I18nKey.paginationPage)} ${page.lastPage}`}
         aria-disabled={isLast ? "true" : "false"}
         tabindex={isLast ? "-1" : "0"}
@@ -241,6 +241,10 @@ const isLast = page.currentPage >= page.lastPage;
       border-color 0.18s ease,
       background 0.18s ease,
       color 0.18s ease;
+  }
+
+  .pagination-button.disabled {
+    pointer-events: none;
   }
 
   html.dark .pagination-button,

@@ -1141,6 +1141,11 @@
   }
 
   function initCalendar() {
+      // 日历只存在于桌面右侧栏。右栏不可见时不抓取数据、不生成网格，
+      // 避免手机和平板为隐藏组件承担同步布局与 GIF 轮播成本。
+      if (!document.getElementById('calendar-widget') || window.matchMedia('(max-width: 1279px)').matches) {
+        return;
+      }
       // Reset to current date on init
       const now = new Date();
       displayYear = now.getFullYear();

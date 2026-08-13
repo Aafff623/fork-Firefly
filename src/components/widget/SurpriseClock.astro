@@ -82,7 +82,7 @@ const skyAttrs: Record<string, string> = {
     const ROOT_ID = "surprise-clock-root";
     const WEATHER_CACHE_KEY = "lc7-weather"; // 与分层时钟共享缓存，一次请求两钟受益
 
-    let raf = 0;
+    let timer = 0;
     /** @type {HTMLElement[]} */
     let digitGroups = [];
     let builtFor = null;
@@ -349,10 +349,20 @@ const skyAttrs: Record<string, string> = {
       });
     }
 
+    function scheduleNextTick() {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(tick, Math.max(80, 1020 - (Date.now() % 1000)));
+    }
+
     function tick() {
-      raf = requestAnimationFrame(tick);
+      scheduleNextTick();
       const root = document.getElementById(ROOT_ID);
-      if (!root) return;
+      if (!root || document.hidden) return;
+      if (
+        root.closest("#right-sidebar") &&
+        window.matchMedia("(max-width: 1279px)").matches
+      ) return;
+      if (root.getClientRects().length === 0) return;
       build(root);
       syncSky(root);
       syncSkyAssets(root);
@@ -394,10 +404,10 @@ const skyAttrs: Record<string, string> = {
     }
 
     function start() {
-      if (raf) cancelAnimationFrame(raf);
+      if (timer) window.clearTimeout(timer);
       digitGroups = [];
       builtFor = null;
-      raf = requestAnimationFrame(tick);
+      tick();
     }
 
     // 主题切换（含 19:00 时间感知自动入夜）→ 全部大钟天空即时联动；只绑定一次

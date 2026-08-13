@@ -1,15 +1,16 @@
 /* 站点 Footer · 三层（顶带 / 导航 / 底条）
- * 学 name.com 分区与扫视；保留花园景层但压干扰
+ * 低饱和灰 + 站点 --hue（默认 290）；假树/花瓣已去掉
  */
 
 .site-footer {
-	--sf-forest: oklch(0.38 0.07 145);
-	--sf-moss: oklch(0.48 0.08 150);
-	--sf-leaf: oklch(0.52 0.1 145);
+	--sf-hue: var(--hue, 290);
+	--sf-forest: oklch(0.34 0.025 var(--sf-hue));
+	--sf-moss: oklch(0.44 0.03 var(--sf-hue));
+	--sf-leaf: oklch(0.5 0.055 var(--sf-hue));
 	--sf-ink: var(--sf-forest);
-	--sf-muted: oklch(0.42 0.04 148);
-	--sf-faint: oklch(0.88 0.02 145 / 0.65);
-	--sf-rule: oklch(0.82 0.03 145 / 0.55);
+	--sf-muted: oklch(0.46 0.018 var(--sf-hue));
+	--sf-faint: oklch(0.88 0.012 var(--sf-hue) / 0.65);
+	--sf-rule: oklch(0.82 0.016 var(--sf-hue) / 0.55);
 	--sf-accent: var(--sf-leaf);
 	--sf-water-dot: oklch(0.62 0.12 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
@@ -29,18 +30,17 @@
 
 	position: relative;
 	isolation: isolate;
-	width: 100vw;
-	max-width: 100vw;
+	width: 100%;
+	max-width: 100%;
 	margin: 2.75rem 0 0;
-	margin-left: calc(50% - 50vw);
 	padding: 2.5rem 0 0;
 	min-width: 0;
-	overflow: hidden;
+	overflow: visible;
 	background: linear-gradient(
 		180deg,
-		oklch(0.95 0.018 145 / 0.55) 0%,
-		oklch(0.93 0.024 148 / 0.72) 48%,
-		oklch(0.9 0.03 150 / 0.78) 100%
+		oklch(0.96 0.01 var(--sf-hue) / 0.5) 0%,
+		oklch(0.94 0.014 var(--sf-hue) / 0.66) 48%,
+		oklch(0.92 0.018 var(--sf-hue) / 0.74) 100%
 	);
 	color: var(--sf-ink);
 	border: none;
@@ -69,21 +69,21 @@
 }
 
 html.dark .site-footer {
-	--sf-forest: oklch(0.94 0.008 95);
-	--sf-moss: oklch(0.82 0.012 95);
-	--sf-leaf: oklch(0.8 0.05 145);
-	--sf-ink: oklch(0.94 0.006 95);
-	--sf-muted: oklch(0.78 0.01 95);
-	--sf-faint: oklch(0.5 0.01 95 / 0.45);
-	--sf-rule: oklch(0.55 0.015 95 / 0.45);
-	--sf-accent: oklch(0.78 0.06 145);
+	--sf-forest: oklch(0.94 0.01 var(--sf-hue));
+	--sf-moss: oklch(0.82 0.012 var(--sf-hue));
+	--sf-leaf: oklch(0.8 0.04 var(--sf-hue));
+	--sf-ink: oklch(0.94 0.008 var(--sf-hue));
+	--sf-muted: oklch(0.78 0.01 var(--sf-hue));
+	--sf-faint: oklch(0.5 0.01 var(--sf-hue) / 0.45);
+	--sf-rule: oklch(0.55 0.012 var(--sf-hue) / 0.45);
+	--sf-accent: oklch(0.8 0.045 var(--sf-hue));
 	--sf-water-dot: oklch(0.74 0.08 230);
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 26%, transparent);
 	background: linear-gradient(
 		180deg,
-		oklch(0.2 0.012 145 / 0.78) 0%,
-		oklch(0.18 0.014 148 / 0.86) 55%,
-		oklch(0.16 0.016 150 / 0.9) 100%
+		oklch(0.2 0.01 var(--sf-hue) / 0.78) 0%,
+		oklch(0.18 0.012 var(--sf-hue) / 0.86) 55%,
+		oklch(0.16 0.014 var(--sf-hue) / 0.9) 100%
 	);
 }
 
@@ -139,14 +139,14 @@ html.dark .site-footer__scape {
 	background:
 		linear-gradient(
 			180deg,
-			oklch(0.97 0.012 145 / 0.88) 0%,
-			oklch(0.95 0.018 148 / 0.62) 32%,
-			oklch(0.93 0.022 150 / 0.42) 58%,
-			oklch(0.91 0.028 152 / 0.28) 100%
+			oklch(0.97 0.008 var(--sf-hue) / 0.88) 0%,
+			oklch(0.95 0.012 var(--sf-hue) / 0.62) 32%,
+			oklch(0.93 0.016 var(--sf-hue) / 0.42) 58%,
+			oklch(0.91 0.02 var(--sf-hue) / 0.28) 100%
 		),
 		radial-gradient(
 			ellipse 90% 55% at 50% 0%,
-			oklch(0.98 0.01 95 / 0.55),
+			oklch(0.98 0.006 var(--sf-hue) / 0.55),
 			transparent 70%
 		);
 }
@@ -155,105 +155,16 @@ html.dark .site-footer__veil {
 	background:
 		linear-gradient(
 			180deg,
-			oklch(0.18 0.012 145 / 0.92) 0%,
-			oklch(0.17 0.014 148 / 0.78) 36%,
-			oklch(0.16 0.016 150 / 0.55) 68%,
-			oklch(0.15 0.018 152 / 0.38) 100%
+			oklch(0.18 0.01 var(--sf-hue) / 0.92) 0%,
+			oklch(0.17 0.012 var(--sf-hue) / 0.78) 36%,
+			oklch(0.16 0.014 var(--sf-hue) / 0.55) 68%,
+			oklch(0.15 0.016 var(--sf-hue) / 0.38) 100%
 		),
 		radial-gradient(
 			ellipse 90% 50% at 50% 0%,
-			oklch(0.22 0.01 95 / 0.5),
+			oklch(0.22 0.008 var(--sf-hue) / 0.5),
 			transparent 70%
 		);
-}
-
-.site-footer__tree {
-	position: absolute;
-	top: 0.5rem;
-	bottom: 0;
-	width: clamp(5.5rem, 14vw, 11rem);
-	pointer-events: none;
-	z-index: 0;
-	opacity: 0.16;
-}
-
-.site-footer__tree--left {
-	left: 0;
-}
-
-.site-footer__tree--right {
-	right: 0;
-	transform: scaleX(-1);
-}
-
-.site-footer__tree::before {
-	content: "";
-	position: absolute;
-	left: 42%;
-	bottom: 0;
-	width: 0.55rem;
-	height: 55%;
-	border-radius: 0.25rem;
-	background: linear-gradient(
-		180deg,
-		oklch(0.42 0.06 60 / 0.75),
-		oklch(0.32 0.05 55 / 0.85)
-	);
-}
-
-.site-footer__tree::after {
-	content: "";
-	position: absolute;
-	left: 8%;
-	top: 8%;
-	width: 84%;
-	height: 48%;
-	border-radius: 50%;
-	background:
-		radial-gradient(circle at 30% 55%, oklch(0.45 0.1 145 / 0.9) 0 38%, transparent 40%),
-		radial-gradient(circle at 68% 48%, oklch(0.4 0.09 150 / 0.88) 0 42%, transparent 44%),
-		radial-gradient(circle at 48% 28%, oklch(0.48 0.1 140 / 0.85) 0 36%, transparent 38%),
-		radial-gradient(circle at 18% 42%, oklch(0.5 0.08 140 / 0.55) 0 18%, transparent 20%),
-		radial-gradient(circle at 82% 36%, oklch(0.46 0.09 150 / 0.5) 0 16%, transparent 18%);
-}
-
-html.dark .site-footer__tree {
-	opacity: 0.24;
-}
-
-html.dark .site-footer__tree::before {
-	background: linear-gradient(
-		180deg,
-		oklch(0.68 0.04 60 / 0.8),
-		oklch(0.58 0.045 55 / 0.88)
-	);
-}
-
-html.dark .site-footer__tree::after {
-	background:
-		radial-gradient(circle at 30% 55%, oklch(0.64 0.08 145 / 0.82) 0 38%, transparent 40%),
-		radial-gradient(circle at 68% 48%, oklch(0.6 0.075 150 / 0.8) 0 42%, transparent 44%),
-		radial-gradient(circle at 48% 28%, oklch(0.68 0.08 140 / 0.78) 0 36%, transparent 38%),
-		radial-gradient(circle at 18% 42%, oklch(0.7 0.06 140 / 0.48) 0 18%, transparent 20%),
-		radial-gradient(circle at 82% 36%, oklch(0.66 0.07 150 / 0.44) 0 16%, transparent 18%);
-}
-
-.site-footer__petals {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	opacity: 0.35;
-	background:
-		radial-gradient(circle 3px at 12% 28%, oklch(0.78 0.12 15 / 0.55), transparent 70%),
-		radial-gradient(circle 2.5px at 22% 62%, oklch(0.82 0.1 350 / 0.45), transparent 70%),
-		radial-gradient(circle 3.5px at 48% 22%, oklch(0.86 0.08 20 / 0.4), transparent 70%),
-		radial-gradient(circle 2px at 72% 34%, oklch(0.84 0.09 15 / 0.38), transparent 70%),
-		radial-gradient(circle 2.5px at 86% 58%, oklch(0.8 0.1 350 / 0.42), transparent 70%);
-}
-
-html.dark .site-footer__petals {
-	opacity: 0.28;
 }
 
 .site-footer__mist {
@@ -268,7 +179,7 @@ html.dark .site-footer__petals {
 			color-mix(in oklch, var(--sf-moss) 14%, transparent),
 			transparent 70%
 		),
-		linear-gradient(0deg, oklch(0.94 0.02 145 / 0.28) 0%, transparent 65%);
+		linear-gradient(0deg, oklch(0.94 0.012 var(--sf-hue) / 0.28) 0%, transparent 65%);
 	opacity: 0.9;
 }
 
@@ -279,7 +190,7 @@ html.dark .site-footer__mist {
 			color-mix(in oklch, var(--sf-moss) 20%, transparent),
 			transparent 70%
 		),
-		linear-gradient(0deg, oklch(0.14 0.014 150 / 0.4) 0%, transparent 65%);
+		linear-gradient(0deg, oklch(0.14 0.012 var(--sf-hue) / 0.4) 0%, transparent 65%);
 }
 
 /* —— 1 · 顶带 —— */
@@ -356,8 +267,6 @@ html.dark .site-footer__blurb--en {
 	gap: 0.75rem;
 	flex: 0 1 auto;
 	min-width: 0;
-	/* 浇水壶舞台 absolute 上浮约 7.25rem，须留空以免被 footer overflow 裁切 */
-	padding-top: 8.25rem;
 }
 
 .site-footer__garden-status {
@@ -431,6 +340,8 @@ html.dark .site-footer__band {
 	width: 100%;
 	box-sizing: border-box;
 	position: relative;
+	content-visibility: auto;
+	contain-intrinsic-size: auto 12rem;
 }
 
 .site-footer__nav::before {
@@ -442,16 +353,16 @@ html.dark .site-footer__band {
 	border-radius: 0.5rem;
 	background: linear-gradient(
 		180deg,
-		oklch(0.97 0.01 145 / 0.35) 0%,
-		oklch(0.95 0.015 148 / 0.18) 100%
+		oklch(0.97 0.008 var(--sf-hue) / 0.35) 0%,
+		oklch(0.95 0.01 var(--sf-hue) / 0.18) 100%
 	);
 }
 
 html.dark .site-footer__nav::before {
 	background: linear-gradient(
 		180deg,
-		oklch(0.16 0.01 145 / 0.35) 0%,
-		oklch(0.15 0.012 148 / 0.12) 100%
+		oklch(0.16 0.008 var(--sf-hue) / 0.35) 0%,
+		oklch(0.15 0.01 var(--sf-hue) / 0.12) 100%
 	);
 }
 
@@ -612,11 +523,11 @@ html.dark .site-footer__list a {
 	width: calc(100% + 2 * clamp(1.5rem, 5vw, 4rem));
 	box-sizing: border-box;
 	border-top: 1px solid var(--sf-faint);
-	background: color-mix(in oklch, var(--sf-moss) 6%, oklch(0.92 0.02 148 / 0.55));
+	background: color-mix(in oklch, var(--sf-moss) 6%, oklch(0.92 0.012 var(--sf-hue) / 0.55));
 }
 
 html.dark .site-footer__legal {
-	background: color-mix(in oklch, var(--sf-ink) 4%, oklch(0.14 0.012 150 / 0.72));
+	background: color-mix(in oklch, var(--sf-ink) 4%, oklch(0.14 0.01 var(--sf-hue) / 0.72));
 }
 
 .site-footer__legal-left {
@@ -912,7 +823,7 @@ html.dark .site-footer__water.is-watering {
 	transform: scaleY(0.86);
 	opacity: 0.85;
 	margin-bottom: 0.15rem;
-	filter: drop-shadow(0 2px 3px oklch(0.35 0.05 145 / 0.22));
+	filter: drop-shadow(0 2px 3px oklch(0.35 0.04 var(--sf-hue) / 0.22));
 	transition:
 		transform 0.45s var(--sf-ease),
 		opacity 0.3s var(--sf-ease),
@@ -993,7 +904,6 @@ html.dark .site-footer__water.is-watering {
 
 	.site-footer__top-right {
 		align-items: flex-start;
-		padding-top: 7.5rem;
 	}
 
 	.site-footer__garden-status {
@@ -1010,19 +920,8 @@ html.dark .site-footer__water.is-watering {
 @media (max-width: 720px) {
 	.site-footer {
 		padding: 2rem 0 0;
-		margin-left: 0;
-		margin-right: 0;
 		width: 100%;
 		max-width: 100%;
-	}
-
-	.site-footer__tree {
-		opacity: 0.12;
-		width: clamp(3.25rem, 18vw, 5rem);
-	}
-
-	html.dark .site-footer__tree {
-		opacity: 0.18;
 	}
 
 	.site-footer__scape {
@@ -1034,10 +933,6 @@ html.dark .site-footer__water.is-watering {
 		opacity: 0.16;
 	}
 
-	.site-footer__petals {
-		opacity: 0.18;
-	}
-
 	.site-footer__blurb--en {
 		display: none;
 	}
@@ -1046,6 +941,11 @@ html.dark .site-footer__water.is-watering {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		column-gap: 1.35rem;
 		padding: 1rem 0 1.6rem;
+	}
+
+	/* 移动端保留核心漫步 / 园径 / 连结；园趣与工具在主导航已有入口。 */
+	.site-footer__col--mobile-secondary {
+		display: none;
 	}
 
 	.site-footer__legal {
@@ -1100,7 +1000,6 @@ html.dark .site-footer__water.is-watering {
 		animation: none;
 	}
 
-	.site-footer__petals,
 	.site-footer__band {
 		opacity: 0.12;
 	}

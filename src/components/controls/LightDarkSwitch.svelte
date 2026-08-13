@@ -591,6 +591,21 @@ onMount(() => {
 		left: 60%;
 	}
 
+	@media (max-width: 767px) {
+		.day-slide {
+			--h: 2.5rem;
+			--ratio: 1;
+		}
+
+		.orb,
+		.is-night .orb {
+			top: 19%;
+			left: 19%;
+			width: 62%;
+			height: 62%;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.day-slide {
 			--dur: 0.01ms;

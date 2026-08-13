@@ -462,6 +462,9 @@ const hideRowCategoryKeys =
       var roots = document.querySelectorAll("[data-recommend-root]");
       if (!roots.length) return;
 
+      // 手机端侧栏与移动底栏均不渲染推荐卡，隐藏内容不得继续拉全量文章元数据。
+      if (window.matchMedia("(max-width: 767px)").matches) return;
+
       if (!isPostPath(location.pathname)) return;
 
       function run(allPosts) {

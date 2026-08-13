@@ -86,9 +86,11 @@ function initialActive(categoryName: string): {
               data-category-name={cat.name}
               data-active={active.active ? "" : undefined}
               data-soft-active={active.soft ? "" : undefined}
+              aria-label={`${cat.name} · ${cat.count}`}
+              title={`${cat.name} · ${cat.count}`}
             >
               <Icon is:inline name={categoryIconName(cat.name)} class="category-icon text-[0.9rem]" aria-hidden="true" />
-              <span>{cat.name}</span>
+              <span class="category-pill__label">{cat.name}</span>
               <span class="pill-count">{cat.count}</span>
             </a>
             );
@@ -107,7 +109,7 @@ function initialActive(categoryName: string): {
       aria-label={i18n(I18nKey.more)}
     >
       <Icon is:inline name="lucide:ellipsis" class="category-icon text-base" aria-hidden="true" />
-      <span>{i18n(I18nKey.more)}</span>
+      <span class="category-pill__label">{i18n(I18nKey.more)}</span>
     </a>
   </div>
 </div>
@@ -204,6 +206,33 @@ function initialActive(categoryName: string): {
   .category-scroll::-webkit-scrollbar {
     display: none;
   }
+
+  @media (max-width: 767px) {
+    .category-bar {
+      width: calc(100% - 1.5rem);
+      margin-inline: auto;
+      margin-bottom: 0.75rem;
+      padding: 0.35rem;
+    }
+
+    .category-bar-inner,
+    .category-scroll {
+      gap: 0.35rem;
+    }
+
+    .category-bar .category-pill {
+      width: 2.5rem;
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+    }
+
+    .category-pill__label,
+    .pill-count,
+    .category-divider {
+      display: none;
+    }
+  }
 </style>
 
 <script>
@@ -294,7 +323,11 @@ function initialActive(categoryName: string): {
 
   function updateCategoryBar(
     currentUrl = new URL(window.location.href),
-    options: { scrollBehavior?: ScrollBehavior; deferScroll?: boolean } = {},
+    options: {
+      scrollBehavior?: ScrollBehavior;
+      deferScroll?: boolean;
+      measure?: boolean;
+    } = {},
   ) {
     const bar = document.getElementById("category-bar");
     if (!bar) return;
@@ -306,6 +339,8 @@ function initialActive(categoryName: string): {
     }
 
     setActiveCategory(bar, currentUrl);
+
+    if (options.measure === false) return;
 
     const deferScroll = options.deferScroll ?? shouldDeferCategoryScroll(bar, currentUrl);
     const scrollBehavior = options.scrollBehavior ?? (deferScroll ? "auto" : "smooth");
@@ -424,9 +459,16 @@ function initialActive(categoryName: string): {
     }
   }
 
-  updateCategoryBar();
+  // 激活态可同步更新；横向尺寸与滚动提示不参与首屏关键渲染，空闲时再测量。
+  updateCategoryBar(new URL(window.location.href), { measure: false });
   initCategoryBarInteractions();
-  initScrollFeatures();
+  const measureInitialCategoryBar = () => {
+    const bar = document.getElementById("category-bar");
+    if (!bar) return;
+    scrollActiveCategoryIntoView(bar, "auto");
+    initScrollFeatures();
+  };
+  window.setTimeout(measureInitialCategoryBar, 300);
 
   // 在 Swup 导航时提前更新状态，避免切换期间激活态闪烁
   function setupSwupEarlyUpdate() {

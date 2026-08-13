@@ -237,7 +237,7 @@ const logoVariants = await Promise.all(
                     return <DropdownMenu link={l} isActive={isLinkActive(l)} />;
                 })}
             </div>
-            <div class="flex col-start-3 justify-self-end items-center gap-1.5 pl-2 lg:pl-4">
+            <div class="navbar-actions flex col-start-3 justify-self-end items-center gap-1.5 pl-2 lg:pl-4">
                 <!--<SearchPanel client:load>-->
                 <Search
                     client:idle
@@ -248,7 +248,7 @@ const logoVariants = await Promise.all(
                     rel="noopener noreferrer me"
                     aria-label="GitHub Repository"
                     title="GitHub"
-                    class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 inline-flex items-center justify-center"
+                    class="navbar-mobile-secondary btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 inline-flex items-center justify-center"
                 >
                     <Icon is:inline name="lucide:github" class="text-[1.25rem]" />
                 </a>
@@ -284,7 +284,7 @@ const logoVariants = await Promise.all(
                         aria-label={i18n(I18nKey.sakuraEffect)}
                         title={i18n(I18nKey.sakuraEffect)}
                         aria-pressed="false"
-                        class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 sakura-nav-btn"
+                        class="navbar-mobile-secondary btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 sakura-nav-btn"
                     >
                         <Icon is:inline name="lucide:flower-2" class="text-[1.25rem] sakura-nav-icon" />
                     </button>
@@ -353,6 +353,28 @@ const logoVariants = await Promise.all(
 		}
 		50% {
 			opacity: 0.45;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.navbar-actions {
+			gap: 0.125rem;
+			padding-left: 0.25rem;
+		}
+
+		.navbar-mobile-secondary,
+		.navbar-brand-title {
+			display: none;
+		}
+
+		.navbar-brand-ripple {
+			width: 2.5rem;
+			height: 2.5rem;
+			padding-inline: 0.375rem;
+		}
+
+		.navbar-logo {
+			margin: 0;
 		}
 	}
 </style>

@@ -728,7 +728,7 @@ const siteLang = lang.replace("_", "-");
 
     .enable-banner #top-row {
       height: calc(var(--banner-height-home) - 4.5rem);
-      @apply transition-all duration-300;
+      transition: height 0.3s ease, transform 0.3s ease;
     }
 
     /* 全屏壁纸模式 */
@@ -780,7 +780,7 @@ const siteLang = lang.replace("_", "-");
       right: 0 !important;
       z-index: 80 !important;
       height: 4.5rem !important;
-      /* 覆盖 transition-all duration-700，保证下滑隐藏手感干脆 */
+      /* sticky 下滑隐藏：只过渡 transform，别让 height/opacity 跟着拖 */
       transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
       will-change: transform;
     }

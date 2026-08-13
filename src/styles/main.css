@@ -282,18 +282,18 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 
     /* 开启边框和阴影效果时的样式 */
     .enable-card-border .card-base {
-        @apply transition-all duration-300 border border-(--line-divider) shadow-xs;
+        @apply transition-[border-color,box-shadow,background-color] duration-300 border border-(--line-divider) shadow-xs;
     }
     .enable-card-border .card-base-transparent {
-        @apply transition-all duration-300 border border-(--line-divider) shadow-xs;
+        @apply transition-[border-color,box-shadow,background-color] duration-300 border border-(--line-divider) shadow-xs;
     }
     .enable-card-border .btn-card {
-        @apply transition-all duration-300 border border-(--line-divider) shadow-xs;
+        @apply transition-[border-color,box-shadow,background-color] duration-300 border border-(--line-divider) shadow-xs;
     }
 
     /* 导航栏样式适配 */
     .enable-card-border #navbar > div:not(.absolute) {
-        @apply transition-all duration-300 border shadow-xs;
+        @apply transition-[border-color,box-shadow,background-color] duration-300 border shadow-xs;
         border-color: var(--line-divider) !important;
     }
 
@@ -454,7 +454,7 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     }
 
     .dropdown-menu {
-        @apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out transform translate-y-[-8px] z-50;
+        @apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none transition-[opacity,visibility,transform] duration-150 ease-out transform translate-y-[-8px] z-50;
     }
 
     .dropdown-container:hover .dropdown-menu,
@@ -502,7 +502,7 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 
     /* 移动端菜单样式 */
     .mobile-submenu {
-        @apply max-h-0 overflow-hidden transition-all duration-300 ease-in-out;
+        @apply max-h-0 overflow-hidden transition-[max-height] duration-300 ease-in-out;
     }
     
     .mobile-dropdown[data-expanded="true"] .mobile-submenu {

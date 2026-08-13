@@ -9,7 +9,7 @@ interface Props {
 
 const processedLinks = Astro.props.links;
 ---
-<div id="nav-menu-panel" class:list={["float-panel float-panel-closed transition-all fixed right-4 px-2 py-2 max-h-[80vh] overflow-y-auto"]}>
+<div id="nav-menu-panel" class:list={["float-panel float-panel-closed transition-[opacity,transform] duration-150 fixed right-4 px-2 py-2 max-h-[80vh] overflow-y-auto"]}>
     {processedLinks.map((link) => (
         <div class="mobile-menu-item">
             {link.children && link.children.length > 0 ? (
@@ -74,7 +74,7 @@ const processedLinks = Astro.props.links;
     @reference "../../styles/main.css";
 
     .mobile-submenu {
-        @apply max-h-0 overflow-hidden transition-all duration-300 ease-in-out;
+        @apply max-h-0 overflow-hidden transition-[max-height] duration-300 ease-in-out;
     }
 
     .mobile-dropdown[data-expanded="true"] .mobile-submenu {

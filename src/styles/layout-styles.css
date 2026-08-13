@@ -314,8 +314,6 @@ html.is-page-transitioning .banner-home-text-overlay {
     #wallpaper-wrapper {
         transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out;
         transform-origin: top center;
-        /* 硬件加速优化 */
-        will-change: transform, opacity;
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
         transform: translateZ(0);
@@ -333,8 +331,6 @@ html.is-page-transitioning .banner-home-text-overlay {
     /* 手机端非首页时主内容区域从顶部开始 - 延迟出现的动画 */
     .absolute.w-full.z-30 {
         transition: top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s;
-        /* 硬件加速优化 */
-        will-change: top;
         /* 禁用transform以保证back to top 按钮可以显示
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
@@ -357,10 +353,8 @@ html.is-page-transitioning .banner-home-text-overlay {
 /* 移动端banner性能优化 */
 @media (max-width: 1023px) {
     .banner-container {
-        /* 启用硬件加速 */
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
-        will-change: transform, opacity;
         
         /* 优化渲染性能 */
         contain: layout style paint;
@@ -371,10 +365,8 @@ html.is-page-transitioning .banner-home-text-overlay {
     }
 
     .carousel-item {
-        /* 硬件加速 */
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
-        will-change: transform, opacity;
         
         /* 优化触摸响应 */
         touch-action: pan-y;
@@ -486,7 +478,6 @@ html.is-page-transitioning .banner-home-text-overlay {
 #banner-images-container .banner-image-slot-desktop img {
     animation: banner-breathe 8s ease-in-out infinite;
     transform-origin: center;
-    will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
     #banner-images-container .slide-item.active img,

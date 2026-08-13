@@ -429,7 +429,7 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 <slot slot="head" name="head"></slot>
 <div
     id="top-row"
-    class="z-50 pointer-events-none relative transition-all duration-700 mx-auto"
+    class="z-50 pointer-events-none relative transition-[transform,opacity] duration-300 mx-auto"
     class:list={[
         stickyNavbar ? "h-18 fixed top-0 left-0 right-0 z-80" : "",
         navbarWidthFull ? "" : "w-full xl:w-[86vw] max-w-(--page-width) px-0 md:px-4",
@@ -438,7 +438,7 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
     <div
         id="navbar-wrapper"
         class:list={[
-            "pointer-events-auto transition-all",
+            "pointer-events-auto transition-[background-color,box-shadow,border-color] duration-300",
             stickyNavbar ? "" : "sticky top-0",
         ]}
     >
@@ -1268,22 +1268,25 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
     )}
 </div>
 
-<LiveChatWidget />
+{siteConfig.pages.ask && <LiveChatWidget />}
 
 <FloatingControls headings={headings} encrypted={encrypted} />
 
-<!-- 宠物点击 → 弹出 LiveChat 浮窗（事件委托，swup 换页后无需重绑） -->
-<script is:inline data-swup-ignore-script>
-    (function initPetLiveChatTrigger() {
-        document.addEventListener('click', function (event) {
-            var target = event.target;
-            if (!(target instanceof Element)) return;
-            var petRoot = target.closest('[data-pet-id]');
-            if (!petRoot) return;
-            window.dispatchEvent(new CustomEvent('pet:livechat:toggle'));
-        });
-    })();
-</script>
+{
+	siteConfig.pages.ask && (
+		<script is:inline data-swup-ignore-script>
+			(function initPetLiveChatTrigger() {
+				document.addEventListener("click", function (event) {
+					var target = event.target;
+					if (!(target instanceof Element)) return;
+					var petRoot = target.closest("[data-pet-id]");
+					if (!petRoot) return;
+					window.dispatchEvent(new CustomEvent("pet:livechat:toggle"));
+				});
+			})();
+		</script>
+	)
+}
 
 <!--
     触屏设备上让代码块的复制按钮默认隐藏，点一下代码块才显形。

@@ -62,10 +62,20 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.repel-text {
+			cursor: inherit;
+		}
+
 		.repel-word.is-entering {
 			opacity: 1;
 			transform: none;
 			animation: none;
+		}
+	}
+
+	@media (hover: none), (pointer: coarse) {
+		.repel-text {
+			cursor: inherit;
 		}
 	}
 </style>
@@ -210,7 +220,11 @@
 			moving = moving || active;
 		}
 
-		setCharsWillChange(scope, moving || pointer.active);
+		if (pointer.active) {
+			setCharsWillChange(scope, true);
+		} else if (!moving) {
+			setCharsWillChange(scope, false);
+		}
 		return moving;
 	}
 
@@ -301,16 +315,26 @@
 	}
 
 	function enhance(el: HTMLElement) {
-		if (el.dataset.repelDone === "1" && el.querySelector(".repel-char")) return;
-
 		const text = (el.textContent || "").trim();
 		if (!text) return;
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const interactivePointer = window.matchMedia(
+			"(hover: hover) and (pointer: fine)",
+		).matches;
+		const nextMode = !reduced && interactivePointer ? "interactive" : "static";
+		if (el.dataset.repelDone === "1" && el.dataset.repelMode === nextMode) return;
 
 		teardown(el);
 		el.dataset.repelDone = "1";
+		el.dataset.repelMode = nextMode;
 
-		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		const wantEnter = !reduced && el.getAttribute("data-repel-enter") === "1";
+		// 触摸屏与 reduced-motion 保留原文，不拆成逐字符 DOM。
+		if (nextMode === "static") {
+			el.textContent = text;
+			return;
+		}
+
+		const wantEnter = el.getAttribute("data-repel-enter") === "1";
 		const words = splitWords(text);
 		const frag = document.createDocumentFragment();
 
@@ -329,8 +353,6 @@
 		});
 
 		el.replaceChildren(frag);
-
-		if (reduced) return;
 
 		el.dataset.repelBound = "1";
 		const ac = new AbortController();
@@ -351,11 +373,23 @@
 
 		if (wantEnter) settleWords(el, words.length, signal);
 
-		// 对齐 use-pointer-repel：进入时才量中心，避免首屏强制布局
+		const ensureMeasured = () => {
+			if (!scope.measured) measureScope(scope);
+		};
+
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(() => {
+				if (signal.aborted || !scope.measured) return;
+				measureScope(scope);
+			}).catch(() => {});
+		}
+
 		el.addEventListener(
 			"pointerenter",
 			() => {
-				measureScope(scope);
+				ensureMeasured();
+				scope.pointer.active = true;
+				setCharsWillChange(scope, true);
 			},
 			{ signal },
 		);

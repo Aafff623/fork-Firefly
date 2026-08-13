@@ -54,7 +54,7 @@ const pinAdminLabels = {
 
 <div
   id="post-list-container"
-  class={`transition-all duration-500 ease-in-out mb-4 ${initialLayoutClass}`}
+  class={`mb-4 ${initialLayoutClass}`}
   data-default-layout={defaultLayout}
   data-mobile-default-layout={mobileDefaultLayout}
   data-layout-switchable={layoutSwitchable}
@@ -129,8 +129,12 @@ const pinAdminLabels = {
         } else {
           container.classList.add('list-mode', 'flex', 'flex-col', 'gap-4', 'md:gap-4');
         }
-        container.offsetHeight;
-        container.style.transition = '';
+        // 不在首屏对整篇列表做同步 layout；两帧后再恢复过渡，避免移动端 LCP 前的强制回流。
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            container.style.transition = '';
+          });
+        });
       }
     }
   })();

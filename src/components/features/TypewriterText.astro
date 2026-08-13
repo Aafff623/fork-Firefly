@@ -17,16 +17,40 @@ const {
 	deferStart = false,
 	class: className = "",
 } = Astro.props;
-const textData = Array.isArray(text) ? JSON.stringify(text) : text;
+const textsArr = Array.isArray(text) ? text : [text];
+const textData = JSON.stringify(textsArr);
+const longest = textsArr.reduce(
+	(a, b) =>
+		Array.from(String(b)).length > Array.from(String(a)).length ? b : a,
+	textsArr[0] || "",
+);
+const lockHeight = textsArr.length > 1;
 ---
 
-<span
-  class={`typewriter ${className}`}
-  data-text={textData}
-  data-speed={speed}
-  data-delete-speed={deleteSpeed}
-  data-pause-time={pauseTime}
-  data-defer-start={deferStart ? "true" : undefined}></span>
+{
+	lockHeight ? (
+		<span class="typewriter-host">
+			<span class="typewriter-sizer" aria-hidden="true">{longest}</span>
+			<span
+				class={`typewriter ${className}`}
+				data-text={textData}
+				data-speed={speed}
+				data-delete-speed={deleteSpeed}
+				data-pause-time={pauseTime}
+				data-defer-start={deferStart ? "true" : undefined}
+			></span>
+		</span>
+	) : (
+		<span
+			class={`typewriter ${className}`}
+			data-text={textData}
+			data-speed={speed}
+			data-delete-speed={deleteSpeed}
+			data-pause-time={pauseTime}
+			data-defer-start={deferStart ? "true" : undefined}
+		></span>
+	)
+}
 
 <script>
   class TypewriterEffect {
@@ -55,6 +79,11 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
       this.speed = parseInt(element.dataset.speed || "100");
       this.deleteSpeed = parseInt(element.dataset.deleteSpeed || "50");
       this.pauseTime = parseInt(element.dataset.pauseTime || "2000");
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        this.element.textContent = this.texts[0] || "";
+        return;
+      }
 
       // 面板轮播等场景：等 typewriter:restart 再开打
       if (element.dataset.deferStart === "true") {
@@ -93,6 +122,11 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     }
 
     private type() {
+      if (!this.element.isConnected) {
+        this.destroy();
+        delete (this.element as HTMLElement & { __typewriterInstance?: TypewriterEffect }).__typewriterInstance;
+        return;
+      }
       const currentText = this.getCurrentText();
       const segments = this.segmentText(currentText);
 
@@ -138,23 +172,24 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     }
 
     public destroy() {
-      if (this.timeoutId) {
+      if (this.timeoutId !== null) {
         clearTimeout(this.timeoutId);
+        this.timeoutId = null;
       }
     }
 
     private segmentText(text: string): string[] {
+      if (typeof Intl.Segmenter !== "function") return Array.from(text);
       const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
-      return Array.from(segmenter.segment(text), s => s.segment);
+      return Array.from(segmenter.segment(text), (segment) => segment.segment);
     }
 
   }
 
   function bindTypewriter(el: HTMLElement) {
     const typed = el as HTMLElement & { __typewriterInstance?: TypewriterEffect; __typewriterRestartBound?: boolean };
-    if (typed.__typewriterInstance) {
-      typed.__typewriterInstance.destroy();
-    }
+    // content:replace / page:view 可能连续触发；已绑定节点不重启打字与计时器。
+    if (typed.__typewriterInstance) return;
     typed.textContent = "";
     typed.__typewriterInstance = new TypewriterEffect(typed);
 
@@ -181,11 +216,14 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     });
   }
 
+  let delayedInitId = 0;
+
   // 初始化所有打字机效果
   function runInitWithDelay() {
     initTypewriterElements();
-    // 兼容 banner 显隐晚于内容替换的场景
-    setTimeout(initTypewriterElements, 220);
+    // 兼容 banner 晚于内容替换出现；只补绑新节点，不重启现有实例。
+    window.clearTimeout(delayedInitId);
+    delayedInitId = window.setTimeout(initTypewriterElements, 220);
   }
 
   if (document.readyState === "loading") {
@@ -210,6 +248,25 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
 </script>
 
 <style>
+  .typewriter-host {
+    display: grid;
+    justify-items: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .typewriter-sizer,
+  .typewriter-host > .typewriter {
+    grid-area: 1 / 1;
+  }
+
+  .typewriter-sizer {
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+    white-space: pre-wrap;
+  }
+
   .typewriter {
     position: relative;
   }
@@ -228,6 +285,12 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     51%,
     100% {
       opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typewriter::after {
+      animation: none;
     }
   }
 </style>
