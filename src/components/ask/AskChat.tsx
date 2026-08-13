@@ -13,6 +13,7 @@ import {
 	useEffect,
 	useRef,
 	useState,
+	type ReactElement,
 	type ReactNode,
 } from "react";
 import { readAskSse } from "@/utils/ask-sse";
@@ -308,7 +309,7 @@ function TraceBlock({
 	);
 }
 
-export default function AskChat() {
+export default function AskChat(): ReactElement {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [value, setValue] = useState("");
 	const [status, setStatus] = useState<ChatStatus>("ready");

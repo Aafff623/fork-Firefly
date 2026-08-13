@@ -560,20 +560,7 @@ function getQrLqipProps(qrCode: string) {
         },
       ],
       {
-        animated: true,
         dragToClose: true,
-        caption: true,
-        Toolbar: {
-          display: {
-            left: ["infobar"],
-            middle: ["zoomIn", "zoomOut", "toggle1to1"],
-            right: ["close"],
-          },
-        },
-        Panzoom: {
-          maxScale: 5,
-          minScale: 1,
-        },
       },
     );
   }

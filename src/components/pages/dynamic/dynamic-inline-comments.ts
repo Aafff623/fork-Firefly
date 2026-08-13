@@ -113,7 +113,9 @@ function isInOrNearViewport(el: HTMLElement, marginPx = 240): boolean {
 
 function detachOtherComposers(keep: HTMLElement) {
 	document
-		.querySelectorAll<HTMLElement>("dynamic-inline-comments[data-composer-open='true']")
+		.querySelectorAll<HTMLElement>(
+			"[data-dynamic-inline-comments][data-composer-open='true']",
+		)
 		.forEach((el) => {
 			if (el === keep) return;
 			(
@@ -122,15 +124,30 @@ function detachOtherComposers(keep: HTMLElement) {
 		});
 }
 
-export function registerDynamicInlineComments(): void {
-	if (customElements.get("dynamic-inline-comments")) return;
+export function registerDynamicInlineComments(): () => void {
+	const page = document.querySelector<HTMLElement>(".dynamic-page");
+	if (!page) return () => {};
 
-	class DynamicInlineComments extends HTMLElement {
+	class DynamicInlineCommentsController {
 		#observer: IntersectionObserver | null = null;
 		#messageListener: ((event: MessageEvent) => void) | null = null;
 		#outsidePointerListener: ((event: PointerEvent) => void) | null = null;
 
-		connectedCallback() {
+		constructor(private readonly el: HTMLElement) {}
+
+		private get dataset(): DOMStringMap {
+			return this.el.dataset;
+		}
+
+		private querySelector<T extends Element>(selector: string): T | null {
+			return this.el.querySelector<T>(selector);
+		}
+
+		private contains(node: Node): boolean {
+			return this.el.contains(node);
+		}
+
+		connect() {
 			if (this.dataset.ready) return;
 			this.querySelector("[data-comment-toggle]")?.addEventListener(
 				"click",
@@ -139,11 +156,10 @@ export function registerDynamicInlineComments(): void {
 			this.dataset.ready = "true";
 
 			// 暴露给全局「只留一个写作框」
-			(
-				this as HTMLElement & { closeComposer?: () => void }
-			).closeComposer = () => this.setComposerOpen(false);
+			(this.el as HTMLElement & { closeComposer?: () => void }).closeComposer = () =>
+				this.setComposerOpen(false);
 
-			if (isInOrNearViewport(this, 280)) {
+			if (isInOrNearViewport(this.el, 280)) {
 				void this.ensureLoaded();
 				return;
 			}
@@ -157,10 +173,10 @@ export function registerDynamicInlineComments(): void {
 				},
 				{ rootMargin: "240px 0px", threshold: 0.01 },
 			);
-			this.#observer.observe(this);
+			this.#observer.observe(this.el);
 		}
 
-		disconnectedCallback() {
+		disconnect() {
 			this.#observer?.disconnect();
 			this.#observer = null;
 			this.teardownMessageListeners();
@@ -180,7 +196,7 @@ export function registerDynamicInlineComments(): void {
 			if (!panel) return;
 
 			if (open) {
-				detachOtherComposers(this);
+				detachOtherComposers(this.el);
 				panel.removeAttribute("hidden");
 				rest?.removeAttribute("hidden");
 				this.dataset.expanded = "true";
@@ -228,7 +244,7 @@ export function registerDynamicInlineComments(): void {
 			}
 
 			const path = extractPathFromSrc(this.dataset.src);
-			await acquireFetchSlot(this);
+			await acquireFetchSlot(this.el);
 			try {
 				const res = await fetch(
 					`${serverURL}/comment?path=${encodeURIComponent(path)}&pageSize=50&page=1`,
@@ -482,5 +498,31 @@ export function registerDynamicInlineComments(): void {
 		}
 	}
 
-	customElements.define("dynamic-inline-comments", DynamicInlineComments);
+	const controllers = new Set<DynamicInlineCommentsController>();
+	const connect = (root: ParentNode) => {
+		root
+			.querySelectorAll<HTMLElement>("[data-dynamic-inline-comments]")
+			.forEach((el) => {
+				if (el.dataset.ready) return;
+				const controller = new DynamicInlineCommentsController(el);
+				controller.connect();
+				controllers.add(controller);
+			});
+	};
+
+	connect(page);
+	const observer = new MutationObserver((records) => {
+		for (const record of records) {
+			for (const node of record.addedNodes) {
+				if (node instanceof Element) connect(node);
+			}
+		}
+	});
+	observer.observe(page, { childList: true, subtree: true });
+
+	return () => {
+		observer.disconnect();
+		controllers.forEach((controller) => controller.disconnect());
+		controllers.clear();
+	};
 }

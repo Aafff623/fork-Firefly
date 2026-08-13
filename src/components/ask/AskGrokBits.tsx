@@ -6,6 +6,7 @@ import {
 	useState,
 	type FormEvent,
 	type KeyboardEvent,
+	type ReactElement,
 } from "react";
 import {
 	ASK_PERSONAS,
@@ -75,7 +76,7 @@ export function buildFollowUps(userQ: string, sources: AskSource[]): string[] {
 }
 
 /** Grok：重叠 favicon + “N sources” pill，点开列出来源 */
-export function AskSourcesPill({ sources }: { sources: AskSource[] }) {
+export function AskSourcesPill({ sources }: { sources: AskSource[] }): ReactElement | null {
 	const [open, setOpen] = useState(false);
 	const preview = sources.slice(0, 3);
 	if (!sources.length) return null;
@@ -142,7 +143,7 @@ export function AskFollowUps({
 }: {
 	items: string[];
 	onPick: (q: string) => void;
-}) {
+}): ReactElement | null {
 	if (!items.length) return null;
 	return (
 		<ul className="ask-followups">
@@ -183,7 +184,7 @@ export function AskGrokComposer({
 	onPersonaChange,
 	plusSuggestions,
 	onPickSuggestion,
-}: ComposerProps) {
+}: ComposerProps): ReactElement {
 	const [plusOpen, setPlusOpen] = useState(false);
 	const [personaOpen, setPersonaOpen] = useState(false);
 	const [listening, setListening] = useState(false);

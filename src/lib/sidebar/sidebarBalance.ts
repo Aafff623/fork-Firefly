@@ -13,14 +13,14 @@ export const DEFAULT_BALANCE_PARK_MIN_GAP_PX = 160;
 const BOOT_KEY = "__fireflySidebarBalanceBooted";
 
 export function isBrowsePostPath(
-	pathname = typeof window !== "undefined" ? window.location.pathname : "",
+	pathname: string = typeof window !== "undefined" ? window.location.pathname : "",
 ): boolean {
 	return /\/posts\//.test(pathname);
 }
 
 /** 动态页（含 /dynamic/comments）：左溢出即失衡，不依赖日历下空隙 */
 export function isDynamicPath(
-	pathname = typeof window !== "undefined" ? window.location.pathname : "",
+	pathname: string = typeof window !== "undefined" ? window.location.pathname : "",
 ): boolean {
 	return /\/dynamic(\/|$)/.test(pathname);
 }
@@ -59,7 +59,7 @@ function estimateLeftStickyBottom(left: HTMLElement): number {
  * （无日历 → true；有日历 → 日历在视口内且底边到视口底空隙 ≥ minGapPx）
  */
 export function isSidebarImbalanced(
-	minGapPx = DEFAULT_BALANCE_PARK_MIN_GAP_PX,
+	minGapPx: number = DEFAULT_BALANCE_PARK_MIN_GAP_PX,
 ): boolean {
 	if (typeof window === "undefined" || isBrowsePostPath()) return false;
 

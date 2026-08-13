@@ -679,7 +679,6 @@
         setLoading(true);
         mgr.init();
     }
-})
 
     widget.dataset.ffMusicBound = "1";
   }

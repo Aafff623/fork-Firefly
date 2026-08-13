@@ -2,6 +2,7 @@
  * /ask 富文本：单次 GFM 渲染（不用 HeroUI Markdown 的 marked.lexer 分块，
  * 分块会把表格拆烂，只剩最后一块能显示）。
  */
+import type { ReactElement } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -81,7 +82,7 @@ type Props = {
 	className?: string;
 };
 
-export default function AskMarkdown({ children, className }: Props) {
+export default function AskMarkdown({ children, className }: Props): ReactElement {
 	const content = normalizeAskMarkdown(children || "");
 	return (
 		<div

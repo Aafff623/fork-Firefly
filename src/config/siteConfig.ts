@@ -123,6 +123,8 @@ export const siteConfig: SiteConfig = {
 		dynamic: true,
 		// 角色名录页面开关（园主 + AI 协作者）
 		agents: true,
+		// 问答助手：DEV 可测；生产藏入口（MaxKB 仍绑本机）。上云后改 true
+		ask: import.meta.env?.PROD !== true,
 	},
 
 	/**

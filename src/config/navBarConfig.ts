@@ -199,6 +199,7 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "问答",
 		url: "/ask/",
 		icon: "lucide:bot-message-square",
+		pageKey: "ask",
 	},
 };
 

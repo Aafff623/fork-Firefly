@@ -138,7 +138,7 @@ export function triggerPetYzhanByTheme(): void {
 	void triggerYzhanBurst(mode);
 }
 
-type ConfettiFn = (typeof import("canvas-confetti"))["default"];
+type ConfettiFn = typeof import("canvas-confetti");
 
 let confettiModulePromise: Promise<ConfettiFn> | null = null;
 
@@ -146,9 +146,10 @@ async function loadConfetti(): Promise<ConfettiFn | null> {
 	if (!confettiModulePromise) {
 		confettiModulePromise = import("canvas-confetti")
 			.then((mod) => {
+				const maybeDefault = (mod as unknown as { default?: unknown }).default;
 				const fn =
-					typeof mod.default === "function"
-						? mod.default
+					typeof maybeDefault === "function"
+						? (maybeDefault as ConfettiFn)
 						: typeof (mod as unknown as ConfettiFn) === "function"
 							? (mod as unknown as ConfettiFn)
 							: null;

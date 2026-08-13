@@ -5,6 +5,7 @@
  * action=chat：SSE 透传 MaxKB stream:true。
  */
 import type { APIRoute } from "astro";
+import { siteConfig } from "@/config";
 import {
 	buildAskPrompt,
 	retrieveSiteHits,
@@ -21,9 +22,9 @@ const MAXKB_BASE = (
 ).replace(/\/$/, "");
 
 const ACCESS_TOKEN =
-	import.meta.env.MAXKB_ACCESS_TOKEN ||
+	(import.meta.env.MAXKB_ACCESS_TOKEN as string | undefined) ||
 	process.env.MAXKB_ACCESS_TOKEN ||
-	"2777601d60679239";
+	"";
 
 function json(
 	data: unknown,
@@ -38,6 +39,32 @@ function json(
 		},
 	});
 }
+
+function askClosed(): Response {
+	return json({ code: 404, message: "Not Found" }, 404);
+}
+
+function tokenMissing(): Response {
+	return json(
+		{
+			code: 503,
+			message:
+				"未配置 MAXKB_ACCESS_TOKEN。本地请写入 .env（勿入库）；生产问答关闭时本接口应 404。",
+		},
+		503,
+	);
+}
+
+function guardAsk(): Response | null {
+	if (!siteConfig.pages.ask) return askClosed();
+	if (!ACCESS_TOKEN) return tokenMissing();
+	return null;
+}
+
+export const GET: APIRoute = async () => {
+	if (!siteConfig.pages.ask) return askClosed();
+	return new Response(null, { status: 405 });
+};
 
 async function maxkbFetch(
 	path: string,
@@ -76,6 +103,9 @@ async function maxkbFetch(
 
 /** POST /api/ask/?action=… */
 export const POST: APIRoute = async ({ request, url }) => {
+	const closed = guardAsk();
+	if (closed) return closed;
+
 	const action = url.searchParams.get("action") || "session";
 
 	if (action === "session") {

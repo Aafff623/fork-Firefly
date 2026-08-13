@@ -1,7 +1,12 @@
 ---
 import AskChat from "@/components/ask/AskChat";
+import { siteConfig } from "@/config";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import "@/styles/ask-heroui.css";
+
+if (!siteConfig.pages.ask) {
+	return Astro.redirect("/404/");
+}
 
 const title = "站点问答助手";
 const description = "基于站点内容回答你的问题，欢迎来问。";

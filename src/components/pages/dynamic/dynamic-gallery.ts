@@ -14,6 +14,21 @@ export function registerDynamicGallery(): void {
 		private images: GalleryImage[] = [];
 
 		connectedCallback() {
+			const island = this.closest<HTMLElement>("astro-island[ssr]");
+			if (island) {
+				island.addEventListener(
+					"astro:hydrate",
+					() => {
+						if (this.isConnected) this.initialize();
+					},
+					{ once: true },
+				);
+				return;
+			}
+			this.initialize();
+		}
+
+		private initialize() {
 			const source = this.dataset.sourceId
 				? document.getElementById(this.dataset.sourceId)
 				: null;

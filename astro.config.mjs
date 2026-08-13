@@ -277,6 +277,9 @@ export default defineConfig({
 				if (pathname === "/anime/" && !siteConfig.pages.anime) {
 					return false;
 				}
+				if (pathname === "/ask/" && !siteConfig.pages.ask) {
+					return false;
+				}
 
 				return true;
 			},

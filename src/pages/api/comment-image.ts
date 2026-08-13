@@ -168,7 +168,9 @@ async function sha256Hex(
 			: data instanceof ArrayBuffer
 				? new Uint8Array(data)
 				: data;
-	const dig = await crypto.subtle.digest("SHA-256", bytes);
+	const cryptoBytes = new Uint8Array(bytes.byteLength);
+	cryptoBytes.set(bytes);
+	const dig = await crypto.subtle.digest("SHA-256", cryptoBytes.buffer);
 	return toHex(dig);
 }
 
@@ -176,9 +178,11 @@ async function hmacSha256(
 	key: ArrayBuffer | Uint8Array,
 	message: string,
 ): Promise<ArrayBuffer> {
+	const keyBytes = new Uint8Array(key.byteLength);
+	keyBytes.set(key instanceof Uint8Array ? key : new Uint8Array(key));
 	const cryptoKey = await crypto.subtle.importKey(
 		"raw",
-		key instanceof Uint8Array ? key : new Uint8Array(key),
+		keyBytes.buffer,
 		{ name: "HMAC", hash: "SHA-256" },
 		false,
 		["sign"],

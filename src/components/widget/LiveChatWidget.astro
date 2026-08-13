@@ -1,5 +1,5 @@
 ---
-// LiveChat 漫画对话框：点击宠物弹出，调 MaxKB API
+// 浏览器只访问同源代理；MAXKB_ACCESS_TOKEN 仅允许停留在服务端。
 ---
 
 <div id="livechat-widget" class="livechat-widget" aria-hidden="true">
@@ -311,9 +311,9 @@
     .lc-input-area button svg { width: 0.875rem; height: 0.875rem; }
 </style>
 
-<script>
-    const LC_API_BASE = "http://localhost:8080/chat/api";
-    const LC_ACCESS_TOKEN = "2777601d60679239";
+<script is:inline>
+  (() => {
+    const LC_API_BASE = "/api/ask/";
 
     let lcToken = null;
     let lcChatId = null;
@@ -321,7 +321,6 @@
 
     const widget = document.getElementById("livechat-widget");
     const bubble = document.getElementById("lc-bubble");
-    const panel = document.getElementById("lc-panel");
     const messagesEl = document.getElementById("livechat-messages");
     const inputEl = document.getElementById("livechat-input");
     const sendBtn = document.getElementById("livechat-send");
@@ -331,7 +330,21 @@
     }
 
     function lcEscape(s) {
-        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function lcSafeUrl(value) {
+        try {
+            const next = new URL(String(value || ""), window.location.origin);
+            return next.protocol === "http:" || next.protocol === "https:" ? next.href : "#";
+        } catch (_error) {
+            return "#";
+        }
     }
 
     function lcAddMsg(role, content, sources) {
@@ -342,7 +355,7 @@
         row.className = `lc-msg ${isMe ? "me" : ""} lc-animate`;
         let sourcesHtml = "";
         if (sources && sources.length) {
-            sourcesHtml = `<div class="lc-sources">${sources.map(s => `<a href="${s.url}" target="_blank">${lcEscape(s.title)}</a>`).join(" · ")}</div>`;
+            sourcesHtml = `<div class="lc-sources">${sources.map(s => `<a href="${lcEscape(lcSafeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${lcEscape(s.title)}</a>`).join(" · ")}</div>`;
         }
         row.innerHTML = `
             <div class="lc-msg-avatar ${isMe ? "user" : "ai"}">${isMe ? "我" : "问"}</div>
@@ -375,22 +388,15 @@
 
     async function lcEnsureSession() {
         if (!lcToken) {
-            const res = await fetch(`${LC_API_BASE}/auth/anonymous`, {
+            const res = await fetch(`${LC_API_BASE}?action=session`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ access_token: LC_ACCESS_TOKEN }),
             });
             const data = await res.json();
             if (data.code !== 200) throw new Error("auth failed");
-            lcToken = data.data;
-        }
-        if (!lcChatId) {
-            const res = await fetch(`${LC_API_BASE}/open`, {
-                headers: { Authorization: "Bearer " + lcToken },
-            });
-            const data = await res.json();
-            if (data.code !== 200) throw new Error("open failed");
-            lcChatId = data.data;
+            lcToken = data.data && data.data.token;
+            lcChatId = data.data && data.data.chatId;
+            if (!lcToken || !lcChatId) throw new Error("session invalid");
         }
     }
 
@@ -407,15 +413,49 @@
 
         try {
             await lcEnsureSession();
-            const res = await fetch(`${LC_API_BASE}/chat_message/${lcChatId}`, {
+            const res = await fetch(`${LC_API_BASE}?action=chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: "Bearer " + lcToken,
                 },
-                body: JSON.stringify({ message: text, stream: false, re_chat: false }),
+                body: JSON.stringify({
+                    token: lcToken,
+                    chatId: lcChatId,
+                    message: text,
+                    hits: [],
+                    persona: "guide",
+                }),
             });
-            const data = await res.json();
+            const contentType = res.headers.get("content-type") || "";
+            let data;
+            if (contentType.includes("text/event-stream")) {
+                const raw = await res.text();
+                let content = "";
+                let last = null;
+                raw.split(/\r?\n\r?\n/).forEach((frame) => {
+                    const payload = frame
+                        .split(/\r?\n/)
+                        .filter((line) => line.startsWith("data:"))
+                        .map((line) => line.slice(5).trimStart())
+                        .join("\n")
+                        .trim();
+                    if (!payload || payload === "[DONE]") return;
+                    try {
+                        const event = JSON.parse(payload);
+                        if (typeof event.content === "string") content += event.content;
+                        last = event;
+                    } catch (_error) {}
+                });
+                data = {
+                    code: res.ok ? 200 : res.status,
+                    data: {
+                        content,
+                        paragraph_list: (last && last.paragraph_list) || [],
+                    },
+                };
+            } else {
+                data = await res.json();
+            }
             lcRemoveTyping();
             if (data.code === 200 && data.data) {
                 const answer = data.data.content || "（没拿到回答）";
@@ -429,7 +469,7 @@
             }
         } catch (e) {
             lcRemoveTyping();
-            lcAddMsg("assistant", "连不上问答服务。请确认本机 MaxKB 在跑。");
+            lcAddMsg("assistant", "问答服务暂时不可用，请稍后再试。");
         }
 
         lcLoading = false;
@@ -482,4 +522,5 @@
     inputEl.addEventListener("keydown", e => {
         if (e.key === "Enter") lcSend();
     });
+  })();
 </script>

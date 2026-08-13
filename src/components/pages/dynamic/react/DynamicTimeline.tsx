@@ -434,8 +434,9 @@ function EntryBody({
 			</dynamic-gallery>
 
 			{showComments ? (
-				<dynamic-inline-comments
+				<div
 					className="dynamic-inline-comments"
+					data-dynamic-inline-comments=""
 					data-src={`/dynamic/comments/?path=${encodeURIComponent(`/dynamic/${entry.id}/`)}`}
 					data-author={entry.author || undefined}
 					data-owner-name={profileName}
@@ -463,7 +464,7 @@ function EntryBody({
 						data-comment-panel=""
 						hidden
 					/>
-				</dynamic-inline-comments>
+				</div>
 			) : null}
 		</div>
 	);
@@ -603,7 +604,7 @@ export default function DynamicTimeline({
 
 	useEffect(() => {
 		registerDynamicGallery();
-		registerDynamicInlineComments();
+		return registerDynamicInlineComments();
 	}, []);
 
 	useEffect(() => {
