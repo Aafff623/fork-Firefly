@@ -8,6 +8,7 @@ tags: [Firefly, Astro]
 category: 功能
 image: ./images/minimax/v2-firefly.jpg
 slug: firefly
+draft: true
 ---
 
 ## 🌟 项目概述

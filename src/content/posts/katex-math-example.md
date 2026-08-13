@@ -7,6 +7,7 @@ tags: [Firefly, Markdown, KaTeX]
 category: 写作
 image: ./images/minimax/v2-katex.jpg
 slug: katex-math-example
+draft: true
 ---
 
 本文展示了 [Firefly](https://github.com/CuteLeaf/Firefly) 主题对 KaTeX 数学公式的渲染支持。

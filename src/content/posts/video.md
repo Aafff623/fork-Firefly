@@ -7,6 +7,7 @@ tags: [Firefly, Markdown, 视频]
 category: 写作
 image: ./images/minimax/v2-video.jpg
 slug: video
+draft: true
 ---
 
 只需从 YouTube 或其他平台复制嵌入代码，然后将其粘贴到 markdown 文件中。

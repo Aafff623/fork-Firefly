@@ -8,6 +8,7 @@ image: ../images/minimax/v2-guide.jpg
 tags: [Firefly, Markdown]
 category: 指南
 collections: [agentic-coding]
+draft: true
 ---
 
 

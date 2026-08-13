@@ -7,6 +7,7 @@ image: ../images/minimax/v2-wiki.jpg
 tags: [Firefly, Markdown, Wiki-Link, Obsidian]
 category: 指南
 slug: guide/firefly-wiki-link
+draft: true
 ---
 
 Firefly 支持在 Markdown、MDX 文章中使用 Obsidian 风格的 Wiki Link 内部链接。链接目标填写文章的 slug 或文件路径，都不需要包含扩展名，具体匹配规则见下文「链接目标的三种写法」。

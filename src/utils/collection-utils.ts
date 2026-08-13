@@ -90,12 +90,12 @@ export async function getCollections(): Promise<CollectionEntryWithMeta[]> {
 		.filter((c): c is CollectionEntryWithMeta => c != null);
 }
 
-/** 总览页只用一级合集（无 parent） */
+/** 总览页只用一级合集（无 parent）；0 篇不出卡，配置项保留 */
 export async function getTopLevelCollections(): Promise<
 	CollectionEntryWithMeta[]
 > {
 	const all = await getCollections();
-	return all.filter((c) => !c.meta.parent);
+	return all.filter((c) => !c.meta.parent && c.posts.length > 0);
 }
 
 /** 按 slug 取单个合集；未登记返回 null（详情页用于 404 守卫） */

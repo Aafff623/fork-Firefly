@@ -7,6 +7,7 @@ tags: [Firefly, Markdown, PlantUML]
 category: 写作
 image: ./images/minimax/v2-plantuml.jpg
 slug: markdown-plantuml
+draft: true
 ---
 
 ## Markdown 中 PlantUML 图表指南

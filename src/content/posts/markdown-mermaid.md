@@ -8,6 +8,7 @@ tags: [Firefly, Markdown, Mermaid]
 category: 写作
 image: ./images/minimax/v2-mermaid.jpg
 slug: markdown-mermaid
+draft: true
 ---
 ## Markdown 中 Mermaid 图表完整指南
 

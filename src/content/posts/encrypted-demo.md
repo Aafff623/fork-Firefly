@@ -2,6 +2,7 @@
 title: Firefly 文章加密
 author: threetwoa
 published: 2026-08-01
+draft: true
 description: 这是一篇密码保护的示例文章，用于演示文章加密功能。
 tags: [Firefly, 加密]
 category: 功能
