@@ -37,9 +37,8 @@
 
 | Skill | 用途 |
 |---|---|
-| `ob2blog` | Obsidian/MD → 本仓帖（vault 附件、结构 / FM / 媒体） |
-| `knowledge-extract` | 会话/调研/BibiGPT/公众号 → Knowledge 素材（Theme/facet；不直接发帖） |
-| `knowledge-output` | Knowledge 素材 → `posts/<slug>`（草稿进 `_draftbox/`，不 push）；正式发收尾接 `site-cascade` |
+| `knowledge-extract` | **写稿唯一进料口**（vault / 粘贴 / 调研 / 早报热榜分流）；落 Knowledge（合集除外） |
+| `knowledge-output` | Knowledge 素材 → `posts/<slug>`（发布岗；无主题分批扫 todo；草稿进 `_draftbox/`，不 push）；正式发收尾接 `site-cascade` |
 | `ai-morning-brief` | 橘鸦 RSS → 按园主焦点筛成「早报」合集一期（不转载全文；默认草稿箱） |
 | `github-weekly-hot` | IT咖啡馆周刊 RSS 当目录 → 对 GitHub 自写「热榜」合集一期（不搬原文；默认草稿箱） |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |

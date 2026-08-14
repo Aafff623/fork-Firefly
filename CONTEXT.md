@@ -64,7 +64,7 @@ Content Collections（`src/content.config.ts`）：
 
 ### 现行分类词表（发帖门禁）
 
-文章 frontmatter `category` **必须**显式确认后再写盘（`ob2blog` / `knowledge-output`）。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
+文章 frontmatter `category` 由 `knowledge-output` 按本表自动建议，批次汇报表一次性过目；园主要改当场说。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
 
 | 分类 | 适用（启发式） |
 |---|---|
@@ -87,22 +87,34 @@ Content Collections（`src/content.config.ts`）：
 
 ### 合集（人工策展）
 
-登记在 `src/config/collectionsConfig.ts`；文章 frontmatter `collections: [slug, ...]`（多对多）。
+登记在 `src/config/collectionsConfig.ts`；文章 frontmatter `collections: [slug, ...]`（多对多，允许跨一级复用）。output 路由只读一二级心智缓存 `knowledge-output/references/collection-model.md`（干什么、什么样的文章该进；不记文章名单、不记三级正文）。每次 output 先 `sync_collection_model.py` diff 真源。
 
 | 层级 | 规则 |
 |---|---|
-| 一级 | 无 `parent`；出现在 `/collections/` 总览卡 |
+| 一级 | 无 `parent`；出现在 `/collections/` 总览卡（**0 篇也出卡**，空频道先立牌子） |
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
+| 第三层 | 这轮用手册 `##` 章节顶着，不新登记合集夹。极客时间四门课是既有三级，仍挂在 `course-geektime` 下 |
 
-现行嵌套：`ai-coding-tools` ← 各工具夹；`course-geektime` ← 四门课。中转 / Workflow / **鱼皮VibeCoding（`vibe-tutorial-index`）** / Agentic Coding / Skill·MCP / **薅羊毛专区（`wool-freebies`）** / **AI 早报（`ai-morning-brief`）** / **GitHub 每周热榜（`github-weekly-hot`）** / **CSDN技术教程（`csdn-tech-tutorials`）** 等仍为一级。一级详情聚合子合集文章（去重）；卡片文案顺序为「N 个子合集 · M 篇文章」。
+现行一级频道：`ai-coding-tools` · `agentic-workflow` · `visual-media` · `model-eval` · `llm-overview` · `ai-morning-brief` · `github-weekly-hot` · `courses` · `career-guide` · `frontend-eng` · `backend` · `database` · `ops` · `product` · `humanities` · `site-series`。
 
-`wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`。
+挂载口径：
+
+- **前端工程**（`frontend-eng`）：小程序、Lottie、SVG 动效、纯 CSS、3D 等实现向。
+- **视觉媒体**（`visual-media`）：海报/版式、提示词资产、视频与手绘生成、MiniMax 做片。
+- **本站系列**（`site-series`）：本站部署、桌宠、发文流水线等站点自身记录。
+- **大模型概述**（`llm-overview`）：RAG / MoE 等应用与底层概念、Python 库地图。跑分实测仍走 `model-eval`。
+- **模型评测**（`model-eval`）：厂商新模型实测；中转 / 羊毛里真正测模型的文章挂其二级 `transit-relay` / `wool-freebies`。
+- **文史**（`humanities`）：历史、神话、人物与地图。不用「历史」当频道名——神话地图不是编年史，后面人物/史识也能进同一夹。
+- **Agentic Workflow**：跨工具的 Vibe / Spec / Harness Engineering；可与工具夹双挂。鱼皮导读墙 `vibe-tutorial-index`、Vibe 踩坑 `csdn-tech-tutorials` 是它的二级。
+- **CLAUDE.md** 手册：`tool-claude-code` + `agentic-workflow`。**AGENTS.md** 手册：Workflow，并可挂 Cursor / Kimi / Codex 工具夹。
+
+`wool-freebies`：收录各厂商 AI 订阅 / 模型限免 / 申请试用情报类博客；文章 category 优先用词表「羊毛揭秘」，frontmatter 写 `collections: [wool-freebies]`（随父夹滚进 `model-eval`）。
 
 `ai-morning-brief`：报刊式按期 AI 早报；文章 category 用词表「早报」，frontmatter 写 `collections: [ai-morning-brief]`。主源为橘鸦Juya 早报 RSS（`https://daily.juya.uk/rss.xml`）；Agent 按园主焦点筛选后发判断，不转载橘鸦全文。B 站稿只链原页，禁转载口播。
 
-`github-weekly-hot`：报刊式按期 GitHub 热榜；文章 category 用词表「开源」，frontmatter 写 `collections: [github-weekly-hot]`，可加 `sourceLink` 指向该期 `{n}.html`。主源为 IT咖啡馆官方 Atom（`https://itcoffee66.github.io/githubweekly/feed.xml`，不要订仓库根 `rss.xml`）。周刊只当项目目录；正文只抽仓库名 + GitHub URL，判断来自 README / 许可证 / 最近 push。禁止搬 `_weekly/*.md`、口播、封面。B 站只作片单。已有日更卡 `github-trending-11-cards-*` 不要塞进本合集。
+`github-weekly-hot`：报刊式按期 GitHub 热榜；文章 category 用词表「开源」，frontmatter 写 `collections: [github-weekly-hot]`，可加 `sourceLink` 指向该期 `{n}.html`。主源为 IT咖啡馆官方 Atom（`https://itcoffee66.github.io/githubweekly/feed.xml`，不要订仓库根 `rss.xml`）。周刊只当项目目录；正文只抽仓库名 + GitHub URL，判断来自 README / 许可证 / 最近 push。禁止搬 `_weekly/*.md`、口播、封面。B 站只作片单。日更图卡 `github-trending-11-cards-*` 已下架，勿再写进本合集。
 
-`csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记；frontmatter 写 `collections: [csdn-tech-tutorials]`。
+`csdn-tech-tutorials`：从 CSDN 精选提炼的 Vibe 踩坑短篇；frontmatter 写 `collections: [csdn-tech-tutorials]`（随父夹滚进 `agentic-workflow`）。
 ## Obsidian 写作源（固定）
 
 | 项 | 值 |
@@ -113,12 +125,14 @@ Content Collections（`src/content.config.ts`）：
 
 一般不变更；变更时先改 `CONTEXT.md` 与 manifest 的 `vaultRoot`，再改 skill 文档。
 
-发文流水线（双路径，按源分支）：
+发文流水线（唯一入口 `knowledge-extract`，按输入分流）：
 
-| 路径 | 源 | 技能链 |
+| 渠 | 源 | 技能链 |
 |---|---|---|
-| 甲 | Obsidian vault | `ob2blog` → **`site-cascade`** |
-| 乙 | 会话/调研/BibiGPT/公众号 | `knowledge-extract` → `knowledge-output` → **`site-cascade`** |
+| 1 | Obsidian vault 路径 | extract → output → **site-cascade** |
+| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract → output → **site-cascade** |
+| 3 | 无材料、只要调研 | extract（并发广搜+配图）→ output → **site-cascade** |
+| 4 | 早报 / GitHub 周榜 | extract 交接 `ai-morning-brief` / `github-weekly-hot` → **site-cascade** |
 
 ### Knowledge 素材库（仓外）
 
@@ -129,13 +143,13 @@ Content Collections（`src/content.config.ts`）：
 | 已发布 | `Archive/{Theme}/{facet}/…` |
 | 小林coding 离线 | `Archive/xiaolincoding/source/`（私有检索；禁批量发帖；站上仅导览合集） |
 | 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读；新 extract 勿再写扁平根 |
-| 来源索引 | `session` / `paste-md` / `bibigpt` / `wechat` / `mixed` |
+| 来源索引 | `obsidian` / `paste` / `research` / `rss`（见 extract `source-modules.md`） |
 | Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md` |
 | 公众号流 | 同目录 `wechat-mp.md`（Multi-Agent + `source/` 保真 + TTA） |
 
-**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 仍走上文「现行分类词表」并经园主确认。
+**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 走上文「现行分类词表」，output 自动建议后批次过目。合集一二级路由缓存见 `knowledge-output/references/collection-model.md`（不记文章名单）。
 
-勿再写成单一 `/ob2blog`。细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。
+细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。旧入口 `ob2blog` 已并入 extract 渠道 1。
 
 ## 部署事实
 

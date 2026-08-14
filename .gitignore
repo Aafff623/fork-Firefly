@@ -100,7 +100,19 @@ public/assets/images/widgets/calendar/_orig-backup/
 .agents/skills/workers-best-practices/
 .agents/skills/wrangler/
 
-# ob2blog staging + local fingerprint dumps (manifest.json is kept)
+# 发文链：.agents 下只挂 junction，正文在 .cursor/skills（避免 git 把联接当第二份文件入库）
+.agents/skills/knowledge-extract/
+.agents/skills/knowledge-output/
+.agents/skills/_shared/
+.agents/skills/ai-morning-brief/
+.agents/skills/github-weekly-hot/
+.agents/skills/site-cascade/
+.agents/skills/wiki-post/
+
+# Python 脚本缓存
+__pycache__/
+
+# vault 映射 staging + local fingerprint dumps（manifest.json 入库）
 .ob2blog/staging/
 .ob2blog/fp-*.txt
 .ob2blog/_diff.py

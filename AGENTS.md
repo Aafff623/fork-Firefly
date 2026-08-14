@@ -24,6 +24,7 @@
 | 产品代码 | `src/` |
 | 站点配置 | `src/config/` |
 | 文章 | `src/content/posts/` |
+| 成帖红线 / 合集共通 | `.cursor/skills/_shared/`（被 output / 早报 / 热榜引用，不是独立 skill） |
 | 官方配置文档（本地，gitignore） | `docs/official/` |
 | 官方文档路由模型 | `docs/knowledge/official-docs.tree.json` |
 | Issue（本地） | `.scratch/<feature>/` |
@@ -61,56 +62,59 @@ pnpm new-d <content>
 
 ## Agent skills
 
-项目级 Skill **正文**在 `Firefly/.cursor/skills/`（仓内真源）。若 Cursor 工作区根是上一级 `blog/`，须在 `blog/.cursor/skills/<name>` 建 **目录联接（junction）** 指向 Firefly 内同名 skill；`Firefly/.agents/skills/` 与全局 `~/.agents` / `~/.claude` 下同名目录亦应是 junction，**不要物理复制正文**（防漂移）。
+项目级 Skill **正文**在 `Firefly/.cursor/skills/`（仓内真源）。全局与各 AI 工具只建 **目录联接（junction）**，禁止复制 SKILL.md。旧入口 `ob2blog` / `firefly-md-to-post` 已并入 `knowledge-extract` 渠道 1，仓内不再保留该 skill 目录。
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
-| `ob2blog` | `.cursor/skills/ob2blog/` | Obsidian→本仓帖 + 双边一致性（`prep_convert` / `sync_check` / manifest）；旧名 `firefly-md-to-post` |
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 会话/调研/BibiGPT/公众号→Knowledge 素材（`todo/{Theme}/{facet}/{日期_短题}/`）；来源+Theme 双索引见 `references/source-modules.md` + `theme-taxonomy.md`；公众号见 `wechat-mp.md`；不直接发帖 |
-| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo 素材（含 Theme 树与扁平遗留）→`src/content/posts/<slug>`；无参数=全部，带主题=仅指定；发布后移入 Archive；收尾接 `site-cascade` |
-| `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 橘鸦 RSS → 按园主焦点筛 3–7 条写成合集一期（不转载全文）；默认 `_draftbox/`；用户说「发」才出箱 + validate + `site-cascade` |
-| `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | IT咖啡馆周刊 RSS 当目录 → 抽仓库 URL，对 GitHub 自写合集一期（不搬原文）；默认 `_draftbox/`；用户说「发」才出箱 + validate + `site-cascade` |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。落 Knowledge（④ 除外）。见 `source-modules.md` |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo →`posts/<slug>`（发布岗：缺口补提 + 自检 + 合集一二级缓存路由）；无主题则分批扫全部 todo；有主题只干命中的；正式发才 Archive + `site-cascade` |
+| `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 由 extract 渠道 4 交接；橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
+| `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | 由 extract 渠道 4 交接；IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
-| `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；先 `check_quota.py`，URL 用 `fetch_media.py`，视频走 `acquire_video_slot.py` |
-| `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create`；产品版从 `1.0.0` 起；本地中英预览见 `preview-release.html` |
-| `wiki-post` | `.cursor/skills/wiki-post/` | GitHub Wiki 手册（Home/FAQ/功能页）；先模块盘点+起草，用户明确说「发布/推送 Wiki」才 push `.wiki.git`；与 `docs/` 不双写 |
-| `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画；源：[greensock/gsap-skills](https://github.com/greensock/gsap-skills)；`skills-lock.json` 可 `npx skills update` |
+| `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；extract 配图检索落空才兜底。先 `check_quota.py` |
+| `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create` |
+| `wiki-post` | `.cursor/skills/wiki-post/` | GitHub Wiki 手册；用户说「发布/推送 Wiki」才 push `.wiki.git` |
+| `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画 |
 
-分工：按源类型选路径（见下）→ 收尾必跑 `site-cascade`；媒体生成走 `firefly-minimax-media`；发版走 `release-post`；建/改 GitHub Wiki 走 `wiki-post`。动画实现优先读对应 `gsap-*`。全局 CLI 另见本机 `~/.cursor/skills/mmx-cli`（非本仓）。工作区根若为上一级 `blog/`，须为上述 skill 建 **junction**（与 `ob2blog` 同做法），否则斜杠命令发现不到。
+vault 机械脚本在 `_shared/scripts/`（`vault_lib.py` / `prep_convert.py` / `sync_check.py` / `validate_post.py` / `upload_r2.py`）；渠道 1 入口是 `knowledge-extract/scripts/extract_vault.py`。映射表仍是 `.ob2blog/manifest.json`。
 
-列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；甲乙成帖都**勿**写入 frontmatter `title`（见 `ob2blog` / `knowledge-output` 的 `references/title-mood.md`）。
+分工：进料一律 `knowledge-extract` → 渠道 1–3 发布走 `knowledge-output` → 收尾 `site-cascade`。媒体兜底 `firefly-minimax-media`。全局 CLI 另见 `~/.cursor/skills/mmx-cli`（非本仓）。
 
-### 发文双路径（默认 workflow）
+列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；成帖**勿**写入 frontmatter `title`（见 `_shared/title-mood.md`）。
 
-按**素材来源**分支；两条路收尾都是 `site-cascade`。
+### Skill 联接（项目 / 全局 / 各工具）
 
-**甲 · Obsidian vault → 帖**
+真源只在 `Firefly/.cursor/skills/`。下列目录对 `knowledge-extract`、`knowledge-output`、`_shared`（以及渠道 4 用的 `ai-morning-brief` / `github-weekly-hot` / `site-cascade`）建 **junction**，不要拷文件：
 
-固定 vault（见 `CONTEXT.md`）：`D:\OneDrive\Desktop\Notes\threetwoa_ob`。
+| 范围 | 目录 |
+|------|------|
+| 项目（Cursor 工作区是 `Firefly/`） | 真源本身 |
+| 项目（工作区是上一级 `blog/`） | `blog/.cursor/skills/<name>` |
+| 仓内其它 agent 根 | `Firefly/.agents/skills/<name>` |
+| Claude Code / Cursor / Agents | `~/.claude/skills` · `~/.cursor/skills` · `~/.agents/skills` |
+| Codex / OpenCode | `~/.codex/skills` · `~/.config/opencode/skills` · `~/.opencode/skills` |
+| Pi / dsh / Kimi | `~/.pi/agent/skills` · `~/.dsh/skills` · `~/.kimi-code/skills` |
+
+Windows：`cmd /c mklink /J <dest> <Firefly/.cursor/skills/<name>>`。已有过期**副本**先删再联。`dir /AL` 才能看出 junction（`pathlib.is_symlink()` 对 junction 为假）。
+
+### 发文（唯一入口 = extract）
+
+用户说「写篇博客 / 整理 / 调研 / 早报 / 丢路径」→ **先 `knowledge-extract`**，按输入分流。不要让用户点名渠道。固定 vault：`D:\OneDrive\Desktop\Notes\threetwoa_ob`（变更先改 `CONTEXT.md` + manifest `vaultRoot`）。
 
 ```text
-用户：/ob2blog + 粘贴本地笔记绝对路径
-  → 读文/图（attachmentFolderPath）→ prep/落盘 posts/<slug>
-  → sync_check / validate
-  → 收尾调用 site-cascade（最新动态含「新笔记」、统计、分类标签、热力图）
-  → 本地预览刷新（pnpm dev）
+用户给材料或题目
+  → knowledge-extract
+       1 路径在 vault     → extract_vault.py → Knowledge（用附件图，上 R2）
+       2 粘贴图文         → 清洗分类 → Knowledge（有图用原图；公众号工序见 wechat-mp）
+       3 无材料只要调研   → 并发广搜（网页/视频/大佬/心得）+ 检索配图 → Knowledge
+       4 早报 / 热榜      → 交接 ai-morning-brief / github-weekly-hot（不经 Knowledge）
+  → 渠道 1–3：knowledge-output（无主题则分批扫 todo；公众号/BibiGPT 默认草稿箱）
+  → 正式发：site-cascade（--blurb）；草稿箱禁止 emit
 ```
 
-Agent 不得假定其它 vault 根路径；用户显式给出新路径时再更新 `CONTEXT.md` + `.ob2blog/manifest.json`。
-
-**乙 · 会话/调研/BibiGPT/公众号 → Knowledge → 帖**
-
-```text
-用户：整理会话 / 写篇博客 / 丢 BibiGPT 导出 / 公众号链接或导出（非 Obsidian）
- → knowledge-extract（source + Theme/facet；bibigpt 先搜证；wechat 走 Multi-Agent+source/ 保真+TTA
-      → Knowledge/todo/{Theme}/{facet}/{日期_短题}/）
- → knowledge-output（转正文 + frontmatter；bibigpt/wechat 默认 _draftbox；出箱后正式发再 Archive）
- → （仅正式发）收尾调用 site-cascade
- → 本地预览刷新（pnpm dev）
-```
-
-仅当素材**已入** Obsidian vault、需要双边同步时，才改走甲路 `ob2blog`；默认会话 / BibiGPT / 公众号原料不经 `ob2blog`。  
-Knowledge 资产结构与 Theme 词表：仓外 `D:\OneDrive\Desktop\Knowledge\README.md` + skill `theme-taxonomy.md`。
+旧称甲/乙/丙 = 渠道 1 / 渠道 2–3 / 渠道 4，仅作别名。  
+Knowledge 词表：仓外 `D:\OneDrive\Desktop\Knowledge\README.md` + `theme-taxonomy.md`。  
+成帖红线：`.cursor/skills/_shared/post-redlines.md`，由 `validate_post.py` 执行。
 
 ### 草稿箱（draftbox · 本地可预览，不进远端）
 

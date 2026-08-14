@@ -16,8 +16,7 @@
 
 | 路径 | 何时 | 技能链 |
 |---|---|---|
-| 甲 | 笔记已在固定 Obsidian vault | `ob2blog` → `site-cascade` |
-| 乙 | 会话 / 调研成帖 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+| 1–4 | 写稿进料（vault / 粘贴 / 调研 / 早报热榜） | `knowledge-extract` →（1–3）`knowledge-output`（无主题分批扫 todo；合集按一二级缓存路由）→ `site-cascade` |
 
 空壳脚手架仍可用：
 

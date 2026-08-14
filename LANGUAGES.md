@@ -40,7 +40,10 @@
 | 草稿（园主口径） | 进草稿箱，不是「commit 后靠 draft:true 藏首页」 |
 | Knowledge Theme | 素材库一级桶（如 `claude-code`）；路径 `todo/{Theme}/{facet}/…` |
 | facet | Theme 下切面（如 `skill` / `mcp` / `architecture`）；≠ 博客 tags |
-| source（extract） | 素材来源模块 ID：`session` / `paste-md` / `bibigpt` / `wechat` / `mixed` |
+| source（extract） | 素材来源：`obsidian` / `paste` / `research` / `rss`（旧 wechat/bibigpt 视为 paste） |
+| 四渠 | 写稿进料分流：vault / 粘贴 / 调研 / RSS；用户不必点名渠道 |
+| 发布岗 | `knowledge-output`：自检 + 合集一二级路由后成帖，不是拷文件 |
+| 合集心智模型 | output 缓存的 L1/L2：干什么、什么样的文章该进；不记文章名单 |
 | 公众号归档 `source/` | 单篇目录内原文+原图保真层；主体笔记另文件且须过 TTA |
 | 正文插图限高 | 仅竖幅/海报收版面；横/方信息图跟栏宽；单击 Fancybox 看原图 |
 | 静态部署 | 除非启用 CF_WORKERS，不说「SSR 站」 |

@@ -47,56 +47,33 @@ Issue(.scratch/<feature>/)
 
 ## 内容流水线（轻量，可不建 PRD）
 
-与功能 PRD 流并行；按**素材来源**走甲或乙，收尾都是 `site-cascade`。工作区根若为 `blog/`：skills/rules 经 junction 暴露到 `blog/.cursor/`（见 `AGENTS.md`）。
-
-### 甲 · Obsidian vault → 帖
-
-仅覆盖「笔记已在固定 vault」这一通道，**不是**全部内容入口。
+与功能 PRD 流并行。**唯一进料口**是 `knowledge-extract`（按输入分流，用户不必点名渠道）。工作区根若为 `blog/`：skills 经 junction 暴露到 `blog/.cursor/`（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.cursor/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
 
 ```text
-Obsidian 笔记（固定 vault，见 CONTEXT.md）
-  → /ob2blog（图文→ src/content/posts/<slug>；**category 必填且已确认**）
-  → site-cascade（动态 / 统计 / 分类标签 / 热力图；笔记动态带 `>` 批注，可用 `--blurb`）
-  → Agent 协作者评论（当前工具 `pnpm agent-comment`，语气 humanizer-tta）
-  → 本地预览 →（你确认后）commit / push → 核线上
-```
-
-- Skill：`.cursor/skills/ob2blog/`、`.cursor/skills/site-cascade/`、`.cursor/skills/dynamic-post/`（评论步骤）
-- 笔记↔帖映射：`.ob2blog/manifest.json`
-- 列表卡标题情绪点缀（emoji/颜文字）：仅 `PostCard` 展示层 `src/utils/title-mood.ts`；**勿**写入 frontmatter `title`
-- 笔记型动态：标题链 + Markdown `>` 作者批注（`--blurb` 或帖子 description）
-- **分类门禁**：写盘前对照 `CONTEXT.md` 现行分类词表；未获用户确认的 `category` 不得落盘；禁止因「AI/工具相关」一律填 `Agentic Coding`
-
-### 乙 · 会话/调研/BibiGPT/公众号 → Knowledge → 帖
-
-```text
-会话 / 调研结论 / BibiGPT 导出 / 微信公众号（+ 原链或导出图文）
+写篇博客 / 丢路径 / 粘贴 / 调研 / 早报
   → knowledge-extract
-       · 先挂索引：source（来源）+ Theme/facet（素材分类）
-       · bibigpt → 搜证再提炼
-       · wechat → Multi-Agent（Archive∥Classify → Extract → TTA）；原文+图进 source/
-       → D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{日期_短题}\
-  → knowledge-output（→ 见下「草稿箱」分流；bibigpt / wechat 默认草稿箱；**成帖前确认 category**）
-  → （仅出箱/正式发）site-cascade（同上；emit 须带批注）
-  → Agent 协作者评论（同上）
-  → 发布成功后素材移入 Knowledge\Archive\{Theme}\{facet}\… 留档
-  → 本地预览 →（你确认后）commit / push → 核线上
+       1 vault 路径     → extract_vault.py → Knowledge（附件图 → R2）
+       2 粘贴图文       → 清洗分类 → Knowledge（有图用原图）
+       3 无材料调研     → 并发广搜 + 检索配图 → Knowledge
+       4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot
+  → 渠道 1–3：knowledge-output（无主题则分批扫 todo；自检过了才落盘）
+  → 正式发：site-cascade（`--blurb`）→ Agent 协作者评论 → 本地预览
+  → 发布成功：素材迁 Knowledge\Archive\…
 ```
 
-- Skill：`.cursor/skills/knowledge-extract/`、`.cursor/skills/knowledge-output/`、`.cursor/skills/site-cascade/`
-- 与甲互补：素材未进 Obsidian 时走乙；已进 vault 需双边同步时再走甲
-- **来源模块**：`session` / `paste-md` / `bibigpt` / `wechat` / `mixed`——见 `knowledge-extract/references/source-modules.md`
-  - BibiGPT = 高保真原料（吃网页会员额度；勿默认 MCP 烧 API）；时效与「官方承认」须 Agent 搜证
-  - 公众号 = 图文专业但正文偏重、数日内易撞题 → 必须 `source/` 保真 + Theme 归桶 + 近 7 日去重 + humanizer-tta；流程见 `references/wechat-mp.md`
-- **素材分类（Theme → facet）**：管 Knowledge 检索，**不是**博客 `category`。词表与路径：`knowledge-extract/references/theme-taxonomy.md`（例：`claude-code` / `skill`）。历史扁平 `todo/{日期_主题}/` 只读兼容；新 extract 写三层路径
-- 列表卡标题情绪点缀：同甲——仅 `title-mood` 展示层；**勿**写入 frontmatter `title`
-- 笔记型动态批注约定：同甲
-- **分类门禁**：同甲（站点 category 仍须确认；可参考 Theme→category 启发式，禁止默填 Agentic Coding）
-- **小节标题防 AI 味**：禁止 `一句话收束` / `核心要点` / `综上所述` 等课件收尾腔；要通俗有创意（判断/边界/怎么选）。细则：`knowledge-output` → 成帖红线 #2 + `references/heading-anti-ai.md`
+旧称甲/乙/丙 = 渠道 1 / 2–3 / 4。映射表仍是 `.ob2blog/manifest.json`（vault 路径 ↔ slug）。列表卡 emoji 仅 `title-mood` 展示层，**勿**写入 `title`。
 
-#### 乙 · 公众号 Multi-Agent（摘要）
+- Skill：`.cursor/skills/knowledge-extract/`、`knowledge-output/`、`site-cascade/`；合集细则 `_shared/periodical.md`
+- 四渠判定：`knowledge-extract/references/source-modules.md`（`obsidian` / `paste` / `research` / `rss`）
+- 渠道 3 广搜：`research-intake.md`；配图/R2：`images.md`
+- 粘贴进料若是公众号：仍走 `wechat-mp.md` 四岗（工序，不是第五入口）；BibiGPT 先搜证。二者默认草稿箱
+- Theme/facet：`theme-taxonomy.md`（≠ 博客 category）
+- **分类 / 合集**：对照 `CONTEXT.md` 词表自动建议 `category`；合集按 `knowledge-output/references/collection-model.md` 一二级 `route:` 自动挂（可双挂）；批次汇报表过目。禁止默填 Agentic Coding；禁止私开合集空壳
+- extract **不落 posts**。配图在 extract 完成（原图或检索 → R2；缺图才 MiniMax）。渠道 4 禁止 MiniMax
 
-父 Agent 开 Multi-Task，四岗：`Archive`（原文+图无损）∥ `Classify`（Theme/facet + 去重）→ `Extract`（薄笔记）→ `TTA`（humanizer-tta）。成功标准与反例见 `wechat-mp.md`。
+#### 公众号 Multi-Agent（渠道 2 工序）
+
+父 Agent 开 Multi-Task，四岗：`Archive`（原文+图无损）∥ `Classify`（Theme/facet + 去重）→ `Extract`（薄笔记）→ `TTA`。见 `wechat-mp.md`。
 
 ### Agent 协作者评论（发帖 / 发动态后必做）
 

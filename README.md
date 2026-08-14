@@ -57,7 +57,7 @@
 
 配置驱动的 Astro 个人博客：正文在 Markdown / MDX，行为在 `src/config`，页面由 Astro + Svelte islands + 少量客户端脚本组成。
 
-硬边界：**静态优先**、**改站先改配置**、发文双路径（Obsidian → `ob2blog`，或 Knowledge → `knowledge-output`），收尾统一 `site-cascade`。本仓**没有**独立 Preview 产品壳；产品面见下方 [Showcase](#showcase)。README 本地预览壳是 `preview-readme.html`（端口 8090），与站点本身无关。
+硬边界：**静态优先**、**改站先改配置**、发文唯一入口 `knowledge-extract`（四渠分流）再 `knowledge-output` / 合集 skill，收尾统一 `site-cascade`。本仓**没有**独立 Preview 产品壳；产品面见下方 [Showcase](#showcase)。README 本地预览壳是 `preview-readme.html`（端口 8090），与站点本身无关。
 
 | 维度 | 事实 |
 | --- | --- |
@@ -78,7 +78,7 @@
 | Components | 侧栏 widget、阅读控件、相册、动态时间线等 | `src/components/` |
 | Ask | HeroUI Pro 问答页、桌宠 LiveChat、同源安全代理与站内检索 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Plugins | KaTeX、Mermaid(merman)、PlantUML、Wiki Link、directive | `src/plugins/` |
-| Agent skills | 发文双路径、级联索引、MiniMax 媒体、GSAP | `.cursor/skills/` |
+| Agent skills | 发文四渠（extract → output / 合集 skill）、级联、MiniMax、GSAP | `.cursor/skills/` |
 | Scripts | LQIP、字体子集、new-post / new-d、Showcase 截图 | `scripts/` |
 | Docs | CONTEXT / ADR / workflow / inventory（非运行时） | `docs/` · 根目录治理文件 |
 
@@ -276,8 +276,7 @@ pnpm dev
 
 | 链路 | 一句话 | 关键门禁 |
 | --- | --- | --- |
-| 发文 · 甲 | Obsidian vault → `ob2blog` → `site-cascade` | vault 根见 `CONTEXT.md` |
-| 发文 · 乙 | Knowledge 素材 → `knowledge-extract` → `knowledge-output` → `site-cascade` | 默认会话产出走乙，不经 `ob2blog` |
+| 发文 | `knowledge-extract`（四渠）→ 1–3 再 `knowledge-output` → `site-cascade` | vault 根见 `CONTEXT.md`；早报/热榜为渠道 4 |
 | 功能 | idea → Issue → PRD(draft) → 你批准 → handoff → 实施 | 未批准不写大规模功能代码 |
 | 交付 | 本地预览 → check/build → push → Vercel Ready → EdgeOne / CF 链路复核 | 未本地验收不得 push；未核主域不宣称完成 |
 
@@ -307,10 +306,10 @@ flowchart LR
 
 #### 发文
 
-| 路径 | 源 | 技能链 |
+| 渠 | 源 | 技能链 |
 | --- | --- | --- |
-| 甲 | Obsidian vault（`threetwoa_ob`） | `ob2blog` → `site-cascade` |
-| 乙 | 会话 / Knowledge 素材 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+| 1–3 | vault / 粘贴 / 调研 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+| 4 | 早报 / GitHub 周榜 | extract 交接合集 skill → `site-cascade` |
 
 内容目录：
 
@@ -487,7 +486,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | Delivery | Vercel origin（`@astrojs/vercel`）· EdgeOne CDN · Cloudflare DNS / R2 | 三者各司其职 | 静态出站 + 少量 API + 外置大图 |
 | Site integrations | Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 前三项现行；分析 ID 多为空 | 配置门控 |
 | Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
-| Agent tooling | `ob2blog` · knowledge-* · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
+| Agent tooling | knowledge-extract / output · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
 
 完整包名、插件链与入口路径：[docs/knowledge/tech-stack-inventory.md](docs/knowledge/tech-stack-inventory.md)。
 
