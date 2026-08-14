@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "回顾本会话，把刚才做的那轮 GPT 中转服务压测提炼成一篇知识笔记，重点要覆盖三个模型的数据、踩过的坑、能复用的测试方法，本机落盘到 Knowledge 目录。",
-      "expected_output": "产出 Markdown 笔记：三款模型数据分表但不堆砌；踩坑实录挑重点；无工具执行流程痕迹（不提 curl/脚本/子代理）；无样板话术（如'需要清理时说一声'）；标题像人起的不是'XX实录'式命名；详略得当；humanizer 去 AI 味；落盘 Knowledge 目录含文件树+section 设计",
+      "expected_output": "识别渠道 2 paste（会话正文）；定 theme/facet；产出 Markdown：三款模型数据分表但不堆砌；踩坑实录挑重点；无工具执行流程痕迹；无样板话术；标题像人起的；详略得当；humanizer；落盘 Knowledge 三层路径+section 设计",
       "files": []
     },
     {
@@ -16,19 +16,37 @@
     {
       "id": 3,
       "prompt": "把这次讨论整理成博客文章发到我的 blog 项目里。",
-      "expected_output": "识别为提炼+发布两段诉求；先按 knowledge-extract 提炼，提示发布交给 knowledge-output/ob2blog；不越权直接发布",
+      "expected_output": "识别为提炼+发布两段；先 knowledge-extract（渠道 2），提示发布交给 knowledge-output（无主题则分批扫 todo）；不越权直接写 posts；配图按 images.md（有则用、缺则检索/R2，MiniMax 仅兜底）",
       "files": []
     },
     {
       "id": 4,
       "prompt": "这是 BibiGPT 导出的视频总结原料（附 BV 链接）。按 extract 走，别盲信里面的上下文数字和官方 Bug 说法。",
-      "expected_output": "识别来源模块 bibigpt；先定 theme/facet；先工具搜证再提炼；笔记含核查/待核实；保证据不抽空心；落盘 Knowledge/todo/{Theme}/{facet}/…；提示交接 knowledge-output 且默认草稿箱；不走 ob2blog；不调用 MCP 烧 API",
+      "expected_output": "渠道 2 paste（paste_kind=bibigpt 工序）；先定 theme/facet；先工具搜证再提炼；笔记含核查/待核实；落盘 Knowledge/todo/{Theme}/{facet}/…；交接 output 默认草稿箱；不调用 MCP 烧 API",
       "files": []
     },
     {
       "id": 5,
       "prompt": "这篇微信公众号讲 Claude Code 的 Skill 写法，链接 mp.weixin.qq.com/…，帮我按公众号流程归档并提炼。",
-      "expected_output": "识别 source=wechat；Multi-Agent（Archive/Classify/Extract/TTA）；原文+配图完整进 source/ 且 MD 相对路径引用；theme=claude-code facet=skill（或等价）；主体笔记过 humanizer-tta；近 7 日去重；落盘 todo/{Theme}/{facet}/{日期}_{短题}/；默认交接 output 进草稿箱；不走 ob2blog",
+      "expected_output": "渠道 2 paste，工序 wechat-mp：Multi-Agent Archive/Classify/Extract/TTA；原文+配图进 source/；theme=claude-code facet=skill；主体过 TTA；近 7 日去重；落盘三层路径；交接 output 默认草稿箱；不要先鉴定品牌再决定是否提炼",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "把 D:\\OneDrive\\Desktop\\Notes\\threetwoa_ob\\某笔记.md 整理进 Knowledge，之后要发博客。",
+      "expected_output": "渠道 1 obsidian；跑 extract_vault.py 消解 ![[]]；已映射则先 sync_check；YAML source=obsidian + origin_path；落 Knowledge；提示 output 发布；不寻找已删除的 ob2blog skill",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "没有参考材料，帮我调研一下某某工具大家怎么用，写成笔记。",
+      "expected_output": "渠道 3 research；默认并发子代理：网页+视频站+大佬言论+使用心得；必须检索场景配图并上 R2；缺图才 MiniMax；YAML source=research；落 Knowledge",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "跑一期今天的 AI 早报。",
+      "expected_output": "渠道 4 rss；交接并执行 ai-morning-brief（不经 Knowledge、不走 output、不 MiniMax）；落盘/R2 按 periodical.md",
       "files": []
     }
   ]

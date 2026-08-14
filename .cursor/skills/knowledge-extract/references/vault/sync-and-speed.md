@@ -22,20 +22,13 @@
 
 ## 时刻检查（怎么「一直对着」）
 
-硬规则：Agent 跑 ob2blog **前**先 `sync_check`；用户说「检查一下笔记同步」时也跑。
+硬规则：已映射帖在 extract 渠道 1 / output 动手前先 `sync_check`；用户说「检查一下笔记同步」时也跑。
 
 ```bash
-# 全量
-python .cursor/skills/ob2blog/scripts/sync_check.py
-
-# 单篇
-python .cursor/skills/ob2blog/scripts/sync_check.py --slug ai-coding-save-money
-
-# 盯梢（秒）—— 本地改 OB 时开着
-python .cursor/skills/ob2blog/scripts/sync_check.py --watch 5
-
-# CI / Agent 机器读
-python .cursor/skills/ob2blog/scripts/sync_check.py --json
+python .cursor/skills/_shared/scripts/sync_check.py
+python .cursor/skills/_shared/scripts/sync_check.py --slug ai-coding-save-money
+python .cursor/skills/_shared/scripts/sync_check.py --watch 5
+python .cursor/skills/_shared/scripts/sync_check.py --json
 ```
 
 | 退出码 | 含义 |
@@ -46,11 +39,11 @@ python .cursor/skills/ob2blog/scripts/sync_check.py --json
 
 漂移后动作：
 
-1. **OB 更新、博客旧** → `prep_convert.py --apply` 再 Agent review 差异  
+1. **OB 更新、博客旧** → 先 `extract_vault.py` 进 Knowledge 再 output；紧急才 `prep_convert.py --apply`（会把图拷进 git，与 R2 策略冲突，需用户同意）  
 2. **博客改了正文、OB 未改** → 汇报冲突，**默认不回写 vault**（除非用户明确「同步回 Obsidian」）  
 3. 更新 manifest `noteSha256`（prep --apply 会写）
 
-指纹算法见 `ob2blog_lib.normalize_for_fingerprint`：从首个 `##` 起算；图按出现序 `⟦IMG:n⟧`；忽略 `::github`；并剥离列表符 / `<url>` 自动链 / 缩进空行等**格式噪音**（避免 prep 美化造成假漂移）。
+指纹算法见 `vault_lib.normalize_for_fingerprint`：从首个 `##` 起算；图按出现序 `⟦IMG:n⟧`；忽略 `::github`；并剥离列表符 / `<url>` 自动链 / 缩进空行等**格式噪音**（避免 prep 美化造成假漂移）。
 
 ## 加速管线（为何第一次慢、怎么快）
 
@@ -58,18 +51,25 @@ python .cursor/skills/ob2blog/scripts/sync_check.py --json
 
 **分流：脚本做机械，Agent 只审差异。**
 
+**新稿默认走 extract 渠道 1**（`extract_vault.py` → Knowledge → output）。下面 `prep_convert.py --apply` 只留给**已映射帖**且用户同意把文件写进 `posts/` 的紧急重转。
+
 ```
-A  prep_convert.py     ← 秒级：解析 ![[ ]]、拷附件、 staging 草稿 + report.json
-B  sync_check / diff   ← 对照原文与草稿指纹、列 missing embeds
-C  Agent review        ← 只改 report 警告项 + FM 润色 + validate_post
-D  pnpm dev 抽查       ← 仅首发或有媒体坑时
+A  extract_vault.py    ← 消解 ![[ ]]、拷附件进 Knowledge/assets
+B  sync_check          ← 已映射帖对照指纹
+C  Agent review        ← 只改 report 警告项 + 上 R2 + 提炼
+D  knowledge-output    ← 成帖；validate_post + site-cascade
 ```
 
 ```bash
-python .cursor/skills/ob2blog/scripts/prep_convert.py \
+python .cursor/skills/knowledge-extract/scripts/extract_vault.py \
+  --note "D:/.../Notes/.../某笔记.md" \
+  --out "D:/OneDrive/Desktop/Knowledge/todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}"
+
+# 紧急：机械写进 posts/（旧路径，会拷图进 git）
+python .cursor/skills/_shared/scripts/prep_convert.py \
   --note "D:/.../Notes/.../某笔记.md" \
   --slug my-slug \
-  --category "Agentic Coding" \
+  --category "指南" \
   --tags "AI,Cursor" \
   --apply
 ```
@@ -91,9 +91,9 @@ python .cursor/skills/ob2blog/scripts/prep_convert.py \
 ## Agent 检查清单（加速版）
 
 1. `sync_check.py`（有映射则）  
-2. 新文或 drift → `prep_convert.py --apply`  
-3. 读 `staging/.../report.json`（或 apply 后的 report）— **只处理 missing/warnings**  
-4. 润色 FM / 导语 / github 卡（若需要）  
-5. `validate_post.py`  
-6. 需要时再 `pnpm dev`；未改动则 skip 预览  
-7. **收尾必做** → `site-cascade`（`cascade_check.py`；公开帖按需 `--emit-dynamic`）  
+2. 新文 → `extract_vault.py`；已映射 drift 且用户同意进 git → 才 `prep_convert.py --apply`  
+3. 读 `extract_vault_report.json` / `staging/.../report.json` — **只处理 missing/warnings**  
+4. 上 R2；润色 FM / 导语（若需要）  
+5. `knowledge-output` + `validate_post.py`  
+6. 需要时再 `pnpm dev`  
+7. **收尾必做** → `site-cascade`

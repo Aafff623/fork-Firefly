@@ -13,6 +13,6 @@
 
 扩词表改该文件的 `MOOD_PACKS` 即可。
 
-## Agent 成帖（ob2blog）
+## Agent 成帖
 
 从 vault 导入时：`title` 跟笔记文件名（或用户指定）即可；**禁止**为列表效果往 FM `title` 塞 emoji / 颜文字。展示点缀由站点层自动挂。

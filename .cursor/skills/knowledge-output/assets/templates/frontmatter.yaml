@@ -5,6 +5,8 @@ description: 一两句摘要，出现在首页卡片与 OG
 image: ./cover.webp
 tags: [标签A, 标签B]
 category: 分类名
+collections: []
+# collections 只填一二级 slug；已挂二级不要再挂它的一级父夹；跨树才双挂
 draft: false
 lang: ''
 slug: my-post-slug
@@ -16,5 +18,5 @@ comment: true
 # sourceLink: ''
 # licenseName: ''
 # licenseUrl: ''
-# updated: 2026-08-01
+# updated: 2026-08-01T15:30:00
 ---

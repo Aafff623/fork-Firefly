@@ -2,7 +2,7 @@
 """Fast mechanical Obsidian → Firefly post draft (no LLM).
 
 Usage (from Firefly/):
-  python .cursor/skills/ob2blog/scripts/prep_convert.py ^
+  python .cursor/skills/_shared/scripts/prep_convert.py ^
     --note "D:/.../邪修 AI Coding 省钱.md" ^
     --slug ai-coding-save-money ^
     [--apply] [--draft false]
@@ -23,7 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from ob2blog_lib import (  # noqa: E402
+from vault_lib import (  # noqa: E402
     WIKI_EMBED_RE,
     ascii_asset_name,
     default_manifest_path,
@@ -48,7 +48,7 @@ def slugify_hint(title: str) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="ob2blog mechanical prep")
+    p = argparse.ArgumentParser(description="vault note mechanical prep into posts/ (resync only)")
     p.add_argument("--note", required=True, help="Obsidian note absolute path")
     p.add_argument("--slug", default="", help="english kebab-case slug")
     p.add_argument(

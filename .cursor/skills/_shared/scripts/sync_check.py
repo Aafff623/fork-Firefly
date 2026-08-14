@@ -2,9 +2,9 @@
 """Check Obsidian note ↔ Firefly post consistency via manifest.
 
 Usage (from Firefly/):
-  python .cursor/skills/ob2blog/scripts/sync_check.py
-  python .cursor/skills/ob2blog/scripts/sync_check.py --slug ai-coding-save-money
-  python .cursor/skills/ob2blog/scripts/sync_check.py --watch 5
+  python .cursor/skills/_shared/scripts/sync_check.py
+  python .cursor/skills/_shared/scripts/sync_check.py --slug ai-coding-save-money
+  python .cursor/skills/_shared/scripts/sync_check.py --watch 5
 
 Exit codes:
   0 = all in sync (or only soft warnings)
@@ -23,7 +23,7 @@ from pathlib import Path
 # ensure sibling import
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from ob2blog_lib import (  # noqa: E402
+from vault_lib import (  # noqa: E402
     default_manifest_path,
     firefly_root_from_here,
     load_manifest,
@@ -34,7 +34,7 @@ from ob2blog_lib import (  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="ob2blog sync check")
+    p = argparse.ArgumentParser(description="vault note ↔ post sync check")
     p.add_argument("--manifest", default="", help="path to manifest.json")
     p.add_argument("--slug", default="", help="check one slug only")
     p.add_argument(

@@ -1,187 +1,150 @@
 ---
 name: knowledge-extract
 description: >-
-  把会话/讨论/调研/BibiGPT/微信公众号等原料提炼成高密度、符合人味、可直接归档的知识笔记(Markdown)。
-  触发词：知识提炼、整理成笔记/文章、归档会话、博客园文章、沉淀经验、把这次讨论写成文章、
-  提取要点、总结成 md、"knowledge extract"、"extract"、"写篇博客"、"记录下来"、回顾本会话、
-  BibiGPT、bibigpt、视频总结原料、音视频总结、这段是 BibiGPT 导出、
-  公众号、微信公众号、wechat、mp.weixin。
-  本机产出到 D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{时间戳_短题}\（含 assets；公众号另含 source/），
-  并输出文件树 + section 设计；便于后续交接 knowledge-output → site-cascade；
-  发布后由 knowledge-output 移入 Knowledge\Archive\ 留档。
-  任何"把这段对话/这次调研/这段视频或公众号原料变成可复用知识资产"的诉求都该触发本技能。
+  写稿唯一进料口：按输入自动分流，不要求用户点名渠道。
+  即使用户说「发到博客 / 整理成文章」，只要还没有 Knowledge 笔记，也先走本技能、不要直接写 posts。
+  渠道 1 本地 Obsidian 笔记路径（含旧口令 ob2blog / firefly-md-to-post）；
+  渠道 2 粘贴图文（Grok / 公众号 / 网页 / BibiGPT / 会话正文，统一当正文+配图，先不要鉴定来源品牌）；
+  渠道 3 没有参考只要调研（强时效先 ask-grok 贴回渠道 2；否则并发广搜：网页、视频站、行业大佬、使用心得，并自动配图）；
+  渠道 4 RSS 合集（早报 / GitHub 每周热点）——内部交接 ai-morning-brief / github-weekly-hot。
+  触发词：写篇博客、发到 blog、知识提炼、整理成笔记、调研、帮我查、Obsidian、vault、
+  ob2blog、早报、热榜、橘鸦、github weekly、BibiGPT、公众号、mp.weixin。
+  渠道 1–3 落盘 D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{日期_短题}\；
+  不落 posts。发布交给 knowledge-output。
 ---
 
-# knowledge-extract — 素材 → 知识笔记
+# knowledge-extract — 写稿进料（四渠）
 
-把一段对话、一次调研、一套踩坑经历，或一份 **BibiGPT / 微信公众号等高保真原料**，压缩成「有重点、有人味、能带走」的 Markdown 知识笔记。核心不是复述，是**提炼出读者能真正带走的东西**。
+本技能是**唯一进料口**。用户不必说「走哪条路」：看输入像什么，就进哪一渠。  
+渠道 1–3 写成 Knowledge 笔记；**不**写 `src/content/posts/`。渠道 4 内部交接合集 skill（它们自己进草稿箱）。
+
+旧名 `ob2blog` / `firefly-md-to-post` 已并入渠道 1，禁止再当独立 skill 调用。
+
+## 安装（两类，禁止复制正文）
+
+| 范围 | 真源 / 挂载 |
+|------|-------------|
+| **项目** | `Firefly/.cursor/skills/knowledge-extract/`（正文只在这里改） |
+| **全局 + 各 AI 工具** | 目录联接（junction）指向上面这一份，见 `AGENTS.md`「Skill 联接」 |
+
+相对路径 `../_shared/` 依赖 extract 本身是 junction（解析到仓内 `_shared`）。禁止把 SKILL.md 拷到 `~/.codex` / OpenCode 当独立副本。
+
+当前不在 Firefly 工作区时：渠道 1–3 仍落 Knowledge；R2 上传与渠道 4 先定位 `D:\OneDrive\Desktop\blog\Firefly`（脚本会沿 `package.json` name=firefly 找根）。
 
 ## 按需阅读
 
 | 何时打开 | 文件 |
 |----------|------|
-| **来源 / 分类双索引** | 下文「索引」+ [`source-modules.md`](references/source-modules.md) |
-| **Theme × facet 词表与路径** | [`theme-taxonomy.md`](references/theme-taxonomy.md) |
-| **公众号 Multi-Agent 归档** | [`wechat-mp.md`](references/wechat-mp.md) |
-| BibiGPT 搜证档 | `source-modules.md` → 模块 `bibigpt` |
+| 四渠判定 + 粘贴深度（公众号 / BibiGPT） | [`source-modules.md`](references/source-modules.md) |
+| 渠道 3 广搜 + 配图检索 | [`research-intake.md`](references/research-intake.md) |
+| 各渠配图 / R2 / MiniMax 兜底 | [`images.md`](references/images.md) |
+| Theme × facet | [`theme-taxonomy.md`](references/theme-taxonomy.md) |
+| 公众号保真分层（渠道 2 工序，不是入口） | [`wechat-mp.md`](references/wechat-mp.md) |
+| Vault 附件 / `![[…]]` | [`vault/obsidian-vault.md`](references/vault/obsidian-vault.md) |
+| 已映射帖一致性 | [`vault/sync-and-speed.md`](references/vault/sync-and-speed.md) |
+| 成帖语法（交接 output 才用） | [`../_shared/post-redlines.md`](../_shared/post-redlines.md) |
 
-## 索引（开跑必挂）
-
-所有来源共用两层标识；细节表在 references，此处只作路由。
-
-### ① 来源 `source`
-
-| ID | 一句话 |
-|---|---|
-| `session` | 本会话 / 调研 → 默认六步 |
-| `paste-md` | 粘贴 MD → 当原料提炼 |
-| `bibigpt` | 视频总结 → **先搜证** |
-| `wechat` | 公众号 → **Multi-Agent + source/ 保真 + TTA** |
-| `mixed` | 混合 → 按最严规则 |
-
-### ② 分类 `theme` / `facet`
+## 开跑：先分流，再 Theme
 
 ```text
-Knowledge/todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
+看输入 → 渠道 1/2/3/4（用户不点名）
+  1–3 → theme/facet → 提炼/转换 → 配图（原图或检索）→ R2 → Knowledge
+  4   → 读并执行 ai-morning-brief 或 github-weekly-hot（不要在本技能里重写合集流水线）
 ```
 
-例：专门讲 Claude Code 的 Theme 下可再分 `architecture` / `agent` / `skill` / `mcp` 等 facet——词表见 [`theme-taxonomy.md`](references/theme-taxonomy.md)。  
-**先定来源，再定 Theme/facet，再落盘。** 与博客 `category` 不是同一套（成帖时再映射并经用户确认）。
+与博客 `category` 不是同一套。YAML `source` 只准四值：`obsidian` | `paste` | `research` | `rss`。旧值 `session` / `wechat` / `bibigpt` 当作 `paste` 的别名。
 
-## 素材来源模块（先识别再提炼）
+## 四渠（判定启发式）
 
-开跑前先判定来源；细则见 [`references/source-modules.md`](references/source-modules.md)。
+| 渠 | 输入长什么样 | 立刻做什么 |
+|----|----------------|------------|
+| **1 Obsidian** | 绝对/相对路径指向 `.md`，且向上能找到 `.obsidian/`；或用户说 vault / ob2blog | `extract_vault.py` 消解 wiki 图；有图用附件；已映射先 `sync_check.py` |
+| **2 粘贴** | 对话里大段正文、导出 MD、链接+正文、会话结论；**含图则一并收下** | 当统一「正文+配图」清洗。不要先鉴定 Grok / 公众号 / 网页品牌 |
+| **3 调研** | 只有题目或「帮我查 / 没有材料只要调研」 | 强时效（定价/订阅/当天新闻）先 `ask-grok`，贴回走渠道 2；否则**默认并发子代理**广搜（网页 + 视频站 + 大佬言论 + 使用心得）；**必须搜配图** |
+| **4 RSS** | 早报 / 橘鸦 / 热榜 / GitHub 每周热点 / IT咖啡馆 | 交接对应合集 skill，本技能到此结束 |
 
-| ID | 来源 | extract 要点 |
-|---|---|---|
-| `session` | 本会话 / Agent 调研 | 默认六步 |
-| `paste-md` | 粘贴 MD（非 vault） | 当原料读，仍提炼 |
-| `bibigpt` | BibiGPT 导出的音视频总结 | **先工具搜证，再提炼**；保证据，勿抽空心 |
-| `wechat` | 微信公众号 | **Archive∥Classify → Extract → TTA**；原文进 `source/` |
-| `mixed` | 混合 | 有 bibigpt 走搜证；有 wechat 走归档分层 |
+两种同时出现：路径能认 vault → 1；否则有正文/图 → 2；都没有 → 3。早报口令优先 4。
 
-已进 Obsidian vault 且要双边同步 → 改走 `ob2blog`，不经本技能。
+渠道 2 内部若出现 `mp.weixin.qq.com` 或 BibiGPT 导出腔，再套 [`wechat-mp.md`](references/wechat-mp.md) / source-modules 里的 bibigpt **工序**（保真、搜证）——这不是第五个入口。
 
-**`bibigpt` 一句记**：网页会员总结吃 Plus 额度；MCP/API 另计 credits。源头求厚、中间求准、成帖求人味。  
-**`wechat` 一句记**：图文进 `source/` 求全；主体笔记求薄；过 humanizer-tta；按 Theme 归桶并做近 7 日去重。
-
-## 工作流（六步）
+## 工作流（渠道 1–3）
 
 ```
-0 来源+分类 → 识别 source；选定 theme/facet（见索引）；wechat 开 Multi-Agent；bibigpt 先搜证
-1 提炼     → 从上下文抽"能带走的价值"：结论、坑、可复用做法；删闲聊/临时计算/无实质内容
-2 取舍     → 详略得当：删繁就简，突出最有价值的点（本技能最重要的步骤；bibigpt/wechat 见各自差分）
-3 结构     → 高密度排版：表格+分点+层级标题+Mermaid 图，服务重点不堆砌
-4 风格化   → 按 humanizer-tta 校准语气（公众号主体笔记强制 TTA 岗）；标题像人起的；去 AI 味
-5 落盘     → 写入 todo/{Theme}/{facet}/{日期}_{短题}/；文首 YAML 索引字段
-6 交付     → 输出文件树（含 Theme/facet）+ section 设计，方便后续交接博客流水线
+0 分流 + Theme/facet
+1 渠道 1：extract_vault.py；渠道 2：清洗粘贴（公众号则 Archive∥Classify）；渠道 3：并发广搜
+2 提炼     → 结论、坑、可复用做法；删闲聊与工具痕迹（vault 成品笔记少改结构，重点消解图）
+3 取舍     → 详略得当
+4 结构     → 表格+短段落+必要 Mermaid
+5 配图     → 见 images.md：有原图用原图；渠道 3 必须检索匹配；上传 R2；缺图才 MiniMax；GIF 仅当用户当场要
+6 风格     → humanizer-tta
+7 落盘     → todo/{Theme}/{facet}/{日期}_{短题}/ + 文首 YAML
+8 交付     → 文件树 + section 表；提示交接 knowledge-output（无主题则分批扫 todo）
 ```
 
-## 提炼原则：详略得当是第一位
+### 渠道 1 命令
 
-1. **删繁就简，抓重点**：一条知识只留「读者能带走的那一句」。试探过程、中间输出、临时数据、无意义的来回，全删。能一句话讲清就不写一段，能一张表就不写十行。
-2. **结论先行**：每节先给结论，证据在表格里按需展开。读者扫一遍标题和小节就能带走全部要点。
-3. **克制不堆砌**：数据给「够做决策」的量。比如压测，给关键指标 + 代表性数据 + 一句结论，不贴每一次的原始记录、不贴所有中间步骤。
-4. **诚实不注水**：没有明显的记录要点就精简输出，绝不硬凑篇幅、不发明不存在的价值。
-5. **模式差异**：Chat 模式侧重实时热点 + 快速消化的要点；Agent 工作模式突出新发现、踩过的坑、可复用的解法，但只挑**最有价值的**写，不是全部倒出。
-6. **分层保真（公众号等）**：`source/` 求全；主体笔记求薄——不要把「归档」和「提炼」混成一个文件。
+固定 vault（见 `CONTEXT.md`）：`D:\OneDrive\Desktop\Notes\threetwoa_ob`。不得假定别的 vault 根。
 
-## 内容红线（必守，犯一条就是废稿）
+```bash
+python .cursor/skills/knowledge-extract/scripts/extract_vault.py \
+  --note "D:/OneDrive/Desktop/Notes/threetwoa_ob/.../note.md" \
+  --out "D:/OneDrive/Desktop/Knowledge/todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}"
 
-1. **不呈现工具执行流程**：不提「我调用了 curl / 脚本 / 工具 / 子代理」，不把思考过程、命令执行、排查步骤当正文。读者要的是结论和知识，不是你的操作日志。
-2. **不贴实现代码凑数**：除非该代码本身就是读者要学的知识（比如「怎么用脚本测 TTFT」），否则工具脚本、命令序列一律删除，只留一句「用流式接口测首包延迟」这样的人话。
-3. **禁样板话术**：删掉「需要清理时说一声」「下一步等你确认」「回顾本会话」「一会儿验收」「输出文件树供你过目」这类 AI 流程客套。全文不留任何「模型正在跑任务」的痕迹。
-4. **禁 AI 行文套路**：不用 em dash、三件套堆砌、signposting（Let's dive in）、无脑加粗、空洞拔高意义。
-5. **禁「一句话 X」句式**：不写「一句话结论」「一句话总结」「一句话说」「一句话版本」。没有任何正常人类这么说话。要表达就用自然的说法（「最核心的一点是」「说人话的版本」或直接给结论），别加这种标签。
-6. **禁收尾目录腔（小节标题）**：不写「一句话收束」「总结一下」「核心要点」「关键收获」「综上所述」「写在最后」「结语」。结尾节用判断/边界/怎么选（如「认清撞上哪一层就行」）。成帖侧完整范例库：`knowledge-output/references/heading-anti-ai.md`。
-7. **别写成操作报告**：这是给人读的知识/文章，不是给工具看的交接单。动词是你的观点（"我建议""这里坑在"），不是你的动作（"我执行了""我调用"）。
+# 已在 .ob2blog/manifest.json 映射过的帖，动手前：
+python .cursor/skills/_shared/scripts/sync_check.py --slug <slug>
+```
 
-## 标题与结构：扔掉"手册腔"
+`![[…]]` 不得留在笔记里。机械重转进 `posts/` 仅用于**已映射帖的紧急同步**（`prep_convert.py --apply`），新稿默认只进 Knowledge。
 
-**一用就露馅的 AI 味标题（禁用）**：
-- 自问自答开场：「这篇在讲什么」「我们来看看 X」「先说结论」
-- 规劝式：「别 X」「不要 X」「切记 X」「入口别找错」
-- 手册式：「X 清单」「X 实录」「X 指南」「实操四波」「验收清单」「踩坑实录」「迁移后的自检清单」「本文没覆盖的边界」
-- 概括空泛：「外来智慧」「核心发现」「使用方法」
-- **收尾模板**：「一句话收束」「小结」「核心要点」「Key Takeaways」「未来展望」（详见 output 侧 `heading-anti-ai.md`）
+### 渠道 3
 
-**像真人博主那样写**：
-- 标题口语化、有情绪、有钩子，像在跟读者说话，而不是给系统交作业。
-- 参考风格（鱼皮 / 程序员博客）：「把 Claude 的规矩搬去 Cursor，真不是复制个文件那么简单」「双 Pro 拼池的 GPT 中转，实测下来到底什么水平」。数字、冲突、疑问、情绪都是好钩子。
-- 列表卡上的 emoji / 颜文字由站点展示层 `title-mood` 按情绪词偶发挂载；**不要**写进笔记/frontmatter 标题。
-- 拿不准时，标题就用「人话讲清这篇干了啥」，宁直白勿口号。
-- 小节标题同理：通俗、有创意、像路牌；优先判断句，少用总结腔。
+打开 [`research-intake.md`](references/research-intake.md)。强时效现况先 `ask-grok`，贴回当渠道 2。其余题目：园主常先开 Cursor Multitask，父代理拆「网页 / 视频与口播要点 / 论坛心得 / 配图检索」并行，再汇总成一篇笔记。不要只靠一次通用网页搜索交差。
 
-**结构**：
-- 少用标题，多用短段落推进。每个小标题要有信息量（是观点/结论，不是「方法」「背景」这种空壳词）。
-- 开头直接跟读者说话，交代「为什么写这篇」的动机（遇到了什么、想解决什么），**不写**「这篇在讲什么」。
-- 段落短，一句话一段都行；有判断、有吐槽、有具体数字。像给朋友讲，不像交作业。
+### 渠道 4
 
-## 配图：先扒现成素材，最后才生图
+读并执行：
 
-配图素材按三级取（**别一上来就生图**）：
+- 早报 → `.cursor/skills/ai-morning-brief/SKILL.md`
+- 热榜 → `.cursor/skills/github-weekly-hot/SKILL.md`
 
-| 级 | 来源 | 说明 |
-|---|---|---|
-| ① 官方 / 原文 | 官方 README、**公众号原配图**（已在 `source/images/`） | 专业原图优先；动图尤甚 |
-| ② 网上相关素材 | 主题相关图 / 素材包 / 合规网图 | 搜主题关键词 + 站点限定 |
-| ③ 生图 | 前两级确认都没有 | 按下方规范用 MiniMax 生成 |
+合集落盘 / R2 / lint：`../_shared/periodical.md`。不要经 Knowledge，不要 MiniMax。
 
-生图兜底时遵循：能用一张好图说清的事，就不画 Mermaid；Mermaid 只在「流程 / 时序」这类必须用图示的场景保留，且标签写人话。**流程/时序类图用 Mermaid 代码块而非文字代码块**（blog 用 `merman` 构建渲染 SVG，浅/深主题自动切换；flowchart 流程 / sequenceDiagram 时序 / stateDiagram-v2 状态 / gantt 时间线 / erDiagram 数据关系）。
+## 提炼原则
 
-- **配额充足，不要吝啬**：一篇笔记配 2-4 张图（封面 + 关键小节配图），落 `assets/`。生成失败不阻塞交付，但能配则配。
-- **公众号**：主体 `assets/` 从 `source/images/` **精选拷贝**；禁止只留微信外链。
-- **抽象主题必须用具象符号**：生图模型画不出「规范迁移」「账号池」这类抽象概念。把主题翻译成看得见的东西：服务器机柜、接口/插头、齿轮、扳手、终端窗口、文档纸、钥匙锁。纯抽象几何 / 单物件光球 = 主题传达失败。
-- **配色避雷**：除了蓝紫渐变，**青 + 橙双霓虹**也是 AI 默认重灾区，青蓝光晕同样显 AI。优先单一冷色（深蓝 + 青白）或黑金米白。
-- **中央主体放大成锚点**：别让光带 / 装饰抢焦点，主体清晰突出是第一优先。
-- **留白给后期标题**：四周留 ≥20% 空边；封面文字后期叠加（AI 直出文字会拼错），prompt 里继续 no text。
-- **图标用通用可辨识符号**：齿轮、扳手、终端窗口这类，别用抽象图形（会像占位符）。
-- **概念句模板**：`主题物件A + 物件B + 材质/工艺 + 光线 + 情绪 + 禁止项`。至少 2-3 个可辨要素，一图一概念，忌单物件居中空镜。
-- **高级感尾句**（英文可复用）：`editorial still life, museum catalog photography, tactile materials, controlled color grading, shallow depth of field, no text, no watermark, no generic AI cyber glow`。
-- **生成后集中 review**：布局错乱？文字对比度暗淡？主体贴边？能否一眼看出主题？图标是否可辨？不合格重生成，不硬用劣图。
-- **成帖后显示**：默认跟栏宽；竖海报才限高（见 `docs/agents/workflow.md`「正文插图显示」）。extract 侧仍控制长边像素，**不必**为版面裁竖图。
-- **索引/章节信息图**：若笔记将做成教程索引帖，额外遵守 `firefly-minimax-media` 的「索引 / 章节信息图 checklist」与 `docs/agents/workflow.md` 同名小节（**style-taste 按章选风格**、元素尺度、禁复读章节名、必须参照物等）；成帖侧见 `knowledge-output`「配图规范」。禁止默认水彩整批套图。
+1. 一条知识只留读者能带走的那一句。试探过程、命令日志全删。
+2. 每节先结论，证据按需进表。
+3. 没有要点就短写，不注水。
+4. 公众号等重原料：`source/` 求全，主体求薄。
 
-## 风格化（务必执行）
+## 内容红线（笔记废稿线）
 
-- 调用 `humanizer-tta` 校准：中文为主、工程师口吻、直接有判断、不装不捧。
-- **`wechat` 源强制**：由独立 TTA 岗（或等价通篇 Depointify）过一遍再交付。
-- 参考优秀开发者博客的「人话、克制、有判断」气质：像阮一峰的开门见山、云风的技术随笔克制直接、美团技术博客的深度不堆料。共同点：给结论 → 讲清一件事 → 细节服务论点 → 有个人取舍。模仿这种「少而准」的写法，不模仿他们的具体措辞。
-- 颜文字 + emoji 组合自然融入，不放在代码块内；安全/风险内容降为 0。
+1. 不写「我调用了 curl / 脚本 / 子代理」。
+2. 不贴工具脚本凑数；代码只在它本身是知识点时保留。
+3. 禁样板客套。
+4. 禁「一句话 X」标签；小节标题禁课件收尾腔。
+5. 动词是观点，不是「我执行了」。
 
-## 落盘规范
+## 标题
 
-**本机环境**（有文件系统）：
+口语、有钩子。列表卡 emoji 由站点 `title-mood` 挂，**不要**写进笔记标题。
+
+## 落盘
 
 ```
 D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{YYYY-MM-DD}_{短题}\
-├── {短题}.md               # 主体笔记（文首 YAML：source/theme/facet/…）
-├── assets\                 # 笔记引用图（精选）
-└── source\                 # 可选；wechat 等重原料必留
-    ├── article.md
-    ├── meta.json
-    └── images\
+├── {短题}.md
+├── assets\          # 本地缓存；正文优先写 R2 URL
+└── source\          # 公众号等重原料
 ```
 
-- **Theme / facet**：目录 ID 见 [`theme-taxonomy.md`](references/theme-taxonomy.md)；新建桶先问园主。
-- **todo\ = 待发布队列**：extract 产出默认落这里；建目录前确认 `todo\` 与 Theme/facet 父路径存在。
-- **兼容**：历史扁平 `todo/{日期}_{主题}/` 仍可被 `knowledge-output` 匹配；**新稿禁止再写扁平根**（除非用户点名）。
-- **发布与归档**：素材经 `knowledge-output` 发布成功后，由 output 移入 `Knowledge\Archive\{Theme}\{facet}\…`（保留层级）；extract 侧不负责归档。
+新建 Theme/facet 先问园主。历史扁平 `todo/{日期}_{主题}/` 只读兼容。云端无盘：只输出 Markdown，仍声明 source/theme/facet。
 
-**云端环境**（网页/chat，无本地盘）：直接输出完整 Markdown 笔记，不落盘；仍须声明建议的 `source` / `theme` / `facet`。
+YAML 字段见 `theme-taxonomy.md`。
 
-## 交付要求（每轮必做）
+## 交付
 
-返回给用户时包含：
-1. **来源 + 分类**：`source` / `theme` / `facet`（及 dedupe 结论，若有）。
-2. **文件树**：`{Theme}/{facet}/{日期}_{短题}` 结构，带一行注释说明每个文件/目录用途。
-3. **section 模块设计**：表格列出每个 section 的标题、内容、呈现形式。
-4. 风格落实点简述（可选）；`wechat` 须确认 TTA 已做。
-
-## 与博客流水线的关系
-
-本技能产出 **Knowledge 笔记**(草稿级，`D:\OneDrive\Desktop\Knowledge\`)，不是 blog 成品。交接与发布走 **`knowledge-output` → `site-cascade`**（转正文/换 frontmatter/落 posts，再级联首页索引）。本技能不做发布。
-
-`ob2blog` **仅当**素材已入 Obsidian vault、需要 vault↔帖双边同步时再走；默认会话/调研/**BibiGPT / 公众号**原料产出不经 `ob2blog`。
-
-成帖分流：园主未指定时，`bibigpt` / `wechat` 源交给 output 后**默认进草稿箱**本地预览；明确「正式发 / 出箱」再迁 `posts/<slug>/` 并 cascade。category 仍须用户确认（`CONTEXT.md` 词表）。
+1. 渠道 + `source` / `theme` / `facet`。
+2. 文件树。
+3. section 表（标题 / 内容 / 形式）。
+4. 配图：原图 / 检索 / MiniMax / 未上 R2 的原因。
+5. **发布走 knowledge-output**（点名主题只发命中的；否则分批扫 todo）；`paste_kind` 为 wechat/bibigpt 时默认草稿箱。

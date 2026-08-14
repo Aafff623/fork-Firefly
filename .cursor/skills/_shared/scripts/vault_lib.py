@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared helpers for ob2blog (stdlib only)."""
+"""Shared helpers for vault → Knowledge / post sync (stdlib only)."""
 
 from __future__ import annotations
 
@@ -211,7 +211,7 @@ def sha256_file(path: Path) -> str:
 
 
 def firefly_root_from_here() -> Path:
-    # .../Firefly/.cursor/skills/ob2blog/scripts/this.py → Firefly/
+    # .../Firefly/.cursor/skills/_shared/scripts/this.py → Firefly/
     here = Path(__file__).resolve()
     for parent in here.parents:
         pkg = parent / "package.json"
@@ -222,7 +222,7 @@ def firefly_root_from_here() -> Path:
                 continue
             if data.get("name") == "firefly":
                 return parent
-    # fallback: scripts(0)/ob2blog(1)/skills(2)/.cursor(3)/Firefly(4)
+    # fallback: scripts(0)/_shared(1)/skills(2)/.cursor(3)/Firefly(4)
     return here.parents[4]
 
 

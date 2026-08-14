@@ -78,7 +78,7 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 4. 视频：显式 `MiniMax-Hailuo-02` + `async_mode=true`；提交后立刻 `mark-submit`；轮询阶段禁止再调 `generate_video`。  
 5. 音乐：`lyrics` 必填 — 可用结构标签占位。  
 6. `voice_design` 可能无 CDN — 只对 TTS URL 做 `fetch_media`。  
-7. 丰富正文联用 `ob2blog`（`##` 起笔、禁 `image: api`）。
+7. 丰富正文联用 `knowledge-output`（`##` 起笔、禁 `image: api`）。
 
 ## 资产落点
 

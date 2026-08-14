@@ -4,8 +4,7 @@ description: >-
   在 Firefly 博客发布一条「最新动态」（碎碎念 / 心情 / 进展 / 吐槽 / 配图分享）。
   触发词：发个动态、发布动态、写条动态、dynamic、碎碎念、发个心情、记录一下此刻、
   帮我发一条、new-dynamic、动态配图、同步一条动态到博客。任何「把一句即时的想法/状态/图片
-  发到博客动态流」的诉求都用本技能——轻量、单条、即时，区别于 knowledge-output（长文成帖）
-  与 ob2blog（Obsidian 同步）。本技能熟悉动态全链路：内容集合 schema、API 图片抽取、
+  发到博客动态流」的诉求都用本技能——轻量、单条、即时，区别于 knowledge-extract → knowledge-output（长文成帖）。本技能熟悉动态全链路：内容集合 schema、API 图片抽取、
   kind 启发式分类、配图缩略图规范、侧栏/时间线渲染、pnpm new-dynamic 脚本。
 compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/content.config.ts）。配图压缩用 Python PIL（可选）。
 ---
@@ -27,7 +26,7 @@ compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/
 ## 何时用 / 不用
 
 - **用**：发一条即时动态、碎碎念、心情、进展、吐槽，或带一两张配图的分享；在别的工作区想「把这段感想同步到博客动态」。
-- **不用**：有主题、有结构、值得长期归档的长内容 → 走 `knowledge-output`（成帖）或 `ob2blog`（Obsidian）。动态 ≠ 博客文章。
+- **不用**：有主题、有结构、值得长期归档的长内容 → 走 `knowledge-extract` → `knowledge-output`。动态 ≠ 博客文章。
 
 ## 动态的本质（先理解，再动手）
 

@@ -27,7 +27,7 @@ D:\OneDrive\Desktop\Knowledge\todo\{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
 
 ```yaml
 ---
-source: wechat          # 来源模块 ID，见 source-modules.md
+source: paste           # obsidian | paste | research | rss（旧 wechat/bibigpt 视为 paste）
 theme: claude-code      # Theme 目录 ID
 facet: skill            # facet 目录 ID
 origin_title: ""        # 原文标题（若有）
@@ -69,7 +69,7 @@ dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "n
 
 ## 与站点 category 的映射（成帖时）
 
-| Theme（素材） | 常映射的博客 category（仍须用户确认） |
+| Theme（素材） | 常映射的博客 category（output 自动建议，批次过目） |
 |---|---|
 | `claude-code` / `cursor` / `opencode` / `codex` / `agent-eng` / `vibe` | Agentic Coding 或 指南（看是否「上手文」） |
 | `wool` | 羊毛揭秘 |
@@ -90,6 +90,6 @@ dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "n
 
 ## 索引怎么用（Agent）
 
-1. extract 开跑：定 `source`（来源表）→ 定 `theme` / `facet`（本表）→ 再落盘。  
+1. extract 开跑：定渠道（`source`）→ 定 `theme` / `facet`（本表）→ 再落盘。  
 2. 交付时文件树必须露出 `Theme/facet/日期_短题` 三层。  
 3. 词表变更：改本文件 + 同步 `Knowledge/README.md` 结构说明 + `docs/agents/workflow.md` 乙路路径示例。

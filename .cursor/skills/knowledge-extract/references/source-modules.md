@@ -1,133 +1,101 @@
-# 素材来源模块（extract 入口）
+# 进料四渠（extract 入口）
 
-extract 开跑前先识别**素材从哪来**，并挂上 **Theme / facet** 分类（见 [`theme-taxonomy.md`](theme-taxonomy.md)）。  
-来源决定：要不要先搜证、证据删多狠、是否 Multi-Agent、封面优先扒哪。  
-分类决定：落在 `Knowledge/todo` 的哪一层目录、日后怎么检索。
+extract 是写稿**唯一进料口**。开跑先判定渠道，再挂 Theme/facet（[`theme-taxonomy.md`](theme-taxonomy.md)）。  
+用户不必说「走 ob2blog / 走乙路」——看输入。
+
+YAML `source` 只写四值：`obsidian` | `paste` | `research` | `rss`。
 
 ---
 
-## 索引 A · 来源（source）
+## 索引 A · 四渠
 
-| ID | 来源 | 典型输入 | extract 额外动作 | 专章 |
-|---|---|---|---|---|
-| `session` | 本会话讨论 / Agent 调研 | 对话上下文、踩坑经历 | 默认六步；删闲聊与工具痕迹 | — |
-| `paste-md` | 粘贴的普通 Markdown（非 vault） | 用户贴正文 / 文件路径 | 当原料读；仍走提炼，不经 ob2blog | — |
-| `bibigpt` | BibiGPT 音视频总结原料 | 自定义 Prompt 导出的胖 MD；可选原片 URL | **先搜证再提炼** | 下文「模块：bibigpt」 |
-| `wechat` | 微信公众号文章 | 链接 / 导出 MD+图 / 浏览器可打开页 | **Multi-Agent 归档+分类+提炼+TTA**；原文进 `source/` | [`wechat-mp.md`](wechat-mp.md) |
-| `mixed` | 以上混合 | 例：公众号 + 会话补充 | 按最严规则合并（有 bibigpt 就搜证；有 wechat 就走归档分层） | — |
+| 渠 | `source` | 典型输入 | extract 动作 | 专章 |
+|----|----------|----------|--------------|------|
+| 1 | `obsidian` | vault 内 `.md` 路径 | `extract_vault.py` 消解 `![[…]]`；用附件图；已映射先 `sync_check` | [`vault/obsidian-vault.md`](vault/obsidian-vault.md) |
+| 2 | `paste` | 粘贴正文+图、链接、会话、Grok/公众号/网页/BibiGPT | **统一当图文原料**清洗分类；有图用原图 | 下文「粘贴深度」；公众号另见 [`wechat-mp.md`](wechat-mp.md) |
+| 3 | `research` | 只有题目 / 「帮我调研」 | 并发广搜 + **必须检索配图** | [`research-intake.md`](research-intake.md) |
+| 4 | `rss` | 早报、热榜口令 | 交接合集 skill，不写 Knowledge | `ai-morning-brief` / `github-weekly-hot`；[`../../_shared/periodical.md`](../../_shared/periodical.md) |
 
-已进 Obsidian vault、要双边同步 → **不要**走 extract，改 `ob2blog`。
+渠道 1、2、4 通常**自带**正文和配图；渠道 3 **没有**，要自己搜文搜图。
 
-### 来源判定启发式
+### 判定顺序（不要先鉴定品牌）
 
-1. 含 `mp.weixin.qq.com` / 用户说「公众号」→ `wechat`  
-2. 含 BibiGPT / 时间轴字幕腔 / BV 链接总结 → `bibigpt`  
-3. 仅本会话上下文 → `session`  
-4. 用户丢来一篇无关会话的 MD → `paste-md`  
-5. 多种同时出现 → `mixed`，并在笔记 YAML 里用 `source` 写主来源、正文交代辅来源  
+1. 早报 / 橘鸦 / 热榜 / GitHub 每周 / IT咖啡馆 → **4**
+2. 路径存在且向上有 `.obsidian/` → **1**
+3. 用户给了可清洗的正文、导出 MD、或「把这段整理成笔记」→ **2**（Grok、公众号、网页、BibiGPT、会话**同一渠**）
+4. 只有主题、没有正文和路径 → **3**
+
+禁止：先问「这是公众号还是 Grok」再开跑。品牌只影响渠道 2 的**工序深度**（要不要 `source/`、要不要搜证），不影响入口。
+
+可选字段（渠道 2 / 4，不参与分流）：
+
+```yaml
+source: paste          # 或 obsidian / research / rss
+paste_kind: wechat     # 可选：wechat | bibigpt | grok | web | session
+rss_kind: morning-brief  # 仅 source=rss：morning-brief | github-weekly-hot
+origin_path: ""        # 渠道 1：vault 笔记绝对路径
+origin_url: ""
+```
+
+旧 YAML `session` / `paste-md` / `wechat` / `bibigpt` / `mixed` → 视为 `paste`；output 仍可凭 `paste_kind` 或旧 `source` 把公众号/BibiGPT 送进草稿箱。
 
 ---
 
 ## 索引 B · 分类（Theme → facet）
 
-完整词表与路径规范：[`theme-taxonomy.md`](theme-taxonomy.md)。
+完整词表：[`theme-taxonomy.md`](theme-taxonomy.md)。
 
 ```text
 todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
 ```
 
-| 层级 | 是什么 | 例子 |
-|---|---|---|
-| **Theme** | 长期知识桶（产品/领域） | `claude-code`、`cursor`、`ppt-visual` |
-| **facet** | 桶内切面 | `architecture`、`skill`、`mcp`、`agent` |
-| **单篇** | 一次提炼交付 | `2026-08-11_Skills文件结构七目录` |
-
-开跑顺序：**source → theme → facet → 落盘**。未定 Theme 不得写进 `misc/inbox` 以外的路径；`misc` 仅临时。
-
-公众号等重内容：先 Archive 保真，再按 Theme 归桶；近 7 日同 Theme 撞题走去重（见 theme-taxonomy「近几天话题去重」）。
+开跑顺序：**渠道 → theme → facet → 落盘**。未定 Theme 不得写进 `misc/inbox` 以外；`misc` 仅临时。
 
 ---
 
-## 模块：`bibigpt`（BibiGPT → Knowledge）
+## 粘贴深度（渠道 2 内部，不是新入口）
 
-### 定位
+### `paste_kind: bibigpt`
 
-BibiGPT（网页会员粘贴链接总结）负责**高保真翻译 / 结构化原料**，不负责定论、不负责实时检索。  
-extract / 本机 Agent 负责：阅读理解 → **工具搜证** → 压成可带走的 Knowledge 笔记 → 再交 `knowledge-output`。
+BibiGPT 负责高保真翻译/结构化原料，不负责定论。extract 先**工具搜证**再提炼。
 
-计费提醒（别接错轨）：
+计费：网页会员总结吃 Plus；**不要**默认 MCP/API 烧 credits。
 
-- **网页 / App 登录会员**总结 → 吃 Plus 会员额度（园主 Annual Plus 主用这条）
-- **MCP / OpenAPI / API Key** → 另吃 API credits；Plus 默认不含 API 配额。未另充 credits 时，**不要**默认走 MCP。
+流程：定 Theme → 收下原料（可存 `source.bibigpt.md`）→ 列出待核查断言 → WebSearch / 官方 docs / GitHub → 提炼六步 → 落盘。默认交接 output 进草稿箱。
 
-### 触发词（命中任一且输入像视频总结原料）
+保证据：口水可删；带时间戳的原话、数字、待核实要留。时间戳用全角冒号 `13：06`。
 
-`BibiGPT` / `bibigpt` / 视频总结原料 / 音视频总结 / 「这段是 BibiGPT 导出」/ 粘贴带时间戳章节的长总结 + 视频链接
+搜证最低清单：原片 URL / UP；点名的仓库与 Skill；模型版本与额度（写核对日）；「官方承认」无链接则降温为「作者称」。
 
-### 上游约定（园主侧）
+配图：原片封面 / 官方 README / 合规网图；再走 [`images.md`](images.md)。
 
-1. 在 bibigpt.co 用**自定义 Prompt**出「胖原料」（要厚、要可核对；不是省流摘要、不是博客终稿）
-2. Prompt 语气对齐 `humanizer-tta`：同事交接腔，禁「一句话结论 / 核心要点」标签腔
-3. 可选：魔术棒二次加工只**追加**「值不值得发 / 角度 / 质疑」，不覆盖原料
-4. 时间戳用全角冒号 `13：06`（照顾 Firefly 成帖半角冒号坑）
-5. 导出 MD 或全文粘贴进对话；尽量附**原片 URL**
+### `paste_kind: wechat`
 
-Prompt 正文真源：会话里已定稿的「Firefly 博客原料 · TTA 版」；改版时同步改本文件末「Prompt 摘要」或园主私有模板，勿在 skill 里维护两份完整长文。
+完整四岗 → [`wechat-mp.md`](wechat-mp.md)。  
+一句：原文与配图进 `source/` 求全；主体求薄并过 TTA；近 7 日撞题去重。
 
-### extract 专用流程（插在六步之前 / 之中）
+### 其它粘贴（Grok / 网页 / 会话）
 
-```text
-识别来源 = bibigpt
-  → 定 Theme/facet（theme-taxonomy）
-  → 收下原料 MD（可另存 source.bibigpt.md 备查，可选）
-  → 列出待核查断言（版本号、上下文数字、仓库名、「官方承认」、时效数据）
-  → 工具搜证（WebSearch / 官方 docs / GitHub / 平台 API）；写「我查过什么」节
-  → 再跑提炼六步：论点可压，证据与待核实标记尽量留
-  → 落盘 Knowledge/todo/{Theme}/{facet}/… ；YAML + @blog 便签写清源片链接与核查日期
-  → 交接 knowledge-output（默认草稿箱，除非用户明确正式发）
-```
-
-### 保证据模式（相对默认「删繁就简」的差分）
-
-| 可狠删 | 尽量留 |
-|---|---|
-| 口水开场、重复段、完整字幕 dump | 带时间戳的原话 / 步骤 / 数字 |
-| 已证伪的口述细节（改写为「作者称」或删） | 「待核实」与水分坑 |
-| 营销腔、拔高意义 | 原片链接、UP、时长、工具真名（纠字幕错词后） |
-
-原则：**源头求厚、中间求准、成帖求人味。**  
-BibiGPT 已经薄过一轮的摘要 → extract 禁止再抽成空心条；缺证据就标待核实或补搜，不要脑补。
-
-### 搜证最低清单（视频技术向）
-
-- 原片 URL / 标题 / UP（B 站可 `view?bvid=`）
-- 点名的开源仓库、Skill、MCP → 官方 README / skills 目录
-- 模型版本、上下文窗口、会员额度 → 官方或一级 Issue；写核对日期
-- 「官方承认 / Bug / 暴涨」→ 无链接则降温为「作者称」
-
-### 配图（bibigpt 源）
-
-1. 原片封面 / 官方仓库 README 图  
-2. 合规网图  
-3. MiniMax 生图（`firefly-minimax-media` 额度门禁）
-
-### 反例
-
-- 把 BibiGPT 默认摘要当终稿直接 output  
-- 用 MCP 烧 API 额度「图省事」（会员网页额度未用完时）  
-- 不搜证就采信片中过期数字  
-- 默默走 ob2blog（未进 vault）
-
-### Prompt 摘要（提醒用，完整版在园主 BibiGPT 模板）
-
-角色：音视频→知识原料记录员，不是省流课代表。  
-必出块：片子是啥 / 能带走的点（带证据）/ 时间轴细拆 / 证据表 / 名词表 / 照做清单 / 水分与坑 / 博客切入 / `@blog` 便签。  
-禁：终稿散文、半角时间戳冒号、无证据硬定论。
+清洗、分类、写成合格笔记。原图拷进 `assets/` 再按 [`images.md`](images.md) 上 R2。不要为了「像调研」再去广搜覆盖用户已给的正文。
 
 ---
 
-## 模块：`wechat`（摘要）
+## 渠道 4 交接
 
-完整流程、四角色 Multi-Agent、source/ 保真约定 → [`wechat-mp.md`](wechat-mp.md)。
+| 口令 | 读并执行 |
+|------|----------|
+| 早报 / 橘鸦 / juya | `.cursor/skills/ai-morning-brief/SKILL.md` |
+| 热榜 / GitHub 每周 / IT咖啡馆 | `.cursor/skills/github-weekly-hot/SKILL.md` |
 
-一句记：**原文与配图进 `source/` 求全；主体笔记求薄并过 TTA；目录按 Theme/facet；近 7 日撞题先去重。**
+不要在 extract 里重写筛稿、R2、草稿箱规则。YAML 若仍想记账：`source: rss` + `rss_kind`。
+
+---
+
+## 反例
+
+- 看到 vault 路径就去找已删除的 `ob2blog` skill
+- 渠道 2 先鉴定「这是不是公众号」才肯提炼
+- 渠道 3 只搜一页 Google 式结果、不配图
+- 渠道 4 把 RSS 正文搬进 Knowledge 再 output（合集有自己的落盘）
+- 把 BibiGPT 默认摘要当终稿
+- 用 MCP 烧 API「图省事」（会员网页额度未用完时）

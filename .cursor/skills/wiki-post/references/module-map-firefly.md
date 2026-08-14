@@ -28,14 +28,14 @@ Stack: Astro 7 · Svelte 5 · Tailwind 4 · pnpm 9 · Vercel
 | Architecture | `layouts/Layout.astro`, `MainGridLayout.astro` | Contributor short |
 | Contributing | link `AGENTS.md`, `docs/agents/workflow.md` | Contributor |
 
-## Eth path source modules (Writing-Posts)
+## 四渠 source modules (Writing-Posts)
 
 | ID | Input | Skill note |
 |---|---|---|
-| `session` | Chat / agent research | default extract |
-| `paste-md` | Pasted MD (not vault) | extract, not ob2blog |
-| `bibigpt` | BibiGPT export (+ video URL) | verify then extract; default draftbox |
-| `mixed` | mix of above | use strictest (bibigpt ⇒ verify) |
+| `obsidian` | Vault note path | extract channel 1 (`extract_vault.py`) |
+| `paste` | Pasted 图文 (Grok / 公众号 / web / session) | extract channel 2 |
+| `research` | Topic only | extract channel 3 (wide search + images) |
+| `rss` | 早报 / 热榜 | extract channel 4 → collection skills |
 
 Detail SSOT: `.cursor/skills/knowledge-extract/references/source-modules.md`
 
@@ -69,7 +69,7 @@ Detail SSOT: `.cursor/skills/knowledge-extract/references/source-modules.md`
 - Music: default `local` playlist
 - Draftbox ≠ theme demo `draft: true` tracked file
 - Theme hue: shell neutral gray; purple accents only
-- Agent publish pipelines stay in skills/`docs/` — Wiki may link “发文见 AGENTS 双路径（含 BibiGPT）”
+- Agent publish pipelines stay in skills/`docs/` — Wiki may link “发文见 AGENTS 四渠（extract → output / 合集 skill）”
 - Product SemVer (`v1.x`) ≠ `package.json` upstream theme version (`6.15.3`)
 
 ## Shipped Wiki tree (2026-08)

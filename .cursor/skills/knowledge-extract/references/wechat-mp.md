@@ -44,7 +44,7 @@
 - [ ] 文首 YAML：`source: wechat` + `theme` + `facet` + `origin_*` + `dedupe`  
 - [ ] 主体笔记 ≠ 原文副本；原文只在 `source/`  
 - [ ] 已过 TTA；交付含 Theme/facet 路径  
-- [ ] 未默默 `ob2blog`；发布交给 `knowledge-output`
+- [ ] 未默默写 posts；发布交给 `knowledge-output`
 
 ## extract 流程（插在六步之前）
 
@@ -71,8 +71,8 @@
 
 ## 配图
 
-1. **先用原文图**（Archive 已落盘）——公众号专业配图优先于生图  
-2. 缺关键示意图再合规网图 / MiniMax（`firefly-minimax-media`）  
+1. **先用原文图**（Archive 已落盘）  
+2. extract 阶段原图精选后按 [`images.md`](images.md) 上 R2；检索仍空才 MiniMax  
 3. 禁止把微信外链图直接写进主体笔记当唯一引用（易失效）
 
 ## 反例
@@ -88,5 +88,5 @@
 | 若实际是… | 改标 |
 |---|---|
 | BibiGPT 视频总结 | `bibigpt`（先搜证） |
-| 已进 Obsidian vault | 不走 extract → `ob2blog` |
-| 用户粘贴普通 MD（非公众号） | `paste-md` |
+| 已进 Obsidian vault | 渠道 1 `obsidian`（`extract_vault.py`），不是另开入口 |
+| 用户粘贴普通 MD（非公众号） | 仍是渠道 2 `paste` |
