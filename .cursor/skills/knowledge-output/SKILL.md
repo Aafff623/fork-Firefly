@@ -57,12 +57,12 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列�
 0 合集缓存  → python .cursor/skills/knowledge-output/scripts/sync_collection_model.py
               drifted → --apply，再读 collection-model.md（只记 L1/L2）
 1 选材      → select_todo.py（无参=本批；有 query=命中后本批）
-2 每篇      → 缺口补提 → 自检三关 → 重建 FM（含 tags / collections）
-3 落盘      → posts/{slug}/ 或 _draftbox/{slug}/
-              正文已是 img.threetwoa.live 则不要 place_post 拷进 git
+2 每篇      → 缺口补提 → 自检三关（含 title / H2 / 开篇 / Markdown）→ 重建 FM
+3 落盘      → 园主说预览/验收 → `_draftbox/{slug}/`；未点头禁止出箱
+              正式发才 `posts/{slug}/`。正文已是 img.threetwoa.live 则不要 place_post 拷进 git
 4 校验      → validate_post.py
-5 收尾      → 正式发才 site-cascade --emit-dynamic --blurb
-              草稿箱：validate，不 emit、不 Archive
+5 收尾      → 正式发且园主点头才 site-cascade --emit-dynamic --blurb
+              草稿箱：validate，不 emit、不 Archive、不 push
 6 归档      → 仅正式发布成功：archive_todo.py --todo "<piece-dir>"
 7 汇报      → 本批 slug → category / collections；剩余 offset；FAIL 原文
 ```
@@ -76,7 +76,7 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列�
 
 ### 2. 自检
 
-打开 [`self-check.md`](references/self-check.md)。完成标准：详细度、标题、配图三关都过，合集缓存已 diff。过不了就补完再检，再写入 `posts/`。
+打开 [`self-check.md`](references/self-check.md)。完成标准：详细度、标题、配图三关都过，合集缓存已 diff。形态红线（title / H2 / 开篇 / Markdown / 封面必须 MiniMax / Mermaid 配色）见 [`../_shared/post-redlines.md`](../_shared/post-redlines.md)。过不了就补完再检。预览验收写入 `_draftbox/`，不要直接写入 `posts/`。
 
 ### 3. 重建 frontmatter
 
@@ -110,6 +110,7 @@ python .cursor/skills/knowledge-output/scripts/place_post.py \
 
 | 动作 | 落盘 | Git / 级联 / Archive |
 |---|---|---|
+| 园主说本地预览 / 验收 / 先看 | `_draftbox/<slug>/`，`draft: true` | 禁止出箱、emit、cascade、push，直到园主点头 |
 | 用户说草稿；或 `paste_kind` / 旧 source 为 wechat / bibigpt | `_draftbox/<slug>/`，`draft: true` | 禁止 add 正文；不 emit；不迁 Archive |
 | 用户说出箱 / 可以发了 | `posts/<slug>/`，通常 `draft: false` | validate → cascade → 确认后 push → 再 Archive |
 | 主题 demo | 已跟踪的 `posts/draft.md` 一类 | 与草稿箱无关 |
@@ -122,8 +123,10 @@ python .cursor/skills/knowledge-output/scripts/place_post.py \
 
 ## 硬规则
 
-1. 默认正式发 `draft: false` 落 `posts/<slug>/`。用户要草稿、含敏感/口令、或 wechat/bibigpt → `_draftbox/`。
+1. 园主说本地预览 / 验收 / 先看 → 先 `_draftbox/`，`draft: true`。未点头禁止出箱 / cascade / push。默认正式发才 `draft: false` 落 `posts/<slug>/`。用户要草稿、含敏感/口令、或 wechat/bibigpt → `_draftbox/`。
 2. 只写本批帖 + 正式发时的级联；不改布局、不顺手改别人的在制品。
 3. 无参 = 分批全量，不是一次做完、也不是拒绝开工。
 4. 不 `git add` / `push`，除非用户这轮明确要提交。
 5. 汇报：本批 `slug → category / collections`、validate 全文、是否 cascade / 归档、下一批 `--offset`。把 lint FAIL 贴出来。
+6. 成帖形态只守 [`../_shared/post-redlines.md`](../_shared/post-redlines.md) 的机器门禁（冒号、破折号、H2、draftbox、封面 MiniMax），不要另起文档。经验稿成稿听 tta-tone `canon.md`，不要用「每篇必须引用框 / 每篇 metric」当全站宪法。title 完整点题；每篇要有 `##`；开篇日期必须对；正文该强调时用加粗/引用/行内代码，禁满篇 `<mark>`；封面禁止素材图，必须 MiniMax（默认人物）；Mermaid 禁灰块；点名桌宠角色先搜 `SpritePet` / `maid-deepseek-whale`。自检不过只回跳缺的那一段（见 extract `intake-stages.md`），不整段重跑 extract。
+7. 粘贴素材的问题说明 / 数字表 / 插件清单优先保留结构。

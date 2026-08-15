@@ -70,13 +70,13 @@ description: >-
 ## 工作流（渠道 1–3）
 
 ```
-0 分流 + Theme/facet
+0 分流 + Theme/facet（暂定五段见 [`intake-stages.md`](references/intake-stages.md)：求全进 vault → 问现场 → 配图 → tta-tone 挑选 → 封面后发布）
 1 渠道 1：extract_vault.py；渠道 2：清洗粘贴（公众号则 Archive∥Classify）；渠道 3：并发广搜
-2 提炼     → 结论、坑、可复用做法；删闲聊与工具痕迹（vault 成品笔记少改结构，重点消解图）
+2 提炼     → 结论、坑、可复用做法；删闲聊与工具痕迹（vault 成品笔记少改结构，重点消解图；粘贴的表/清单先留结构）
 3 取舍     → 详略得当
-4 结构     → 表格+短段落+必要 Mermaid
+4 结构     → 表格+短段落+必要 Mermaid；不要把园主贴来的数字表/插件清单先改成通稿
 5 配图     → 见 images.md：有原图用原图；渠道 3 必须检索匹配；上传 R2；缺图才 MiniMax；GIF 仅当用户当场要
-6 风格     → humanizer-tta
+6 风格     → 成品稿 / 园主已写正文 → 不过 humanizer-tta；其余调研通稿才走 humanizer-tta（成稿开口听 tta-tone canon）
 7 落盘     → todo/{Theme}/{facet}/{日期}_{短题}/ + 文首 YAML
 8 交付     → 文件树 + section 表；提示交接 knowledge-output（无主题则分批扫 todo）
 ```
@@ -112,9 +112,10 @@ python .cursor/skills/_shared/scripts/sync_check.py --slug <slug>
 ## 提炼原则
 
 1. 一条知识只留读者能带走的那一句。试探过程、命令日志全删。
-2. 每节先结论，证据按需进表。
-3. 没有要点就短写，不注水。
-4. 公众号等重原料：`source/` 求全，主体求薄。
+2. 粘贴的问题说明、数字表、插件清单优先保留结构，不要先改成通稿。
+3. 每节先结论，证据按需进表。
+4. 没有要点就短写，不注水。
+5. 公众号等重原料：`source/` 求全，主体求薄。
 
 ## 内容红线（笔记废稿线）
 
@@ -126,7 +127,8 @@ python .cursor/skills/_shared/scripts/sync_check.py --slug <slug>
 
 ## 标题
 
-口语、有钩子。列表卡 emoji 由站点 `title-mood` 挂，**不要**写进笔记标题。
+完整、一看就知道讲什么。园主给了素材题/方向就先对齐，不要先写金句。禁止感想句（「没废 / 带歪了」）。  
+列表卡 emoji 由站点 `title-mood` 挂，**不要**写进笔记标题。成帖 title / H2 / 开篇见 [`../_shared/post-redlines.md`](../_shared/post-redlines.md)。
 
 ## 落盘
 
