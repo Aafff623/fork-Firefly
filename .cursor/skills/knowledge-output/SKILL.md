@@ -1,30 +1,31 @@
 ---
 name: knowledge-output
 description: >-
-  把 Knowledge/todo 素材发布成 Firefly 博客文章（发布岗，不是拷文件）。
+  园主在 Obsidian 把笔记调到理想之后，把素材发布成 Firefly 博客（发布岗，不是拷文件）。
   无主题 / 无 extract 口令 → 分批扫全部 todo；有主题 → 只干命中的。
-  每篇：缺口补提 → 自检（详细度 / 标题 / 配图）→ 合集心智模型路由 → 落盘。
+  每篇：缺口补提 → 自检 → 合集路由 → 落盘 → 用语进库（默认自动；也可只抽指定节/词）。
   触发词：发布笔记、把知识笔记发到博客、knowledge output、素材转博客、提取完发出去、
-  扫 todo、把 Knowledge 发了。
+  扫 todo、把 Knowledge 发了、这篇进库、只提取第三节。
   早报 / GitHub 热榜不走本技能（走对应合集 skill）。
-  Obsidian 进料也走本技能（extract 渠道 1 已写入 Knowledge）；正式发收尾 site-cascade。
+  正式发收尾 site-cascade。
 compatibility: 需在 Firefly 项目根执行；Python 3；select_todo.py / place_post.py /
   archive_todo.py / sync_collection_model.py；模板 assets/templates/frontmatter.yaml；
   校验 ../_shared/scripts/validate_post.py。
 ---
 
-# knowledge-output — Knowledge 素材 → 成帖（发布岗）
+# knowledge-output — 理想稿 → 成帖（发布岗）
 
-进料一律先经过 `knowledge-extract`（含 vault 路径）。旧 `ob2blog` 入口已删除。  
+园主已在 Obsidian 把笔记调到理想，才调用本技能。进料一律先经过 `knowledge-extract`。旧 `ob2blog` 入口已删除。  
 合集期刊（早报 / 热榜）**不走本技能**。
 
-本技能不是「把 md 拷进 `posts/`」。过不了自检禁止落盘。
+本技能不是「把 md 拷进 `posts/`」，也不是把理想稿重写成另一张嘴。过不了自检禁止落盘。
 
 | 真源 | 路径 |
 |---|---|
 | 成帖红线（机器） | [`../_shared/post-redlines.md`](../_shared/post-redlines.md) → `validate_post.py` |
 | 自检（人） | [`references/self-check.md`](references/self-check.md) |
 | 合集一二级缓存 | [`references/collection-model.md`](references/collection-model.md) |
+| 用语进库 | [`references/voice-ingest.md`](references/voice-ingest.md) |
 | Theme / category 对照 | `knowledge-extract/references/theme-taxonomy.md` + `CONTEXT.md` 词表 |
 | FM 骨架 | [`assets/templates/frontmatter.yaml`](assets/templates/frontmatter.yaml) |
 
@@ -61,10 +62,11 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列�
 3 落盘      → 园主说预览/验收 → `_draftbox/{slug}/`；未点头禁止出箱
               正式发才 `posts/{slug}/`。正文已是 img.threetwoa.live 则不要 place_post 拷进 git
 4 校验      → validate_post.py
-5 收尾      → 正式发且园主点头才 site-cascade --emit-dynamic --blurb
-              草稿箱：validate，不 emit、不 Archive、不 push
-6 归档      → 仅正式发布成功：archive_todo.py --todo "<piece-dir>"
-7 汇报      → 本批 slug → category / collections；剩余 offset；FAIL 原文
+5 用语进库  → 见 voice-ingest.md。默认从理想稿抽；用户点名则只抽指定节/词；说不要则跳过
+6 收尾      → 正式发且园主点头才 site-cascade --emit-dynamic --blurb
+              草稿箱：validate + 进库，不 emit、不 Archive、不 push
+7 归档      → 仅正式发布成功：archive_todo.py --todo "<piece-dir>"
+8 汇报      → 本批 slug → category / collections；进了哪些词；剩余 offset；FAIL 原文
 ```
 
 ## 单篇工序
@@ -106,6 +108,10 @@ python .cursor/skills/knowledge-output/scripts/place_post.py \
 
 笔记型动态须含 `>` 批注。用户要另发碎碎念 → `dynamic-post`。
 
+### 5. 用语进库
+
+打开 [`voice-ingest.md`](references/voice-ingest.md)。理想稿优先 `origin_path`（vault）。默认整篇抽；用户说「只提取第三节 / 这几个词」则只抽那些。早报 / 热榜 / 别人的文章不做。不要为了进库再改写一篇。
+
 ## 草稿箱
 
 | 动作 | 落盘 | Git / 级联 / Archive |
@@ -127,6 +133,7 @@ python .cursor/skills/knowledge-output/scripts/place_post.py \
 2. 只写本批帖 + 正式发时的级联；不改布局、不顺手改别人的在制品。
 3. 无参 = 分批全量，不是一次做完、也不是拒绝开工。
 4. 不 `git add` / `push`，除非用户这轮明确要提交。
-5. 汇报：本批 `slug → category / collections`、validate 全文、是否 cascade / 归档、下一批 `--offset`。把 lint FAIL 贴出来。
-6. 成帖形态只守 [`../_shared/post-redlines.md`](../_shared/post-redlines.md) 的机器门禁（冒号、破折号、H2、draftbox、封面 MiniMax），不要另起文档。经验稿成稿听 tta-tone `canon.md`，不要用「每篇必须引用框 / 每篇 metric」当全站宪法。title 完整点题；每篇要有 `##`；开篇日期必须对；正文该强调时用加粗/引用/行内代码，禁满篇 `<mark>`；封面禁止素材图，必须 MiniMax（默认人物）；Mermaid 禁灰块；点名桌宠角色先搜 `SpritePet` / `maid-deepseek-whale`。自检不过只回跳缺的那一段（见 extract `intake-stages.md`），不整段重跑 extract。
+5. 汇报：本批 `slug → category / collections`、validate 全文、进了哪些词、是否 cascade / 归档、下一批 `--offset`。把 lint FAIL 贴出来。
+6. 成帖形态只守 [`../_shared/post-redlines.md`](../_shared/post-redlines.md) 的机器门禁，不要另起文档。经验稿听 tta-tone `canon.md`。title 完整点题；每篇要有 `##`；开篇日期必须对；该强调时用加粗/引用/行内代码，禁满篇 `<mark>`；封面必须 MiniMax（默认人物）；Mermaid 禁灰块。自检不过只回跳缺的那一段，不整段重跑 extract，也不把理想稿重写成另一张嘴。
 7. 粘贴素材的问题说明 / 数字表 / 插件清单优先保留结构。
+8. 用语进库默认做。用户点名范围则只抽那些；说「这轮不要进库」则跳过。词表写入只在本岗；tta-tone 成稿只读 `lexicon.md`。

@@ -8,7 +8,7 @@ Knowledge（尤其 `todo/`）按 **Theme → facet → 单篇** 三级组织。
 
 ```text
 D:\OneDrive\Desktop\Knowledge\todo\{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
-├── {短题}.md                 # 提炼后主体（须过 humanizer-tta）
+├── {短题}.md                 # 主体。园主调完为准；通稿才去壳
 ├── assets/                   # 笔记引用图（封面/示意图；相对路径）
 └── source/                   # 可选；公众号等重原料必留
     ├── article.md            # 原文或接近无损的 MD

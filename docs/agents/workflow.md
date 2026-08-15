@@ -51,13 +51,15 @@ Issue(.scratch/<feature>/)
 
 ```text
 写篇博客 / 丢路径 / 粘贴 / 调研 / 早报
-  → knowledge-extract
-       1 vault 路径     → extract_vault.py → Knowledge（附件图 → R2）
-       2 粘贴图文       → 清洗分类 → Knowledge（有图用原图）
+  → knowledge-extract（求全 → 问现场 → 配图 → 停）
+       1 vault 路径     → extract_vault.py → 求全写入（渠道 1 以 vault 为准；附件图 → R2）
+       2 粘贴图文       → 清洗分类 → Knowledge（换根未做；有图用原图）
        3 无材料调研     → 并发广搜 + 检索配图 → Knowledge
-       4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot
-  → 渠道 1–3：knowledge-output（无主题则分批扫 todo；自检过了才落盘）
-  → 正式发：site-cascade（`--blurb`）→ Agent 协作者评论 → 本地预览
+       4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot（不抽用语）
+  → 园主在 Obsidian 调到理想
+  → 渠道 1–3：knowledge-output（自检 → 落盘 → 用语进库；无主题则分批扫 todo）
+  → 本地预览验收 → `_draftbox/`（未点头禁止出箱 / cascade / push）
+  → 正式发：site-cascade（`--blurb`）→ Agent 协作者评论
   → 发布成功：素材迁 Knowledge\Archive\…
 ```
 
@@ -69,7 +71,7 @@ Issue(.scratch/<feature>/)
 - 粘贴进料若是公众号：仍走 `wechat-mp.md` 四岗（工序，不是第五入口）；BibiGPT 先搜证。二者默认草稿箱
 - Theme/facet：`theme-taxonomy.md`（≠ 博客 category）
 - **分类 / 合集**：对照 `CONTEXT.md` 词表自动建议 `category`；合集按 `knowledge-output/references/collection-model.md` 一二级 `route:` 自动挂（可双挂）；批次汇报表过目。禁止默填 Agentic Coding；禁止私开合集空壳
-- extract **不落 posts**。配图在 extract 完成（原图或检索 → R2；缺图才 MiniMax）。渠道 4 禁止 MiniMax
+- extract **不落 posts**、不抽用语、不做封面。配图在 extract 完成（原图或检索 → R2；缺图才 MiniMax）。渠道 4 禁止 MiniMax
 
 #### 公众号 Multi-Agent（渠道 2 工序）
 
@@ -95,9 +97,9 @@ Issue(.scratch/<feature>/)
 园主定义的「草稿」：**本地能 `pnpm dev` 调试，但不进 git、不 push**。
 
 ```text
-进箱：用户要草稿 / 先本地调试
+进箱：用户要草稿 / 先本地调试 / 园主说本地预览或验收
   → 落盘 src/content/posts/_draftbox/<slug>/（draft: true）
-  → 校验可跑；禁止 git add 箱内正文；不 emit 公开动态
+  → 校验可跑；禁止 git add 箱内正文；不 emit、不 cascade、不 push
   → 本地打开 /posts/<slug>/ 预览
 
 出箱：用户说从草稿箱出来 / 可以发了

@@ -17,22 +17,33 @@
 
 ## 2. 标题（title + H2/H3）
 
-对照 [`heading-anti-ai.md`](heading-anti-ai.md) + `humanizer-tta`（口头禅 / 成篇去痕）。  
-**frontmatter `title` 和所有 H2/H3 都要改到像人起的路牌**，不要课件目录。
+对照 [`heading-anti-ai.md`](heading-anti-ai.md) + [`../../_shared/post-redlines.md`](../../_shared/post-redlines.md)。不要先炼金句。
 
-禁（命中就改名）：全面解析、深度剖析、XX 清单、XX 实录、核心要点、一句话收束、综上所述、写在最后、Overview、Best Practices。  
-emoji / 颜文字：禁止写入 `title`（列表卡 `title-mood` 自己挂）。
+- **title**：完整、一看就知道讲什么。园主给了素材题/方向就先对齐。禁止感想句（「没废 / 带歪了」）。
+- **H2**：每篇必须有多节 `##`，不能只有一级（frontmatter title / 文内 `#`）。`###` 按需。侧栏目录读 H2。先定职能（现象 / 根因 / 解法 / 选择 / 安装 / 附件）再取名。侧栏窄，宜短。禁止空对象（「揭秘两阶段」「内置的和社区的」）。「园丁 / 园主」可用，不要每节硬塞。
+- **主语**：成帖句子要有主语。禁止大段无主语句。谁掉分、谁装、谁交给 Agent，写清楚。
+- 仍禁课件腔：全面解析、深度剖析、XX 清单、核心要点、一句话收束、综上所述、写在最后、Overview、Best Practices。
+- emoji / 颜文字：禁止写入 `title`（列表卡 `title-mood` 自己挂）。
 
-读出声：像跟同事说话才过。TTA 的 50 分自评不当放行条件。
+TTA 的 50 分自评不当放行条件。
+
+## 2b. 开篇与 Markdown
+
+- 经验稿开篇听 tta-tone `canon.md`：时间线和现场先于报告骨架。发布日 ≠ 写作日（例：V4-Pro-0813 是 8 月 13 日，8 月 15 日不能写「今天上了」）。
+- 该强调时用加粗 / 引用 / 行内代码，不要为凑格式硬塞。数字该分色再用 `.metric`，禁止满篇黄 `<mark>`。
+- 粘贴的问题说明、数字表、插件清单优先留结构。
+- 园主已调完的句子原样留，不要重写成另一张嘴。
 
 ## 3. 配图
 
-优先级：原图 / 官方图 → 检索场景素材 → 仍空才 MiniMax（`check_quota.py`）→ GIF 仅用户当场要。
+封面 / 列表卡：必须 MiniMax 自生成（默认二次元人物，主题元素编进画面）。禁止园主配图、禁止检索素材当 `image:`。  
+正文插图：园主截图 / 官方图 → 检索场景素材 → 仍空才 MiniMax（`check_quota.py`）。GIF 仅用户当场要。  
+Mermaid：禁止灰/单色；多色节点、分区、深浅色都能看。
 
 - 正文大图必须是 `https://img.threetwoa.live/...`（桶 `firefly-comment`）。禁止只留微信外链。
 - 比例：每个主要 H2 附近至少一张能说明该节的图；禁止零图；禁止堆无关科技库存。
+- 点名本站角色（DeepSeek 猫娘）必须先搜 `SpritePet` / `public/pets/maid-deepseek-whale`，禁止自造鲸背杂志风。见 [`../knowledge-extract/references/images.md`](../knowledge-extract/references/images.md)。
 - 已是 R2 URL 的不要再 `place_post` 拷进 git。本地 `./assets/` 残留才 webify 后上 R2。
-- 细则：[`../knowledge-extract/references/images.md`](../knowledge-extract/references/images.md)
 
 ## 4. 合集缓存
 

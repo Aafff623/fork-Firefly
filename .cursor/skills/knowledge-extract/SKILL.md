@@ -10,7 +10,7 @@ description: >-
   触发词：写篇博客、发到 blog、知识提炼、整理成笔记、调研、帮我查、Obsidian、vault、
   ob2blog、早报、热榜、橘鸦、github weekly、BibiGPT、公众号、mp.weixin。
   渠道 1–3 落盘 D:\OneDrive\Desktop\Knowledge\todo\{Theme}\{facet}\{日期_短题}\；
-  不落 posts。发布交给 knowledge-output。
+  不落 posts、不做封面、不抽用语。园主在 Obsidian 调完再交给 knowledge-output。
 ---
 
 # knowledge-extract — 写稿进料（四渠）
@@ -42,15 +42,18 @@ description: >-
 | 公众号保真分层（渠道 2 工序，不是入口） | [`wechat-mp.md`](references/wechat-mp.md) |
 | Vault 附件 / `![[…]]` | [`vault/obsidian-vault.md`](references/vault/obsidian-vault.md) |
 | 已映射帖一致性 | [`vault/sync-and-speed.md`](references/vault/sync-and-speed.md) |
+| 三段分工（extract / 园主 / output） | [`intake-stages.md`](references/intake-stages.md) |
 | 成帖语法（交接 output 才用） | [`../_shared/post-redlines.md`](../_shared/post-redlines.md) |
 
 ## 开跑：先分流，再 Theme
 
 ```text
 看输入 → 渠道 1/2/3/4（用户不点名）
-  1–3 → theme/facet → 提炼/转换 → 配图（原图或检索）→ R2 → Knowledge
+  1–3 → theme/facet → 求全写入 → 问现场 → 配图 → 停
   4   → 读并执行 ai-morning-brief 或 github-weekly-hot（不要在本技能里重写合集流水线）
 ```
+
+三段分工见 [`intake-stages.md`](references/intake-stages.md)。本岗不发布、不做封面、不抽用语。
 
 与博客 `category` 不是同一套。YAML `source` 只准四值：`obsidian` | `paste` | `research` | `rss`。旧值 `session` / `wechat` / `bibigpt` 当作 `paste` 的别名。
 
@@ -70,16 +73,15 @@ description: >-
 ## 工作流（渠道 1–3）
 
 ```
-0 分流 + Theme/facet（暂定五段见 [`intake-stages.md`](references/intake-stages.md)：求全进 vault → 问现场 → 配图 → tta-tone 挑选 → 封面后发布）
-1 渠道 1：extract_vault.py；渠道 2：清洗粘贴（公众号则 Archive∥Classify）；渠道 3：并发广搜
-2 提炼     → 结论、坑、可复用做法；删闲聊与工具痕迹（vault 成品笔记少改结构，重点消解图；粘贴的表/清单先留结构）
-3 取舍     → 详略得当
-4 结构     → 表格+短段落+必要 Mermaid；不要把园主贴来的数字表/插件清单先改成通稿
-5 配图     → 见 images.md：有原图用原图；渠道 3 必须检索匹配；上传 R2；缺图才 MiniMax；GIF 仅当用户当场要
-6 风格     → 成品稿 / 园主已写正文 → 不过 humanizer-tta；其余调研通稿才走 humanizer-tta（成稿开口听 tta-tone canon）
-7 落盘     → todo/{Theme}/{facet}/{日期}_{短题}/ + 文首 YAML
-8 交付     → 文件树 + section 表；提示交接 knowledge-output（无主题则分批扫 todo）
+0 分流 + Theme/facet
+1 收材料   → 渠道 1：extract_vault.py；渠道 2：清洗粘贴（公众号见 wechat-mp）；渠道 3：并发广搜
+2 求全写入 → 客观信息尽量收全。渠道 1 以 vault 为准；渠道 2–3 目前仍落 Knowledge（换根未做）
+3 问现场   → 经验稿核当时 / 例子 / 心得 / 货 / 原句；空了问，不准编
+4 配图     → 见 images.md：有原图用原图；渠道 3 必须检索；上 R2；缺图才 MiniMax
+5 停       → 文件树 + section 表。提示园主在 Obsidian 调到理想，再调用 knowledge-output
 ```
+
+本岗不做：发布、封面、用语进库、把园主已写正文重写成另一张嘴。闲聊和工具痕迹可删；粘贴的表 / 清单先留结构。
 
 ### 渠道 1 命令
 
@@ -111,11 +113,10 @@ python .cursor/skills/_shared/scripts/sync_check.py --slug <slug>
 
 ## 提炼原则
 
-1. 一条知识只留读者能带走的那一句。试探过程、命令日志全删。
+1. 先求全。试探过程、命令日志、工具痕迹可删；不要为了「只留一句」把现场砍掉。
 2. 粘贴的问题说明、数字表、插件清单优先保留结构，不要先改成通稿。
-3. 每节先结论，证据按需进表。
-4. 没有要点就短写，不注水。
-5. 公众号等重原料：`source/` 求全，主体求薄。
+3. 每节能写结论就写；证据按需进表。没有要点就短写，不注水。
+4. 公众号等重原料：`source/` 求全，主体求薄。
 
 ## 内容红线（笔记废稿线）
 
@@ -149,4 +150,4 @@ YAML 字段见 `theme-taxonomy.md`。
 2. 文件树。
 3. section 表（标题 / 内容 / 形式）。
 4. 配图：原图 / 检索 / MiniMax / 未上 R2 的原因。
-5. **发布走 knowledge-output**（点名主题只发命中的；否则分批扫 todo）；`paste_kind` 为 wechat/bibigpt 时默认草稿箱。
+5. **停在这里。** 园主在 Obsidian 调完再走 knowledge-output（点名主题只发命中的；否则分批扫 todo）。`paste_kind` 为 wechat/bibigpt 时默认草稿箱。

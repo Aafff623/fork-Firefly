@@ -61,7 +61,7 @@ BibiGPT 负责高保真翻译/结构化原料，不负责定论。extract 先**�
 
 计费：网页会员总结吃 Plus；**不要**默认 MCP/API 烧 credits。
 
-流程：定 Theme → 收下原料（可存 `source.bibigpt.md`）→ 列出待核查断言 → WebSearch / 官方 docs / GitHub → 提炼六步 → 落盘。默认交接 output 进草稿箱。
+流程：定 Theme → 收下原料（可存 `source.bibigpt.md`）→ 列出待核查断言 → WebSearch / 官方 docs / GitHub → 求全写入 → 停。园主调完再 output（默认草稿箱）。
 
 保证据：口水可删；带时间戳的原话、数字、待核实要留。时间戳用全角冒号 `13：06`。
 
@@ -76,7 +76,8 @@ BibiGPT 负责高保真翻译/结构化原料，不负责定论。extract 先**�
 
 ### 其它粘贴（Grok / 网页 / 会话）
 
-清洗、分类、写成合格笔记。原图拷进 `assets/` 再按 [`images.md`](images.md) 上 R2。不要为了「像调研」再去广搜覆盖用户已给的正文。
+清洗、分类、写成合格笔记。原图拷进 `assets/` 再按 [`images.md`](images.md) 上 R2。不要为了「像调研」再去广搜覆盖用户已给的正文。  
+粘贴里的问题说明、数字表、插件清单优先保留原结构，不要先改成通稿。
 
 ---
 
@@ -99,3 +100,4 @@ BibiGPT 负责高保真翻译/结构化原料，不负责定论。extract 先**�
 - 渠道 4 把 RSS 正文搬进 Knowledge 再 output（合集有自己的落盘）
 - 把 BibiGPT 默认摘要当终稿
 - 用 MCP 烧 API「图省事」（会员网页额度未用完时）
+- 把园主贴来的分数表 / 插件清单先改写成散文再提炼

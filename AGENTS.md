@@ -66,8 +66,8 @@ pnpm new-d <content>
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。落 Knowledge（④ 除外）。见 `source-modules.md` |
-| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge\todo →`posts/<slug>`（发布岗：缺口补提 + 自检 + 合集一二级缓存路由）；无主题则分批扫全部 todo；有主题只干命中的；正式发才 Archive + `site-cascade` |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。求全写入后停；不发布、不抽用语。见 `source-modules.md` |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | 园主在 Obsidian 调完理想稿之后：缺口补提 + 自检 + 落盘 + 用语进库（默认自动，也可点名只抽某节/词）；无主题则分批扫 todo；正式发才 Archive + `site-cascade` |
 | `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 由 extract 渠道 4 交接；橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
 | `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | 由 extract 渠道 4 交接；IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
@@ -78,7 +78,7 @@ pnpm new-d <content>
 
 vault 机械脚本在 `_shared/scripts/`（`vault_lib.py` / `prep_convert.py` / `sync_check.py` / `validate_post.py` / `upload_r2.py`）；渠道 1 入口是 `knowledge-extract/scripts/extract_vault.py`。映射表仍是 `.ob2blog/manifest.json`。
 
-分工：进料一律 `knowledge-extract` → 渠道 1–3 发布走 `knowledge-output` → 收尾 `site-cascade`。媒体兜底 `firefly-minimax-media`。全局 CLI 另见 `~/.cursor/skills/mmx-cli`（非本仓）。
+分工：进料一律 `knowledge-extract` → 园主在 Obsidian 调到理想 → `knowledge-output`（发布 + 用语进库）→ 收尾 `site-cascade`。媒体兜底 `firefly-minimax-media`。全局 CLI 另见 `~/.cursor/skills/mmx-cli`（非本仓）。
 
 列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；成帖**勿**写入 frontmatter `title`（见 `_shared/title-mood.md`）。
 
@@ -104,11 +104,12 @@ Windows：`cmd /c mklink /J <dest> <Firefly/.cursor/skills/<name>>`。已有过�
 ```text
 用户给材料或题目
   → knowledge-extract
-       1 路径在 vault     → extract_vault.py → Knowledge（用附件图，上 R2）
-       2 粘贴图文         → 清洗分类 → Knowledge（有图用原图；公众号工序见 wechat-mp）
-       3 无材料只要调研   → 并发广搜（网页/视频/大佬/心得）+ 检索配图 → Knowledge
-       4 早报 / 热榜      → 交接 ai-morning-brief / github-weekly-hot（不经 Knowledge）
-  → 渠道 1–3：knowledge-output（无主题则分批扫 todo；公众号/BibiGPT 默认草稿箱）
+       1 路径在 vault     → extract_vault.py → 求全写入（渠道 1 以 vault 为准）
+       2 粘贴图文         → 清洗分类 → Knowledge（换根未做；公众号工序见 wechat-mp）
+       3 无材料只要调研   → 并发广搜 + 检索配图 → Knowledge
+       4 早报 / 热榜      → 交接 ai-morning-brief / github-weekly-hot（不经 Knowledge，不抽用语）
+  → 园主在 Obsidian 调到理想
+  → 渠道 1–3：knowledge-output（发布 + 用语进库；无主题则分批扫 todo；公众号/BibiGPT 默认草稿箱）
   → 正式发：site-cascade（--blurb）；草稿箱禁止 emit
 ```
 

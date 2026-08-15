@@ -129,10 +129,10 @@ Content Collections（`src/content.config.ts`）：
 
 | 渠 | 源 | 技能链 |
 |---|---|---|
-| 1 | Obsidian vault 路径 | extract → output → **site-cascade** |
-| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract → output → **site-cascade** |
-| 3 | 无材料、只要调研 | extract（并发广搜+配图）→ output → **site-cascade** |
-| 4 | 早报 / GitHub 周榜 | extract 交接 `ai-morning-brief` / `github-weekly-hot` → **site-cascade** |
+| 1 | Obsidian vault 路径 | extract → 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract → 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 3 | 无材料、只要调研 | extract（并发广搜+配图）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 4 | 早报 / GitHub 周榜 | extract 交接 `ai-morning-brief` / `github-weekly-hot` → **site-cascade**（不抽用语） |
 
 ### Knowledge 素材库（仓外）
 

@@ -1,7 +1,7 @@
 # 来源模块：`wechat`（微信公众号 → Knowledge）
 
 公众号文常见特点：**排版与配图专业、正文偏重、热点话题数日内易重复**。  
-本模块目标：原文与配图**完整归档**，再提炼成可带走的 Knowledge 笔记（过 humanizer-tta），并挂上 Theme/facet 索引。
+本模块目标：原文与配图**完整归档**，再写成可带走的 Knowledge 笔记，并挂上 Theme/facet 索引。用语进库不在本工序。
 
 ## 触发词
 
@@ -25,7 +25,7 @@
 ┌─ Agent-Archive（归档员）        → source/article.md + source/images/* + meta.json
 ├─ Agent-Classify（分类/去重）    → theme + facet + dedupe 扫描（近 7 日）
 ├─ Agent-Extract（提炼）          → 主体 {短题}.md（详略得当；重文只留可带走点）
-└─ Agent-TTA（语式）              → humanizer-tta 通篇润色；标题/小节去课件腔
+└─ Agent-TTA（语式）              → 标题/小节去课件腔；不要重写成另一张嘴
 ```
 
 | 角色 | 职责 | 成功标准 |
@@ -33,7 +33,7 @@
 | **Archive** | 正文与配图**无损**落 `source/`；MD 内图片改为 `source/images/…` 相对路径；写 `meta.json`（url/title/author/date） | 打开 `source/article.md` 图文可本地预览；无外链图依赖 |
 | **Classify** | 对照 [`theme-taxonomy.md`](theme-taxonomy.md) 选 Theme/facet；扫同 Theme 近 7 日是否撞题 | 写出目录路径 + `dedupe` 字段；撞题则建议合并或只写差分 |
 | **Extract** | 从 `source/` 提炼主体笔记；可引用 `assets/`（从原图精选拷贝，非再外链） | 有判断、有结构；不是原文缩进粘贴 |
-| **TTA** | 读 `humanizer-tta`：Depointify + Voice；禁「一句话收束」等 | 成稿无明显 AI 目录腔；工程师口吻 |
+| **TTA** | 去课件腔（禁「一句话收束」等）；园主调完才是理想稿 | 主体不像目录通稿 |
 
 并行建议：Archive ∥ Classify 可同时开；Extract 依赖 Archive（至少有正文）；TTA 依赖 Extract。  
 父 Agent 汇总：建 `todo/{Theme}/{facet}/{日期}_{短题}/` 目录树 + 交付文件树。
@@ -43,18 +43,18 @@
 - [ ] `source/article.md` + 图齐全，引用相对路径有效  
 - [ ] 文首 YAML：`source: wechat` + `theme` + `facet` + `origin_*` + `dedupe`  
 - [ ] 主体笔记 ≠ 原文副本；原文只在 `source/`  
-- [ ] 已过 TTA；交付含 Theme/facet 路径  
-- [ ] 未默默写 posts；发布交给 `knowledge-output`
+- [ ] 已去课件腔；交付含 Theme/facet 路径  
+- [ ] 未默默写 posts；园主调完再交给 `knowledge-output`
 
-## extract 流程（插在六步之前）
+## extract 流程（插在渠道 2 清洗里）
 
 ```text
 识别来源 = wechat
   → Multi-Agent：Archive + Classify（并行）
   → 确认 Theme/facet / 去重结论（撞题则问园主：合并 or 差分）
-  → Extract 写主体 → TTA 润色
+  → Extract 写主体 → 去课件腔
   → 落盘 todo/{Theme}/{facet}/{日期}_{短题}/
-  → 交接 knowledge-output（公众号默认进草稿箱本地预览，除非用户明确正式发）
+  → 停。园主调完再 output（公众号默认草稿箱，除非用户明确正式发）
 ```
 
 ## 与「删繁就简」的差分
@@ -81,7 +81,7 @@
 - 把全文当「提炼笔记」交差（没有 source/ 分层）  
 - 单 Agent 糊成一锅，图丢了才发现  
 - 忽略近几天同 Theme 撞题，连开同构目录  
-- 未过 humanizer-tta 就交接 output  
+- 在本工序抽用语或做封面
 
 ## 与其它来源
 

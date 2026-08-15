@@ -55,6 +55,11 @@ EM_DASH = "\u2014"
 
 HEADING_RE = re.compile(r"^(#{2,3})\s+(.+)$", re.M)
 ONE_SENTENCE_LABEL_RE = re.compile(r"一句话(?:收束|结论|总结|版本|说)")
+TITLE_IMPRESSION_RE = re.compile(r"没废|带歪了")
+MARK_TAG_RE = re.compile(r"<mark\b", re.I)
+METRIC_CLASS_RE = re.compile(r"class=\"[^\"]*metric")
+BOLD_MD_RE = re.compile(r"\*\*[^*\n]+\*\*")
+BLOCKQUOTE_RE = re.compile(r"^>", re.M)
 
 HEADING_PHRASES = (
     "一句话收束",
@@ -83,6 +88,8 @@ HEADING_PHRASES = (
     "让我们开始吧",
     "let's dive in",
     "值得注意的是",
+    "揭秘两阶段",
+    "内置的和社区的",
 )
 HEADING_EXACT = {
     "小结",
@@ -256,6 +263,10 @@ def lint_meta(meta: dict[str, str], path: Path) -> tuple[list[str], list[str]]:
         errors.append(
             "frontmatter title must not contain emoji/kaomoji (title-mood is display-only)"
         )
+    if TITLE_IMPRESSION_RE.search(title):
+        errors.append(
+            "frontmatter title is an impression hook (没废/带歪了) — name the topic completely"
+        )
     for key in ("title", "slug"):
         val = meta.get(key) or ""
         if any(ch in val for ch in ("\ufeff", "\u200b", "\u200c", "\u200d", "\u00ad")):
@@ -293,7 +304,9 @@ def lint_body(body: str) -> tuple[list[str], list[str]]:
     scrubbed = scrub_code(body)
 
     if re.search(r"^#\s+\S", scrubbed, re.M):
-        errors.append("body starts with H1 — use ## and keep title in frontmatter")
+        errors.append("body has H1 — use ## / ### and keep title in frontmatter")
+    if not re.search(r"^##\s+\S", scrubbed, re.M):
+        errors.append("body has no H2 — every post needs ## sections (sidebar TOC reads H2)")
     if re.search(r"!\[\[.+?\]\]", scrubbed):
         errors.append("Obsidian embed ![[...]] is unsupported — use ![alt](./path)")
     if re.search(r"^!!!\s+\w+", scrubbed, re.M):
@@ -335,6 +348,20 @@ def lint_body(body: str) -> tuple[list[str], list[str]]:
 
     if ONE_SENTENCE_LABEL_RE.search(scrubbed):
         errors.append("body contains 一句话X label — say the judgment directly")
+
+    mark_n = len(MARK_TAG_RE.findall(body))
+    metric_n = len(METRIC_CLASS_RE.findall(body))
+    if mark_n >= 3 and metric_n == 0:
+        warnings.append(
+            "too many <mark> highlights — color numbers with "
+            ".metric.metric-low/.high/.tools/.ver"
+        )
+    if not BOLD_MD_RE.search(body):
+        warnings.append("body has no **bold**")
+    if not BLOCKQUOTE_RE.search(body):
+        warnings.append("body has no blockquote")
+    if not INLINE_CODE_RE.search(body):
+        warnings.append("body has no inline code")
 
     return errors, warnings
 
@@ -414,11 +441,22 @@ def _self_test() -> int:
     expect("cn-dash", "这事结束了——然后呢\n", False, "em dash")
     expect("h2-banned", "## 一句话收束\n正文\n", True, "banned heading")
     expect("h2-ok", "## 认清撞上哪一层就行\n正文\n", False, "banned heading")
+    expect("h2-required", "只有一段，没有节标题。\n", True, "no H2")
+    expect("h2-empty-object", "## 揭秘两阶段\n正文\n", True, "banned heading")
     expect("label", "一句话结论就是别买。\n", True, "一句话X")
 
     meta_bad = {"title": "坑爹啊 😅", "published": "2026-08-14"}
     e, _ = lint_meta(meta_bad, Path("src/content/posts/x/index.md"))
     cases.append(("title-emoji", any("emoji" in x for x in e)))
+
+    e, _ = lint_meta(
+        {"title": "这回没废", "published": "2026-08-14"},
+        Path("src/content/posts/x/index.md"),
+    )
+    cases.append(("title-impression", any("impression" in x for x in e)))
+
+    _, w = lint_body("只有一句，没有强调。\n")
+    cases.append(("md-flavor-warn", any("bold" in x for x in w)))
 
     boxed = Path("src/content/posts/_draftbox/x/index.md")
     e, _ = lint_meta(
