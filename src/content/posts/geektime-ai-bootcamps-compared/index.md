@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [极客时间, AI Agent, 课程拆解, SDD, Harness]
 category: Agentic Coding
 collections: [course-geektime-bootcamps]
-draft: false
+draft: true
 lang: ''
 slug: geektime-ai-bootcamps-compared
 pinned: false

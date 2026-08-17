@@ -6,7 +6,7 @@ description: 草图经 GPT Image 2 再到可交互 Three.js，一条 Traceform �
 image: ./cover.jpg
 tags: [Codex, Three.js, GPT Image]
 category: Agentic Coding
-draft: false
+draft: true
 lang: ''
 slug: sketch-to-interactive-3d-traceform
 pinned: false

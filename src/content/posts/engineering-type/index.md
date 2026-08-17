@@ -7,7 +7,7 @@ tags: [Harness, Agent, Prompt, Context]
 category: Agentic Coding
 
 collections: [agentic-coding]
-draft: false
+draft: true
 slug: engineering-type
 pinned: false
 comment: true

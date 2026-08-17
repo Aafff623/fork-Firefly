@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [极客时间, Agentic AI, 产品经理, 零代码]
 category: Agentic Coding
 collections: [course-geektime-agentic-product]
-draft: false
+draft: true
 lang: ''
 slug: geektime-agentic-ai-product
 pinned: false

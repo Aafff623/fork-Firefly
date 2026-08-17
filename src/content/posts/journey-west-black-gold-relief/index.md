@@ -6,7 +6,7 @@ description: 西游人物谱的黑金浮雕风提示词与出图参考。
 image: ./cover.jpg
 tags: [西游, 海报, 提示词]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: journey-west-black-gold-relief
 pinned: false

@@ -6,7 +6,7 @@ description: MiniMax H3 本地 ComfyUI 路径：INT8/NVFP4 四文件、显存档
 image: ./cover.jpg
 tags: [MiniMax H3, ComfyUI, 本地部署, 视频生成]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: minimax-h3-comfyui
 pinned: false

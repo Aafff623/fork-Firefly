@@ -6,7 +6,7 @@ description: LogoLounge 2026 标志趋势中文转述：立体化、字脚像素
 image: ./cover.jpg
 tags: [LogoLounge, Logo, 设计趋势, 品牌, 视觉品味]
 category: 前端开发
-draft: false
+draft: true
 lang: ''
 slug: logolounge-2026-trends
 pinned: false

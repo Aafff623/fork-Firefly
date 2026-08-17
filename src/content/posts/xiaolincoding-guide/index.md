@@ -6,7 +6,7 @@ description: 小林coding 主站栏目导览与个人学习入口；链回原文
 tags: [小林coding, 图解, 面经, 学习笔记]
 category: 指南
 collections: [xiaolincoding]
-draft: false
+draft: true
 lang: ""
 slug: xiaolincoding-guide
 image: ./cover.jpg

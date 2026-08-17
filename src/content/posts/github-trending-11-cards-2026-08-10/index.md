@@ -6,7 +6,7 @@ description: 当日 GitHub 热榜十一张图卡速览。
 image: ./cover.jpg
 tags: [GitHub, 开源, 热榜]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: github-trending-11-cards-2026-08-10
 pinned: false

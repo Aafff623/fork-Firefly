@@ -6,7 +6,7 @@ image: ./cover.jpg
 updated: 2026-08-09T12:31:32
 tags: [前端, CSS 3D, matrix3d, 线性代数, React, 源码拆解]
 category: 前端开发
-draft: false
+draft: true
 lang: zh-CN
 slug: the118-pure-matrix-3d
 pinned: false

@@ -6,7 +6,7 @@ description: 艺术展览海报的多种版式表达，对照着抄结构。
 image: ./cover.jpg
 tags: [海报, 展览, 版式]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: art-exhibition-poster-layouts
 pinned: false

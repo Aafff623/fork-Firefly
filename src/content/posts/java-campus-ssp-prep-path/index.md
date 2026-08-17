@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 211 本 + C9 软工硕，25 届 Java；美团日常 + 淘天暑期后，秋招拿字节/快手/淘天/京东 SSP、美团 SP。可抄结构，别裸对标难度预期。
 tags: [Java, 秋招, SSP, 校招, 实习]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: java-campus-ssp-prep-path
 image: ./cover.jpg

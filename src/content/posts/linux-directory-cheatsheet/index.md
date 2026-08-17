@@ -6,7 +6,7 @@ description: Linux 目录结构运维速记合稿：核心六位置、etc/var/us
 image: ./cover.jpg
 tags: [Linux, 运维, FHS, 目录结构, 速记]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: linux-directory-cheatsheet
 pinned: false

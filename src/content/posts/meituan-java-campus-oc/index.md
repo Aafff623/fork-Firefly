@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 本硕 211 投美团核心本地商业后端，9 月一面到 OC。带走的不是题单，是意向城市对不上差点被送走，以及 ThreadLocal 被追到 CPU 缓存。
 tags: [美团, Java, 校招, 面经, ThreadLocal]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: meituan-java-campus-oc
 image: ./cover.jpg

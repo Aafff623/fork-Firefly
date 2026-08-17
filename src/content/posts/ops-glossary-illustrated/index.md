@@ -6,7 +6,7 @@ description: 公众号竖版术语海报宣称「100 个」，本批原料只有
 image: ./cover.jpg
 tags: [运维, 术语, Linux, 监控, Kubernetes, 云]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: ops-glossary-illustrated
 pinned: false

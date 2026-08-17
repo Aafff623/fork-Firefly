@@ -6,7 +6,7 @@ description: 降本增效四段位、十二种方法，按段位选招。
 image: ./cover.jpg
 tags: [降本增效, 经营]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: cost-efficiency-four-tiers
 pinned: false

@@ -5,7 +5,7 @@ description: 世界神话体系、十二母题与宗教对照图速查。信徒�
 image: ./cover.jpg
 tags: [神话, 宗教, 信息图, 速查, 母题]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: world-myth-religion-maps
 pinned: false

@@ -6,7 +6,7 @@ image: ./cover.jpg
 tags: [MiniMax, 封面, 风格规范, Firefly]
 category: 指南
 collections: [agentic-workflow]
-draft: false
+draft: true
 lang: ''
 slug: minimax-cover-styles
 pinned: false

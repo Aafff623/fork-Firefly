@@ -5,7 +5,7 @@ description: 安永 Megatrends 2026 导读：NAVI 世界、八条大趋势，以
 image: ./cover.jpg
 tags: [安永, 大趋势, NAVI, 企业战略, 人机协作]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: ey-2026-navi-trends
 pinned: false

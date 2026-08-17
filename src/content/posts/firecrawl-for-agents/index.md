@@ -6,7 +6,7 @@ description: Firecrawl 把搜、抓、交互叠成 Web context API。AGPL + 云�
 image: ./cover.jpg
 tags: [Firecrawl, Agent, 网页抓取, MCP, Scraping]
 category: Agentic Coding
-draft: false
+draft: true
 lang: ''
 slug: firecrawl-for-agents
 pinned: false

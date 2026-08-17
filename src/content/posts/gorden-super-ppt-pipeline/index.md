@@ -6,7 +6,7 @@ description: Codex 专属三技能：内容→图片 PPT→可编辑 PPTX。四�
 image: ./cover.jpg
 tags: [Codex, PPT, Skill, GordenSuperPPT, 可编辑PPT]
 category: skill 测评
-draft: false
+draft: true
 lang: ''
 slug: gorden-super-ppt-pipeline
 pinned: false

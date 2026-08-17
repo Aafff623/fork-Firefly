@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 2022 缩招环境下，Vue 栈两年前端靠项目文档化拿下字节与阿里。简历少挖坑、项目复盘七抽屉，比再刷一百道简单题更能抬上限。
 tags: [前端, 面经, 字节, 阿里, 社招]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: frontend-2y-bytedance-alibaba-dig
 image: ./cover.jpg

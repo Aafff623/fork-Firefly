@@ -6,7 +6,7 @@ description: 旅行类 UI 案例 02：场景化首页、行程卡片、实景取
 image: ./cover.jpg
 tags: [旅行App, UI案例, 信息架构, 决策焦虑]
 category: 前端开发
-draft: false
+draft: true
 lang: ''
 slug: travel-app-ui-cases-02
 pinned: false

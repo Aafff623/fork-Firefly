@@ -5,7 +5,7 @@ description: Claude Code + Cursor 三天从零做任务管理 Web 的诚实坑�
 image: ./cover.jpg
 tags: [Vibe Coding, 踩坑, Claude Code, Cursor, 全栈]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: vibe-web-taskflow-pitfalls
 pinned: false

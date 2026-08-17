@@ -6,7 +6,7 @@ description: 国际主义风格平面设计要点与示例，081 这一套。
 image: ./cover.jpg
 tags: [国际主义, 平面设计]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: international-style-graphic-design-081
 pinned: false

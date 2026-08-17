@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [中转, K12, Codex, "403", 号池, AI Coding]
 category: 中转
 collections: [transit-relay]
-draft: false
+draft: true
 lang: ''
 slug: codex-k12-pool-403
 pinned: false

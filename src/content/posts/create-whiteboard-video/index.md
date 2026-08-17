@@ -6,7 +6,7 @@ description: 维克兹开源 create-whiteboard-video：分镜可改、坏图只�
 image: ./cover.jpg
 tags: [create-whiteboard-video, 白板手绘, Agent Skills, 分镜, 视频渲染]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: create-whiteboard-video
 pinned: false

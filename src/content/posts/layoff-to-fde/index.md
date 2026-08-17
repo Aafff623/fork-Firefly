@@ -5,7 +5,7 @@ description: 星思考随笔：裁员焦虑落到 FDE（前沿部署工程师）
 image: ./cover.jpg
 tags: [FDE, 职业路径, 裁员, 企业AI, 驻场交付]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: layoff-to-fde
 pinned: false

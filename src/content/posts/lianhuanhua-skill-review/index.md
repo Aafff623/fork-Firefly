@@ -8,7 +8,7 @@ tags: [AIGC, skill测评, 小人书, 连环画, Seedream, MiniMax, 文生图]
 category: skill 测评
 collections: [review-skill-mcp]
 slug: lianhuanhua-skill-review
-draft: false
+draft: true
 lang: ''
 pinned: false
 comment: true

@@ -6,7 +6,7 @@ description: 国际/活动海报六张：取景焦点、破框网格、双色跨
 image: ./cover.jpg
 tags: [海报, 构图, 视觉品味, 设计参考, 破框]
 category: 前端开发
-draft: false
+draft: true
 lang: ''
 slug: creative-poster-gallery
 pinned: false

@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [DeepSeek, MiniMax, 多模态, MCP, 视觉理解, AI Coding]
 category: Agentic Coding
 collections: [agentic-workflow]
-draft: false
+draft: true
 lang: ''
 slug: deepseek-external-vision-minimax
 pinned: false

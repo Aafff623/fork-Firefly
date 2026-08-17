@@ -6,7 +6,7 @@ description: AI 漫剧可用的 36 种运镜提示词，按镜头意图分类。
 image: ./cover.jpg
 tags: [运镜, 提示词, 漫剧]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: ai-comic-camera-moves-prompts
 pinned: false

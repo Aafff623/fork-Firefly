@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 二本、工作约两年半，约 10 家公司 28 轮拿到字节/拼多多/美团/滴滴等 offer。书单、简历边界、讨论三件套，比整页粘贴题库更扛消耗战。
 tags: [社招, Java, 面经, 字节, 美团]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: social-hire-28-rounds-playbook
 image: ./cover.jpg

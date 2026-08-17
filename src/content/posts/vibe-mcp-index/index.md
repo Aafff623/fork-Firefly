@@ -7,7 +7,7 @@ tags: [Vibe Coding, MCP, 教程索引]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
 collections: [review-skill-mcp]
-draft: false
+draft: true
 lang: ""
 slug: vibe-mcp-index
 pinned: false

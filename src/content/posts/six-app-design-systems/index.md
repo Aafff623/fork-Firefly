@@ -6,7 +6,7 @@ description: Apple / Material / Fluent / Ant / TDesign / Semi 六家设计规范
 image: ./cover.jpg
 tags: [设计系统, Ant Design, Material Design, Apple HIG, TDesign, Semi Design]
 category: 前端开发
-draft: false
+draft: true
 lang: ''
 slug: six-app-design-systems
 pinned: false

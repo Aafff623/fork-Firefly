@@ -6,7 +6,7 @@ description: 从 RJ45 / SFP / Console / PoE 认口开始，再讲广播域、Acc
 image: ./cover.jpg
 tags: [交换机, VLAN, 网络, Trunk, PoE, Access]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: switch-ports-to-vlan
 pinned: false

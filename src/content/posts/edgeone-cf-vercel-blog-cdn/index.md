@@ -6,7 +6,7 @@ description: 个人博客边缘三件套已落地：Vercel 只构建，EdgeOne �
 image: ./cover.jpg
 tags: [EdgeOne, Cloudflare, R2, Vercel, CDN, 自定义域名, 图床]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: edgeone-cf-vercel-blog-cdn
 pinned: false

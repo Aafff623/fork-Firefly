@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [中转, GPT, Pro, 拼池, 压测, AI Coding]
 category: 中转
 collections: [transit-relay]
-draft: false
+draft: true
 lang: ''
 slug: gpt-relay-dual-pro-pool-benchmark
 pinned: false

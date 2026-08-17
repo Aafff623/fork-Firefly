@@ -7,7 +7,7 @@ tags: [Vibe Coding, 教程索引, 模型测评, AI 模型]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
 collections: [vibe-tutorial-index]
-draft: false
+draft: true
 lang: ""
 slug: vibe-models-index
 pinned: false

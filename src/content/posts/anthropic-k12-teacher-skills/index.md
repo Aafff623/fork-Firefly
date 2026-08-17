@@ -6,7 +6,7 @@ description: Anthropic 开源 k12-teacher-skills：JSON 内容源分离、学科
 image: ./cover.jpg
 tags: [Skill, Anthropic, 教育]
 category: Agentic Coding
-draft: false
+draft: true
 lang: ''
 slug: anthropic-k12-teacher-skills
 pinned: false

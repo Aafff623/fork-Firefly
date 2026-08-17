@@ -6,7 +6,7 @@ image: ./cover.jpg
 updated: 2026-08-07T23:22:41
 tags: [GitHub Profile, 个人品牌, 设计, AI Coding]
 category: Agentic Coding
-draft: false
+draft: true
 slug: github-profile-signboard
 lang: zh-CN
 pinned: false

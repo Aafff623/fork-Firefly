@@ -6,7 +6,7 @@ description: 两张全景图把 K8s 架构和核心概念摊开。
 image: ./cover.jpg
 tags: [Kubernetes, 架构]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: k8s-architecture-two-panoramas
 pinned: false

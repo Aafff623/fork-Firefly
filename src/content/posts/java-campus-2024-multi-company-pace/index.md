@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 有阿里/字节实习的 24 届连面快手、阿里滔天、滴滴、字节、小红书、美团。题单能当日历看，更值钱的是业务价值观和选 offer 两处硬踩坑。
 tags: [Java, 秋招, 面经, 校招, 多厂]
 category: 指南
-draft: false
+draft: true
 lang: ''
 slug: java-campus-2024-multi-company-pace
 image: ./cover.jpg
