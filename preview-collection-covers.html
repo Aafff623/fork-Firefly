@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>合集封面挑选 · Firefly</title>
+  <link rel="stylesheet" href="./preview-collection-covers.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="bar__title">合集封面挑选</div>
+    <p class="bar__note">这是挑选页，还没写进 <code>collectionsConfig</code>。点选后只存在本机 localStorage，不会改站点。</p>
+    <p class="bar__hint">请用 HTTP 打开（仓库根 <code>python -m http.server 8090</code>），不要用 file://。</p>
+  </header>
+  <nav class="toc"><a href="#c-ai-coding-tools">AI 编程工具</a><a href="#c-agentic-workflow">Agentic Workflow</a><a href="#c-visual-media">视觉媒体</a><a href="#c-model-eval">模型评测</a><a href="#c-llm-overview">大模型概述</a><a href="#c-ai-morning-brief">AI 早报</a><a href="#c-github-weekly-hot">GitHub 每周热点</a><a href="#c-courses">课程推荐</a><a href="#c-career-guide">求职攻略</a><a href="#c-frontend-eng">前端工程</a><a href="#c-backend">后端</a><a href="#c-database">数据库</a><a href="#c-ops">运维</a><a href="#c-product">产品经理</a><a href="#c-humanities">文史</a><a href="#c-site-series">本站系列</a></nav>
+  <aside class="chosen" id="chosen">
+    <h2>已选</h2>
+    <pre id="chosen-json">尚未选择</pre>
+    <button type="button" id="clear-picks">清空选择</button>
+  </aside>
+  <main class="main">
+    
+    <section class="group" id="c-ai-coding-tools" data-slug="ai-coding-tools">
+      <header class="group__head">
+        <h2>AI 编程工具</h2>
+        <p class="group__slug"><code>ai-coding-tools</code></p>
+        <p class="group__theme">Harness 产品夹：Claude Code、Cursor、Codex、Copilot 等工具全家福或开发者工作台。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/ai-coding-tools.jpg" alt="当前 AI 编程工具 封面" />
+          <figcaption><code>public/assets/collections/ai-coding-tools.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-ai-coding-tools" value="01-cursor-screenshot" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-coding-tools/01-cursor-screenshot.jpg" alt="AI 编程工具 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-cursor-screenshot</span>
+              <span class="pick__why">Cursor 编辑器宽屏截图，主体就是 AI IDE，适合当工具夹背景。</span>
+              <span class="pick__src">
+                Newmcpe ·
+                <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener">CC BY 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Cursor_Screenshot.png" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-coding-tools" value="02-vscode-unsplash-commons" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-coding-tools/02-vscode-unsplash-commons.jpg" alt="AI 编程工具 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-vscode-unsplash-commons</span>
+              <span class="pick__why">横构图笔记本写代码，气氛干净，文字能压在左侧空白。</span>
+              <span class="pick__src">
+                Tirza van Dijk tirzavandijk ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Laptop_coding_programs_%28Unsplash%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-coding-tools" value="03-pair-programming" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-coding-tools/03-pair-programming.jpg" alt="AI 编程工具 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-pair-programming</span>
+              <span class="pick__why">结对编程现场，贴合多工具协作，不是海报字墙。</span>
+              <span class="pick__src">
+                Lisamarie Babik ·
+                <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Pair_programming_1.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-coding-tools" value="04-macro-laptop-code" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-coding-tools/04-macro-laptop-code.jpg" alt="AI 编程工具 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-macro-laptop-code</span>
+              <span class="pick__why">键盘与代码特写，横图，当卡片底不会抢标题。</span>
+              <span class="pick__src">
+                Marc Mueller seven11nash ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Macro_laptop_coding_%28Unsplash%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-coding-tools" value="05-logo-wall" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-coding-tools/05-logo-wall.jpg" alt="AI 编程工具 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-logo-wall</span>
+              <span class="pick__why">官方图标拼在一张 16:9 深色底上，专给 AI 编程工具夹当背景。</span>
+              <span class="pick__src">
+                Collage of Wikimedia Commons PD-textlogo: Cursor logo.png, Claude Ai.svg, OpenAI logo 2025.svg, Visual Studio Code 1.35 icon.svg, Octicons-mark-github.svg ·
+                <a href="https://commons.wikimedia.org/wiki/Commons:Threshold_of_originality" target="_blank" rel="noopener">PD-textlogo (trademark still applies) + local collage</a>
+                ·
+                <a href="local collage from Wikimedia PD-textlogo files" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-agentic-workflow" data-slug="agentic-workflow">
+      <header class="group__head">
+        <h2>Agentic Workflow</h2>
+        <p class="group__slug"><code>agentic-workflow</code></p>
+        <p class="group__theme">跨工具方法：Vibe / Spec / Harness，机器人与流水线气氛。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/agentic-workflow.jpg" alt="当前 Agentic Workflow 封面" />
+          <figcaption><code>public/assets/collections/agentic-workflow.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-agentic-workflow" value="01-pair-chitika" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/agentic-workflow/01-pair-chitika.jpg" alt="Agentic Workflow 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-pair-chitika</span>
+              <span class="pick__why">多人对着屏幕协作，像 agent 工作流而不是单工具广告。</span>
+              <span class="pick__src">
+                Kabren ·
+                <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Pair_Programming_at_Chitika.JPG" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-agentic-workflow" value="02-pair-alt" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/agentic-workflow/02-pair-alt.jpg" alt="Agentic Workflow 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-pair-alt</span>
+              <span class="pick__why">双人编程横图，方法夹比 Logo 墙更合适。</span>
+              <span class="pick__src">
+                Calqui ·
+                <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Pair_Programming.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-agentic-workflow" value="03-circuit-board" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/agentic-workflow/03-circuit-board.jpg" alt="Agentic Workflow 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-circuit-board</span>
+              <span class="pick__why">电路板特写，工程流水线的硬核气氛，没有大段字。</span>
+              <span class="pick__src">
+                Tinux ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Circuit_board_after_manual_etching.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-agentic-workflow" value="04-unsplash-collab" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/agentic-workflow/04-unsplash-collab.jpg" alt="Agentic Workflow 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-collab</span>
+              <span class="pick__why">多人围桌协作，跨工具工作流，不跟运维夹的 K8s 图撞车。</span>
+              <span class="pick__src">
+                Annie Spratt ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/people-sitting-beside-table-QckxruozjRg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-agentic-workflow" value="05-exploded-pc" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/agentic-workflow/05-exploded-pc.jpg" alt="Agentic Workflow 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-exploded-pc</span>
+              <span class="pick__why">人在产线/设备前，工作流与自动化，替换文字偏多的拆解示意图。</span>
+              <span class="pick__src">
+                ThisisEngineering RAEng ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-1581091226825-a6a2a5aee158" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-visual-media" data-slug="visual-media">
+      <header class="group__head">
+        <h2>视觉媒体</h2>
+        <p class="group__slug"><code>visual-media</code></p>
+        <p class="group__theme">海报、提示词、视频与手绘生成。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/visual-media.jpg" alt="当前 视觉媒体 封面" />
+          <figcaption><code>public/assets/collections/visual-media.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-visual-media" value="01-pexels-video-edit" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/visual-media/01-pexels-video-edit.jpg" alt="视觉媒体 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-pexels-video-edit</span>
+              <span class="pick__why">后期时间线占满曲面屏，横图，一眼就是做片。</span>
+              <span class="pick__src">
+                Pexels 供稿摄影师（页内署名） ·
+                <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">Pexels License</a>
+                ·
+                <a href="https://www.pexels.com/photo/a-computer-monitor-displaying-a-video-editing-program-24497392/" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-visual-media" value="02-unsplash-camera" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/visual-media/02-unsplash-camera.jpg" alt="视觉媒体 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unsplash-camera</span>
+              <span class="pick__why">相机举在眼前的横构图，媒体夹常用氛围，主体清楚。</span>
+              <span class="pick__src">
+                Paul Skorupskas ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/person-holding-black-dslr-camera-iFGDtf5okx8" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-visual-media" value="03-unsplash-palette" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/visual-media/03-unsplash-palette.jpg" alt="视觉媒体 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-palette</span>
+              <span class="pick__why">设计工作台与色票，适合海报/版式主题。</span>
+              <span class="pick__src">
+                Halacious ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/ex00S05G3no" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-visual-media" value="04-unsplash-retro-pc" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/visual-media/04-unsplash-retro-pc.jpg" alt="视觉媒体 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-retro-pc</span>
+              <span class="pick__why">复古主机与霓虹，偏视觉实验，不像文档截图。</span>
+              <span class="pick__src">
+                Alex Knight ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/O4i0lsGXw3k" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-visual-media" value="05-unsplash-abstract" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/visual-media/05-unsplash-abstract.jpg" alt="视觉媒体 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-abstract</span>
+              <span class="pick__why">抽象 3D 色块，当卡片底有颜色层次，不抢字。</span>
+              <span class="pick__src">
+                Milad Fakurian ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/3R4vPrB1Q0U" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-model-eval" data-slug="model-eval">
+      <header class="group__head">
+        <h2>模型评测</h2>
+        <p class="group__slug"><code>model-eval</code></p>
+        <p class="group__theme">实测、跑分、中转与羊毛场景里的水位判断。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/model-eval.jpg" alt="当前 模型评测 封面" />
+          <figcaption><code>public/assets/collections/model-eval.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-model-eval" value="01-test-tubes" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/model-eval/01-test-tubes.jpg" alt="模型评测 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-test-tubes</span>
+              <span class="pick__why">试管特写，评测/实验隐喻直接，横构图干净。</span>
+              <span class="pick__src">
+                Sarka Na kopci ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Test_tubes_in_a_laboratory.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-model-eval" value="02-test-tubes-rack" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/model-eval/02-test-tubes-rack.jpg" alt="模型评测 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-test-tubes-rack</span>
+              <span class="pick__why">一排试管像对照实验，适合「逐项实测」。</span>
+              <span class="pick__src">
+                J.N. Eskra ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Test_tubes_in_rack.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-model-eval" value="03-chemical-tubes" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/model-eval/03-chemical-tubes.jpg" alt="模型评测 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-chemical-tubes</span>
+              <span class="pick__why">实验室玻璃器皿，比仪表盘截图少字。</span>
+              <span class="pick__src">
+                Vis M ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Chemical_test_tubes_2013.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-model-eval" value="04-unsplash-dashboard" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/model-eval/04-unsplash-dashboard.jpg" alt="模型评测 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-dashboard</span>
+              <span class="pick__why">笔记本上的图表仪表盘，评测结果可视化。</span>
+              <span class="pick__src">
+                Luke Chesser ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/charts-on-laptop-screen-eBGHZv2rzz0" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-model-eval" value="05-unsplash-analytics" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/model-eval/05-unsplash-analytics.jpg" alt="模型评测 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-analytics</span>
+              <span class="pick__why">桌面分析图表，横图，适合当评测夹底。</span>
+              <span class="pick__src">
+                Campaign Creators ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/macbook-pro-beside-white-ipad-gMsnXqILjp4" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-llm-overview" data-slug="llm-overview">
+      <header class="group__head">
+        <h2>大模型概述</h2>
+        <p class="group__slug"><code>llm-overview</code></p>
+        <p class="group__theme">RAG、MoE、应用栈与底层概念。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/llm-overview.jpg" alt="当前 大模型概述 封面" />
+          <figcaption><code>public/assets/collections/llm-overview.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-llm-overview" value="01-neural-net-svg" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/llm-overview/01-neural-net-svg.jpg" alt="大模型概述 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-neural-net-svg</span>
+              <span class="pick__why">经典神经网络示意图，概念夹比实拍更贴题。</span>
+              <span class="pick__src">
+                QuantuMechaniX8 ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Neural_Network.svg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-llm-overview" value="02-simplified-nn" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/llm-overview/02-simplified-nn.jpg" alt="大模型概述 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-simplified-nn</span>
+              <span class="pick__why">机器人头灯特写，大模型「智能体」气氛，替换竖构图公式图。</span>
+              <span class="pick__src">
+                Possessed Photography ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-1535378917042-10a22c95931a" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-llm-overview" value="03-unsplash-deepmind" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/llm-overview/03-unsplash-deepmind.jpg" alt="大模型概述 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-deepmind</span>
+              <span class="pick__why">DeepMind 放出的神经网络插画，横图、主体清楚。</span>
+              <span class="pick__src">
+                Google DeepMind ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/an-artist-s-illustration-of-artificial-intelligence-neural-networks-tZc3vyPBhWU" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-llm-overview" value="04-unsplash-robot" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/llm-overview/04-unsplash-robot.jpg" alt="大模型概述 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-robot</span>
+              <span class="pick__why">白色机器人特写，大模型「具身」气氛，少字。</span>
+              <span class="pick__src">
+                Alex Knight ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/white-robot-near-brown-wall-2EJCSULRwC8" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-llm-overview" value="05-unsplash-circuit-macro" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/llm-overview/05-unsplash-circuit-macro.jpg" alt="大模型概述 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-circuit-macro</span>
+              <span class="pick__why">主板宏观，底层计算栈，不像产品海报。</span>
+              <span class="pick__src">
+                Michael Dziedzic ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/blue-and-black-computer-motherboard-LIqFF7sZdRY" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-ai-morning-brief" data-slug="ai-morning-brief">
+      <header class="group__head">
+        <h2>AI 早报</h2>
+        <p class="group__slug"><code>ai-morning-brief</code></p>
+        <p class="group__theme">按期资讯摘要，报馆/印刷/早报气氛。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/ai-morning-brief.jpg" alt="当前 AI 早报 封面" />
+          <figcaption><code>public/assets/collections/ai-morning-brief.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-ai-morning-brief" value="01-offset-press" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-morning-brief/01-offset-press.jpg" alt="AI 早报 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-offset-press</span>
+              <span class="pick__why">轮转印刷机出海报级横图，早报夹最贴题。</span>
+              <span class="pick__src">
+                Tom T ·
+                <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Web-fed_offset_press_printing_newspapers.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-morning-brief" value="02-press-etching" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-morning-brief/02-press-etching.jpg" alt="AI 早报 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-press-etching</span>
+              <span class="pick__why">报纸特写横图，早报夹辨识度高，替换过小的印刷车间照。</span>
+              <span class="pick__src">
+                Pexels photographer ·
+                <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">Pexels License</a>
+                ·
+                <a href="https://www.pexels.com/photo/518543/" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-morning-brief" value="03-unsplash-newspaper" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-morning-brief/03-unsplash-newspaper.jpg" alt="AI 早报 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-newspaper</span>
+              <span class="pick__why">一叠报纸特写，横图，卡片上很好认。</span>
+              <span class="pick__src">
+                Roman Kraft ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/newspaper-lot-t7YycgKoEEU" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-morning-brief" value="04-unsplash-news-read" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-morning-brief/04-unsplash-news-read.jpg" alt="AI 早报 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-news-read</span>
+              <span class="pick__why">手持报纸，早报阅读动作明确。</span>
+              <span class="pick__src">
+                Roman Kraft ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/person-holding-white-paper-tA90pRfL2gM" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ai-morning-brief" value="05-unsplash-newsroom" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ai-morning-brief/05-unsplash-newsroom.jpg" alt="AI 早报 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-newsroom</span>
+              <span class="pick__why">新闻画面感（屏幕/资讯），和印刷机那组拉开差异。</span>
+              <span class="pick__src">
+                AbsolutVision ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/turned-on-flat-screen-television-WYw3uXa1w_8" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-github-weekly-hot" data-slug="github-weekly-hot">
+      <header class="group__head">
+        <h2>GitHub 每周热点</h2>
+        <p class="group__slug"><code>github-weekly-hot</code></p>
+        <p class="group__theme">按期开源项目解读，Octocat / GitHub 工作台。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/github-weekly-hot.jpg" alt="当前 GitHub 每周热点 封面" />
+          <figcaption><code>public/assets/collections/github-weekly-hot.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-github-weekly-hot" value="01-unsplash-github" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/github-weekly-hot/01-unsplash-github.jpg" alt="GitHub 每周热点 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-unsplash-github</span>
+              <span class="pick__why">屏幕上的 GitHub 界面，周刊目录感直接。</span>
+              <span class="pick__src">
+                Roman Synkevych ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/black-flat-screen-computer-monitor-vXInUOv1n84" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-github-weekly-hot" value="02-unsplash-git" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/github-weekly-hot/02-unsplash-git.jpg" alt="GitHub 每周热点 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unsplash-git</span>
+              <span class="pick__why">提交/代码桌面，开源项目周报气氛。</span>
+              <span class="pick__src">
+                Yancy Min ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/a-macbook-with-lines-of-code-on-its-screen-on-a-busy-desk-843nzZ7VXlI" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-github-weekly-hot" value="03-octocat-desk" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/github-weekly-hot/03-octocat-desk.jpg" alt="GitHub 每周热点 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-octocat-desk</span>
+              <span class="pick__why">桌上 Octocat 手办，GitHub 辨识度高，不是整页官网截图。</span>
+              <span class="pick__src">
+                Cristiano Betta from London, UK ·
+                <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:New_member_of_my_desk_family_for_in_the_office._Straight_from_the_office_thanks_to_a_colleague._Currently_my_desk_includes_an_Octocat_and_a_bunch_of_Studio_Ghibli_figurines._%2849229740747%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-github-weekly-hot" value="04-github-mark" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/github-weekly-hot/04-github-mark.jpg" alt="GitHub 每周热点 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-github-mark</span>
+              <span class="pick__why">开发者对着双屏写代码，周刊工作台，替换 Invertocat 单标。</span>
+              <span class="pick__src">
+                Pexels photographer ·
+                <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">Pexels License</a>
+                ·
+                <a href="https://www.pexels.com/photo/1181467/" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-github-weekly-hot" value="05-github-desktop-logo" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/github-weekly-hot/05-github-desktop-logo.jpg" alt="GitHub 每周热点 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-github-desktop-logo</span>
+              <span class="pick__why">显示器+键盘编程桌，开源周报工作台，替换单独 Desktop 标。</span>
+              <span class="pick__src">
+                Pexels / pixabay 编程键盘 ·
+                <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">Pexels License</a>
+                ·
+                <a href="https://www.pexels.com/photo/macbook-pro-beside-monitor-and-window-546819/" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-courses" data-slug="courses">
+      <header class="group__head">
+        <h2>课程推荐</h2>
+        <p class="group__slug"><code>courses</code></p>
+        <p class="group__theme">训练营与课程拆解，课堂/书架。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/courses.jpg" alt="当前 课程推荐 封面" />
+          <figcaption><code>public/assets/collections/courses.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-courses" value="01-uta-lecture" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/courses/01-uta-lecture.jpg" alt="课程推荐 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-uta-lecture</span>
+              <span class="pick__why">真实课堂讲授，课程夹最直白。</span>
+              <span class="pick__src">
+                University of Texas at Arlington Photograph Collection ·
+                <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener">CC BY 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:University_of_Texas_at_Arlington_College_of_Business_Administrator_and_Professor_Mark_Eakin_lecturing_in_classroom_%2810010722%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-courses" value="02-edwards-classroom" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/courses/02-edwards-classroom.jpg" alt="课程推荐 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-edwards-classroom</span>
+              <span class="pick__why">空教室课桌横排，适合当卡片底，不挤标题。</span>
+              <span class="pick__src">
+                Canadian2006 ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Edwards_School_of_Business_classroom_2020.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-courses" value="03-unsplash-library" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/courses/03-unsplash-library.jpg" alt="课程推荐 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-library</span>
+              <span class="pick__why">书架纵深，课程/阅读，横图。</span>
+              <span class="pick__src">
+                Alfons Morales ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-of-library-with-shelves-YLSwjSy7stw" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-courses" value="04-unsplash-study" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/courses/04-unsplash-study.jpg" alt="课程推荐 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-study</span>
+              <span class="pick__why">课堂讲授现场（贝宁维基讲座），补上原先 Unsplash 404。</span>
+              <span class="pick__src">
+                Kulttuurinavigaattori ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Wikipedia_lecture_in_Benin_in_2017.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-courses" value="05-unsplash-books" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/courses/05-unsplash-books.jpg" alt="课程推荐 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-books</span>
+              <span class="pick__why">旧书平铺特写，比教室更安静的封面。</span>
+              <span class="pick__src">
+                Iñaki del Olmo ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/books-in-library-NIJuEQw0RKg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-career-guide" data-slug="career-guide">
+      <header class="group__head">
+        <h2>求职攻略</h2>
+        <p class="group__slug"><code>career-guide</code></p>
+        <p class="group__theme">校招、社招轮次、转岗与面经。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/career-guide.jpg" alt="当前 求职攻略 封面" />
+          <figcaption><code>public/assets/collections/career-guide.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-career-guide" value="01-unsplash-handshake" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/career-guide/01-unsplash-handshake.jpg" alt="求职攻略 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-unsplash-handshake</span>
+              <span class="pick__why">握手横图，求职结果/offer 的常见视觉。</span>
+              <span class="pick__src">
+                Cytonn Photography ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/two-people-shaking-hands-n95VMLxslbs" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-career-guide" value="02-unsplash-desk-work" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/career-guide/02-unsplash-desk-work.jpg" alt="求职攻略 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unsplash-desk-work</span>
+              <span class="pick__why">桌前改材料，像改简历/准备面试。</span>
+              <span class="pick__src">
+                Scott Graham ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/person-holding-pencil-near-laptop-OQMZwNd3ThU" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-career-guide" value="03-unsplash-suit" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/career-guide/03-unsplash-suit.jpg" alt="求职攻略 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-suit</span>
+              <span class="pick__why">正装特写，社招面试气氛，主体清楚。</span>
+              <span class="pick__src">
+                Ben Rosett ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/man-wearing-watch-and-dress-shirt-holding-espresso-cup-ukzHlkoz1IE" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-career-guide" value="04-unsplash-meeting" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/career-guide/04-unsplash-meeting.jpg" alt="求职攻略 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-meeting</span>
+              <span class="pick__why">会议室讨论，多轮面试/对线现场。</span>
+              <span class="pick__src">
+                Amy Hirschi ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/people-sitting-on-chair-in-front-of-table-K0c8ko3e6AA" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-career-guide" value="05-unsplash-resume" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/career-guide/05-unsplash-resume.jpg" alt="求职攻略 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-resume</span>
+              <span class="pick__why">纸质材料与桌面，贴合面经/材料准备。</span>
+              <span class="pick__src">
+                Resume Genius 风格桌面（Unsplash: resume papers） ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-1586281380349-632531db7ed4" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-frontend-eng" data-slug="frontend-eng">
+      <header class="group__head">
+        <h2>前端工程</h2>
+        <p class="group__slug"><code>frontend-eng</code></p>
+        <p class="group__theme">小程序、Lottie、SVG、CSS、3D 实现向。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/frontend-eng.jpg" alt="当前 前端工程 封面" />
+          <figcaption><code>public/assets/collections/frontend-eng.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-frontend-eng" value="01-unsplash-webdesign" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/frontend-eng/01-unsplash-webdesign.jpg" alt="前端工程 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-unsplash-webdesign</span>
+              <span class="pick__why">桌面上的网页设计稿，前端夹最常见氛围。</span>
+              <span class="pick__src">
+                Hal Gatewood ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/black-laptop-computer-on-white-table-iISyBKOT2D0" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-frontend-eng" value="02-unsplash-html" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/frontend-eng/02-unsplash-html.jpg" alt="前端工程 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unsplash-html</span>
+              <span class="pick__why">代码/框架界面特写，实现向而不是海报生成。</span>
+              <span class="pick__src">
+                Fotis Fotopoulos ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/a-computer-screen-with-a-logo-on-it-6sAl6aQ4OWI" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-frontend-eng" value="03-unsplash-browser" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/frontend-eng/03-unsplash-browser.jpg" alt="前端工程 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-browser</span>
+              <span class="pick__why">显示器上的代码横图，前端工程底图经典款。</span>
+              <span class="pick__src">
+                Glenn Carstens-Peters ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/monitor-showing-java-8-y_6rqStQBYQ" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-frontend-eng" value="04-css-iframe" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/frontend-eng/04-css-iframe.jpg" alt="前端工程 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-css-iframe</span>
+              <span class="pick__why">深色编辑器里的 HTML/CSS，实现向，替换原先丹麦文对照截图。</span>
+              <span class="pick__src">
+                Ilya Pavlov ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/monitor-showing-programming-language-Oalh2MojUuk" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-frontend-eng" value="05-unsplash-ui-desk" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/frontend-eng/05-unsplash-ui-desk.jpg" alt="前端工程 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-ui-desk</span>
+              <span class="pick__why">笔记本+显示器工作台，横图留白够写标题。</span>
+              <span class="pick__src">
+                Christopher Gower ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/turned-on-gray-laptop-computer-m_HRfLhgABo" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-backend" data-slug="backend">
+      <header class="group__head">
+        <h2>后端</h2>
+        <p class="group__slug"><code>backend</code></p>
+        <p class="group__theme">服务端、接口与业务系统。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/backend.jpg" alt="当前 后端 封面" />
+          <figcaption><code>public/assets/collections/backend.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-backend" value="01-server-room-139" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/backend/01-server-room-139.jpg" alt="后端 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-server-room-139</span>
+              <span class="pick__why">机柜进深，后端夹最直白的机房横图。</span>
+              <span class="pick__src">
+                Indrajit Das ·
+                <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:139_Server_Room_01.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-backend" value="02-server-room-lender" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/backend/02-server-room-lender.jpg" alt="后端 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-server-room-lender</span>
+              <span class="pick__why">另一间机房，冷通道气氛，和 01 角度不同。</span>
+              <span class="pick__src">
+                Carl Lender from Sunrise, USA ·
+                <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Server_Room_%2822397102849%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-backend" value="03-pdc-server" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/backend/03-pdc-server.jpg" alt="后端 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-pdc-server</span>
+              <span class="pick__why">机房通道，主体是机柜不是人物。</span>
+              <span class="pick__src">
+                Esquilo ·
+                <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:PDC_server_room.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-backend" value="04-centaur-server" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/backend/04-centaur-server.jpg" alt="后端 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-centaur-server</span>
+              <span class="pick__why">服务器特写，适合卡片裁切。</span>
+              <span class="pick__src">
+                VIA Gallery from Hsintien, Taiwan ·
+                <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener">CC BY 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Centaur_server_room_%282293424530%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-backend" value="05-unsplash-servers" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/backend/05-unsplash-servers.jpg" alt="后端 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-servers</span>
+              <span class="pick__why">灯条机柜，现代数据中心，和 Wikimedia 那几张互补。</span>
+              <span class="pick__src">
+                Taylor Vick ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/cable-network-M5tzZtFCOfs" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-database" data-slug="database">
+      <header class="group__head">
+        <h2>数据库</h2>
+        <p class="group__slug"><code>database</code></p>
+        <p class="group__theme">库表、查询与数据系统设计。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/database.jpg" alt="当前 数据库 封面" />
+          <figcaption><code>public/assets/collections/database.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-database" value="01-vt-datacenter" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/database/01-vt-datacenter.jpg" alt="数据库 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-vt-datacenter</span>
+              <span class="pick__why">数据中心机柜，存储/库的物理层。</span>
+              <span class="pick__src">
+                Christopher Bowns ·
+                <a href="https://creativecommons.org/licenses/by-sa/2.0" target="_blank" rel="noopener">CC BY-SA 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Virginia_Tech_-_data_center.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-database" value="02-unc-dc3" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/database/02-unc-dc3.jpg" alt="数据库 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unc-dc3</span>
+              <span class="pick__why">UNC 数据中心，横图机柜阵列。</span>
+              <span class="pick__src">
+                Ana Las Heras ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Data_Center_3_%28UNC%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-database" value="03-unc-dc2" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/database/03-unc-dc2.jpg" alt="数据库 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unc-dc2</span>
+              <span class="pick__why">同场地另一角度，和 02 色温不同。</span>
+              <span class="pick__src">
+                Ana Las Heras ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Data_Center_2_%28UNC%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-database" value="04-relational-photo" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/database/04-relational-photo.jpg" alt="数据库 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-relational-photo</span>
+              <span class="pick__why">关系库教学现场/白板，比纯 ER 海报少字。</span>
+              <span class="pick__src">
+                Willow Brugh ·
+                <a href="https://creativecommons.org/licenses/by-sa/2.0" target="_blank" rel="noopener">CC BY-SA 2.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Database_skillshare_relational_%2812459211923%29.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-database" value="05-unsplash-data-table" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/database/05-unsplash-data-table.jpg" alt="数据库 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-data-table</span>
+              <span class="pick__why">账册/表格质感，库表隐喻，不是架构图海报。</span>
+              <span class="pick__src">
+                Caspar Camille Rubin ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/black-and-white-book-on-brown-wooden-table-fPkvU7RDmCo" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-ops" data-slug="ops">
+      <header class="group__head">
+        <h2>运维</h2>
+        <p class="group__slug"><code>ops</code></p>
+        <p class="group__theme">Linux、网络、K8s 与术语图解。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/ops.jpg" alt="当前 运维 封面" />
+          <figcaption><code>public/assets/collections/ops.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-ops" value="01-k8s-talk" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ops/01-k8s-talk.jpg" alt="运维 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-k8s-talk</span>
+              <span class="pick__why">K8s 演讲现场。若与 workflow 重复下载，脚本会改用备用。</span>
+              <span class="pick__src">
+                Raysonho @ Open Grid Scheduler / Grid Engine ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Kubernetes_talk_at_Google_Cloud_Summit.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ops" value="02-k8s-logo" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ops/02-k8s-logo.jpg" alt="运维 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-k8s-logo</span>
+              <span class="pick__why">美国数据中心基础设施图，比扁长 K8s 字标更适合当卡片底。</span>
+              <span class="pick__src">
+                DOE/National Renewable Energy Laboratory (NREL) ·
+                <a href="https://commons.wikimedia.org/wiki/File:Data_center_infrastructure_in_the_United_States.jpg" target="_blank" rel="noopener">Public domain</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Data_center_infrastructure_in_the_United_States.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ops" value="03-tux" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ops/03-tux.jpg" alt="运维 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-tux</span>
+              <span class="pick__why">把官方 Tux 放到深色 16:9 底上，Linux 运维夹能认出来。</span>
+              <span class="pick__src">
+                Larry Ewing (Tux on local 16:9 board) ·
+                <a href="https://commons.wikimedia.org/wiki/File:Tux.png" target="_blank" rel="noopener">Attribution</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Tux.png" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ops" value="04-unsplash-terminal" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ops/04-unsplash-terminal.jpg" alt="运维 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-terminal</span>
+              <span class="pick__why">绿字终端全屏，Linux/排障气氛。</span>
+              <span class="pick__src">
+                Markus Spiske ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/black-laptop-computer-turned-on-iar-afB0QQw" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-ops" value="05-unsplash-cables" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/ops/05-unsplash-cables.jpg" alt="运维 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-cables</span>
+              <span class="pick__why">家用机柜+UPS+路由，运维日常，补上网线那张 404。</span>
+              <span class="pick__src">
+                Tomskyhaha ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Server-UPS-and-EA6350v3-in-a-shelf.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-product" data-slug="product">
+      <header class="group__head">
+        <h2>产品经理</h2>
+        <p class="group__slug"><code>product</code></p>
+        <p class="group__theme">人效、精益、成本与产品判断。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/product.jpg" alt="当前 产品经理 封面" />
+          <figcaption><code>public/assets/collections/product.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-product" value="01-mozilla-whiteboard" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/product/01-mozilla-whiteboard.jpg" alt="产品经理 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-mozilla-whiteboard</span>
+              <span class="pick__why">硅谷白板贴满贴纸，产品讨论墙，不是 PPT 封面。</span>
+              <span class="pick__src">
+                Oliver Propst ·
+                <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Mozilla_Mountain_View_Whiteboard_Coverd_With_Stickers_%2884006239%29.jpeg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-product" value="02-unsplash-sticky" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/product/02-unsplash-sticky.jpg" alt="产品经理 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-unsplash-sticky</span>
+              <span class="pick__why">团队对着屏幕讨论，产品判断现场，补上便签那张 404。</span>
+              <span class="pick__src">
+                Austin Distel ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-1553877522-43269d4ea984" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-product" value="03-unsplash-workshop" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/product/03-unsplash-workshop.jpg" alt="产品经理 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-unsplash-workshop</span>
+              <span class="pick__why">工作坊讨论，精益/人效场景。</span>
+              <span class="pick__src">
+                Campaign Creators ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/people-sitting-on-chair-in-front-of-table-gMsnXqILjp4" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-product" value="04-unsplash-planning" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/product/04-unsplash-planning.jpg" alt="产品经理 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-planning</span>
+              <span class="pick__why">团队对着笔记本开会，产品判断现场。</span>
+              <span class="pick__src">
+                Marvin Meyer ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/people-sitting-in-front-of-computer-SYTO3xs06fU" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-product" value="05-unsplash-notes" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/product/05-unsplash-notes.jpg" alt="产品经理 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-notes</span>
+              <span class="pick__why">墙面便签矩阵，横图，当卡片底很稳。</span>
+              <span class="pick__src">
+                You X Ventures ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/sticky-notes-on-wall-Oalh2MojUuk" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-humanities" data-slug="humanities">
+      <header class="group__head">
+        <h2>文史</h2>
+        <p class="group__slug"><code>humanities</code></p>
+        <p class="group__theme">历史、神话、人物与地图。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/humanities.jpg" alt="当前 文史 封面" />
+          <figcaption><code>public/assets/collections/humanities.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-humanities" value="01-qingming-court" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/humanities/01-qingming-court.jpg" alt="文史 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-qingming-court</span>
+              <span class="pick__why">清院本局部（桥市），横构图有人物与建筑，不再是整卷被压成细条。</span>
+              <span class="pick__src">
+                Five artists from the Painting Academy and active at the Qing court: Chen Mei (陳枚) Sun Hu (孫祜) Jin Kun (金昆) Dai Hong (戴洪) Cheng Zhidao (程志道) ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29_04a.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-humanities" value="02-qingming-alt" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/humanities/02-qingming-alt.jpg" alt="文史 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-qingming-alt</span>
+              <span class="pick__why">清院本另一段城郭，和 01 同卷不同景，适合当文史卡底。</span>
+              <span class="pick__src">
+                Five artists from the Painting Academy and active at the Qing court: Chen Mei (陳枚) Sun Hu (孫祜) Jin Kun (金昆) Dai Hong (戴洪) Cheng Zhidao (程志道) ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29_08a.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-humanities" value="03-dunhuang217" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/humanities/03-dunhuang217.jpg" alt="文史 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-dunhuang217</span>
+              <span class="pick__why">莫高窟第 217 窟壁画，神话/宗教美术，公有领域。</span>
+              <span class="pick__src">
+                Unknown painter ·
+                <a href="https://commons.wikimedia.org/wiki/File:Dunhuang217.jpg" target="_blank" rel="noopener">Public domain</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Dunhuang217.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-humanities" value="04-mogao-lotus" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/humanities/04-mogao-lotus.jpg" alt="文史 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-mogao-lotus</span>
+              <span class="pick__why">敦煌经变横幅，和 03 同窟不同墙，色彩更满。</span>
+              <span class="pick__src">
+                Unknown 8th century mural painter ·
+                <a href="https://commons.wikimedia.org/wiki/File:Mogao_Cave_217_-_South_Wall_of_the_Main_Chamber_-_Lotus_Sutra_tableau_%28preaching_Buddha_with_Summit_of_Being_atop%3B_parable_of_the_Phantom_city_to_the_right%29.png" target="_blank" rel="noopener">Public domain</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Mogao_Cave_217_-_South_Wall_of_the_Main_Chamber_-_Lotus_Sutra_tableau_%28preaching_Buddha_with_Summit_of_Being_atop%3B_parable_of_the_Phantom_city_to_the_right%29.png" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-humanities" value="05-fan-qi-landscape" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/humanities/05-fan-qi-landscape.jpg" alt="文史 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-fan-qi-landscape</span>
+              <span class="pick__why">清樊圻山水册（大都会），文人山水，不是博物馆海报字墙。</span>
+              <span class="pick__src">
+                Fan Qi ·
+                <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener">CC0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:%E6%B8%85_%E6%A8%8A%E5%9C%BB_%E7%82%BA%E7%8E%89%E7%BF%81%E4%BD%9C%E5%B1%B1%E6%B0%B4%E5%9C%96_%E5%86%8A-Landscapes_Painted_for_Yuweng_MET_DP160555.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+    <section class="group" id="c-site-series" data-slug="site-series">
+      <header class="group__head">
+        <h2>本站系列</h2>
+        <p class="group__slug"><code>site-series</code></p>
+        <p class="group__theme">园主本站：部署、桌宠、发文流水线。萤火/书桌/写作。</p>
+      </header>
+      
+      <div class="current">
+        <p class="current__label">当前仓内已有（不算 5 张候选）</p>
+        <figure class="current__fig">
+          <img src="public/assets/collections/site-series.jpg" alt="当前 本站系列 封面" />
+          <figcaption><code>public/assets/collections/site-series.jpg</code> · 配置 cover 已指向此路径</figcaption>
+        </figure>
+      </div>
+      <div class="picks">
+        
+        <label class="pick">
+          <input type="radio" name="pick-site-series" value="01-fireflies-forest" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/site-series/01-fireflies-forest.jpg" alt="本站系列 候选 1" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">1. 01-fireflies-forest</span>
+              <span class="pick__why">林间萤火，和站名 Firefly 对得上，横图夜景。</span>
+              <span class="pick__src">
+                Zsolyomi ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:The_fairytale_forest_-_Eastern_fireflies_%28Luciola_mingrelica%29_dance_in_the_night_in_the_forests_of_Mount_Paggaio%2C_Greece.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-site-series" value="02-fireflies-bohol" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/site-series/02-fireflies-bohol.jpg" alt="本站系列 候选 2" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">2. 02-fireflies-bohol</span>
+              <span class="pick__why">萤火虫特写，主体清楚，适合小卡裁切。</span>
+              <span class="pick__src">
+                Charles J. Sharp ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Fireflies_%28Pteroptyx_mcdermotti%29_Bohol.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-site-series" value="03-kota-tinggi" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/site-series/03-kota-tinggi.jpg" alt="本站系列 候选 3" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">3. 03-kota-tinggi</span>
+              <span class="pick__why">萤火公园夜游，比微距更有场景纵深。</span>
+              <span class="pick__src">
+                Marcofly2409 ·
+                <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+                ·
+                <a href="https://commons.wikimedia.org/wiki/File:Kota_Tinggi_Firefly_Park_05.jpg" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-site-series" value="04-unsplash-writing" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/site-series/04-unsplash-writing.jpg" alt="本站系列 候选 4" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">4. 04-unsplash-writing</span>
+              <span class="pick__why">纸笔写作桌，本站发文日常，补上原先 404。</span>
+              <span class="pick__src">
+                Unsplash / writing desk ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/photo-1455390582262-044cdead277a" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+        <label class="pick">
+          <input type="radio" name="pick-site-series" value="05-unsplash-home-desk" />
+          <span class="pick__frame">
+            <img src=".scratch/collection-cover-picker/images/site-series/05-unsplash-home-desk.jpg" alt="本站系列 候选 5" loading="lazy" />
+            <span class="pick__meta">
+              <span class="pick__id">5. 05-unsplash-home-desk</span>
+              <span class="pick__why">家里书桌用电脑，站点系列偏「自己的园子」。</span>
+              <span class="pick__src">
+                Glenn Carstens-Peters ·
+                <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>
+                ·
+                <a href="https://unsplash.com/photos/person-using-macbook-pro-npxXWgQ33ZQ" target="_blank" rel="noopener">来源页</a>
+              </span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </section>
+  </main>
+  <footer class="foot">Firefly 本地挑选壳 · 图在 .scratch/collection-cover-picker/images/ · 正式配置未改</footer>
+  <script src="./preview-collection-covers.js"></script>
+</body>
+</html>

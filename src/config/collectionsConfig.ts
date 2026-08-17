@@ -1,54 +1,203 @@
 import type { CollectionsConfig } from "../types/collectionsConfig";
 
 /**
- * 人工策展合集登记（配置驱动）。
- * 文章 frontmatter 写 `collections: [slug, ...]` 即可入合集（多对多）。
- * 合集展示顺序 = 数组顺序；description 用于总览卡片与详情页头部。
+ * 人工策展合集（配置驱动）。
+ * 文章 frontmatter `collections: [slug, ...]`（多对多，允许跨一级复用）。
  *
- * 分层：
- * - 一级（无 parent）：总览页卡片
- * - 二级（有 parent）：挂在一级详情页内，不单独出现在总览墙
+ * 层级：
+ * - 一级（无 parent）：知识树频道，出现在 `/collections/` 总览
+ * - 二级（有 parent）：工具夹 / 方法夹 / 来源夹；只在一级详情页出场
+ * 第三层这轮用手册章节顶着，不登记成合集夹。
+ * 极客时间四门课是既有三级叶子，仍挂在 `course-geektime` 下。
  *
- * 当前嵌套：
- * - `ai-coding-tools` ← tool-claude-code / kimi / opencode / cursor / pi
- * - `course-geektime` ← 四门极客时间课
- * 一级另含：`wool-freebies`（薅羊毛专区）、`ai-morning-brief`（AI 早报）、
- * `github-weekly-hot`（GitHub 每周热榜）等
+ * output 发布岗只缓存一二级（干什么 / 什么样的文章该进），不记文章名单：
+ * `.cursor/skills/knowledge-output/references/collection-model.md`
+ * 改本文件后：`python .cursor/skills/knowledge-output/scripts/sync_collection_model.py --apply`
+ *
+ * 现行一级：AI 编程工具 · Agentic Workflow · 视觉媒体 · 模型评测 ·
+ * 大模型概述 · AI 早报 · GitHub 每周热点 · 课程推荐 · 求职攻略 · 前端工程 ·
+ * 后端 · 数据库 · 运维 · 产品经理 · 文史 · 本站系列
  */
 export const collectionsConfig: CollectionsConfig = {
 	items: [
-		// ── 专题系列（一级）──
+		// ── 1. AI 编程工具 ──
+		{
+			slug: "ai-coding-tools",
+			name: "AI 编程工具",
+			description:
+				"Harness 产品夹：Claude Code、OpenCode、Cursor、Kimi、Codex、Pi、Kiro、ZCode 等。工具专文挂二级；跨工具方法另见 Agentic Workflow。",
+			emoji: "🧰",
+			cover: "/assets/collections/ai-coding-tools.jpg",
+		},
+		{
+			slug: "tool-claude-code",
+			name: "Claude Code",
+			description: "版本、CLAUDE.md、MCP、Hooks、美化与真实 workflow。",
+			emoji: "🟣",
+			cover: "/assets/collections/tool-claude-code.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-opencode",
+			name: "OpenCode",
+			description: "路由协作、记忆嫁接与 DeepSeek 刀法。",
+			emoji: "📂",
+			cover: "/assets/collections/tool-opencode.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-cursor",
+			name: "Cursor",
+			description: "三层规则、Skills 路径、外壳美化与 AGENTS.md 实践。",
+			emoji: "⬡",
+			cover: "/assets/collections/tool-cursor.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-kimi-code",
+			name: "Kimi Code CLI",
+			description: "Workbench、Hook 校验、死循环刹车。",
+			emoji: "🌙",
+			cover: "/assets/collections/tool-kimi-code.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-codex",
+			name: "Codex",
+			description: "Chat / Work 分工、实践心得、AGENTS.md 与长期拴绳。",
+			emoji: "⬛",
+			cover: "/assets/collections/tool-codex.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-pi",
+			name: "Pi Coding Agent",
+			description: "Extension 开荒、记忆、主题与 provider 排错。",
+			emoji: "π",
+			cover: "/assets/collections/tool-pi.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-kiro",
+			name: "Kiro",
+			description: "Harness 缰绳体感与 Claude 协作。",
+			emoji: "🪢",
+			cover: "/assets/collections/tool-kiro.jpg",
+			parent: "ai-coding-tools",
+		},
+		{
+			slug: "tool-zcode",
+			name: "ZCode",
+			description: "智谱 ZCode / ADE 工作台。有帖再往这里挂。",
+			emoji: "Z",
+			parent: "ai-coding-tools",
+		},
+
+		// ── 2. Agentic Workflow ──
 		{
 			slug: "agentic-workflow",
 			name: "Agentic Workflow",
 			description:
-				"跨工具工作流：MiniMax 媒体管线、Windows 编码治理、视觉外挂等可复用打法。",
+				"跨工具沉淀：Vibe Coding、Spec Coding、Harness Engineering，以及大佬链路与工程方法。可与工具夹双挂。",
 			emoji: "⚙️",
 			cover: "/assets/collections/agentic-workflow.jpg",
 		},
 		{
+			slug: "vibe-tutorial-index",
+			name: "Vibe Coding 导读",
+			description: "鱼皮系列索引墙：入门、工具、实战、模型、学习与变现。",
+			emoji: "🚀",
+			cover: "/assets/collections/vibe-coding.jpg",
+			parent: "agentic-workflow",
+		},
+		{
+			slug: "csdn-tech-tutorials",
+			name: "Vibe 踩坑实录",
+			description: "从会聊天到能交付的踩坑短篇（CSDN 精选提炼）。",
+			emoji: "📘",
+			cover: "/assets/collections/csdn-tech-tutorials.jpg",
+			parent: "agentic-workflow",
+		},
+
+		// ── 3. 视觉媒体 ──
+		{
+			slug: "visual-media",
+			name: "视觉媒体",
+			description:
+				"海报与版式、提示词资产、视频与手绘生成、MiniMax 做片。前端工程实现见「前端工程」。",
+			emoji: "🎬",
+			cover: "/assets/collections/visual-media.jpg",
+		},
+
+		// ── 4. 模型评测 ──
+		{
+			slug: "model-eval",
+			name: "模型评测",
+			description:
+				"厂商新模型实测，以及中转 / 羊毛场景里真正跑得动的模型评测。",
+			emoji: "🧪",
+			cover: "/assets/collections/model-eval.jpg",
+		},
+		{
 			slug: "transit-relay",
-			name: "中转站评测",
+			name: "中转实测",
 			description: "GPT / Codex 中转方案、额度与压测实录。",
 			emoji: "🔁",
 			cover: "/assets/collections/transit-relay.jpg",
+			parent: "model-eval",
 		},
 		{
-			slug: "vibe-tutorial-index",
-			name: "鱼皮VibeCoding",
-			description:
-				"鱼皮 Vibe Coding 系列导读：基础、工具、实战部署、模型、学习、变现与热文索引。",
-			emoji: "🚀",
-			cover: "/assets/collections/vibe-coding.jpg",
+			slug: "wool-freebies",
+			name: "羊毛与限免实测",
+			description: "订阅、限免、试用情报里带模型水位判断的篇目。",
+			emoji: "🎟️",
+			cover: "/assets/collections/wool-freebies.jpg",
+			parent: "model-eval",
 		},
 
-		// ── 课程合集（一级：极客时间 → 二级：各门课）──
+		// ── 5. 大模型概述 ──
+		{
+			slug: "llm-overview",
+			name: "大模型概述",
+			description:
+				"RAG、MoE、应用栈与底层概念，以及 Python 库地图。实测跑分见「模型评测」。",
+			emoji: "🧠",
+			cover: "/assets/collections/llm-overview.jpg",
+		},
+
+		// ── 6. 报刊 ──
+		{
+			slug: "ai-morning-brief",
+			name: "AI 早报",
+			description:
+				"按期 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。",
+			emoji: "🗞️",
+			cover: "/assets/collections/ai-morning-brief.jpg",
+		},
+		{
+			slug: "github-weekly-hot",
+			name: "GitHub 每周热点",
+			description:
+				"按期自写的开源项目解读。周刊只当目录；日更热榜卡不进本夹。",
+			emoji: "⭐",
+			cover: "/assets/collections/github-weekly-hot.jpg",
+		},
+
+		// ── 7. 课程推荐 ──
+		{
+			slug: "courses",
+			name: "课程推荐",
+			description: "训练营与课程拆解。下面按机构 / 系列挂二级。",
+			emoji: "📚",
+			cover: "/assets/collections/courses.jpg",
+		},
 		{
 			slug: "course-geektime",
 			name: "极客时间",
 			description: "极客时间 AI 相关训练营结课笔记与选课对比。",
 			emoji: "📚",
 			cover: "/assets/collections/course-geektime.jpg",
+			parent: "courses",
 		},
 		{
 			slug: "course-geektime-agent-fullstack",
@@ -83,139 +232,79 @@ export const collectionsConfig: CollectionsConfig = {
 			parent: "course-geektime",
 		},
 
-		// ── AI 编程工具（一级 + 二级）──
+		// ── 8. 求职攻略 ──
 		{
-			slug: "ai-coding-tools",
-			name: "AI 编程工具",
-			description:
-				"Claude Code、Kimi、OpenCode、Cursor、Pi 等工具上手、技巧与 Harness 生态。",
-			emoji: "🧰",
-			cover: "/assets/collections/ai-coding-tools.jpg",
+			slug: "career-guide",
+			name: "求职攻略",
+			description: "校招路径、社招轮次、转岗与面经。",
+			emoji: "🧭",
+			cover: "/assets/collections/career-guide.jpg",
 		},
-		{
-			slug: "tool-claude-code",
-			name: "Claude Code",
-			description: "美化、记忆、Skill 加载、Harness 生态与 Claude Code 专文。",
-			emoji: "🟣",
-			cover: "/assets/collections/tool-claude-code.jpg",
-			parent: "ai-coding-tools",
-		},
-		{
-			slug: "tool-kimi-code",
-			name: "Kimi Code",
-			description: "Hook 验证、工具循环、从 Claude 迁移等 Kimi 专文。",
-			emoji: "🌙",
-			cover: "/assets/collections/tool-kimi-code.jpg",
-			parent: "ai-coding-tools",
-		},
-		{
-			slug: "tool-opencode",
-			name: "OpenCode",
-			description: "OpenCode + Luna / DeepSeek 协作配置与迁移实践。",
-			emoji: "📂",
-			cover: "/assets/collections/tool-opencode.jpg",
-			parent: "ai-coding-tools",
-		},
-		{
-			slug: "tool-cursor",
-			name: "Cursor",
-			description: "Cursor 侧 Harness 迁移与 Claude 规矩搬运。",
-			emoji: "⬡",
-			cover: "/assets/collections/tool-cursor.jpg",
-			parent: "ai-coding-tools",
-		},
-		{
-			slug: "tool-pi",
-			name: "Pi Coding Agent",
-			description: "Pi 开荒、记忆机制、主题状态栏与 provider 排错。",
-			emoji: "π",
-			cover: "/assets/collections/tool-pi.jpg",
-			parent: "ai-coding-tools",
-		},
-
-		// ── Agentic Coding（一级 · 共性创意）──
-		{
-			slug: "agentic-coding",
-			name: "Agentic Coding",
-			description: "AI 编程过程中的创意、奇技与工程化想法（不绑单一工具）。",
-			emoji: "💡",
-			cover: "/assets/collections/agentic-coding.jpg",
-		},
-		{
-			slug: "agentic-coding-core",
-			name: "Agentic Coding 核心长文",
-			description:
-				"按工具 / 规范主题合并后的手册长文（正文收成一二级标题）；中转站测评仍按站分篇。",
-			emoji: "📎",
-			cover: "/assets/collections/agentic-coding.jpg",
-		},
-
-		// ── 测评（一级）──
-		{
-			slug: "review-skill-mcp",
-			name: "Skill 与 MCP 测评",
-			description: "Skill、MCP 与相关工具链的实测与横评。",
-			emoji: "🔌",
-			cover: "/assets/collections/mcp-recommend.jpg",
-		},
-
-		// ── tta 系列技能（一级 · 自研 skill 规范与迭代）──
-		{
-			slug: "tta-skills",
-			name: "tta 系列技能",
-			description: "自研 tta 系列 AI skill 的规范、迭代与实战。",
-			emoji: "🛠️",
-			cover: "/assets/collections/tta-skills.jpg",
-		},
-
-		// ── 羊毛 / 限免情报（一级）──
-		{
-			slug: "wool-freebies",
-			name: "薅羊毛专区",
-			description:
-				"各厂商 AI 订阅、模型限免、申请试用与积分活动的可维护情报汇总（以博客文章收录）。",
-			emoji: "🎟️",
-			cover: "/assets/collections/wool-freebies.jpg",
-		},
-
-		// ── AI 早报（一级 · 报刊式按期）──
-		{
-			slug: "ai-morning-brief",
-			name: "AI 早报",
-			description:
-				"按期发行的 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。",
-			emoji: "🗞️",
-			cover: "/assets/collections/ai-morning-brief.jpg",
-		},
-
-		// ── GitHub 每周热榜（一级 · 报刊式按期）──
-		{
-			slug: "github-weekly-hot",
-			name: "GitHub 每周热榜",
-			description:
-				"按期自写的开源项目解读：项目列表可参考 IT咖啡馆周刊目录，正文只对 GitHub 公开页下判断。B 站视频只作片单。",
-			emoji: "⭐",
-			cover: "/assets/collections/github-weekly-hot.jpg",
-		},
-
-		// ── CSDN 技术教程（一级）──
-		{
-			slug: "csdn-tech-tutorials",
-			name: "CSDN技术教程",
-			description:
-				"从 CSDN 精选提炼的 Vibe / Agent 工程 / MCP·Skills / 终端美化实战笔记。",
-			emoji: "📘",
-			cover: "/assets/collections/csdn-tech-tutorials.jpg",
-		},
-
-		// ── 小林coding 学习笔记（一级）──
 		{
 			slug: "xiaolincoding",
 			name: "小林coding",
-			description:
-				"小林coding 图解 / 面经的个人学习笔记与导读合集（非原文镜像）。",
+			description: "图解 / 面经的个人导读（非原文镜像）。",
 			emoji: "📗",
 			cover: "/assets/collections/xiaolincoding.jpg",
+			parent: "career-guide",
+		},
+
+		// ── 9. 领域工程 ──
+		{
+			slug: "frontend-eng",
+			name: "前端工程",
+			description:
+				"小程序、Lottie、SVG 动效、纯 CSS、3D 等实现向。海报和视频生成见「视觉媒体」。",
+			emoji: "🧩",
+			cover: "/assets/collections/frontend-eng.jpg",
+		},
+		{
+			slug: "backend",
+			name: "后端",
+			description: "服务端、接口与业务系统。有帖再往这里挂。",
+			emoji: "🗄️",
+			cover: "/assets/collections/backend.jpg",
+		},
+		{
+			slug: "database",
+			name: "数据库",
+			description: "库表、查询与数据系统设计。有帖再往这里挂。",
+			emoji: "🗃️",
+			cover: "/assets/collections/database.jpg",
+		},
+		{
+			slug: "ops",
+			name: "运维",
+			description: "Linux、网络、K8s 与术语图解。",
+			emoji: "🛠️",
+			cover: "/assets/collections/ops.jpg",
+		},
+		{
+			slug: "product",
+			name: "产品经理",
+			description: "人效、精益、成本与产品判断。有帖再往这里挂。",
+			emoji: "📋",
+			cover: "/assets/collections/product.jpg",
+		},
+
+		// ── 10. 文史 ──
+		{
+			slug: "humanities",
+			name: "文史",
+			description:
+				"历史、神话、人物与地图。神话地图先占坑；以后史识、人物也可往这里挂。",
+			emoji: "📜",
+			cover: "/assets/collections/humanities.jpg",
+		},
+
+		// ── 11. 本站系列 ──
+		{
+			slug: "site-series",
+			name: "本站系列",
+			description:
+				"园主本站：部署与域名、桌宠、发文流水线等站点自身记录。",
+			emoji: "🏡",
+			cover: "/assets/collections/site-series.jpg",
 		},
 	],
 };

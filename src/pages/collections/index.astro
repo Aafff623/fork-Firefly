@@ -1,68 +1,227 @@
 ---
 /**
  * 合集总览页：只展示一级合集；二级挂在一级详情页内。
+ * 默认按显示名拼音/英文 A→Z，不跟 collectionsConfig 数组顺序。
+ * 总览卡：扁条 + 约 3 列，标题完整一行不裁。
  */
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getTopLevelCollections } from "@/utils/collection-utils";
+import { pinyin } from "pinyin-pro";
 
-const collections = await getTopLevelCollections();
+const CJK = /[\u4e00-\u9fff]/;
+
+function collectionLetter(name: string): string {
+	const trimmed = name.trim();
+	if (!trimmed) return "#";
+	const first = trimmed[0];
+	if (/[A-Za-z]/.test(first)) return first.toUpperCase();
+	if (CJK.test(first)) {
+		const py = pinyin(first, { toneType: "none" });
+		const letter = (py[0] || "").toUpperCase();
+		return /[A-Z]/.test(letter) ? letter : "#";
+	}
+	const latin = trimmed.match(/[A-Za-z]/);
+	if (latin) return latin[0].toUpperCase();
+	const cjk = trimmed.match(CJK);
+	if (cjk) {
+		const py = pinyin(cjk[0], { toneType: "none" });
+		const letter = (py[0] || "").toUpperCase();
+		return /[A-Z]/.test(letter) ? letter : "#";
+	}
+	return "#";
+}
+
+function collectionSortKey(name: string): string {
+	return [...name.trim()]
+		.map((ch) => {
+			if (/[A-Za-z0-9]/.test(ch)) return ch.toLowerCase();
+			if (CJK.test(ch)) {
+				return pinyin(ch, { toneType: "none" }).toLowerCase();
+			}
+			return "";
+		})
+		.join("");
+}
+
+const rawCollections = await getTopLevelCollections();
+const collections = [...rawCollections].sort((a, b) => {
+	const letterA = collectionLetter(a.meta.name);
+	const letterB = collectionLetter(b.meta.name);
+	if (letterA !== letterB) return letterA.localeCompare(letterB);
+	const keyA = collectionSortKey(a.meta.name);
+	const keyB = collectionSortKey(b.meta.name);
+	if (keyA !== keyB) return keyA.localeCompare(keyB);
+	return a.meta.name.localeCompare(b.meta.name, "zh-CN");
+});
+
+const presentLetters = [
+	...new Set(collections.map((c) => collectionLetter(c.meta.name))),
+];
 const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
+const statusCounts = {
+	all: collections.length,
+	hasPosts: collections.filter((c) => c.posts.length > 0).length,
+	empty: collections.filter((c) => c.posts.length === 0).length,
+	hasChildren: collections.filter((c) => c.children.length > 0).length,
+};
 ---
 
 <MainGridLayout title={i18n(I18nKey.collections)} description={i18n(I18nKey.allCollections)}>
-  <div class="card-base px-6 py-5 mb-4 sm:px-8 sm:py-6">
-    <h1 class="collections-page__title">{i18n(I18nKey.collections)}</h1>
-    <p class="collections-page__meta">
-      {i18n(I18nKey.allCollections)} · {totalPosts} {i18n(I18nKey.postsCount)}
-    </p>
+  <div class="collections-page" data-collections-page>
+  <div class="card-base collections-page__head px-6 py-5 mb-4 sm:px-8 sm:py-6">
+    <div class="collections-page__head-row">
+      <div class="collections-page__copy">
+        <h1 class="collections-page__title">{i18n(I18nKey.collections)}</h1>
+        <p class="collections-page__meta">
+          {i18n(I18nKey.allCollections)} · {totalPosts} {i18n(I18nKey.postsCount)}
+        </p>
+      </div>
+
+      {
+        collections.length > 0 && (
+          <div class="collections-page__tools" data-collections-tools>
+            <div class="collections-page__mode" aria-label="合集筛选方式">
+              <button
+                type="button"
+                class="collections-page__mode-btn"
+                data-filter-mode="letter"
+                aria-pressed="true"
+              >
+                字母
+              </button>
+              <button
+                type="button"
+                class="collections-page__mode-btn"
+                data-filter-mode="status"
+                aria-pressed="false"
+              >
+                状态
+              </button>
+            </div>
+
+            <div
+              class="collections-page__panel"
+              data-filter-panel="letter"
+            >
+              <div class="collections-page__chips" data-letter-chips>
+                <button
+                  type="button"
+                  class="collections-page__chip"
+                  data-letter=""
+                  aria-pressed="true"
+                >
+                  全部
+                </button>
+                {presentLetters.map((letter) => (
+                  <button
+                    type="button"
+                    class="collections-page__chip collections-page__chip--letter"
+                    data-letter={letter}
+                    aria-pressed="false"
+                    aria-label={`只看 ${letter}`}
+                  >
+                    {letter}
+                  </button>
+                ))}
+              </div>
+              <label class="collections-page__select-wrap">
+                <span class="sr-only">按字母筛选</span>
+                <select class="collections-page__select" data-letter-select>
+                  <option value="" selected>
+                    全部字母
+                  </option>
+                  {presentLetters.map((letter) => (
+                    <option value={letter}>{letter}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div
+              class="collections-page__panel"
+              data-filter-panel="status"
+              hidden
+            >
+              <div class="collections-page__chips" data-status-chips>
+                <button
+                  type="button"
+                  class="collections-page__chip"
+                  data-status="all"
+                  aria-pressed="true"
+                >
+                  全部
+                  <span class="collections-page__chip-count">{statusCounts.all}</span>
+                </button>
+                <button
+                  type="button"
+                  class="collections-page__chip"
+                  data-status="has-posts"
+                  aria-pressed="false"
+                >
+                  有文章
+                  <span class="collections-page__chip-count">{statusCounts.hasPosts}</span>
+                </button>
+                <button
+                  type="button"
+                  class="collections-page__chip"
+                  data-status="empty"
+                  aria-pressed="false"
+                >
+                  空合集
+                  <span class="collections-page__chip-count">{statusCounts.empty}</span>
+                </button>
+                <button
+                  type="button"
+                  class="collections-page__chip"
+                  data-status="has-children"
+                  aria-pressed="false"
+                >
+                  有二级夹
+                  <span class="collections-page__chip-count">{statusCounts.hasChildren}</span>
+                </button>
+              </div>
+              <label class="collections-page__select-wrap">
+                <span class="sr-only">按状态筛选</span>
+                <select class="collections-page__select" data-status-select>
+                  <option value="all" selected>
+                    全部（{statusCounts.all}）
+                  </option>
+                  <option value="has-posts">有文章（{statusCounts.hasPosts}）</option>
+                  <option value="empty">空合集（{statusCounts.empty}）</option>
+                  <option value="has-children">有二级夹（{statusCounts.hasChildren}）</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        )
+      }
+    </div>
   </div>
 
   {
     collections.length > 0 ? (
-      <div class="collections-grid">
-        {
-          collections.map(({ meta, url, posts, children }) => (
-            <a
-              href={url}
-              class:list={[
-                "collection-card card-base onload-animation",
-                meta.cover && "collection-card--has-cover",
-              ]}
-              title={`${meta.name} · ${posts.length}`}
-              style={
-                meta.cover
-                  ? `--collection-cover: url('${meta.cover}')`
-                  : undefined
-              }
-            >
-              {
-                meta.emoji && (
-                  <span class="collection-card__emoji" aria-hidden="true">
-                    {meta.emoji}
-                  </span>
-                )
-              }
-              <span class="collection-card__name">{meta.name}</span>
-              <span class="collection-card__desc">{meta.description}</span>
-              <span class="collection-card__count">
-                {
-                  children.length > 0 ? (
-                    <>
-                      {children.length} 个子合集 · {posts.length}{" "}
-                      {i18n(I18nKey.postsCount)}
-                    </>
-                  ) : (
-                    <>
-                      {posts.length} {i18n(I18nKey.postsCount)}
-                    </>
-                  )
-                }
+      <div class="collections-grid" data-collections-grid>
+        {collections.map(({ meta, url, posts, children }) => (
+          <a
+            href={url}
+            class="collection-card collections-overview-tile card-base"
+            data-collection-card
+            data-letter={collectionLetter(meta.name)}
+            data-posts={posts.length}
+            data-children={children.length}
+            title={`${meta.name} · ${posts.length}`}
+          >
+            {meta.emoji && (
+              <span class="collection-card__emoji" aria-hidden="true">
+                {meta.emoji}
               </span>
-            </a>
-          ))
-        }
+            )}
+            <span class="collection-card__name">{meta.name}</span>
+            <span class="collection-card__count">{posts.length}</span>
+          </a>
+        ))}
       </div>
     ) : (
       <div class="card-base px-8 py-12 text-center">
@@ -70,6 +229,10 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
       </div>
     )
   }
+  <p class="collections-page__empty-filter" data-empty-filter hidden>
+    没有匹配的合集
+  </p>
+  </div>
 </MainGridLayout>
 
 <style>
@@ -98,177 +261,416 @@ const totalPosts = collections.reduce((sum, c) => sum + c.posts.length, 0);
     color: var(--text-color-muted, oklch(0.5 0.02 70));
   }
 
-  .collections-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-    gap: 0.9rem;
+  .collections-page__head-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem 1.1rem;
+    flex-wrap: wrap;
   }
 
-  .collection-card {
-	--collection-paper: oklch(0.97 0.015 92);
-	--collection-paper-2: oklch(0.93 0.022 96);
-	--collection-ink: oklch(0.25 0.024 72);
-	--collection-muted: oklch(0.34 0.022 76);
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
+  .collections-page__copy {
+    flex: 0 1 auto;
+    min-width: 8rem;
+  }
+
+  .collections-page__tools {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 0.4rem;
-    min-height: 11.5rem;
-    padding: 1.25rem 1.25rem 1.1rem;
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+
+  .collections-page__mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.12rem;
+    padding: 0.12rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 55%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+  }
+
+  .collections-page__mode-btn {
+    appearance: none;
+    margin: 0;
+    padding: 0.18rem 0.7rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: color-mix(in oklch, var(--content-meta, #666) 90%, transparent);
+    font-size: 0.75rem;
+    font-weight: 650;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .collections-page__mode-btn:hover {
+    color: var(--primary);
+  }
+
+  .collections-page__mode-btn[aria-pressed="true"] {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+  }
+
+  .collections-page__panel {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .collections-page__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.28rem;
+  }
+
+  .collections-page__chip {
+    appearance: none;
+    margin: 0;
+    padding: 0.18rem 0.52rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 78%, var(--line-divider));
+    color: color-mix(in oklch, var(--content-meta, #555) 92%, var(--collection-ink, currentColor));
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1.25;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .collections-page__chip--letter {
+    min-width: 1.55rem;
+    padding-inline: 0.38rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .collections-page__chip:hover {
+    color: var(--primary);
+    border-color: color-mix(in oklch, var(--primary) 34%, var(--line-divider));
+  }
+
+  .collections-page__chip[aria-pressed="true"] {
+    color: var(--primary);
+    background: color-mix(in oklch, var(--primary) 14%, var(--card-bg, #fff));
+    border-color: color-mix(in oklch, var(--primary) 48%, var(--line-divider));
+  }
+
+  .collections-page__chip-count {
+    margin-left: 0.18rem;
+    font-weight: 600;
+    opacity: 0.72;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .collections-page__select-wrap {
+    display: none;
+    width: 100%;
+    max-width: 14rem;
+  }
+
+  .collections-page__select {
+    width: 100%;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.55rem;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+    color: color-mix(in oklch, var(--content-meta, #444) 95%, currentColor);
+    font-size: 0.8rem;
+  }
+
+  .collections-page__empty-filter {
+    margin: 1.2rem 0 0;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .collection-card[hidden],
+  .collections-page__panel[hidden],
+  .collections-page__empty-filter[hidden] {
+    display: none !important;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  :global(.dark) .collections-page__mode,
+  :global(.dark) .collections-page__chip,
+  :global(.dark) .collections-page__select {
+    border-color: color-mix(in oklch, var(--line-divider, #fff) 42%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #222) 82%, transparent);
+    color: color-mix(in oklch, var(--content-meta, #ddd) 92%, white);
+  }
+
+  :global(.dark) .collections-page__mode-btn[aria-pressed="true"],
+  :global(.dark) .collections-page__chip[aria-pressed="true"] {
+    background: color-mix(in oklch, var(--primary) 22%, var(--card-bg, #222));
+    color: color-mix(in oklch, var(--primary) 70%, white);
+    border-color: color-mix(in oklch, var(--primary) 46%, transparent);
+  }
+
+  @media (max-width: 520px) {
+    .collections-page__tools {
+      align-items: stretch;
+      flex-basis: 100%;
+    }
+
+    .collections-page__mode {
+      align-self: flex-end;
+    }
+
+    .collections-page__chips {
+      display: none;
+    }
+
+    .collections-page__select-wrap {
+      display: block;
+      max-width: none;
+    }
+  }
+
+  .collections-grid {
+    display: grid;
+    /* tile-wide-v3: 15.25rem floor, max 3 cols */
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(15.25rem, calc(33.333% - 0.55rem)), 1fr)
+    );
+    gap: 0.8rem;
+  }
+
+  /* 扁卡跟 PostCard 纸片：12px 圆角矩形，不要胶囊，不要主色描边 */
+  .collection-card {
+    --collection-ink: oklch(0.25 0.024 72);
+    --collection-muted: oklch(0.42 0.02 76);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 3.4rem;
+    padding: 0.72rem 0.95rem;
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
+    border-radius: 0.75rem !important;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 42%, transparent);
+    box-shadow: 0 1px 2px color-mix(in oklch, black 4%, transparent);
     transition:
-		transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-		box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-		border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid color-mix(in oklch, var(--line-divider) 78%, transparent);
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease;
   }
 
-	:global(.dark) .collection-card {
-		--collection-paper: oklch(0.19 0.018 82);
-		--collection-paper-2: oklch(0.23 0.022 86);
-		--collection-ink: oklch(0.94 0.012 92);
-		--collection-muted: oklch(0.82 0.014 92);
-	}
-
-  .collection-card--has-cover::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    background-image: var(--collection-cover);
-    background-size: cover;
-    background-position: center top;
-    transform: scale(1.02);
-	filter: brightness(0.92) saturate(0.84) contrast(0.96);
-	transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  :global(.dark) .collection-card {
+    --collection-ink: oklch(0.94 0.012 92);
+    --collection-muted: oklch(0.78 0.014 92);
+    border-color: color-mix(in oklch, var(--line-divider, #fff) 22%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
-  .collection-card--has-cover::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-	/* 图片只负责气氛，文字始终落在同一张高对比“宣纸”安全层上。 */
-	background:
-		linear-gradient(
-			90deg,
-			color-mix(in oklch, var(--collection-paper) 94%, transparent) 0%,
-			color-mix(in oklch, var(--collection-paper) 88%, transparent) 58%,
-			color-mix(in oklch, var(--collection-paper-2) 72%, transparent) 100%
-		),
-		linear-gradient(
-			180deg,
-			color-mix(in oklch, var(--collection-paper) 62%, transparent) 0%,
-			color-mix(in oklch, var(--collection-paper) 86%, transparent) 100%
-		);
-	backdrop-filter: blur(1.25px) saturate(0.82);
-	-webkit-backdrop-filter: blur(1.25px) saturate(0.82);
+  :global(.enable-card-border) .collection-card,
+  :global(.wallpaper-transparent) .collection-card {
+    border-color: color-mix(in oklch, var(--line-divider) 42%, transparent);
+    box-shadow: 0 1px 2px color-mix(in oklch, black 4%, transparent);
+  }
+
+  :global(.dark.enable-card-border) .collection-card,
+  :global(.dark) :global(.wallpaper-transparent) .collection-card {
+    border-color: color-mix(in oklch, var(--line-divider, #fff) 22%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .collection-card__emoji {
-    font-size: 1.6rem;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.05rem;
     line-height: 1;
   }
 
   .collection-card__name {
-    font-size: 1.12rem;
-    font-weight: 800;
-    font-style: normal;
-	color: color-mix(in oklch, var(--primary) 58%, var(--collection-ink));
-    text-decoration: none;
-    letter-spacing: 0.01em;
-	text-shadow: none;
+    flex: 1 1 auto;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: color-mix(in oklch, var(--primary) 48%, var(--collection-ink));
+    white-space: nowrap;
   }
 
   :global(.dark) .collection-card__name {
-	color: color-mix(in oklch, var(--primary) 42%, var(--collection-ink));
-  }
-
-  .collection-card__desc {
-    font-size: 0.85rem;
-    line-height: 1.55;
-    font-weight: 550;
-	color: var(--collection-ink);
-  }
-
-  .collection-card--has-cover .collection-card__desc {
-	color: var(--collection-ink);
-	text-shadow: none;
-  }
-
-  :global(.dark) .collection-card__desc,
-  :global(.dark) .collection-card--has-cover .collection-card__desc {
-	color: var(--collection-ink);
-    text-shadow: none;
+    color: color-mix(in oklch, var(--primary) 38%, var(--collection-ink));
   }
 
   .collection-card__count {
-    margin-top: auto;
-    padding-top: 0.35rem;
+    flex: none;
+    display: flex;
+    align-items: center;
     font-size: 0.78rem;
-	color: var(--collection-muted);
+    font-weight: 650;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
-  }
-
-  .collection-card--has-cover .collection-card__count {
-    align-self: flex-start;
-    margin-top: auto;
-    padding: 0.22rem 0.55rem;
-    border-radius: 999px;
-    font-weight: 700;
-	color: var(--collection-ink);
-	background: color-mix(in oklch, var(--collection-paper) 92%, transparent);
-	border: 1px solid color-mix(in oklch, var(--collection-ink) 14%, transparent);
-	box-shadow: 0 1px 2px color-mix(in oklch, var(--collection-ink) 9%, transparent);
-  }
-
-  :global(.dark) .collection-card--has-cover .collection-card__count {
-	color: var(--collection-ink);
-	background: color-mix(in oklch, var(--collection-paper-2) 90%, transparent);
-	border-color: color-mix(in oklch, var(--collection-ink) 18%, transparent);
+    color: var(--collection-muted);
   }
 
   @media (hover: hover) {
     .collection-card:hover {
-      transform: translateY(-2px);
-      border-color: color-mix(in oklch, var(--primary) 34%, var(--line-divider));
-      box-shadow: 0 0.45rem 1.1rem color-mix(in oklch, var(--primary) 10%, transparent);
+      border-color: color-mix(in oklch, var(--line-divider) 55%, transparent);
+      box-shadow: 0 2px 8px -4px color-mix(in oklch, black 12%, transparent);
     }
 
-    .collection-card--has-cover:hover::before {
-      transform: scale(1.06);
+    :global(.dark) .collection-card:hover {
+      border-color: color-mix(in oklch, var(--line-divider, #fff) 32%, transparent);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
   }
 
-	.collection-card:focus-visible {
-		outline: 2px solid var(--primary);
-		outline-offset: 3px;
-	}
+  .collection-card:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 
-	.collection-card:active {
-		transform: translateY(0);
-	}
-
-	@media (prefers-contrast: more) {
-		.collection-card--has-cover::after {
-			background: color-mix(in oklch, var(--collection-paper) 96%, transparent);
-			backdrop-filter: none;
-			-webkit-backdrop-filter: none;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.collection-card,
-		.collection-card--has-cover::before {
-			transition: none;
-		}
-
-		.collection-card:hover,
-		.collection-card--has-cover:hover::before {
-			transform: none;
-		}
-	}
+  @media (prefers-reduced-motion: reduce) {
+    .collection-card {
+      transition: none;
+    }
+  }
 </style>
+
+<script is:inline data-swup-ignore-script>
+  (function () {
+    function bootCollectionsFilter() {
+      var root = document.querySelector("[data-collections-page]");
+      if (!root || root.dataset.filterBound === "true") return;
+      root.dataset.filterBound = "true";
+
+      var mode = "letter";
+      var letter = "";
+      var status = "all";
+
+      var modeBtns = root.querySelectorAll("[data-filter-mode]");
+      var letterBtns = root.querySelectorAll("[data-letter-chips] [data-letter]");
+      var statusBtns = root.querySelectorAll("[data-status-chips] [data-status]");
+      var letterSelect = root.querySelector("[data-letter-select]");
+      var statusSelect = root.querySelector("[data-status-select]");
+      var emptyHint = root.querySelector("[data-empty-filter]");
+
+      function setPressed(nodes, attr, value) {
+        nodes.forEach(function (btn) {
+          btn.setAttribute("aria-pressed", btn.getAttribute(attr) === value ? "true" : "false");
+        });
+      }
+
+      function setMode(next) {
+        mode = next === "status" ? "status" : "letter";
+        if (mode === "letter") status = "all";
+        else letter = "";
+        modeBtns.forEach(function (btn) {
+          var on = btn.getAttribute("data-filter-mode") === mode;
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        root.querySelectorAll("[data-filter-panel]").forEach(function (panel) {
+          panel.hidden = panel.getAttribute("data-filter-panel") !== mode;
+        });
+        if (letterSelect) letterSelect.value = letter;
+        if (statusSelect) statusSelect.value = status;
+        apply();
+      }
+
+      function apply() {
+        var cards = root.querySelectorAll("[data-collection-card]");
+        var shown = 0;
+
+        cards.forEach(function (card) {
+          var cardLetter = card.getAttribute("data-letter") || "";
+          var posts = Number(card.getAttribute("data-posts") || 0);
+          var children = Number(card.getAttribute("data-children") || 0);
+          var ok = true;
+          if (mode === "letter" && letter && cardLetter !== letter) ok = false;
+          if (mode === "status") {
+            if (status === "has-posts" && posts === 0) ok = false;
+            if (status === "empty" && posts > 0) ok = false;
+            if (status === "has-children" && children === 0) ok = false;
+          }
+          card.hidden = !ok;
+          if (ok) shown += 1;
+        });
+
+        if (emptyHint) emptyHint.hidden = shown > 0;
+        setPressed(letterBtns, "data-letter", letter);
+        setPressed(statusBtns, "data-status", status);
+        if (letterSelect) letterSelect.value = letter;
+        if (statusSelect) statusSelect.value = status;
+      }
+
+      modeBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setMode(btn.getAttribute("data-filter-mode") || "letter");
+        });
+      });
+
+      letterBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var next = btn.getAttribute("data-letter") || "";
+          letter = letter === next ? "" : next;
+          apply();
+        });
+      });
+
+      statusBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          status = btn.getAttribute("data-status") || "all";
+          apply();
+        });
+      });
+
+      if (letterSelect) {
+        letterSelect.addEventListener("change", function () {
+          letter = letterSelect.value || "";
+          apply();
+        });
+      }
+
+      if (statusSelect) {
+        statusSelect.addEventListener("change", function () {
+          status = statusSelect.value || "all";
+          apply();
+        });
+      }
+
+      apply();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootCollectionsFilter);
+    } else {
+      bootCollectionsFilter();
+    }
+    document.addEventListener("swup:contentReplaced", bootCollectionsFilter);
+    document.addEventListener("swup:page:view", bootCollectionsFilter);
+  })();
+</script>

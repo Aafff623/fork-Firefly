@@ -14,9 +14,8 @@ export type CollectionMeta = {
 	 */
 	cover?: string;
 	/**
-	 * 父合集 slug（二级合集专用）。
-	 * 有 parent → 二级：总览页不单独出场，挂在一级详情页下。
-	 * 无 parent → 一级：出现在 `/collections/` 卡片墙。
+	 * 父合集 slug。有 parent 的不出现在总览墙。
+	 * 常规是二级（工具夹 / 方法夹）；极客时间课表是既有三级，挂在二级「极客时间」下。
 	 */
 	parent?: string;
 };

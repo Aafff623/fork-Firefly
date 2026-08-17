@@ -77,12 +77,24 @@ export async function getCollections(): Promise<CollectionEntryWithMeta[]> {
 		parent.children.push(entry);
 	}
 
-	for (const entry of bySlug.values()) {
-		if (entry.children.length === 0) continue;
-		entry.posts = mergeUniquePosts([
-			entry.posts,
-			...entry.children.map((c) => c.posts),
-		]);
+	/** 只合并直接子夹，但自下而上多趟，让极客时间课表能滚到「课程推荐」墙。 */
+	const ownPosts = new Map(
+		[...bySlug.entries()].map(([slug, entry]) => [slug, entry.posts]),
+	);
+	for (let pass = 0; pass < 8; pass++) {
+		let changed = false;
+		for (const entry of bySlug.values()) {
+			if (entry.children.length === 0) continue;
+			const merged = mergeUniquePosts([
+				ownPosts.get(entry.meta.slug) ?? [],
+				...entry.children.map((c) => c.posts),
+			]);
+			if (merged.length !== entry.posts.length) {
+				entry.posts = merged;
+				changed = true;
+			}
+		}
+		if (!changed) break;
 	}
 
 	return collectionsConfig.items
@@ -90,12 +102,12 @@ export async function getCollections(): Promise<CollectionEntryWithMeta[]> {
 		.filter((c): c is CollectionEntryWithMeta => c != null);
 }
 
-/** 总览页只用一级合集（无 parent）；0 篇不出卡，配置项保留 */
+/** 总览页只用一级合集（无 parent）。空频道也出卡，方便先立牌子再填文。 */
 export async function getTopLevelCollections(): Promise<
 	CollectionEntryWithMeta[]
 > {
 	const all = await getCollections();
-	return all.filter((c) => !c.meta.parent && c.posts.length > 0);
+	return all.filter((c) => !c.meta.parent);
 }
 
 /** 按 slug 取单个合集；未登记返回 null（详情页用于 404 守卫） */
