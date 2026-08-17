@@ -62,7 +62,7 @@ Content Collections（`src/content.config.ts`）：
 
 **草稿箱 ≠ `draft: true` demo**：箱内正文永不入库；主题示例帖 `posts/draft.md` 可跟踪且仅靠 FM 藏生产首页。见 `AGENTS.md` / `docs/agents/workflow.md`。
 
-**2026-08 内容大裁员**：正式帖已从 `src/content/posts/` 撤下；生产列表当前只剩主题 demo（均为 `draft: true`，线上不出现）。对应动态改为「这篇已撤」。合集频道牌子仍在，篇数可为 0。后续新作按四渠重新进站。
+**2026-08 内容收束**：正式帖仍在库内。8-17 曾误把工作区整批删除推进生产，已用 `150403e7` 撤回。园主要的是少发、留 Zcode 等指定篇，不是空站；未点名的篇目先全部恢复，再按名单收。
 
 ### 现行分类词表（发帖门禁）
 
