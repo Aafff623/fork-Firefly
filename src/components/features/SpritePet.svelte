@@ -14,6 +14,10 @@ import {
 	resolvePetIdForPath,
 } from "@/lib/pets/builtinPets";
 import {
+	createPetRendererGate,
+	shouldSkipPetSheet,
+} from "@/lib/pets/petRendererGate";
+import {
 	getAtlas,
 	getPetAnimationDurationMs,
 	getPetAnimationPlaybackStep,
@@ -164,6 +168,20 @@ const CLICK_POOL_FEET: PetAnimationState[] = ["running", "waving", "waiting"];
 
 function isPostPath(pathname = window.location.pathname) {
 	return /\/posts\//.test(pathname);
+}
+
+/** 文章页窄屏不拉 spritesheet（门在 petRendererGate；生命周期仍要绑） */
+function livePetRendererContext() {
+	return {
+		hideOnMobilePost,
+		pathname: window.location.pathname,
+		viewportWidth: window.innerWidth,
+		mobileBreakpoint,
+	};
+}
+
+function shouldSkipPetRenderer() {
+	return shouldSkipPetSheet(livePetRendererContext());
 }
 
 /** 文章页是否用「文档绝对坐标」钉页（否：始终 position:fixed 贴视口） */
@@ -506,6 +524,7 @@ function waitMs(ms: number) {
 const petSheetLoaders = new Map<BuiltinPetId, Promise<void>>();
 
 function ensurePetSheetLoaded(petId: BuiltinPetId): Promise<void> {
+	if (shouldSkipPetRenderer()) return Promise.resolve();
 	const cached = petSheetLoaders.get(petId);
 	if (cached) return cached;
 	const sheet = findBuiltinPet(petId);
@@ -1366,14 +1385,16 @@ function defaultStyle(): string {
 	return `${side}bottom:${oy}px;top:auto;`;
 }
 
-function positionedStyle(): string {
-	if (dockMode === "card") {
-		// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
-		return `left:${dockFixedX}px;top:${dockFixedY}px;right:auto;bottom:auto;`;
+	function positionedStyle(): string {
+		// 定位走 transform（translate3d 合成层）：CLS 免计分 + 漫游更顺。
+		// 根元素基点固定 left:0/top:0，posX/posY 语义与原 left/top 完全一致
+		if (dockMode === "card") {
+			// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
+			return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${dockFixedX}px, ${dockFixedY}px, 0);`;
+		}
+		if (posX === null || posY === null) return defaultStyle();
+		return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${posX}px, ${posY}px, 0);`;
 	}
-	if (posX === null || posY === null) return defaultStyle();
-	return `left:${posX}px;top:${posY}px;right:auto;bottom:auto;`;
-}
 
 function flushPendingLook() {
 	lookRaf = 0;
@@ -1707,24 +1728,56 @@ function mountPetToBody(el: HTMLElement | null) {
 }
 
 onMount(() => {
-	void preloadActivePetSheet();
-	void syncPetFromPath();
-	const hadStored = loadStoredPosition();
-	if (isPostViewportMode()) {
-		// 文章页忽略主页存档坐标，直接钉视口角
-		applyPostViewportLock();
-	} else if (!hadStored) {
-		applyBrowseDefaultPlacement();
-		scheduleBrowseDefaultPlacement();
-	}
-	mountPetToBody(rootEl);
+	updateHidden();
 
+	const bootRenderer = () => {
+		// skip 恢复时先把皮同步对齐当前路由（同步赋值、无换班动画）：模板一渲染
+		// 就是正确的 spritesheet URL，避免先拉默认皮、换皮再拉文章皮的双重下载
+		activePetId = resolveActivePetId(
+			visitorSelection,
+			window.location.pathname,
+		);
+		routePathname = window.location.pathname;
+		void preloadActivePetSheet();
+		void syncPetFromPath();
+		const hadStored = loadStoredPosition();
+		if (isPostViewportMode()) {
+			applyPostViewportLock();
+		} else if (!hadStored) {
+			applyBrowseDefaultPlacement();
+			scheduleBrowseDefaultPlacement();
+		}
+		mountPetToBody(rootEl);
+		if (effectiveMotion) {
+			playTransient(
+				"waving",
+				2,
+				() => {
+					setTimeout(() => reactToRoute(), 120);
+				},
+				"route",
+			);
+		} else {
+			reactToRoute();
+		}
+		resetIdleTimer();
+		if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
+			startRoamLoop();
+		}
+	};
+
+	const rendererGate = createPetRendererGate(bootRenderer);
+	const applyRendererGate = () =>
+		rendererGate.evaluate(livePetRendererContext());
+
+	// 先读 reduced-motion 再放行首启，避免 waving 前导读到未初始化的默认值
 	const media = window.matchMedia(REDUCED_MOTION_QUERY);
 	prefersReducedMotion = media.matches;
 	const onMotion = (e: MediaQueryListEvent) => {
 		prefersReducedMotion = e.matches;
 	};
 	media.addEventListener("change", onMotion);
+	applyRendererGate();
 
 	// 亮暗色切换：监听 html.dark，滤镜由 CSS 过渡，再给一次轻脉冲
 	let lastDark = document.documentElement.classList.contains("dark");
@@ -1752,6 +1805,7 @@ onMount(() => {
 
 	const onResize = () => {
 		updateHidden();
+		applyRendererGate();
 		if (dockMode === "free" && !dragging && posX !== null && posY !== null) {
 			if (isPostViewportMode()) {
 				// 文章页是视口坐标：按窗口夹紧
@@ -1840,6 +1894,9 @@ onMount(() => {
 		}
 	};
 	const onSwupArrive = () => {
+		updateHidden();
+		applyRendererGate();
+		if (shouldSkipPetRenderer()) return;
 		observeFooter();
 		void (async () => {
 			await waitMs(80);
@@ -2016,18 +2073,6 @@ onMount(() => {
 		document.documentElement.classList.contains("sidebar-imbalanced")
 	) {
 		enterBalancePark();
-	}
-
-	if (effectiveMotion) {
-		playTransient("waving", 2, () => {
-			setTimeout(() => reactToRoute(), 120);
-		}, "route");
-	} else {
-		reactToRoute();
-	}
-	resetIdleTimer();
-	if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
-		startRoamLoop();
 	}
 
 	return () => {

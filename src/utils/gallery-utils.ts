@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { galleryConfig } from "@/config/galleryConfig";
 import type { GalleryAlbum, GalleryPhotoMeta } from "@/types/galleryConfig";
 import { url } from "@/utils/url-utils";
 
@@ -11,10 +12,11 @@ function withBase(assetPath: string): string {
 	const normalizedPath = assetPath.startsWith("/")
 		? assetPath
 		: `/${assetPath}`;
-	const base = import.meta.env.BASE_URL || "/";
+	const base = import.meta.env?.BASE_URL || "/";
 	if (base !== "/" && normalizedPath.startsWith(base)) {
 		return normalizedPath;
 	}
+	if (!base || base === "/") return normalizedPath;
 	return url(normalizedPath);
 }
 
@@ -126,6 +128,37 @@ export function scanAlbumPhotoEntries(albumId: string): GalleryPhotoEntry[] {
  */
 export function scanAlbumPhotos(albumId: string): string[] {
 	return scanAlbumPhotoEntries(albumId).map((e) => e.src);
+}
+
+/**
+ * 无限画布同源图：本地相册 + public/gallery/_demo/artworks（外链不进 WebGL）
+ */
+export function listExplorerPhotos(): string[] {
+	const localAlbumPhotos = galleryConfig.albums.flatMap((album) =>
+		scanAlbumPhotoEntries(album.id)
+			.map((e) => e.src)
+			.filter((src) => !/^https?:\/\//i.test(src)),
+	);
+	const demoDir = path.join(
+		process.cwd(),
+		"public",
+		"gallery",
+		"_demo",
+		"artworks",
+	);
+	const demoArtworks = fs.existsSync(demoDir)
+		? fs
+				.readdirSync(demoDir)
+				.filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
+				.sort()
+				.map((f) => withBase(`/gallery/_demo/artworks/${f}`))
+		: [];
+	if (localAlbumPhotos.length + demoArtworks.length > 0) {
+		return [...localAlbumPhotos, ...demoArtworks];
+	}
+	return Array.from({ length: 7 }, (_, i) =>
+		withBase(`/gallery/_demo/placeholders/ph-0${i + 1}.svg`),
+	);
 }
 
 /**

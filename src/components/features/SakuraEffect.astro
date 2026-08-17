@@ -565,7 +565,16 @@
 			enable: true,
 		});
 
-		if (pinned) {
+		// 移动端 / 省流量模式不自动启动（Worker + rAF + 贴图的常驻成本）；
+		// 桌面与手动开关不受影响——设置面板 sakuraToggle 仍可随时开
+		const skipAutoStart =
+			window.matchMedia("(max-width: 768px)").matches ||
+			(navigator as Navigator & { connection?: { saveData?: boolean } })
+				.connection?.saveData === true;
+
+		if (skipAutoStart) {
+			document.documentElement.setAttribute("data-sakura-enabled", "false");
+		} else if (pinned) {
 			initSakura(cfg);
 			document.documentElement.setAttribute("data-sakura-enabled", "true");
 		} else {

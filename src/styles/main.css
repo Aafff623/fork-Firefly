@@ -15,11 +15,9 @@
 @import './post-card-mode.css';
 @import './post-card-letter.css';
 @import './recommend-index.css';
-@import './site-footer.css';
 @import './text-voice.css';
 @import './announcement-press.css';
 @import './gift-surprise.css';
-@import './guestbook-cicada.css';
 @import './hero-bg.css';
 
 @plugin '@tailwindcss/typography';
@@ -270,6 +268,14 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
         @apply rounded-(--radius-large) overflow-hidden bg-(--card-bg-transparent) transition-colors duration-150;
     }
 
+    /* 合集总览扁卡：圆角必须写在全局表。
+       总览页 scoped CSS 会被 Swup updateHead 卸掉；返回时只剩 .card-base 的
+       --radius-large，矮卡看起来像胶囊。这条一直在 head 里，切页卸不掉。 */
+    #swup-container a.collection-card.card-base,
+    #swup-container a.collections-overview-tile {
+        border-radius: 0.75rem !important;
+    }
+
     /* LQIP 占位渐变 */
     .lqip-placeholder {
         z-index: 0;
@@ -376,7 +382,9 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
         @apply top-21 rounded-(--radius-large) overflow-hidden bg-(--card-bg) transition-colors duration-150 shadow-xl border border-black/5 dark:border-white/10
     }
     .float-panel-closed {
-        @apply -translate-y-1 opacity-0 pointer-events-none
+        /* invisible：收起面板彻底退出渲染与 CLS 计分（opacity-0 元素被脚本
+           收起时仍可能产生 layout-shift 记录，visibility 才真正摘除） */
+        @apply -translate-y-1 opacity-0 pointer-events-none invisible
     }
     .float-panel-closed * {
         @apply pointer-events-none

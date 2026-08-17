@@ -1,6 +1,4 @@
 ---
-import fs from "node:fs";
-import path from "node:path";
 import { Icon } from "astro-icon/components";
 import AlbumCard from "@/components/pages/gallery/AlbumCard.astro";
 import InfiniteCanvasLauncher from "@/components/pages/gallery/InfiniteCanvasLauncher.svelte";
@@ -11,20 +9,10 @@ import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import {
 	getAlbumCover,
+	listExplorerPhotos,
 	scanAlbumPhotoEntries,
 } from "@/utils/gallery-utils";
 import { url } from "@/utils/url-utils";
-
-/** 无限画布专用：同源 demo 画库（避免外链 CORS 导致 WebGL 只剩 1 张图） */
-function scanDemoArtworks(): string[] {
-	const dir = path.join(process.cwd(), "public", "gallery", "_demo", "artworks");
-	if (!fs.existsSync(dir)) return [];
-	return fs
-		.readdirSync(dir)
-		.filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
-		.sort()
-		.map((f) => url(`/gallery/_demo/artworks/${f}`));
-}
 
 // 检查页面是否启用
 if (!siteConfig.pages.gallery) {
@@ -43,17 +31,9 @@ const albums = galleryConfig.albums.map((album) => {
 });
 
 const allPhotos = albums.flatMap((a) => a.photos);
-const demoPlaceholders = Array.from({ length: 7 }, (_, i) =>
-	url(`/gallery/_demo/placeholders/ph-0${i + 1}.svg`),
-);
 
-const localAlbumPhotos = allPhotos.filter((p) => !/^https?:\/\//i.test(p));
-const demoArtworks = scanDemoArtworks();
-// 画布优先：本地相册图 + 原版风格 demo 画库（密度/多样性）；外链不进 WebGL
-const explorerPhotos =
-	localAlbumPhotos.length + demoArtworks.length > 0
-		? [...localAlbumPhotos, ...demoArtworks]
-		: demoPlaceholders;
+// 无限画布照片清单：与 /gallery/explorer.json 同源（本地相册 + demo 画库；外链不进 WebGL）
+const explorerPhotos = listExplorerPhotos();
 const columnWidth = galleryConfig.columnWidth || 240;
 const homeMasonryEnabled = galleryConfig.homeMasonry?.enabled !== false;
 const homeMasonryMax = galleryConfig.homeMasonry?.maxItems ?? 48;
@@ -225,8 +205,8 @@ const canvasLabels = {
               {i18n(I18nKey.galleryPhotoWall)}
             </h2>
             <InfiniteCanvasLauncher
-              client:load
-              photos={explorerPhotos}
+              client:idle
+              photosUrl={url("/gallery/explorer.json")}
               labels={canvasLabels}
             />
           </div>

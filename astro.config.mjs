@@ -150,7 +150,9 @@ export default defineConfig({
 			],
 			smoothScrolling: false,
 			cache: true,
-			preload: true,
+			// 视口内链接预取：点击即缓存命中（软导航提速）。插件 v3.2.11 内建
+			// saveData/effectiveType 带宽感知 + 节流，弱网自动退避不抢 LCP 带宽
+			preload: { hover: true, visible: true },
 			accessibility: true,
 			updateHead: true,
 			updateBodyClass: false,

@@ -31,6 +31,7 @@ declare global {
 		closeAnnouncement: () => void;
 		// __fireflyMusic type is defined in global.d.ts
 		semifullScrollHandler?: (() => void) | undefined;
+		semifullNavbar?: HTMLElement | null | undefined;
 		initSemifullScrollDetection?: () => void;
 	}
 }

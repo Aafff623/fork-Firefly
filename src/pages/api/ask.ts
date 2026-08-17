@@ -15,11 +15,51 @@ import {
 
 export const prerender = false;
 
-const MAXKB_BASE = (
-	import.meta.env.MAXKB_API_BASE ||
-	process.env.MAXKB_API_BASE ||
-	"http://127.0.0.1:8080/chat/api"
-).replace(/\/$/, "");
+/**
+ * 上游基址在模块加载期一次性校验：协议仅 http(s)、禁 userinfo、
+ * 主机白名单（回环/内网默认放行；公网上游需在 MAXKB_ALLOWED_UPSTREAM_HOSTS
+ * 显式登记），杜绝环境变量被改成任意外联的 SSRF 面。
+ */
+const MAXKB_BASE = (() => {
+	const raw = (
+		import.meta.env.MAXKB_API_BASE ||
+		process.env.MAXKB_API_BASE ||
+		"http://127.0.0.1:8080/chat/api"
+	).replace(/\/+$/, "");
+	const parsed = new URL(raw);
+	if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+		throw new Error(`[ask] MAXKB_API_BASE 协议非法: ${parsed.protocol}`);
+	}
+	if (parsed.username || parsed.password) {
+		throw new Error("[ask] MAXKB_API_BASE 不允许携带 userinfo");
+	}
+	const host = parsed.hostname.toLowerCase();
+	const privateOrLoopback =
+		host === "localhost" ||
+		host === "::1" ||
+		/^127\./.test(host) ||
+		/^10\./.test(host) ||
+		/^192\.168\./.test(host) ||
+		/^172\.(1[6-9]|2\d|3[01])\./.test(host);
+	const extraAllowed = (process.env.MAXKB_ALLOWED_UPSTREAM_HOSTS || "")
+		.split(",")
+		.map((s) => s.trim().toLowerCase())
+		.filter(Boolean);
+	if (!privateOrLoopback && !extraAllowed.includes(host)) {
+		throw new Error(
+			`[ask] 上游主机不在白名单: ${host}（回环/内网默认放行；公网请在 MAXKB_ALLOWED_UPSTREAM_HOSTS 登记）`,
+		);
+	}
+	return raw;
+})();
+
+/** 上游路径只接受站内字面量形态，拒绝协议头/双斜杠等注入 */
+function upstreamUrl(path: string): string {
+	if (!/^\/[A-Za-z0-9\-_/.]*$/.test(path)) {
+		throw new Error(`[ask] 非法上游路径: ${path.slice(0, 32)}`);
+	}
+	return `${MAXKB_BASE}${path}`;
+}
 
 const ACCESS_TOKEN =
 	(import.meta.env.MAXKB_ACCESS_TOKEN as string | undefined) ||
@@ -66,39 +106,38 @@ export const GET: APIRoute = async () => {
 	return new Response(null, { status: 405 });
 };
 
-async function maxkbFetch(
-	path: string,
-	init: RequestInit = {},
+/**
+ * 上游 JSON 响应解析（fetch 由调用方以 upstreamUrl(字面量) 直连发起，
+ * 不做参数间接层——URL 构造留在调用点，可静态审计）。
+ */
+async function readUpstreamJson(
+	res: Response,
 ): Promise<{ ok: boolean; status: number; data: unknown }> {
-	const url = `${MAXKB_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+	const text = await res.text();
+	let data: unknown = null;
 	try {
-		const res = await fetch(url, {
-			...init,
-			headers: {
-				Accept: "application/json",
-				...(init.headers || {}),
-			},
-		});
-		const text = await res.text();
-		let data: unknown = null;
-		try {
-			data = text ? JSON.parse(text) : null;
-		} catch {
-			data = { code: 500, message: text.slice(0, 200) || "非 JSON 响应" };
-		}
-		return { ok: res.ok, status: res.status, data };
-	} catch (err) {
-		const message =
-			err instanceof Error ? err.message : "无法连接 MaxKB（127.0.0.1:8080）";
-		return {
-			ok: false,
-			status: 502,
-			data: {
-				code: 502,
-				message: `MaxKB 不可达：${message}。请确认 Docker Desktop 已开且 maxkb 容器在跑。`,
-			},
-		};
+		data = text ? JSON.parse(text) : null;
+	} catch {
+		data = { code: 500, message: text.slice(0, 200) || "非 JSON 响应" };
 	}
+	return { ok: res.ok, status: res.status, data };
+}
+
+function upstreamUnreachable(err: unknown): {
+	ok: boolean;
+	status: number;
+	data: { code: number; message: string };
+} {
+	const message =
+		err instanceof Error ? err.message : "无法连接 MaxKB（127.0.0.1:8080）";
+	return {
+		ok: false,
+		status: 502,
+		data: {
+			code: 502,
+			message: `MaxKB 不可达：${message}。请确认 Docker Desktop 已开且 maxkb 容器在跑。`,
+		},
+	};
 }
 
 /** POST /api/ask/?action=… */
@@ -109,11 +148,22 @@ export const POST: APIRoute = async ({ request, url }) => {
 	const action = url.searchParams.get("action") || "session";
 
 	if (action === "session") {
-		const auth = await maxkbFetch("/auth/anonymous", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ access_token: ACCESS_TOKEN }),
-		});
+		// URL = 已校验基址 + 字面量路径（与 chat 分支同构，可静态审计）
+		const authUrl = `${MAXKB_BASE}/auth/anonymous`;
+		let auth: { ok: boolean; status: number; data: unknown };
+		try {
+			const authRes = await fetch(authUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "application/json",
+				},
+				body: JSON.stringify({ access_token: ACCESS_TOKEN }),
+			});
+			auth = await readUpstreamJson(authRes);
+		} catch (err) {
+			auth = upstreamUnreachable(err);
+		}
 		const authBody = auth.data as { code?: number; message?: string; data?: string };
 		if (!auth.ok || authBody?.code !== 200 || !authBody.data) {
 			return json(
@@ -125,10 +175,20 @@ export const POST: APIRoute = async ({ request, url }) => {
 			);
 		}
 
-		const open = await maxkbFetch("/open", {
-			method: "GET",
-			headers: { Authorization: `Bearer ${authBody.data}` },
-		});
+		const openUrl = `${MAXKB_BASE}/open`;
+		let open: { ok: boolean; status: number; data: unknown };
+		try {
+			const openRes = await fetch(openUrl, {
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${authBody.data}`,
+				},
+			});
+			open = await readUpstreamJson(openRes);
+		} catch (err) {
+			open = upstreamUnreachable(err);
+		}
 		const openBody = open.data as { code?: number; message?: string; data?: string };
 		if (!open.ok || openBody?.code !== 200 || !openBody.data) {
 			return json(
@@ -190,6 +250,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 		if (!token || !chatId || !message) {
 			return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
 		}
+		// chatId 会拼进上游 URL 路径：严格字符白名单 + 长度上限，杜绝路径形态注入
+		if (!/^[A-Za-z0-9\-_]{1,64}$/.test(chatId)) {
+			return json({ code: 400, message: "chatId 格式非法" }, 400);
+		}
 
 		const intent: AskIntent =
 			body.intent === "recent"
@@ -203,11 +267,12 @@ export const POST: APIRoute = async ({ request, url }) => {
 			body.persona ||
 			(body.mode === "deep" ? "scholar" : "guide");
 		const prompt = buildAskPrompt(message, hits, intent, persona);
-		const upstreamUrl = `${MAXKB_BASE}/chat_message/${encodeURIComponent(chatId)}`;
+		// chatId 已过严格字符白名单 + upstreamUrl 路径校验双重防线
+		const upstreamUrlStr = upstreamUrl(`/chat_message/${encodeURIComponent(chatId)}`);
 
 		let upstream: Response;
 		try {
-			upstream = await fetch(upstreamUrl, {
+			upstream = await fetch(upstreamUrlStr, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

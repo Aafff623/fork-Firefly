@@ -86,6 +86,33 @@
   line-height: 0;
 }
 
+/* 加载失败提示：与「暂无相册」空态区分，紧贴入口按钮出现 */
+.infinite-canvas-load-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid color-mix(in oklab, #ef4444 35%, var(--line-divider));
+  border-radius: 0.6rem;
+  background: color-mix(in oklab, #ef4444 8%, var(--card-bg));
+  color: #b91c1c;
+  font-size: 0.8rem;
+}
+
+:is(.dark) .infinite-canvas-load-error {
+  color: #fca5a5;
+}
+
+.infinite-canvas-load-error button {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--line-divider);
+  border-radius: 0.45rem;
+  background: transparent;
+  color: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
 .infinite-canvas-fullscreen {
   position: fixed;
   inset: 0;

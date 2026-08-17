@@ -63,7 +63,7 @@ const enablePoster = siteConfig.post.sharePoster !== false;
             <span data-share-copy-label>{i18n(I18nKey.copyLink)}</span>
           </button>
           <SharePoster
-            client:load
+            client:visible
             title={title}
             author={author}
             description={description}

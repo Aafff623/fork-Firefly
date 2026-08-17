@@ -3,6 +3,8 @@ import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
 import GuestbookCicada from "@/components/pages/guestbook/GuestbookCicada.svelte";
+// 留言板蝉鸣画布样式：页面级引入（原先经 main.css 全站携带）
+import "@/styles/guestbook-cicada.css";
 import { Icon } from "astro-icon/components";
 import { commentConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";

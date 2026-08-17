@@ -11,12 +11,16 @@ import RepelText from "@components/features/RepelText.astro";
 import MusicManager from "@components/features/MusicManager.astro";
 import SakuraEffect from "@components/features/SakuraEffect.astro";
 import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
+// V7：页脚样式异步加载（纯手写 CSS、仅页底 Footer 使用）——不占首屏渲染阻塞
+import footerStyles from "@/styles/site-footer.css?url";
 
 import {
 	analyticsConfig,
 	backgroundWallpaper,
 	displaySettingsConfig,
 	expressiveCodeConfig,
+	commentConfig,
+	musicPlayerConfig,
 	profileConfig,
 	siteConfig,
 } from "@/config";
@@ -103,6 +107,14 @@ const siteLang = lang.replace("_", "-");
 >
   <head>
     <meta charset="UTF-8" />
+    {commentConfig.waline?.serverURL && (
+      <link rel="preconnect" href={commentConfig.waline.serverURL} crossorigin />
+    )}
+    {/* unpkg：Waline 表情包图片源 */}
+    <link rel="preconnect" href="https://unpkg.com" />
+    {/* V7：页脚样式异步（print→all 切换法），noscript 兜底无 JS 场景 */}
+    <link rel="stylesheet" href={footerStyles} media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href={footerStyles} /></noscript>
     {analyticsConfig?.googleAnalyticsId && (
             <GoogleAnalytics analyticsId={analyticsConfig.googleAnalyticsId} />
     )}
@@ -194,6 +206,10 @@ const siteLang = lang.replace("_", "-");
       >
         (function() {
           const domains = JSON.parse(noReferrerDomains);
+          // C3：pattern 正则一次预编译（原实现对每张动态图片 × 每个 pattern 重建 RegExp）
+          const domainRegexes = domains.map(function(pattern) {
+            return new RegExp('^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+          });
 
           // 域名匹配函数，支持通配符
           function matchesDomain(urlStr, patterns) {
@@ -201,9 +217,7 @@ const siteLang = lang.replace("_", "-");
               const urlObj = new URL(urlStr);
               const hostname = urlObj.hostname;
 
-              return patterns.some(function(pattern) {
-                const regexPattern = pattern.replace(/\./g, '\\.').replace(/\*/g, '.*');
-                const regex = new RegExp('^' + regexPattern + '$');
+              return domainRegexes.some(function(regex) {
                 return regex.test(hostname);
               });
             } catch (e) {
@@ -682,7 +696,7 @@ const siteLang = lang.replace("_", "-");
     <!-- 页面顶部渐变高光效果 - 只在full和semifull模式下显示 -->
     {shouldShowTopHighlight && <div class="top-gradient-highlight" />}
     <ConfigCarrier />
-    <MusicManager />
+    {musicPlayerConfig.enable !== false && <MusicManager />}
     <slot />
 
 
@@ -699,6 +713,54 @@ const siteLang = lang.replace("_", "-");
         </>
       )
     }
+
+    <script>
+      // V7 hero 大图懒换（friends/guestbook/dynamic 等 .hero-bg 使用方）：
+      // 首绘先用渐变兜底，LCP 落定 + idle 后再注回 --hero-img 真图，
+      // 1.7-2.8MB 的 hero GIF 不再抢占首屏关键路径；swup 换页后重扫
+      const armHeroBgDeferral = () => {
+        const els = document.querySelectorAll(
+          ".hero-bg:not([data-hero-armed])",
+        );
+        if (!els.length) return;
+        const restore = (el: Element) => {
+          el.setAttribute("data-hero-armed", "done");
+          const val = (el as HTMLElement).dataset.heroImg;
+          if (!val) return;
+          (el as HTMLElement).style.setProperty("--hero-img", val);
+          el.classList.remove("hero-img-deferred");
+        };
+        els.forEach((el) => {
+          const val = getComputedStyle(el as HTMLElement)
+            .getPropertyValue("--hero-img")
+            .trim();
+          el.setAttribute("data-hero-armed", "pending");
+          if (!val || !val.includes("url(")) return; // 无底图使用方不处理
+          (el as HTMLElement).dataset.heroImg = val;
+          el.classList.add("hero-img-deferred");
+          // 兜底图先行渲染；真图在 idle 后再拉（弱网下 GIF 到达晚也不挡首屏）
+          const schedule =
+            "requestIdleCallback" in window
+              ? (cb: () => void) =>
+                  (window as unknown as {
+                    requestIdleCallback: (
+                      cb: () => void,
+                      o?: { timeout: number },
+                    ) => number;
+                  }).requestIdleCallback(cb, { timeout: 1200 })
+              : (cb: () => void) => window.setTimeout(cb, 600);
+          schedule(() => restore(el));
+        });
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", armHeroBgDeferral, {
+          once: true,
+        });
+      } else {
+        armHeroBgDeferral();
+      }
+      document.addEventListener("swup:page:view", armHeroBgDeferral);
+    </script>
   </body>
 </html>
 
@@ -1029,7 +1091,13 @@ function disableAnimation() {
   }
 
   /** 壁纸/主栏定位：进场前后共用，避免 replace + view 双写分叉 */
+  let wallpaperChromeLastRun = 0;
   function applyWallpaperChrome() {
+    // C：content:replace 与 page:view 在每次软导航各调用一次本函数（等价 DOM
+    // 双写）；50ms 内的重复调用直接短路
+    const now = Date.now();
+    if (now - wallpaperChromeLastRun < 50) return;
+    wallpaperChromeLastRun = now;
     const isHome = pathsEqual(window.location.pathname, url("/"));
     const currentMode = document.documentElement.getAttribute("data-wallpaper-mode");
     const isMobileForBanner = window.innerWidth < 1024;
@@ -1344,12 +1412,17 @@ function disableAnimation() {
       const shouldUseSmoothScroll = window.innerWidth >= 768;
       const isFullscreenNonHome = document.documentElement.getAttribute("data-wallpaper-mode") === "fullscreen" && !isHomePage;
       if (shouldUseSmoothScroll && !isFullscreenNonHome) {
-        window.scrollTo({
-          top: 0,
-          behavior: "auto",
+        // C：包 rAF，与本帧已排队的 DOM 写合并后再滚动，避免强制同步布局
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: 0,
+            behavior: "auto",
+          });
         });
       }
     });
+    // C：time 主题的小时格式化器会话级缓存（软导航复用，免逐次构造）
+    let timeThemeHourFormatter: Intl.DateTimeFormat | null = null;
     window.swup.hooks.on("page:view", () => {
       // 恢复 #main-grid 的过渡动画（visit:start 中禁用了）
       const mainGrid = document.getElementById("main-grid");
@@ -1359,6 +1432,8 @@ function disableAnimation() {
 
       // 按落地 URL 再同步一次幕布状态（防缓存/回退偏差）
       syncCurtainFocusFromUrl(window.location.pathname);
+      // DOM 重建：侧栏可见性缓存失效重测
+      sidebarMetricsDirty = true;
 
       // 定位立刻对齐；侧栏测量 / overflow 进场后再做，缩短主栏透明窗
       applyWallpaperChrome();
@@ -1404,11 +1479,12 @@ function disableAnimation() {
         const tz = siteConfig.timezone || "Asia/Shanghai";
         const lightFrom = siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7;
         const darkFrom = siteConfig.themeColor.timeSchedule?.darkFromHour ?? 19;
-        const hourPart = new Intl.DateTimeFormat("en-US", {
-          timeZone: tz,
-          hour: "numeric",
-          hourCycle: "h23",
-        })
+        // C：Intl.DateTimeFormat 贵在构造——会话级缓存，软导航不再逐次重建
+        const hourFormatter = (timeThemeHourFormatter ??= new Intl.DateTimeFormat(
+          "en-US",
+          { timeZone: tz, hour: "numeric", hourCycle: "h23" },
+        ));
+        const hourPart = hourFormatter
           .formatToParts(new Date())
           .find((p) => p.type === "hour")?.value;
         const hour = Number(hourPart);
@@ -1499,12 +1575,29 @@ function disableAnimation() {
     right: { topClass: "top-0", hasVisibleTop: false },
   };
 
+  // D2：topContainer 可见性读数缓存——offsetHeight 是强制布局读，滚动期
+  // 每帧 ×2 侧纯属浪费；可见性只在 resize / 软导航（DOM 重建）后变化。
+  // 与 sidebarStickyState 同处：updateSidebarStickySpacing 会被首次
+  // scrollFunction() 同步调用，声明晚于调用点则读到 undefined。
+  let sidebarMetricsDirty = true;
+  const sidebarTopVisibleCache: { left: boolean; right: boolean } = {
+    left: false,
+    right: false,
+  };
+
   // 必须在 scrollFunction() 首次调用前定义，否则 const TDZ 会中断后续壁纸淡入
   const isCurrentPagePost = () =>
     window.location.pathname.includes("/posts/") ||
     window.location.pathname.includes("/post/");
 
   // 优化的滚动处理函数
+  // D2：navbar/top-row 查询缓存（滚动中每帧 getElementById 是纯浪费；
+  // 元素被 swup 替换后缓存失效再重取）
+  let cachedNavbarEl = document.getElementById("navbar");
+  let cachedTopRowEl = document.getElementById("top-row");
+  // D1b：滚动进行中暂停水波动画（肉眼不可察），停滚 160ms 后恢复
+  let wavesPauseTimer: number | undefined;
+
   function scrollFunction() {
     if (document.documentElement.classList.contains("is-page-transitioning")) {
       return;
@@ -1512,8 +1605,16 @@ function disableAnimation() {
 
     const scrollTop = document.documentElement.scrollTop;
     const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
-    const navbarElement = document.getElementById("navbar");
-    const topRow = document.getElementById("top-row");
+    const navbarElement = cachedNavbarEl ?? document.getElementById("navbar");
+    if (navbarElement) cachedNavbarEl = navbarElement;
+    const topRow = cachedTopRowEl ?? document.getElementById("top-row");
+    if (topRow) cachedTopRowEl = topRow;
+
+    document.documentElement.classList.add("waves-scrolling");
+    if (wavesPauseTimer) window.clearTimeout(wavesPauseTimer);
+    wavesPauseTimer = window.setTimeout(() => {
+      document.documentElement.classList.remove("waves-scrolling");
+    }, 160);
 
     // 根据滚动位置动态更新侧边栏 sticky 间距
     updateSidebarStickySpacing();
@@ -1599,7 +1700,12 @@ function disableAnimation() {
   // 初始化滚动状态（例如从历史位置恢复时）
   scrollFunction();
 
-  window.onresize = () => {
+  // onresize 用 addEventListener：直接赋值会覆盖/被覆盖其它 onresize 处理器
+  window.addEventListener("resize", () => {
+    // 布局尺寸变了，滚动路径的元素与 sticky/侧栏测量缓存全部失效重取
+    cachedNavbarEl = null;
+    cachedTopRowEl = null;
+    sidebarMetricsDirty = true;
     // calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
     let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
     offset = offset - (offset % 4);
@@ -1607,7 +1713,7 @@ function disableAnimation() {
       "--banner-height-extend",
       `${offset}px`
     );
-  };
+  });
 
   // 页面加载完成后初始化banner和内容溢出容器
   if (document.readyState === "loading") {
@@ -1763,7 +1869,13 @@ function disableAnimation() {
       // 结构为：sidebar -> top 容器（可选） + sticky 容器
       const topContainer = sticky.previousElementSibling as HTMLElement | null;
       // display:none 的动态栏不算「可见顶部」
-      const hasVisibleTop = !!topContainer && topContainer.offsetHeight > 1;
+      let hasVisibleTop: boolean;
+      if (sidebarMetricsDirty) {
+        hasVisibleTop = !!topContainer && topContainer.offsetHeight > 1;
+        sidebarTopVisibleCache[side] = hasVisibleTop;
+      } else {
+        hasVisibleTop = !!topContainer && sidebarTopVisibleCache[side];
+      }
 
       // swup 从非文章页切换到文章页时，top 容器可能残留 mb-4，需要按可见性动态修正
       if (topContainer) {
@@ -1793,8 +1905,7 @@ function disableAnimation() {
         const toc = sticky.querySelector<HTMLElement>(
           'widget-layout[data-id="sidebar-toc"]',
         );
-        const tocVisible =
-          !!toc &&
+        const tocVisible =          !!toc &&
           !toc.classList.contains("hidden") &&
           toc.getClientRects().length > 0;
         const opticalCenter = isPostPage && !hasVisibleTop && tocVisible;
@@ -1804,10 +1915,12 @@ function disableAnimation() {
         );
       }
     });
+    sidebarMetricsDirty = false;
   }
 
-  // 动态栏关闭等场景主动重算
+  // 动态栏关闭等场景主动重算（先置脏强制重测 offsetHeight）
   document.addEventListener("firefly:sidebar-layout", () => {
+    sidebarMetricsDirty = true;
     updateSidebarStickySpacing();
   });
 

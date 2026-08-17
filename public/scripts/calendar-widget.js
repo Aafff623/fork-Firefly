@@ -1,8 +1,17 @@
-/* calendar-widget — extracted from Calendar.astro; config via window.__calendarWidgetConfig */
+/* calendar-widget — extracted from Calendar.astro; config via #calendar-widget-boot[data-config] */
 (function () {
   if (window.__calendarWidgetScriptLoaded) return;
   window.__calendarWidgetScriptLoaded = true;
-  var __cfg = window.__calendarWidgetConfig || {};
+  var __cfg = {};
+  var bootEl = document.getElementById("calendar-widget-boot");
+  var rawCfg = bootEl && bootEl.getAttribute("data-config");
+  if (rawCfg) {
+    try {
+      __cfg = JSON.parse(rawCfg) || {};
+    } catch (e) {
+      __cfg = {};
+    }
+  }
   var monthNames = __cfg.monthNames;
   var yearText = __cfg.yearText;
   var currentLang = __cfg.currentLang;
@@ -1229,8 +1238,8 @@
   // 页面加载时渲染日历
   initCalendar();
 
-  // 页面切换时重新渲染
-  document.addEventListener("swup:contentReplaced", () => {
+  // 页面切换时重新渲染（swup@4 事件为 page:view；contentReplaced 是 swup2/3 事件名，不触发）
+  document.addEventListener("swup:page:view", () => {
     setTimeout(initCalendar, 100);
   });
 

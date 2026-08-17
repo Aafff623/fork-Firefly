@@ -30,7 +30,8 @@ interface Props {
 	pinned?: boolean;
 	pinKind?: PinKind | null;
 	password?: boolean;
-	style: string;
+	/** 懒入场卡（D3）不带 stagger 延迟，此处为 undefined */
+	style?: string;
 	loading?: "lazy" | "eager";
 	/** list 模式变体：featured=首篇 · row=细线行；grid 下由 CSS 重置为普通卡 */
 	listVariant?: "featured" | "row";

@@ -33,6 +33,42 @@
 			]
 		},
 		{
+			"source": "/scripts/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		},
+		{
+			"source": "/pio/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		},
+		{
+			"source": "/pets/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		},
+		{
+			"source": "/generated/*",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				}
+			]
+		},
+		{
 			"source": "/assets/*",
 			"headers": [
 				{

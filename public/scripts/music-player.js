@@ -707,5 +707,5 @@
   } else {
     boot();
   }
-  document.addEventListener("astro:page-load", bindAll);
+  document.addEventListener("swup:page:view", bindAll);
 })();

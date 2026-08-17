@@ -6,7 +6,7 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"check": "astro check",
-		"build": "npx tsx scripts/generate-lqips.ts && astro build && npx tsx scripts/subset-fonts.ts && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
+		"build": "npx tsx scripts/generate-lqips.ts && astro build && npx tsx scripts/subset-fonts.ts && npx tsx scripts/strip-legacy-fonts.ts && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"build:edgeone": "astro build && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"preview": "astro preview",
 		"astro": "astro",
@@ -24,7 +24,6 @@
 		"@astrojs/check": "^0.9.9",
 		"@astrojs/cloudflare": "^14.1.4",
 		"@astrojs/markdown-remark": "^7.2.1",
-		"@astrojs/markdown-satteri": "^0.3.4",
 		"@astrojs/mdx": "^7.0.3",
 		"@astrojs/react": "^6.0.2",
 		"@astrojs/rss": "^4.0.19",
@@ -71,16 +70,13 @@
 		"expressive-code-language-badge": "^1.1.0",
 		"framer-motion": "^12.43.0",
 		"github-slugger": "^2.0.0",
-		"glob": "^13.0.6",
 		"gray-matter": "^4.0.3",
 		"hastscript": "^9.0.1",
 		"katex": "^0.17.0",
 		"l2d-widget": "^0.1.0",
 		"lucide-react": "^1.28.0",
-		"marked": "^18.0.9",
 		"mdast-util-to-string": "^4.0.0",
 		"motion": "^13.1.0",
-		"pagefind": "^1.5.2",
 		"pako": "^3.0.1",
 		"qrcode": "^1.5.4",
 		"react": "^19.2.8",
@@ -102,8 +98,6 @@
 		"remark-sectionize": "^2.1.0",
 		"sanitize-html": "^2.17.6",
 		"satori": "^0.26.0",
-		"satteri": "^0.9.5",
-		"sharp": "^0.35.3",
 		"shiki": "^4.4.3",
 		"streamdown": "^2.5.0",
 		"stylus": "^0.64.0",
@@ -115,8 +109,7 @@
 		"tsparticles": "^4.3.2",
 		"tsx": "^4.23.1",
 		"typescript": "^6.0.3",
-		"unist-util-visit": "^5.1.0",
-		"wrangler": "^4.114.0"
+		"unist-util-visit": "^5.1.0"
 	},
 	"devDependencies": {
 		"@astrojs/ts-plugin": "^1.10.10",
@@ -130,13 +123,20 @@
 		"@types/react-dom": "^19.2.4",
 		"@types/sanitize-html": "^2.16.1",
 		"@types/three": "^0.185.3",
+		"glob": "^13.0.6",
+		"pagefind": "^1.5.2",
 		"pinyin-pro": "^3.28.2",
 		"postcss-import": "^16.1.1",
 		"postcss-nesting": "^14.0.1",
 		"rehype-callouts": "^2.2.0",
-		"subset-font": "^2.5.0"
+		"sharp": "^0.35.3",
+		"subset-font": "^2.5.0",
+		"wrangler": "^4.114.0"
 	},
 	"packageManager": "pnpm@9.14.4",
+	"engines": {
+		"node": ">=22"
+	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@zowe/secrets-for-zowe-sdk"

@@ -171,8 +171,10 @@ const postUrlPrefix = url("/posts/");
   </div>
 </WidgetLayout>
 
-<script is:inline data-swup-ignore-script define:vars={{ monthNames, yearText, currentLang, calendarDataUrl, postUrlPrefix, heatmapWeekTemplate, holidayMap }}>
-  window.__calendarWidgetConfig = {
+<div
+  id="calendar-widget-boot"
+  hidden
+  data-config={JSON.stringify({
     monthNames,
     yearText,
     currentLang,
@@ -180,9 +182,9 @@ const postUrlPrefix = url("/posts/");
     postUrlPrefix,
     heatmapWeekTemplate,
     holidayMap,
-  };
-</script>
-<script is:inline data-swup-ignore-script src="/scripts/calendar-widget.js"></script>
+  })}
+></div>
+<script is:inline defer data-swup-ignore-script src="/scripts/calendar-widget.js"></script>
 
 <style>
   /* ── 笔记本日历：GIF 封面保留；外壳对齐 card-base 扁平原感 ── */

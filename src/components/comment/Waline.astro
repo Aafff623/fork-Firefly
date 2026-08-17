@@ -59,13 +59,51 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   <div id="waline"></div>
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script>
-    import {
-      bootWalineFromShell,
-      registerWalineSwupHooks,
-    } from "@/lib/waline-boot";
+    let bootedOnce = false;
+    let pendingIO: IntersectionObserver | null = null;
 
-    registerWalineSwupHooks();
-    bootWalineFromShell();
+    const start = async () => {
+      const { bootWalineFromShell, registerWalineSwupHooks } = await import(
+        "@/lib/waline-boot"
+      );
+      // 注册后，后续软导航由 waline-boot 自带的 swup 钩子接管（幂等，只注册一次）
+      registerWalineSwupHooks();
+      bootedOnce = true;
+      bootWalineFromShell();
+    };
+
+    const bootWhenNear = () => {
+      if (bootedOnce) return;
+
+      const shell = document.querySelector(".waline-shell");
+      if (!(shell instanceof Element) || typeof IntersectionObserver === "undefined") {
+        void start();
+        return;
+      }
+
+      // 软导航后旧 IO 观察的是已脱离 DOM 的 shell，先摘掉再对新 shell 重挂
+      pendingIO?.disconnect();
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          io.disconnect();
+          if (pendingIO === io) pendingIO = null;
+          void start();
+        },
+        { rootMargin: "200px 0px" },
+      );
+      pendingIO = io;
+      io.observe(shell);
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootWhenNear, { once: true });
+    } else {
+      bootWhenNear();
+    }
+    // 兜底：软导航可能先于 IO 触发（用户没滚近评论区就跳走），旧 shell 的 IO
+    // 永不回调；必须在模块作用域监听切页，对新页面的评论区重挂懒启动
+    document.addEventListener("swup:page:view", bootWhenNear);
   </script>
   {
     stickerSuggestEnabled && (

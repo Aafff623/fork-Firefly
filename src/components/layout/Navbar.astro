@@ -39,10 +39,10 @@ const navbarEnableBlur =
 		? (backgroundWallpaper.common?.navbar?.enableBlur ?? true)
 		: false;
 
-// 获取导航栏模糊度
+// 获取导航栏模糊度（12px：视觉与 20px 近似，sticky 常驻全宽重算成本约降四成）
 const navbarBlur =
 	backgroundWallpaper.mode === "banner"
-		? (backgroundWallpaper.common?.navbar?.blur ?? 20)
+		? (backgroundWallpaper.common?.navbar?.blur ?? 12)
 		: 0;
 
 // 获取导航栏标题，如果没有设置则使用 siteConfig.title
@@ -252,7 +252,7 @@ const logoVariants = await Promise.all(
                 >
                     <Icon is:inline name="lucide:github" class="text-[1.25rem]" />
                 </a>
-                {musicPlayerConfig.showInNavbar && (
+                {musicPlayerConfig.enable !== false && musicPlayerConfig.showInNavbar && (
                     <button
                         aria-label={i18n(I18nKey.music)}
                         class="btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 relative"
@@ -301,7 +301,7 @@ const logoVariants = await Promise.all(
                 </button>
             </div>
         </div>
-        {musicPlayerConfig.showInNavbar && (
+        {musicPlayerConfig.enable !== false && musicPlayerConfig.showInNavbar && (
             <div id="music-nav-panel" class="float-panel float-panel-closed absolute transition-all right-16 p-2 pt-4.5 w-80 z-50">
                 <MusicPlayer />
             </div>
@@ -595,6 +595,12 @@ function initSemifullScrollDetection() {
 
     const transparentMode = navbar.getAttribute('data-transparent-mode');
     if (transparentMode !== 'semifull') return;
+
+    // C：visit:start 与 page:view 每次软导航各调一次本函数；navbar 是静态
+    // 头部（软导航不替换）——同一实例且 handler 在位时直接返回，
+    // 避免每次导航双跑解绑/重绑 + scrolled 类被重置导致的透明闪变
+    if (window.semifullScrollHandler && window.semifullNavbar === navbar) return;
+    window.semifullNavbar = navbar;
 
     // 无论首页/非首页，semifull 都由滚动位置决定是否进入 scrolled 状态
     // 先移除之前的滚动监听器，避免重复绑定

@@ -202,3 +202,10 @@ html[data-waves-enabled="true"] #wallpaper-gradient {
 html[data-wallpaper-mode="none"] #wallpaper-gradient {
     display: none !important;
 }
+/* --------------------------------------------------------------------------
+   6. 滚动进行中暂停（Layout scrollFunction 给 html 加 waves-scrolling；
+      停滚 160ms 后移除恢复。三层无限平移动画在滚动期让出合成带宽）
+   -------------------------------------------------------------------------- */
+html.waves-scrolling .waves > .parallax use {
+    animation-play-state: paused;
+}

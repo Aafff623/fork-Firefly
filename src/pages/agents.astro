@@ -32,12 +32,15 @@ async function resolveAvatarUrl(src: string): Promise<string> {
 	}
 	if (src.startsWith("/")) return url(src);
 
+	// glob 基必须是 src/assets（本文件在 src/pages/ 下，一层 ../）。
+	// 之前误写 "../../**"（仓库根）把 public/ 与 tmp/ 全部图片卷进 SSR 模块图，
+	// 产出数千个 _astro 孤儿副本（pets/garden-note 双份 ~16MB 即此成因）
 	const files = import.meta.glob<ImageMetadata>(
-		"../../**/*.{png,jpg,jpeg,webp,avif}",
+		"../assets/**/*.{png,jpg,jpeg,webp,avif}",
 		{ import: "default" },
 	);
 	const normalizedPath = path
-		.normalize(path.join("../../", src))
+		.normalize(path.join("../", src))
 		.replace(/\\/g, "/");
 	const file = files[normalizedPath];
 	if (!file) {

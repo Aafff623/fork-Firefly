@@ -12,6 +12,9 @@ export type MusicPlayerConfig = {
 	// 是否显示歌词
 	showLyrics?: boolean;
 
+	// 总开关：false 时不挂载播放器脚本与入口（默认视为开启）
+	enable?: boolean;
+
 	// 是否在导航栏显示音乐播放器
 	showInNavbar?: boolean;
 

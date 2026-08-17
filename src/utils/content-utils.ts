@@ -55,11 +55,19 @@ function compareByEffectiveTimeDesc(
 	return getEffectivePostTime(b.data) - getEffectivePostTime(a.data);
 }
 
+/** 主题 demo：`posts/` 根下单文件。成帖与草稿箱都在子目录，DEV/PROD 都不进首页列表。 */
+function isThemeDemoPost(post: { filePath?: string }): boolean {
+	const norm = (post.filePath ?? "").replace(/\\/g, "/");
+	return /^src\/content\/posts\/[^/]+\.(md|mdx)$/.test(norm);
+}
+
 // Retrieve posts and sort: 常驻 → 默认置顶 → 其余（均按有效时间倒序）
 async function getRawSortedPosts() {
-	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allBlogPosts = (
+		await getCollection("posts", ({ data }) => {
+			return import.meta.env.PROD ? data.draft !== true : true;
+		})
+	).filter((post) => !isThemeDemoPost(post));
 
 	const autoPinnedId = getAutoPinnedPostId(allBlogPosts);
 	// 生产藏草稿常驻置顶；DEV 保留，便于草稿箱本地调试
@@ -359,9 +367,11 @@ export async function getRelatedPosts(
  * 无真实 PV 时：标签流行度 + 置顶 + 近更，再加重近 60 天半衰期。
  */
 export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
-	const allPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allPosts = (
+		await getCollection<"posts">("posts", ({ data }) => {
+			return import.meta.env.PROD ? data.draft !== true : true;
+		})
+	).filter((post) => !isThemeDemoPost(post));
 
 	const tagCorpusFreq = new Map<string, number>();
 	for (const p of allPosts) {

@@ -80,6 +80,58 @@
 			]
 		},
 		{
+			"source": "/scripts/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/pio/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/pets/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/generated/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400"
+				},
+				{
+					"key": "CDN-Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
 			"source": "/assets/(.*)",
 			"headers": [
 				{

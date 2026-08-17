@@ -1,5 +1,4 @@
 <script lang="ts">
-import QRCode from "qrcode";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
 import { siteConfig } from "@/config";
@@ -257,6 +256,7 @@ async function generatePoster() {
 		const ruleColor = "rgba(44, 36, 22, 0.1)";
 
 		// 1. Prepare resources
+		const { default: QRCode } = await import("qrcode");
 		const qrCodeUrl = await QRCode.toDataURL(url, {
 			margin: 1,
 			width: 100 * scale,

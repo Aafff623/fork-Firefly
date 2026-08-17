@@ -420,7 +420,7 @@ function initialActive(categoryName: string): {
     }, { passive: false });
 
     // 监听滚动更新提示图标
-    scroll.addEventListener("scroll", updateScrollHint);
+    scroll.addEventListener("scroll", scheduleScrollHint, { passive: true });
     updateScrollHint();
   }
 
@@ -457,6 +457,17 @@ function initialActive(categoryName: string): {
         moreDivider.removeAttribute("data-visible");
       }
     }
+  }
+
+  // D5：updateScrollHint 里的 scrollWidth/clientWidth 是强制布局读，
+  // 逐 scroll/resize 事件同步跑会在横向滚动时掉帧；合并到下一帧只测一次。
+  let scrollHintFrame = 0;
+  function scheduleScrollHint() {
+    if (scrollHintFrame) return;
+    scrollHintFrame = requestAnimationFrame(() => {
+      scrollHintFrame = 0;
+      updateScrollHint();
+    });
   }
 
   // 激活态可同步更新；横向尺寸与滚动提示不参与首屏关键渲染，空闲时再测量。
@@ -500,7 +511,7 @@ function initialActive(categoryName: string): {
     });
 
     // resize 监听只需注册一次；updateScrollHint 每次实时查询当前 bar，导航后依然有效
-    window.addEventListener("resize", updateScrollHint);
+    window.addEventListener("resize", scheduleScrollHint);
 
     if (window.swup?.hooks) {
       setupSwupEarlyUpdate();

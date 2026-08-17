@@ -16,41 +16,5 @@ import FloatingButton from "@/components/common/FloatingButton.astro";
     // 直接使用原生滚动，避免OverlayScrollbars冲突
     window.scroll({ top: 0, behavior: "smooth" });
   }
-
-  // 响应式返回顶部按钮管理器
-  if (typeof window.BackToTopManager === "undefined") {
-    window.BackToTopManager = class BackToTopManager {
-      constructor() {
-        this.button = document.getElementById("back-to-top-btn");
-        this.init();
-      }
-
-      init() {
-        if (!this.button) return; // wrapper checks removed as it is now flexible
-
-        this.setupScrollListener();
-      }
-
-      setupScrollListener() {
-        const updateVisibility = () => {
-          const scrollTop =
-            window.pageYOffset || document.documentElement.scrollTop;
-
-          // 当滚动超过200px时显示按钮
-          if (scrollTop > 200) {
-            this.button.classList.remove("hide");
-          } else {
-            this.button.classList.add("hide");
-          }
-        };
-
-        window.addEventListener("scroll", updateVisibility, { passive: true });
-      }
-    };
-  }
-  // ... existing initialization logic ...
-  // 幂等初始化：无论 Swup 是否重执行本脚本，只创建一个管理器，避免 scroll listener 累积
-  if (!window.__backToTopManager) {
-    window.__backToTopManager = new BackToTopManager();
-  }
+  // 显隐只走 Layout.astro scrollFunction（阈值 bannerHeight / rAF），避免双监听抢同一个 .hide
 </script>

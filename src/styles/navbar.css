@@ -20,11 +20,12 @@
 @reference "tailwindcss";
 
 @utility navbar-surface-transition {
+  /* backdrop-filter 不进 transition：滚动切 scrolled 类时动画化 blur 是
+     最贵的一类重绘（整条 sticky 导航栏逐帧全区域重算）；状态直切 */
   transition:
     background-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    backdrop-filter 0.36s cubic-bezier(0.22, 1, 0.36, 1),
     border-radius 0.36s cubic-bezier(0.22, 1, 0.36, 1);
 }
 

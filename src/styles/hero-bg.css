@@ -14,6 +14,16 @@
   pointer-events: none;
 }
 
+/* V7 hero 大图懒换：JS 先收走 --hero-img 换中性渐变兜底（叠着 78% 磨砂层
+   几乎不可辨），首绘落定后 idle 再注回原值拉真图——GIF 不再卡首屏 LCP */
+.hero-bg.hero-img-deferred::before {
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--card-bg, #fff) 92%, var(--primary, #8b5cf6) 8%),
+    color-mix(in oklab, var(--card-bg, #fff) 86%, var(--primary, #8b5cf6) 14%)
+  );
+}
+
 .hero-bg::after {
   content: "";
   position: absolute;

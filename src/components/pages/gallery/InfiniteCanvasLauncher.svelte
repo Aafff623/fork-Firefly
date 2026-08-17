@@ -2,30 +2,85 @@
 /**
  * 无限画布入口：方块 App 图标 → 全屏挂载 InfiniteAlbumCanvas（按需加载/卸载）
  */
-import { onDestroy } from "svelte";
-import InfiniteAlbumCanvas from "./InfiniteAlbumCanvas.svelte";
+import { onDestroy, type Component } from "svelte";
 
 interface Props {
-	photos: string[];
+	photos?: string[];
+	photosUrl?: string;
 	labels: {
 		open: string;
 		close: string;
 		dragHint: string;
 		demoHint: string;
 		empty: string;
+		loadError?: string;
+		retry?: string;
 	};
 }
 
-const { photos, labels }: Props = $props();
+const { photos = [], photosUrl, labels }: Props = $props();
 
 let open = $state(false);
 let prevOverflow = "";
+let resolvedPhotos = $state<string[]>(photos);
+let Canvas = $state<Component<{
+	photos: string[];
+	title?: string;
+	hint?: string;
+	demoHint?: string;
+}> | null>(null);
+let loading = $state(false);
+let loadError = $state(false);
 
-function openCanvas() {
-	if (open) return;
-	prevOverflow = document.body.style.overflow;
-	document.body.style.overflow = "hidden";
-	open = true;
+/** 悬停预热：并行拉照片清单与画布 chunk（点击意图已明确，符合 hover-intent 预取纪律） */
+function warmup() {
+	if (open || loading) return;
+	if (photosUrl && resolvedPhotos.length === 0) {
+		void fetch(photosUrl)
+			.then(async (r) => (r.ok ? ((await r.json()) as { photos?: string[] }) : null))
+			.then((d) => {
+				if (d && Array.isArray(d.photos) && resolvedPhotos.length === 0) {
+					resolvedPhotos = d.photos;
+				}
+			})
+			.catch(() => {});
+	}
+	if (!Canvas) {
+		void import("./InfiniteAlbumCanvas.svelte")
+			.then((m) => {
+				Canvas = m.default;
+			})
+			.catch(() => {});
+	}
+}
+
+async function openCanvas() {
+	if (open || loading) return;
+	loading = true;
+	loadError = false;
+	try {
+		// 照片清单与画布 chunk 并行取，省一个串行 RTT
+		const [jsonPhotos, canvasMod] = await Promise.all([
+			photosUrl && resolvedPhotos.length === 0
+				? fetch(photosUrl).then(async (r) => {
+						if (!r.ok) throw new Error(`explorer.json ${r.status}`);
+						const d = (await r.json()) as { photos?: string[] };
+						return Array.isArray(d.photos) ? d.photos : [];
+					})
+				: null,
+			!Canvas ? import("./InfiniteAlbumCanvas.svelte") : null,
+		]);
+		if (jsonPhotos) resolvedPhotos = jsonPhotos;
+		if (canvasMod) Canvas = canvasMod.default;
+		prevOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+		open = true;
+	} catch {
+		// 网络失败与「暂无相册」区分开：给出可重试的错误态
+		loadError = true;
+	} finally {
+		loading = false;
+	}
 }
 
 function closeCanvas() {
@@ -56,8 +111,10 @@ onDestroy(() => {
 	type="button"
 	class="infinite-canvas-app-btn"
 	onclick={openCanvas}
+	onpointerover={warmup}
 	aria-label={labels.open}
 	title={labels.open}
+	aria-busy={loading}
 >
 	<span class="infinite-canvas-app-btn__glyph" aria-hidden="true">
 		<svg viewBox="0 0 24 24" width="22" height="22" fill="none">
@@ -68,6 +125,15 @@ onDestroy(() => {
 		</svg>
 	</span>
 </button>
+
+{#if loadError}
+	<div class="infinite-canvas-load-error" role="alert">
+		<span>{labels.loadError ?? "画布加载失败"}</span>
+		<button type="button" onclick={() => openCanvas()}>
+			{labels.retry ?? "重试"}
+		</button>
+	</div>
+{/if}
 
 {#if open}
 	<div
@@ -92,9 +158,9 @@ onDestroy(() => {
 				/>
 			</svg>
 		</button>
-		{#if photos.length > 0}
-			<InfiniteAlbumCanvas
-				photos={photos}
+		{#if Canvas && resolvedPhotos.length > 0}
+			<Canvas
+				photos={resolvedPhotos}
 				title="INFINITE CANVAS"
 				hint={labels.dragHint}
 				demoHint={labels.demoHint}

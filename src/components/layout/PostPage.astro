@@ -1,8 +1,8 @@
 ﻿---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
-import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
 import PostCard from "@/components/layout/PostCard.astro";
+import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
 import { displaySettingsConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -62,6 +62,9 @@ const pinAdminLabels = {
   {
     page.data.map((entry: PostEntry, index: number) => {
       const pinKind = getPostPinKind(entry, autoPinnedId);
+      // D3：首屏 8 卡保留 load 进场 + stagger；其余卡片入场改 IO 触发
+      // （原实现末卡要等 index*50ms≈1.2s 才轮到，且屏外空跑动画）
+      const immediateEntrance = index < 8;
       return (
       <PostCard
         entry={entry}
@@ -79,20 +82,57 @@ const pinAdminLabels = {
         password={!!entry.data.password}
         loading={index < 2 ? "eager" : "lazy"}
         listVariant={index === 0 ? "featured" : "row"}
-        class:list="onload-animation post-card-item"
-        style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+        class:list={immediateEntrance ? "onload-animation post-card-item" : "post-card-item"}
+        style={immediateEntrance ? `animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);` : undefined}
+        data-lazy-entrance={immediateEntrance ? undefined : ""}
       />
       );
     })
   }
 </div>
 
-<PostPinAdmin
-  client:load
-  adminLogins={["Aafff623"]}
-  isDev={import.meta.env.DEV}
-  labels={pinAdminLabels}
-/>
+<script>
+  // D3 配套：滚入视口（前 80px 预见量）才补 onload-animation；swup 换页后重扫
+  const armLazyEntrance = () => {
+    const cards = document.querySelectorAll("[data-lazy-entrance]:not([data-entrance-armed])");
+    if (!cards.length) return;
+    if (!("IntersectionObserver" in window)) {
+      cards.forEach((c) => c.classList.add("onload-animation"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.unobserve(e.target);
+          e.target.classList.add("onload-animation");
+        }
+      },
+      { rootMargin: "80px 0px" },
+    );
+    cards.forEach((c) => {
+      c.setAttribute("data-entrance-armed", "");
+      io.observe(c);
+    });
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", armLazyEntrance, { once: true });
+  } else {
+    armLazyEntrance();
+  }
+  document.addEventListener("swup:page:view", armLazyEntrance);
+</script>
+
+{
+  import.meta.env.DEV && (
+    <PostPinAdmin
+      client:load
+      adminLogins={["Aafff623"]}
+      isDev={true}
+      labels={pinAdminLabels}
+    />
+  )
+}
 
 <!-- 立即执行脚本：防止刷新时的布局闪烁 -->
 <script is:inline define:vars={{ defaultLayout, mobileDefaultLayout, layoutSwitchable }}>

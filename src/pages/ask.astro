@@ -1,11 +1,18 @@
 ---
-import AskChat from "@/components/ask/AskChat";
 import { siteConfig } from "@/config";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import "@/styles/ask-heroui.css";
 
 if (!siteConfig.pages.ask) {
 	return Astro.redirect("/404/");
+}
+
+// /ask 仅 DEV 开放：岛与 HeroUI 样式挂在 import.meta.env.DEV 分支，
+// 生产构建静态替换后整块死代码消除（742KB JS + 886KB CSS 不再产出孤儿 chunk）
+const AskChat = import.meta.env.DEV
+	? (await import("@/components/ask/AskChat")).default
+	: null;
+if (import.meta.env.DEV) {
+	await import("@/styles/ask-heroui.css");
 }
 
 const title = "站点问答助手";
@@ -14,6 +21,6 @@ const description = "基于站点内容回答你的问题，欢迎来问。";
 
 <MainGridLayout title={title} description={description}>
 	<div class="card-base z-10 relative w-full">
-		<AskChat client:load />
+		{AskChat && <AskChat client:load />}
 	</div>
 </MainGridLayout>

@@ -121,7 +121,7 @@ html.dark .site-footer {
 	background-size: cover;
 	background-position: center bottom;
 	background-repeat: no-repeat;
-	opacity: 0.72;
+	opacity: 0.8;
 	border-radius: inherit;
 	-webkit-mask-image: linear-gradient(
 		180deg,
@@ -139,7 +139,7 @@ html.dark .site-footer {
 }
 
 html.dark .site-footer__scape {
-	opacity: 0.28;
+	opacity: 0.36;
 	filter: brightness(0.58) saturate(0.76) contrast(1.08);
 }
 
@@ -201,6 +201,110 @@ html.dark .site-footer__mist {
 			transparent 70%
 		),
 		linear-gradient(0deg, color-mix(in oklch, var(--sf-paper-2) 72%, transparent) 0%, transparent 65%);
+}
+
+/*
+ * 横幅 / 全壁纸：Footer 跟上同一套溶边，而不是另砌一块不透光园纸。
+ * 上沿先借 --page-bg（氛围层同色相），约 14vh 后再让竹月绿园纸与景图长出来。
+ * 不把 --hue 灌进 Footer：浇灌草要保住独立绿。无壁纸模式仍走上面的圆角盒。
+ */
+:is(
+	body.wallpaper-transparent,
+	html[data-wallpaper-mode="banner"],
+	html[data-wallpaper-mode="overlay"],
+	html[data-wallpaper-mode="fullscreen"]
+) .site-footer {
+	margin-block-start: 0;
+	padding-block-start: 4.25rem;
+	background: transparent;
+	border-color: transparent;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+:is(
+	body.wallpaper-transparent,
+	html[data-wallpaper-mode="banner"],
+	html[data-wallpaper-mode="overlay"],
+	html[data-wallpaper-mode="fullscreen"]
+) .site-footer::before {
+	opacity: 0;
+}
+
+:is(
+	body.wallpaper-transparent,
+	html[data-wallpaper-mode="banner"],
+	html[data-wallpaper-mode="overlay"],
+	html[data-wallpaper-mode="fullscreen"]
+) .site-footer__scape {
+	clip-path: none;
+	opacity: 0.66;
+	-webkit-mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		transparent 10vh,
+		rgba(0, 0, 0, 0.28) 18vh,
+		rgba(0, 0, 0, 0.72) 30vh,
+		#000 100%
+	);
+	mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		transparent 10vh,
+		rgba(0, 0, 0, 0.28) 18vh,
+		rgba(0, 0, 0, 0.72) 30vh,
+		#000 100%
+	);
+}
+
+:is(
+	body.wallpaper-transparent,
+	html[data-wallpaper-mode="banner"],
+	html[data-wallpaper-mode="overlay"],
+	html[data-wallpaper-mode="fullscreen"]
+) .site-footer__veil {
+	clip-path: none;
+	background: linear-gradient(
+		180deg,
+		transparent 0,
+		color-mix(in oklch, var(--page-bg) 32%, transparent) 6vh,
+		color-mix(in oklch, var(--sf-paper) 34%, transparent) 14vh,
+		color-mix(in oklch, var(--sf-paper) 70%, transparent) 22vh,
+		color-mix(in oklch, var(--sf-paper-2) 90%, transparent) 100%
+	);
+}
+
+html.dark:is(
+	[data-wallpaper-mode="banner"],
+	[data-wallpaper-mode="overlay"],
+	[data-wallpaper-mode="fullscreen"]
+) .site-footer__veil,
+html.dark body.wallpaper-transparent .site-footer__veil {
+	background: linear-gradient(
+		180deg,
+		transparent 0,
+		color-mix(in oklch, var(--page-bg) 48%, transparent) 8vh,
+		color-mix(in oklch, var(--sf-paper) 62%, transparent) 16vh,
+		color-mix(in oklch, var(--sf-paper-2) 90%, transparent) 100%
+	);
+}
+
+html.dark:is(
+	[data-wallpaper-mode="banner"],
+	[data-wallpaper-mode="overlay"],
+	[data-wallpaper-mode="fullscreen"]
+) .site-footer__scape,
+html.dark body.wallpaper-transparent .site-footer__scape {
+	opacity: 0.28;
+}
+
+:is(
+	body.wallpaper-transparent,
+	html[data-wallpaper-mode="banner"],
+	html[data-wallpaper-mode="overlay"],
+	html[data-wallpaper-mode="fullscreen"]
+) .site-footer__legal {
+	background: color-mix(in oklch, var(--sf-paper-2) 72%, var(--sf-celadon));
 }
 
 /* —— 1 · 顶带 —— */
@@ -949,17 +1053,41 @@ html.dark .site-footer__water.is-watering {
 	}
 
 	.site-footer__scape {
-		opacity: 0.46;
+		opacity: 0.56;
 		background-position: 24% bottom;
 		clip-path: inset(0 round 1rem 1rem 0 0);
 	}
 
 	html.dark .site-footer__scape {
-		opacity: 0.2;
+		opacity: 0.28;
 	}
 
 	.site-footer__veil {
 		clip-path: inset(0 round 1rem 1rem 0 0);
+	}
+
+	:is(
+		body.wallpaper-transparent,
+		html[data-wallpaper-mode="banner"],
+		html[data-wallpaper-mode="overlay"],
+		html[data-wallpaper-mode="fullscreen"]
+	) .site-footer {
+		border-radius: 0;
+	}
+
+	:is(
+		body.wallpaper-transparent,
+		html[data-wallpaper-mode="banner"],
+		html[data-wallpaper-mode="overlay"],
+		html[data-wallpaper-mode="fullscreen"]
+	) .site-footer__scape,
+	:is(
+		body.wallpaper-transparent,
+		html[data-wallpaper-mode="banner"],
+		html[data-wallpaper-mode="overlay"],
+		html[data-wallpaper-mode="fullscreen"]
+	) .site-footer__veil {
+		clip-path: none;
 	}
 
 	.site-footer__top {

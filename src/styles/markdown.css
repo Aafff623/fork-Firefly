@@ -291,6 +291,58 @@
   }
 }
 
+/* 正文语义指标：仅 .metric-* 生效，不改 mark */
+.custom-md {
+  .metric {
+    font-weight: 600;
+    padding-inline: 0.06em;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: left 0.7em;
+    background-size: 100% 0.34em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .metric-low {
+    color: oklch(0.50 0.11 var(--hue-coral));
+    background-image: var(--hl-coral);
+  }
+
+  .metric-high {
+    color: oklch(0.42 0.10 var(--hue-mint));
+    background-image: var(--hl-mint);
+  }
+
+  .metric-tools {
+    color: oklch(0.46 0.10 var(--hue-cool));
+    background-image: var(--hl-cool);
+  }
+
+  .metric-ver {
+    color: oklch(0.50 0.10 var(--hue-violet));
+    background-image: var(--hl-violet);
+  }
+}
+
+:root.dark .custom-md {
+  .metric-low {
+    color: oklch(0.82 0.09 var(--hue-coral));
+  }
+
+  .metric-high {
+    color: oklch(0.84 0.08 var(--hue-mint));
+  }
+
+  .metric-tools {
+    color: oklch(0.80 0.08 var(--hue-cool));
+  }
+
+  .metric-ver {
+    color: oklch(0.82 0.08 var(--hue-violet));
+  }
+}
+
 body.wallpaper-transparent .custom-md {
   .horizontal-scroll-container {
     background-color: var(--card-bg-transparent);

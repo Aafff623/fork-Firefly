@@ -4,6 +4,9 @@ import type { MusicPlayerConfig } from "../types/musicConfig";
 // 生产默认 mode: "local"（自托管曲库，不依赖公共 Meting）。
 // Meting 块保留作可选备源：把 mode 改回 "meting" 即可手工切回（API 可能失效，见 ADR-0002）。
 export const musicPlayerConfig: MusicPlayerConfig = {
+	// 总开关。关掉才不加载 manager/player 脚本；默认保持开启（观感铁律）
+	enable: true,
+
 	// 是否在导航栏显示音乐播放器入口
 	showInNavbar: true,
 
