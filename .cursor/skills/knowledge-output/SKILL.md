@@ -18,6 +18,8 @@ compatibility: 需在 Firefly 项目根执行；Python 3；select_todo.py / plac
 园主已在 Obsidian 把笔记调到理想，才调用本技能。进料一律先经过 `knowledge-extract`。旧 `ob2blog` 入口已删除。  
 合集期刊（早报 / 热榜）**不走本技能**。
 
+**交接口径（2026-08-16）**：新稿理想稿在 vault（`D:\OneDrive\Desktop\Notes\threetwoa_ob`）。output **优先读园主调完的 Obsidian 笔记**（用户点名路径 / 本轮 extract 交付的 vault 文件树 / YAML `origin_path`）。`Knowledge/todo` 只读旧库存，不再作为 extract 默认产出；不要把新 extract 写成 Knowledge。本岗扫描根仍是 `select_todo.py` → `Knowledge/todo`（旧库存批次），不要改成扫整个 vault。
+
 本技能不是「把 md 拷进 `posts/`」，也不是把理想稿重写成另一张嘴。过不了自检禁止落盘。
 
 | 真源 | 路径 |
@@ -50,7 +52,8 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py claude-code
 python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列清单，本回合仍按批处理
 ```
 
-无 extract 口令、用户只说「发布 / output / 把 Knowledge 发了」→ **默认扫全部 `Knowledge/todo`**，每回合最多 3 篇；失败隔离，不一次 emit 十几条动态，不 `git add` / `push`。
+用户点名刚调完的 vault 笔记 → **先发那篇**，不要再去 Knowledge 另抄一份。  
+无 extract 口令、用户只说「发布 / output / 把 Knowledge 发了」→ **默认扫全部旧库存 `Knowledge/todo`**，每回合最多 3 篇；失败隔离，不一次 emit 十几条动态，不 `git add` / `push`。新 extract 不会再落到这里。
 
 ## 每回合开工
 

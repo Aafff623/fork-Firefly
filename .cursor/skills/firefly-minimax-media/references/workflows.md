@@ -51,6 +51,8 @@
 失败且确认未扣次：可 release 后停止；**不确定是否扣次时不要盲目重提**。  
 若 `mark-submit` 返回已达 `max_submits`：说明已提交过，只许轮询。
 
+日历头图 GIF（侧栏封面，不是文内短片）：先读 `.scratch/gif-library/README.md`，对标 `public/assets/images/widgets/calendar/voxel/` 三张；收成 GIF 用 `scripts/video_to_seamless_gif.py`（xfade · 360 · 10fps · 3.4s）。默认落备份库，不接线。
+
 ## C. 桌宠 / 吉祥物音色
 
 ```

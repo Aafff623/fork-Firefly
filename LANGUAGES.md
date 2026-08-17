@@ -38,7 +38,7 @@
 | 合集 / collections | 人工策展的主题聚合页（区别于 AI 标的分类 category） |
 | 草稿箱 / draftbox | `posts/_draftbox/`：本地可预览、gitignore 不 push；出箱后再入库 |
 | 草稿（园主口径） | 进草稿箱，不是「commit 后靠 draft:true 藏首页」 |
-| Knowledge Theme | 素材库一级桶（如 `claude-code`）；路径 `todo/{Theme}/{facet}/…` |
+| Knowledge Theme | YAML 一级桶（如 `claude-code`）；落盘用 vault 已有夹，不是 `Knowledge/todo` |
 | facet | Theme 下切面（如 `skill` / `mcp` / `architecture`）；≠ 博客 tags |
 | source（extract） | 素材来源：`obsidian` / `paste` / `research` / `rss`（旧 wechat/bibigpt 视为 paste） |
 | 四渠 | 写稿进料分流：vault / 粘贴 / 调研 / RSS；用户不必点名渠道 |

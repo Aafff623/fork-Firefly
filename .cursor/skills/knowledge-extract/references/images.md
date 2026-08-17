@@ -53,9 +53,26 @@ python .cursor/skills/_shared/scripts/upload_r2.py \
 
 `assets/` 可留本地副本方便预览；主体 md **优先写 R2 URL**，避免 output 再把大图拷进 git。
 
+## 封面 ≠ 正文插图
+
+`image:` / 列表卡背景：必须 MiniMax 自生成（默认二次元人物，主题元素编进画面；或场景图）。禁止把园主配图或检索素材当封面。  
+正文插图：园主截图、官方图、检索图可以。合集（渠道 4）仍禁止生图。
+
+## 封面点名本站角色
+
+封面或配图点名本站角色（DeepSeek 猫娘等）必须先搜桌宠真源，再决定生图：
+
+- 组件：`src/components/features/SpritePet.svelte`
+- 默认宠：`maid-deepseek-whale`（`src/lib/pets/builtinPets.ts` / `src/config/petConfig.ts`）
+- 精灵：`public/pets/maid-deepseek-whale/`（`/pets/maid-deepseek-whale/spritesheet.webp`）
+
+禁止自造鲸背杂志风。生图走 `firefly-minimax-media`（先 `check_quota.py`），不要在本页重写 prompt 工艺。
+
 ## MiniMax 兜底
 
-1. 检索（或原图）确实没有能说明该节的图。
+正文缺图才走这里。封面不走兜底，见上一节「封面 ≠ 正文插图」。
+
+1. 检索（或原图）确实没有能说明该节的图。点名本站角色时先过上一节真源。
 2. 读 `firefly-minimax-media`，先 `scripts/check_quota.py`。
 3. 交付写明：哪几张是生图、额度是否过门禁。
 4. 合集（渠道 4）默认禁止生图。

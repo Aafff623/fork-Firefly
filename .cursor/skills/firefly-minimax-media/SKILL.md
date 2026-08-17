@@ -88,6 +88,7 @@ python .cursor/skills/firefly-minimax-media/scripts/fetch_media.py --url "https:
 | 桌宠音频 | `public/pets/<petId>/audio/` | `<audio src="/pets/...">` |
 | 站点音乐 | `public/assets/music/` | `<audio src="/assets/music/...">` |
 | 短视频 | `public/media/minimax/video/` | `<video src="/media/minimax/video/...">`；禁改壁纸 |
+| 日历封面 GIF | 备份默认 `.scratch/gif-library/backup/`；上线才进 `public/assets/images/widgets/calendar/voxel/` | **先读** `.scratch/gif-library/README.md`。标杆（已上线，勿删勿搬）：`voxel/rose-cat-gardener.gif` · `cyan-data-cube.gif` · `violet-firefly-lantern.gif`。默认不改 `Calendar.astro`。 |
 
 ## 封面强制前置
 

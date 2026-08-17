@@ -182,7 +182,7 @@ def dynamic_covers_slug(dynamics: list[dict], slug: str) -> bool:
     needle = f"/posts/{slug.strip('/')}/"
     alt = f"/posts/{slug.strip('/')}"
     for d in dynamics:
-        if needle in d["body"] or alt in d["body"] or slug in d["body"]:
+        if needle in d["body"] or alt + ")" in d["body"] or alt + " " in d["body"] or alt + "\n" in d["body"]:
             return True
     return False
 

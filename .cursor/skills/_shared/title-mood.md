@@ -16,3 +16,5 @@
 ## Agent 成帖
 
 从 vault 导入时：`title` 跟笔记文件名（或用户指定）即可；**禁止**为列表效果往 FM `title` 塞 emoji / 颜文字。展示点缀由站点层自动挂。
+
+本文件只管列表卡点缀，不管起名。frontmatter `title` 必须完整点题：园主给了素材题就先对齐，禁止感想句金句。细则 [`post-redlines.md`](post-redlines.md)。

@@ -1,7 +1,7 @@
-# 来源模块：`wechat`（微信公众号 → Knowledge）
+# 来源模块：`wechat`（微信公众号 → vault）
 
 公众号文常见特点：**排版与配图专业、正文偏重、热点话题数日内易重复**。  
-本模块目标：原文与配图**完整归档**，再写成可带走的 Knowledge 笔记，并挂上 Theme/facet 索引。用语进库不在本工序。
+本模块目标：原文与配图**完整归档**，再写成可在 Obsidian 里调的笔记，并挂上 Theme/facet 索引。用语进库不在本工序。落盘进 vault，不进 Knowledge。
 
 ## 触发词
 
@@ -36,7 +36,7 @@
 | **TTA** | 去课件腔（禁「一句话收束」等）；园主调完才是理想稿 | 主体不像目录通稿 |
 
 并行建议：Archive ∥ Classify 可同时开；Extract 依赖 Archive（至少有正文）；TTA 依赖 Extract。  
-父 Agent 汇总：建 `todo/{Theme}/{facet}/{日期}_{短题}/` 目录树 + 交付文件树。
+父 Agent 汇总：在 vault 已有主题夹下建 `{日期}_{短题}/`（优先 `Agentic Coding/`）+ 交付文件树。不要写 `Knowledge/todo`。
 
 ### 父 Agent 检查清单
 
@@ -53,7 +53,7 @@
   → Multi-Agent：Archive + Classify（并行）
   → 确认 Theme/facet / 去重结论（撞题则问园主：合并 or 差分）
   → Extract 写主体 → 去课件腔
-  → 落盘 todo/{Theme}/{facet}/{日期}_{短题}/
+  → 落盘 vault\{已有主题夹}\{日期}_{短题}\
   → 停。园主调完再 output（公众号默认草稿箱，除非用户明确正式发）
 ```
 

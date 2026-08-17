@@ -96,8 +96,8 @@
 
 | Skill | 路径 | 角色 |
 |---|---|---|
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 写稿进料（vault / 粘贴 / 调研 / RSS）→ Knowledge |
-| `knowledge-output` | `.cursor/skills/knowledge-output/` | Knowledge → 成帖（发布岗：自检 + 合集一二级路由；无主题分批扫 todo） |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | 写稿进料（vault / 粘贴 / 调研 / RSS）→ `threetwoa_ob`（不落 Knowledge） |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | vault 理想稿 → 成帖（发布岗：自检 + 合集一二级路由；优先读 Obsidian；旧库存才分批扫 todo） |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联（动态/统计/分类标签/热力图） |
 | `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频 |
 

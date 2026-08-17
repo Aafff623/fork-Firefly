@@ -62,6 +62,8 @@ Content Collections（`src/content.config.ts`）：
 
 **草稿箱 ≠ `draft: true` demo**：箱内正文永不入库；主题示例帖 `posts/draft.md` 可跟踪且仅靠 FM 藏生产首页。见 `AGENTS.md` / `docs/agents/workflow.md`。
 
+**2026-08 内容大裁员**：正式帖已从 `src/content/posts/` 撤下；生产列表当前只剩主题 demo（均为 `draft: true`，线上不出现）。对应动态改为「这篇已撤」。合集频道牌子仍在，篇数可为 0。后续新作按四渠重新进站。
+
 ### 现行分类词表（发帖门禁）
 
 文章 frontmatter `category` 由 `knowledge-output` 按本表自动建议，批次汇报表一次性过目；园主要改当场说。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
@@ -127,27 +129,30 @@ Content Collections（`src/content.config.ts`）：
 
 发文流水线（唯一入口 `knowledge-extract`，按输入分流）：
 
+**extract 落盘 = vault**（本表上栏固定根）。渠道 1 写回该笔记所在目录；渠道 2–3 写入已有主题夹（优先 `Agentic Coding/`）。禁止把「写到 Obsidian」理解成 Knowledge。
+
 | 渠 | 源 | 技能链 |
 |---|---|---|
-| 1 | Obsidian vault 路径 | extract → 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
-| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract → 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
-| 3 | 无材料、只要调研 | extract（并发广搜+配图）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 1 | Obsidian vault 路径 | extract（写回该目录）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract（vault 已有夹）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
+| 3 | 无材料、只要调研 | extract（并发广搜+配图 → vault 已有夹）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
 | 4 | 早报 / GitHub 周榜 | extract 交接 `ai-morning-brief` / `github-weekly-hot` → **site-cascade**（不抽用语） |
 
-### Knowledge 素材库（仓外）
+### Knowledge 旧库存（仓外，只读）
 
 | 项 | 值 |
 |---|---|
 | 根 | `D:\OneDrive\Desktop\Knowledge` |
-| 待发布 | `todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/`（新规范） |
-| 已发布 | `Archive/{Theme}/{facet}/…` |
+| 角色 | **只读旧库存**。新 extract 禁止再写入。output 无主题时仍可分批扫 `todo/` |
+| 待发布（旧） | `todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/` |
+| 已发布（旧） | `Archive/{Theme}/{facet}/…` |
 | 小林coding 离线 | `Archive/xiaolincoding/source/`（私有检索；禁批量发帖；站上仅导览合集） |
-| 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读；新 extract 勿再写扁平根 |
+| 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读 |
 | 来源索引 | `obsidian` / `paste` / `research` / `rss`（见 extract `source-modules.md`） |
-| Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md` |
-| 公众号流 | 同目录 `wechat-mp.md`（Multi-Agent + `source/` 保真 + TTA） |
+| Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md`（YAML；落盘夹用 vault 已有目录） |
+| 公众号流 | 同目录 `wechat-mp.md`（Multi-Agent + `source/` 保真 + TTA；落 vault） |
 
-**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 走上文「现行分类词表」，output 自动建议后批次过目。合集一二级路由缓存见 `knowledge-output/references/collection-model.md`（不记文章名单）。
+**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 走上文「现行分类词表」，output 自动建议后批次过目。合集一二级路由缓存见 `knowledge-output/references/collection-model.md`（不记文章名单）。不要整库把 Knowledge 搬进 vault。
 
 细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。旧入口 `ob2blog` 已并入 extract 渠道 1。
 
@@ -222,6 +227,7 @@ Content Collections（`src/content.config.ts`）：
 
 ## 已知缺口（非阻塞）
 
+- 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见 `docs/outputs/handoff/perf-optimization-*`
 - 主题 demo 帖已 `draft: true`（生产列表隐藏，DEV 仍可开）；Bangumi 页已关，追番 ID 仍可后续改
 - 统计 GA / Clarity / Umami / 51la 配置全空，等园主给 ID 再填 `analyticsConfig`（不造假 ID）
 - 评论系统现行 `type: "waline"`（ADR-0001）；勿再按 `none` 理解

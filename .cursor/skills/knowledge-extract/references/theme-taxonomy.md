@@ -1,25 +1,34 @@
-# Theme 分类词表（Knowledge 索引）
+# Theme 分类词表（YAML 索引；落盘进 vault）
 
-Knowledge（尤其 `todo/`）按 **Theme → facet → 单篇** 三级组织。  
-**Theme** = 长期知识桶（产品 / 领域）；**facet** = 桶内切面（架构 / Skill / MCP…）。  
-与博客 frontmatter `category`（`CONTEXT.md` 现行分类词表）**不是同一套**：Theme 管素材库检索；成帖时再映射到站点 category。
+Theme / facet 仍是笔记头索引（检索、output 对照 category）。  
+**落盘根是 vault**，不是 `D:\OneDrive\Desktop\Knowledge`。
 
-## 落盘路径（新规范）
+沿用 vault 已有夹，不要按本表 Theme ID 新建空目录，除非园主点头。
+
+## 落盘路径
+
+固定根：`D:\OneDrive\Desktop\Notes\threetwoa_ob`
 
 ```text
-D:\OneDrive\Desktop\Knowledge\todo\{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
-├── {短题}.md                 # 主体。园主调完为准；通稿才去壳
-├── assets/                   # 笔记引用图（封面/示意图；相对路径）
-└── source/                   # 可选；公众号等重原料必留
-    ├── article.md            # 原文或接近无损的 MD
-    ├── meta.json             # url / 标题 / 作者 / 抓取日（无密钥）
-    └── images/               # 原配图完整落盘
+渠道 1：该笔记已有目录（写回/更新，路径为准）
+渠道 2–3：{vault根}\{已有主题夹}\  或  {已有主题夹}\{YYYY-MM-DD}_{短题}\
+         ├── {短题}.md
+         ├── assets/     # 需要附件时
+         └── source/     # 公众号等重原料
 ```
 
-- `{Theme}` / `{facet}`：用本表 **目录 ID**（kebab-case ASCII），勿用空格。
-- `{短题}`：中文简洁达意；目录名 `YYYY-MM-DD_短题`。
-- **兼容**：历史扁平 `todo/{YYYY-MM-DD}_{主题}/` 仍可读；**新 extract 禁止再写扁平根**（除非用户明确要求临时路径）。
-- **Archive**：发布后整棵 `{YYYY-MM-DD}_{短题}/` 迁到 `Archive/{Theme}/{facet}/…`（保留 Theme 层级）；旧扁平归档可仍落 `Archive/` 根。
+已有主题夹（2026-08-16 实况，沿用勿发明）：
+
+| vault 夹 | 对得上的 Theme ID（YAML，不是新目录名） |
+|---|---|
+| `Agentic Coding/` | `claude-code` · `cursor` · `opencode` · `codex` · `agent-eng` · `vibe`（**默认优先**） |
+| `About Me/` | `career`（面经/实习向） |
+| `Explore/` · `Competition/` · `素材处理区域/` | 对得上再用；对不上先问 |
+| `Inbox/` | 临时；对不上 Theme 时先问园主，不要默默新建 Theme 夹 |
+
+- `{短题}`：中文简洁达意。需要附件/原文时用篇目录 `YYYY-MM-DD_短题`；轻量笔记可直接 `{短题}.md`。
+- **禁止**：把 extract 写到 `Knowledge\todo\{Theme}\{facet}\`；禁止把「写到 Obsidian」理解成 Knowledge。
+- **旧库存**：`D:\OneDrive\Desktop\Knowledge\todo` 与 `Archive/` **只读**。output 扫旧稿仍可用；新 extract 不要往那里写，也不要整库搬进 vault。
 
 ## 笔记头索引（必写）
 
@@ -28,19 +37,19 @@ D:\OneDrive\Desktop\Knowledge\todo\{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
 ```yaml
 ---
 source: paste           # obsidian | paste | research | rss（旧 wechat/bibigpt 视为 paste）
-theme: claude-code      # Theme 目录 ID
+theme: claude-code      # Theme 目录 ID（YAML；落盘夹用上表 vault 夹）
 facet: skill            # facet 目录 ID
 origin_title: ""        # 原文标题（若有）
 origin_url: ""          # 原文链接（若有）
 origin_author: ""       # 公众号名 / UP（若有）
-extracted: 2026-08-11   # 提炼日
+extracted: 2026-08-16   # 提炼日
 dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "none"
 ---
 ```
 
 ## Theme × facet 词表（现行）
 
-新建 Theme / facet 须先问园主中文名与目录 ID，再写入本表（覆盖式更新）。
+新建 Theme / facet 须先问园主中文名与目录 ID，再写入本表（覆盖式更新）。不要为此在 vault 里新建空夹。
 
 | Theme ID | 中文名 | 常用 facet（目录 ID = 中文可，优先英文 kebab） | 适用启发式 |
 |---|---|---|---|
@@ -84,12 +93,12 @@ dedupe: ""              # 若近几天同题已有笔记：写对照路径或 "n
 
 公众号优质但**重**、且**数日内易撞题**。落盘前：
 
-1. 扫 `todo/{Theme}/` 与近 7 日 `Archive/{Theme}/`（及历史扁平目录名）。
+1. 扫目标 vault 夹（优先 `Agentic Coding/`）近 7 日同题；旧库存可对照 `Knowledge/todo`（只读）。
 2. 同 Theme 下标题/钩子高度重合 → 优先**合并增补**旧笔记，或新笔记 `dedupe` 写明对照路径并只保留差分。
 3. 不要为同一热点连开 3 个几乎同构目录。
 
 ## 索引怎么用（Agent）
 
-1. extract 开跑：定渠道（`source`）→ 定 `theme` / `facet`（本表）→ 再落盘。  
-2. 交付时文件树必须露出 `Theme/facet/日期_短题` 三层。  
-3. 词表变更：改本文件 + 同步 `Knowledge/README.md` 结构说明 + `docs/agents/workflow.md` 乙路路径示例。
+1. extract 开跑：定渠道（`source`）→ 定 `theme` / `facet`（本表 YAML）→ 落入对得上的 **vault 已有夹**。  
+2. 交付时文件树必须露出实际 vault 路径。  
+3. 词表变更：改本文件 + `docs/agents/workflow.md` 路径示例。不要再把新稿路径写成 Knowledge。

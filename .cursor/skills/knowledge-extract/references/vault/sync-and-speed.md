@@ -39,7 +39,7 @@ python .cursor/skills/_shared/scripts/sync_check.py --json
 
 漂移后动作：
 
-1. **OB 更新、博客旧** → 先 `extract_vault.py` 进 Knowledge 再 output；紧急才 `prep_convert.py --apply`（会把图拷进 git，与 R2 策略冲突，需用户同意）  
+1. **OB 更新、博客旧** → 先 `extract_vault.py` 写回该笔记所在目录再 output；紧急才 `prep_convert.py --apply`（会把图拷进 git，与 R2 策略冲突，需用户同意）  
 2. **博客改了正文、OB 未改** → 汇报冲突，**默认不回写 vault**（除非用户明确「同步回 Obsidian」）  
 3. 更新 manifest `noteSha256`（prep --apply 会写）
 
@@ -51,10 +51,10 @@ python .cursor/skills/_shared/scripts/sync_check.py --json
 
 **分流：脚本做机械，Agent 只审差异。**
 
-**新稿默认走 extract 渠道 1**（`extract_vault.py` → Knowledge → output）。下面 `prep_convert.py --apply` 只留给**已映射帖**且用户同意把文件写进 `posts/` 的紧急重转。
+**新稿默认走 extract 渠道 1**（`extract_vault.py` 写回 vault 该笔记所在目录 → output）。下面 `prep_convert.py --apply` 只留给**已映射帖**且用户同意把文件写进 `posts/` 的紧急重转。
 
 ```
-A  extract_vault.py    ← 消解 ![[ ]]、拷附件进 Knowledge/assets
+A  extract_vault.py    ← 消解 ![[ ]]、拷附件进该笔记所在目录的 assets/
 B  sync_check          ← 已映射帖对照指纹
 C  Agent review        ← 只改 report 警告项 + 上 R2 + 提炼
 D  knowledge-output    ← 成帖；validate_post + site-cascade
@@ -62,8 +62,8 @@ D  knowledge-output    ← 成帖；validate_post + site-cascade
 
 ```bash
 python .cursor/skills/knowledge-extract/scripts/extract_vault.py \
-  --note "D:/.../Notes/.../某笔记.md" \
-  --out "D:/OneDrive/Desktop/Knowledge/todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}"
+  --note "D:/OneDrive/Desktop/Notes/threetwoa_ob/Agentic Coding/某笔记.md"
+  # --out 省略则写回该笔记所在目录；不要指向 Knowledge
 
 # 紧急：机械写进 posts/（旧路径，会拷图进 git）
 python .cursor/skills/_shared/scripts/prep_convert.py \

@@ -2,4 +2,5 @@
 
 真源：[`../../_shared/title-mood.md`](../../_shared/title-mood.md)
 
-成帖时写出口语气即可，**禁止**把点缀写进 frontmatter `title`。`validate_post.py` 会拦 title 里的 emoji / 颜文字。
+本文件只管列表卡点缀。frontmatter `title` 必须完整点题，禁止感想句；起名守 [`../../_shared/post-redlines.md`](../../_shared/post-redlines.md)。  
+**禁止**把点缀写进 `title`。`validate_post.py` 会拦 emoji / 颜文字。

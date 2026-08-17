@@ -1,33 +1,5 @@
 {
   "version": 1,
   "vaultRoot": "D:\\OneDrive\\Desktop\\Notes\\threetwoa_ob",
-  "posts": [
-    {
-      "slug": "ai-coding-save-money",
-      "obsidianNote": "D:\\OneDrive\\Desktop\\Notes\\threetwoa_ob\\Agentic Coding\\论 AI Coding 的奇淫技巧👿.md",
-      "postPath": "src/content/posts/ai-coding-save-money/index.md",
-      "title": "论 AI Coding 的奇淫技巧👿",
-      "noteSha256": "6d6a504e87ace3afae2103629f293569c17e6dda962aebeebc229f40985882f2",
-      "lastPrep": "2026-08-02",
-      "assetMap": {
-        "邪修 AI Coding 省钱.webp": "./cover.webp",
-        "邪修 AI Coding 省钱-2.png": "./images/ai-coding-2.png"
-      }
-    },
-    {
-      "slug": "engineering-type",
-      "obsidianNote": "D:\\OneDrive\\Desktop\\Notes\\threetwoa_ob\\素材处理区域\\Engineering Type.md",
-      "postPath": "src/content/posts/engineering-type/index.md",
-      "title": "Engineering Type",
-      "noteSha256": "e60e06575dc3eb42a20f5d13c3f7f9b920b47bc32ff90bb7a634fc54a510c99e",
-      "lastPrep": "2026-08-02",
-      "assetMap": {
-        "Engineering Type.png": "./images/engineering-type.png",
-        "Engineering Type-1.png": "./images/engineering-type-1.png",
-        "Engineering Type-2.png": "./images/engineering-type-2.png",
-        "Engineering Type.jpg": "./images/engineering-type.jpg",
-        "Engineering Type-3.png": "./images/engineering-type-3.png"
-      }
-    }
-  ]
+  "posts": []
 }

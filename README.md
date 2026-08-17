@@ -212,7 +212,7 @@ python scripts/capture-readme-showcase.py
       <a href="assets/images/readme/showcase-post.png"><img alt="Post" src="assets/images/readme/showcase-post.png" width="100%"></a>
       <br><strong>Post</strong><br>
       <sub>Index-First TOC · 封面 · Markdown 扩展 · 公告礼盒</sub><br>
-      <a href="https://www.threetwoa.live/posts/claude-code-windows-beautify/">Open</a>
+      <a href="https://www.threetwoa.live/">Open</a>
     </td>
     <td width="33%" valign="top" align="center">
       <a href="assets/images/readme/showcase-dynamic.png"><img alt="Dynamic" src="assets/images/readme/showcase-dynamic.png" width="100%"></a>
@@ -427,7 +427,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 ## Performance
 
-性能专项已推进到 V3。**方法比单个跑分重要**：先用 LCP / CDP / 20-hop 探针确认瓶颈，再改加载策略、生命周期和移动端信息密度。最新结果如下，跨环境数字只作趋势判断，不伪装成严格 A/B。
+性能专项已推进到 **V7**。**方法比单个跑分重要**：先用 LCP / CDP / 20-hop 探针确认瓶颈，再改加载策略、生命周期和移动端信息密度。最新结果如下，跨环境数字只作趋势判断，不伪装成严格 A/B。
 
 | 指标 | 参考值 | 当前值 | 变化与口径 |
 | --- | ---: | ---: | --- |
@@ -437,11 +437,13 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | 桌面 DOM 节点 | 3598 | ≈3200 | -11.1% |
 | 移动端 forced layout | 3734 ms | 2590 ms | -30.6% |
 | TagCloud reflow | 723 ms | 140 ms | -80.6% |
-| CLS | — | 0 | 当前验收值 |
+| CLS | — | 0.01 | hero/音乐脚本 defer 引入的 0.27 已收敛 |
 
 移动端不是等比缩小 PC：RepelText 字符、TagCloud CDN / 动画、Calendar / Recommend 重复元数据请求和底部冗余侧栏都在小屏归零；主题切换长条从 `85×40` 收到 `35×35` icon。核心治理仍包括 Swup 生命周期统一清理、图片按需物化、Pagefind 懒加载、内联脚本外置和首屏渲染门控。
 
-完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md)。
+**V4→V7 增量（2026-08-15/16）**：dist 571→**185MB**（`agents.astro` 根级 glob 根治 + pio 出仓 + 孤儿 chunk 清零 + 内容重复 142MB→0）；每页内联脚本 162→**49KB**；桌宠移动文章页 **0 张** spritesheet；music 双脚本 defer；Waline/画布/qrcode 点击才载；TagCloud 自托管；swup 视口内链接预取（弱网自动退避）；hero 大图懒换；页脚 CSS 异步。门禁 `scripts/check-v41-gates.mjs` **29 项**（含 dist 产物断言）进日常验证。
+
+完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md) · [V5 review+收口](docs/outputs/handoff/perf-optimization-2026-08-15-v5-plan.md) · [V6/V7 收官](docs/outputs/handoff/perf-optimization-2026-08-15-v6-final.md)。
 
 ## Style and assets
 

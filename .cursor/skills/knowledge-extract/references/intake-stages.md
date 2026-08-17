@@ -1,17 +1,17 @@
 # 发文三段
 
-RSS 不绑新人格。Knowledge 换根还没做；理想稿以园主调完的 Obsidian 为准。
+RSS 不绑新人格。extract 落盘 = vault；理想稿以园主调完的 Obsidian 为准。
 
 ```text
-extract  求全 → 问现场 → 配图 → 停
+extract  求全 → 问现场 → 配图 → 停（写入 threetwoa_ob）
 园主     在 Obsidian 调到理想（要开口再调 tta-tone，那是润色）
 output   自检 → 封面 → 落盘 → 用语进库（默认自动）
 ```
 
 | 岗 | 做 | 不做 |
 | --- | --- | --- |
-| extract | 客观信息尽量收全，写入 Obsidian；问现场；插图 | 不发布、不做封面、不进用语库 |
+| extract | 客观信息尽量收全，写入 vault；问现场；插图 | 不发布、不做封面、不进用语库、不写 Knowledge |
 | 园主 | 把笔记改成理想样子 | — |
-| output | 发布一条龙；默认从理想稿抽用语 | 不把理想稿重写成另一篇；不整段重跑 extract |
+| output | 发布一条龙；默认从理想稿抽用语；优先读 vault 里调完的笔记 | 不把理想稿重写成另一篇；不整段重跑 extract；不把新 extract 写成 Knowledge |
 
 output 自检不过：只回跳缺的那一段。用户说「只提取某节 / 某几个词」则只抽那些；说「这轮不要进库」则跳过。

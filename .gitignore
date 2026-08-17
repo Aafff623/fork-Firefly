@@ -54,6 +54,7 @@ package/
 
 # local agent scratch
 .scratch/
+.mimosa/
 
 # 博文草稿箱：本地可预览，正文不入库不 push（仅保留 README 约定）
 src/content/posts/_draftbox/**

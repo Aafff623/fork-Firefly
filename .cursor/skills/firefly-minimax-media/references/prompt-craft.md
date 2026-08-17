@@ -47,7 +47,8 @@
 
 ### 17 · 卡通人物风（标准 · 2026-08-06）
 
-站点锚点：`docs/idea/calendar-cover/mood.md` + `public/assets/images/widgets/calendar/*.gif`；合集样张：`public/assets/collections/*.jpg`；菜单样张：`style-taste/17-chibi.jpg`。
+站点锚点：`docs/idea/calendar-cover/mood.md` + `public/assets/images/widgets/calendar/*.gif`；合集样张：`public/assets/collections/*.jpg`；菜单样张：`style-taste/17-chibi.jpg`。  
+日历动图生成（规格 / 标杆 / 额度）以 `.scratch/gif-library/README.md` 为准；对标已上线 voxel 三张，不要对标工作室白底干净道具。
 
 **气质**：`soft · pixel · chibi · calm · UI-banner-safe`（非写实、非赛博、非黏土）。
 

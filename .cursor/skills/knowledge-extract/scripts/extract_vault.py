@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Resolve Obsidian wiki embeds into a Knowledge piece directory (no posts/).
+"""Resolve Obsidian wiki embeds in-place in the vault (no posts/, no Knowledge/).
 
 Usage (from Firefly/):
   python .cursor/skills/knowledge-extract/scripts/extract_vault.py ^
-    --note "D:/OneDrive/Desktop/Notes/threetwoa_ob/.../note.md" ^
-    --out "D:/OneDrive/Desktop/Knowledge/todo/{Theme}/{facet}/2026-08-14_短题"
+    --note "D:/OneDrive/Desktop/Notes/threetwoa_ob/Agentic Coding/note.md"
+  # --out 省略则写回该笔记所在目录
 """
 
 from __future__ import annotations
@@ -42,9 +42,13 @@ def main() -> int:
         except Exception:
             pass
 
-    p = argparse.ArgumentParser(description="Obsidian note → Knowledge assets (wiki resolved)")
+    p = argparse.ArgumentParser(description="Obsidian note → vault assets (wiki resolved)")
     p.add_argument("--note", required=True)
-    p.add_argument("--out", required=True)
+    p.add_argument(
+        "--out",
+        default="",
+        help="write-back directory; default = the note's parent folder in the vault",
+    )
     p.add_argument("--title", default="")
     p.add_argument("--force", action="store_true")
     args = p.parse_args()
@@ -54,7 +58,7 @@ def main() -> int:
         print(f"ERROR: note not found: {note}", file=sys.stderr)
         return 2
 
-    out = Path(args.out).expanduser().resolve()
+    out = Path(args.out).expanduser().resolve() if args.out.strip() else note.parent
     out.mkdir(parents=True, exist_ok=True)
     assets = out / "assets"
     assets.mkdir(exist_ok=True)
@@ -62,7 +66,7 @@ def main() -> int:
     vault = vault_info_for_note(note)
     title = args.title.strip() or note.stem
     md_path = out / f"{title}.md"
-    if md_path.exists() and not args.force:
+    if md_path.exists() and not args.force and md_path.resolve() != note.resolve():
         print(f"ERROR: {md_path} exists (pass --force to overwrite)", file=sys.stderr)
         return 2
 

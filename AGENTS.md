@@ -66,8 +66,8 @@ pnpm new-d <content>
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
-| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。求全写入后停；不发布、不抽用语。见 `source-modules.md` |
-| `knowledge-output` | `.cursor/skills/knowledge-output/` | 园主在 Obsidian 调完理想稿之后：缺口补提 + 自检 + 落盘 + 用语进库（默认自动，也可点名只抽某节/词）；无主题则分批扫 todo；正式发才 Archive + `site-cascade` |
+| `knowledge-extract` | `.cursor/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。落盘进 `threetwoa_ob`，不落 Knowledge。求全写入后停；不发布、不抽用语。见 `source-modules.md` |
+| `knowledge-output` | `.cursor/skills/knowledge-output/` | 园主在 Obsidian 调完理想稿之后：缺口补提 + 自检 + 落盘 + 用语进库（默认自动，也可点名只抽某节/词）；优先读 vault 笔记；旧库存才分批扫 todo；正式发才 Archive + `site-cascade` |
 | `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 由 extract 渠道 4 交接；橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
 | `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | 由 extract 渠道 4 交接；IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
@@ -103,18 +103,18 @@ Windows：`cmd /c mklink /J <dest> <Firefly/.cursor/skills/<name>>`。已有过�
 
 ```text
 用户给材料或题目
-  → knowledge-extract
-       1 路径在 vault     → extract_vault.py → 求全写入（渠道 1 以 vault 为准）
-       2 粘贴图文         → 清洗分类 → Knowledge（换根未做；公众号工序见 wechat-mp）
-       3 无材料只要调研   → 并发广搜 + 检索配图 → Knowledge
+  → knowledge-extract（落盘 = vault：D:\OneDrive\Desktop\Notes\threetwoa_ob）
+       1 路径在 vault     → extract_vault.py → 写回该笔记所在目录
+       2 粘贴图文         → 清洗分类 → vault 已有主题夹（优先 Agentic Coding/；公众号工序见 wechat-mp）
+       3 无材料只要调研   → 并发广搜 + 检索配图 → vault 已有主题夹
        4 早报 / 热榜      → 交接 ai-morning-brief / github-weekly-hot（不经 Knowledge，不抽用语）
   → 园主在 Obsidian 调到理想
-  → 渠道 1–3：knowledge-output（发布 + 用语进库；无主题则分批扫 todo；公众号/BibiGPT 默认草稿箱）
+  → 渠道 1–3：knowledge-output（发布 + 用语进库；优先读 vault 理想稿；旧库存才分批扫 Knowledge/todo；公众号/BibiGPT 默认草稿箱）
   → 正式发：site-cascade（--blurb）；草稿箱禁止 emit
 ```
 
 旧称甲/乙/丙 = 渠道 1 / 渠道 2–3 / 渠道 4，仅作别名。  
-Knowledge 词表：仓外 `D:\OneDrive\Desktop\Knowledge\README.md` + `theme-taxonomy.md`。  
+Theme 词表：`theme-taxonomy.md`（YAML 索引；落盘夹用 vault 已有目录）。`Knowledge/todo` 只读旧库存。  
 成帖红线：`.cursor/skills/_shared/post-redlines.md`，由 `validate_post.py` 执行。
 
 ### 草稿箱（draftbox · 本地可预览，不进远端）

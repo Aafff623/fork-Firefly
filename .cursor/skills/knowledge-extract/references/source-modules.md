@@ -1,7 +1,7 @@
 # 进料四渠（extract 入口）
 
 extract 是写稿**唯一进料口**。开跑先判定渠道，再挂 Theme/facet（[`theme-taxonomy.md`](theme-taxonomy.md)）。  
-用户不必说「走 ob2blog / 走乙路」——看输入。
+用户不必说「走 ob2blog / 走乙路」——看输入。渠道 1–3 落盘 = vault（`threetwoa_ob`），不要写 Knowledge。
 
 YAML `source` 只写四值：`obsidian` | `paste` | `research` | `rss`。
 
@@ -14,7 +14,7 @@ YAML `source` 只写四值：`obsidian` | `paste` | `research` | `rss`。
 | 1 | `obsidian` | vault 内 `.md` 路径 | `extract_vault.py` 消解 `![[…]]`；用附件图；已映射先 `sync_check` | [`vault/obsidian-vault.md`](vault/obsidian-vault.md) |
 | 2 | `paste` | 粘贴正文+图、链接、会话、Grok/公众号/网页/BibiGPT | **统一当图文原料**清洗分类；有图用原图 | 下文「粘贴深度」；公众号另见 [`wechat-mp.md`](wechat-mp.md) |
 | 3 | `research` | 只有题目 / 「帮我调研」 | 并发广搜 + **必须检索配图** | [`research-intake.md`](research-intake.md) |
-| 4 | `rss` | 早报、热榜口令 | 交接合集 skill，不写 Knowledge | `ai-morning-brief` / `github-weekly-hot`；[`../../_shared/periodical.md`](../../_shared/periodical.md) |
+| 4 | `rss` | 早报、热榜口令 | 交接合集 skill，不写 vault 普通笔记、不经 Knowledge | `ai-morning-brief` / `github-weekly-hot`；[`../../_shared/periodical.md`](../../_shared/periodical.md) |
 
 渠道 1、2、4 通常**自带**正文和配图；渠道 3 **没有**，要自己搜文搜图。
 
@@ -46,10 +46,11 @@ origin_url: ""
 完整词表：[`theme-taxonomy.md`](theme-taxonomy.md)。
 
 ```text
-todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/
+D:\OneDrive\Desktop\Notes\threetwoa_ob\{已有主题夹}\   # 优先 Agentic Coding/
+# 需附件/原文时：{已有主题夹}\{YYYY-MM-DD}_{短题}\
 ```
 
-开跑顺序：**渠道 → theme → facet → 落盘**。未定 Theme 不得写进 `misc/inbox` 以外；`misc` 仅临时。
+开跑顺序：**渠道 → theme → facet → 落入 vault 已有夹**。YAML 的 `misc` 仅临时；对不上夹先问园主，不要新建空 Theme，也不要写 Knowledge。
 
 ---
 
@@ -97,7 +98,7 @@ BibiGPT 负责高保真翻译/结构化原料，不负责定论。extract 先**�
 - 看到 vault 路径就去找已删除的 `ob2blog` skill
 - 渠道 2 先鉴定「这是不是公众号」才肯提炼
 - 渠道 3 只搜一页 Google 式结果、不配图
-- 渠道 4 把 RSS 正文搬进 Knowledge 再 output（合集有自己的落盘）
+- 渠道 4 把 RSS 正文搬进 vault 普通笔记或 Knowledge 再 output（合集有自己的落盘）
 - 把 BibiGPT 默认摘要当终稿
 - 用 MCP 烧 API「图省事」（会员网页额度未用完时）
 - 把园主贴来的分数表 / 插件清单先改写成散文再提炼

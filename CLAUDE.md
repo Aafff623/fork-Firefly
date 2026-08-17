@@ -37,8 +37,8 @@
 
 | Skill | 用途 |
 |---|---|
-| `knowledge-extract` | **写稿唯一进料口**（vault / 粘贴 / 调研 / 早报热榜分流）；求全后停，不发布、不抽用语 |
-| `knowledge-output` | 园主调完理想稿后再发（发布岗 + 用语进库；无主题分批扫 todo；草稿进 `_draftbox/`）；正式发收尾接 `site-cascade` |
+| `knowledge-extract` | **写稿唯一进料口**（vault / 粘贴 / 调研 / 早报热榜分流）；落盘进 `threetwoa_ob`，不落 Knowledge；求全后停，不发布、不抽用语 |
+| `knowledge-output` | 园主调完理想稿后再发（发布岗 + 用语进库；优先读 vault 笔记；旧库存才分批扫 todo；草稿进 `_draftbox/`）；正式发收尾接 `site-cascade` |
 | `ai-morning-brief` | 橘鸦 RSS → 按园主焦点筛成「早报」合集一期（不转载全文；默认草稿箱） |
 | `github-weekly-hot` | IT咖啡馆周刊 RSS 当目录 → 对 GitHub 自写「热榜」合集一期（不搬原文；默认草稿箱） |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |

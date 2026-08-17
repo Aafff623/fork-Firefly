@@ -51,6 +51,6 @@
 
 ## 落盘
 
-`source: research`。关键出处写在笔记里（链接+日期），不要另造空 `source/` 目录除非用户给了长文原料。
+`source: research`。写入 `D:\OneDrive\Desktop\Notes\threetwoa_ob` 已有主题夹（优先 `Agentic Coding/`）。关键出处写在笔记里（链接+日期），不要另造空 `source/` 目录除非用户给了长文原料。不要写 Knowledge。
 
-交接 output 时说明：这是调研稿，图已是 R2 或仍待 MiniMax。
+交接 output 时说明：这是调研稿，图已是 R2 或仍待 MiniMax；理想稿在 vault。

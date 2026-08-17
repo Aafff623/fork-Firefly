@@ -51,16 +51,16 @@ Issue(.scratch/<feature>/)
 
 ```text
 写篇博客 / 丢路径 / 粘贴 / 调研 / 早报
-  → knowledge-extract（求全 → 问现场 → 配图 → 停）
-       1 vault 路径     → extract_vault.py → 求全写入（渠道 1 以 vault 为准；附件图 → R2）
-       2 粘贴图文       → 清洗分类 → Knowledge（换根未做；有图用原图）
-       3 无材料调研     → 并发广搜 + 检索配图 → Knowledge
+  → knowledge-extract（求全 → 问现场 → 配图 → 停；落盘 = vault）
+       1 vault 路径     → extract_vault.py → 写回该笔记所在目录（附件图 → R2）
+       2 粘贴图文       → 清洗分类 → vault 已有主题夹（优先 Agentic Coding/；有图用原图）
+       3 无材料调研     → 并发广搜 + 检索配图 → vault 已有主题夹
        4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot（不抽用语）
   → 园主在 Obsidian 调到理想
-  → 渠道 1–3：knowledge-output（自检 → 落盘 → 用语进库；无主题则分批扫 todo）
+  → 渠道 1–3：knowledge-output（自检 → 落盘 → 用语进库；优先读 vault 理想稿；旧库存才分批扫 Knowledge/todo）
   → 本地预览验收 → `_draftbox/`（未点头禁止出箱 / cascade / push）
   → 正式发：site-cascade（`--blurb`）→ Agent 协作者评论
-  → 发布成功：素材迁 Knowledge\Archive\…
+  → 发布成功：旧 Knowledge\todo 素材才迁 Archive；vault 新稿留在 vault
 ```
 
 旧称甲/乙/丙 = 渠道 1 / 2–3 / 4。映射表仍是 `.ob2blog/manifest.json`（vault 路径 ↔ slug）。列表卡 emoji 仅 `title-mood` 展示层，**勿**写入 `title`。
