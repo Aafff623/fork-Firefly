@@ -60,6 +60,7 @@ type Session = {
 	faceAvatar: HTMLElement;
 	faceBot: HTMLElement;
 	face: Face;
+	engineOk: boolean;
 	hover: boolean;
 	leaveTimer: number;
 	bot: GrokBot | null;
@@ -260,12 +261,54 @@ function injectScript(src: string): Promise<void> {
 	});
 }
 
+function vendorForcedOff(): boolean {
+	return (
+		import.meta.env.DEV &&
+		new URLSearchParams(location.search).has("ff-no-grok")
+	);
+}
+
+function jsType(res: Response): boolean {
+	if (!res.ok) return false;
+	const type = (res.headers.get("content-type") || "").toLowerCase();
+	if (!type || type.includes("html") || type.includes("markdown")) return false;
+	return type.includes("javascript") || type.includes("ecmascript");
+}
+
+async function vendorPresent(): Promise<boolean> {
+	if (vendorForcedOff()) return false;
+	const src = ENGINE_SCRIPTS[0];
+	const signal = AbortSignal.timeout(2500);
+	try {
+		let res = await fetch(src, { method: "HEAD", cache: "no-store", signal });
+		if (res.status === 405 || res.status === 501) {
+			res = await fetch(src, { method: "GET", cache: "no-store", signal });
+		}
+		return jsType(res);
+	} catch {
+		return false;
+	}
+}
+
+function geoReady(): boolean {
+	return !!(window as unknown as { GROK_GEO?: unknown }).GROK_GEO;
+}
+
 function loadEngine(): Promise<boolean> {
-	if (grokCtor()) return Promise.resolve(true);
+	if (grokCtor() && geoReady()) return Promise.resolve(true);
 	if (enginePromise) return enginePromise;
 	enginePromise = (async () => {
 		try {
-			for (const src of ENGINE_SCRIPTS) {
+			if (!(await vendorPresent())) {
+				console.warn("[profile-grok] vendor missing; stay on avatar");
+				return false;
+			}
+			await injectScript(ENGINE_SCRIPTS[0]);
+			if (!geoReady()) {
+				console.warn("[profile-grok] vendor missing; stay on avatar");
+				return false;
+			}
+			for (const src of ENGINE_SCRIPTS.slice(1)) {
 				await injectScript(src);
 			}
 			return typeof grokCtor() === "function";
@@ -384,16 +427,21 @@ function ensureBot(S: Session): GrokBot | null {
 	if (S.bot || reduced() || S.dead) return S.bot;
 	const Ctor = grokCtor();
 	if (!Ctor) return null;
-	S.bot = new Ctor(S.svg, {
-		mode: "hold",
-		state: "thinking",
-		shape: "blob",
-		color: "black",
-		scheme: schemeOf(),
-		loginWrap: true,
-		sizePx: sizePxOf(S.stage),
-		followPointer: false,
-	});
+	try {
+		S.bot = new Ctor(S.svg, {
+			mode: "hold",
+			state: "thinking",
+			shape: "blob",
+			color: "black",
+			scheme: schemeOf(),
+			loginWrap: true,
+			sizePx: sizePxOf(S.stage),
+			followPointer: false,
+		});
+	} catch {
+		S.bot = null;
+		return null;
+	}
 	hold(S.bot);
 	S.bot.setPaused(false);
 	muteEngineWild(S.bot);
@@ -508,14 +556,16 @@ function nextBucket(S: Session): void {
 }
 
 function showFace(S: Session, face: Face): void {
+	if (face === "bot") {
+		if (!S.engineOk || reduced() || S.dead || !ensureBot(S)) {
+			face = "avatar";
+		}
+	}
 	S.face = face;
 	paintFace(S);
-	if (face === "bot") {
-		const bot = ensureBot(S);
-		if (bot) {
-			bot.setPaused(false);
-			hold(bot);
-		}
+	if (face === "bot" && S.bot) {
+		S.bot.setPaused(false);
+		hold(S.bot);
 		scheduleBucket(S);
 		scheduleVariant(S, bucketOf(S.bucket), bucketOf(S.bucket).variants[S.variant]?.trick);
 	} else if (S.bot) {
@@ -527,7 +577,7 @@ function showFace(S: Session, face: Face): void {
 }
 
 function onEnter(S: Session): void {
-	if (reduced() || S.dead) return;
+	if (reduced() || S.dead || !S.engineOk) return;
 	window.clearTimeout(S.leaveTimer);
 	S.hover = true;
 	if (S.face !== "bot") showFace(S, "bot");
@@ -638,6 +688,12 @@ function bind(S: Session): void {
 				void (async () => {
 					if (!(await loadEngine())) return;
 					if (S.dead) return;
+					S.engineOk = true;
+					if (!ensureBot(S)) {
+						S.engineOk = false;
+						showFace(S, "avatar");
+						return;
+					}
 					showFace(S, "bot");
 					void playIndex(S, 2, 0);
 					startLoop(S);
@@ -674,7 +730,8 @@ function mount(stage: HTMLElement): Session | null {
 		svg,
 		faceAvatar,
 		faceBot,
-		face: "bot",
+		face: "avatar",
+		engineOk: false,
 		hover: false,
 		leaveTimer: 0,
 		bot: null,
@@ -697,18 +754,23 @@ function mount(stage: HTMLElement): Session | null {
 
 	watchMotto(S);
 	bind(S);
+	showFace(S, "avatar");
 
 	if (reduced()) {
-		showFace(S, "avatar");
 		return S;
 	}
 
 	void (async () => {
 		if (!(await loadEngine())) {
-			showFace(S, "avatar");
 			return;
 		}
 		if (S.dead) return;
+		S.engineOk = true;
+		if (!ensureBot(S)) {
+			S.engineOk = false;
+			showFace(S, "avatar");
+			return;
+		}
 		showFace(S, "bot");
 		void playIndex(S, 2, 0);
 		startLoop(S);
