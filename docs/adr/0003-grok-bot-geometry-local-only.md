@@ -11,7 +11,7 @@
 
 1. **编舞与时间表入库**：`src/scripts/profile-grok-carousel.ts`、`profile-grok-timing.ts`、`Profile.astro` 圆槽接线。
 2. **几何不出仓**：`public/vendor/grok-bot/**` gitignore，仅 `README.md` 入库（本地从 `.scratch/refs/grok-icon-study/replica` 拷贝的步骤写在 README）。
-3. **线上缺 vendor**：侧栏锁静态头像，不跑 Bot，不 404 整页。
+3. **线上缺 vendor**：侧栏锁静态头像，不跑 Bot，不 404 整页。**HTML 首屏必须 `is-avatar`**（头像面 `is-on`）；引擎未就绪时禁止切 Bot 面（含悬停）。禁止为了 1:4 把 SSR 默认成空 Bot 盘。
 4. **Ask / LiveChat**：分析结论是缩小常驻、关 overlay 与跟手，且 `/ask` 应关侧栏轮播以免双实例；**尚未实现**，未点头不写。
 
 ## Consequences
@@ -26,3 +26,4 @@
 - 克隆仓的人若未拷 replica，侧栏只有头像。
 - 生产默认看不到 Bot，直到另有合法自绘或书面授权。
 - replica 与编舞脚本可能漂移，需对照 `.scratch/preview-grok-avatar/`。
+- 若 HTML 默认 `is-bot` 而生产无几何，首屏是米色空圆；已改为首屏头像。

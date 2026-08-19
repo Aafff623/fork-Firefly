@@ -1,7 +1,7 @@
 # master · 2026-08-19（侧栏 Grok Bot 轮播）
 
 ## Status
-shipped-local（生产无 vendor 几何则锁头像；未发 GitHub Release / Wiki）
+shipped-local（生产无 vendor 几何则锁头像；空圆兜底见 `2026-08-19-profile-avatar-fallback.md`）
 
 ## Commits
 
