@@ -8,8 +8,9 @@ if (!siteConfig.pages.ask) {
 
 // /ask 仅 DEV 开放：岛与 HeroUI 样式挂在 import.meta.env.DEV 分支，
 // 生产构建静态替换后整块死代码消除（742KB JS + 886KB CSS 不再产出孤儿 chunk）
-const AskChat = import.meta.env.DEV
-	? (await import("@/components/ask/AskChat")).default
+// client:* 必须写在带静态 import 的 .astro 里；对 TSX 动态 import 会 NoMatchingImport
+const AskChatIsland = import.meta.env.DEV
+	? (await import("@/components/ask/AskChatIsland.astro")).default
 	: null;
 if (import.meta.env.DEV) {
 	await import("@/styles/ask-heroui.css");
@@ -21,6 +22,6 @@ const description = "基于站点内容回答你的问题，欢迎来问。";
 
 <MainGridLayout title={title} description={description}>
 	<div class="card-base z-10 relative w-full">
-		{AskChat && <AskChat client:load />}
+		{AskChatIsland && <AskChatIsland />}
 	</div>
 </MainGridLayout>
