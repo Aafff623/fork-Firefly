@@ -127,7 +127,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
   }
 </section>
 
-<script is:inline defer data-swup-ignore-script src="/scripts/tag-chalk-sphere.js"></script>
+<script is:inline defer data-swup-ignore-script src="/scripts/tag-chalk-sphere.js?v=depth-edge2"></script>
 
 <style>
   .tag-sphere {
@@ -179,10 +179,10 @@ const showMore = Boolean(moreHref && moreCount > 0);
     cursor: grabbing;
   }
 
-  /* 悬停触发后：目标黄高亮丝滑转到正中，其余发虚（不用 filter，避免和球动画抢合成） */
+  /* 悬停触发后：目标转到正中并黄高亮，其余再压一层透明度 */
   .tag-sphere__frame.is-hover-focus
     :global(.tagcloud--item:not(.tag-sphere__item--focus)) {
-    opacity: 0.28 !important;
+    opacity: 0.22 !important;
     transition: opacity 0.35s ease;
   }
 
@@ -190,6 +190,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
     :global(.tagcloud--item.tag-sphere__item--focus) {
     z-index: 10000 !important;
     opacity: 1 !important;
+    filter: none !important;
   }
 
   .tag-sphere__frame.is-hover-focus
@@ -290,6 +291,7 @@ const showMore = Boolean(moreHref && moreCount > 0);
   .tag-sphere :global(.tagcloud--item) {
     position: absolute !important;
     isolation: isolate;
+    --tag-spot: 0.28;
   }
 
   .tag-sphere :global(.tagcloud--item),
@@ -304,13 +306,17 @@ const showMore = Boolean(moreHref && moreCount > 0);
     line-height: 1.15;
   }
 
-  /* 球框恒为深底：亮/暗主题统一浅色字，保证对比 */
+  /* 球框恒为深底。字色跟 --tag-spot：正中近白，远处打成灰蓝，别让半透明白字还像贴纸 */
   .tag-sphere :global(.tag-sphere__link--primary) {
-    color: oklch(0.93 0.01 80) !important;
+    color: color-mix(
+      in oklch,
+      oklch(0.97 0.012 80) calc(var(--tag-spot, 0.28) * 100%),
+      oklch(0.62 0.025 250)
+    ) !important;
     font-weight: 700 !important;
     cursor: pointer;
-    transition: color 0.15s ease;
-    text-shadow: 0 1px 2px rgb(0 0 0 / 0.45) !important;
+    transition: none;
+    text-shadow: 0 1px 1px rgb(0 0 0 / calc(0.25 + var(--tag-spot, 0.28) * 0.45)) !important;
   }
 
   .tag-sphere :global(.tag-sphere__link--primary:hover) {
@@ -318,11 +324,15 @@ const showMore = Boolean(moreHref && moreCount > 0);
   }
 
   .tag-sphere :global(.tag-sphere__link--theme) {
-    color: oklch(0.72 0.015 80) !important;
+    color: color-mix(
+      in oklch,
+      oklch(0.78 0.02 80) calc(var(--tag-spot, 0.28) * 100%),
+      oklch(0.56 0.02 250)
+    ) !important;
     font-weight: 500 !important;
     font-size: 1.05em !important;
     cursor: default;
-    text-shadow: 0 1px 2px rgb(0 0 0 / 0.4) !important;
+    text-shadow: 0 1px 1px rgb(0 0 0 / calc(0.2 + var(--tag-spot, 0.28) * 0.35)) !important;
   }
 
   .tag-sphere__fallback {

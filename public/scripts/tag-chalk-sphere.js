@@ -18,8 +18,8 @@
 
     var SCRIPT_SRC = "/scripts/vendor/tagcloud.min.js";
     var DRAG_PX = 6;
-    // 闲置慢转；拖拽跟手但别飞（用户反馈 5.5 / 0.42 过灵敏）
-    var IDLE_MAX_SPEED = 0.28;
+    // 闲置再快一档；拖拽跟手但别飞（0.42 是拖拽过灵敏的旧值）
+    var IDLE_MAX_SPEED = 0.4;
     var DRAG_MAX_SPEED = 1.85;
     var IDLE_DIV = 5;
     // 越大越钝：鼠标位移 / DRAG_DIV → 角速度
@@ -231,10 +231,7 @@
         if (!node) continue;
         e._ow = node.offsetWidth;
         e._oh = node.offsetHeight;
-        if (node.style && node.style.willChange) {
-          node.style.willChange = "transform";
-        }
-        if (node.style && node.style.filter) node.style.filter = "";
+        if (node.style) node.style.willChange = "transform";
       }
     }
 
@@ -264,11 +261,58 @@
       }
     }
 
+    /**
+     * 按这一帧里最近/最远的标签归一化。
+     * 12 点斐波那契分布永远到不了 z=-R，用理论极点会把「最近那颗」也压到 0.4，整球发灰。
+     */
+    function paintSphereDepth(instance) {
+      if (!instance || !instance.items) return;
+      var items = instance.items;
+      var n = items.length;
+      if (!n) return;
+      var d = instance.depth || 2 * (instance.radius || 72);
+      var rMin = Infinity;
+      var rMax = -Infinity;
+      var rs = new Array(n);
+      var i;
+      for (i = 0; i < n; i++) {
+        var rr = (2 * d) / (2 * d + items[i].z);
+        rs[i] = rr;
+        if (rr < rMin) rMin = rr;
+        if (rr > rMax) rMax = rr;
+      }
+      var span = rMax - rMin;
+      if (span < 0.01) span = 0.01;
+      for (i = 0; i < n; i++) {
+        var item = items[i];
+        var node = item.el;
+        if (!node) continue;
+        var u = (rs[i] - rMin) / span;
+        var spot = Math.pow(u, 3.2);
+        var op = 0.4 + 0.6 * spot;
+        var spotCss = 0.28 + 0.72 * spot;
+        var cue = "";
+        if (item._cue !== cue) {
+          item._cue = cue;
+          node.style.filter = cue;
+        }
+        var spotKey = spotCss.toFixed(3);
+        if (item._spot !== spotKey) {
+          item._spot = spotKey;
+          node.style.setProperty("--tag-spot", spotKey);
+        }
+        node.style.opacity = op.toFixed(3);
+        node.style.zIndex = String(Math.round(rs[i] * 1000));
+      }
+    }
+
     /** 库 _next 每帧读 offsetWidth；改走缓存，并去掉 IE filter 写入 */
     function patchTagCloudNext(instance) {
       if (!instance) return;
       var proto = Object.getPrototypeOf(instance);
-      if (!proto || proto._fireflyNextPatched) return;
+      if (!proto) return;
+      if (proto._fireflyDepthPaint === 9) return;
+      proto._fireflyDepthPaint = 9;
       proto._fireflyNextPatched = true;
       proto._next = function () {
         var s = this;
@@ -313,9 +357,6 @@
           item.y = y2;
           item.z = z2;
           item.scale = r.toFixed(3);
-          var op = r * r - 0.25;
-          if (op > 1) op = 1;
-          if (op < 0) op = 0;
           var node = item.el;
           if (!node) continue;
           var hw = (item._ow != null ? item._ow : node.offsetWidth) / 2;
@@ -330,9 +371,8 @@
             ")";
           node.style.WebkitTransform = tr;
           node.style.transform = tr;
-          node.style.opacity = op.toFixed(3);
-          node.style.zIndex = String(Math.round(r * 1000));
         }
+        paintSphereDepth(s);
       };
     }
 
@@ -432,9 +472,6 @@
         var e = instance.items[i];
         var r = (2 * depth) / (2 * depth + e.z);
         e.scale = r;
-        var op = r * r - 0.25;
-        if (op > 1) op = 1;
-        if (op < 0) op = 0;
         var node = e.el;
         if (!node) continue;
         var hw = (e._ow != null ? e._ow : node.offsetWidth) / 2;
@@ -445,9 +482,8 @@
           "translate3d(" + n + "px, " + o + "px, 0) scale(" + r + ")";
         node.style.WebkitTransform = tr;
         node.style.transform = tr;
-        node.style.opacity = String(op);
-        node.style.zIndex = String(Math.round(r * 1000));
       }
+      paintSphereDepth(instance);
     }
 
     function findInstanceItem(instance, itemEl) {
@@ -1014,6 +1050,7 @@
       ) {
         patchTagCloudNext(existing);
         cacheItemMetrics(existing);
+        syncTagCloudStyles(existing);
         bindMetricsAndVisibility(el, root);
         setIdleSpeed(existing);
         if (fallback) fallback.hidden = true;
@@ -1062,6 +1099,7 @@
 
       patchTagCloudNext(instance);
       cacheItemMetrics(instance);
+      syncTagCloudStyles(instance);
       // mount 后最多 1 帧：等布局稳定再量一次宽高（不再常驻 rAF 抢写 opacity）
       el._tagColorWatch = requestAnimationFrame(function () {
         el._tagColorWatch = 0;
