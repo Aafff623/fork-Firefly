@@ -1,7 +1,7 @@
 {
 	"buildCommand": "pnpm build",
 	"outputDirectory": "dist",
-	"installCommand": "pnpm install",
+	"installCommand": "rm -rf node_modules && pnpm install",
 	"framework": "astro",
 	"redirects": [
 		{

@@ -140,6 +140,11 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@zowe/secrets-for-zowe-sdk"
-		]
+		],
+		"supportedArchitectures": {
+			"os": ["current"],
+			"cpu": ["current"],
+			"libc": ["current", "glibc", "musl"]
+		}
 	}
 }
