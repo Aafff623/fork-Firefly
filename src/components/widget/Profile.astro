@@ -47,10 +47,12 @@ function socialBrandKey(name: string, icon: string): string {
 <div class:list={["profile-widget", "p-2.5", className]} style={style}>
   <div
     class:list={[
-      "profile-avatar-stage relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32",
+      "profile-avatar-stage is-bot relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32",
       frameFeatureOn && "profile-avatar-stage--frame-ready",
     ]}
     data-profile-avatar-frame
+    data-profile-grok
+    data-grok-face="bot"
     data-default-frame={defaultFrameId}
   >
     <button
@@ -61,18 +63,28 @@ function socialBrandKey(name: string, icon: string): string {
       data-greetings={greetingsJson}
     >
       <span class="profile-avatar-clip absolute inset-0 overflow-hidden rounded-full pointer-events-none">
-        <ImageWrapper
-          src={profileConfig.avatar || ""}
-          alt="Profile Image of the Author"
-          class="profile-avatar-image mx-auto lg:w-full h-full lg:mt-0 object-cover"
-          loading="eager"
-          fetchpriority="high"
-          widths={[350]}
-          sizes="350px"
-          fadeIn={false}
-          showLqip={false}
-          showOverlay={false}
-        />
+        <span class="profile-face profile-face--avatar" data-profile-face="avatar">
+          <ImageWrapper
+            src={profileConfig.avatar || ""}
+            alt="Profile Image of the Author"
+            class="profile-avatar-image mx-auto lg:w-full h-full lg:mt-0 object-cover"
+            loading="eager"
+            fetchpriority="high"
+            widths={[350]}
+            sizes="350px"
+            fadeIn={false}
+            showLqip={false}
+            showOverlay={false}
+          />
+        </span>
+        <span class="profile-face profile-face--bot is-on" data-profile-face="bot">
+          <svg
+            class="profile-grok-bot"
+            data-profile-grok-svg
+            role="img"
+            aria-hidden="true"
+          ></svg>
+        </span>
       </span>
       {
         frameFeatureOn &&
@@ -305,6 +317,11 @@ function socialBrandKey(name: string, icon: string): string {
   }
 </script>
 
+<script>
+  import { bootProfileGrokCarousel } from "@/scripts/profile-grok-carousel";
+  bootProfileGrokCarousel();
+</script>
+
 <style>
   /* 与 surprise-clock / layered-clock 同款：无底、无边、无影 */
   .profile-widget {
@@ -328,8 +345,97 @@ function socialBrandKey(name: string, icon: string): string {
   }
 
   .profile-avatar-stage {
-    /* 给招手与气泡留出溢出空间 */
+    /* 给招手、气泡、Bot overlay 留出溢出空间 */
     overflow: visible;
+  }
+
+  .profile-face {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 700ms ease;
+  }
+
+  .profile-face.is-on {
+    opacity: 1;
+  }
+
+  .profile-face--avatar {
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .profile-face--bot {
+    display: grid;
+    place-items: center;
+    overflow: visible;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--card-bg) 86%, #efe8dc);
+  }
+
+  :global(html.dark) .profile-face--bot {
+    background: color-mix(in oklch, var(--card-bg) 88%, #2a2722);
+  }
+
+  .profile-grok-bot {
+    display: block;
+    overflow: visible;
+    color-scheme: light;
+  }
+
+  :global(html.dark) .profile-grok-bot {
+    color-scheme: dark;
+  }
+
+  .profile-avatar-stage.is-bot .profile-avatar-clip {
+    overflow: visible;
+  }
+
+  .profile-avatar-stage.is-avatar .profile-avatar-clip {
+    overflow: hidden;
+  }
+
+  .profile-avatar-stage.is-bot .profile-avatar-frame {
+    display: none !important;
+  }
+
+  :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+    .profile-avatar-stage--frame-ready.is-bot {
+    width: 58%;
+    max-width: 7rem;
+  }
+
+  @media (min-width: 1024px) {
+    :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+      .profile-avatar-stage--frame-ready.is-bot {
+      width: 60%;
+      max-width: 8rem;
+    }
+  }
+
+  :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+    .profile-avatar-stage--frame-ready.is-bot
+    .profile-avatar-shell {
+    padding: 0.2rem;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 68%, #a89987);
+    background: color-mix(in oklch, var(--card-bg) 82%, #b9aa98);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--card-bg) 68%, white),
+      0 0.28rem 0.7rem rgb(69 58 45 / 0.1);
+    animation: profile-avatar-breathe 4.8s ease-in-out infinite;
+  }
+
+  :global(html[data-avatar-frame]:not([data-avatar-frame="none"]))
+    .profile-avatar-stage--frame-ready.is-bot
+    .profile-avatar-clip {
+    inset: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .profile-avatar-stage.is-bot .profile-avatar-shell.is-greeting {
+    animation: profile-avatar-breathe 4.8s ease-in-out infinite;
   }
 
   /* 有装饰框时略放大舞台，避免挂件裁切（none 除外） */
@@ -639,8 +745,12 @@ function socialBrandKey(name: string, icon: string): string {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .profile-face { transition: none; }
     .profile-avatar-shell { animation: none; }
     .profile-avatar-shell.is-greeting { animation: none; }
+    .profile-avatar-stage.is-bot .profile-avatar-shell.is-greeting {
+      animation: none;
+    }
     .profile-avatar-shell.is-greeting .profile-avatar-wave {
       animation: none;
     }

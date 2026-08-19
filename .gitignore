@@ -118,5 +118,8 @@ __pycache__/
 .ob2blog/fp-*.txt
 .ob2blog/_diff.py
 
+# xAI Grok Bot replica geometry（仅本地学习预览，禁止入库再分发）
+public/vendor/grok-bot/**
+!public/vendor/grok-bot/README.md
 
 .vercel
