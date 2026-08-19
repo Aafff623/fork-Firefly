@@ -152,44 +152,274 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
               class="site-footer__water-canvas"
               width="160"
               height="160"
+              aria-hidden="true"
             ></canvas>
-            <svg
-              id="footer-water-sprout"
-              class="site-footer__water-sprout"
-              viewBox="0 0 48 56"
-              width="48"
-              height="56"
-              role="img"
+            <div class="site-footer__tree-slot">
+              <svg
+                id="footer-water-sprout"
+                class="site-footer__water-sprout"
+                viewBox="0 0 80 104"
+                width="80"
+                height="104"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="sf-w-trunk"
+                    x1="34"
+                    y1="44"
+                    x2="46"
+                    y2="96"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0" stop-color="#c48a58"></stop>
+                    <stop offset="0.42" stop-color="#8d5a36"></stop>
+                    <stop offset="1" stop-color="#5a3826"></stop>
+                  </linearGradient>
+                  <radialGradient
+                    id="sf-w-soil"
+                    cx="40"
+                    cy="94"
+                    r="24"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0" stop-color="#9a7352"></stop>
+                    <stop offset="1" stop-color="#5c4432"></stop>
+                  </radialGradient>
+                  <radialGradient id="sf-w-fruit" cx="0.32" cy="0.28" r="0.78">
+                    <stop offset="0" stop-color="#f6d07a"></stop>
+                    <stop offset="0.38" stop-color="#e07a36"></stop>
+                    <stop offset="1" stop-color="#a83a22"></stop>
+                  </radialGradient>
+                  <symbol id="sf-w-leaf" viewBox="-8 -24 16 26">
+                    <path
+                      fill="currentColor"
+                      d="M0 0 C-7 -3.2 -8.6 -13 -2.2 -20 L0 -23.2 L2.2 -20 C8.6 -13 7 -3.2 0 0Z"
+                    ></path>
+                    <path
+                      fill="none"
+                      stroke="#1e3a28"
+                      stroke-width="0.55"
+                      stroke-linecap="round"
+                      opacity="0.32"
+                      d="M0 -1.2 C0 -8 0 -15 0 -20.5"
+                    ></path>
+                  </symbol>
+                  <symbol id="sf-w-bloom" viewBox="-5 -6 10 12">
+                    <ellipse
+                      rx="2.15"
+                      ry="3.45"
+                      fill="#f4ebe0"
+                      transform="rotate(0)"
+                    ></ellipse>
+                    <ellipse
+                      rx="2.15"
+                      ry="3.45"
+                      fill="#edd4c8"
+                      transform="rotate(72)"
+                    ></ellipse>
+                    <ellipse
+                      rx="2.15"
+                      ry="3.45"
+                      fill="#f4ebe0"
+                      transform="rotate(144)"
+                    ></ellipse>
+                    <ellipse
+                      rx="2.15"
+                      ry="3.45"
+                      fill="#edd4c8"
+                      transform="rotate(216)"
+                    ></ellipse>
+                    <ellipse
+                      rx="2.15"
+                      ry="3.45"
+                      fill="#f4ebe0"
+                      transform="rotate(288)"
+                    ></ellipse>
+                    <circle r="1.08" fill="#e8a090"></circle>
+                  </symbol>
+                </defs>
+                <ellipse
+                  class="site-footer__tree-shadow"
+                  cx="40"
+                  cy="98.2"
+                  rx="19"
+                  ry="3.6"
+                ></ellipse>
+                <path
+                  class="site-footer__tree-soil"
+                  d="M16 95.2 C24 87.6 56 87.6 64 95.2 C54 101 26 101 16 95.2Z"
+                  fill="url(#sf-w-soil)"
+                ></path>
+                <path
+                  class="site-footer__tree-moss"
+                  d="M24 92.4 C32 89.2 50 89.4 56 93 C48 95.6 32 95.4 24 92.4Z"
+                ></path>
+                <ellipse
+                  class="site-footer__tree-stone"
+                  cx="57.5"
+                  cy="94.6"
+                  rx="2.4"
+                  ry="1.35"
+                ></ellipse>
+                <g class="site-footer__sprout-g2 site-footer__tree-grass">
+                  <path d="M21 93.5 C19.6 86 18.2 81.5 20.8 93.5"></path>
+                  <path d="M24.5 93.2 C25.8 84.5 27.6 80 25.2 93.2"></path>
+                  <path d="M54.5 93.6 C53.4 86.2 52.2 82 56 93.6"></path>
+                </g>
+                <path
+                  class="site-footer__tree-trunk"
+                  fill="url(#sf-w-trunk)"
+                  d="M37.8 95 C36.2 79 34.6 64 37.2 50 C38 48.6 42.6 48.5 43.6 50.4 C46 64 44.6 79 43.2 95 C41.4 96.8 39 96.8 37.8 95Z"
+                ></path>
+                <path
+                  class="site-footer__tree-trunk-hi"
+                  d="M39.4 93.2 C38.2 77 37.4 63 39.6 51.2"
+                ></path>
+                <path
+                  class="site-footer__tree-root"
+                  d="M37.6 94.6 C34 95.8 31.2 95.2 29.6 94"
+                ></path>
+                <g class="site-footer__tree-crown">
+                  <g class="site-footer__tree-g1">
+                    <g color="#4a8b52" transform="translate(40 68) rotate(-46)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g color="#7cb86a" transform="translate(40 66) rotate(42)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g
+                      color="#9bc86a"
+                      transform="translate(40 62) rotate(4) scale(0.86)"
+                    >
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                  </g>
+                  <g class="site-footer__sprout-g2 site-footer__tree-g2">
+                    <path
+                      class="site-footer__tree-branch"
+                      d="M43 58 C52 50 58 40 61 31"
+                      fill="none"
+                      stroke="url(#sf-w-trunk)"
+                      stroke-width="1.65"
+                      stroke-linecap="round"
+                    ></path>
+                    <g color="#2f5d3c" transform="translate(40 54) rotate(-58)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g color="#4a8b52" transform="translate(40 48) rotate(-24)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g color="#7cb86a" transform="translate(40 44) rotate(6)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g color="#5a9a58" transform="translate(40 48) rotate(36)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g color="#2f5d3c" transform="translate(61 32) rotate(64)">
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                    <g
+                      color="#9bc86a"
+                      transform="translate(28 50) rotate(-72) scale(0.82)"
+                    >
+                      <use href="#sf-w-leaf" x="-8" y="-24" width="16" height="26"
+                      ></use>
+                    </g>
+                  </g>
+                  <g class="site-footer__sprout-g3 site-footer__tree-g3">
+                    <use href="#sf-w-bloom" x="24" y="28" width="10" height="12"
+                    ></use>
+                    <use href="#sf-w-bloom" x="42" y="22" width="9" height="11"></use>
+                    <use href="#sf-w-bloom" x="33" y="18" width="8" height="10"></use>
+                    <use href="#sf-w-bloom" x="16" y="40" width="8" height="10"></use>
+                    <circle class="site-footer__tree-dew" cx="36" cy="36" r="1.25"
+                    ></circle>
+                    <circle class="site-footer__tree-dew" cx="50" cy="30" r="1.05"
+                    ></circle>
+                  </g>
+                  <g class="site-footer__sprout-g4 site-footer__tree-g4">
+                    <g class="site-footer__tree-fruit site-footer__tree-fruit--a">
+                      <ellipse
+                        cx="53"
+                        cy="40"
+                        rx="7.1"
+                        ry="7.6"
+                        fill="url(#sf-w-fruit)"
+                      ></ellipse>
+                      <ellipse
+                        cx="50.4"
+                        cy="37.2"
+                        rx="2.5"
+                        ry="1.8"
+                        fill="#f8e0b0"
+                        opacity="0.55"
+                      ></ellipse>
+                      <path
+                        class="site-footer__tree-kaki-cap"
+                        d="M49.4 32.6 L53 35.4 L56.6 32.6 L55 36.6 L57.4 39.4 L53 37.4 L48.6 39.4 L51 36.6Z"
+                      ></path>
+                    </g>
+                    <g class="site-footer__tree-fruit site-footer__tree-fruit--b">
+                      <ellipse
+                        cx="29"
+                        cy="44"
+                        rx="5.4"
+                        ry="5.8"
+                        fill="url(#sf-w-fruit)"
+                      ></ellipse>
+                      <ellipse
+                        cx="27.2"
+                        cy="42"
+                        rx="1.8"
+                        ry="1.3"
+                        fill="#f8e0b0"
+                        opacity="0.5"
+                      ></ellipse>
+                      <path
+                        class="site-footer__tree-kaki-cap"
+                        d="M26.4 38.4 L29 40.6 L31.6 38.4 L30.4 41.4 L32.2 43.4 L29 41.8 L25.8 43.4 L27.6 41.4Z"
+                      ></path>
+                    </g>
+                    <g class="site-footer__tree-calyx">
+                      <path
+                        class="site-footer__tree-kaki-cap"
+                        d="M49.4 32.6 L53 35.4 L56.6 32.6 L55 36.6 L57.4 39.4 L53 37.4 L48.6 39.4 L51 36.6Z"
+                      ></path>
+                      <path
+                        class="site-footer__tree-kaki-cap"
+                        d="M26.4 38.4 L29 40.6 L31.6 38.4 L30.4 41.4 L32.2 43.4 L29 41.8 L25.8 43.4 L27.6 41.4Z"
+                      ></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <button
+                type="button"
+                id="footer-water-pick"
+                class="site-footer__water-pick"
+                hidden
+                aria-label="摘下园果"
+                title="摘一颗"
+              ></button>
+            </div>
+            <aside
+              id="footer-water-note"
+              class="site-footer__fruit-note"
+              hidden
             >
-              <title>小草</title>
-              <path
-                class="site-footer__sprout-stem"
-                d="M24 52 V22"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-              />
-              <path
-                class="site-footer__sprout-leaf site-footer__sprout-leaf--l"
-                d="M24 34 C16 30 10 22 12 16 C18 18 22 24 24 30 Z"
-                fill="currentColor"
-              />
-              <path
-                class="site-footer__sprout-leaf site-footer__sprout-leaf--r"
-                d="M24 30 C30 26 38 20 38 14 C32 16 27 22 24 28 Z"
-                fill="currentColor"
-              />
-              <ellipse
-                class="site-footer__sprout-soil"
-                cx="24"
-                cy="50"
-                rx="14"
-                ry="3.5"
-                fill="currentColor"
-                opacity="0.35"
-              />
-            </svg>
+              <p class="site-footer__fruit-note-kicker">园果</p>
+              <p class="site-footer__fruit-note-body">一颗只属于这次路过。</p>
+              <p class="site-footer__fruit-note-hint">关页就化回泥土。</p>
+            </aside>
           </div>
         </div>
       </div>

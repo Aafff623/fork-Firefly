@@ -1,6 +1,6 @@
 /* Hallmark · component: Footer · archetype: Ft5 statement + genuine garden index
  * theme: custom · vibe: "月白竹影，松柏数字花园" · paper: oklch(97% 0.018 115) · accent: oklch(55% 0.12 145)
- * display: Georgia/Songti SC · body: project sans · axes: light / roman-serif / chromatic-green · generated: imagegen + WebP post-process
+ * display: Segoe Script italic (navbar brand) · body: project sans · axes: light / script-italic / chromatic-green · generated: imagegen + WebP post-process
  * pre-emit critique: P5 H4 E5 S5 R5 V5 · contrast: pass (min 6.74:1) · footer: Ft5 + hub index · mobile: pass
  */
 
@@ -22,9 +22,16 @@
 	--sf-water-ring: color-mix(in oklch, var(--sf-water-dot) 22%, transparent);
 	--sf-sprout: oklch(0.52 0.13 145);
 	--sf-sprout-grown: oklch(0.43 0.11 148);
+	--sf-fruit: oklch(0.68 0.155 52);
 	--sf-serif: Georgia, "Times New Roman", "Songti SC", serif;
-	--sf-display: Georgia, "Times New Roman", serif;
+	/* 品牌艺术字：与顶栏 threetwoa 同一路手写体，斜体 */
+	--sf-display:
+		var(--font-navbar-title, "Segoe Script"),
+		"Apple Chancery",
+		"Snell Roundhand",
+		cursive;
 	--sf-blurb-cn: "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
+	--sf-blurb-art: "STXingkai", "华文行楷", "KaiTi", "Songti SC", serif;
 	--sf-blurb-en: Georgia, "Times New Roman", serif;
 	--sf-sans:
 		var(--font-inter),
@@ -326,13 +333,16 @@ html.dark body.wallpaper-transparent .site-footer__scape {
 
 .site-footer__wordmark {
 	font-family: var(--sf-display);
-	font-weight: 500;
-	font-style: normal;
+	font-weight: 400;
+	font-style: italic;
 	font-size: clamp(2rem, 1.45rem + 1.45vw, 3.15rem);
-	letter-spacing: 0.015em;
-	line-height: 1.12;
+	letter-spacing: 0.04em;
+	line-height: 1.2;
 	color: var(--sf-forest);
 	text-wrap: balance;
+	/* M17 雾罩溶底：字脚下沿淡进园纸 */
+	-webkit-mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
+	mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
 }
 
 .site-footer__blurb-stack {
@@ -349,11 +359,14 @@ html.dark body.wallpaper-transparent .site-footer__scape {
 }
 
 .site-footer__blurb--cn {
-	font-family: var(--sf-blurb-cn);
-	font-size: clamp(1rem, 0.92rem + 0.42vw, 1.3rem);
-	line-height: 1.65;
-	letter-spacing: 0.04em;
+	font-family: var(--sf-blurb-art);
+	font-size: clamp(1.05rem, 0.96rem + 0.48vw, 1.38rem);
+	font-weight: 400;
+	line-height: 1.7;
+	letter-spacing: 0.08em;
 	color: color-mix(in oklch, var(--sf-ink) 92%, var(--sf-moss));
+	-webkit-mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
+	mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
 }
 
 .site-footer__blurb--en {
@@ -376,9 +389,11 @@ html.dark .site-footer__blurb--en {
 }
 
 .site-footer__top-right {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
+	align-self: stretch;
 	gap: 0.7rem;
 	flex: 0 1 auto;
 	min-width: 0;
@@ -498,13 +513,13 @@ html.dark .site-footer__nav::before {
 }
 
 .site-footer__col-title-cn {
-	/* 艺术衬线：与 wordmark / 园记同一路，别用等宽工业感 */
-	font-family: var(--sf-blurb-cn);
-	font-size: clamp(1rem, 0.94rem + 0.24vw, 1.2rem);
-	font-weight: 500;
+	/* 与上方园记同一路行楷，别用宋体/等宽 */
+	font-family: var(--sf-blurb-art);
+	font-size: clamp(1.05rem, 0.96rem + 0.28vw, 1.28rem);
+	font-weight: 400;
 	font-style: normal;
-	letter-spacing: 0.22em;
-	line-height: 1.25;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
 	color: color-mix(in oklch, var(--sf-ink) 84%, var(--sf-moss));
 }
 
@@ -764,7 +779,6 @@ html.dark .site-footer__legal {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
-	/* 舞台向上弹出，祖先勿裁切 */
 	overflow: visible;
 	z-index: 5;
 }
@@ -874,23 +888,28 @@ html.dark .site-footer__water.is-watering {
 .site-footer__water-stage {
 	position: absolute;
 	left: 50%;
-	bottom: calc(100% + 0.55rem);
-	transform: translateX(-50%) translateY(6px) scale(0.92);
+	top: calc(100% + 0.45rem);
+	right: auto;
+	bottom: auto;
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
-	gap: 0.15rem;
+	gap: 0.1rem;
 	width: 11.5rem;
-	height: 7.25rem;
-	padding: 0.35rem 0.4rem 0.25rem;
-	border-radius: 1rem;
-	background: transparent;
+	height: 8rem;
+	padding: 0.25rem 0.2rem 0.15rem;
 	border: none;
+	border-radius: 0;
+	background: transparent;
 	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
-	z-index: 20;
+	overflow: visible;
+	transform: translateX(-50%) translateY(6px);
+	z-index: 6;
 	transition:
 		opacity 0.28s var(--sf-ease),
 		transform 0.28s var(--sf-ease),
@@ -900,79 +919,354 @@ html.dark .site-footer__water.is-watering {
 .site-footer__water-stage.is-open {
 	opacity: 1;
 	visibility: visible;
-	transform: translateX(-50%) translateY(0) scale(1);
+	transform: translateX(-50%) translateY(0);
 }
 
 .site-footer__water-stage::after {
 	content: "";
 	position: absolute;
 	left: 50%;
-	bottom: 0.35rem;
-	width: 6.5rem;
-	height: 1rem;
-	transform: translateX(-38%);
+	bottom: 0.4rem;
+	width: 7.2rem;
+	height: 1.1rem;
+	transform: translateX(-28%);
 	background: radial-gradient(
 		ellipse 50% 50% at 50% 50%,
-		color-mix(in oklch, var(--sf-water-dot) 20%, transparent),
-		transparent 70%
+		color-mix(in oklch, var(--sf-water-dot) 18%, transparent),
+		transparent 72%
 	);
 	pointer-events: none;
 }
 
 .site-footer__water-canvas {
+	position: relative;
+	left: auto;
+	bottom: auto;
 	width: 5.75rem;
 	height: 5.75rem;
 	flex-shrink: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.site-footer__water-stage.is-pickable .site-footer__water-canvas {
+	opacity: 0;
+}
+
+.site-footer__tree-slot {
+	position: relative;
+	width: 5.5rem;
+	height: 7.15rem;
+	max-height: none;
+	flex-shrink: 0;
+	margin-bottom: 0.1rem;
+	z-index: 1;
 }
 
 .site-footer__water-sprout {
-	width: 2.75rem;
-	height: 3.2rem;
-	color: var(--sf-sprout);
+	display: block;
+	width: 100%;
+	height: 100%;
 	transform-origin: 50% 100%;
-	transform: scaleY(0.86);
-	opacity: 0.85;
-	margin-bottom: 0.15rem;
-	filter: drop-shadow(0 2px 3px oklch(0.3 0.045 145 / 0.2));
+	transform: scale(0.84);
+	filter: drop-shadow(0 3px 5px oklch(0.3 0.045 145 / 0.22));
+	overflow: visible;
+	transition: transform 0.5s var(--sf-ease);
+}
+
+.site-footer__water-sprout[data-growth="1"] {
+	transform: scale(0.88);
+}
+
+.site-footer__water-sprout[data-growth="2"] {
+	transform: scale(0.94);
+}
+
+.site-footer__water-sprout[data-growth="3"] {
+	transform: scale(0.97);
+}
+
+.site-footer__water-sprout[data-growth="4"] {
+	transform: scale(1);
+}
+
+.site-footer__tree-g1 {
+	transition: opacity 0.35s var(--sf-ease);
+}
+
+.site-footer__tree-crown {
+	transform-origin: 40px 94px;
+}
+
+.site-footer__water-sprout.is-thirsty .site-footer__tree-crown {
+	animation: sf-crown-sway 0.7s ease-in-out infinite;
+}
+
+.site-footer__sprout-g2,
+.site-footer__sprout-g3,
+.site-footer__sprout-g4 {
+	opacity: 0;
+	transform: scale(0.42);
+	transform-origin: 40px 94px;
+	pointer-events: none;
 	transition:
-		transform 0.45s var(--sf-ease),
-		opacity 0.3s var(--sf-ease),
-		color 0.3s var(--sf-ease);
+		opacity 0.45s var(--sf-ease),
+		transform 0.5s var(--sf-ease);
 }
 
-.site-footer__water-sprout.is-thirsty {
-	animation: sf-sprout-sway 0.55s ease-in-out infinite;
-}
-
-.site-footer__water-sprout.is-grown {
-	transform: scaleY(1.08) scaleX(1.04);
+.site-footer__water-sprout[data-growth="2"] .site-footer__sprout-g2,
+.site-footer__water-sprout[data-growth="3"] .site-footer__sprout-g2,
+.site-footer__water-sprout[data-growth="4"] .site-footer__sprout-g2,
+.site-footer__water-sprout[data-growth="3"] .site-footer__sprout-g3,
+.site-footer__water-sprout[data-growth="4"] .site-footer__sprout-g3,
+.site-footer__water-sprout[data-growth="4"] .site-footer__sprout-g4 {
 	opacity: 1;
-	color: var(--sf-sprout-grown);
+	transform: scale(1);
+}
+
+.site-footer__tree-trunk-hi {
+	fill: none;
+	stroke: #d4b08c;
+	stroke-width: 0.85;
+	stroke-linecap: round;
+	opacity: 0.42;
+}
+
+.site-footer__tree-root {
+	fill: none;
+	stroke: #5a3826;
+	stroke-width: 1.35;
+	stroke-linecap: round;
+	opacity: 0.7;
+}
+
+.site-footer__tree-shadow {
+	fill: #3d4a32;
+	opacity: 0.2;
+}
+
+.site-footer__tree-moss {
+	fill: #5a7a42;
+	opacity: 0.78;
+}
+
+.site-footer__tree-stone {
+	fill: #7a6e62;
+	opacity: 0.7;
+}
+
+.site-footer__tree-grass path {
+	fill: none;
+	stroke: #4a7a3c;
+	stroke-width: 1.15;
+	stroke-linecap: round;
+}
+
+.site-footer__tree-dew {
+	fill: var(--sf-water-dot);
+	opacity: 0.88;
+}
+
+.site-footer__tree-kaki-cap {
+	fill: #3f6a36;
+}
+
+.site-footer__tree-fruit {
+	transform-origin: center;
+	transform-box: fill-box;
+}
+
+.site-footer__tree-calyx {
+	opacity: 0;
+}
+
+.site-footer__water-sprout[data-growth="4"] .site-footer__tree-fruit--a {
+	animation: sf-fruit-bob 2.2s ease-in-out infinite;
+}
+
+.site-footer__water-sprout[data-growth="4"] .site-footer__tree-fruit--b {
+	animation: sf-fruit-bob 2.4s ease-in-out 0.35s infinite;
+}
+
+.site-footer__water-sprout.is-picking .site-footer__tree-fruit {
+	animation: sf-fruit-drop 0.68s ease-in forwards;
+}
+
+.site-footer__water-sprout[data-picked="1"] .site-footer__tree-fruit {
+	opacity: 0;
 	animation: none;
 }
 
-.site-footer__sprout-stem,
-.site-footer__sprout-leaf {
-	color: var(--sf-sprout);
+.site-footer__water-sprout[data-picked="1"] .site-footer__tree-calyx {
+	opacity: 1;
 }
 
-.site-footer__water-sprout.is-grown .site-footer__sprout-stem,
-.site-footer__water-sprout.is-grown .site-footer__sprout-leaf {
-	color: var(--sf-sprout-grown);
+.site-footer__water-pick {
+	position: absolute;
+	left: calc(66.2% - 0.95rem);
+	top: calc(38.4% - 0.95rem);
+	width: 1.9rem;
+	height: 1.9rem;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	cursor: pointer;
+	pointer-events: auto;
+	appearance: none;
+	-webkit-appearance: none;
 }
 
-.site-footer__sprout-soil {
-	color: oklch(0.45 0.055 72);
+.site-footer__water-pick[hidden] {
+	display: none;
 }
 
-@keyframes sf-sprout-sway {
+.site-footer__water-pick::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	border: 1.5px solid color-mix(in oklch, var(--sf-fruit) 60%, transparent);
+	box-shadow: 0 0 0 3px color-mix(in oklch, var(--sf-fruit) 12%, transparent);
+	animation: sf-pick-ring 1.7s ease-out infinite;
+}
+
+.site-footer__water-pick:focus-visible {
+	outline: 2px solid var(--sf-accent);
+	outline-offset: 2px;
+}
+
+.site-footer__tree-slot:has(.site-footer__water-pick:hover)
+	.site-footer__tree-fruit--a {
+	animation: none;
+	transform: scale(1.08);
+}
+
+.site-footer__fruit-note {
+	position: absolute;
+	right: calc(100% + 0.45rem);
+	left: auto;
+	top: 0.35rem;
+	z-index: 3;
+	width: 7.1rem;
+	padding: 0.5rem 0.55rem 0.48rem;
+	border-radius: 0.55rem;
+	background: color-mix(in oklch, var(--sf-paper) 94%, var(--sf-celadon));
+	border: 1px solid color-mix(in oklch, var(--sf-rule) 85%, transparent);
+	box-shadow: 0 6px 16px oklch(0.3 0.04 145 / 0.1);
+	pointer-events: auto;
+	cursor: pointer;
+	opacity: 0;
+	transform: translateX(6px);
+	transition:
+		opacity 0.28s var(--sf-ease),
+		transform 0.28s var(--sf-ease);
+}
+
+.site-footer__fruit-note.is-open {
+	opacity: 1;
+	transform: none;
+}
+
+.site-footer__fruit-note[hidden] {
+	display: none;
+}
+
+.site-footer__fruit-note-kicker {
+	margin: 0 0 0.18rem;
+	font-family: var(--sf-sans);
+	font-size: 0.58rem;
+	letter-spacing: 0.16em;
+	color: var(--sf-muted);
+}
+
+.site-footer__fruit-note-body {
+	margin: 0;
+	font-family: var(--sf-blurb-art);
+	font-size: 0.88rem;
+	line-height: 1.35;
+	color: var(--sf-forest);
+}
+
+.site-footer__fruit-note-hint {
+	margin: 0.18rem 0 0;
+	font-family: var(--sf-sans);
+	font-size: 0.58rem;
+	letter-spacing: 0.04em;
+	color: var(--sf-muted);
+}
+
+html.dark .site-footer__water-sprout {
+	filter: drop-shadow(0 3px 6px oklch(0.12 0.03 145 / 0.4)) brightness(1.06);
+}
+
+html.dark .site-footer__fruit-note {
+	background: color-mix(in oklch, var(--sf-paper) 90%, var(--sf-forest));
+}
+
+@keyframes sf-crown-sway {
 	0%,
 	100% {
-		transform: scaleY(0.9) rotate(-3deg);
+		transform: rotate(-2.4deg);
 	}
 	50% {
-		transform: scaleY(0.94) rotate(4deg);
+		transform: rotate(2.8deg);
 	}
+}
+
+@keyframes sf-fruit-bob {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-1.6px);
+	}
+}
+
+@keyframes sf-fruit-drop {
+	0% {
+		transform: translateY(0) rotate(0deg) scale(1);
+		opacity: 1;
+	}
+	70% {
+		transform: translateY(16px) rotate(14deg) scale(0.88);
+		opacity: 0.65;
+	}
+	100% {
+		transform: translateY(34px) rotate(26deg) scale(0.55);
+		opacity: 0;
+	}
+}
+
+@keyframes sf-pick-ring {
+	0% {
+		transform: scale(0.86);
+		opacity: 0.85;
+	}
+	70% {
+		transform: scale(1.18);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1.18);
+		opacity: 0;
+	}
+}
+
+.site-footer__water[data-growth="1"] .site-footer__icon-drop,
+.site-footer__water[data-growth="2"] .site-footer__icon-drop {
+	opacity: 1;
+}
+
+.site-footer__water[data-growth="3"] .site-footer__icon-feather,
+.site-footer__water[data-growth="4"] .site-footer__icon-feather {
+	opacity: 1;
+	color: var(--sf-leaf);
+}
+
+.site-footer__water[data-growth="4"] {
+	border-color: color-mix(in oklch, var(--sf-leaf) 42%, transparent);
 }
 
 .site-footer__water-icons {
@@ -1028,6 +1322,7 @@ html.dark .site-footer__water.is-watering {
 
 	.site-footer__top-right {
 		align-items: flex-start;
+		align-self: auto;
 	}
 
 	.site-footer__garden-status {
@@ -1186,16 +1481,6 @@ html.dark .site-footer__water.is-watering {
 	.site-footer__stamp {
 		display: none;
 	}
-
-	.site-footer__water-stage {
-		left: auto;
-		right: 0;
-		transform: translateX(0) translateY(6px) scale(0.92);
-	}
-
-	.site-footer__water-stage.is-open {
-		transform: translateX(0) translateY(0) scale(1);
-	}
 }
 
 @media (max-width: 480px) {
@@ -1227,6 +1512,20 @@ html.dark .site-footer__water.is-watering {
 		display: none;
 	}
 
+	.site-footer__tree-slot {
+		width: 4.8rem;
+		height: 6.2rem;
+	}
+
+	.site-footer__fruit-note {
+		width: 6.2rem;
+		padding: 0.42rem 0.46rem;
+		right: auto;
+		left: 0;
+		top: calc(100% + 0.35rem);
+		bottom: auto;
+	}
+
 	.site-footer__band {
 		margin-top: 0.8rem;
 	}
@@ -1241,7 +1540,8 @@ html.dark .site-footer__water.is-watering {
 	.site-footer__list a::after,
 	.site-footer__water,
 	.site-footer__water-stage,
-	.site-footer__water-sprout {
+	.site-footer__water-sprout,
+	.site-footer__fruit-note {
 		transition: none;
 	}
 
@@ -1251,7 +1551,9 @@ html.dark .site-footer__water.is-watering {
 
 	.site-footer__icon-drop,
 	.site-footer__icon-feather,
-	.site-footer__water-sprout.is-thirsty {
+	.site-footer__water-sprout.is-thirsty .site-footer__tree-crown,
+	.site-footer__water-sprout[data-growth="4"] .site-footer__tree-fruit,
+	.site-footer__water-pick::after {
 		animation: none;
 	}
 

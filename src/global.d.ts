@@ -92,6 +92,8 @@ declare global {
 		__typewriterSwupBound?: boolean;
 		/** Navbar 按钮 swup 监听幂等 guard */
 		__navbarButtonsBound?: boolean;
+		/** Footer 浇水彩蛋 swup:page:view 监听幂等 guard */
+		__footerWaterSwupBound?: boolean;
 	}
 
 	interface MediaQueryList {
