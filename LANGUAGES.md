@@ -34,6 +34,8 @@
 | 文章 / post | 随便叫「页面」指博文 |
 | 动态 | 「朋友圈」除非用户这么说 |
 | 侧边栏小组件 / widget | 无差别「插件」 |
+| 侧栏 Grok Bot | xAI 风格吉祥物编舞（`Profile` 圆槽）；不要写成「GitHub 卡片」 |
+| Ask 输入条 / `.ask-grok-row` | HeroUI 问答坞布局 class，**不是**侧栏 Grok Bot |
 | 配置文件 `*Config.ts` | 「后台设置」（本站无 CMS 后台） |
 | 合集 / collections | 人工策展的主题聚合页（区别于 AI 标的分类 category） |
 | 草稿箱 / draftbox | `posts/_draftbox/`：本地可预览、gitignore 不 push；出箱后再入库 |
