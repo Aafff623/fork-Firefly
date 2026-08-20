@@ -206,7 +206,7 @@ Content Collections（`src/content.config.ts`）：
 3. 二次开发保留 Firefly / Fuwari 版权声明与 MIT 义务。
 4. Windows 路径与 Shell：遵循 `.cursor/rules/windows-*-discipline.mdc`。
 5. Agent 行为：遵循 `.cursor/rules/karpathy-guidelines.mdc`（先想清楚、外科手术式改动、可验证目标）。
-6. 不把 xAI Grok Bot 抽出几何（`geometry-data.js` 等）推进 git / Vercel；本地副本与拷贝步骤见 `public/vendor/grok-bot/README.md`、ADR-0003。
+6. 不把 xAI Grok Bot 抽出几何（`geometry-data.js` 等）推进 git / Vercel；本地副本与拷贝步骤见 `public/vendor/grok-bot/README.md`、ADR-0003。线上 Bot 用自研 `firefly-bot/`（ADR-0004/0005，参数化生成 + 黑白圆润风，表达独立）。
 
 ## 术语（摘录）
 
@@ -219,7 +219,7 @@ Content Collections（`src/content.config.ts`）：
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
 | 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；浏览侧栏失衡时分类折叠 + 宠钉日历（`sidebarBalance`）；与 Spine/Live2D 互斥；**点击触发问答浮窗**（见下） |
-| 侧栏 Grok Bot | `Profile` 圆槽宏切：站点头像 : Bot ≈ 1:4（`profile-grok-timing.ts`）。Bot 六桶巡演。几何来自学习仓 replica，只放本机 `public/vendor/grok-bot/`（gitignore，见 ADR-0003）。**HTML 首屏是站点头像**；线上缺文件 / 无 `GrokCharacter` 则不切 Bot（含悬停）。≠ Ask 输入条 class `.ask-grok-row` |
+| 侧栏 Firefly Bot | `Profile` 圆槽宏切：站点头像 : Bot ≈ 1:4（`profile-firefly-timing.ts`）。Bot 六桶巡演，形状池圆润族（正圆 blob 双权重 / 鹅卵石 / 卵形 / 圆角六边形），纯黑身体 + 白眼（ADR-0005）；引擎自研入库 `public/vendor/firefly-bot/`，xAI replica 仅本机对照（ADR-0003/0004）。**HTML 首屏是站点头像**；线上缺文件 / 无 `FireflyCharacter` 则不切 Bot（含悬停）。≠ Ask 输入条 class `.ask-grok-row` |
 | 问答助手 | 基于 **MaxKB** 的站点 RAG：`/ask` 为 HeroUI Pro React 岛 + 同源 `/api/ask`（本站检索 + SSE）；桌宠点击弹 `LiveChatWidget`（仍直连本机 MaxKB）。**`siteConfig.pages.ask`**：现行 `!import.meta.env.PROD`（DEV 开 / 生产关）。上云见 `docs/ask-maxkb-cloud-plan.md`；浮窗强依赖桌宠 `enable` 且仅 ask 开时挂载。Ask 页 Grok Bot 吉祥物**尚未接线** |
 | 站点音乐 | 默认 `musicConfig.mode=local`（ADR-0002）；导航栏音符=音频面板，三角播放=横幅背景视频，二者互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
