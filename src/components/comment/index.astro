@@ -32,6 +32,7 @@ const postTitle = post && "title" in post.data ? post.data.title : undefined;
 
 const commentService: CommentConfig["type"] =
 	service ?? commentConfig?.type ?? "none";
+const showNotConfigured = commentService === "none";
 
 // 只载入当前页面实际使用的评论实现，避免 Giscus 文章携带 Waline CSS/JS。
 const Artalk =
@@ -73,7 +74,7 @@ const Waline =
         {Giscus && <Giscus />}
         {Disqus && <Disqus identifier={slug} url={url} title={customTitle || postTitle || slug} />}
         {Artalk && <Artalk path={path} />}
-        {commentService === "none" && (
+        {showNotConfigured && (
           <div class="text-center py-8 text-(--content-meta)">
             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-(--btn-regular-bg) flex items-center justify-center">
               <Icon is:inline name="lucide:message-circle" class="w-8 h-8 text-(--primary)" aria-hidden="true" />

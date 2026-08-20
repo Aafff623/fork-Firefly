@@ -51,7 +51,8 @@ const gates = [
 			commentIndex.includes("service ?? commentConfig?.type") &&
 			commentIndex.includes('await import("./Giscus.astro")') &&
 			commentIndex.includes('await import("./Waline.astro")') &&
-			commentIndex.includes('commentService === "none"'),
+			commentIndex.includes('showNotConfigured = commentService === "none"') &&
+			commentIndex.includes("{showNotConfigured &&"),
 	],
 	[
 		"动态回复固定使用 Waline",
