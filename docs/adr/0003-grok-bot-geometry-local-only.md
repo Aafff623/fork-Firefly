@@ -1,6 +1,6 @@
 # ADR-0003 · Grok Bot 几何仅本机，不入库再分发
 
-- Status: accepted
+- Status: superseded by [ADR-0004](0004-firefly-bot-self-geometry.md)（xAI 资产不入库的约束仍然有效，replica 本机拷贝已由自研外壳取代）
 - Date: 2026-08-19
 
 ## Context
