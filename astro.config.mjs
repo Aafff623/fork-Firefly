@@ -258,6 +258,9 @@ export default defineConfig({
 				// 根据页面开关配置过滤sitemap
 				const url = new URL(page);
 				const pathname = url.pathname;
+				if (pathname === "/community/" && !siteConfig.pages.community) {
+					return false;
+				}
 				if (pathname === "/dynamic/" && !siteConfig.pages.dynamic) {
 					return false;
 				}
@@ -343,7 +346,11 @@ export default defineConfig({
 		},
 		optimizeDeps: {
 			// 勿 include @heroui-pro 子路径：EdgeOne CI 上 resolve 会失败并拖垮构建
-			include: ["@lottiefiles/dotlottie-web", "motion", "react-aria-components"],
+			include: [
+				"@lottiefiles/dotlottie-web",
+				"motion",
+				"react-aria-components",
+			],
 		},
 		ssr: {
 			noExternal: [

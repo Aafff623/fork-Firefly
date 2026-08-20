@@ -1,0 +1,275 @@
+---
+import { Icon } from "astro-icon/components";
+import { communityConfig, siteConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.community) {
+	return Astro.redirect("/404/");
+}
+
+const title = "社区";
+const description =
+	"从一篇文章继续聊下去，也把问题、想法和站点公告留在可追溯的地方。";
+---
+
+<MainGridLayout title={title} description={description}>
+	<section class="community-page" aria-labelledby="community-title">
+		<header class="card-base community-hero">
+			<div class="community-hero__icon" aria-hidden="true">
+				<Icon is:inline name="lucide:users-round" />
+			</div>
+			<div class="community-hero__copy">
+				<p class="community-eyebrow">THREETWOA COMMUNITY</p>
+				<h2 id="community-title">从评论区，走进同一个社区</h2>
+				<p>{description}</p>
+				<div class="community-actions">
+					<a
+						class="community-action community-action--primary"
+						href={communityConfig.newDiscussionUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Icon is:inline name="lucide:message-square-plus" aria-hidden="true" />
+						发起讨论
+					</a>
+					<a
+						class="community-action"
+						href={communityConfig.profileUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Icon is:inline name="fa7-brands:github" aria-hidden="true" />
+						个人中心
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<ul class="community-channels" aria-label="社区分区">
+			{communityConfig.channels.map((channel) => (
+				<li>
+					<a
+						class="card-base community-channel"
+						href={channel.url}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<span class="community-channel__icon" aria-hidden="true">
+							<Icon is:inline name={channel.icon} />
+						</span>
+						<span class="community-channel__body">
+							<strong>{channel.name}</strong>
+							<span>{channel.description}</span>
+						</span>
+						<Icon is:inline name="lucide:arrow-up-right" class="community-channel__arrow" aria-hidden="true" />
+					</a>
+				</li>
+			))}
+		</ul>
+
+		<aside class="card-base community-boundary" aria-labelledby="community-boundary-title">
+			<Icon is:inline name="lucide:git-branch" aria-hidden="true" />
+			<div>
+				<h2 id="community-boundary-title">现在共用 GitHub 身份，未来保留独立论坛边界</h2>
+				<p>
+					文章评论与社区分区由 GitHub Discussions 承担，所以通知、审核、历史记录和个人身份天然连在一起。
+					如果以后确实需要本站注册、订阅、私信或实时讨论，它会作为独立应用建设，不把账号和数据库塞进博客的发布链路。
+				</p>
+			</div>
+		</aside>
+	</section>
+</MainGridLayout>
+
+<style>
+	.community-page {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.community-hero {
+		display: flex;
+		gap: 1.25rem;
+		padding: clamp(1.5rem, 4vw, 2.5rem);
+		background:
+			radial-gradient(circle at 92% 12%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 32%),
+			var(--card-bg);
+	}
+
+	.community-hero__icon,
+	.community-channel__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+		border-radius: 1rem;
+		background: color-mix(in oklab, var(--primary) 14%, var(--card-bg));
+		color: var(--primary);
+	}
+
+	.community-hero__icon {
+		width: 4rem;
+		height: 4rem;
+		font-size: 2rem;
+	}
+
+	.community-hero__copy {
+		min-width: 0;
+	}
+
+	.community-eyebrow {
+		margin: 0 0 0.45rem;
+		color: var(--primary);
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+	}
+
+	.community-hero h2 {
+		margin: 0;
+		font-size: clamp(1.65rem, 4vw, 2.5rem);
+		line-height: 1.18;
+		color: var(--deep-text);
+	}
+
+	.community-hero__copy > p:not(.community-eyebrow) {
+		max-width: 48rem;
+		margin: 0.75rem 0 0;
+		color: var(--content-meta);
+		line-height: 1.75;
+	}
+
+	.community-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+		margin-top: 1.25rem;
+	}
+
+	.community-action {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		min-height: 2.65rem;
+		padding: 0.6rem 1rem;
+		border: 1px solid color-mix(in oklab, var(--content-meta) 18%, transparent);
+		border-radius: 999px;
+		color: var(--deep-text);
+		font-weight: 700;
+		transition: transform 160ms ease, border-color 160ms ease;
+	}
+
+	.community-action:hover {
+		transform: translateY(-2px);
+		border-color: color-mix(in oklab, var(--primary) 55%, transparent);
+	}
+
+	.community-action--primary {
+		border-color: transparent;
+		background: var(--primary);
+		color: white;
+	}
+
+	:global(html.dark) .community-action--primary {
+		color: #111;
+	}
+
+	.community-channels {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.community-channels > li {
+		min-width: 0;
+	}
+
+	.community-channel {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		min-width: 0;
+		height: 100%;
+		padding: 1.1rem 1.2rem;
+		transition: transform 160ms ease, border-color 160ms ease;
+	}
+
+	.community-channel:hover {
+		transform: translateY(-2px);
+		border-color: color-mix(in oklab, var(--primary) 42%, transparent);
+	}
+
+	.community-channel__icon {
+		width: 2.75rem;
+		height: 2.75rem;
+		font-size: 1.3rem;
+	}
+
+	.community-channel__body {
+		display: grid;
+		min-width: 0;
+		gap: 0.2rem;
+	}
+
+	.community-channel__body strong {
+		color: var(--deep-text);
+		font-size: 1.05rem;
+	}
+
+	.community-channel__body span {
+		color: var(--content-meta);
+		font-size: 0.88rem;
+		line-height: 1.55;
+	}
+
+	.community-channel__arrow {
+		flex: 0 0 auto;
+		margin-left: auto;
+		color: var(--content-meta);
+	}
+
+	.community-boundary {
+		display: flex;
+		gap: 0.85rem;
+		padding: 1.2rem 1.35rem;
+		color: var(--content-meta);
+	}
+
+	.community-boundary > :global(svg) {
+		flex: 0 0 auto;
+		margin-top: 0.2rem;
+		color: var(--primary);
+		font-size: 1.35rem;
+	}
+
+	.community-boundary h2 {
+		margin: 0;
+		color: var(--deep-text);
+		font-size: 1rem;
+	}
+
+	.community-boundary p {
+		margin: 0.4rem 0 0;
+		font-size: 0.88rem;
+		line-height: 1.7;
+	}
+
+	@media (max-width: 640px) {
+		.community-hero {
+			flex-direction: column;
+		}
+
+		.community-channels {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.community-action,
+		.community-channel {
+			transition: none;
+		}
+	}
+</style>

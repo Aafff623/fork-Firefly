@@ -43,6 +43,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "#",
 		icon: "lucide:users",
 		children: [
+			// 社区
+			LinkPresets.Community,
+
 			// 友链
 			LinkPresets.Friends,
 
@@ -133,6 +136,12 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "/dynamic/",
 		icon: "lucide:messages-square",
 		pageKey: "dynamic",
+	},
+	Community: {
+		name: "社区",
+		url: "/community/",
+		icon: "lucide:badge-info",
+		pageKey: "community",
 	},
 	Archive: {
 		name: "时间轴",
