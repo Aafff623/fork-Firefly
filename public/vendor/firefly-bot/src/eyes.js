@@ -53,7 +53,9 @@
     for (const p of polys[0]) a1 = Math.max(a1, Math.abs(p[0] - cents[0][0]));
     for (const p of polys[1]) o1 = Math.max(o1, Math.abs(p[0] - cents[1][0]));
     const l1 = Math.abs(cents[1][0] - (cents[0][0] + sX)) * $i.sx;
-    const pre = uniformEyes ? 0 : VJt;
+    // 两眼内缘至少留 20 视口单位，UNIFORM 也不得贴死/交织
+    const MIN_INNER = 20;
+    const pre = Math.max(uniformEyes ? 0 : VJt, MIN_INNER);
     const _ee = a1 + o1 > 0.5 ? clamp((l1 - pre) / (a1 + o1), 0.35, 4) : 4;
     const Uee = (uniformEyes ? 1 : $i.eye) * clamp(eyeScaleProp, 0.25, 4);
     const oX = Math.min(clamp(opt.eyeBoostX, 0.2, 2) * Uee, _ee / pulse);
@@ -170,6 +172,8 @@
       const xre = Ca + Wo + Kj * $i.sx;
       const lX = O2 <= Xl ? clamp(xre, O2, Xl) : (O2 + Xl) / 2;
       let dd = lX + (xre - lX) * (1 - Tre);
+      // 左右再各让 6 单位，中缝留空，防 3D/注视把两眼织到一块
+      dd += i === 0 ? -6 : 6;
       let Yj = vl;
       if (notifyX > 0.01) {
         const xr = 20 * clamp(notifyX, 0, 1.4);

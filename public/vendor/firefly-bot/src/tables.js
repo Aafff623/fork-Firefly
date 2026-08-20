@@ -75,8 +75,10 @@
     spinTurn: [6.2, 1],
   };
 
-  const FACE_TUNE = { size: 0.86, gap: 1.18, height: 1, eyeWidth: 0.96, eyeHeight: 0.92 };
-  const POSE = { turn: 17, tilt: -14, roll: 29, scale: 1 };
+  // gap 拉开左右眼中心；eyeWidth 略收，避免两眼在中线长到一块（ADR-0005 v2.5）
+  const FACE_TUNE = { size: 0.86, gap: 1.58, height: 1, eyeWidth: 0.88, eyeHeight: 0.92 };
+  // 减弱 3D 转头，避免透视把两眼挤向鼻梁
+  const POSE = { turn: 8, tilt: -8, roll: 22, scale: 1 };
   const POSE_HOME = { turn: 22, tilt: -19, roll: 38 };
   const UNIFORM_EYES = true;
   const V_T = new Set(["happy", "excited", "proud"]);

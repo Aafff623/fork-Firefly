@@ -113,9 +113,11 @@ const BUCKETS: Bucket[] = [
 		label: "歇着",
 		variants: [
 			{ state: "idle" },
-			{ state: "bored" },
-			{ state: "proud" },
-			{ state: "shy" },
+			{ state: "idle", trick: "bounce" },
+			{ state: "humming" },
+			{ state: "bored", trick: "hop" },
+			{ state: "idle", trick: "burst" },
+			{ state: "proud", trick: "bounce" },
 		],
 	},
 	{
@@ -124,7 +126,7 @@ const BUCKETS: Bucket[] = [
 		variants: [
 			{ state: "curious", emphasis: true },
 			{ state: "listening" },
-			{ state: "happy" },
+			{ state: "happy", trick: "bounce" },
 			{ state: "curious" },
 		],
 	},
@@ -422,7 +424,7 @@ function ensureBot(S: Session): FflyBot | null {
 	try {
 		S.bot = new Ctor(S.svg, {
 			mode: "hold",
-			state: "thinking",
+			state: "idle",
 			shape: "blob",
 			color: "black",
 			scheme: schemeOf(),
@@ -690,7 +692,7 @@ function bind(S: Session): void {
 						return;
 					}
 					showFace(S, "bot");
-					void playIndex(S, 2, 0);
+					void playIndex(S, 0, 0);
 					startLoop(S);
 				})();
 			}
@@ -730,7 +732,7 @@ function mount(stage: HTMLElement): Session | null {
 		hover: false,
 		leaveTimer: 0,
 		bot: null,
-		bucket: 2,
+		bucket: 0,
 		variant: 0,
 		trick: "—",
 		switches: 0,
