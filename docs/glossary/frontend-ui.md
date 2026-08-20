@@ -29,7 +29,8 @@
 | sidebarConfig.ts | 侧栏位置与小组件顺序 |
 | backgroundWallpaper.ts | 壁纸模式与横幅文案 |
 | displaySettingsConfig.ts | 设置面板可切换项 |
-| commentConfig.ts | 评论（本仓 **Waline**，`type: "waline"`；见 ADR-0001） |
+| commentConfig.ts | 评论（文章默认 **Giscus**；Dynamic 显式覆盖 **Waline**；见 ADR-0006） |
+| communityConfig.ts | GitHub Discussions 社区入口、个人中心与分区链接 |
 | dynamicConfig.ts | 动态页 / Memos |
 | friendsConfig.ts / galleryConfig.ts / sponsorConfig.ts | 友链 / 相册 / 打赏 |
 | fontConfig.ts / musicConfig.ts / effectsConfig.ts / pioConfig.ts / petConfig.ts | 字体 / 音乐 / 特效 / 看板娘 / 站内桌宠 |

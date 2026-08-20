@@ -65,7 +65,7 @@
 | Render | Static-first · SSG · CDN |
 | Content | `posts` / `dynamic` / `spec` Content Collections |
 | Interaction | Svelte islands · Swup · progressive enhancement |
-| Integrations | Waline · Iconify · SpritePet · local music |
+| Integrations | Giscus · Waline（Dynamic）· GitHub Discussions · Iconify · SpritePet · local music |
 | Delivery | `www.threetwoa.live` → EdgeOne CDN → Vercel origin；Cloudflare DNS + R2 图床 |
 
 ### Modules
@@ -116,7 +116,7 @@
 | Reading | list / grid / waterfall；Index-First TOC；亮暗色 / 色相 / 壁纸 | `PostPage.astro` · `displaySettingsConfig.ts` |
 | Performance | Swup 泄漏治理 · 图片按需物化 · 移动端组件裁剪 · 首屏 LCP 渲染门控 | `src/lib/page-lifecycle.ts` · `MainGridLayout.astro` |
 | Ask | `/ask` HeroUI Pro 聊天岛、站内检索、SSE、桌宠 LiveChat；默认生产关闭 | `src/components/ask/` · `src/pages/api/ask.ts` |
-| Personal | Dynamic 时间线、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
+| Personal | Dynamic 时间线、GitHub Discussions 社区、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
 | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、站点统计、桌宠 | `src/components/widget/` |
 | Delivery | EdgeOne CDN 主入口、Vercel 源站与回滚、Cloudflare R2 外置大图 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
 
@@ -135,9 +135,9 @@
 | Reading | Interaction model | Swup 页面过渡与 Svelte islands 按需注水 | `src/components/` · `src/layouts/` |
 | Personal surfaces | Dynamic | 碎碎念时间线，可接本地内容或 Memos | `src/pages/dynamic/index.astro` |
 | Personal surfaces | Gallery | 作品集手风琴与 Three.js 无限画布双模式 | `src/pages/gallery/` |
-| Personal surfaces | Extended pages | About、Friends、Guestbook、Anime 等独立页面 | `src/pages/` · `src/content/spec/` |
+| Personal surfaces | Extended pages | Community、About、Friends、Guestbook、Anime 等独立页面 | `src/pages/` · `src/content/spec/` |
 | Personal surfaces | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、统计、桌宠 | `src/components/widget/` |
-| Integration | Comments | Waline（ADR-0001）：表情预设、Giphy、访客统计；`stickerSuggest` 已集成默认关 | `src/config/commentConfig.ts` |
+| Integration | Comments | 文章主评论用 Giscus；Dynamic 内联回复保留 Waline（ADR-0006），两者都按页面延迟加载 | `src/config/commentConfig.ts` · `src/pages/dynamic/comments.astro` |
 | Integration | Icons | `astro-icon` + Iconify（lucide 主，兼 fa7 / simple-icons / mdi / mingcute / material-symbols） | `astro.config.mjs` |
 | Integration | Pets & music | SpritePet 默认开；Live2D / Spine 备选互斥；音乐默认 local（ADR-0002） | `petConfig.ts` · `musicConfig.ts` · `pioConfig.ts` |
 | Integration | Media services | 评论大图优先 Cloudflare R2，保留 COS 兼容；Fancybox 灯箱 | `.env.example` · `src/pages/api/comment-image.ts` |
@@ -156,7 +156,8 @@
 
 | 域 | 现行 | 备选 / 备注 | 配置 |
 | --- | --- | --- | --- |
-| 评论 | **Waline**（自建 serverURL + Neon） | Twikoo / Giscus / Artalk / Disqus 槽位 | `commentConfig.ts` · [ADR-0001](docs/adr/0001-waline-over-giscus.md) |
+| 评论 | **Giscus**（文章）+ **Waline**（Dynamic 内联回复） | Twikoo / Artalk / Disqus 槽位保留 | `commentConfig.ts` · [ADR-0006](docs/adr/0006-giscus-with-waline-dynamic-channel.md) |
+| 社区 | **GitHub Discussions** 分区与身份体系 | 独立论坛 / 注册 / 私信留作后续独立应用 | `communityConfig.ts` · `/community/` |
 | 桌宠 | **SpritePet**（双 DeepSeek 皮） | Live2D / Spine（三者互斥） | `petConfig.ts` · `pioConfig.ts` |
 | 音乐 | **local** 自托管曲库 | Meting API 备源 | `musicConfig.ts` · [ADR-0002](docs/adr/0002-local-music-default.md) |
 | 图标 | Iconify + **Lucide** 为主 | fa7 / simple-icons / mdi / mingcute / material-symbols | `astro.config.mjs` |
@@ -168,9 +169,10 @@
 
 | 域 | 现行（默认） | 备选 / 旁路 | 配置入口 |
 | --- | --- | --- | --- |
-| 评论 | **Waline**（自建 `serverURL` + Neon） | Twikoo / Giscus / Artalk / Disqus 槽位保留 | [`commentConfig.ts`](src/config/commentConfig.ts) · [ADR-0001](docs/adr/0001-waline-over-giscus.md) |
-| 表情包 | `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji | CDN 可换包 | `commentConfig.waline.emoji` |
-| GIF | Waline 客户端默认 **Giphy** search | 高流量时可换自有 API Key | `Waline.astro` |
+| 评论 | **Giscus** 承担文章讨论；**Waline** 只服务 Dynamic 内联回复 | Twikoo / Artalk / Disqus 槽位保留 | [`commentConfig.ts`](src/config/commentConfig.ts) · [ADR-0006](docs/adr/0006-giscus-with-waline-dynamic-channel.md) |
+| 社区 | GitHub Discussions 的 Announcements / General / Q&A / Ideas | 以后需要站内账号时再拆独立论坛应用 | [`communityConfig.ts`](src/config/communityConfig.ts) · `/community/` |
+| 表情包 | Dynamic 的 `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji | CDN 可换包 | `commentConfig.waline.emoji` |
+| GIF | Dynamic 的 Waline 客户端默认 **Giphy** search | 高流量时可换自有 API Key | `Waline.astro` |
 | 梗图建议 | `stickerSuggest` **已接线、默认 `enabled: false`** | 可开词表；可选 DeepSeek agent | `/api/comment-sticker-suggest` |
 | 评论大图 | Cloudflare **R2** 服务端代理（绕过 128KB Base64） | COS 兼容链保留；删除 / 取消会同步清对象 | `/api/comment-image` · `.env.example` |
 | 图标 | **Iconify** via `astro-icon`；UI 以 **Lucide** 为主 | fa7 / simple-icons / mdi / mingcute / material-symbols | `astro.config.mjs` → `icon({ include })` |
@@ -182,7 +184,7 @@
 
 </details>
 
-决策记录：评论走 Waline 而不是 Giscus，是为了表情选项卡与 GIF 插入闭环（见 ADR-0001）。音乐默认 local，是为了不依赖公共 Meting 可用性（见 ADR-0002）。
+决策记录：文章评论回归 Giscus，以 GitHub 身份、审核和 Discussions 历史为主；Dynamic 内联回复继续用 Waline，保留表情、GIF 与轻量回复体验（见 ADR-0006，ADR-0001 已被取代）。音乐默认 local，是为了不依赖公共 Meting 可用性（见 ADR-0002）。
 
 ## Showcase
 
@@ -365,7 +367,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
    ```
 
    frontmatter 由 [src/content.config.ts](src/content.config.ts) 校验；生产默认隐藏 `draft: true`。
-6. **集成**：需要密钥时复制 `.env.example` → `.env`（勿提交）。评论 Waline、桌宠 SpritePet、音乐 `local`、R2 / COS 存储见 Integrations。
+6. **集成**：需要密钥时复制 `.env.example` → `.env`（勿提交）。文章评论 Giscus、Dynamic 回复 Waline、桌宠 SpritePet、音乐 `local`、R2 / COS 存储见 Integrations。
 7. **本地验证**：`pnpm check` · `pnpm type-check` · `pnpm build` · `pnpm preview` — 核对 `dist/`、Pagefind、RSS、Sitemap、主页面。
 8. **交付链**
 
@@ -390,7 +392,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | 双侧栏与 widget 顺序 | `src/config/sidebarConfig.ts` |
 | 壁纸、透明度和背景模式 | `src/config/backgroundWallpaper.ts` |
 | 亮暗色、布局和显示面板 | `src/config/displaySettingsConfig.ts` |
-| 评论系统与 Waline | `src/config/commentConfig.ts` |
+| 评论与社区（Giscus / Dynamic Waline / Discussions） | `src/config/commentConfig.ts` · `src/config/communityConfig.ts` |
 | 相册模式与相册元数据 | `src/config/galleryConfig.ts` |
 | 公告、礼盒和日历封面 | `src/config/announcementConfig.ts` |
 | 特效开关 | `src/config/effectsConfig.ts` |
@@ -443,6 +445,8 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 **V4→V7 增量（2026-08-15/16）**：dist 571→**185MB**（`agents.astro` 根级 glob 根治 + pio 出仓 + 孤儿 chunk 清零 + 内容重复 142MB→0）；每页内联脚本 162→**49KB**；桌宠移动文章页 **0 张** spritesheet；music 双脚本 defer；Waline/画布/qrcode 点击才载；TagCloud 自托管；swup 视口内链接预取（弱网自动退避）；hero 大图懒换；页脚 CSS 异步。门禁 `scripts/check-v41-gates.mjs` **29 项**（含 dist 产物断言）进日常验证。
 
+**V8 增量（2026-08-20）**：文章评论切回 Giscus，Dynamic 独立覆盖为 Waline；评论组件、预连接和 Waline 样式均按页面门控，文章构建产物不再引用 Waline CSS；新增 `/community/` Discussions 门户。最终构建产物 20-hop Swup 回归无重复 iframe / ID / Waline 泄漏，软跳转事件样本中位 **291ms**、最慢 **505ms**；本地无节流文章直达样本 LCP **1.35s**、CLS **0.00**（实验室观测，不等同线上 CrUX）。社区页移动 Lighthouse：Accessibility / SEO / Agentic Browsing 均 **100**；Best Practices **81** 只因本地 HTTP。专项门禁 `pnpm check:community` **9 项**。
+
 完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md) · [V5 review+收口](docs/outputs/handoff/perf-optimization-2026-08-15-v5-plan.md) · [V6/V7 收官](docs/outputs/handoff/perf-optimization-2026-08-15-v6-final.md)。
 
 ## Style and assets
@@ -463,7 +467,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | 图标 | Iconify；UI 以 Lucide 为主 | `astro.config.mjs` → `icon.include` |
 | 桌宠 | SpritePet 双 DeepSeek + 访客换皮 | `petConfig.ts` · `public/pets/` |
 | Live2D / Spine | 备选，与桌宠互斥 | `pioConfig.ts` · `public/pio/` |
-| 评论表情 | Waline emojis：qq / weibo / bilibili / bmoji | `commentConfig.ts` |
+| 评论表情 | Dynamic 的 Waline emojis：qq / weibo / bilibili / bmoji | `commentConfig.ts` |
 | 音乐 | local 曲库（Pixabay 氛围曲等） | `musicConfig.ts` · `public/assets/music/` |
 | README 配图 | banner · architecture · tech-stack · showcase-* | `assets/images/readme/` |
 | 合集 / 日历 GIF 等 | 合集封面 · 日历月图 | `public/assets/collections/` · `images/widgets/calendar/` |
@@ -486,7 +490,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | Interaction | Swup · Iconify（Lucide 主）· Fancybox · Three.js（Gallery）· Framer Motion（动态时间线） | 全开 | 过渡、图标、灯箱、画廊 |
 | Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | `pnpm build` 串起 | 构建期把贵活做完 |
 | Delivery | Vercel origin（`@astrojs/vercel`）· EdgeOne CDN · Cloudflare DNS / R2 | 三者各司其职 | 静态出站 + 少量 API + 外置大图 |
-| Site integrations | Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 前三项现行；分析 ID 多为空 | 配置门控 |
+| Site integrations | Giscus · GitHub Discussions · Dynamic Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 评论双通道按路由门控；分析 ID 多为空 | 配置门控 |
 | Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
 | Agent tooling | knowledge-extract / output · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
 

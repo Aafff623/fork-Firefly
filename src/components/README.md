@@ -131,9 +131,9 @@ Firefly 项目中所有可复用组件的集中管理。组件按照功能和职
 - `index.astro` - 评论主组件
 - `Artalk.astro` - Artalk 评论集成
 - `Disqus.astro` - Disqus 评论集成
-- `Giscus.astro` - Giscus 挂载（主题保留；本站已停用，见 ADR-0001）
+- `Giscus.astro` - 文章与留言板的现行 Giscus 挂载（延迟加载、主题同步、跨页清理）
 - `Twikoo.astro` - Twikoo 评论集成
-- `Waline.astro` - Waline 评论（现行）
+- `Waline.astro` - Dynamic 内联回复专用 Waline（按页面与视口懒加载）
 
 ### 📊 analytics/ - 数据统计组件
 
