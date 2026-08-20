@@ -84,7 +84,7 @@
 | 评论大图 | `/api/comment-image` + 腾讯云 COS | 超 Base64 限制的图 | 现行（需密钥） | `.env.example` |
 | 梗图建议 | `/api/comment-sticker-suggest` | 词表 / 可选 DeepSeek | 接线、默认关 | `commentConfig.waline.stickerSuggest` |
 | 桌宠 | SpritePet spritesheet | 浏览/文章双皮 | 现行 | `petConfig.ts` · `public/pets/` |
-| 侧栏 Grok Bot | replica 引擎 + 自写编舞 | Profile 圆槽宏切 | 本机现行 / 生产无几何则锁头像 | `profile-grok-carousel.ts` · ADR-0003 |
+| 侧栏 Firefly Bot | 自研外壳引擎 + 自写编舞 | Profile 圆槽宏切 | 现行（本机与生产一致） | `profile-firefly-carousel.ts` · ADR-0004（0003 已取代） |
 | Live2D / Spine | `l2d-widget` · `public/pio/` | 与 SpritePet 互斥 | 备选 | `pioConfig.ts` |
 | 音乐 | local 曲库 | 导航栏播放器 | 现行 | `musicConfig.ts` · ADR-0002 |
 | 音乐备选 | Meting API | 在线歌单 | 备选 | `musicConfig.mode=meting` |
