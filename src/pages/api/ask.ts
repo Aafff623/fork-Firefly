@@ -148,18 +148,18 @@ export const POST: APIRoute = async ({ request, url }) => {
 	const action = url.searchParams.get("action") || "session";
 
 	if (action === "session") {
-		// URL = 已校验基址 + 字面量路径（与 chat 分支同构，可静态审计）
-		const authUrl = `${MAXKB_BASE}/auth/anonymous`;
+		// 与 chat 分支同构：上游 URL 一律经 upstreamUrl 字面量校验
+		const authUrl = upstreamUrl("/auth/anonymous");
 		let auth: { ok: boolean; status: number; data: unknown };
 		try {
-			const authRes = await fetch(authUrl, {
+			const authRes = await fetch(new Request(authUrl, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					Accept: "application/json",
 				},
 				body: JSON.stringify({ access_token: ACCESS_TOKEN }),
-			});
+			}));
 			auth = await readUpstreamJson(authRes);
 		} catch (err) {
 			auth = upstreamUnreachable(err);
@@ -175,16 +175,16 @@ export const POST: APIRoute = async ({ request, url }) => {
 			);
 		}
 
-		const openUrl = `${MAXKB_BASE}/open`;
+		const openUrl = upstreamUrl("/open");
 		let open: { ok: boolean; status: number; data: unknown };
 		try {
-			const openRes = await fetch(openUrl, {
+			const openRes = await fetch(new Request(openUrl, {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
 					Authorization: `Bearer ${authBody.data}`,
 				},
-			});
+			}));
 			open = await readUpstreamJson(openRes);
 		} catch (err) {
 			open = upstreamUnreachable(err);
