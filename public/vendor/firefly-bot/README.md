@@ -17,4 +17,5 @@ geometry-data.js → src/math.js → src/tables.js → src/pose.js → src/trick
 
 - 本机仍保留 gitignore 的原 replica：`public/vendor/grok-bot/`（仅供对照，禁止入库分发，见 ADR-0003/0004）。
 - 编舞预览：`.scratch/preview-grok-avatar/`（原 replica 版）；新引擎回归可直接跑站点 dev server 看侧栏。
-- 决策记录：`docs/adr/0004-firefly-bot-self-geometry.md`。
+- 决策记录：`docs/adr/0004-firefly-bot-self-geometry.md`（自研外壳入库）、`docs/adr/0005-firefly-bot-black-round.md`（纯黑圆润 + 开场 rest/idle 团子）。
+- 编舞默认从 rest 桶 `idle` 开场；歇着穿插 bounce / hop / humming / burst。两眼内缘硬留缝（ADR-0005 v2.5）。`thinking` / orbit 只出现在 work、ring 桶与点击轮转，避免第一眼是三点加载。
