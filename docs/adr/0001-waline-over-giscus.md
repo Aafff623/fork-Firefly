@@ -1,6 +1,6 @@
 # ADR-0001 · 评论系统采用 Waline，停用 Giscus
 
-- Status: accepted
+- Status: superseded by ADR-0006
 - Date: 2026-08-02
 
 ## Context
