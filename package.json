@@ -6,6 +6,7 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"check": "astro check",
+		"check:community": "node scripts/check-community-comment-gates.mjs",
 		"build": "npx tsx scripts/generate-lqips.ts && astro build && npx tsx scripts/subset-fonts.ts && npx tsx scripts/strip-legacy-fonts.ts && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"build:edgeone": "astro build && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"preview": "astro preview",

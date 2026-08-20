@@ -13,13 +13,12 @@ if (
 }
 
 /** 与时间线 data-src 对齐；客户端 waline-boot 也会再读一遍 ?path= */
-const customPath =
-	Astro.url.searchParams.get("path")?.trim() || "/dynamic/";
+const customPath = Astro.url.searchParams.get("path")?.trim() || "/dynamic/";
 ---
 
 <Layout title="" embed>
 	<main class="dynamic-comment-embed">
-		<Comment customPath={customPath} />
+		<Comment customPath={customPath} service="waline" />
 	</main>
 </Layout>
 

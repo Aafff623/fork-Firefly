@@ -41,13 +41,13 @@
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
 
-**官方默认 ≠ 本站**：`docs/official` 记载的是主题出厂默认（例如评论 `type: "none"`）。本站现行以 `src/config/*` 与 ADR 为准（评论为 Waline，见 ADR-0001）；勿把官方默认抄回本站配置或知识文。
+**官方默认 ≠ 本站**：`docs/official` 记载的是主题出厂默认（例如评论 `type: "none"`）。本站现行以 `src/config/*` 与 ADR 为准（文章评论为 Giscus，Dynamic 回复保留 Waline，见 ADR-0006）；勿把官方默认抄回本站配置或知识文。
 
 ## 配置驱动模型
 
 几乎所有开关在 `src/config/*.ts`，经 `@/config` barrel 导出；类型在 `src/types/`。改站优先改配置，不改布局内核。
 
-核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `collectionsConfig`（人工合集登记，支持一级/二级嵌套）…
+核心文件：`siteConfig` · `profileConfig` · `navBarConfig` · `sidebarConfig` · `backgroundWallpaper`（含独立 `atmosphere`，与 mode 四选一无关） · `commentConfig` · `communityConfig` · `collectionsConfig`（人工合集登记，支持一级/二级嵌套）…
 
 亮暗色：`themeColor.defaultMode` 现行为 **`time`**（按站点时区 `Asia/Shanghai` 北京时间；`timeSchedule` 默认 07:00–19:00 亮、19:00–07:00 暗）。另支持 `light` / `dark` / `system`；导航日月钮循环为 time → light → dark → time。
 
@@ -232,7 +232,7 @@ Content Collections（`src/content.config.ts`）：
 - 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见 `docs/outputs/handoff/perf-optimization-*`
 - 主题 demo 帖已 `draft: true`（生产列表隐藏，DEV 仍可开）；Bangumi 页已关，追番 ID 仍可后续改
 - 统计 GA / Clarity / Umami / 51la 配置全空，等园主给 ID 再填 `analyticsConfig`（不造假 ID）
-- 评论系统现行 `type: "waline"`（ADR-0001）；勿再按 `none` 理解
+- 文章评论现行 `type: "giscus"`，Dynamic 评论页显式覆盖为 Waline（ADR-0006，ADR-0001 已被取代）；勿再按 `none` 或全站 Waline 理解
 - 音乐默认 `local`（ADR-0002）；勿再默认假定公共 Meting 在线
 - 本地 pnpm 若走 npmmirror，部分包可能 404；安装可用官方 registry
 - 主题氛围：页面/卡片/按钮底为中性灰；紫与邻近色只出现在链接、高亮、图标、竖条等点缀位

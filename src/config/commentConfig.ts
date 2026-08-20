@@ -2,8 +2,9 @@ import type { CommentConfig } from "../types/commentConfig";
 
 export const commentConfig: CommentConfig = {
 	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk
-	// 现行：Waline（表情 + 默认 Giphy）。决策见 docs/adr/0001-waline-over-giscus.md
-	type: "waline",
+	// 主评论使用 GitHub Discussions；动态时间线的逐条回复显式保留 Waline。
+	// 决策见 docs/adr/0006-giscus-with-waline-dynamic-channel.md
+	type: "giscus",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -61,6 +62,21 @@ export const commentConfig: CommentConfig = {
 		locale: "zh-CN",
 		// 是否启用文章访问量统计功能
 		visitorCount: true,
+	},
+
+	// GitHub Discussions 评论。repo/category ID 已于 2026-08-20 通过 GitHub GraphQL 复核。
+	giscus: {
+		repo: "Aafff623/fork-Firefly",
+		repoId: "R_kgDOToSNAw",
+		category: "Announcements",
+		categoryId: "DIC_kwDOToSNA84DCe8K",
+		mapping: "pathname",
+		strict: "0",
+		reactionsEnabled: "1",
+		emitMetadata: "0",
+		inputPosition: "bottom",
+		lang: "zh-CN",
+		loading: "lazy",
 	},
 
 	//disqus评论系统配置

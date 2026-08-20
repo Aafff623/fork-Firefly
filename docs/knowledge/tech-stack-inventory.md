@@ -79,8 +79,10 @@
 
 | 项 | 实现 | 角色 | 状态 | 入口 |
 |---|---|---|---|---|
-| 评论 | Waline（自建 serverURL） | 文章评论 | 现行 | `commentConfig.ts` · ADR-0001 |
-| 评论备选 | Twikoo / Giscus / Artalk / Disqus | 槽位保留 | 备选 | `commentConfig.type` |
+| 文章评论 | Giscus（GitHub Discussions） | 文章与留言板评论 | 现行 | `commentConfig.ts` · ADR-0006 |
+| Dynamic 回复 | Waline（自建 serverURL） | 单条动态内联评论 | 现行、路由覆盖 | `dynamic/comments.astro` · ADR-0006 |
+| 评论备选 | Twikoo / Artalk / Disqus | 槽位保留 | 备选 | `commentConfig.type` |
+| 社区 | GitHub Discussions 分区门户 | 公告、交流、问答、想法 | 现行 | `communityConfig.ts` · `/community/` |
 | 评论大图 | `/api/comment-image` + 腾讯云 COS | 超 Base64 限制的图 | 现行（需密钥） | `.env.example` |
 | 梗图建议 | `/api/comment-sticker-suggest` | 词表 / 可选 DeepSeek | 接线、默认关 | `commentConfig.waline.stickerSuggest` |
 | 桌宠 | SpritePet spritesheet | 浏览/文章双皮 | 现行 | `petConfig.ts` · `public/pets/` |

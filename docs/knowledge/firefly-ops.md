@@ -1,7 +1,7 @@
 # Firefly 运维备忘（fork-Firefly / threetwoa's blog）
 
 > 主题配置语义以 docs/official/ 为准（路由：docs/knowledge/official-docs.tree.json）；领域事实以 CONTEXT.md 为准。  
-> **官方默认 ≠ 本站**：`docs/official` 里评论默认 `type: "none"` 等是主题出厂值；本站现行以 `src/config/commentConfig.ts` + ADR-0001（Waline）为准。  
+> **官方默认 ≠ 本站**：`docs/official` 里评论默认 `type: "none"` 等是主题出厂值；本站现行以 `src/config/commentConfig.ts` + ADR-0006（文章 Giscus、Dynamic Waline）为准。
 > 线上：https://fork-firefly.vercel.app · 仓库：https://github.com/Aafff623/fork-Firefly
 
 ## 1. Day-2 日常
@@ -59,7 +59,7 @@ siteConfig.pages.* = false → 路由 404 + 导航自动隐藏。不必先改 na
 3. **Node < 22**：构建易失败
 4. **勿乱开 CF_WORKERS**：本仓是静态站
 5. **demo 残留**：Bangumi/追番示例 ID、demo 文；可关页面或改 ID
-6. **留言板**：`siteConfig.pages.guestbook` 开启；评论为 **Waline**（`commentConfig.type: "waline"`，见 ADR-0001）。留言能力依赖 Waline `serverURL` 与后端可用；勿再写成评论关闭
+6. **留言板 / 评论**：`siteConfig.pages.guestbook` 开启；文章与留言板走 **Giscus**（`commentConfig.type: "giscus"`），Dynamic 内联回复才走 Waline（见 ADR-0006）。Giscus 依赖 GitHub Discussions 配置；Waline `serverURL` 只影响 Dynamic 回复
 7. **仅 pnpm**：npm/yarn 会被 preinstall 拦截
 
 ## 4. 不要随便改

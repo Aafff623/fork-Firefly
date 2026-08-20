@@ -1,5 +1,4 @@
 ---
-import "@waline/client/waline.css";
 import { commentConfig } from "@/config";
 import { url as siteUrl } from "@/utils/url-utils";
 import stickerSuggestStyles from "./sticker-suggest/sticker-suggest.css?url";
@@ -59,13 +58,42 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   <div id="waline"></div>
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script>
+    import walineStyleUrl from "@waline/client/waline.css?url";
+
     let bootedOnce = false;
     let pendingIO: IntersectionObserver | null = null;
+    let walineStylesPromise: Promise<void> | null = null;
+
+    const loadWalineStyles = () => {
+      if (walineStylesPromise) return walineStylesPromise;
+
+      walineStylesPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector<HTMLLinkElement>(
+          'link[data-waline-styles="true"]',
+        );
+        if (existing?.sheet) {
+          resolve();
+          return;
+        }
+
+        const link = existing ?? document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = walineStyleUrl;
+        link.dataset.walineStyles = "true";
+        link.addEventListener("load", () => resolve(), { once: true });
+        link.addEventListener("error", () => reject(new Error("Waline styles failed to load")), {
+          once: true,
+        });
+        if (!existing) document.head.append(link);
+      });
+      return walineStylesPromise;
+    };
 
     const start = async () => {
-      const { bootWalineFromShell, registerWalineSwupHooks } = await import(
-        "@/lib/waline-boot"
-      );
+      const [{ bootWalineFromShell, registerWalineSwupHooks }] = await Promise.all([
+        import("@/lib/waline-boot"),
+        loadWalineStyles(),
+      ]);
       // 注册后，后续软导航由 waline-boot 自带的 swup 钩子接管（幂等，只注册一次）
       registerWalineSwupHooks();
       bootedOnce = true;
@@ -135,7 +163,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   </script>
 </div>
 
-<style is:global>
+<style is:inline>
   /* 评论区字号 / 插图比例：覆盖 Waline 默认偏小编辑字号与未限宽插图 */
   .waline-shell {
     --waline-font-size: 1.05rem;
@@ -534,7 +562,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   }
 </style>
 
-<style>
+<style is:inline>
   .waline-hint {
     margin: 0 0 0.55rem;
     padding: 0;

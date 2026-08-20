@@ -3,9 +3,10 @@
 
 // 类型导出
 export type {
+	AdConfig,
 	AgentPersona,
 	AgentPersonas,
-	AdConfig,
+	AmbientFxConfig,
 	AnalyticsConfig,
 	AnnouncementConfig,
 	BackgroundWallpaperConfig,
@@ -17,21 +18,20 @@ export type {
 	FooterConfig,
 	GalleryAlbum,
 	GalleryConfig,
-	LicenseConfig,
 	LayeredClockConfig,
+	LicenseConfig,
 	MermaidConfig,
 	MusicPlayerConfig,
 	NavBarConfig,
 	PlantUMLConfig,
 	ProfileConfig,
 	SakuraConfig,
-	AmbientFxConfig,
 	SidebarLayoutConfig,
 	SiteConfig,
 	SponsorConfig,
-	SpritePetConfig,
 	SponsorItem,
 	SponsorMethod,
+	SpritePetConfig,
 	WidgetComponentConfig,
 	WidgetComponentType,
 	WidgetSpecificConfig,
@@ -47,24 +47,25 @@ export { analyticsConfig } from "./analyticsConfig"; // 统计分析配置
 export { announcementConfig } from "./announcementConfig"; // 公告配置
 // 样式配置
 export { backgroundWallpaper } from "./backgroundWallpaper"; // 背景壁纸配置
+export {
+	categoryIconConfig,
+	categoryIconName,
+} from "./categoryIconConfig"; // 分类条 Lucide 图标
+export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
 // 功能配置
 export { commentConfig } from "./commentConfig"; // 评论系统配置
+export { communityConfig } from "./communityConfig"; // GitHub Discussions 社区入口
 export { coverImageConfig } from "./coverImageConfig"; // 封面图配置
 export { displaySettingsConfig } from "./displaySettingsConfig"; // 显示设置面板开关配置
 export { dynamicConfig } from "./dynamicConfig"; // 动态页面配置
-export { sakuraConfig, ambientFxConfig } from "./effectsConfig"; // 动画特效配置（樱花 / 桌宠礼盒 ambient）
+export { ambientFxConfig, sakuraConfig } from "./effectsConfig"; // 动画特效配置（樱花 / 桌宠礼盒 ambient）
 export { expressiveCodeConfig } from "./expressiveCodeConfig"; // 代码高亮配置
 export { fontConfig, fontsList } from "./fontConfig"; // 字体配置
 export { footerConfig } from "./footerConfig"; // 页脚配置
 export { friendsPageConfig, getEnabledFriends } from "./friendsConfig"; // 友链配置
 export { galleryConfig } from "./galleryConfig"; // 相册配置
-export { licenseConfig } from "./licenseConfig"; // 许可证配置
 export { layeredClockConfig } from "./layeredClockConfig"; // 分层时钟天空/天气配置
-export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
-export {
-	categoryIconConfig,
-	categoryIconName,
-} from "./categoryIconConfig"; // 分类条 Lucide 图标
+export { licenseConfig } from "./licenseConfig"; // 许可证配置
 // 组件配置
 export { mermaidConfig } from "./mermaidConfig"; // Mermaid 图表配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置

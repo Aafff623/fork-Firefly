@@ -1,8 +1,8 @@
 # 评论区边打字边推梗图 · 架构方案
 
-> Status: idea（方案设计，未实施；契约已定稿供 PRD 引用）  
+> Status: implemented but disabled by default（仅适用于 Dynamic 的 Waline 回复；文章评论已改用 Giscus）
 > Date: 2026-08-04  
-> 约束：不换评论系统、不 fork Waline、旁挂优先（ADR-0001）  
+> 约束：不 fork Waline、旁挂优先；评论双通道现状见 ADR-0006
 > 调研索引：`research-index.md`  
 > PRD：`docs/outputs/prd/comment-sticker-suggest/prd.md`
 
@@ -14,14 +14,14 @@
 
 | 项 | 路径 / 事实 |
 |---|---|
-| 评论类型 | `Firefly\src\config\commentConfig.ts` → `type: "waline"` |
-| 挂载入口 | `Firefly\src\components\comment\index.astro` → `Waline.astro` |
-| 客户端 | `unpkg @waline/client@v3` CDN（非 npm） |
+| 评论类型 | 文章默认 Giscus；`dynamic/comments.astro` 显式 `service="waline"` |
+| 挂载入口 | `Firefly\src\components\comment\index.astro` → Dynamic 路由覆盖 `Waline.astro` |
+| 客户端 | npm `@waline/client`，组件接近视口后动态加载 |
 | 旁挂已验证 | `Waline.astro`：`textarea.wl-editor` 视觉镜像、折叠编辑器、`MutationObserver` |
 | 大图上传 | `Firefly\src\pages\api\comment-image.ts` → 腾讯云 COS（`prerender=false`） |
 | 表情预设 | qq / weibo / bilibili / bmoji（`@waline/emojis@1.4.0`） |
 | 默认 GIF 搜索 | Waline 内置 Giphy（工具栏「搜索面板」） |
-| ADR | `Firefly\docs\adr\0001-waline-over-giscus.md` |
+| ADR | `Firefly\docs\adr\0006-giscus-with-waline-dynamic-channel.md`（取代 ADR-0001） |
 
 **关键结论**：Waline 的 `search` 钩子只服务「打开 GIF 搜索面板后的查询」，**不是**编辑器 type-ahead。官方 Cookbook 亦如此。不可把产品目标塞进该钩子。
 

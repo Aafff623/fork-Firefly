@@ -13,6 +13,7 @@ src/config/
 ├── announcementConfig.ts     # 公告配置
 ├── backgroundWallpaper.ts    # 背景壁纸配置
 ├── commentConfig.ts          # 评论系统配置
+├── communityConfig.ts        # GitHub Discussions 社区配置
 ├── coverImageConfig.ts       # 封面图配置
 ├── displaySettingsConfig.ts  # 设置面板配置
 ├── dynamicConfig.ts          # 动态页面配置
@@ -57,7 +58,8 @@ import { profileConfig } from "@/config/profileConfig";
 | `analyticsConfig.ts` | 统计分析配置（Google Analytics、Microsoft Clarity、Umami、51la） |
 | `announcementConfig.ts` | 公告配置（标题、内容、类型、链接等） |
 | `backgroundWallpaper.ts` | 背景壁纸配置（壁纸模式、图片、横幅文字、水波纹等） |
-| `commentConfig.ts` | 评论系统配置（Twikoo、Waline、Artalk、Giscus、Disqus） |
+| `commentConfig.ts` | 评论系统配置（文章默认 Giscus；Dynamic 可显式覆盖 Waline；另保留 Twikoo、Artalk、Disqus） |
+| `communityConfig.ts` | GitHub Discussions 社区入口、个人中心和分区链接 |
 | `coverImageConfig.ts` | 封面图配置（文章封面图、随机封面图 API） |
 | `dynamicConfig.ts` | 动态页面配置（页面标题、描述、评论开关和每页显示数量） |
 | `effectsConfig.ts` | 动画特效配置（樱花数量、速度、尺寸等） |

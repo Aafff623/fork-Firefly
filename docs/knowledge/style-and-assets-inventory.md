@@ -96,8 +96,8 @@ SpritePet 包一览与许可：见 [`public/pets/README.md`](../../public/pets/R
 
 | 项 | 现行 | 入口 |
 |---|---|---|
-| 表情包 | `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji（unpkg CDN） | `commentConfig.waline.emoji` |
-| GIF 搜索 | Waline 客户端默认 **Giphy** | 评论组件 |
+| 表情包 | Dynamic 回复使用 `@waline/emojis@1.4.0`：qq / weibo / bilibili / bmoji（unpkg CDN） | `commentConfig.waline.emoji` |
+| GIF 搜索 | Dynamic 的 Waline 客户端默认 **Giphy** | `Waline.astro` |
 | 梗图建议 | 接线、默认 `enabled: false` | `stickerSuggest` · `/api/comment-sticker-suggest` |
 
 ## 音乐素材
