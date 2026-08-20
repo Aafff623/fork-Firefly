@@ -39,8 +39,9 @@ assert(
 const postPage = read("src/components/layout/PostPage.astro");
 assert(
 	"A2 PostPinAdmin DEV-gated (dynamic import or template gate)",
-	postPage.includes('await import("@/components/controls/PostPinAdmin.svelte")') ||
-		/import\.meta\.env\.DEV\s*&&/.test(postPage),
+	postPage.includes(
+		'await import("@/components/controls/PostPinAdmin.svelte")',
+	) || /import\.meta\.env\.DEV\s*&&/.test(postPage),
 	"PostPinAdmin renders unconditionally",
 );
 
@@ -64,11 +65,9 @@ assert(
 
 const layout = read("src/layouts/Layout.astro");
 assert(
-	"A6/A7 music gated + preconnect",
-	layout.includes("musicPlayerConfig.enable !== false") &&
-		layout.includes("preconnect") &&
-		layout.includes("https://unpkg.com"),
-	"layout missing enable gate or preconnect",
+	"A6/A7 music gated",
+	layout.includes("musicPlayerConfig.enable !== false"),
+	"layout missing music enable gate",
 );
 assert(
 	"D4 TagCloud self-hosted (no jsdelivr runtime dep)",
@@ -87,7 +86,8 @@ assert(
 const waline = read("src/components/comment/Waline.astro");
 assert(
 	"A4 Waline dynamic import",
-	waline.includes("@/lib/waline-boot") && waline.includes("await import"),
+	waline.includes('import("@/lib/waline-boot")') &&
+		!waline.includes('from "@/lib/waline-boot"'),
 	"Waline still statically imports waline-boot",
 );
 assert(
@@ -183,15 +183,20 @@ assert(
 );
 
 assert(
-	"R5 unpkg preconnect + jsdelivr no-crossorigin",
-	layout.includes('<link rel="preconnect" href="https://unpkg.com" />') &&
+	"R5 Waline preconnect page-gated + jsdelivr no-crossorigin",
+	layout.includes("usesWalineOnThisPage") &&
+		layout.includes(
+			'{usesWalineOnThisPage && <link rel="preconnect" href="https://unpkg.com" />}',
+		) &&
 		!layout.includes('href="https://cdn.jsdelivr.net" crossorigin'),
-	"preconnect priority wrong (unpkg should be preconnect; jsdelivr is no-cors)",
+	"Waline preconnect must stay off unrelated pages; jsdelivr remains no-cors",
 );
 
 assert(
 	"R6 pet bootRenderer syncs pet id before render",
-	/bootRenderer = \(\) => \{[\s\S]*?activePetId = resolveActivePetId\(/.test(pet),
+	/bootRenderer = \(\) => \{[\s\S]*?activePetId = resolveActivePetId\(/.test(
+		pet,
+	),
 	"bootRenderer must align activePetId to the route before first render (double-sheet race)",
 );
 
@@ -225,9 +230,7 @@ if (fs.existsSync(distClient)) {
 
 	const astroDir = path.join(distClient, "_astro");
 	let jsBlob = "";
-	const jsNames = fs
-		.readdirSync(astroDir)
-		.filter((f) => f.endsWith(".js"));
+	const jsNames = fs.readdirSync(astroDir).filter((f) => f.endsWith(".js"));
 	for (const f of jsNames) {
 		const p = path.join(astroDir, f);
 		if (fs.statSync(p).size < 3_000_000) jsBlob += fs.readFileSync(p, "utf8");
@@ -247,7 +250,8 @@ if (fs.existsSync(distClient)) {
 	const askOrphan = fs
 		.readdirSync(astroDir)
 		.find(
-			(f) => f.endsWith(".css") && f.startsWith("ask.") && !htmlBlob.includes(f),
+			(f) =>
+				f.endsWith(".css") && f.startsWith("ask.") && !htmlBlob.includes(f),
 		);
 	assert(
 		"dist no orphan ask.css",
@@ -255,7 +259,10 @@ if (fs.existsSync(distClient)) {
 		`ask css emitted but referenced by no page: ${askOrphan}`,
 	);
 
-	const indexHtml = fs.readFileSync(path.join(distClient, "index.html"), "utf8");
+	const indexHtml = fs.readFileSync(
+		path.join(distClient, "index.html"),
+		"utf8",
+	);
 	assert(
 		"dist music scripts deferred",
 		/<script defer[^>]*music-manager\.js/.test(indexHtml) &&
@@ -272,8 +279,8 @@ if (fs.existsSync(distClient)) {
 }
 
 if (failures.length) {
-	console.error("FAIL\n" + failures.map((f) => `- ${f}`).join("\n"));
+	console.error(`FAIL\n${failures.map((f) => `- ${f}`).join("\n")}`);
 	process.exit(1);
 }
 console.log(`PASS ${ok.length} gates`);
-ok.forEach((n) => console.log(`  ok  ${n}`));
+for (const name of ok) console.log(`  ok  ${name}`);
