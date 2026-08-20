@@ -2,8 +2,15 @@
 (function (global) {
   const NS = "http://www.w3.org/2000/svg";
   const Re0 = 114.2705;
-  const STAR_COLOR = "#C9A0FF";
-  const PALETTE = ["#8B5CF6", "#C084FC", "#5B8DEF", "#F472B6", "#34D399", "#FBBF24"];
+  // ADR-0005 纯黑圆润：彩带走黑白灰 + 一份站点紫点缀（light-dark 需经 style 生效）。
+  const STAR_COLOR = "light-dark(#2E2E2E, #F2EFE9)";
+  const PALETTE = [
+    "light-dark(#1F1F1F, #E8E4DC)",
+    "light-dark(#565656, #C9C4BA)",
+    "light-dark(#8A8A8A, #9C978D)",
+    "light-dark(#3A3A3A, #D6D1C6)",
+    "#8B5CF6",
+  ];
   const STAR = (() => {
     const n = [];
     for (let e = 0; e < 10; e++) {
@@ -421,7 +428,7 @@
         if (!j.el) {
           const ce = el(j.star ? "path" : j.round ? "circle" : "rect");
           if (j.star) ce.setAttribute("d", STAR);
-          ce.setAttribute("fill", j.color);
+          ce.style.fill = j.color;
           back.appendChild(ce); j.el = ce;
         }
         j.el.setAttribute("opacity", Q.toFixed(3));

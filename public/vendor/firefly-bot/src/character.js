@@ -204,13 +204,17 @@
     setColor(id, scheme) {
       this.colorId = id;
       if (scheme) this.scheme = scheme;
+      const pal = g.FFLY_GEO.palette[id] || g.FFLY_GEO.palette.black;
+      const bd = pal.body || { light: pal.light, dark: pal.dark };
       if (this.inkFlat) {
         this.svg.style.setProperty("--fg", this.inkFlat);
+        this.svg.style.setProperty("--body", this.inkFlat);
       } else if (this.loginWrap) {
         this.svg.style.setProperty("--fg", inkFg(id));
+        this.svg.style.setProperty("--body", `light-dark(${bd.light}, ${bd.dark})`);
       } else {
-        const pal = g.FFLY_GEO.palette[id] || g.FFLY_GEO.palette.black;
         this.svg.style.setProperty("--fg", this.scheme === "dark" ? pal.dark : pal.light);
+        this.svg.style.setProperty("--body", this.scheme === "dark" ? bd.dark : bd.light);
       }
       this.svg.style.setProperty("--ink", inkCss(id));
       this.svg.style.setProperty("--bg", this.eyeColor || EYE_BG);
@@ -347,7 +351,7 @@
 
       this.group = document.createElementNS(ns, "g");
       this.body = document.createElementNS(ns, "path");
-      this.body.setAttribute("fill", "var(--fg, #000)");
+      this.body.setAttribute("fill", "var(--body, var(--fg, #000))");
       const eyesG = document.createElementNS(ns, "g");
       eyesG.setAttribute("clip-path", `url(#${clipId})`);
       this.eyeEls = [0, 1].map(() => {

@@ -81,7 +81,7 @@
   const V_T = new Set(["happy", "excited", "proud"]);
   const B_T = new Set(["playful"]);
   const WINK_STATES = new Set(["idle", "happy", "excited", "curious", "playful"]);
-  const SHAPE_ZOOM = { blob: 0.92, pebble: 0.96, squircle: 0.84, tablet: 1, wedge: 0.94, hex: 0.94, cloud: 1, teardrop: 1 };
+  const SHAPE_ZOOM = { blob: 0.92, pebble: 0.96, egg: 0.95, hex: 0.94, teardrop: 1 };
   const VIEW_SCALE = 259 / 229;
   const shapeZoom = (name) => SHAPE_ZOOM[name] ?? 1;
   const poseScale = (name) => shapeZoom(name) * VIEW_SCALE;
@@ -96,9 +96,9 @@
   };
   const overlayViewZoom = (kind, scale) => (kind == null ? 1 : Math.max(OVERLAY_ZOOM[kind] / Math.max(scale, 1), 1));
 
-  // Firefly 自研墨色渐变（站点 hue 290 紫系），替代原 Grok 登录墨色表。
+  // Firefly 自研墨色表（ADR-0005 纯黑圆润：black 走黑白系，彩色条目仅数据兼容）。
   const INK = {
-    black: { lightFrom: "#6B4FD8", lightTo: "#3B2A86", darkFrom: "#C9B8FF", darkTo: "#8F73E8" },
+    black: { lightFrom: "#2A2A2A", lightTo: "#0C0C0C", darkFrom: "#3C3C3C", darkTo: "#161616" },
     brown: { lightFrom: "#AE8968", lightTo: "#855C36", darkFrom: "#A27952", darkTo: "#604227" },
     red: { lightFrom: "#FF5667", lightTo: "#E02135", darkFrom: "#FF3E51", darkTo: "#A21826" },
     orange: { lightFrom: "#FF8838", lightTo: "#E05B00", darkFrom: "#FF781C", darkTo: "#C24E00" },
@@ -119,7 +119,7 @@
     const e = INK[id] || INK.black;
     return `linear-gradient(${INK_ANGLE + 90}deg, light-dark(${e.lightFrom}, ${e.darkFrom}), light-dark(${e.lightTo}, ${e.darkTo}))`;
   };
-  const EYE_BG = "var(--sand-bg-base, var(--disk, #f3efe6))";
+  const EYE_BG = "var(--disk, #FAF8F4)";
 
   g.FFLY_TABLES = {
     GROUPS, EYE_PLAYLIST, EYE_HOLD_MS, BLINK_MS,

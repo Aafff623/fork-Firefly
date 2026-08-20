@@ -4,7 +4,7 @@
 
 ## 构成
 
-- `geometry-data.js` — 自研几何：形状路径（参数化极坐标扰动生成）、25 组眼型（参数化超椭圆生成器）、hue 290 紫系 palette。非 xAI 资产。
+- `geometry-data.js` — 自研几何 v2（ADR-0005 纯黑圆润）：形状族 5 个（正圆 blob / 鹅卵石 pebble / 卵形 egg / 圆角六边形 hex / 水滴 teardrop），25 组眼型（参数化超椭圆生成器），纯黑 palette（`black.light/dark` 为线条色，`black.body` 为身体填充）。非 xAI 资产。
 - `src/*.js` — 通用动画算法（弹簧 / 姿态机 / 特技关键帧 / overlay 程序化绘制 / 眼睛渲染管线），行为规格复刻原 grok replica，全局符号已改为 `FFLY_*` / `FireflyCharacter`。
 
 ## 加载顺序（消费方 `src/scripts/profile-firefly-carousel.ts` 按此注入）

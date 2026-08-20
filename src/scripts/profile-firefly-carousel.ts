@@ -92,16 +92,8 @@ const ENGINE_SCRIPTS = [
 	"/vendor/firefly-bot/src/character.js",
 ] as const;
 
-const SHAPES = [
-	"blob",
-	"pebble",
-	"squircle",
-	"hex",
-	"egg",
-	"gem",
-	"shield",
-	"leaf",
-];
+// ADR-0005 圆润族巡演：正圆 blob 加权（重复占位），偶尔切鹅卵石/卵形/圆角六边形。
+const SHAPES = ["blob", "blob", "pebble", "egg", "hex"];
 
 const LEAVE_MS = TIMING.leaveMs;
 const GREET_MS = TIMING.greetMs;
