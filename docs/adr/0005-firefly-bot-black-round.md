@@ -21,6 +21,7 @@ ADR-0004 的自研外壳沿用了 hue 290 紫系（palette.black 实为 #4C3A8C/
 5. **死数据同步**：`INK.black` 渐变、`starColor` 同步黑系（当前无消费者，防未来接线误用紫色）。
 6. **眼型实心重产（v2.1，2026-08-20 晚）**：初版参数化超椭圆眼型呈空心月牙（实心度 0.38–0.62），观感与 Grok 相差大。重产流程：本机对照 replica（gitignore）仅提取**宏观形态参数**（每眼宽/高/中心，`.scratch/grok_eye_specs.json`），由超椭圆图元按参数重算 48 点实心眼型（实心度 ≥0.78）——原版标志性的大号白竖椭圆、横胶囊眯眼、圆睁变体与左右眼姿态差全部保留，坐标不逐点拷贝。眼型语义仍按既有 25 索引 playlist 对齐情绪。
 7. **交互人性化（v2.2，2026-08-20 晚）**：① 眼神跟随鼠标——开启引擎既有 pointer→gaze 通道（carousel `followPointer: true`，Bot 面激活时补 `setFollowPointer(true)`，渲染时 pointer 优先于随机注视，远近按椭圆轨迹映射）；② 变身提速——`SPRINGS.shape` 10→16、`overlay` 14→18、`overlayMix` 11→15、眼型 morph 刚度 7/8/10→11/12/14；③ 彩带常态化——桶切换时 25% 概率自发 `burstOnce()`（黑白灰 + 站点紫粒子），不再只依赖点击。
+8. **首屏头像与眼神持续跟随（v2.3，2026-08-20）**：引擎预热后**不立刻切 Bot**，首屏停在站点头像 6–8s（既有 `FACE_MS.avatar`），并播一次轻晃 + 👋 招手（`is-hello`，`prefers-reduced-motion` 跳过；硬刷新重来，Swup 不重播）。宏切隐藏与 pointerleave **不再** `setFollowPointer(false)`——该调用会清空 `pointerRaw`，Bot 面回来且鼠标静止时眼神必失跟；`paused` 已停渲染，跟随保持开着继续采全局鼠标。
 
 ## License 立场（对「1:1 复刻观感」的合规边界）
 

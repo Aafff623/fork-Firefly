@@ -84,6 +84,8 @@ declare global {
 		__catCompactBound?: boolean;
 		/** 侧栏 Profile widget swup 监听幂等 guard */
 		__profileWidgetBound?: boolean;
+		/** 首载头像轻晃招手只播一次（硬刷新重来，Swup 切页不重播） */
+		__profileHelloPlayed?: boolean;
 		/** Twikoo swup hook / 自定义事件监听幂等 guard */
 		__twikooBound?: boolean;
 		/** RepelText swup 监听幂等 guard */

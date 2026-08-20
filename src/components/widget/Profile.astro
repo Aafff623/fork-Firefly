@@ -263,6 +263,14 @@ function socialBrandKey(name: string, icon: string): string {
 
       const wave = btn.querySelector<HTMLElement>("[data-avatar-wave]");
       const bubble = btn.querySelector<HTMLElement>("[data-avatar-bubble]");
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (!reduceMotion && !window.__profileHelloPlayed) {
+        window.__profileHelloPlayed = true;
+        btn.classList.add("is-hello");
+        window.setTimeout(() => btn.classList.remove("is-hello"), 2800);
+      }
 
       const dismiss = () => {
         btn.classList.remove("is-greeting");
@@ -725,6 +733,17 @@ function socialBrandKey(name: string, icon: string): string {
     animation: profile-wave-hand 0.9s ease-in-out infinite;
   }
 
+  /* 启动网页：头像轻晃 + 招手一次（不弹问候气泡；Swup 切页不重播） */
+  .profile-avatar-shell.is-hello .profile-face--avatar {
+    animation: profile-avatar-shake 0.7s ease;
+  }
+
+  .profile-avatar-shell.is-hello .profile-avatar-wave {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    animation: profile-wave-hand 0.9s ease-in-out 3;
+  }
+
   @keyframes profile-avatar-breathe {
     0%, 100% { transform: translateY(0) scale(1); }
     50% {
@@ -757,6 +776,13 @@ function socialBrandKey(name: string, icon: string): string {
     }
     .profile-avatar-shell.is-greeting .profile-avatar-wave {
       animation: none;
+    }
+    .profile-avatar-shell.is-hello .profile-face--avatar {
+      animation: none;
+    }
+    .profile-avatar-shell.is-hello .profile-avatar-wave {
+      animation: none;
+      opacity: 0;
     }
   }
 

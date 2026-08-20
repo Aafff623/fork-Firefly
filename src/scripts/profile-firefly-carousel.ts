@@ -564,7 +564,8 @@ function showFace(S: Session, face: Face): void {
 		scheduleBucket(S);
 		scheduleVariant(S, bucketOf(S.bucket), bucketOf(S.bucket).variants[S.variant]?.trick);
 	} else if (S.bot) {
-		S.bot.setFollowPointer(false);
+		// 宏切隐藏不清 pointerRaw：setFollowPointer(false) 会把鼠标参照清掉，
+		// Bot 面回来且鼠标静止时眼神失跟。paused 已停渲染，跟随保持开着继续采点。
 		S.bot.setPaused(true);
 		S.bot.setEmphasis(false);
 	}
@@ -596,7 +597,6 @@ function onLeave(S: Session): void {
 		if (S.dead) return;
 		S.hover = false;
 		if (!S.bot) return;
-		S.bot.setFollowPointer(false);
 		S.bot.setEmphasis(false);
 		muteEngineWild(S.bot);
 		S.bucket = 1;
@@ -761,13 +761,17 @@ function mount(stage: HTMLElement): Session | null {
 		}
 		if (S.dead) return;
 		S.engineOk = true;
-		if (!ensureBot(S)) {
+		const bot = ensureBot(S);
+		if (!bot) {
 			S.engineOk = false;
 			showFace(S, "avatar");
 			return;
 		}
-		showFace(S, "bot");
-		void playIndex(S, 2, 0);
+		// 预热引擎，首屏停在头像（进场招手）；跟随保持开着，Bot 面出现时眼神已有鼠标参照
+		if (S.face !== "bot") {
+			bot.setPaused(true);
+		}
+		bot.setFollowPointer(true);
 		startLoop(S);
 	})();
 
