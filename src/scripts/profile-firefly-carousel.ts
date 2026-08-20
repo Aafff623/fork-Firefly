@@ -428,7 +428,7 @@ function ensureBot(S: Session): FflyBot | null {
 			scheme: schemeOf(),
 			loginWrap: true,
 			sizePx: sizePxOf(S.stage),
-			followPointer: false,
+			followPointer: true, // 眼神跟随鼠标（ADR-0005：pointer 优先于随机注视）
 		});
 	} catch {
 		S.bot = null;
@@ -545,6 +545,8 @@ function nextBucket(S: Session): void {
 	S.variant = 0;
 	scheduleBucket(S);
 	void playIndex(S, S.bucket, 0);
+	// 彩带常态化：桶切换时偶尔自发庆祝，不强制依赖点击（ADR-0005）
+	if (Math.random() < 0.25 && S.bot?.burstOnce) S.bot.burstOnce();
 }
 
 function showFace(S: Session, face: Face): void {
@@ -557,6 +559,7 @@ function showFace(S: Session, face: Face): void {
 	paintFace(S);
 	if (face === "bot" && S.bot) {
 		S.bot.setPaused(false);
+		S.bot.setFollowPointer(true);
 		hold(S.bot);
 		scheduleBucket(S);
 		scheduleVariant(S, bucketOf(S.bucket), bucketOf(S.bucket).variants[S.variant]?.trick);

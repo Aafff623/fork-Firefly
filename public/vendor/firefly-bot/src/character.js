@@ -244,7 +244,7 @@
         this.eyeMorph.t = 1;
         this.eyeMorph.v = 0;
       } else if (name !== "sleeping" && name !== "waking") {
-        this._morphEyes(list[0], name === "excited" ? 10 : 8);
+        this._morphEyes(list[0], name === "excited" ? 14 : 12); // ADR-0005 提速（原 10/8）
       }
       this.eyeUntil = this.stateAt + rand(...EYE_HOLD_MS[name]);
       const blink = BLINK_MS[name];
@@ -391,7 +391,7 @@
       this.clipPath.setAttribute("d", geo.shapes[this.shapeName].path);
     }
 
-    _morphEyes(index, stiffness = 7) {
+    _morphEyes(index, stiffness = 11) { // ADR-0005 提速（原 7）
       if (index === this.eyeTo && this.eyeMorph.t === 1) return;
       const t = clamp(this.eyeMorph.x, 0, 1);
       this.eyeFrom = this.eyeTo;

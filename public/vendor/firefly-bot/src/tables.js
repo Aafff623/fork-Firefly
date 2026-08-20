@@ -67,9 +67,10 @@
     gazeY: [13, 1],
     notify: [9, 0.55],
     humDots: [6, 1],
-    overlay: [14, 1],
-    overlayMix: [11, 1],
-    shape: [10, 1],
+    // ADR-0005：morph/overlay 提速（原 shape 10 / overlay 14 / mix 11，变身拖沓）
+    overlay: [18, 1],
+    overlayMix: [15, 1],
+    shape: [16, 1],
     overlayTurn: [14, 1],
     spinTurn: [6.2, 1],
   };
