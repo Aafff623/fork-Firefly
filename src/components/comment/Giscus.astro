@@ -1,68 +1,225 @@
 ---
 import { commentConfig } from "@/config";
 
-if (!commentConfig?.giscus) {
+if (!commentConfig.giscus) {
 	throw new Error("Giscus comments are not configured");
 }
 
 const giscus = commentConfig.giscus;
-const lightTheme = "light";
-const darkTheme = "dark";
+const discussionUrl = `https://github.com/${giscus.repo}/discussions`;
 ---
 
-<!--
-  ???????????? Giscus ?????????? ADR-0001??
-  ?? Web Component?https://giscus.app/
--->
-<giscus-widget
-  id="comments"
-  repo={giscus.repo}
-  repoId={giscus.repoId}
-  category={giscus.category}
-  categoryId={giscus.categoryId}
-  mapping={giscus.mapping}
-  strict={giscus.strict}
-  reactionsEnabled={giscus.reactionsEnabled}
-  emitMetadata={giscus.emitMetadata}
-  inputPosition={giscus.inputPosition}
-  theme={lightTheme}
-  lang={giscus.lang}
-  loading={giscus.loading}
-/>
+<div
+	id="giscus"
+	class="giscus-shell"
+	data-giscus-host
+	data-repo={giscus.repo}
+	data-repo-id={giscus.repoId}
+	data-category={giscus.category}
+	data-category-id={giscus.categoryId}
+	data-mapping={giscus.mapping}
+	data-strict={giscus.strict}
+	data-reactions-enabled={giscus.reactionsEnabled}
+	data-emit-metadata={giscus.emitMetadata}
+	data-input-position={giscus.inputPosition}
+	data-lang={giscus.lang}
+	data-loading={giscus.loading}
+	data-discussions-url={discussionUrl}
+>
+	<p class="giscus-status" data-giscus-status aria-live="polite">
+		评论将在这里加载。你也可以直接前往
+		<a href={discussionUrl} target="_blank" rel="noopener noreferrer">GitHub Discussions</a>。
+	</p>
+</div>
 
-<script is:inline define:vars={{ lightTheme, darkTheme }}>
-  const requestedPath = new URLSearchParams(window.location.search).get("path");
-  const widget = document.querySelector("giscus-widget");
-  if (requestedPath && widget) {
-    widget.setAttribute("mapping", "specific");
-    widget.setAttribute("term", requestedPath);
-  }
+<noscript>
+	<p class="giscus-noscript">
+		浏览器关闭了 JavaScript，请前往
+		<a href={discussionUrl}>GitHub Discussions</a>
+		参与讨论。
+	</p>
+</noscript>
 
-  import("https://esm.sh/giscus");
+<script is:inline>
+  (() => {
+    const previous = window.__fireflyGiscusRuntime;
+    previous?.dispose?.();
 
-  function updateGiscusTheme() {
-    const isDark = document.documentElement.classList.contains("dark");
-    const theme = isDark ? darkTheme : lightTheme;
-    if (widget) {
-      widget.setAttribute("theme", theme);
+    const host = document.querySelector("[data-giscus-host]");
+    if (!(host instanceof HTMLElement)) return;
+
+    const status = host.querySelector("[data-giscus-status]");
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let intersectionObserver = null;
+    let themeObserver = null;
+    let readyObserver = null;
+    let idleId = 0;
+    let fallbackTimer = 0;
+    let loadTimer = 0;
+    let mounted = false;
+
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) return;
+      status.hidden = !message;
+      status.classList.toggle("is-error", isError);
+      if (message) status.textContent = message;
+    };
+
+    const currentTheme = () =>
+      document.documentElement.classList.contains("dark") ? "dark" : "light";
+
+    const sendTheme = () => {
+      const frame = host.querySelector("iframe.giscus-frame");
+      frame?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: currentTheme() } } },
+        "https://giscus.app",
+      );
+    };
+
+    const markReady = () => {
+      if (!host.querySelector("iframe.giscus-frame")) return false;
+      window.clearTimeout(loadTimer);
+      readyObserver?.disconnect();
+      setStatus("");
+      sendTheme();
+      return true;
+    };
+
+    const mount = () => {
+      if (mounted || signal.aborted || !host.isConnected) return;
+      mounted = true;
+      intersectionObserver?.disconnect();
+      window.clearTimeout(fallbackTimer);
+      if (idleId && "cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
+
+      setStatus("正在连接 GitHub Discussions…");
+      host
+        .querySelectorAll("iframe.giscus-frame, script[data-firefly-giscus]")
+        .forEach((node) => node.remove());
+
+      const requestedPath = new URLSearchParams(window.location.search).get("path");
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.dataset.fireflyGiscus = "1";
+      script.setAttribute("data-repo", host.dataset.repo || "");
+      script.setAttribute("data-repo-id", host.dataset.repoId || "");
+      script.setAttribute("data-category", host.dataset.category || "");
+      script.setAttribute("data-category-id", host.dataset.categoryId || "");
+      script.setAttribute(
+        "data-mapping",
+        requestedPath ? "specific" : host.dataset.mapping || "pathname",
+      );
+      if (requestedPath) script.setAttribute("data-term", requestedPath);
+      script.setAttribute("data-strict", host.dataset.strict || "0");
+      script.setAttribute(
+        "data-reactions-enabled",
+        host.dataset.reactionsEnabled || "1",
+      );
+      script.setAttribute("data-emit-metadata", host.dataset.emitMetadata || "0");
+      script.setAttribute("data-input-position", host.dataset.inputPosition || "bottom");
+      script.setAttribute("data-theme", currentTheme());
+      script.setAttribute("data-lang", host.dataset.lang || "zh-CN");
+      script.setAttribute("data-loading", host.dataset.loading || "lazy");
+      script.onerror = () => {
+        setStatus(
+          "GitHub 评论加载失败，请检查网络后重试，或直接打开 Discussions。",
+          true,
+        );
+      };
+
+      readyObserver = new MutationObserver(markReady);
+      readyObserver.observe(host, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+      host.append(script);
+      loadTimer = window.setTimeout(() => {
+        if (!markReady()) {
+          setStatus(
+            "GitHub 评论暂时没有响应。你仍可从社区页进入 Discussions。",
+            true,
+          );
+        }
+      }, 10000);
+    };
+
+    const dispose = () => {
+      controller.abort();
+      intersectionObserver?.disconnect();
+      themeObserver?.disconnect();
+      readyObserver?.disconnect();
+      window.clearTimeout(fallbackTimer);
+      window.clearTimeout(loadTimer);
+      if (idleId && "cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
+      host
+        .querySelectorAll("iframe.giscus-frame, script[data-firefly-giscus]")
+        .forEach((node) => node.remove());
+    };
+
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) mount();
+      },
+      { rootMargin: "600px 0px" },
+    );
+    intersectionObserver.observe(host);
+
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(mount, { timeout: 2500 });
+    } else {
+      fallbackTimer = window.setTimeout(mount, 1800);
     }
-  }
 
-  updateGiscusTheme();
-
-  if (window.giscusThemeObserver) {
-    window.giscusThemeObserver.disconnect();
-  }
-
-  window.giscusThemeObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        updateGiscusTheme();
-      }
+    themeObserver = new MutationObserver(sendTheme);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme"],
     });
-  });
 
-  window.giscusThemeObserver.observe(document.documentElement, {
-    attributes: true,
-  });
+    document.addEventListener("astro:before-swap", dispose, { signal });
+    document.addEventListener("swup:visit:start", dispose, {
+      signal,
+      once: true,
+    });
+    window.__fireflyGiscusRuntime = { dispose, mount };
+  })();
 </script>
+
+<style is:global>
+	.giscus-shell {
+		min-height: 11rem;
+	}
+
+	.giscus-status,
+	.giscus-noscript {
+		margin: 0;
+		padding: 0.9rem 1rem;
+		border: 1px solid color-mix(in oklab, var(--primary) 18%, transparent);
+		border-radius: 0.75rem;
+		background: color-mix(in oklab, var(--primary) 6%, var(--card-bg));
+		color: var(--content-meta);
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.giscus-status a,
+	.giscus-noscript a {
+		color: var(--primary);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.giscus-status.is-error {
+		border-color: color-mix(in oklab, #ef4444 35%, transparent);
+		background: color-mix(in oklab, #ef4444 7%, var(--card-bg));
+	}
+
+	.giscus-frame {
+		width: 100%;
+	}
+</style>

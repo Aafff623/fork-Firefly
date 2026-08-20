@@ -59,7 +59,7 @@ export type CommentConfig = {
 		// 是否统计访问量，true 启用访问量，false 关闭
 		visitorCount?: boolean;
 	};
-	/** 可选后端槽位；本站已停用（见 ADR-0001），保留类型以兼容主题多评论系统 */
+	/** GitHub Discussions 评论配置；动态时间线仍可通过组件 override 使用 Waline。 */
 	giscus?: {
 		repo: string;
 		repoId: string;
