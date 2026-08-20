@@ -1,9 +1,8 @@
 /**
- * 侧栏头像 ↔ Grok Bot 时间表。
- * 预览 `.scratch/preview-grok-avatar/timing.js` 必须同数。
+ * 侧栏头像 ↔ Firefly Bot 时间表。
  * 宏面 1:4（头像少、Bot 长）。只加长，不改比例。
  */
-export const GROK_CAROUSEL_TIMING = {
+export const FFLY_CAROUSEL_TIMING = {
 	face: {
 		avatar: [6000, 8000],
 		bot: [24000, 32000],
@@ -25,4 +24,4 @@ export const GROK_CAROUSEL_TIMING = {
 	},
 } as const;
 
-export type GrokCarouselTiming = typeof GROK_CAROUSEL_TIMING;
+export type FflyCarouselTiming = typeof FFLY_CAROUSEL_TIMING;

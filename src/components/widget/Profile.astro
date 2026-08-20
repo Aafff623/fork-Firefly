@@ -51,8 +51,8 @@ function socialBrandKey(name: string, icon: string): string {
       frameFeatureOn && "profile-avatar-stage--frame-ready",
     ]}
     data-profile-avatar-frame
-    data-profile-grok
-    data-grok-face="avatar"
+    data-profile-ffly
+    data-ffly-face="avatar"
     data-default-frame={defaultFrameId}
   >
     <button
@@ -79,8 +79,8 @@ function socialBrandKey(name: string, icon: string): string {
         </span>
         <span class="profile-face profile-face--bot" data-profile-face="bot">
           <svg
-            class="profile-grok-bot"
-            data-profile-grok-svg
+            class="profile-ffly-bot"
+            data-profile-ffly-svg
             role="img"
             aria-hidden="true"
           ></svg>
@@ -318,8 +318,8 @@ function socialBrandKey(name: string, icon: string): string {
 </script>
 
 <script>
-  import { bootProfileGrokCarousel } from "@/scripts/profile-grok-carousel";
-  bootProfileGrokCarousel();
+  import { bootProfileFireflyCarousel } from "@/scripts/profile-firefly-carousel";
+  bootProfileFireflyCarousel();
 </script>
 
 <style>
@@ -382,13 +382,13 @@ function socialBrandKey(name: string, icon: string): string {
     background: color-mix(in oklch, var(--card-bg) 88%, #2a2722);
   }
 
-  .profile-grok-bot {
+  .profile-ffly-bot {
     display: block;
     overflow: visible;
     color-scheme: light;
   }
 
-  :global(html.dark) .profile-grok-bot {
+  :global(html.dark) .profile-ffly-bot {
     color-scheme: dark;
   }
 

@@ -1,13 +1,13 @@
 /**
- * 侧栏头像 ↔ Grok Bot 宏切 + 六桶巡演。
- * 编舞对齐 `.scratch/preview-grok-avatar/choreography.js`，不改 replica。
+ * 侧栏头像 ↔ Firefly Bot 宏切 + 六桶巡演。
+ * 引擎：public/vendor/firefly-bot（自研外壳，特效行为复刻原 grok replica）。
  */
 
-import { GROK_CAROUSEL_TIMING as TIMING } from "./profile-grok-timing";
+import { FFLY_CAROUSEL_TIMING as TIMING } from "./profile-firefly-timing";
 
-type GrokOverlay = { x: number };
+type FflyOverlay = { x: number };
 
-type GrokBot = {
+type FflyBot = {
 	destroy: () => void;
 	setMode: (mode: string) => void;
 	setPaused: (v: boolean) => void;
@@ -27,15 +27,15 @@ type GrokBot = {
 	hopAt: number;
 	spinTurn: { t: number; x: number; v: number } | null;
 	wildWide: boolean;
-	overlay: GrokOverlay;
+	overlay: FflyOverlay;
 	particles?: { clear?: () => void };
 	ctx: { wantPn: unknown };
 };
 
-type GrokCtor = new (
+type FflyCtor = new (
 	svg: SVGSVGElement,
 	opts: Record<string, unknown>,
-) => GrokBot;
+) => FflyBot;
 
 type Face = "avatar" | "bot";
 
@@ -63,7 +63,7 @@ type Session = {
 	engineOk: boolean;
 	hover: boolean;
 	leaveTimer: number;
-	bot: GrokBot | null;
+	bot: FflyBot | null;
 	bucket: number;
 	variant: number;
 	trick: string;
@@ -82,14 +82,14 @@ type Session = {
 };
 
 const ENGINE_SCRIPTS = [
-	"/vendor/grok-bot/geometry-data.js",
-	"/vendor/grok-bot/src/math.js",
-	"/vendor/grok-bot/src/tables.js",
-	"/vendor/grok-bot/src/pose.js",
-	"/vendor/grok-bot/src/tricks.js",
-	"/vendor/grok-bot/src/fx.js",
-	"/vendor/grok-bot/src/eyes.js",
-	"/vendor/grok-bot/src/character.js",
+	"/vendor/firefly-bot/geometry-data.js",
+	"/vendor/firefly-bot/src/math.js",
+	"/vendor/firefly-bot/src/tables.js",
+	"/vendor/firefly-bot/src/pose.js",
+	"/vendor/firefly-bot/src/tricks.js",
+	"/vendor/firefly-bot/src/fx.js",
+	"/vendor/firefly-bot/src/eyes.js",
+	"/vendor/firefly-bot/src/character.js",
 ] as const;
 
 const SHAPES = [
@@ -202,13 +202,13 @@ let enginePromise: Promise<boolean> | null = null;
 let live: Session | null = null;
 let swupBound = false;
 
-function grokCtor(): GrokCtor | undefined {
-	return (window as unknown as { GrokCharacter?: GrokCtor }).GrokCharacter;
+function fflyCtor(): FflyCtor | undefined {
+	return (window as unknown as { FireflyCharacter?: FflyCtor }).FireflyCharacter;
 }
 
 function overlayMap(): Record<string, string> {
-	const fx = (window as unknown as { GROK_FX?: { MAP?: Record<string, string> } })
-		.GROK_FX;
+	const fx = (window as unknown as { FFLY_FX?: { MAP?: Record<string, string> } })
+		.FFLY_FX;
 	return fx?.MAP ?? {};
 }
 
@@ -234,10 +234,10 @@ function overlayOf(state: string): string | null {
 
 function injectScript(src: string): Promise<void> {
 	const existing = document.querySelector<HTMLScriptElement>(
-		`script[data-grok-engine][src="${src}"]`,
+		`script[data-ffly-engine][src="${src}"]`,
 	);
 	if (existing) {
-		if (existing.dataset.grokReady === "1" || grokCtor()) {
+		if (existing.dataset.fflyReady === "1" || fflyCtor()) {
 			return Promise.resolve();
 		}
 		return new Promise((resolve, reject) => {
@@ -251,9 +251,9 @@ function injectScript(src: string): Promise<void> {
 		const el = document.createElement("script");
 		el.src = src;
 		el.async = false;
-		el.dataset.grokEngine = "1";
+		el.dataset.fflyEngine = "1";
 		el.onload = () => {
-			el.dataset.grokReady = "1";
+			el.dataset.fflyReady = "1";
 			resolve();
 		};
 		el.onerror = () => reject(new Error(src));
@@ -264,7 +264,7 @@ function injectScript(src: string): Promise<void> {
 function vendorForcedOff(): boolean {
 	return (
 		import.meta.env.DEV &&
-		new URLSearchParams(location.search).has("ff-no-grok")
+		new URLSearchParams(location.search).has("ff-no-bot")
 	);
 }
 
@@ -291,40 +291,40 @@ async function vendorPresent(): Promise<boolean> {
 }
 
 function geoReady(): boolean {
-	return !!(window as unknown as { GROK_GEO?: unknown }).GROK_GEO;
+	return !!(window as unknown as { FFLY_GEO?: unknown }).FFLY_GEO;
 }
 
 function loadEngine(): Promise<boolean> {
-	if (grokCtor() && geoReady()) return Promise.resolve(true);
+	if (fflyCtor() && geoReady()) return Promise.resolve(true);
 	if (enginePromise) return enginePromise;
 	enginePromise = (async () => {
 		try {
 			if (!(await vendorPresent())) {
-				console.warn("[profile-grok] vendor missing; stay on avatar");
+				console.warn("[profile-firefly] vendor missing; stay on avatar");
 				return false;
 			}
 			await injectScript(ENGINE_SCRIPTS[0]);
 			if (!geoReady()) {
-				console.warn("[profile-grok] vendor missing; stay on avatar");
+				console.warn("[profile-firefly] vendor missing; stay on avatar");
 				return false;
 			}
 			for (const src of ENGINE_SCRIPTS.slice(1)) {
 				await injectScript(src);
 			}
-			return typeof grokCtor() === "function";
+			return typeof fflyCtor() === "function";
 		} catch {
-			console.warn("[profile-grok] vendor missing; stay on avatar");
+			console.warn("[profile-firefly] vendor missing; stay on avatar");
 			return false;
 		}
 	})();
 	return enginePromise;
 }
 
-function hold(bot: GrokBot | null): void {
+function hold(bot: FflyBot | null): void {
 	if (bot) bot.setMode("hold");
 }
 
-function muteEngineWild(bot: GrokBot | null): void {
+function muteEngineWild(bot: FflyBot | null): void {
 	if (!bot) return;
 	bot.trickAt = performance.now() + 1e8;
 	bot.celebrateAt = -1;
@@ -343,7 +343,7 @@ function muteEngineWild(bot: GrokBot | null): void {
 	}
 }
 
-function setShapeSafe(bot: GrokBot, name: string): void {
+function setShapeSafe(bot: FflyBot, name: string): void {
 	if (!name || name === bot.shapeName) return;
 	bot.setShape(name);
 	hold(bot);
@@ -354,7 +354,7 @@ function setShapeSafe(bot: GrokBot, name: string): void {
 	bot.particles?.clear?.();
 }
 
-function maybeShape(S: Session, bot: GrokBot): void {
+function maybeShape(S: Session, bot: FflyBot): void {
 	S.switches += 1;
 	if (S.switches % TIMING.shapeEvery !== 0) return;
 	const pool = SHAPES.filter((n) => n !== bot.shapeName);
@@ -371,7 +371,7 @@ function trickPadMs(kind: string | null | undefined): number {
 	return 0;
 }
 
-function trickPlaying(bot: GrokBot | null): boolean {
+function trickPlaying(bot: FflyBot | null): boolean {
 	if (!bot) return false;
 	if (bot.hopAt >= 0 && performance.now() - bot.hopAt < TIMING.trick.hop) {
 		return true;
@@ -385,7 +385,7 @@ function trickPlaying(bot: GrokBot | null): boolean {
 	return false;
 }
 
-function fireTrick(S: Session, bot: GrokBot, kind: string | null): void {
+function fireTrick(S: Session, bot: FflyBot, kind: string | null): void {
 	if (!kind) {
 		S.trick = "—";
 		return;
@@ -396,7 +396,7 @@ function fireTrick(S: Session, bot: GrokBot, kind: string | null): void {
 	else if (kind === "burst") bot.burstOnce();
 }
 
-function waitOverlayOut(S: Session, bot: GrokBot | null): Promise<void> {
+function waitOverlayOut(S: Session, bot: FflyBot | null): Promise<void> {
 	return new Promise((resolve) => {
 		if (!bot || S.dead) {
 			resolve();
@@ -423,9 +423,9 @@ function schemeOf(): "light" | "dark" {
 	return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
-function ensureBot(S: Session): GrokBot | null {
+function ensureBot(S: Session): FflyBot | null {
 	if (S.bot || reduced() || S.dead) return S.bot;
-	const Ctor = grokCtor();
+	const Ctor = fflyCtor();
 	if (!Ctor) return null;
 	try {
 		S.bot = new Ctor(S.svg, {
@@ -446,7 +446,7 @@ function ensureBot(S: Session): GrokBot | null {
 	S.bot.setPaused(false);
 	muteEngineWild(S.bot);
 	S.trick = "—";
-	(S.svg as SVGSVGElement & { __grok?: GrokBot }).__grok = S.bot;
+	(S.svg as SVGSVGElement & { __ffly?: FflyBot }).__ffly = S.bot;
 	return S.bot;
 }
 
@@ -454,7 +454,7 @@ function destroyBot(S: Session): void {
 	if (!S.bot) return;
 	S.bot.destroy();
 	S.bot = null;
-	delete (S.svg as SVGSVGElement & { __grok?: GrokBot }).__grok;
+	delete (S.svg as SVGSVGElement & { __ffly?: FflyBot }).__ffly;
 	S.svg.innerHTML = "";
 }
 
@@ -464,7 +464,7 @@ function paintFace(S: Session): void {
 	S.faceBot.classList.toggle("is-on", botOn);
 	S.stage.classList.toggle("is-bot", botOn);
 	S.stage.classList.toggle("is-avatar", !botOn);
-	S.stage.dataset.grokFace = S.face;
+	S.stage.dataset.fflyFace = S.face;
 }
 
 function mottoClose(S: Session, now: number): boolean {
@@ -717,7 +717,7 @@ function teardown(S: Session): void {
 
 function mount(stage: HTMLElement): Session | null {
 	const shell = stage.querySelector<HTMLElement>("[data-avatar-greet]");
-	const svg = stage.querySelector<SVGSVGElement>("[data-profile-grok-svg]");
+	const svg = stage.querySelector<SVGSVGElement>("[data-profile-ffly-svg]");
 	const faceAvatar = stage.querySelector<HTMLElement>(
 		'[data-profile-face="avatar"]',
 	);
@@ -780,7 +780,7 @@ function mount(stage: HTMLElement): Session | null {
 }
 
 async function start(): Promise<void> {
-	const stage = document.querySelector<HTMLElement>("[data-profile-grok]");
+	const stage = document.querySelector<HTMLElement>("[data-profile-ffly]");
 	if (live && live.stage === stage && stage?.isConnected && !live.dead) {
 		return;
 	}
@@ -792,7 +792,7 @@ async function start(): Promise<void> {
 	live = mount(stage);
 }
 
-export function bootProfileGrokCarousel(): void {
+export function bootProfileFireflyCarousel(): void {
 	void start();
 	if (swupBound) return;
 	swupBound = true;
