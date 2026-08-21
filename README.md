@@ -447,7 +447,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 **V8 增量（2026-08-20）**：文章评论切回 Giscus，Dynamic 独立覆盖为 Waline；评论组件、预连接和 Waline 样式均按页面门控，文章构建产物不再引用 Waline CSS；新增 `/community/` Discussions 门户。最终构建产物 20-hop Swup 回归无重复 iframe / ID / Waline 泄漏，软跳转事件样本中位 **291ms**、最慢 **505ms**；本地无节流文章直达样本 LCP **1.35s**、CLS **0.00**（实验室观测，不等同线上 CrUX）。社区页移动 Lighthouse：Accessibility / SEO / Agentic Browsing 均 **100**；Best Practices **81** 只因本地 HTTP。专项门禁 `pnpm check:community` **9 项**。
 
-**V9 在制（2026-08-21）**：未缓存文章先进入 2 并发意图队列，HTML 准备完成后再一次提交 URL、DOM 与即时回顶；请求失败保留旧 URL/DOM/滚动并提示重试，导航等待期暂停桌宠、标签球与装饰动画。新增 GitHub numeric-id 园主会话、本地 Markdown/图片编辑与软归档；DEV bypass 仅在显式开关与真实 loopback 下生效。生产 GitHub 写回和真实 OAuth尚未启用，不把本地 mock 当线上后台。专项门禁为 `scripts/check-article-navigation-gates.mjs`、`scripts/check-ui-motion-gates.mjs` 与 `pnpm check:owner`。
+**V9（2026-08-21 · [v1.4.0](https://github.com/Aafff623/fork-Firefly/releases/tag/v1.4.0)）**：未缓存文章先进入 2 并发意图队列，HTML 准备完成后再一次提交 URL、DOM 与即时回顶；请求失败保留旧 URL/DOM/滚动并提示重试，导航等待期暂停桌宠、标签球与装饰动画。新增 GitHub numeric-id 园主会话、本地 Markdown/图片编辑与软归档；DEV bypass 仅在显式开关与真实 loopback 下生效，退出登录需确认；搜索迁至分类条「更多」右侧，樱花开关回到设置面板。生产 GitHub 写回和真实 OAuth 尚未启用，不把本地 mock 当线上后台。专项门禁为 `scripts/check-article-navigation-gates.mjs`、`scripts/check-ui-motion-gates.mjs` 与 `pnpm check:owner`。
 
 完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md) · [V5 review+收口](docs/outputs/handoff/perf-optimization-2026-08-15-v5-plan.md) · [V6/V7 收官](docs/outputs/handoff/perf-optimization-2026-08-15-v6-final.md)。
 
