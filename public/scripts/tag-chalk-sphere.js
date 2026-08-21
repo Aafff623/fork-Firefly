@@ -19,7 +19,7 @@
     var SCRIPT_SRC = "/scripts/vendor/tagcloud.min.js";
     var DRAG_PX = 6;
     // 闲置再快一档；拖拽跟手但别飞（0.42 是拖拽过灵敏的旧值）
-    var IDLE_MAX_SPEED = 0.4;
+    var IDLE_MAX_SPEED = 0.48;
     var DRAG_MAX_SPEED = 1.85;
     var IDLE_DIV = 5;
     // 越大越钝：鼠标位移 / DRAG_DIV → 角速度
@@ -945,6 +945,7 @@
         var host = el._tagVisRoot;
         var off =
           document.hidden ||
+          window.__fireflyNavigationPriority === true ||
           el._tagVisIntersecting === false ||
           (host && host.getAttribute("data-view-mode") === "list");
         if (off) {
@@ -1214,6 +1215,16 @@
     // 跨页重挂 / 切换视图的事件只绑一次：左栏与 /tags/ 各有一份实例，防 swup 监听累积
     if (!window.__tagChalkSphereBound) {
       window.__tagChalkSphereBound = true;
+      window.addEventListener("firefly:navigation-priority", function (event) {
+        window.__fireflyNavigationPriority = Boolean(
+          event && event.detail && event.detail.active,
+        );
+        document
+          .querySelectorAll("[data-tag-chalk-sphere] .tag-sphere__cloud")
+          .forEach(function (cloud) {
+            if (cloud._tagVisSync) cloud._tagVisSync();
+          });
+      });
       document.addEventListener("swup:page:view", function () {
         // 等本轮 page:view 同步处理器（各组件重挂）跑完再清离页实例，避免误杀刚挂上的
         setTimeout(sweepOrphanTagClouds, 0);

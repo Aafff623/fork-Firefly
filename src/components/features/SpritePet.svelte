@@ -8,15 +8,11 @@ import { onDestroy, onMount } from "svelte";
 import {
 	type BuiltinPetId,
 	type DualRoutePetId,
-	type StoredPetSelection,
 	findBuiltinPet,
 	isPickerPetId,
 	resolvePetIdForPath,
+	type StoredPetSelection,
 } from "@/lib/pets/builtinPets";
-import {
-	createPetRendererGate,
-	shouldSkipPetSheet,
-} from "@/lib/pets/petRendererGate";
 import {
 	getAtlas,
 	getPetAnimationDurationMs,
@@ -29,21 +25,25 @@ import {
 	quantizePetLookDirection,
 } from "@/lib/pets/petAnimation";
 import {
+	createPetRendererGate,
+	shouldSkipPetSheet,
+} from "@/lib/pets/petRendererGate";
+import {
 	facingForCorner,
 	findVisibleAnchorById,
 	isViewportCornerPark,
 	listVisibleRoamAnchors,
-	pickNextRoamAnchor,
 	type PetRoamAnchorId,
 	type PetRoamCorner,
 	type PetRoamFacing,
 	type PetRoamResolvedAnchor,
+	pickNextRoamAnchor,
 } from "@/lib/pets/petRoamAnchors";
 import {
 	canPlayByPriority,
 	getPetPagePersonaDef,
-	resolvePostReadMood,
 	type PetScenarioPriority,
+	resolvePostReadMood,
 } from "@/lib/pets/petScenarios";
 import {
 	SIDEBAR_BALANCE_EVENT,
@@ -233,18 +233,14 @@ const pet = $derived(findBuiltinPet(activePetId));
 const atlas = $derived(getAtlas(pet.atlasVariant));
 /** 按宠尺寸覆盖；缺省用布局传入的全局 size */
 const effectiveSize = $derived(pet.sizePx ?? size);
-const height = $derived(
-	(effectiveSize * atlas.cellHeight) / atlas.cellWidth,
-);
+const height = $derived((effectiveSize * atlas.cellHeight) / atlas.cellWidth);
 const atlasUrl = $derived(url(pet.spritesheetPath));
 /** classic-8x9 无 look 行，强制关闭；覆盖模式也关（首批均为 v1） */
 const effectiveLookFollow = $derived(
 	lookFollow && !isOverrideMode && pet.atlasVariant === "v2",
 );
 /** 卡间停留：按宠覆盖；拖后恢复仍用 roam.resumeAfterDragMs */
-const effectiveRoamIntervalMs = $derived(
-	pet.roamIntervalMs ?? roam.intervalMs,
-);
+const effectiveRoamIntervalMs = $derived(pet.roamIntervalMs ?? roam.intervalMs);
 /** idle/ambient 变慢倍数；瞬态动作不乘 */
 const effectiveIdlePace = $derived(
 	pet.idlePaceMultiplier && pet.idlePaceMultiplier > 0
@@ -293,10 +289,12 @@ let roamLoopActive = false;
 let balanceParkActive = false;
 /** 本轮 5s 倒计时锁定的下一张卡；拖拽会作废，松开后 2s 再重新随机 */
 let plannedRoamTargetId: PetRoamAnchorId | null = null;
+/** 最近两个停靠点：避免宠物在相邻两张卡之间机械往返 */
+let recentRoamAnchorIds: PetRoamAnchorId[] = [];
 /** 钻洞/近距换位代数：滚动/定时并发时只让最后一次落地 */
 let roamPortalGen = 0;
 
-let playbackTimer: ReturnType<typeof setTimeout> | null = null;
+let playbackFrame: number | null = null;
 let transientTimer: ReturnType<typeof setTimeout> | null = null;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let readScrollTimer: ReturnType<typeof setTimeout> | null = null;
@@ -304,6 +302,7 @@ let readScrollTimer: ReturnType<typeof setTimeout> | null = null;
 let activeScenarioPriority: PetScenarioPriority | null = null;
 /** Tab 后台：停表，回前台再恢复 */
 let pageVisible = true;
+let navigationPaused = false;
 let suppressClick = false;
 let lastClickAt = 0;
 let scenarioCooldownUntil = 0;
@@ -405,15 +404,15 @@ function applyFrame(
 }
 
 function stopPlayback() {
-	if (playbackTimer) {
-		clearTimeout(playbackTimer);
-		playbackTimer = null;
+	if (playbackFrame !== null) {
+		cancelAnimationFrame(playbackFrame);
+		playbackFrame = null;
 	}
 }
 
 function startPlayback(state: PetAnimationState) {
 	stopPlayback();
-	if (!spriteEl || !pageVisible) return;
+	if (!spriteEl || !pageVisible || navigationPaused) return;
 
 	if (state === "idle" && stickyLook !== undefined && effectiveLookFollow) {
 		applyGazeFrame(stickyLook);
@@ -430,6 +429,7 @@ function startPlayback(state: PetAnimationState) {
 	const startedAt = performance.now();
 	// 仅 idle 环境动作变慢；点击/拖拽等瞬态仍原速
 	const pace = state === "idle" ? effectiveIdlePace : 1;
+	let lastFrameKey = "";
 	const tick = () => {
 		if (!pageVisible) {
 			stopPlayback();
@@ -439,13 +439,14 @@ function startPlayback(state: PetAnimationState) {
 			state,
 			Math.max(0, (performance.now() - startedAt) / pace),
 		);
-		applyFrame(next.frame, next.motionState, next.phase);
-		playbackTimer = setTimeout(
-			tick,
-			Math.max(1, Math.ceil(next.remainingDurationMs * pace)),
-		);
+		const frameKey = `${next.frame.rowIndex}:${next.frame.columnIndex}:${next.motionState}:${next.phase}`;
+		if (frameKey !== lastFrameKey) {
+			lastFrameKey = frameKey;
+			applyFrame(next.frame, next.motionState, next.phase);
+		}
+		playbackFrame = requestAnimationFrame(tick);
 	};
-	tick();
+	playbackFrame = requestAnimationFrame(tick);
 }
 
 function playTransient(
@@ -568,13 +569,9 @@ async function syncPetFromPath(
 	routePathname = pathname;
 	const next = resolveActivePetId(visitorSelection, pathname);
 	const swappingToPost =
-		next !== activePetId &&
-		isPostPath(pathname) &&
-		!isPostPath(prevPath);
+		next !== activePetId && isPostPath(pathname) && !isPostPath(prevPath);
 	const swappingFromPost =
-		next !== activePetId &&
-		!isPostPath(pathname) &&
-		isPostPath(prevPath);
+		next !== activePetId && !isPostPath(pathname) && isPostPath(prevPath);
 
 	updateHidden();
 	if (isPostViewportMode(pathname)) {
@@ -646,12 +643,7 @@ async function applyVisitorSelection(next: StoredPetSelection) {
 		startRoamLoop();
 	}
 	if (swapped && effectiveMotion) {
-		playTransient(
-			isOverrideMode ? "waving" : "review",
-			2,
-			undefined,
-			"route",
-		);
+		playTransient(isOverrideMode ? "waving" : "review", 2, undefined, "route");
 	}
 }
 
@@ -842,6 +834,10 @@ function dockToCard(
 	posX = null;
 	posY = null;
 	currentAnchorId = anchorId;
+	recentRoamAnchorIds = [
+		anchorId,
+		...recentRoamAnchorIds.filter((id) => id !== anchorId),
+	].slice(0, 2);
 	mountPetToBody(rootEl);
 	syncCardDockFixedPos();
 }
@@ -881,11 +877,22 @@ function placeOnAnyVisibleAnchor(): boolean {
 	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	const pick =
 		visible.find((a) => a.id === "dynamics") ??
-		pickNextRoamAnchor(visible, null);
+		chooseNextRoamAnchor(visible, null);
 	if (!pick) return false;
 	dockToCard(pick.el, pick.corner, pick.id, pick.facing);
 	skinOpacity = 1;
 	return true;
+}
+
+function chooseNextRoamAnchor(
+	visible: readonly PetRoamResolvedAnchor[],
+	currentId: PetRoamAnchorId | null,
+): PetRoamResolvedAnchor | null {
+	const origin = {
+		x: dockMode === "card" ? dockFixedX : (posX ?? dockFixedX),
+		y: dockMode === "card" ? dockFixedY : (posY ?? dockFixedY),
+	};
+	return pickNextRoamAnchor(visible, currentId, recentRoamAnchorIds, origin);
 }
 
 /** 浏览态默认落点：侧栏卡片角；找不到锚点时钉视口角兜底 */
@@ -931,12 +938,7 @@ function enterBalancePark() {
 	if (userPinnedPosition || hidden || dragging) return;
 	const calendar = findVisibleAnchorById("calendar", effectiveSize, height);
 	if (calendar) {
-		dockToCard(
-			calendar.el,
-			calendar.corner,
-			calendar.id,
-			calendar.facing,
-		);
+		dockToCard(calendar.el, calendar.corner, calendar.id, calendar.facing);
 		skinOpacity = 1;
 		return;
 	}
@@ -1018,9 +1020,8 @@ function scheduleResumeRoamAfterDrag() {
 		}
 		void (async () => {
 			const visible = listVisibleRoamAnchors(effectiveSize, height);
-			// 拖后目标与原先计划无关：视口内重新随机（可含拖前那张卡）
-			const target =
-				pickNextRoamAnchor(visible, null) ?? visible[0] ?? null;
+			// 拖后目标与原计划无关：按当前落点重算一条可读路径
+			const target = chooseNextRoamAnchor(visible, null) ?? visible[0] ?? null;
 			if (target) {
 				await roamToAnchor(target, true);
 			} else {
@@ -1050,10 +1051,7 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 	const gen = ++roamPortalGen;
 	const fadeMs = Math.max(120, pet.portalFadeMs ?? roam.fadeMs ?? 380);
 	const holdMs = Math.max(0, pet.portalHoldMs ?? roam.portalHoldMs ?? 160);
-	const leadMs = Math.max(
-		80,
-		pet.portalLeadMs ?? Math.min(220, fadeMs),
-	);
+	const leadMs = Math.max(80, pet.portalLeadMs ?? Math.min(220, fadeMs));
 	const exitMs = Math.max(80, pet.portalExitMs ?? fadeMs);
 	const useFade = effectiveMotion && !prefersReducedMotion;
 	const portalState = pet.portalMotionState;
@@ -1246,8 +1244,7 @@ async function performRoamStep() {
 	}
 
 	const currentStillVisible =
-		currentAnchorId != null &&
-		visible.some((a) => a.id === currentAnchorId);
+		currentAnchorId != null && visible.some((a) => a.id === currentAnchorId);
 
 	// 定时换卡：只在当前卡仍可见时主动换；滚丢的交给 scroll 延迟逻辑
 	if (!currentStillVisible) {
@@ -1259,7 +1256,7 @@ async function performRoamStep() {
 	let target =
 		(plannedRoamTargetId
 			? (visible.find((a) => a.id === plannedRoamTargetId) ?? null)
-			: null) ?? pickNextRoamAnchor(visible, currentAnchorId);
+			: null) ?? chooseNextRoamAnchor(visible, currentAnchorId);
 	clearPlannedRoamTarget();
 	if (!target || target.id === currentAnchorId) return;
 	await roamToAnchor(target);
@@ -1269,9 +1266,9 @@ function scheduleNextRoam() {
 	if (!roamLoopActive) return;
 	if (roamTimer) clearTimeout(roamTimer);
 
-	// 开 5s 表时就锁定下一张卡（随机且 ≠ 当前）；拖拽会 stopRoamLoop 作废
+	// 开表时锁定下一张卡（距离感知且避开近期落点）；拖拽会作废
 	const visible = listVisibleRoamAnchors(effectiveSize, height);
-	const planned = pickNextRoamAnchor(visible, currentAnchorId);
+	const planned = chooseNextRoamAnchor(visible, currentAnchorId);
 	plannedRoamTargetId = planned?.id ?? null;
 
 	roamTimer = setTimeout(() => {
@@ -1305,8 +1302,7 @@ function onScrollRoamCheck() {
 
 	const visible = listVisibleRoamAnchors(effectiveSize, height);
 	const ok =
-		currentAnchorId != null &&
-		visible.some((a) => a.id === currentAnchorId);
+		currentAnchorId != null && visible.some((a) => a.id === currentAnchorId);
 
 	if (ok) {
 		clearScrollLeaveTimer();
@@ -1334,7 +1330,7 @@ function onScrollRoamCheck() {
 		) {
 			return;
 		}
-		const target = pickNextRoamAnchor(still, null) ?? still[0];
+		const target = chooseNextRoamAnchor(still, null) ?? still[0];
 		// 滚出换卡：目标不可预测，强制钻洞
 		if (target) void roamToAnchor(target, true);
 	}, delay);
@@ -1366,7 +1362,10 @@ function clampToViewport(x: number, y: number): { x: number; y: number } {
 
 function clampToDocument(x: number, y: number): { x: number; y: number } {
 	if (typeof document === "undefined") return { x, y };
-	const maxX = Math.max(0, document.documentElement.scrollWidth - effectiveSize);
+	const maxX = Math.max(
+		0,
+		document.documentElement.scrollWidth - effectiveSize,
+	);
 	const maxY = Math.max(0, document.documentElement.scrollHeight - height);
 	return {
 		x: Math.min(maxX, Math.max(0, x)),
@@ -1385,16 +1384,16 @@ function defaultStyle(): string {
 	return `${side}bottom:${oy}px;top:auto;`;
 }
 
-	function positionedStyle(): string {
-		// 定位走 transform（translate3d 合成层）：CLS 免计分 + 漫游更顺。
-		// 根元素基点固定 left:0/top:0，posX/posY 语义与原 left/top 完全一致
-		if (dockMode === "card") {
-			// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
-			return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${dockFixedX}px, ${dockFixedY}px, 0);`;
-		}
-		if (posX === null || posY === null) return defaultStyle();
-		return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${posX}px, ${posY}px, 0);`;
+function positionedStyle(): string {
+	// 定位走 transform（translate3d 合成层）：CLS 免计分 + 漫游更顺。
+	// 根元素基点固定 left:0/top:0，posX/posY 语义与原 left/top 完全一致
+	if (dockMode === "card") {
+		// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
+		return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${dockFixedX}px, ${dockFixedY}px, 0);`;
 	}
+	if (posX === null || posY === null) return defaultStyle();
+	return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${posX}px, ${posY}px, 0);`;
+}
 
 function flushPendingLook() {
 	lookRaf = 0;
@@ -1574,9 +1573,7 @@ function onWindowPointerMove(event: PointerEvent) {
 			// 若仍在拖，接上跑步；避免 playTransient 收尾强制 idle 闪一下
 			if (dragging && dragStart) {
 				animationState =
-					dragStart.facing === "right"
-						? "running-left"
-						: "running-right";
+					dragStart.facing === "right" ? "running-left" : "running-right";
 			}
 		});
 	}
@@ -1860,10 +1857,7 @@ onMount(() => {
 			readScrollTimer = null;
 			if (!isPostPath() || hidden || !pageVisible) return;
 			const doc = document.documentElement;
-			const maxScroll = Math.max(
-				1,
-				doc.scrollHeight - window.innerHeight,
-			);
+			const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
 			const progress = window.scrollY / maxScroll;
 			const mood = resolvePostReadMood(progress);
 			if (!mood) return;
@@ -1887,12 +1881,6 @@ onMount(() => {
 		};
 	};
 	const win = window as Window & { swup?: SwupLike };
-	const onSwupLeave = () => {
-		if (!reactToSiteUi || !effectiveMotion) return;
-		if (canTriggerScenario("swup-leave", 3_000)) {
-			playTransient("running", 2, undefined, "route");
-		}
-	};
 	const onSwupArrive = () => {
 		updateHidden();
 		applyRendererGate();
@@ -1915,10 +1903,7 @@ onMount(() => {
 				startRoamLoop();
 			}
 			// 换班完成后再播 persona，避免抢动画
-			const persona = getPetPagePersonaDef(
-				pathAtStart,
-				is404Page(),
-			);
+			const persona = getPetPagePersonaDef(pathAtStart, is404Page());
 			if (swapped) {
 				if (canTriggerScenario(`shift-${persona.id}`, 10_000)) {
 					playTransient(
@@ -1938,12 +1923,34 @@ onMount(() => {
 		})();
 	};
 	const bindSwup = () => {
-		win.swup?.hooks?.on("animation:out:start", onSwupLeave);
 		// 只绑 page:view：再绑 content:replace 会同一趟导航跑两次换皮，易把 opacity 卡死
 		win.swup?.hooks?.on("page:view", onSwupArrive);
 	};
 	bindSwup();
 	document.addEventListener("swup:enable", bindSwup);
+
+	const onNavigationPriority = (event: Event) => {
+		const active = Boolean(
+			(event as CustomEvent<{ active?: boolean }>).detail?.active,
+		);
+		navigationPaused = active;
+		if (active) {
+			stopPlayback();
+			stopRoamLoop();
+			if (transientTimer) {
+				clearTimeout(transientTimer);
+				transientTimer = null;
+			}
+			return;
+		}
+		if (!pageVisible || hidden) return;
+		animationState = "idle";
+		startPlayback("idle");
+		if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
+			startRoamLoop();
+		}
+	};
+	window.addEventListener("firefly:navigation-priority", onNavigationPriority);
 
 	let footerObserver: IntersectionObserver | null = null;
 	const observeFooter = () => {
@@ -2004,11 +2011,7 @@ onMount(() => {
 		const raw = detail?.petId;
 		if (!raw) return;
 		const next: StoredPetSelection =
-			raw === "default"
-				? "default"
-				: isPickerPetId(raw)
-					? raw
-					: "default";
+			raw === "default" ? "default" : isPickerPetId(raw) ? raw : "default";
 		void applyVisitorSelection(next);
 	};
 	window.addEventListener("firefly:pet-change", onPetChange);
@@ -2086,17 +2089,17 @@ onMount(() => {
 		window.removeEventListener("pointermove", onUserActivity);
 		window.removeEventListener("scroll", onScroll);
 		document.removeEventListener("swup:enable", bindSwup);
-		win.swup?.hooks?.off?.("animation:out:start", onSwupLeave);
 		win.swup?.hooks?.off?.("page:view", onSwupArrive);
+		window.removeEventListener(
+			"firefly:navigation-priority",
+			onNavigationPriority,
+		);
 		window.removeEventListener("bg-player-state-change", onBgPlayer);
 		window.removeEventListener("firefly:pet-scenario", onPetScenario);
 		window.removeEventListener("firefly:pet-change", onPetChange);
 		document.removeEventListener("invalid", onInvalid, true);
 		document.removeEventListener("visibilitychange", onVisibility);
-		document.removeEventListener(
-			SIDEBAR_IMBALANCE_EVENT,
-			onSidebarImbalance,
-		);
+		document.removeEventListener(SIDEBAR_IMBALANCE_EVENT, onSidebarImbalance);
 		document.removeEventListener(SIDEBAR_BALANCE_EVENT, onSidebarBalance);
 		footerObserver?.disconnect();
 		if (idleTimer) clearTimeout(idleTimer);

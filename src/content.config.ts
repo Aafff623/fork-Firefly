@@ -50,6 +50,7 @@ const postsCollection: ContentCollection<PostData> = defineCollection({
 		pattern: [
 			"**/*.{md,mdx}",
 			"!_draftbox/README.md",
+			"!_draftbox/_archive/**/*.{md,mdx}",
 			"!**/images/**/*.{md,mdx}",
 		],
 		base: "./src/content/posts",

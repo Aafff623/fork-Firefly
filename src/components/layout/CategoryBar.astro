@@ -2,6 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { Icon } from "astro-icon/components";
+import Search from "@/components/controls/Search.svelte";
 import { categoryIconName } from "@/config";
 import { getCategoryList, getSortedPostsList } from "@/utils/content-utils";
 import { url } from "@/utils/url-utils";
@@ -111,6 +112,9 @@ function initialActive(categoryName: string): {
       <Icon is:inline name="lucide:ellipsis" class="category-icon text-base" aria-hidden="true" />
       <span class="category-pill__label">{i18n(I18nKey.more)}</span>
     </a>
+    <div class="category-bar-search shrink-0 flex items-center">
+      <Search client:idle />
+    </div>
   </div>
 </div>
 
@@ -173,6 +177,11 @@ function initialActive(categoryName: string): {
     flex: 1;
     min-width: 0;
     position: relative;
+  }
+
+  /* 搜索圆钮贴合分类条 pill 行高，避免撑高整条 */
+  :global(.category-bar-inner .category-bar-search .practical-search) {
+    --ps-size: 2.35rem;
   }
   .scroll-fade {
     position: absolute;

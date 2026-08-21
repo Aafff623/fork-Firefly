@@ -1172,6 +1172,342 @@ function disableAnimation() {
     });
   }
 
+  const isPostPath = (rawUrl: string) => {
+    try {
+      return /^\/posts\/[^/]+\/?$/.test(new URL(rawUrl, window.location.href).pathname);
+    } catch {
+      return false;
+    }
+  };
+
+  type ArticlePrefetchResult = { url: string; html: string };
+  type ArticlePrefetchTask = {
+    href: string;
+    resolve: (page: ArticlePrefetchResult) => void;
+    reject: (error: unknown) => void;
+  };
+  const ARTICLE_PREFETCH_CONCURRENCY = 2;
+  const articlePrefetchPending = new Map<string, Promise<ArticlePrefetchResult>>();
+  const articlePrefetchHigh: ArticlePrefetchTask[] = [];
+  const articlePrefetchLow: ArticlePrefetchTask[] = [];
+  let articlePrefetchActive = 0;
+  let articleNavigationSequence = 0;
+  let navigationPriorityTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  const emitNavigationPriority = (active: boolean) => {
+    document.documentElement.classList.toggle("is-navigation-priority", active);
+    window.dispatchEvent(
+      new CustomEvent("firefly:navigation-priority", { detail: { active } }),
+    );
+  };
+
+  const beginNavigationPriority = () => {
+    emitNavigationPriority(true);
+    const progressBar = document.getElementById("progress-bar");
+    progressBar?.classList.remove("finishing", "done");
+    progressBar?.classList.add("loading");
+    if (navigationPriorityTimeout) clearTimeout(navigationPriorityTimeout);
+    navigationPriorityTimeout = setTimeout(() => {
+      navigationPriorityTimeout = null;
+      emitNavigationPriority(false);
+    }, 15_000);
+  };
+
+  const endNavigationPriority = () => {
+    if (navigationPriorityTimeout) clearTimeout(navigationPriorityTimeout);
+    navigationPriorityTimeout = null;
+    emitNavigationPriority(false);
+  };
+
+  const showArticleNavigationError = () => {
+    const existing = document.getElementById("article-navigation-error");
+    existing?.remove();
+    const notice = document.createElement("div");
+    notice.id = "article-navigation-error";
+    notice.className = "article-navigation-error";
+    notice.setAttribute("role", "alert");
+    notice.textContent = "文章暂时加载失败，已保留当前页面，请稍后重试。";
+    document.body.appendChild(notice);
+    requestAnimationFrame(() => notice.classList.add("is-visible"));
+    setTimeout(() => {
+      notice.classList.remove("is-visible");
+      setTimeout(() => notice.remove(), 180);
+    }, 4_000);
+  };
+
+  const canIntentPrefetch = () => {
+    if (document.hidden) return false;
+    const connection = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }
+    ).connection;
+    return !connection?.saveData && !connection?.effectiveType?.endsWith("2g");
+  };
+
+  const pumpArticlePrefetch = () => {
+    while (articlePrefetchActive < ARTICLE_PREFETCH_CONCURRENCY) {
+      const task = articlePrefetchHigh.shift() ?? articlePrefetchLow.shift();
+      if (!task) return;
+      articlePrefetchActive += 1;
+      void window.swup
+        .fetchPage(task.href)
+        .then((page: ArticlePrefetchResult) => {
+          window.swup.cache.set(task.href, page);
+          task.resolve(page);
+        })
+        .catch(task.reject)
+        .finally(() => {
+          articlePrefetchActive -= 1;
+          articlePrefetchPending.delete(task.href);
+          pumpArticlePrefetch();
+        });
+    }
+  };
+
+  const prepareArticle = (
+    href: string,
+    options: { priority: boolean; force: boolean },
+  ): Promise<ArticlePrefetchResult> => {
+    if (window.swup.cache.has(href)) {
+      return Promise.resolve(window.swup.cache.get(href) as ArticlePrefetchResult);
+    }
+    const pending = articlePrefetchPending.get(href);
+    if (pending) return pending;
+    if (!options.force && !canIntentPrefetch()) {
+      return Promise.reject(new Error("intent_prefetch_deferred"));
+    }
+    const promise = new Promise<ArticlePrefetchResult>((resolve, reject) => {
+      const task = { href, resolve, reject };
+      (options.priority ? articlePrefetchHigh : articlePrefetchLow).push(task);
+      pumpArticlePrefetch();
+    });
+    articlePrefetchPending.set(href, promise);
+    return promise;
+  };
+
+  const commitDeferredArticleHistory = (visit: {
+    to: { url: string; hash?: string };
+    history: { popstate: boolean };
+    meta: Record<string, unknown>;
+  }) => {
+    if (visit.meta.fireflyDeferredArticleHistory !== true) return;
+
+    const resolvedUrl =
+      typeof visit.meta.fireflyResolvedArticleUrl === "string"
+        ? visit.meta.fireflyResolvedArticleUrl
+        : visit.to.url;
+    const nextUrl = `${resolvedUrl}${visit.to.hash ?? ""}`;
+    const swupInternal = window.swup as typeof window.swup & {
+      currentHistoryIndex: number;
+    };
+    const nextIndex = swupInternal.currentHistoryIndex + 1;
+
+    window.history.pushState(
+      {
+        url: nextUrl,
+        random: Math.random(),
+        source: "swup",
+        index: nextIndex,
+      },
+      "",
+      nextUrl,
+    );
+    swupInternal.currentHistoryIndex = nextIndex;
+    visit.to.url = resolvedUrl;
+    visit.history.popstate = false;
+    window.swup.classes.remove("is-popstate");
+    visit.meta.fireflyDeferredArticleHistory = false;
+  };
+
+  const articleLinkFromEvent = (event: Event): HTMLAnchorElement | null => {
+    const target = event.target instanceof Element ? event.target.closest("a[href]") : null;
+    if (!(target instanceof HTMLAnchorElement)) return null;
+    if (target.matches("[download], [target='_blank'], [data-no-swup]")) return null;
+    const destination = new URL(target.href, window.location.href);
+    if (
+      destination.origin !== window.location.origin ||
+      destination.hash ||
+      !isPostPath(destination.href) ||
+      pathsEqual(destination.pathname, window.location.pathname)
+    ) {
+      return null;
+    }
+    return target;
+  };
+
+  if (!(window as Window & { __fireflyArticleIntentBound?: boolean }).__fireflyArticleIntentBound) {
+    (window as Window & { __fireflyArticleIntentBound?: boolean }).__fireflyArticleIntentBound = true;
+    const intent = (event: Event) => {
+      const link = articleLinkFromEvent(event);
+      if (!link) return;
+      void prepareArticle(link.href, { priority: true, force: false }).catch(() => undefined);
+    };
+    document.addEventListener("pointerover", intent, { capture: true, passive: true });
+    document.addEventListener("focusin", intent, { capture: true });
+    document.addEventListener("touchstart", intent, { capture: true, passive: true });
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+        const link = articleLinkFromEvent(event);
+        if (!link || window.swup.cache.has(link.href)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const sequence = ++articleNavigationSequence;
+        beginNavigationPriority();
+        void prepareArticle(link.href, { priority: true, force: true })
+          .then(() => {
+            if (sequence !== articleNavigationSequence) return;
+            window.swup.navigate(link.href, {
+              meta: { fireflyPreparedArticle: true },
+            });
+          })
+          .catch(() => {
+            if (sequence !== articleNavigationSequence) return;
+            document.documentElement.classList.remove("is-page-transitioning");
+            endNavigationPriority();
+            const progressBar = document.getElementById("progress-bar");
+            progressBar?.classList.remove("loading", "finishing", "done");
+            showArticleNavigationError();
+          });
+      },
+      { capture: true },
+    );
+
+    const preloadMarkedArticles = () => {
+      const marked = [...document.querySelectorAll<HTMLAnchorElement>("a[data-swup-preload]")].slice(0, 2);
+      for (const link of marked) {
+        void prepareArticle(link.href, { priority: false, force: false }).catch(() => undefined);
+      }
+    };
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(preloadMarkedArticles, { timeout: 1_500 });
+    } else {
+      setTimeout(preloadMarkedArticles, 250);
+    }
+    document.addEventListener("swup:page:view", preloadMarkedArticles);
+  }
+
+  const commitIncomingLayout = (visit: {
+    to: { url: string };
+    meta: Record<string, unknown>;
+  }) => {
+    const bodyElement = document.body;
+    const isHomePage = pathsEqual(visit.to.url, url("/"));
+
+    // 目标 DOM 已经替换后再切布局。等待网络时保持旧页和旧滚动位置不动。
+    const wasCurtain = document.documentElement.classList.contains("curtain-focus");
+    const curtainChanged = syncCurtainFocusFromUrl(visit.to.url);
+    const mainGrid = document.getElementById("main-grid");
+    if (mainGrid && !(curtainChanged || wasCurtain)) {
+      mainGrid.style.setProperty("transition", "none", "important");
+    }
+
+    bodyElement.classList.toggle("lg:is-home", isHomePage);
+    bodyElement.classList.toggle("is-home", isHomePage);
+
+    const currentWallpaperMode = document.documentElement.getAttribute("data-wallpaper-mode");
+    if (currentWallpaperMode !== "banner") {
+      bodyElement.classList.remove("enable-banner");
+      bodyElement.classList.add("no-banner-layout");
+      bodyElement.classList.toggle("wallpaper-transparent", currentWallpaperMode === "overlay");
+    }
+
+    const navbar = document.getElementById("navbar");
+    if (navbar) {
+      navbar.setAttribute("data-is-home", isHomePage.toString());
+      if (
+        navbar.getAttribute("data-transparent-mode") === "semifull" &&
+        typeof (window as any).initSemifullScrollDetection === "function"
+      ) {
+        (window as any).initSemifullScrollDetection();
+      }
+    }
+
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile) {
+      const postListContainer = document.getElementById("post-list-container");
+      if (postListContainer) postListContainer.style.transition = "none";
+    }
+
+    const wallpaperWrapper = document.getElementById("wallpaper-wrapper");
+    const mainContentWrapper = document.querySelector(
+      ".w-full.z-30.pointer-events-none"
+    ) as HTMLElement | null;
+
+    if (isMobile && wallpaperWrapper && mainContentWrapper) {
+      if (isHomePage) {
+        mainContentWrapper.style.setProperty("transition", "none", "important");
+        wallpaperWrapper.classList.remove("mobile-hide-banner");
+        wallpaperWrapper.style.display = "";
+        setTimeout(() => {
+          mainContentWrapper.classList.remove("mobile-main-no-banner");
+          const visitCurrentMode = document.documentElement.getAttribute("data-wallpaper-mode");
+          if (visitCurrentMode === "fullscreen") {
+            mainContentWrapper.style.position = "relative";
+            mainContentWrapper.style.zIndex = "30";
+            mainContentWrapper.style.setProperty("top", "0", "important");
+            mainContentWrapper.style.setProperty("margin-top", "1rem", "important");
+          } else if (visitCurrentMode === "overlay" || visitCurrentMode === "none") {
+            mainContentWrapper.style.setProperty("top", "5.5rem", "important");
+            mainContentWrapper.style.position = "";
+            mainContentWrapper.style.zIndex = "";
+            mainContentWrapper.style.setProperty("margin-top", "0", "important");
+          } else {
+            mainContentWrapper.style.removeProperty("top");
+            mainContentWrapper.style.position = "";
+            mainContentWrapper.style.zIndex = "";
+            mainContentWrapper.style.setProperty("margin-top", "0", "important");
+          }
+        }, 150);
+      } else {
+        wallpaperWrapper.classList.add("mobile-hide-banner");
+        mainContentWrapper.classList.add("mobile-main-no-banner");
+        mainContentWrapper.style.setProperty("top", "5.5rem", "important");
+        mainContentWrapper.style.position = "";
+        mainContentWrapper.style.zIndex = "";
+        mainContentWrapper.style.setProperty("margin-top", "0", "important");
+      }
+    } else if (!isMobile && wallpaperWrapper) {
+      wallpaperWrapper.style.display = "";
+      wallpaperWrapper.classList.remove("mobile-hide-banner");
+      if (mainContentWrapper) {
+        mainContentWrapper.classList.remove("mobile-main-no-banner");
+        const visitDesktopMode = document.documentElement.getAttribute("data-wallpaper-mode");
+        if (visitDesktopMode === "fullscreen") {
+          mainContentWrapper.style.position = "relative";
+          mainContentWrapper.style.zIndex = "30";
+          mainContentWrapper.style.setProperty("top", "0", "important");
+          mainContentWrapper.style.setProperty("margin-top", "1rem", "important");
+        } else if (visitDesktopMode === "banner") {
+          mainContentWrapper.style.setProperty("top", "calc(var(--banner-height) - 3.5rem)", "important");
+          mainContentWrapper.style.position = "";
+          mainContentWrapper.style.zIndex = "";
+          mainContentWrapper.style.setProperty("margin-top", "0", "important");
+        }
+      }
+    }
+
+    const heightExtend = document.getElementById("page-height-extend");
+    if (heightExtend) heightExtend.classList.remove("hidden");
+
+    const toc = document.getElementById("toc-wrapper");
+    if (toc) toc.classList.add("toc-not-ready");
+
+    if (visit.meta.fireflyAtomicArticle === true) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  };
+
   const setup = () => {
     // 全屏壁纸模式：替换 swup 默认的回顶行为
     // 首页回顶部，其他页滚动到 #main-grid（与 ScrollDownIndicator 行为一致）
@@ -1233,194 +1569,102 @@ function disableAnimation() {
         }
       }
     });
-    window.swup.hooks.on("content:replace", () => {
-      // 仅保留进场前必须立刻正确的定位；侧栏测量 / overflow 挪到进场后
-      applyWallpaperChrome();
-    });
-    window.swup.hooks.on("visit:start", (visit: { to: { url: string }; animation: { wait: boolean } }) => {
+    window.swup.hooks.replace(
+      "page:load",
+      async (
+        visit: {
+          meta: Record<string, unknown>;
+        },
+        args: unknown,
+        defaultHandler?: (
+          visit: unknown,
+          args: unknown,
+        ) => Promise<ArticlePrefetchResult>,
+      ) => {
+        if (!defaultHandler) throw new Error("Missing Swup page loader");
+        const page = await defaultHandler(visit, args);
+        if (visit.meta.fireflyDeferredArticleHistory !== true) return page;
+
+        visit.meta.fireflyResolvedArticleUrl = page.url;
+        return {
+          ...page,
+          // Swup normally updates history before renderPage(). Keep the visible URL on
+          // the source page until content:replace commits the prepared article.
+          url: String(visit.meta.fireflySourceArticleUrl),
+        };
+      },
+    );
+    window.swup.hooks.replace(
+      "content:replace",
+      (
+        visit: {
+          to: { url: string; hash?: string };
+          history: { popstate: boolean };
+          meta: Record<string, unknown>;
+        },
+        args: unknown,
+        defaultHandler?: (visit: unknown, args: unknown) => unknown,
+      ) => {
+        const result = defaultHandler?.(visit, args);
+        if (visit.meta.fireflyAtomicArticle === true) {
+          // The DOM replacement above, history push, layout switch and scroll reset all
+          // finish in this task, so the browser cannot paint an intermediate state.
+          commitDeferredArticleHistory(visit);
+          commitIncomingLayout(visit);
+        }
+        return result;
+      },
+    );
+    window.swup.hooks.on("visit:start", (visit: {
+      to: { url: string; hash?: string };
+      animation: { animate: boolean; wait: boolean };
+      history: { popstate: boolean };
+      scroll: { reset: boolean };
+      containers: string[];
+      meta: Record<string, unknown>;
+    }) => {
       // 先等目标页 HTML 就绪再离场，避免 is-animating 把主栏 opacity:0 后空等 fetch（中间大块留白）
       // 见 swup VisitAnimation.wait：https://swup.js.org/options/#animation
       visit.animation.wait = true;
+
+      // 文章正文优先：缓存命中时直接替换，冷请求时旧页原地等待，不播放 120ms×2 的装饰动画。
+      const isArticleVisit =
+        !visit.history.popstate && !visit.to.hash && isPostPath(visit.to.url);
+      if (isArticleVisit) {
+		beginNavigationPriority();
+		document.documentElement.classList.add("is-page-transitioning");
+        visit.animation.animate = false;
+        visit.scroll.reset = false;
+        visit.meta.fireflySourceArticleUrl =
+          window.location.pathname + window.location.search + window.location.hash;
+        visit.meta.fireflyDeferredArticleHistory = true;
+        // Suppress Swup's eager history push. content:replace creates the real entry
+        // only after the prepared article DOM has replaced the old page.
+        visit.history.popstate = true;
+        const articleContainers = ["#swup-container", "#floating-toc-wrapper"];
+        for (const selector of ["#left-sidebar-dynamic", "#right-sidebar-dynamic"]) {
+          const container = document.querySelector(selector);
+          if (container && !container.classList.contains("hidden")) {
+            articleContainers.push(selector);
+          }
+        }
+        visit.containers = articleContainers;
+        visit.meta.fireflyAtomicArticle = true;
+      } else {
+        commitIncomingLayout(visit);
+      }
 
       // Start progress bar
       const progressBar = document.getElementById("progress-bar");
       if (progressBar) {
         progressBar.classList.remove("finishing", "done");
-        // Force reflow so the animation restarts cleanly
-        void progressBar.offsetWidth;
+        // 非文章路由保留进度条重启动画；文章热路径不强制整页同步布局。
+        if (!isArticleVisit) {
+          void progressBar.offsetWidth;
+        }
         progressBar.classList.add("loading");
       }
 
-      // change banner height immediately when a link is clicked
-      const bodyElement = document.querySelector("body");
-      const isHomePage = pathsEqual(visit.to.url, url("/"));
-
-      // 动态/相册：提前开合幕布，让两侧与中间动画跟 Swup 切页叠在一起
-      const wasCurtain = document.documentElement.classList.contains("curtain-focus");
-      const curtainChanged = syncCurtainFocusFromUrl(visit.to.url);
-
-      // 禁用 #main-grid 的过渡动画，防止 lg:is-home 切换时 transform 产生 700ms 动画
-      // 幕布开合时保留过渡，否则两侧会硬切
-      const mainGrid = document.getElementById("main-grid");
-      if (mainGrid && !(curtainChanged || wasCurtain)) {
-        mainGrid.style.setProperty("transition", "none", "important");
-      }
-
-      if (isHomePage) {
-        bodyElement!.classList.add("lg:is-home");
-        bodyElement!.classList.add("is-home");
-      } else {
-        bodyElement!.classList.remove("lg:is-home");
-        bodyElement!.classList.remove("is-home");
-      }
-
-      // 强制回流，确保 transform 立即生效，然后恢复过渡动画
-      if (mainGrid) {
-        void mainGrid.offsetWidth;
-        mainGrid.style.removeProperty("transition");
-      }
-
-      // 同步壁纸模式的 body 类（防止 enable-banner 从初始加载残留到全屏/overlay/none 模式）
-      const currentWallpaperMode = document.documentElement.getAttribute("data-wallpaper-mode");
-      if (currentWallpaperMode !== "banner") {
-        bodyElement!.classList.remove("enable-banner");
-        bodyElement!.classList.add("no-banner-layout");
-        if (currentWallpaperMode === "overlay") {
-          bodyElement!.classList.add("wallpaper-transparent");
-        } else {
-          bodyElement!.classList.remove("wallpaper-transparent");
-        }
-      }
-
-      // Control navbar transparency based on page
-      const navbar = document.getElementById("navbar");
-      if (navbar) {
-        navbar.setAttribute("data-is-home", isHomePage.toString());
-
-        // 重新初始化semifull模式的滚动检测
-        const transparentMode = navbar.getAttribute("data-transparent-mode");
-        if (transparentMode === "semifull") {
-          // 重新调用初始化函数来重新绑定滚动事件
-          if (
-            typeof (window as any).initSemifullScrollDetection === "function"
-          ) {
-            (window as any).initSemifullScrollDetection();
-          }
-        }
-      }
-
-      // Control mobile banner visibility based on page with improved staging animation
-      // 只在移动端（1024px以下）处理banner隐藏
-      const isMobile = window.innerWidth < 1024;
-
-      // 在移动端禁用文章列表容器的过渡动画，防止与主内容区位置变化冲突
-      if (isMobile) {
-        const postListContainer = document.getElementById("post-list-container");
-        if (postListContainer) {
-          postListContainer.style.transition = "none";
-        }
-      }
-
-      const wallpaperWrapper = document.getElementById("wallpaper-wrapper");
-      const mainContentWrapper = document.querySelector(
-        ".w-full.z-30.pointer-events-none"
-      ) as HTMLElement | null;
-
-      if (isMobile && wallpaperWrapper && mainContentWrapper) {
-        if (isHomePage) {
-          // 首页：禁用主内容区域的过渡动画，防止文章列表下移
-          // 使用 setProperty + important 确保覆盖 CSS !important 规则
-          mainContentWrapper.style.setProperty("transition", "none", "important");
-
-          // 移除隐藏类让壁纸出现（display:none 由 CSS 类控制，需先移除类）
-          wallpaperWrapper.classList.remove("mobile-hide-banner");
-          wallpaperWrapper.style.display = "";
-          setTimeout(() => {
-            mainContentWrapper.classList.remove("mobile-main-no-banner");
-            // 恢复与 SSR 一致的内联 top，而非 removeProperty（否则 CSS 的 70vh 会生效导致内容下移）
-            const visitCurrentMode = document.documentElement.getAttribute("data-wallpaper-mode");
-            if (visitCurrentMode === "fullscreen") {
-              mainContentWrapper.style.position = "relative";
-              mainContentWrapper.style.zIndex = "30";
-              mainContentWrapper.style.setProperty("top", "0", "important");
-              mainContentWrapper.style.setProperty("margin-top", "1rem", "important");
-            } else if (visitCurrentMode === "overlay" || visitCurrentMode === "none") {
-              mainContentWrapper.style.setProperty("top", "5.5rem", "important");
-              mainContentWrapper.style.position = "";
-              mainContentWrapper.style.zIndex = "";
-              mainContentWrapper.style.setProperty("margin-top", "0", "important");
-            } else if (isMobile) {
-              // 移动端横幅模式首页：清除 inline top，让 CSS 响应式规则生效
-              mainContentWrapper.style.removeProperty("top");
-              mainContentWrapper.style.position = "";
-              mainContentWrapper.style.zIndex = "";
-              mainContentWrapper.style.setProperty("margin-top", "0", "important");
-            } else {
-              mainContentWrapper.style.setProperty("top", "calc(var(--banner-height) - 3.5rem)", "important");
-              mainContentWrapper.style.position = "";
-              mainContentWrapper.style.zIndex = "";
-              mainContentWrapper.style.setProperty("margin-top", "0", "important");
-            }
-            // 不在此处恢复过渡动画，由 page:view 统一管理，避免与后续钩子冲突
-          }, 150);
-        } else {
-          // 非首页：隐藏壁纸并移动内容
-          wallpaperWrapper.classList.add("mobile-hide-banner");
-          mainContentWrapper.classList.add("mobile-main-no-banner");
-          mainContentWrapper.style.setProperty("top", "5.5rem", "important");
-          mainContentWrapper.style.position = "";
-          mainContentWrapper.style.zIndex = "";
-          mainContentWrapper.style.setProperty("margin-top", "0", "important");
-        }
-      } else if (!isMobile && wallpaperWrapper) {
-        // 桌面端：确保banner正常显示
-        wallpaperWrapper.style.display = "";
-        wallpaperWrapper.classList.remove("mobile-hide-banner");
-        if (mainContentWrapper) {
-          mainContentWrapper.classList.remove("mobile-main-no-banner");
-          // 桌面端全屏壁纸模式：壁纸始终可见，内容用 relative 定位紧跟壁纸
-          const visitDesktopMode = document.documentElement.getAttribute("data-wallpaper-mode");
-          if (visitDesktopMode === "fullscreen") {
-            mainContentWrapper.style.position = "relative";
-            mainContentWrapper.style.zIndex = "30";
-            mainContentWrapper.style.setProperty("top", "0", "important");
-            mainContentWrapper.style.setProperty("margin-top", "1rem", "important");
-          }
-          // 桌面端横幅模式：统一用banner高度定位，不改变grid transform
-          if (visitDesktopMode === "banner") {
-            mainContentWrapper.style.setProperty("top", "calc(var(--banner-height) - 3.5rem)", "important");
-            mainContentWrapper.style.position = "";
-            mainContentWrapper.style.zIndex = "";
-            mainContentWrapper.style.setProperty("margin-top", "0", "important");
-          }
-        }
-      }
-
-      // increase the page height during page transition to prevent the scrolling animation from jumping
-      const heightExtend = document.getElementById("page-height-extend");
-      if (heightExtend) {
-        heightExtend.classList.remove("hidden");
-      }
-
-      // Hide the TOC while scrolling back to top
-      let toc = document.getElementById("toc-wrapper");
-      if (toc) {
-        toc.classList.add("toc-not-ready");
-      }
-
-      // 确保页面滚动到顶部，切页期间使用即时回顶，移动端不使用，避免出现闪烁
-      // 全屏壁纸模式非首页跳过此处回顶，由 scroll:top 钩子统一处理滚动到 #main-grid
-      const shouldUseSmoothScroll = window.innerWidth >= 768;
-      const isFullscreenNonHome = document.documentElement.getAttribute("data-wallpaper-mode") === "fullscreen" && !isHomePage;
-      if (shouldUseSmoothScroll && !isFullscreenNonHome) {
-        // C：包 rAF，与本帧已排队的 DOM 写合并后再滚动，避免强制同步布局
-        requestAnimationFrame(() => {
-          window.scrollTo({
-            top: 0,
-            behavior: "auto",
-          });
-        });
-      }
     });
     // C：time 主题的小时格式化器会话级缓存（软导航复用，免逐次构造）
     let timeThemeHourFormatter: Intl.DateTimeFormat | null = null;
@@ -1518,6 +1762,7 @@ function disableAnimation() {
       }, 300);
     });
     window.swup.hooks.on("visit:end", (_visit: { to: { url: string } }) => {
+		endNavigationPriority();
       // Finish progress bar
       const progressBar = document.getElementById("progress-bar");
       if (progressBar) {
@@ -1549,6 +1794,8 @@ function disableAnimation() {
         scrollFunction();
       }, 200);
     });
+		window.swup.hooks.on("visit:abort", endNavigationPriority);
+		window.swup.hooks.on("fetch:error", endNavigationPriority);
 
 
   };
@@ -1588,8 +1835,7 @@ function disableAnimation() {
 
   // 必须在 scrollFunction() 首次调用前定义，否则 const TDZ 会中断后续壁纸淡入
   const isCurrentPagePost = () =>
-    window.location.pathname.includes("/posts/") ||
-    window.location.pathname.includes("/post/");
+    isPostPath(window.location.href) || window.location.pathname.includes("/post/");
 
   // 优化的滚动处理函数
   // D2：navbar/top-row 查询缓存（滚动中每帧 getElementById 是纯浪费；

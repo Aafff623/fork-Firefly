@@ -1,0 +1,12 @@
+---
+import OwnerEditor from "@/components/owner/OwnerEditor";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import "@/styles/owner-editor.css";
+
+export const prerender = false;
+const slug = Astro.url.searchParams.get("post")?.trim() ?? "";
+---
+
+<MainGridLayout title="园主编辑器" description="园主专用 Markdown 编辑与安全预览">
+  <OwnerEditor slug={slug} client:load />
+</MainGridLayout>

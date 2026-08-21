@@ -80,7 +80,8 @@ const pinAdminLabels = {
         pinned={entry.data.pinned}
         pinKind={pinKind}
         password={!!entry.data.password}
-        loading={index < 2 ? "eager" : "lazy"}
+        loading={index === 0 ? "eager" : "lazy"}
+        priorityPreload={index < 2}
         listVariant={index === 0 ? "featured" : "row"}
         class:list={immediateEntrance ? "onload-animation post-card-item" : "post-card-item"}
         style={immediateEntrance ? `animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);` : undefined}
@@ -127,7 +128,6 @@ const pinAdminLabels = {
   import.meta.env.DEV && (
     <PostPinAdmin
       client:load
-      adminLogins={["Aafff623"]}
       isDev={true}
       labels={pinAdminLabels}
     />
