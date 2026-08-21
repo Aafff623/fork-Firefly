@@ -387,7 +387,16 @@ function socialBrandKey(name: string, icon: string): string {
   }
 
   :global(html.dark) .profile-face--bot.is-on {
-    background: color-mix(in oklch, var(--card-bg) 88%, #2a2722);
+    background: radial-gradient(
+      circle at 50% 42%,
+      rgb(88 96 108 / 0.86),
+      rgb(39 44 53 / 0.96) 66%,
+      rgb(21 24 30 / 0.98)
+    );
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.16),
+      0 0 0 2px color-mix(in oklch, var(--primary) 20%, transparent),
+      0 0.45rem 1.15rem rgb(0 0 0 / 0.34);
   }
 
   .profile-ffly-bot {
@@ -398,6 +407,9 @@ function socialBrandKey(name: string, icon: string): string {
 
   :global(html.dark) .profile-ffly-bot {
     color-scheme: dark;
+    filter:
+      drop-shadow(0 0 1px rgb(255 255 255 / 0.5))
+      drop-shadow(0 0 0.45rem color-mix(in oklch, var(--primary) 24%, transparent));
   }
 
   .profile-avatar-stage.is-bot .profile-avatar-clip {

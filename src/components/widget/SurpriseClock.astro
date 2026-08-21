@@ -135,7 +135,7 @@ const skyAttrs: Record<string, string> = {
   }
 
   :global(.dark) .surprise-clock {
-    --sc-muted: rgb(255 255 255 / 0.26);
+    --sc-muted: rgb(255 255 255 / 0.18);
     --sc-bright: color-mix(in oklch, var(--primary) 72%, white);
     --sc-sky-night: oklch(0.16 0.05 272);
   }
@@ -600,13 +600,14 @@ const skyAttrs: Record<string, string> = {
     width: 100%;
     height: 1.2rem;
     /* 旁路数字更虚 + 轻闪烁，滴答感 */
-    color: var(--sc-muted, rgb(0 0 0 / 0.32));
-    opacity: 0.72;
+    color: var(--sc-muted, rgb(0 0 0 / 0.22));
+    opacity: 0.52;
     font-family: var(--sc-pixel, "DotGothic16", monospace);
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     font-weight: 400;
     line-height: 1;
     transform: rotate(-45deg);
+    filter: blur(0.25px) saturate(0.75);
     transition:
       font-size 160ms steps(4, end),
       transform 280ms steps(6, end),
@@ -618,16 +619,16 @@ const skyAttrs: Record<string, string> = {
   }
 
   :global(html.dark .surprise-clock__num:not(.is-bright)) {
-    color: rgb(255 255 255 / 0.26);
+    color: rgb(255 255 255 / 0.18);
   }
 
   @keyframes sc-tick-blink {
     0%,
     100% {
-      opacity: 0.58;
+      opacity: 0.38;
     }
     50% {
-      opacity: 0.82;
+      opacity: 0.58;
     }
   }
 
@@ -644,6 +645,7 @@ const skyAttrs: Record<string, string> = {
     font-weight: 400;
     transform: rotate(0deg);
     text-shadow: 0 1px 2px rgb(0 0 0 / 0.22);
+    filter: none;
     animation: none;
   }
 
@@ -665,7 +667,7 @@ const skyAttrs: Record<string, string> = {
 
     :global(.surprise-clock__num:not(.is-bright)) {
       animation: none;
-      opacity: 0.68;
+      opacity: 0.5;
     }
 
     /* 天空/天气动画降级：保留静态场景 */

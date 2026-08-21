@@ -226,13 +226,46 @@ export function listVisibleRoamAnchors(
 export function pickNextRoamAnchor(
 	visible: readonly PetRoamResolvedAnchor[],
 	currentId: PetRoamAnchorId | null,
+	recentIds: readonly PetRoamAnchorId[] = [],
+	origin?: Readonly<{ x: number; y: number }>,
 ): PetRoamResolvedAnchor | null {
 	if (visible.length === 0) return null;
 	const others = currentId
 		? visible.filter((a) => a.id !== currentId)
 		: [...visible];
-	const pool = others.length > 0 ? others : [...visible];
-	return pool[Math.floor(Math.random() * pool.length)] ?? null;
+	const fresh = others.filter((anchor) => !recentIds.includes(anchor.id));
+	const pool =
+		fresh.length > 0 ? fresh : others.length > 0 ? others : [...visible];
+	return (
+		pool
+			.map((anchor) => ({
+				anchor,
+				score: scoreRoamAnchor(anchor, origin, recentIds),
+			}))
+			.sort((a, b) => b.score - a.score)[0]?.anchor ?? null
+	);
+}
+
+/**
+ * Prefer a readable medium hop over pure randomness: nearby moves can run,
+ * far/cross-column moves can portal, and the last two cards are de-emphasized.
+ */
+function scoreRoamAnchor(
+	anchor: PetRoamResolvedAnchor,
+	origin: Readonly<{ x: number; y: number }> | undefined,
+	recentIds: readonly PetRoamAnchorId[],
+): number {
+	const from = origin ?? {
+		x: window.innerWidth / 2,
+		y: window.innerHeight / 2,
+	};
+	const distance = Math.hypot(anchor.x - from.x, anchor.y - from.y);
+	const idealDistance = Math.min(520, Math.max(180, window.innerWidth * 0.28));
+	const distanceFit =
+		1 - Math.min(1, Math.abs(distance - idealDistance) / idealDistance);
+	const recentPenalty = recentIds.includes(anchor.id) ? 2 : 0;
+	// A small jitter prevents a permanent two-card loop without discarding path quality.
+	return distanceFit * 3 - recentPenalty + Math.random() * 0.3;
 }
 
 export function findVisibleAnchorById(
@@ -241,8 +274,7 @@ export function findVisibleAnchorById(
 	petHeight: number,
 ): PetRoamResolvedAnchor | null {
 	return (
-		listVisibleRoamAnchors(petWidth, petHeight).find((a) => a.id === id) ??
-		null
+		listVisibleRoamAnchors(petWidth, petHeight).find((a) => a.id === id) ?? null
 	);
 }
 
