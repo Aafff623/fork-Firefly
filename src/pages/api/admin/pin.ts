@@ -1,11 +1,17 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { APIRoute } from "astro";
+import {
+	checkOwnerMutationRate,
+	resolveOwnerSessionSecret,
+	validateMutationRequest,
+} from "@/lib/owner-auth";
 
 export const prerender = false;
 
 const POSTS_ROOT = path.join(process.cwd(), "src", "content", "posts");
 const GITHUB_REPO = "Aafff623/fork-Firefly";
+const GITHUB_EDIT_BRANCH = "master";
 
 function toPosix(p: string): string {
 	return p.replace(/\\/g, "/");
@@ -24,7 +30,7 @@ function setPinnedFrontmatter(raw: string, pinned: boolean): string {
 }
 
 function githubEditUrl(relativePath: string): string {
-	return `https://github.com/${GITHUB_REPO}/edit/main/${toPosix(relativePath)}`;
+	return `https://github.com/${GITHUB_REPO}/edit/${GITHUB_EDIT_BRANCH}/${toPosix(relativePath)}`;
 }
 
 async function pathExists(filePath: string): Promise<boolean> {
@@ -58,7 +64,13 @@ async function resolvePostFile(
 		const absolute = path.isAbsolute(hint)
 			? path.normalize(hint)
 			: path.join(process.cwd(), hint.replace(/^\//, ""));
-		if (await pathExists(absolute)) return absolute;
+		const relative = path.relative(POSTS_ROOT, absolute);
+		const insidePosts =
+			relative !== "" &&
+			!relative.startsWith(`..${path.sep}`) &&
+			!path.isAbsolute(relative) &&
+			/\.(?:md|mdx)$/i.test(absolute);
+		if (insidePosts && (await pathExists(absolute))) return absolute;
 	}
 
 	const id = postId.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
@@ -85,7 +97,29 @@ async function resolvePostFile(
 	return null;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+	const secret = resolveOwnerSessionSecret(
+		request,
+		import.meta.env.DEV,
+		clientAddress,
+	);
+	if (!secret) {
+		return Response.json(
+			{ ok: false, error: "owner_auth_unconfigured" },
+			{ status: 503 },
+		);
+	}
+	const validation = await validateMutationRequest(request, secret);
+	if (!validation.ok) {
+		return Response.json(
+			{ ok: false, error: validation.error },
+			{ status: validation.status },
+		);
+	}
+	if (!checkOwnerMutationRate(validation.session)) {
+		return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+	}
+
 	let body: { postId?: string; pinned?: boolean; filePath?: string };
 	try {
 		body = (await request.json()) as typeof body;
@@ -97,7 +131,11 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	const postId = body.postId?.trim();
-	if (!postId || typeof body.pinned !== "boolean") {
+	if (
+		!postId ||
+		!/^[a-z0-9][a-z0-9/_-]{0,180}$/i.test(postId) ||
+		typeof body.pinned !== "boolean"
+	) {
 		return new Response(
 			JSON.stringify({ ok: false, error: "invalid_payload" }),
 			{
@@ -113,10 +151,7 @@ export const POST: APIRoute = async ({ request }) => {
 		: `src/content/posts/${postId}.md`;
 	const editUrl = githubEditUrl(relative);
 
-	const canWriteLocal =
-		import.meta.env.DEV ||
-		import.meta.env.MODE === "development" ||
-		process.env.NODE_ENV === "development";
+	const canWriteLocal = import.meta.env.DEV;
 
 	// 非本地开发：不写盘（也不再强制打开 GitHub）
 	if (!canWriteLocal) {
@@ -152,10 +187,11 @@ export const POST: APIRoute = async ({ request }) => {
 			headers: { "Content-Type": "application/json" },
 		});
 	} catch (error) {
+		void error;
 		return new Response(
 			JSON.stringify({
 				ok: false,
-				error: error instanceof Error ? error.message : "write_failed",
+				error: "write_failed",
 				editUrl,
 			}),
 			{

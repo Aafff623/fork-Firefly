@@ -6,18 +6,8 @@
  * 园主置顶入口：挂在卡片内容区，确认框 portal 到 body，兼容 list / card。
  */
 import { onMount } from "svelte";
-import {
-	DEV_OWNER_KEY,
-	LEGACY_SESSION_KEY,
-	LEGACY_VIEWER_KEY,
-	SESSION_KEY,
-	VIEWER_KEY,
-	ensureDevOwnerSession,
-	readAdminViewer,
-} from "@/utils/admin-auth";
 
 interface Props {
-	adminLogins?: string[];
 	isDev?: boolean;
 	labels: {
 		menu: string;
@@ -39,16 +29,13 @@ interface PinTarget {
 	filePath: string;
 }
 
-const {
-	adminLogins = [],
-	isDev = false,
-	labels,
-}: Props = $props();
+const { isDev = false, labels }: Props = $props();
 
 let isAdmin = $state(false);
 let busy = $state(false);
 let status = $state<"idle" | "error" | "success">("idle");
 let hint = $state("");
+let csrf = $state("");
 let pending = $state<boolean | null>(null);
 let target = $state<PinTarget | null>(null);
 
@@ -62,26 +49,29 @@ function portal(node: HTMLElement) {
 	};
 }
 
-function syncAdmin() {
-	if (isDev) {
-		ensureDevOwnerSession(adminLogins);
-	}
-	const hasSession =
-		!!localStorage.getItem(SESSION_KEY) ||
-		!!localStorage.getItem(LEGACY_SESSION_KEY) ||
-		isDevOwnerFlag();
-	isAdmin = hasSession || isDev ? readAdminViewer(adminLogins).isAdmin : false;
-	document.querySelectorAll<HTMLElement>("[data-post-pin-admin]").forEach((node) => {
-		node.hidden = !isAdmin;
-	});
-}
-
-function isDevOwnerFlag(): boolean {
+async function syncAdmin() {
 	try {
-		return localStorage.getItem(DEV_OWNER_KEY) === "1";
+		const response = await fetch("/api/auth/session/", {
+			credentials: "same-origin",
+			headers: { Accept: "application/json" },
+		});
+		const data = (await response.json()) as {
+			authenticated?: boolean;
+			role?: "owner" | "user";
+			csrf?: string;
+		};
+		isAdmin =
+			response.ok && data.authenticated === true && data.role === "owner";
+		csrf = isAdmin ? data.csrf || "" : "";
 	} catch {
-		return false;
+		isAdmin = false;
+		csrf = "";
 	}
+	document
+		.querySelectorAll<HTMLElement>("[data-post-pin-admin]")
+		.forEach((node) => {
+			node.hidden = !isAdmin;
+		});
 }
 
 function openConfirm(next: boolean, nextTarget: PinTarget, e: MouseEvent) {
@@ -132,7 +122,11 @@ async function setSticky(next: boolean) {
 	try {
 		const res = await fetch("/api/admin/pin/", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+				"x-firefly-csrf": csrf,
+			},
 			body: JSON.stringify({
 				postId: target.postId,
 				pinned: next,
@@ -178,32 +172,18 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 onMount(() => {
-	syncAdmin();
-	const onStorage = (event: StorageEvent) => {
-		if (
-			event.key === VIEWER_KEY ||
-			event.key === SESSION_KEY ||
-			event.key === LEGACY_VIEWER_KEY ||
-			event.key === LEGACY_SESSION_KEY ||
-			event.key === DEV_OWNER_KEY
-		) {
-			syncAdmin();
-		}
-	};
-	window.addEventListener("storage", onStorage);
-	window.addEventListener("focus", syncAdmin);
+	void syncAdmin();
+	const onFocus = () => void syncAdmin();
+	window.addEventListener("focus", onFocus);
 	window.addEventListener("keydown", onKeydown);
 	document.addEventListener("click", onDocumentClick);
-	const onPageView = () => syncAdmin();
+	const onPageView = () => void syncAdmin();
 	document.addEventListener("swup:page:view", onPageView);
-	const timer = window.setInterval(syncAdmin, 2000);
 	return () => {
-		window.removeEventListener("storage", onStorage);
-		window.removeEventListener("focus", syncAdmin);
+		window.removeEventListener("focus", onFocus);
 		window.removeEventListener("keydown", onKeydown);
 		document.removeEventListener("click", onDocumentClick);
 		document.removeEventListener("swup:page:view", onPageView);
-		window.clearInterval(timer);
 	};
 });
 </script>

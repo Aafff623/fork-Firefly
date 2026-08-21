@@ -5,6 +5,7 @@ import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import DisplaySettings from "@/components/controls/DisplaySettingsIntegrated.svelte";
 import LightDarkSwitch from "@/components/controls/LightDarkSwitch.svelte";
+import OwnerAccount from "@/components/controls/OwnerAccount.astro";
 import Search from "@/components/controls/Search.svelte";
 import MusicPlayer from "@/components/features/MusicPlayer.astro";
 import {
@@ -294,6 +295,7 @@ const logoVariants = await Promise.all(
                             <Icon is:inline name="lucide:sliders-horizontal" class="text-[1.25rem]"></Icon>
                         </button>
                 )}
+                <OwnerAccount />
                 {/* @ts-ignore */}
                 <LightDarkSwitch client:idle></LightDarkSwitch>
                 <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-full w-9 h-9 md:w-11 md:h-11 active:scale-90 lg:hidden!" id="nav-menu-switch">

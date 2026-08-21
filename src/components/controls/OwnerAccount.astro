@@ -1,0 +1,220 @@
+---
+import { Icon } from "astro-icon/components";
+
+const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
+const loginHref = `/api/auth/github/start/?returnTo=${encodeURIComponent(returnTo)}`;
+const postMatch = Astro.url.pathname.match(/^\/posts\/([^/]+)\/?$/);
+const editorHref = postMatch
+	? `/owner/editor/?post=${encodeURIComponent(postMatch[1])}`
+	: "/owner/editor/";
+---
+
+<div class="owner-account" data-owner-account data-session-url="/api/auth/session/">
+  <a
+    href={loginHref}
+    class="owner-account__button btn-plain scale-animation"
+    aria-label="使用 GitHub 登录"
+    title="GitHub 登录"
+    data-owner-login
+  >
+    <Icon is:inline name="lucide:github" class="owner-account__icon" />
+    <span class="owner-account__label">登录</span>
+  </a>
+
+  <div class="owner-account__signed" data-owner-signed hidden>
+    <a
+      href={editorHref}
+      class="owner-account__button btn-plain scale-animation"
+      aria-label="打开园主编辑器"
+      title="园主编辑器"
+      data-owner-editor
+      hidden
+    >
+      <Icon is:inline name="lucide:pencil" class="owner-account__icon" />
+      <span class="owner-account__label">编辑</span>
+    </a>
+    <span class="owner-account__viewer" data-owner-viewer title="GitHub 已登录">
+      <img data-owner-avatar alt="" width="28" height="28" />
+      <span class="owner-account__name" data-owner-name></span>
+      <span class="owner-account__dev" data-owner-dev hidden>DEV</span>
+    </span>
+    <button
+      type="button"
+      class="owner-account__button owner-account__logout btn-plain scale-animation"
+      aria-label="退出 GitHub 登录"
+      title="退出登录"
+      data-owner-logout
+    >
+      <Icon is:inline name="lucide:log-out" class="owner-account__icon" />
+    </button>
+  </div>
+  <span class="sr-only" data-owner-status aria-live="polite"></span>
+</div>
+
+<script>
+  type OwnerSessionResponse = {
+    authenticated?: boolean;
+    role?: "owner" | "user";
+    viewer?: { login?: string; avatarUrl?: string };
+    csrf?: string;
+    dev?: boolean;
+  };
+
+  function mountOwnerAccount(root: HTMLElement): void {
+    const login = root.querySelector<HTMLElement>("[data-owner-login]");
+    const signed = root.querySelector<HTMLElement>("[data-owner-signed]");
+    const editor = root.querySelector<HTMLElement>("[data-owner-editor]");
+    const avatar = root.querySelector<HTMLImageElement>("[data-owner-avatar]");
+    const name = root.querySelector<HTMLElement>("[data-owner-name]");
+    const dev = root.querySelector<HTMLElement>("[data-owner-dev]");
+    const logout = root.querySelector<HTMLButtonElement>("[data-owner-logout]");
+    const status = root.querySelector<HTMLElement>("[data-owner-status]");
+
+    const currentReturnTo = `${window.location.pathname}${window.location.search}`;
+    if (login instanceof HTMLAnchorElement) {
+      login.href = `/api/auth/github/start/?returnTo=${encodeURIComponent(currentReturnTo)}`;
+    }
+    if (editor instanceof HTMLAnchorElement) {
+      const match = window.location.pathname.match(/^\/posts\/([^/]+)\/?$/);
+      editor.href = match
+        ? `/owner/editor/?post=${encodeURIComponent(match[1])}`
+        : "/owner/editor/";
+    }
+
+    if (root.dataset.ownerBound === "true") return;
+    root.dataset.ownerBound = "true";
+    let csrf = "";
+
+    const showGuest = () => {
+      login?.removeAttribute("hidden");
+      if (signed) signed.hidden = true;
+      csrf = "";
+    };
+
+    const sync = async () => {
+      try {
+        const response = await fetch(root.dataset.sessionUrl || "/api/auth/session/", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        });
+        const data = (await response.json()) as OwnerSessionResponse;
+        if (!response.ok || !data.authenticated || !data.viewer?.login) {
+          showGuest();
+          return;
+        }
+        if (login) login.hidden = true;
+        if (signed) signed.hidden = false;
+        if (editor) editor.hidden = data.role !== "owner";
+        if (avatar) {
+          avatar.src = data.viewer.avatarUrl || `https://github.com/${data.viewer.login}.png`;
+          avatar.alt = `${data.viewer.login} 的 GitHub 头像`;
+        }
+        if (name) name.textContent = data.role === "owner" ? "园主" : data.viewer.login;
+        if (dev) dev.hidden = !data.dev;
+        csrf = data.csrf || "";
+        if (status) status.textContent = data.role === "owner" ? "已识别为园主" : "GitHub 已登录";
+      } catch {
+        showGuest();
+      }
+    };
+
+    logout?.addEventListener("click", async () => {
+      if (!csrf || logout.disabled) return;
+      logout.disabled = true;
+      try {
+        const response = await fetch("/api/auth/logout/", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "x-firefly-csrf": csrf },
+        });
+        if (response.ok) {
+          showGuest();
+          if (status) status.textContent = "已退出 GitHub 登录";
+        }
+      } finally {
+        logout.disabled = false;
+      }
+    });
+    void sync();
+  }
+
+  function bootOwnerAccounts(): void {
+    document.querySelectorAll<HTMLElement>("[data-owner-account]").forEach(mountOwnerAccount);
+  }
+
+  bootOwnerAccounts();
+  document.addEventListener("swup:page:view", bootOwnerAccounts);
+</script>
+
+<style>
+  .owner-account,
+  .owner-account__signed,
+  .owner-account__viewer {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .owner-account__signed {
+    gap: 0.2rem;
+  }
+
+  .owner-account__button {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding-inline: 0.55rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .owner-account__icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .owner-account__label,
+  .owner-account__name {
+    font-size: 0.78rem;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .owner-account__viewer {
+    gap: 0.32rem;
+    padding: 0.18rem 0.45rem 0.18rem 0.18rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--card-bg) 76%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 22%, transparent);
+  }
+
+  .owner-account__viewer img {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .owner-account__dev {
+    padding: 0.08rem 0.28rem;
+    border-radius: 0.25rem;
+    color: #7a3500;
+    background: #ffd69a;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .owner-account__logout:disabled {
+    opacity: 0.45;
+  }
+
+  @media (max-width: 1023px) {
+    .owner-account__label,
+    .owner-account__name,
+    .owner-account__logout {
+      display: none;
+    }
+  }
+</style>
