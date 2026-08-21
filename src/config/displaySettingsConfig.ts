@@ -46,8 +46,8 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 
 	// ── 特效 (Effects) ────────────────────────────────────
 
-	// 樱花特效开关（迁至顶栏粉色图标，面板不再暴露）
-	sakuraSwitchable: false,
+	// 樱花特效开关（设置面板 Effects 页）
+	sakuraSwitchable: true,
 
 	// ── 桌宠 (Pets) ──────────────────────────────────────
 

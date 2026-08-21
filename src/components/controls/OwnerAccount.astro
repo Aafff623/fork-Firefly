@@ -17,7 +17,7 @@ const editorHref = postMatch
     title="GitHub 登录"
     data-owner-login
   >
-    <Icon is:inline name="lucide:github" class="owner-account__icon" />
+    <Icon is:inline name="lucide:log-in" class="owner-account__icon" />
     <span class="owner-account__label">登录</span>
   </a>
 
@@ -120,6 +120,7 @@ const editorHref = postMatch
 
     logout?.addEventListener("click", async () => {
       if (!csrf || logout.disabled) return;
+      if (!window.confirm("确定退出当前 GitHub 登录？")) return;
       logout.disabled = true;
       try {
         const response = await fetch("/api/auth/logout/", {

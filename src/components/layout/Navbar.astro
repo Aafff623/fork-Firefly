@@ -6,13 +6,11 @@ import { Icon } from "astro-icon/components";
 import DisplaySettings from "@/components/controls/DisplaySettingsIntegrated.svelte";
 import LightDarkSwitch from "@/components/controls/LightDarkSwitch.svelte";
 import OwnerAccount from "@/components/controls/OwnerAccount.astro";
-import Search from "@/components/controls/Search.svelte";
 import MusicPlayer from "@/components/features/MusicPlayer.astro";
 import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	navBarConfig,
-	sakuraConfig,
 	siteConfig,
 	spritePetConfig,
 } from "@/config";
@@ -89,8 +87,6 @@ const hasDisplaySettings =
 	(displaySettingsConfig.petPickerSwitchable &&
 		spritePetConfig.enable &&
 		spritePetConfig.pickerEnabled);
-/** 樱花迁顶栏：管线开启即显示粉色图标 */
-const showSakuraNavToggle = sakuraConfig.enable;
 
 // 根据 siteConfig.pages 过滤导航栏链接
 const pages = siteConfig.pages;
@@ -240,9 +236,6 @@ const logoVariants = await Promise.all(
             </div>
             <div class="navbar-actions flex col-start-3 justify-self-end items-center gap-1.5 pl-2 lg:pl-4">
                 <!--<SearchPanel client:load>-->
-                <Search
-                    client:idle
-                />
                 <a
                     href={githubRepoUrl}
                     target="_blank"
@@ -276,18 +269,6 @@ const logoVariants = await Promise.all(
                     >
                         <span class="bg-player-icon-play"><Icon is:inline name="lucide:play" class="text-[1.5rem]" /></span>
                         <span class="bg-player-icon-pause hidden"><Icon is:inline name="lucide:pause" class="text-[1.5rem]" /></span>
-                    </button>
-                )}
-                {showSakuraNavToggle && (
-                    <button
-                        type="button"
-                        id="sakura-nav-toggle"
-                        aria-label={i18n(I18nKey.sakuraEffect)}
-                        title={i18n(I18nKey.sakuraEffect)}
-                        aria-pressed="false"
-                        class="navbar-mobile-secondary btn-plain scale-animation rounded-full h-9 w-9 md:h-11 md:w-11 active:scale-90 sakura-nav-btn"
-                    >
-                        <Icon is:inline name="lucide:flower-2" class="text-[1.25rem] sakura-nav-icon" />
                     </button>
                 )}
                 {hasDisplaySettings && (
@@ -501,50 +482,6 @@ if (!window.__navbarButtonsBound) {
 }
 </script>
 
-<script>
-import {
-	getSakuraPinned,
-	getStoredSakuraEnabled,
-	setSakuraEnabled,
-} from "@/utils/setting-utils";
-
-/** 顶栏樱花开关：与设置面板同一套 persist / 事件 */
-let sakuraNavToggleBound = false;
-
-function syncSakuraNavBtn(enabled: boolean) {
-	const btn = document.getElementById("sakura-nav-toggle");
-	if (!btn) return;
-	btn.setAttribute("aria-pressed", String(enabled));
-	btn.classList.toggle("is-sakura-on", enabled);
-}
-
-function initSakuraNavToggle() {
-	const btn = document.getElementById("sakura-nav-toggle");
-	if (!btn) return;
-
-	const initial =
-		getSakuraPinned() ||
-		getStoredSakuraEnabled() ||
-		document.documentElement.getAttribute("data-sakura-enabled") === "true";
-	syncSakuraNavBtn(initial);
-
-	btn.onclick = () => {
-		const next = btn.getAttribute("aria-pressed") !== "true";
-		setSakuraEnabled(next);
-		syncSakuraNavBtn(next);
-	};
-
-	if (!sakuraNavToggleBound) {
-		sakuraNavToggleBound = true;
-		window.addEventListener("sakuraToggle", (e) => {
-			const ce = e as CustomEvent<{ enabled?: boolean }>;
-			syncSakuraNavBtn(!!ce.detail?.enabled);
-		});
-	}
-}
-
-initSakuraNavToggle();
-</script>
 
 <script>
 /** 品牌标题：悬停时加 is-brand-drawing，驱动横向渐变 clip 擦出 */
