@@ -7,6 +7,7 @@
 		"start": "astro dev",
 		"check": "astro check",
 		"check:community": "node scripts/check-community-comment-gates.mjs",
+		"check:owner": "node scripts/check-owner-experience-gates.mjs && tsx scripts/test-owner-auth.mts && tsx scripts/test-owner-content.mts && tsx scripts/test-owner-api.mts",
 		"build": "npx tsx scripts/generate-lqips.ts && astro build && npx tsx scripts/subset-fonts.ts && npx tsx scripts/strip-legacy-fonts.ts && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"build:edgeone": "astro build && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"preview": "astro preview",
