@@ -150,9 +150,11 @@ export default defineConfig({
 			],
 			smoothScrolling: false,
 			cache: true,
-			// 视口内链接预取：点击即缓存命中（软导航提速）。插件 v3.2.11 内建
-			// saveData/effectiveType 带宽感知 + 节流，弱网自动退避不抢 LCP 带宽
-			preload: { hover: true, visible: true },
+			// 文章卡片可能在首屏稳定前就被点击；立即接管导航，避免首击退化为整页刷新。
+			loadOnIdle: false,
+			// 只预取用户正在指向、聚焦或触摸的目标链接，避免首页同时拉取多篇完整 HTML。
+			// 文章意图预取由 Layout 的 2 并发队列统一管理，避免插件默认 5 并发抢占点击请求。
+			preload: false,
 			accessibility: true,
 			updateHead: true,
 			updateBodyClass: false,

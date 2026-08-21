@@ -8,8 +8,8 @@ import PostStats from "@/components/layout/PostStats.astro";
 import { siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
-import type { PinKind } from "@/utils/content-utils";
 import { tagAccentStyle } from "@/utils/accent-from-label";
+import type { PinKind } from "@/utils/content-utils";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
 import { decorateListTitle } from "@/utils/title-mood";
@@ -33,6 +33,8 @@ interface Props {
 	/** 懒入场卡（D3）不带 stagger 延迟，此处为 undefined */
 	style?: string;
 	loading?: "lazy" | "eager";
+	/** 首页首两篇优先预取正文 HTML；其余卡片仍只在 hover/focus/touch 时预取 */
+	priorityPreload?: boolean;
 	/** list 模式变体：featured=首篇 · row=细线行；grid 下由 CSS 重置为普通卡 */
 	listVariant?: "featured" | "row";
 }
@@ -50,6 +52,7 @@ const {
 	password,
 	style,
 	loading = "lazy",
+	priorityPreload = false,
 	listVariant,
 } = Astro.props;
 
@@ -158,6 +161,7 @@ const publishedLabel = formatDateToYYYYMMDD(published);
     <div class="post-card-head">
       <a
         href={url}
+        data-swup-preload={priorityPreload ? "true" : undefined}
         class="post-card-title transition group min-w-0 flex-1 font-bold text-3xl text-90
           hover:text-(--primary) dark:hover:text-(--primary)
           active:text-(--title-active) dark:active:text-(--title-active)"

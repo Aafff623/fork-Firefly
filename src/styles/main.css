@@ -67,6 +67,39 @@ html {
     background-size: cover;
 }
 
+/* Swup 提交新页面时必须即时定位；否则全局 smooth 会把回顶拖到正文出现之后。 */
+html.is-page-transitioning {
+    scroll-behavior: auto;
+}
+
+html.is-navigation-priority #wallpaper-wrapper *,
+html.is-navigation-priority .atmosphere-layer *,
+html.is-navigation-priority .firefly-background * {
+    animation-play-state: paused !important;
+}
+
+.article-navigation-error {
+    position: fixed;
+    z-index: 10000;
+    left: 50%;
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    translate: -50% 0.75rem;
+    max-width: min(92vw, 32rem);
+    padding: 0.72rem 1rem;
+    border: 1px solid color-mix(in oklch, var(--primary) 34%, transparent);
+    border-radius: 0.8rem;
+    color: var(--primary-text);
+    background: color-mix(in oklch, var(--card-bg) 92%, black 8%);
+    box-shadow: 0 0.8rem 2.2rem color-mix(in oklch, black 24%, transparent);
+    opacity: 0;
+    transition: opacity 160ms ease, translate 160ms ease;
+}
+
+.article-navigation-error.is-visible {
+    translate: -50% 0;
+    opacity: 1;
+}
+
 /* 桌面端略收内容密度：根字号与栏宽略小于 100%，但比 85%/78vw 更宽松 */
 @media (min-width: 1280px) {
     html {
@@ -696,4 +729,3 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 .pagination-info {
   @apply text-sm text-(--text-secondary) text-center mb-2;
 }
-
