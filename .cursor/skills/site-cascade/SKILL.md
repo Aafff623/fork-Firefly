@@ -42,7 +42,7 @@ compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 1 确认触发帖（slug）→ 2 cascade_check.py
 → 3 （发文级联动态已关闭，跳过 emit；除非园主显式开回 includeSystemNotes）
 → 4 核对侧栏组件位置（只读/必要时修 enable）
-→ 5 Agent 协作者评论（评在园主相关真实动态或文章页；语气 humanizer-tta）
+→ 5 Agent 协作者评论（评在园主相关真实动态或文章页；语气 tta-tone）
 → 6 汇报四表面验收项 + 评论是否发出
 ```
 

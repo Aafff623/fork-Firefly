@@ -40,7 +40,7 @@ python .cursor/skills/_shared/scripts/validate_post.py <path-to-index.md>
 ## 仍靠 Agent（脚本扫不了）
 
 - 分类门禁：未获用户确认不得把 category 写死（对照 `CONTEXT.md`）
-- 人味：园主已调完的理想稿不过 `humanizer-tta`。通稿去壳才过。**不要**用 50 分自评当放行条件，用本 lint 的 FAIL 项 + 禁标题命中结果贴进汇报
+- 人味：园主已调完的理想稿不过 `tta-tone` 去壳。通稿去壳才过。**不要**用 50 分自评当放行条件，用本 lint 的 FAIL 项 + 禁标题命中结果贴进汇报
 - 实录类：群聊/访谈保留原话精华，不用抽象总结替换
 - 成帖形态（以验收过的 `v4-pro-first-round-catalog` 为准，翻车反写；命中就改）：
 

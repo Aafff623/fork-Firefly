@@ -1,7 +1,6 @@
 # CLAUDE.md
 
-> **Output Style**: `humanizer-tta` — `~/.claude/skills/humanizer-tta/SKILL.md`  
-> **Session Init**: `windows-agent-discipline` — 会话启动先读（见 AGENTS.md）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
+> **Output Style**: `tta-tone` — `~/.agents/skills/tta-tone/SKILL.md`  
 > **Cursor 宪法**: `%USERPROFILE%\.cursor\rules\`（全局 alwaysApply）；仓内 `.cursor/rules/` 仅站点专有 mdc
 
 本文件是维护协议与加载顺序；硬约束以 `AGENTS.md` 为准，领域以 `CONTEXT.md` 为准。
@@ -48,18 +47,6 @@
 发版前读 `release-post/SKILL.md`；先起草，用户说「发布」才 `gh release create`。  
 建/改 Wiki 前读 `wiki-post/SKILL.md`；先起草，用户说「发布/推送 Wiki」才 push `.wiki.git`。  
 工作区根若为上一级 `blog/`，须在 `blog/.cursor/skills/` 建 junction 指向本表 skill（见 `AGENTS.md`）。
-
-### Issue tracker
-
-本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。
-
-### Triage labels
-
-五种 canonical 标签。见 `docs/agents/triage-labels.md`。
-
-### Domain docs
-
-单上下文。见 `docs/agents/domain.md`。
 
 ## 常用命令
 

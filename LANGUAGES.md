@@ -24,7 +24,7 @@
 | ready-for-human | 需人类实现 |
 | wontfix | 不做 |
 | theme | 一个业务主题目录名（kebab-case） |
-| handoff | `docs/outputs/handoff/{theme}/` 交接快照（覆盖式） |
+| handoff | 工作区 `../docs/outputs/handoff/Firefly/` 交接快照（覆盖式） |
 | PRD | `docs/outputs/prd/{theme}/prd.md` |
 
 ## 领域用词（博客）

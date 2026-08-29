@@ -36,7 +36,7 @@
 | `src/` | 产品层（pages / layouts / components / config / content / plugins / utils） |
 | `public/` | 原样静态资源 |
 | `scripts/` | LQIP、字体子集、new-post / new-dynamic |
-| `docs/` | 上游主题多语言 README 图 + **本仓 Agent 流程资产**（`docs/agents` · `docs/idea` 灵感库等） |
+| `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/outputs/{prd,commit-history}`）；弱关联产物（灵感 / 调研 / handoff / 知识文）已提取至工作区 `../docs/` |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
@@ -80,6 +80,7 @@ Content Collections（`src/content.config.ts`）：
 | 早报 | 按期 AI 资讯摘要（报刊式合集 `ai-morning-brief`；不是教程、不是羊毛拆解） |
 | 开源 | 按期 GitHub 项目解读（报刊式合集 `github-weekly-hot`；不是日更图卡，不是教程） |
 | 功能 | 站点功能介绍（按需） |
+| 修行 | 修仙、修行、玄学世界观、灵性实证与神话考据（一级合集 `xiuxing`，二级按 UP 主：散人小沅 / 修炼者小烨 / 玄成先生 / 林晓丁） |
 
 新建分类：先问园主中文名，再写入该帖 `category`（列表由 content 聚合，一般无需改配置）。
 
@@ -97,12 +98,12 @@ Content Collections（`src/content.config.ts`）：
 | 二级 | 有 `parent`；只在一级详情页展示；总览不单独出场 |
 | 第三层 | 这轮用手册 `##` 章节顶着，不新登记合集夹。极客时间四门课是既有三级，仍挂在 `course-geektime` 下 |
 
-现行一级频道：`ai-coding-tools` · `agentic-workflow` · `visual-media` · `model-eval` · `llm-overview` · `ai-morning-brief` · `github-weekly-hot` · `courses` · `career-guide` · `frontend-eng` · `backend` · `database` · `ops` · `product` · `humanities` · `site-series`。
+现行一级频道：`ai-coding-tools` · `agentic-workflow` · `visual-media` · `model-eval` · `llm-overview` · `java-fullstack` · `courses` · `career-guide` · `frontend-eng` · `backend` · `database` · `ops` · `product` · `humanities` · `xiuxing` · `site-series`。
 
 挂载口径：
 
 - **前端工程**（`frontend-eng`）：小程序、Lottie、SVG 动效、纯 CSS、3D 等实现向。
-- **视觉媒体**（`visual-media`）：海报/版式、提示词资产、视频与手绘生成、MiniMax 做片。
+- **视觉媒体**（`visual-media`）：海报/版式、提示词资产、视频与手绘素材整理。
 - **本站系列**（`site-series`）：本站部署、桌宠、发文流水线等站点自身记录。
 - **大模型概述**（`llm-overview`）：RAG / MoE 等应用与底层概念、Python 库地图。跑分实测仍走 `model-eval`。
 - **模型评测**（`model-eval`）：厂商新模型实测；中转 / 羊毛里真正测模型的文章挂其二级 `transit-relay` / `wool-freebies`。
@@ -229,7 +230,7 @@ Content Collections（`src/content.config.ts`）：
 
 ## 已知缺口（非阻塞）
 
-- 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见 `docs/outputs/handoff/perf-optimization-*`
+- 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见工作区 `../docs/outputs/handoff/Firefly/perf-optimization-*`
 - 主题 demo 帖已 `draft: true`（生产列表隐藏，DEV 仍可开）；Bangumi 页已关，追番 ID 仍可后续改
 - 统计 GA / Clarity / Umami / 51la 配置全空，等园主给 ID 再填 `analyticsConfig`（不造假 ID）
 - 文章评论现行 `type: "giscus"`，Dynamic 评论页显式覆盖为 Waline（ADR-0006，ADR-0001 已被取代）；勿再按 `none` 或全站 Waline 理解

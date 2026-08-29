@@ -39,7 +39,7 @@ Prefer one direction for narrative depth: **decisions in docs/, procedures in Wi
 | Paste entire CONTEXT into Home | Stale within one config rename | Home = links + 5-line blurb |
 | Wiki-only deploy secrets | Leaks + no review | Env vars stay in host dashboard; Wiki lists **names only** |
 | Duplicate FAQ in README and Wiki | Drift | README links to Wiki FAQ |
-| Publish every agent transcript | Noise | Curate; leave research in `docs/idea/` |
+| Publish every agent transcript | Noise | Curate; leave research in workspace `../docs/idea/Firefly/` |
 
 ## Staging drafts (optional)
 

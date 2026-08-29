@@ -4,7 +4,7 @@ import type { SpritePetConfig } from "../types/petConfig";
  * 站内桌宠（spritesheet）配置。
  * 默认双 DeepSeek：浏览态 Maid · 文章页 OpenPet。
  * 访客换皮只影响浏览态；文章页始终 postPetId，不随设置覆盖。
- * 素材许可见 `public/pets/README.md` / `docs/knowledge/codex-pet-picker.md`。
+ * 素材许可见 `public/pets/README.md` / 工作区 `../docs/knowledge/Firefly/codex-pet-picker.md`。
  *
  * 与 Spine / Live2D 互斥：三者最多同时启用一个。
  * 若多个 enable=true，运行时优先桌宠 → Spine → Live2D。

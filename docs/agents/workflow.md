@@ -1,18 +1,18 @@
 # 任务流（workflow）
 
 ```text
-docs/idea/{theme}/                   # 可选：灵感库沉淀（本 session 可只写到这）
+../docs/idea/Firefly/{theme}/        # 可选：灵感库沉淀（弱关联，在工作区）
   → 新 session 提取
 Issue(.scratch/<feature>/)
-  → docs/outputs/report/{theme}/     # 可选调研
+  → ../docs/outputs/report/Firefly/{theme}/  # 可选调研（弱关联，在工作区）
   → docs/outputs/prd/{theme}/prd.md  # draft → 你批准
-  → docs/outputs/handoff/{theme}/YYYY-MM-DD-{branch}-{task}.md
+  → ../docs/outputs/handoff/Firefly/{theme}/YYYY-MM-DD-{branch}-{task}.md
   → 实施 → awaiting-review【停】
   → 通过 → commit + docs/outputs/commit-history/{branch}/YYYY-MM-DD.md
   → archive
 ```
 
-灵感只进 `docs/idea/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
+灵感只进工作区 `../docs/idea/Firefly/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
 
 ## Phase / 交付闭环（强制）
 
@@ -71,7 +71,7 @@ Issue(.scratch/<feature>/)
 - 粘贴进料若是公众号：仍走 `wechat-mp.md` 四岗（工序，不是第五入口）；BibiGPT 先搜证。二者默认草稿箱
 - Theme/facet：`theme-taxonomy.md`（≠ 博客 category）
 - **分类 / 合集**：对照 `CONTEXT.md` 词表自动建议 `category`；合集按 `knowledge-output/references/collection-model.md` 一二级 `route:` 自动挂（可双挂）；批次汇报表过目。禁止默填 Agentic Coding；禁止私开合集空壳
-- extract **不落 posts**、不抽用语、不做封面。配图在 extract 完成（原图或检索 → R2；缺图才 MiniMax）。渠道 4 禁止 MiniMax
+- extract **不落 posts**、不抽用语、不做封面。配图在 extract 完成（原图或检索 → R2）；缺图标记待补，不在流程中调用模型生图。渠道 4 同样只使用已有素材
 
 #### 公众号 Multi-Agent（渠道 2 工序）
 
@@ -156,7 +156,7 @@ Issue(.scratch/<feature>/)
 
 实现：`src/styles/markdown.css` + `FancyboxManager.classifyContentImages`。质检时对照：信息图应接近栏宽；单人海报/立绘不应整屏只有一张图。
 
-### 配图素材来源分级（先扒现成，再生成）
+### 配图素材来源分级（先用现成素材）
 
 正文插图 / 动图按三级取素材，**别一上来就生图**：
 
@@ -164,36 +164,14 @@ Issue(.scratch/<feature>/)
 |---|---|---|---|
 | ① | 官方素材 | 官方 README 预览 gif、官方文档/截图 | 扒 GitHub raw / 文档图，带官方背书、最省事；**动图优先扒官方**（如 claude-mem 官方 README 的 `cm-preview.gif`，curl raw 直链即得） |
 | ② | 网上相关素材 | 主题相关图、素材包、合规网图 | 搜主题关键词 + 站点限定；弱相关章可用免广告合规网图 |
-| ③ | 生图 | 前两级确认都没有 | 按 style-taste 走 `firefly-minimax-media`（见下小节） |
+| ③ | 待补 | 前两级确认都没有 | 在交接中标记缺口，不虚构、不调用模型生图 |
 
-只有确认官方 / 网图都没有，才动生图；动图尤甚——官方 README 的预览 gif 常是现成最优解。
+只有确认官方 / 网图都没有，才标记待补；动图尤甚——官方 README 的预览 gif 常是现成最优解。
 
 ### 大图落盘（R2，不进 git）
 
 封面与正文大图优先走 Cloudflare R2（`img.` 子域，见 `CONTEXT.md` 部署事实 / `docs/agents/architecture-cost-optimized.md`）。**禁止**再把大 jpg/png/webp commit 进 `src/content/posts/**` 或 `public/` 撑 git pack。本地对照用的小图、LQIP、图标仍可入库。存量大图不在本条里搬迁，另开任务。
 
-### 正文配图 / 索引帖信息图（MiniMax）
+### 正文配图 / 索引帖信息图
 
-索引帖、教程目录帖的「章节小长条 / 信息图」与卡片封面不同：要按章节主题拆元素与指向关系，不是吉祥物换姿势。**画风走 style-taste，不锁死单一材质**（曾误把「水彩」写成默认，已废止）。
-
-操作细节与 checklist：`.cursor/skills/firefly-minimax-media/`（`SKILL.md` + `references/prompt-craft.md` 风格路由）；成帖 Web 化 / 质检：`knowledge-output`「配图规范」。样张：`public/media/minimax/style-taste/`。
-
-| 项 | 规范 |
-|---|---|
-| 风格路由（强制） | 生图前按章/按帖选定 **style-taste ID**（见 `prompt-craft`：通用 03/05/06/08/09/10/16，特定 01/02/07/11/13/**17**）。风格服务内容：工具链/架构→08 等轴；系统设计→05 包豪斯；流程示意→08 或 03；教程科普→16 水粉（可选，非默认）；情绪随笔→09 胶片；综述多概念→10 剪纸；日历/合集吉祥物→**17 卡通人物**（勿用 01 场景像素凑）。**禁止**整帖/整批共用一个材质 prompt（含禁止默认水彩）。 |
-| 同帖差异 | 封面与章节图、相邻章之间宜错开风格或至少错开色板/构图；并发子 Agent **不得**继承兄弟帖的风格模板，由父代理下发「本帖风格表」。 |
-| 构图方向 | 信息图 + 主题元素；禁止「同款吉祥物只换姿势」。长工程可先落稿，多轮再优化，**不默认整组返工**。 |
-| 元素尺度 | 附属图标（平台/渠道/Node/电脑等）须够大、对比够、一眼可辨；禁止缩成难辨色点。吉祥物可作主体，但不能只剩主体。 |
-| 留白 / 字图 | 主体占画面主体，忌大面积空镜；中文胶囊与插画分区，禁止字图空间相交。 |
-| 图内文案 | **勿复读章节名/H2**；写要点或元素说明。模型烧中文不稳时：底图无字 + 后期叠字（叠字纳入排版）。 |
-| 参照物 | **必须**官网/素材库 reference（或合规网图）；禁止空捏。弱相关章可直接用免广告合规网图。 |
-| 生图入口 | `firefly-minimax-media`（额度门禁 → 选定 style ID → MCP/`mmx` → `fetch_media.py` → 接线） |
-
-**已知坑（简记）**
-
-| 坑 | 处理 |
-|---|---|
-| 整批水彩/同款套图 | 未走 style-taste；回查本帖风格表，按章重选 ID 再画 |
-| Astro `data-store` / OneDrive | 改图后对磁盘真源，硬刷新；勿只信浏览器 |
-| `image-01` 中文不稳 | 无字底图 + 后期叠字 |
-| Windows mmx prompt 编码 | prompt 用文件或确认 UTF-8；避免管道吞编码 |
+索引帖、教程目录帖的章节图与卡片封面都只接入已经存在的本地、官方或合规素材。图片不足时保留缺口说明，不在发布流程中调用外部模型生成，也不把正文截图自动改成封面。

@@ -1,7 +1,6 @@
 # AGENTS.md
 
-> **Output Style**: `humanizer-tta` skill — 统一语气与去 AI 味。路径：`~/.claude/skills/humanizer-tta/SKILL.md`  
-> **Session Init**: `windows-agent-discipline` skill — **会话启动先读**（Agent 画像警示 / Windows 编码纪律 / 工具调用与交付自检）。路径：`~/.claude/skills/windows-agent-discipline/SKILL.md`  
+> **Output Style**: `tta-tone` skill — 统一语气、去 AI 味与收尾格式。路径：`~/.agents/skills/tta-tone/SKILL.md`  
 > **Cursor 宪法（全局 SSOT）**: `%USERPROFILE%\.cursor\rules\AGENTS.mdc` + companions（`answer-format` / `windows-*` / `commit-history` / `karpathy-guidelines`）  
 > **仓内 `.cursor/rules/`**: 仅站点专有规则（`seasonal-gift-box` · `site-cascade-after-content`）；禁止再复制全局宪法文件
 
@@ -28,8 +27,9 @@
 | 官方配置文档（本地，gitignore） | `docs/official/` |
 | 官方文档路由模型 | `docs/knowledge/official-docs.tree.json` |
 | Issue（本地） | `.scratch/<feature>/` |
-| 灵感库 | `docs/idea/{theme}/`（有构想再建；只存构想不写代码） |
-| PRD / handoff / commit-history | `docs/outputs/{prd,handoff,commit-history}/`（有产物再建） |
+| 灵感库（弱关联，在工作区） | `../docs/idea/Firefly/{theme}/`（有构想再建；只存构想不写代码） |
+| PRD / commit-history | `docs/outputs/{prd,commit-history}/`（有产物再建） |
+| 调研报告 / handoff（弱关联，在工作区） | `../docs/outputs/{report,handoff}/Firefly/` |
 | 上游 AGENTS 备份 | 若需要再本地建 `.scratch/project-init-backup/`（目录当前不存在且多在 gitignore） |
 
 ## 硬约束
@@ -39,7 +39,7 @@
 3. **交付闭环**：本地 `pnpm dev` 预览 → 本地校验 → 你确认后 `push` → 等 Vercel → **再核线上**。未本地验收不得 push；未看线上不得宣称部署完成。细则见 `docs/agents/workflow.md`。
 4. **密钥**：不入库。
 5. **覆盖冲突**：本仓治理文件与上游主题说明冲突时，以本仓 `AGENTS.md` / `CONTEXT.md` 为准；上游原文已备份。
-6. **资产禁止空壳**：`CONTEXT` / `LANGUAGES` / `docs/agents/*` / `docs/glossary/*` / `docs/knowledge/*` 必须有可消费正文；缺内容时先调研再写盘，禁止只建空目录或一句话占位。
+6. **资产禁止空壳**：`CONTEXT` / `LANGUAGES` / `docs/agents/*` / `docs/glossary/*` / `docs/knowledge/official-docs.tree.json` 必须有可消费正文；缺内容时先调研再写盘，禁止只建空目录或一句话占位。弱关联产物（灵感 / 调研报告 / handoff / 知识文）归工作区 `../docs/`，不在本仓补建。
 
 ## 多 Agent 协作纪律
 
@@ -131,18 +131,6 @@ Theme 词表：`theme-taxonomy.md`（YAML 索引；落盘夹用 vault 已有目�
 | 出箱 | 用户说「从草稿箱出来 / 可以发了」→ 迁到 `posts/<slug>/`，按需 `draft: false`，再 cascade → 确认后 push |
 
 细则：`docs/agents/workflow.md`「草稿箱」；箱内说明：`src/content/posts/_draftbox/README.md`。
-
-### Issue tracker
-
-本地 Markdown：`.scratch/<feature>/`。见 `docs/agents/issue-tracker.md`。
-
-### Triage labels
-
-五种 canonical 标签（同名映射）。见 `docs/agents/triage-labels.md`。
-
-### Domain docs
-
-单上下文：`CONTEXT.md` + `docs/adr/`。见 `docs/agents/domain.md`。
 
 ## 任务流摘要
 
