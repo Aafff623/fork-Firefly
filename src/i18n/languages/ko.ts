@@ -93,6 +93,14 @@ export const ko: Translation = {
 		"여기는 제 친구들입니다. 방문하여 서로 교류해 보세요",
 	[Key.searchFriends]: "친구 검색...",
 	[Key.friendsEmpty]: "아직 친구가 없습니다.",
+	[Key.navSites]: "내비게이션",
+	[Key.navSitesDescription]:
+		"자주 가는 사이트와 리소스의 분류별 색인입니다. 카드를 클릭하면 소개를 볼 수 있어요",
+	[Key.searchNavSites]: "사이트 검색...",
+	[Key.navSitesEmpty]: "일치하는 사이트가 없습니다",
+	[Key.navSitesPinned]: "자주 사용",
+	[Key.navSitesOpenSite]: "사이트 열기",
+	[Key.navSitesArticles]: "개의 글",
 	[Key.guestbook]: "방명록",
 	[Key.guestbookDescription]:
 		"이곳에 흔적을 남기고 생각과 제안을 공유해 주세요",
@@ -290,12 +298,15 @@ export const ko: Translation = {
 	[Key.pinAdminUnsetSticky]: "상시 해제",
 	[Key.pinAdminConfirmSet]: "상시 고정하기",
 	[Key.pinAdminConfirmUnset]: "상시 고정 해제",
-	[Key.pinAdminConfirmSetDesc]: "확인하면 목록 상단에 오래 유지되며 자동 고정으로 대체되지 않습니다.",
-	[Key.pinAdminConfirmUnsetDesc]: "해제하면 일반 정렬로 돌아가고, 가장 최근 글이 다시 자동 고정됩니다.",
+	[Key.pinAdminConfirmSetDesc]:
+		"확인하면 목록 상단에 오래 유지되며 자동 고정으로 대체되지 않습니다.",
+	[Key.pinAdminConfirmUnsetDesc]:
+		"해제하면 일반 정렬로 돌아가고, 가장 최근 글이 다시 자동 고정됩니다.",
 	[Key.pinAdminConfirmOk]: "확인",
 	[Key.pinAdminConfirmCancel]: "나중에",
 	[Key.pinAdminDevHint]: "고정됨, 새로고침 중…",
-	[Key.pinAdminProdHint]: "온라인 원클릭 저장은 아직 없습니다. 로컬에서 pinned를 수정한 뒤 배포하세요",
+	[Key.pinAdminProdHint]:
+		"온라인 원클릭 저장은 아직 없습니다. 로컬에서 pinned를 수정한 뒤 배포하세요",
 
 	// Related Posts
 	[Key.relatedPosts]: "관련 게시글",
@@ -338,12 +349,16 @@ export const ko: Translation = {
 	[Key.settingsTabEffects]: "효과",
 	[Key.settingsTabPets]: "펫",
 
+	[Key.petRoamTitle]: "펫 달리기",
+	[Key.petRoamHint]:
+		"끄기: 달력 오른쪽 아래에 고정(스크롤 따라 이동 안 함). 켜기: 자유롭게 배회.",
 	[Key.petPickerTitle]: "데스크톱 펫",
 	[Key.petPickerDefault]: "기본 · DeepSeek",
 	[Key.petPickerDefaultHint]: "목록 Maid · 글 OpenPet",
 	[Key.petPickerLicenseUnknown]: "라이선스 불명확",
 	[Key.petPickerCurrent]: "현재",
-	[Key.petPickerAttribution]: "소재: awesome-codex-pet. 비상업 표시 시 저작자 표기.",
+	[Key.petPickerAttribution]:
+		"소재: awesome-codex-pet. 비상업 표시 시 저작자 표기.",
 	[Key.avatarFrameTitle]: "아바타 프레임",
 	[Key.avatarFrameNone]: "없음",
 	[Key.avatarFrameC3]: "회전 그라데이션",
@@ -378,7 +393,8 @@ export const ko: Translation = {
 	[Key.sponsorMethodsPending]:
 		"결제 수단을 준비 중입니다. 지금은 아래 댓글로 응원해 주세요. QR 코드와 링크는 준비되면 여기에 표시됩니다.",
 	[Key.sponsorList]: "후원자",
-	[Key.sponsorEmpty]: "아직 공개 후원 기록이 없습니다. 첫 번째 후원자가 되어 주세요",
+	[Key.sponsorEmpty]:
+		"아직 공개 후원 기록이 없습니다. 첫 번째 후원자가 되어 주세요",
 	[Key.sponsorAmount]: "금액",
 	[Key.sponsorDate]: "날짜",
 	[Key.sponsorMessage]: "메시지",

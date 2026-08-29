@@ -93,6 +93,14 @@ export const ja: Translation = {
 		"ここは私の友達です、お互いに訪問して交流することを歓迎します",
 	[Key.searchFriends]: "友達を検索...",
 	[Key.friendsEmpty]: "まだ友達がいません",
+	[Key.navSites]: "ナビ",
+	[Key.navSitesDescription]:
+		"よく訪れるサイトとリソースのカテゴリ別インデックス。カードをクリックして詳細を表示",
+	[Key.searchNavSites]: "サイトを検索...",
+	[Key.navSitesEmpty]: "一致するサイトがありません",
+	[Key.navSitesPinned]: "よく使う",
+	[Key.navSitesOpenSite]: "サイトを開く",
+	[Key.navSitesArticles]: "本の記事",
 	[Key.guestbook]: "ゲストブック",
 	[Key.guestbookDescription]:
 		"ここに足跡を残して、あなたの考えや提案を共有してください",
@@ -290,12 +298,15 @@ export const ja: Translation = {
 	[Key.pinAdminUnsetSticky]: "常時ピンを解除",
 	[Key.pinAdminConfirmSet]: "常時ピンにする",
 	[Key.pinAdminConfirmUnset]: "常時ピンを解除",
-	[Key.pinAdminConfirmSetDesc]: "確定後、この記事はリスト上部に固定され、自動ピンに置き換わりません。",
-	[Key.pinAdminConfirmUnsetDesc]: "解除後は通常の並び順に戻り、最新更新の記事が自動ピンになります。",
+	[Key.pinAdminConfirmSetDesc]:
+		"確定後、この記事はリスト上部に固定され、自動ピンに置き換わりません。",
+	[Key.pinAdminConfirmUnsetDesc]:
+		"解除後は通常の並び順に戻り、最新更新の記事が自動ピンになります。",
 	[Key.pinAdminConfirmOk]: "確定",
 	[Key.pinAdminConfirmCancel]: "やめる",
 	[Key.pinAdminDevHint]: "固定しました。更新中…",
-	[Key.pinAdminProdHint]: "本番の一括書き込みは未対応です。ローカルで pinned を編集してデプロイしてください",
+	[Key.pinAdminProdHint]:
+		"本番の一括書き込みは未対応です。ローカルで pinned を編集してデプロイしてください",
 
 	// 関連記事
 	[Key.relatedPosts]: "関連記事",
@@ -338,12 +349,16 @@ export const ja: Translation = {
 	[Key.settingsTabEffects]: "エフェクト",
 	[Key.settingsTabPets]: "ペット",
 
+	[Key.petRoamTitle]: "ペットの歩行",
+	[Key.petRoamHint]:
+		"オフ:カレンダー右下に固定(スクロールに追従しない)。オン:自由に歩き回る。",
 	[Key.petPickerTitle]: "デスクトップペット",
 	[Key.petPickerDefault]: "デフォルト · DeepSeek",
 	[Key.petPickerDefaultHint]: "閲覧 Maid · 記事 OpenPet",
 	[Key.petPickerLicenseUnknown]: "ライセンス不明",
 	[Key.petPickerCurrent]: "選択中",
-	[Key.petPickerAttribution]: "素材は awesome-codex-pet より。非商用表示時は作者表記をお願いします。",
+	[Key.petPickerAttribution]:
+		"素材は awesome-codex-pet より。非商用表示時は作者表記をお願いします。",
 	[Key.avatarFrameTitle]: "アバターフレーム",
 	[Key.avatarFrameNone]: "なし",
 	[Key.avatarFrameC3]: "回転グラデ",
@@ -378,7 +393,8 @@ export const ja: Translation = {
 	[Key.sponsorMethodsPending]:
 		"支払い方法は準備中です。今は下のコメント欄で応援できます。QRコードとリンクは準備でき次第ここに表示します。",
 	[Key.sponsorList]: "スポンサーリスト",
-	[Key.sponsorEmpty]: "公開スポンサー記録はまだありません。最初の支援者になってください",
+	[Key.sponsorEmpty]:
+		"公開スポンサー記録はまだありません。最初の支援者になってください",
 	[Key.sponsorAmount]: "金額",
 	[Key.sponsorDate]: "日付",
 	[Key.sponsorMessage]: "メッセージ",

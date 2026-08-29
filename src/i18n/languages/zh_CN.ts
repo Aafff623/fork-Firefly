@@ -92,6 +92,14 @@ export const zh_CN: Translation = {
 	[Key.friendsDescription]: "这里是我的朋友们，欢迎互相访问交流",
 	[Key.searchFriends]: "搜索友链...",
 	[Key.friendsEmpty]: "暂无友情链接",
+	[Key.navSites]: "藏经阁",
+	[Key.navSitesDescription]:
+		"我常去的站点与资源索引，分类整理，点击卡片查看介绍",
+	[Key.searchNavSites]: "搜索站点...",
+	[Key.navSitesEmpty]: "没有匹配的站点",
+	[Key.navSitesPinned]: "常用",
+	[Key.navSitesOpenSite]: "打开网站",
+	[Key.navSitesArticles]: "篇文章",
 	[Key.guestbook]: "留言",
 	[Key.guestbookDescription]: "欢迎在这里留下你的足迹，分享你的想法和建议",
 	[Key.untitled]: "无标题",
@@ -283,8 +291,10 @@ export const zh_CN: Translation = {
 	[Key.pinAdminUnsetSticky]: "取消常驻",
 	[Key.pinAdminConfirmSet]: "设为常驻置顶",
 	[Key.pinAdminConfirmUnset]: "取消常驻置顶",
-	[Key.pinAdminConfirmSetDesc]: "确认后，这篇文章会长期留在列表顶部，不再被默认置顶替换。",
-	[Key.pinAdminConfirmUnsetDesc]: "取消后，它会回到普通排序；最新更新的文章将重新成为默认置顶。",
+	[Key.pinAdminConfirmSetDesc]:
+		"确认后，这篇文章会长期留在列表顶部，不再被默认置顶替换。",
+	[Key.pinAdminConfirmUnsetDesc]:
+		"取消后，它会回到普通排序；最新更新的文章将重新成为默认置顶。",
 	[Key.pinAdminConfirmOk]: "确认",
 	[Key.pinAdminConfirmCancel]: "再想想",
 	[Key.pinAdminDevHint]: "已设为常驻，正在刷新…",
@@ -331,13 +341,18 @@ export const zh_CN: Translation = {
 	[Key.settingsTabEffects]: "特效",
 	[Key.settingsTabPets]: "桌宠",
 
+	// 桌宠
+	[Key.petRoamTitle]: "桌宠奔跑",
+	[Key.petRoamHint]:
+		"关闭时固定站在日历右下角，不随页面滚动；开启后自由游走。",
 	// 桌宠换皮
 	[Key.petPickerTitle]: "选择桌宠",
 	[Key.petPickerDefault]: "默认 · DeepSeek",
 	[Key.petPickerDefaultHint]: "浏览可换皮 · 文章固定 OpenPet",
 	[Key.petPickerLicenseUnknown]: "许可未明确",
 	[Key.petPickerCurrent]: "当前",
-	[Key.petPickerAttribution]: "素材来自 awesome-codex-pet；非商业展示请署名作者。",
+	[Key.petPickerAttribution]:
+		"素材来自 awesome-codex-pet；非商业展示请署名作者。",
 	[Key.avatarFrameTitle]: "头像边框",
 	[Key.avatarFrameNone]: "无边框",
 	[Key.avatarFrameC3]: "旋转渐变环",

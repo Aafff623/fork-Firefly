@@ -54,6 +54,9 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 	// 桌宠换皮 Tab（内容列表以 spritePetConfig.pickerPetIds 为准）
 	petPickerSwitchable: true,
 
+	// 桌宠奔跑开关（默认关：固定钉日历右下角，不随滚动；开= roam 游走算法）
+	petRoamSwitchable: true,
+
 	// 头像边框选择（外观 Tab；目录见 profileConfig.avatarFrame）
 	avatarFrameSwitchable: true,
 };

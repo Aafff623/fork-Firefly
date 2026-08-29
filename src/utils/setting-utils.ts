@@ -1458,6 +1458,34 @@ export function getSakuraIntroDurationMs(): number {
 	return SAKURA_INTRO_MS;
 }
 
+// Pet roam functions（桌宠奔跑开关；默认关=钉日历右下角不游走）
+const PET_ROAM_ENABLED_KEY = "petRoamEnabled";
+
+export function getPetRoamEnabled(): boolean {
+	if (typeof window === "undefined") {
+		return false;
+	}
+	try {
+		return localStorage.getItem(PET_ROAM_ENABLED_KEY) === "true";
+	} catch {
+		return false;
+	}
+}
+
+export function setPetRoamEnabled(enabled: boolean): void {
+	if (typeof localStorage === "undefined") {
+		return;
+	}
+	try {
+		localStorage.setItem(PET_ROAM_ENABLED_KEY, String(enabled));
+	} catch {
+		/* ignore */
+	}
+	window.dispatchEvent(
+		new CustomEvent("firefly:pet-roam-toggle", { detail: { enabled } }),
+	);
+}
+
 /** 桌宠双击等：短暂飘樱，不写入常驻/钉住；已钉住则不动 */
 let sakuraBurstTimer: ReturnType<typeof setTimeout> | null = null;
 

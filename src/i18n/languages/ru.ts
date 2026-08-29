@@ -93,6 +93,14 @@ export const ru: Translation = {
 		"Вот мои друзья, добро пожаловать посетить и общаться друг с другом",
 	[Key.searchFriends]: "Поиск друзей...",
 	[Key.friendsEmpty]: "Друзей пока нет.",
+	[Key.navSites]: "Навигация",
+	[Key.navSitesDescription]:
+		"Каталог сайтов и ресурсов, которыми я пользуюсь, по категориям. Нажмите на карточку для подробностей",
+	[Key.searchNavSites]: "Поиск сайтов...",
+	[Key.navSitesEmpty]: "Нет подходящих сайтов",
+	[Key.navSitesPinned]: "Избранное",
+	[Key.navSitesOpenSite]: "Открыть сайт",
+	[Key.navSitesArticles]: "статей",
 	[Key.guestbook]: "Гостевая книга",
 	[Key.guestbookDescription]:
 		"Добро пожаловать, оставьте свой след здесь, поделитесь своими мыслями и предложениями",
@@ -293,12 +301,15 @@ export const ru: Translation = {
 	[Key.pinAdminUnsetSticky]: "Открепить",
 	[Key.pinAdminConfirmSet]: "Постоянно закрепить",
 	[Key.pinAdminConfirmUnset]: "Снять закрепление",
-	[Key.pinAdminConfirmSetDesc]: "Запись останется сверху и не будет заменена авто-пином.",
-	[Key.pinAdminConfirmUnsetDesc]: "Вернётся в обычный порядок; снова закрепится самый свежий пост.",
+	[Key.pinAdminConfirmSetDesc]:
+		"Запись останется сверху и не будет заменена авто-пином.",
+	[Key.pinAdminConfirmUnsetDesc]:
+		"Вернётся в обычный порядок; снова закрепится самый свежий пост.",
 	[Key.pinAdminConfirmOk]: "Подтвердить",
 	[Key.pinAdminConfirmCancel]: "Не сейчас",
 	[Key.pinAdminDevHint]: "Закреплено, обновление…",
-	[Key.pinAdminProdHint]: "Онлайн-запись пока недоступна; измените pinned локально и задеплойте",
+	[Key.pinAdminProdHint]:
+		"Онлайн-запись пока недоступна; измените pinned локально и задеплойте",
 
 	// Похожие статьи
 	[Key.relatedPosts]: "Похожие статьи",
@@ -341,12 +352,16 @@ export const ru: Translation = {
 	[Key.settingsTabEffects]: "Эффекты",
 	[Key.settingsTabPets]: "Питомец",
 
+	[Key.petRoamTitle]: "Бег питомца",
+	[Key.petRoamHint]:
+		"Выкл: питомец стоит у календаря (не следует за прокруткой). Вкл: свободно бродит.",
 	[Key.petPickerTitle]: "Питомцы",
 	[Key.petPickerDefault]: "По умолчанию · DeepSeek",
 	[Key.petPickerDefaultHint]: "Обзор Maid · Статья OpenPet",
 	[Key.petPickerLicenseUnknown]: "Лицензия неясна",
 	[Key.petPickerCurrent]: "Сейчас",
-	[Key.petPickerAttribution]: "Материалы из awesome-codex-pet; укажите авторов при некоммерческом показе.",
+	[Key.petPickerAttribution]:
+		"Материалы из awesome-codex-pet; укажите авторов при некоммерческом показе.",
 	[Key.avatarFrameTitle]: "Рамка аватара",
 	[Key.avatarFrameNone]: "Без рамки",
 	[Key.avatarFrameC3]: "Вращающийся градиент",

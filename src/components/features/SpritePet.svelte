@@ -51,6 +51,7 @@ import {
 } from "@/lib/sidebar/sidebarBalance";
 import type { SpritePetRoamConfig } from "@/types/petConfig";
 import { triggerPetYzhanByTheme } from "@/utils/ambient-fx";
+import { getPetRoamEnabled } from "@/utils/setting-utils";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -708,6 +709,9 @@ function actionForPetClick(
 /** 用户是否拖过（本会话或 v3 存储）；有则不再自动贴「最新动态」 */
 let userPinnedPosition = false;
 
+/** 设置面板「桌宠奔跑」开关（默认关=钉日历右下角，文档绝对坐标不随滚） */
+let roamSwitchOn: boolean = getPetRoamEnabled();
+
 function loadStoredPosition(): boolean {
 	try {
 		// 清掉旧 key，避免继续停在视口右下
@@ -798,6 +802,11 @@ function undockToBodyAtCurrentScreenPos() {
  */
 function applyPostViewportLock(pathname = window.location.pathname) {
 	if (typeof window === "undefined" || !isPostViewportMode(pathname)) return;
+	// 奔跑开关关（默认）：文章页不锁视口角，改钉日历右下（文档绝对坐标）
+	if (!roamSwitchOn) {
+		pinToCalendarStill();
+		return;
+	}
 	stopRoamLoop();
 	clearResumeAfterDragTimer();
 	clearScrollLeaveTimer();
@@ -905,7 +914,15 @@ function applyBrowseDefaultPlacement() {
 
 function scheduleBrowseDefaultPlacement() {
 	if (userPinnedPosition || isPostPath()) return;
+	if (!roamSwitchOn) {
+		pinToCalendarStill();
+		return;
+	}
 	const tryPlace = (isFinal: boolean) => {
+		if (!roamSwitchOn) {
+			pinToCalendarStill();
+			return;
+		}
 		if (userPinnedPosition || isPostPath()) return;
 		if (placeNearDynamicsWidget()) return;
 		if (placeOnAnyVisibleAnchor()) return;
@@ -919,6 +936,7 @@ function scheduleBrowseDefaultPlacement() {
 }
 
 function canRoamNow(): boolean {
+	if (!roamSwitchOn) return false;
 	if (!pageVisible) return false;
 	if (!roam.enable || hidden) return false;
 	if (!canRoamOnBrowse()) return false;
@@ -928,8 +946,48 @@ function canRoamNow(): boolean {
 	return true;
 }
 
+/**
+ * 「奔跑开关关闭」的驻留形态：钉在日历右下角，文档绝对坐标（is-page-anchored）。
+ * 不跟滚动：窗口上滑宠物随文档离场，滚回来还在原地。无可见日历则视口角兜底。
+ */
+function pinToCalendarStill() {
+	if (typeof window === "undefined") return;
+	if (hidden || dragging) return;
+	stopRoamLoop();
+	exitBalancePark();
+	clearDockHost();
+	dockMode = "free";
+	currentAnchorId = null;
+	plannedRoamTargetId = null;
+	// 不经 findVisibleAnchorById 的可见性过滤：日历滚出视口也要钉在它的文档位置
+	const cal =
+		document.getElementById("calendar-widget") ??
+		document.querySelector("widget-layout.calendar-notebook-widget");
+	const cr = cal ? cal.getBoundingClientRect() : null;
+	// rect 无效（未渲染/折叠）→ 视口角兜底，勿钉 (0,0)
+	if (cal && cr && cr.width > 0 && cr.height > 0) {
+		// 几何同 syncCardDockFixedPos 右下分支：大半身子挂卡右外，脚与卡底齐
+		const r = cr;
+		const hang = Math.round(effectiveSize * 0.72);
+		const sink = Math.round(height * 0.08);
+		const vx = r.right - effectiveSize + hang;
+		const vy = r.bottom - height + sink;
+		const page = viewportToPage(vx, vy);
+		const clamped = clampToDocument(page.x, page.y);
+		posX = Math.round(clamped.x);
+		posY = Math.round(clamped.y);
+		dockCorner = "bottom-right";
+		dockFacing = "left";
+		skinOpacity = 1;
+		if (rootEl) mountPetToBody(rootEl);
+		return;
+	}
+	parkAtBrowseFallback(false);
+}
+
 /** 失衡：强制贴日历并停 roam；无可见日历则视口右下兜底 */
 function enterBalancePark() {
+	if (!roamSwitchOn) return;
 	if (typeof window === "undefined" || isPostPath()) return;
 	balanceParkActive = true;
 	stopRoamLoop();
@@ -992,6 +1050,7 @@ function stopRoamLoop() {
  * 拖拽期间不计时；只有松开才开表。
  */
 function scheduleResumeRoamAfterDrag() {
+	if (!roamSwitchOn) return;
 	if (!roam.enable || !canRoamOnBrowse() || hidden) return;
 	if (roam.pauseWhenPinned) return;
 	clearResumeAfterDragTimer();
@@ -1243,8 +1302,9 @@ async function performRoamStep() {
 		return;
 	}
 
+	// currentAnchorId 为 null(自由/兜底落点,如奔跑开关切入)也视为可换卡
 	const currentStillVisible =
-		currentAnchorId != null && visible.some((a) => a.id === currentAnchorId);
+		currentAnchorId == null || visible.some((a) => a.id === currentAnchorId);
 
 	// 定时换卡：只在当前卡仍可见时主动换；滚丢的交给 scroll 延迟逻辑
 	if (!currentStillVisible) {
@@ -1281,6 +1341,7 @@ function scheduleNextRoam() {
 }
 
 function startRoamLoop() {
+	if (!roamSwitchOn) return;
 	if (!roam.enable) return;
 	if (balanceParkActive) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
@@ -1295,6 +1356,7 @@ function startRoamLoop() {
  * 若中途又滚回原卡，取消这次换位。
  */
 function onScrollRoamCheck() {
+	if (!roamSwitchOn) return;
 	if (!roam.enable || hidden || !canRoamOnBrowse()) return;
 	if (balanceParkActive) return;
 	if (roam.pauseWhenPinned && userPinnedPosition) return;
@@ -1761,6 +1823,13 @@ onMount(() => {
 		if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
 			startRoamLoop();
 		}
+		// 奔跑开关关闭（默认）：覆盖默认停靠，钉日历右下角（文档绝对坐标）。
+		// 延到入场动画结束再取日历矩形，否则钉到动画中的偏移位上。
+		if (!roamSwitchOn) {
+			window.setTimeout(() => {
+				if (!roamSwitchOn) pinToCalendarStill();
+			}, 1100);
+		}
 	};
 
 	const rendererGate = createPetRendererGate(bootRenderer);
@@ -1821,6 +1890,13 @@ onMount(() => {
 		}
 		if (balanceParkActive && !isPostPath()) {
 			enterBalancePark();
+			return;
+		}
+		if (!roamSwitchOn) {
+			// 奔跑开关关：resize 不改钉日历驻留
+			if (!userPinnedPosition && !isPostPath() && dockMode === "free") {
+				pinToCalendarStill();
+			}
 			return;
 		}
 		if (!userPinnedPosition && !isPostPath() && dockMode !== "card") {
@@ -1892,7 +1968,10 @@ onMount(() => {
 			const pathAtStart = window.location.pathname;
 			const swapped = await syncPetFromPath(pathAtStart);
 			if (window.location.pathname !== pathAtStart) return;
-			if (isPostViewportMode()) {
+			if (!roamSwitchOn) {
+				// 奔跑开关关：换页后（含文章页）仍钉日历右下角
+				pinToCalendarStill();
+			} else if (isPostViewportMode()) {
 				// syncPetFromPath 已钉视口；这里只保证游走关掉
 				balanceParkActive = false;
 				stopRoamLoop();
@@ -2070,6 +2149,24 @@ onMount(() => {
 	};
 	document.addEventListener(SIDEBAR_IMBALANCE_EVENT, onSidebarImbalance);
 	document.addEventListener(SIDEBAR_BALANCE_EVENT, onSidebarBalance);
+	// 奔跑开关（设置面板实时切换）：关=钉日历右下角；开=回 roam 游走
+	const onPetRoamToggle = (e: Event) => {
+		const enabled =
+			(e as CustomEvent<{ enabled?: boolean }>).detail?.enabled ?? false;
+		roamSwitchOn = enabled;
+		if (enabled) {
+			if (isPostPath()) {
+				applyPostViewportLock();
+			} else if (balanceParkActive) {
+				exitBalancePark();
+			} else if (!userPinnedPosition && !hidden && canRoamOnBrowse()) {
+				startRoamLoop();
+			}
+		} else {
+			pinToCalendarStill();
+		}
+	};
+	window.addEventListener("firefly:pet-roam-toggle", onPetRoamToggle);
 	// 晚挂载：对齐当前失衡态（html class 由 boot 维护）
 	if (
 		!isPostPath() &&
@@ -2101,6 +2198,7 @@ onMount(() => {
 		document.removeEventListener("visibilitychange", onVisibility);
 		document.removeEventListener(SIDEBAR_IMBALANCE_EVENT, onSidebarImbalance);
 		document.removeEventListener(SIDEBAR_BALANCE_EVENT, onSidebarBalance);
+		window.removeEventListener("firefly:pet-roam-toggle", onPetRoamToggle);
 		footerObserver?.disconnect();
 		if (idleTimer) clearTimeout(idleTimer);
 		if (readScrollTimer) clearTimeout(readScrollTimer);
@@ -2128,10 +2226,9 @@ onDestroy(() => {
 			dockMode === "free" &&
 			!dragging &&
 			posX !== null &&
-			posY !== null &&
-			!isPostViewportMode()
+			posY !== null
 		}
-		class:is-post-viewport={isPostViewportMode()}
+		class:is-post-viewport={isPostViewportMode() && dockMode !== "free"}
 		class:is-face-left={dockMode === "card" && dockFacing === "left" && !animationState.startsWith("running")}
 		class:is-dragging={dragging}
 		class:is-theme-pulse={themePulse}

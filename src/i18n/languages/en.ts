@@ -93,6 +93,14 @@ export const en: Translation = {
 		"Here are my friends, welcome to visit and communicate with each other",
 	[Key.searchFriends]: "Search friends...",
 	[Key.friendsEmpty]: "No friends yet.",
+	[Key.navSites]: "Navigation",
+	[Key.navSitesDescription]:
+		"A categorized index of sites and resources I frequent. Click a card for details.",
+	[Key.searchNavSites]: "Search sites...",
+	[Key.navSitesEmpty]: "No matching sites",
+	[Key.navSitesPinned]: "Pinned",
+	[Key.navSitesOpenSite]: "Open site",
+	[Key.navSitesArticles]: "articles",
 	[Key.guestbook]: "Guestbook",
 	[Key.guestbookDescription]:
 		"Welcome to leave your mark here, share your thoughts and suggestions",
@@ -291,12 +299,15 @@ export const en: Translation = {
 	[Key.pinAdminUnsetSticky]: "Unset sticky",
 	[Key.pinAdminConfirmSet]: "Make this post sticky",
 	[Key.pinAdminConfirmUnset]: "Remove sticky pin",
-	[Key.pinAdminConfirmSetDesc]: "It will stay at the top of the list and won’t be replaced by auto-pin.",
-	[Key.pinAdminConfirmUnsetDesc]: "It returns to normal order; the newest updated post becomes auto-pinned again.",
+	[Key.pinAdminConfirmSetDesc]:
+		"It will stay at the top of the list and won’t be replaced by auto-pin.",
+	[Key.pinAdminConfirmUnsetDesc]:
+		"It returns to normal order; the newest updated post becomes auto-pinned again.",
 	[Key.pinAdminConfirmOk]: "Confirm",
 	[Key.pinAdminConfirmCancel]: "Not now",
 	[Key.pinAdminDevHint]: "Sticky saved, refreshing…",
-	[Key.pinAdminProdHint]: "Online one-click pin is not enabled yet; edit pinned locally then deploy",
+	[Key.pinAdminProdHint]:
+		"Online one-click pin is not enabled yet; edit pinned locally then deploy",
 
 	// Related Posts
 	[Key.relatedPosts]: "Related Posts",
@@ -339,13 +350,18 @@ export const en: Translation = {
 	[Key.settingsTabEffects]: "Effects",
 	[Key.settingsTabPets]: "Pets",
 
+	// Pet
+	[Key.petRoamTitle]: "Pet roaming",
+	[Key.petRoamHint]:
+		"Off: stands still at the calendar corner (does not follow scroll). On: roams freely.",
 	// Pet picker
 	[Key.petPickerTitle]: "Desktop pet",
 	[Key.petPickerDefault]: "Default · DeepSeek",
 	[Key.petPickerDefaultHint]: "Browse skins · Post always OpenPet",
 	[Key.petPickerLicenseUnknown]: "License unclear",
 	[Key.petPickerCurrent]: "Current",
-	[Key.petPickerAttribution]: "Assets from awesome-codex-pet; attribute authors for non-commercial display.",
+	[Key.petPickerAttribution]:
+		"Assets from awesome-codex-pet; attribute authors for non-commercial display.",
 	[Key.avatarFrameTitle]: "Avatar frame",
 	[Key.avatarFrameNone]: "None",
 	[Key.avatarFrameC3]: "Spinning gradient",
