@@ -31,7 +31,7 @@ updated: 2026-08-04T21:40:00
 - 紧贴主题，或主题高度抽象
 - 画面包含多种可辨要素
 
-本地挑选页：`/media/minimax/style-taste/`（开发服）或仓库内 `public/media/minimax/style-taste/index.html`。
+本地样张挑选页已下线；本文保留历史风格表与示例说明。
 
 ## 通用场景
 
@@ -127,7 +127,7 @@ updated: 2026-08-04T21:40:00
 2. 命中 → 直接用对应 ID 写 prompt 出图  
 3. 未命中 → 列出通用 7 选项；不选则用 03  
 4. 任何风格都套用文首口味硬规范，并避开蓝紫廉价 AI 味  
-5. **索引 / 章节信息图**：与封面共用本表；须按章显式选 ID，禁止整帖/整批同材质（含水粉 16 当默认）；操作见 `firefly-minimax-media` checklist 与 `docs/agents/workflow.md`「正文配图 / 索引帖信息图」
+5. **索引 / 章节信息图**：与封面共用本表；须按章显式选 ID，禁止整帖/整批同材质（含水粉 16 当默认）。
 
 未纳入本规范的样张（默认不用）：04 瑞士海报 · 12 黏土 · 14 粗野 · 15 陶瓷。
 
@@ -135,6 +135,6 @@ updated: 2026-08-04T21:40:00
 
 | 资产 | 路径 |
 |------|------|
-| 风格挑选页 | `public/media/minimax/style-taste/index.html` |
-| Skill 工艺说明 | `.cursor/skills/firefly-minimax-media/references/prompt-craft.md` |
+| 风格挑选页 | 已下线（历史样张表仍保留在本文） |
+| Skill 工艺说明 | 已下线 |
 | 本帖封面 | `./cover.jpg`（与 03 编辑静物同图） |
