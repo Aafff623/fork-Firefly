@@ -23,6 +23,10 @@ export type {
 	MermaidConfig,
 	MusicPlayerConfig,
 	NavBarConfig,
+	NavModule,
+	NavSite,
+	NavSitesPageConfig,
+	NavSubCategory,
 	PlantUMLConfig,
 	ProfileConfig,
 	SakuraConfig,
@@ -75,6 +79,14 @@ export { licenseConfig } from "./licenseConfig"; // 许可证配置
 export { mermaidConfig } from "./mermaidConfig"; // Mermaid 图表配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置
 export { navBarConfig, navBarSearchConfig } from "./navBarConfig"; // 导航栏配置与搜索配置
+export {
+	getEnabledNavModules,
+	getEnabledNavSites,
+	isNavSitePreviewable,
+	navCollectionsModule,
+	navModulesConfig,
+	navSitesPageConfig,
+} from "./navSitesConfig"; // 站点导航（藏经阁）配置
 export { spritePetConfig } from "./petConfig"; // 站内桌宠（默认双 DeepSeek + 可选 Codex 换皮）
 export { live2dWidgetConfig, spineModelConfig } from "./pioConfig"; // 看板娘配置
 export { plantumlConfig } from "./plantumlConfig"; // PlantUML 图表配置

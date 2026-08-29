@@ -6,7 +6,7 @@ export type { CommentConfig } from "./commentConfig";
 export type { CoverImageConfig } from "./coverImageConfig";
 export type { DisplaySettingsConfig } from "./displaySettingsConfig";
 export type { DynamicConfig } from "./dynamicConfig";
-export type { SakuraConfig, AmbientFxConfig } from "./effectsConfig";
+export type { AmbientFxConfig, SakuraConfig } from "./effectsConfig";
 
 export type {
 	ExpressiveCodeConfig,
@@ -21,8 +21,8 @@ export type {
 	GalleryConfig,
 	GalleryPhotoMeta,
 } from "./galleryConfig";
-export type { LicenseConfig } from "./licenseConfig";
 export type { LayeredClockConfig } from "./layeredClockConfig";
+export type { LicenseConfig } from "./licenseConfig";
 export type { MermaidConfig } from "./mermaidConfig";
 export type { MusicPlayerConfig } from "./musicConfig";
 export type {
@@ -31,6 +31,12 @@ export type {
 	NavBarSearchConfig,
 	NavBarSearchMethod,
 } from "./navBarConfig";
+export type {
+	NavModule,
+	NavSite,
+	NavSitesPageConfig,
+	NavSubCategory,
+} from "./navSitesConfig";
 export type { SpritePetConfig, SpritePetRoamConfig } from "./petConfig";
 export type { Live2DWidgetConfig, SpineModelConfig } from "./pioConfig";
 export type { PlantUMLConfig } from "./plantumlConfig";
