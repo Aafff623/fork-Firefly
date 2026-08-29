@@ -1,0 +1,25 @@
+---
+// 藏经阁 · 六、园内藏品（/nav/collections/）：站内合集入口（数量红线豁免）
+import NavSitesView from "@components/pages/nav/NavSitesView.astro";
+import { getEnabledNavModules, siteConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.navSites) {
+	return Astro.redirect("/404/");
+}
+
+const module = getEnabledNavModules().find((m) => m.slug === "collections");
+if (!module) {
+	return Astro.redirect("/nav/");
+}
+
+const subNames = module.subcategories
+	.filter((sub) => sub.sites.length > 0)
+	.map((sub) => sub.name)
+	.join("、");
+const description = `藏经阁 · ${module.name}${subNames ? `：${subNames}` : ""}`;
+---
+
+<MainGridLayout title={`${module.name} · 藏经阁`} description={description} wide>
+  <NavSitesView modules={[module]} activeSlug="collections" title={module.name} description={description} />
+</MainGridLayout>

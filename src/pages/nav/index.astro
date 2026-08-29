@@ -1,0 +1,29 @@
+---
+// 藏经阁总览（/nav/）：全部模块分区 + 置顶「常用」行 + 全局搜索 + 预览弹层
+// 数据真源：src/config/navSitesConfig.ts；布局：wide 全宽（隐藏双侧栏）
+import NavSitesView from "@components/pages/nav/NavSitesView.astro";
+import { getEnabledNavModules, navSitesPageConfig, siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.navSites) {
+	return Astro.redirect("/404/");
+}
+
+const modules = getEnabledNavModules();
+
+const title = navSitesPageConfig.title || i18n(I18nKey.navSites);
+const description =
+	navSitesPageConfig.description || i18n(I18nKey.navSitesDescription);
+---
+
+<MainGridLayout title={title} description={description} wide>
+  <NavSitesView
+    modules={modules}
+    activeSlug=""
+    showPinned
+    title={title}
+    description={description}
+  />
+</MainGridLayout>

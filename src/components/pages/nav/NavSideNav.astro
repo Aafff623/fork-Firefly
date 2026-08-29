@@ -1,0 +1,195 @@
+---
+// 藏经阁侧边栏：一级模块路由导航 + 当前模块二级子类锚点（SSR 激活态，swup 换页即正确）
+// 移动端覆盖层由 NavSitesView 的汉堡按钮与 body[data-nav-sidenav-open] 驱动
+import { Icon } from "astro-icon/components";
+import { getEnabledNavModules } from "@/config";
+
+interface Props {
+	/** 当前激活模块 slug；总览页传 "" */
+	activeSlug: string;
+}
+
+const { activeSlug } = Astro.props;
+const modules = getEnabledNavModules();
+---
+
+<nav class="nav-sidenav" id="nav-sidenav" aria-label="藏经阁导航">
+  <div class="nav-sidenav-head">
+    <Icon is:inline name="lucide:library-big" class="nav-sidenav-logo" />
+    <span class="nav-sidenav-title">藏经阁</span>
+  </div>
+
+  <a class:list={["nav-side-link", { "is-active": !activeSlug }]} href="/nav/">
+    <Icon is:inline name="lucide:layout-grid" class="nav-side-icon" />
+    <span>总览</span>
+  </a>
+
+  {
+    modules.map((module) => (
+      <div class="nav-side-group">
+        <a
+          class:list={["nav-side-link", { "is-active": module.slug === activeSlug }]}
+          href={`/nav/${module.slug}/`}
+        >
+          {module.icon && <Icon is:inline name={module.icon} class="nav-side-icon" />}
+          <span>{module.name}</span>
+        </a>
+        {module.slug === activeSlug && (
+          <div class="nav-side-subs">
+            {module.subcategories
+              .filter((sub) => sub.sites.length > 0)
+              .map((sub) => (
+                <a class="nav-side-sub" href={`#${sub.id}`}>
+                  {sub.name}
+                </a>
+              ))}
+          </div>
+        )}
+      </div>
+    ))
+  }
+</nav>
+
+<style>
+  .nav-sidenav {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    padding: 0.7rem 0.55rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    border-radius: 0.8rem;
+    background: color-mix(in oklab, var(--content-meta) 4%, transparent);
+  }
+
+  .nav-sidenav-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.2rem 0.55rem 0.55rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .nav-sidenav-logo {
+    width: 1.05rem;
+    height: 1.05rem;
+    color: var(--primary);
+  }
+
+  .nav-side-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.42rem 0.55rem;
+    border-radius: 0.55rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    text-decoration: none;
+    transition:
+      background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-side-link:hover {
+    background: color-mix(in oklab, var(--primary) 7%, transparent);
+    color: var(--primary);
+  }
+
+  .nav-side-link.is-active {
+    background: color-mix(in oklab, var(--primary) 12%, transparent);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .nav-side-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .nav-side-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .nav-side-subs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    padding: 0.1rem 0 0.25rem 1.35rem;
+  }
+
+  .nav-side-sub {
+    padding: 0.28rem 0.55rem;
+    border-radius: 0.45rem;
+    font-size: 0.78rem;
+    color: color-mix(in oklab, var(--content-meta) 80%, transparent);
+    text-decoration: none;
+    transition:
+      background-color 140ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-side-sub:hover {
+    background: color-mix(in oklab, var(--primary) 7%, transparent);
+    color: var(--primary);
+  }
+
+  :global(html.dark) .nav-sidenav {
+    background: rgb(255 255 255 / 0.04);
+    border-color: rgb(255 255 255 / 0.1);
+  }
+
+  :global(html.dark) .nav-side-link,
+  :global(html.dark) .nav-side-sub {
+    color: rgb(255 255 255 / 0.62);
+  }
+
+  :global(html.dark) .nav-side-link:hover,
+  :global(html.dark) .nav-side-sub:hover {
+    color: var(--primary);
+  }
+
+  :global(html.dark) .nav-side-link.is-active {
+    color: var(--primary);
+  }
+
+  /* —— 移动端：覆盖层抽屉（汉堡按钮在 NavSitesView） —— */
+  @media (max-width: 900px) {
+    .nav-sidenav {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 80;
+      width: min(17rem, 84vw);
+      max-height: none;
+      border-radius: 0 0.8rem 0.8rem 0;
+      background: var(--card-bg, #fff);
+      box-shadow: 0 12px 48px rgb(0 0 0 / 0.28);
+      transform: translateX(-105%);
+      transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :global(html.dark) .nav-sidenav {
+      background: #1b1b1f;
+    }
+
+    :global(body[data-nav-sidenav-open]) .nav-sidenav {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-sidenav {
+      transition: none;
+    }
+  }
+</style>

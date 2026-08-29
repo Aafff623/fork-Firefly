@@ -1,0 +1,232 @@
+---
+// 藏经阁站点卡：外链站（点卡弹预览 / 角标直链）与站内合集卡（整卡站内跳转）共用
+import { Icon } from "astro-icon/components";
+import { isNavSitePreviewable, type NavSite } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import { getCollectionUrl } from "@/utils/collection-utils";
+
+interface Props {
+	site: NavSite;
+	/** 站内合集文章数（仅合集卡传入） */
+	articles?: number | null;
+}
+
+const { site, articles = null } = Astro.props;
+const internal = Boolean(site.collectionSlug);
+const href = internal
+	? getCollectionUrl(site.collectionSlug as string)
+	: (site.url as string);
+const previewable = isNavSitePreviewable(site);
+---
+
+<article
+  class="nav-site-card"
+  tabindex={previewable || internal ? 0 : undefined}
+  role={internal ? "link" : previewable ? "button" : undefined}
+  aria-label={previewable ? `查看 ${site.title} 介绍` : undefined}
+  data-url={internal ? undefined : site.url}
+  data-href={internal ? href : undefined}
+  data-internal={internal ? "1" : ""}
+  data-title={site.title}
+  data-tags={(site.tags || []).join(",")}
+  data-desc={site.desc || ""}
+  data-previewable={previewable ? "1" : ""}
+>
+  <div class="nav-site-icon">
+    {
+      site.icon ? (
+        <Icon is:inline name={site.icon} />
+      ) : site.emoji ? (
+        <span class="nav-site-emoji">{site.emoji}</span>
+      ) : (
+        <span class="nav-site-fallback">{site.title.slice(0, 1)}</span>
+      )
+    }
+  </div>
+  <div class="nav-site-body">
+    <div class="nav-site-head">
+      <span class="nav-site-name">{site.title}</span>
+      <a
+        class="nav-site-jump"
+        href={href}
+        target={internal ? undefined : "_blank"}
+        rel={internal ? undefined : "noopener noreferrer"}
+        aria-label={`${i18n(I18nKey.navSitesOpenSite)}: ${site.title}`}
+      >
+        <Icon is:inline name={internal ? "lucide:arrow-right" : "lucide:arrow-up-right"} />
+      </a>
+    </div>
+    {site.desc && <p class="nav-site-desc">{site.desc}</p>}
+    {
+      internal && articles !== null && (
+        <p class="nav-site-meta">
+          {articles} {i18n(I18nKey.navSitesArticles)}
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .nav-site-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+    padding: 0.8rem 0.9rem;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--content-meta) 5%, transparent);
+    cursor: pointer;
+    transition:
+      border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-site-card:hover {
+    border-color: color-mix(in oklab, var(--primary) 42%, var(--line-color));
+    background: color-mix(in oklab, var(--primary) 5%, transparent);
+  }
+
+  .nav-site-card:active {
+    transform: translateY(1px);
+  }
+
+  .nav-site-card:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .nav-site-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    height: 2.9rem;
+    flex-shrink: 0;
+    border-radius: 0.7rem;
+    background: color-mix(in oklab, var(--primary) 9%, transparent);
+    font-size: 1.35rem;
+    color: var(--primary);
+  }
+
+  .nav-site-icon :global(svg) {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .nav-site-emoji {
+    line-height: 1;
+    font-size: 1.3rem;
+  }
+
+  .nav-site-fallback {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .nav-site-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+
+  .nav-site-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .nav-site-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .nav-site-card:hover .nav-site-name {
+    color: var(--primary);
+  }
+
+  .nav-site-jump {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+    border-radius: 0.4rem;
+    color: var(--primary);
+    opacity: 0;
+    transform: translate(-0.2rem, 0.15rem);
+    transition:
+      opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-site-jump :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .nav-site-card:hover .nav-site-jump,
+  .nav-site-card:focus-within .nav-site-jump {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  .nav-site-jump:hover {
+    background: color-mix(in oklab, var(--primary) 14%, transparent);
+  }
+
+  .nav-site-desc {
+    margin: 0;
+    font-size: 0.8rem;
+    color: color-mix(in oklab, var(--content-meta) 88%, transparent);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav-site-meta {
+    margin: 0;
+    font-size: 0.72rem;
+    color: color-mix(in oklab, var(--content-meta) 72%, transparent);
+  }
+
+  :global(html.dark) .nav-site-card {
+    background: rgb(255 255 255 / 0.05);
+  }
+
+  :global(html.dark) .nav-site-card:hover {
+    border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+    background: color-mix(in oklab, var(--primary) 12%, transparent);
+  }
+
+  :global(html.dark) .nav-site-name {
+    color: rgb(255 255 255 / 0.9);
+  }
+
+  :global(html.dark) .nav-site-desc {
+    color: rgb(255 255 255 / 0.58);
+  }
+
+  :global(html.dark) .nav-site-meta {
+    color: rgb(255 255 255 / 0.48);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-site-card,
+    .nav-site-jump {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,947 @@
+---
+import NavSideNav from "@components/pages/nav/NavSideNav.astro";
+// 藏经阁视图：mast + 侧边栏 + 搜索 + 模块分区 + 预览弹层 + 交互脚本
+// 总览页传全部模块（showPinned 开「常用」行）；模块页传单模块，侧栏显示其二级子类锚点
+import SiteCard from "@components/pages/nav/SiteCard.astro";
+import { Icon } from "astro-icon/components";
+import { isNavSitePreviewable, type NavModule, type NavSite } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import { getCollections } from "@/utils/collection-utils";
+
+interface Props {
+	/** 本页要渲染的模块（总览 = 全部，模块页 = 单个） */
+	modules: NavModule[];
+	/** 当前激活模块 slug；总览页传 "" */
+	activeSlug: string;
+	title: string;
+	description?: string;
+	/** 是否渲染置顶「常用」行（仅总览页） */
+	showPinned?: boolean;
+}
+
+const {
+	modules,
+	activeSlug,
+	title,
+	description = "",
+	showPinned = false,
+} = Astro.props;
+
+const renderedSubs = modules.flatMap((m) =>
+	m.subcategories.filter((sub) => sub.sites.length > 0),
+);
+const siteCount = renderedSubs.reduce((sum, sub) => sum + sub.sites.length, 0);
+
+// 站内合集文章数（合集卡「N 篇文章」徽章）
+const collections = await getCollections();
+const collectionArticles: Record<string, number> = Object.fromEntries(
+	collections.map((c) => [c.meta.slug, c.posts.length]),
+);
+const articlesOf = (site: NavSite) =>
+	site.collectionSlug
+		? (collectionArticles[site.collectionSlug] ?? null)
+		: null;
+
+// 置顶「常用」行（跨模块去重，与侧栏模块顺序一致）
+const pinnedSites = showPinned
+	? (() => {
+			const seen = new Set<string>();
+			const pinned: NavSite[] = [];
+			for (const module of modules) {
+				for (const sub of module.subcategories) {
+					for (const site of sub.sites) {
+						if (!site.pinned) continue;
+						const key = site.url || site.collectionSlug || site.title;
+						if (seen.has(key)) continue;
+						seen.add(key);
+						pinned.push(site);
+					}
+				}
+			}
+			return pinned;
+		})()
+	: [];
+
+// 预览弹层的客户端数据（url → 详情），卡片 DOM 里只带 url 引用
+const previewData = Object.fromEntries(
+	renderedSubs.flatMap((sub) =>
+		sub.sites
+			.filter((site) => isNavSitePreviewable(site))
+			.map((site) => [
+				site.url,
+				{
+					title: site.title,
+					url: site.url,
+					detail: site.detail || "",
+					screenshots: site.screenshots || [],
+				},
+			]),
+	),
+);
+const previewDataJson = JSON.stringify(previewData);
+---
+
+<div class="nav-shell w-full relative min-h-32">
+  <div class="nav-panel card-base z-10 relative w-full">
+    <header class="nav-mast">
+      <p class="nav-mast-meta">
+        <span>NAV · SITES</span>
+        <span>{siteCount}</span>
+      </p>
+      <h1 class="nav-title">{title}</h1>
+      {description && <p class="nav-lede">{description}</p>}
+    </header>
+
+    <div class="nav-body">
+      <NavSideNav activeSlug={activeSlug} />
+
+      <div class="nav-main">
+        <nav-sites-app class="nav-app">
+          <div class="nav-toolbar">
+            <div class="nav-search">
+              <Icon is:inline name="lucide:search" class="nav-search-icon" />
+              <input
+                type="text"
+                data-search
+                placeholder={i18n(I18nKey.searchNavSites)}
+                class="nav-search-input"
+              />
+            </div>
+          </div>
+
+          <div class="nav-content" data-catalog>
+            {
+              pinnedSites.length > 0 && (
+                <section class="nav-section" data-cat-section="pinned">
+                  <div class="nav-section-head">
+                    <Icon is:inline name="lucide:pin" class="nav-section-icon" />
+                    <h2 class="nav-section-title">{i18n(I18nKey.navSitesPinned)}</h2>
+                    <span class="nav-section-count">{pinnedSites.length}</span>
+                  </div>
+                  <div class="nav-grid">
+                    {pinnedSites.map((site) => (
+                      <SiteCard site={site} articles={articlesOf(site)} />
+                    ))}
+                  </div>
+                </section>
+              )
+            }
+
+            {modules.map((module) => (
+              <div class="nav-module" data-module={module.slug}>
+                {modules.length > 1 && (
+                  <div class="nav-module-head">
+                    {module.icon && (
+                      <Icon is:inline name={module.icon} class="nav-module-icon" />
+                    )}
+                    <h2 class="nav-module-name">{module.name}</h2>
+                  </div>
+                )}
+                {module.subcategories
+                  .filter((sub) => sub.sites.length > 0)
+                  .map((sub) => (
+                    <section class="nav-section" id={sub.id} data-cat-section={sub.name}>
+                      <div class="nav-section-head">
+                        {sub.icon && (
+                          <Icon is:inline name={sub.icon} class="nav-section-icon" />
+                        )}
+                        <h3 class="nav-section-title">{sub.name}</h3>
+                        <span class="nav-section-count">{sub.sites.length}</span>
+                        {sub.desc && <span class="nav-section-desc">{sub.desc}</span>}
+                      </div>
+                      <div class="nav-grid">
+                        {sub.sites.map((site) => (
+                          <SiteCard site={site} articles={articlesOf(site)} />
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+              </div>
+            ))}
+
+            <div class="nav-empty hidden flex-col items-center justify-center py-10 text-[var(--content-meta)]">
+              <Icon is:inline name="lucide:search-x" class="text-3xl mb-2 opacity-60" />
+              <div class="text-sm">{i18n(I18nKey.navSitesEmpty)}</div>
+            </div>
+          </div>
+        </nav-sites-app>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="nav-sidenav-toggle" class="nav-sidenav-toggle" type="button" aria-label="目录">
+  <Icon is:inline name="lucide:list" />
+</button>
+<div id="nav-sidenav-backdrop" class="nav-sidenav-backdrop" aria-hidden="true"></div>
+
+<!-- 站点预览卡：左轮播 / 右详情（swup 容器内，切页随 DOM 销毁） -->
+<dialog id="nav-site-dialog" class="nav-dialog">
+  <div class="nav-dialog-panel">
+    <header class="nav-dialog-head">
+      <h3 class="nav-dialog-title"></h3>
+      <div class="nav-dialog-actions">
+        <a class="nav-dialog-open" target="_blank" rel="noopener noreferrer">
+          <Icon is:inline name="lucide:arrow-up-right" />
+          <span>{i18n(I18nKey.navSitesOpenSite)}</span>
+        </a>
+        <button class="nav-dialog-close" type="button" aria-label="close">
+          <Icon is:inline name="lucide:x" />
+        </button>
+      </div>
+    </header>
+    <div class="nav-dialog-body">
+      <div class="nav-dialog-left" data-carousel-wrap hidden>
+        <div class="nav-car-viewport">
+          <div class="nav-car-track"></div>
+        </div>
+        <button class="nav-car-btn" type="button" data-car-prev aria-label="prev">
+          <Icon is:inline name="lucide:chevron-left" />
+        </button>
+        <button class="nav-car-btn" type="button" data-car-next aria-label="next">
+          <Icon is:inline name="lucide:chevron-right" />
+        </button>
+        <div class="nav-car-dots"></div>
+      </div>
+      <div class="nav-dialog-left nav-dialog-placeholder" data-carousel-placeholder hidden>
+        <Icon is:inline name="lucide:image-off" />
+      </div>
+      <div class="nav-dialog-detail"></div>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="nav-preview-data" set:html={previewDataJson} is:inline />
+
+<script is:inline>
+  if (!customElements.get("nav-sites-app")) {
+    class NavSitesApp extends HTMLElement {
+      connectedCallback() {
+        if (this.dataset.bound === "1") return;
+        this.dataset.bound = "1";
+        this.addEventListener("click", this.handleClick);
+        this.addEventListener("keydown", this.handleKeydown);
+        const input = this.querySelector("[data-search]");
+        if (input) input.addEventListener("input", () => this.applyFilters());
+        this.initDialog();
+      }
+
+      disconnectedCallback() {
+        this.removeEventListener("click", this.handleClick);
+        this.removeEventListener("keydown", this.handleKeydown);
+      }
+
+      handleKeydown(e) {
+        if ((e.key !== "Enter" && e.key !== " ") || !e.target.closest(".nav-site-card")) return;
+        e.preventDefault();
+        this.handleClick(e);
+      }
+
+      // 跳转图标直达外链（不弹预览）；卡片本体开预览；站内合集卡整卡软导航
+      handleClick(e) {
+        const jump = e.target.closest(".nav-site-jump");
+        if (jump) {
+          e.stopPropagation();
+          return;
+        }
+
+        const card = e.target.closest(".nav-site-card");
+        if (!card) return;
+        // 站内合集卡：整卡 swup 软导航（swup 不在则整页兜底），不弹预览
+        if (card.dataset.internal === "1") {
+          const href = card.dataset.href;
+          if (!href) return;
+          const swup = window.swup;
+          if (swup && typeof swup.navigate === "function") swup.navigate(href);
+          else window.location.assign(href);
+          return;
+        }
+        if (card.dataset.previewable === "1") {
+          this.openPreview(card.dataset.url);
+        }
+      }
+
+      applyFilters() {
+        const input = this.querySelector("[data-search]");
+        const query = (input?.value || "").toLowerCase().trim();
+        let anyVisible = false;
+
+        this.querySelectorAll(".nav-site-card").forEach((card) => {
+          const haystack = [
+            card.dataset.title || "",
+            card.dataset.desc || "",
+            card.dataset.tags || "",
+          ]
+            .join(" ")
+            .toLowerCase();
+          const show = !query || haystack.includes(query);
+          card.style.display = show ? "" : "none";
+          if (show) anyVisible = true;
+        });
+
+        this.querySelectorAll(".nav-section").forEach((section) => {
+          const visible = section.querySelectorAll('.nav-site-card:not([style*="display: none"])').length;
+          section.style.display = visible > 0 ? "" : "none";
+        });
+
+        this.querySelectorAll(".nav-module").forEach((module) => {
+          const visible = module.querySelectorAll('.nav-section:not([style*="display: none"])').length;
+          module.style.display = visible > 0 ? "" : "none";
+        });
+
+        const empty = this.querySelector(".nav-empty");
+        if (empty) {
+          empty.classList.toggle("hidden", anyVisible);
+          empty.classList.toggle("flex", !anyVisible);
+        }
+      }
+
+      // —— 预览弹层 ——
+      initDialog() {
+        this.dialog = document.getElementById("nav-site-dialog");
+        if (!this.dialog || this.dialog.dataset.bound === "1") return;
+        this.dialog.dataset.bound = "1";
+        let previewData = {};
+        try {
+          previewData = JSON.parse(document.getElementById("nav-preview-data").textContent || "{}");
+        } catch {}
+        this.previewData = previewData;
+
+        this.dialog.querySelector(".nav-dialog-close").addEventListener("click", () => this.dialog.close());
+        // 点遮罩关闭：只响应面板外点击
+        this.dialog.addEventListener("click", (e) => {
+          if (e.target === this.dialog) this.dialog.close();
+        });
+        this.dialog.addEventListener("close", () => {
+          this.teardownCarousel();
+          const origin = this.focusOrigin;
+          this.focusOrigin = null;
+          if (origin && origin.isConnected && typeof origin.focus === "function") origin.focus();
+        });
+      }
+
+      openPreview(url) {
+        const data = this.previewData && this.previewData[url];
+        if (!data) return;
+        const dialog = this.dialog;
+        this.focusOrigin = document.activeElement;
+
+        dialog.querySelector(".nav-dialog-title").textContent = data.title;
+        const open = dialog.querySelector(".nav-dialog-open");
+        open.href = data.url;
+
+        // 详情：空行分段，纯文本注入
+        const detail = dialog.querySelector(".nav-dialog-detail");
+        detail.innerHTML = "";
+        const paragraphs = (data.detail || "").split(/\n+/).filter(Boolean);
+        if (paragraphs.length === 0) {
+          const p = document.createElement("p");
+          p.className = "nav-dialog-detail-empty";
+          p.textContent = "—";
+          detail.appendChild(p);
+        } else {
+          for (const text of paragraphs) {
+            const p = document.createElement("p");
+            p.textContent = text;
+            detail.appendChild(p);
+          }
+        }
+
+        // 轮播 / 占位
+        const shots = data.screenshots || [];
+        const wrap = dialog.querySelector("[data-carousel-wrap]");
+        const placeholder = dialog.querySelector("[data-carousel-placeholder]");
+        wrap.hidden = shots.length === 0;
+        placeholder.hidden = shots.length > 0;
+        this.buildCarousel(wrap, shots);
+
+        dialog.showModal();
+      }
+
+      buildCarousel(wrap, shots) {
+        const track = wrap.querySelector(".nav-car-track");
+        const dots = wrap.querySelector(".nav-car-dots");
+        const prev = wrap.querySelector("[data-car-prev]");
+        const next = wrap.querySelector("[data-car-next]");
+        track.innerHTML = "";
+        dots.innerHTML = "";
+        this.carousel = { wrap, idx: 0, total: shots.length };
+        prev.onclick = () => this.goSlide((this.carousel?.idx ?? 0) - 1);
+        next.onclick = () => this.goSlide((this.carousel?.idx ?? 0) + 1);
+
+        shots.forEach((src) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "";
+          img.loading = "lazy";
+          img.className = "nav-car-slide";
+          track.appendChild(img);
+        });
+
+        const single = shots.length <= 1;
+        prev.hidden = single;
+        next.hidden = single;
+        dots.hidden = single;
+        if (!single) {
+          shots.forEach((_, i) => {
+            const dot = document.createElement("button");
+            dot.type = "button";
+            dot.className = "nav-car-dot";
+            dot.addEventListener("click", () => this.goSlide(i));
+            dots.appendChild(dot);
+          });
+        }
+        this.goSlide(0);
+      }
+
+      goSlide(idx) {
+        if (!this.carousel) return;
+        const { wrap, total } = this.carousel;
+        if (total <= 0) return;
+        this.carousel.idx = ((idx % total) + total) % total;
+        wrap.querySelector(".nav-car-track").style.transform = `translateX(-${this.carousel.idx * 100}%)`;
+        wrap.querySelectorAll(".nav-car-dot").forEach((dot, i) => {
+          if (i === this.carousel.idx) dot.setAttribute("data-active", "");
+          else dot.removeAttribute("data-active");
+        });
+      }
+
+      teardownCarousel() {
+        this.carousel = null;
+        const track = this.dialog?.querySelector(".nav-car-track");
+        if (track) track.innerHTML = "";
+      }
+    }
+    customElements.define("nav-sites-app", NavSitesApp);
+  }
+
+  // —— 移动端抽屉 + 锚点平滑滚动（元素随 swup 换页重建，直接绑新节点） ——
+  (() => {
+    const sidebar = document.getElementById("nav-sidenav");
+    const toggle = document.getElementById("nav-sidenav-toggle");
+    const backdrop = document.getElementById("nav-sidenav-backdrop");
+    if (!sidebar || !toggle) return;
+
+    const close = () => document.body.removeAttribute("data-nav-sidenav-open");
+    toggle.addEventListener("click", () => {
+      if (document.body.hasAttribute("data-nav-sidenav-open")) close();
+      else document.body.setAttribute("data-nav-sidenav-open", "");
+    });
+    if (backdrop) backdrop.addEventListener("click", close);
+    sidebar.addEventListener("click", (e) => {
+      if (e.target.closest("a")) close();
+    });
+
+    // 侧栏二级锚点：平滑滚动（尊重 reduced-motion），原生锚点兜底
+    sidebar.addEventListener("click", (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const target = document.getElementById(decodeURIComponent(a.hash.slice(1)));
+      if (!target) return;
+      e.preventDefault();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      history.replaceState(null, "", a.hash);
+    });
+  })();
+</script>
+
+<style>
+  .nav-panel {
+    padding: 1.25rem 1.35rem 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .nav-panel {
+      padding: 1.5rem 1.85rem 1.75rem;
+    }
+  }
+
+  .nav-mast {
+    margin: 0 0 1.15rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+  }
+
+  .nav-mast-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.55rem;
+    font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--content-meta) 85%, transparent);
+  }
+
+  .nav-title {
+    margin: 0;
+    font-size: clamp(1.55rem, 2.4vw, 1.85rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--deep-text, rgb(0 0 0 / 0.88));
+  }
+
+  :global(html.dark) .nav-title {
+    color: rgb(255 255 255 / 0.92);
+  }
+
+  .nav-lede {
+    margin: 0.45rem 0 0;
+    max-width: 42rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: color-mix(in oklab, var(--content-meta) 95%, transparent);
+  }
+
+  :global(html.dark) .nav-mast-meta,
+  :global(html.dark) .nav-lede {
+    color: rgb(255 255 255 / 0.68);
+  }
+
+  /* —— 双栏：侧边栏 | 主内容 —— */
+  .nav-body {
+    display: grid;
+    grid-template-columns: 12.5rem minmax(0, 1fr);
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .nav-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .nav-main {
+    min-width: 0;
+  }
+
+  .nav-toolbar {
+    margin: 0 auto 1.6rem;
+    max-width: 38rem;
+  }
+
+  .nav-search {
+    position: relative;
+  }
+
+  .nav-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.05rem;
+    height: 1.05rem;
+    color: color-mix(in oklab, var(--content-meta) 70%, transparent);
+    pointer-events: none;
+  }
+
+  .nav-search-input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.6rem;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background: color-mix(in oklab, var(--content-meta) 6%, transparent);
+    font-size: 0.95rem;
+    color: inherit;
+    outline: none;
+    transition:
+      border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-search-input::placeholder {
+    color: color-mix(in oklab, var(--content-meta) 65%, transparent);
+  }
+
+  .nav-search-input:hover {
+    background: transparent;
+  }
+
+  .nav-search-input:focus-visible {
+    background: transparent;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 28%, transparent);
+  }
+
+  .nav-content {
+    scroll-margin-top: 4.5rem;
+  }
+
+  .nav-module + .nav-module {
+    margin-top: 1.9rem;
+  }
+
+  .nav-module-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    margin-bottom: 0.9rem;
+    border-radius: 0.6rem;
+    background: color-mix(in oklab, var(--primary) 8%, transparent);
+  }
+
+  .nav-module-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--primary);
+  }
+
+  .nav-module-name {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-section {
+    scroll-margin-top: 4.5rem;
+  }
+
+  .nav-section + .nav-section {
+    margin-top: 1.4rem;
+  }
+
+  .nav-section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .nav-section-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--primary);
+  }
+
+  .nav-section-title {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-section-count {
+    font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    color: color-mix(in oklab, var(--content-meta) 75%, transparent);
+  }
+
+  .nav-section-desc {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.74rem;
+    color: color-mix(in oklab, var(--content-meta) 70%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .nav-section-desc {
+      display: none;
+    }
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    gap: 0.65rem;
+  }
+
+  /* —— 移动端汉堡按钮 + 抽屉遮罩 —— */
+  .nav-sidenav-toggle {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 70;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    border-radius: 999px;
+    background: var(--card-bg, #fff);
+    color: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.16);
+  }
+
+  .nav-sidenav-toggle :global(svg) {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .nav-sidenav-backdrop {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .nav-sidenav-toggle {
+      display: inline-flex;
+    }
+
+    :global(body[data-nav-sidenav-open]) .nav-sidenav-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 75;
+      display: block;
+      background: rgb(0 0 0 / 0.4);
+    }
+  }
+
+  /* —— 预览弹层 —— */
+  .nav-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 0.85rem;
+    background: transparent;
+    max-width: min(56rem, calc(100vw - 2rem));
+    width: 100%;
+    overflow: visible;
+  }
+
+  .nav-dialog::backdrop {
+    background: rgb(0 0 0 / 0.45);
+  }
+
+  .nav-dialog-panel {
+    display: flex;
+    flex-direction: column;
+    max-height: min(38rem, calc(100vh - 4rem));
+    border-radius: 0.85rem;
+    border: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background: var(--card-bg, #fff);
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.25);
+    overflow: hidden;
+  }
+
+  :global(html.dark) .nav-dialog-panel {
+    background: #1b1b1f;
+    border-color: rgb(255 255 255 / 0.14);
+  }
+
+  .nav-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+  }
+
+  .nav-dialog-title {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.02rem;
+    font-weight: 700;
+  }
+
+  .nav-dialog-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .nav-dialog-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background: var(--primary);
+    transition: filter 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-dialog-open:hover {
+    filter: brightness(1.1);
+  }
+
+  .nav-dialog-open :global(svg) {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .nav-dialog-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border: 0;
+    border-radius: 0.45rem;
+    background: color-mix(in oklab, var(--content-meta) 10%, transparent);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .nav-dialog-close:hover {
+    background: color-mix(in oklab, var(--primary) 14%, transparent);
+    color: var(--primary);
+  }
+
+  .nav-dialog-close :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .nav-dialog-body {
+    display: grid;
+    grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+    gap: 0;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .nav-dialog-left {
+    position: relative;
+    min-height: 12rem;
+    border-right: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    background: color-mix(in oklab, var(--content-meta) 5%, transparent);
+  }
+
+  .nav-dialog-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in oklab, var(--content-meta) 40%, transparent);
+  }
+
+  .nav-dialog-placeholder :global(svg) {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .nav-car-viewport {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .nav-car-track {
+    display: flex;
+    height: 100%;
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-car-slide {
+    min-width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .nav-car-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.45);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-car-btn:hover {
+    background: rgb(0 0 0 / 0.65);
+  }
+
+  .nav-car-btn[data-car-prev] {
+    left: 0.5rem;
+  }
+
+  .nav-car-btn[data-car-next] {
+    right: 0.5rem;
+  }
+
+  .nav-car-btn :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .nav-car-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 0.6rem;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .nav-car-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.5);
+    cursor: pointer;
+    transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-car-dot[data-active] {
+    background: #fff;
+  }
+
+  .nav-dialog-detail {
+    min-height: 0;
+    max-height: calc(min(38rem, calc(100vh - 4rem)) - 3.6rem);
+    overflow-y: auto;
+    padding: 1rem 1.1rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: color-mix(in oklab, var(--content-meta) 100%, transparent);
+  }
+
+  .nav-dialog-detail p + p {
+    margin-top: 0.7rem;
+  }
+
+  :global(html.dark) .nav-dialog-detail {
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  @media (max-width: 640px) {
+    .nav-dialog-body {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .nav-dialog-left {
+      min-height: 10rem;
+      max-height: 14rem;
+      border-right: none;
+      border-bottom: 1px solid color-mix(in oklab, var(--line-color), transparent);
+    }
+
+    .nav-dialog-detail {
+      max-height: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-car-track {
+      transition: none;
+    }
+  }
+</style>

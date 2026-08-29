@@ -1,0 +1,25 @@
+---
+// 藏经阁 · 三、优质创作者（/nav/creators/）：编程与 AI / 知识科普 / 人文与效率
+import NavSitesView from "@components/pages/nav/NavSitesView.astro";
+import { getEnabledNavModules, siteConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.navSites) {
+	return Astro.redirect("/404/");
+}
+
+const module = getEnabledNavModules().find((m) => m.slug === "creators");
+if (!module) {
+	return Astro.redirect("/nav/");
+}
+
+const subNames = module.subcategories
+	.filter((sub) => sub.sites.length > 0)
+	.map((sub) => sub.name)
+	.join("、");
+const description = `藏经阁 · ${module.name}${subNames ? `：${subNames}` : ""}`;
+---
+
+<MainGridLayout title={`${module.name} · 藏经阁`} description={description} wide>
+  <NavSitesView modules={[module]} activeSlug="creators" title={module.name} description={description} />
+</MainGridLayout>

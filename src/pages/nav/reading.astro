@@ -1,0 +1,25 @@
+---
+// 藏经阁 · 四、阅读空间（/nav/reading/）：电子书资源 / 读书平台
+import NavSitesView from "@components/pages/nav/NavSitesView.astro";
+import { getEnabledNavModules, siteConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.navSites) {
+	return Astro.redirect("/404/");
+}
+
+const module = getEnabledNavModules().find((m) => m.slug === "reading");
+if (!module) {
+	return Astro.redirect("/nav/");
+}
+
+const subNames = module.subcategories
+	.filter((sub) => sub.sites.length > 0)
+	.map((sub) => sub.name)
+	.join("、");
+const description = `藏经阁 · ${module.name}${subNames ? `：${subNames}` : ""}`;
+---
+
+<MainGridLayout title={`${module.name} · 藏经阁`} description={description} wide>
+  <NavSitesView modules={[module]} activeSlug="reading" title={module.name} description={description} />
+</MainGridLayout>

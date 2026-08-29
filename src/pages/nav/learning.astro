@@ -1,0 +1,25 @@
+---
+// 藏经阁 · 一、学习进修（/nav/learning/）：学习平台 / 官方文档 / 实战与案例
+import NavSitesView from "@components/pages/nav/NavSitesView.astro";
+import { getEnabledNavModules, siteConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+if (!siteConfig.pages.navSites) {
+	return Astro.redirect("/404/");
+}
+
+const module = getEnabledNavModules().find((m) => m.slug === "learning");
+if (!module) {
+	return Astro.redirect("/nav/");
+}
+
+const subNames = module.subcategories
+	.filter((sub) => sub.sites.length > 0)
+	.map((sub) => sub.name)
+	.join("、");
+const description = `藏经阁 · ${module.name}${subNames ? `：${subNames}` : ""}`;
+---
+
+<MainGridLayout title={`${module.name} · 藏经阁`} description={description} wide>
+  <NavSitesView modules={[module]} activeSlug="learning" title={module.name} description={description} />
+</MainGridLayout>
