@@ -40,6 +40,20 @@ def firefly_root() -> Path:
     return here.parents[4]
 
 
+def system_notes_enabled(repo: Path) -> bool:
+    """读 src/config/dynamicConfig.ts 的 includeSystemNotes；缺省视为 false。
+
+    园主 2026-08-29 起关闭发文级联动态：includeSystemNotes 非 true 时
+    --emit-dynamic 一律拒绝（规则文档与脚本层双保险）。
+    """
+    cfg = repo / "src" / "config" / "dynamicConfig.ts"
+    try:
+        text = cfg.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return re.search(r"includeSystemNotes\s*:\s*true", text) is not None
+
+
 def parse_fm(text: str) -> dict[str, str]:
     m = FM_RE.match(text)
     if not m:
@@ -305,6 +319,13 @@ def main() -> int:
 
     emitted = None
     if args.emit_dynamic:
+        if not system_notes_enabled(repo):
+            print(
+                "ERROR: dynamicConfig.includeSystemNotes is not true — "
+                "system-note cascade is disabled; do not emit (see dynamicConfig.ts)",
+                file=sys.stderr,
+            )
+            return 2
         if not args.slug:
             print("ERROR: --emit-dynamic requires --slug", file=sys.stderr)
             return 2

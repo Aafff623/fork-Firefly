@@ -26,7 +26,7 @@ compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 | 站点统计 | `getSortedPosts` 等，构建/dev 时聚合 | 保证帖子 FM 正确、`draft` 符合预期；跑 `cascade_check.py` 验收数字 |
 | 分类 / 标签条 | 各帖 `category` / `tags` | 新帖必须写清晰分类与标签；核对侧栏 `categories`/`tags` 仍 enable |
 | 热力图 | `/api/allPostMeta.json` ← 各帖 `published` | 保证 `published: YYYY-MM-DD`；非 draft（生产）才计入 |
-| 最新动态 | `src/content/dynamic/*.md` + `/api/dynamic.json` | **发新笔记时补一条动态**（见下）；保留用户手写动态 |
+| 最新动态 | `src/content/dynamic/*.md` + `/api/dynamic.json` | 只保留真实动态（园主手写 / Agent 发布）；发文级联 emit 已关闭（见下 §3） |
 
 **不要**为了「刷新统计」去改布局内核或手写假数字。配置位在 `src/config/sidebarConfig.ts`。
 
@@ -40,9 +40,9 @@ compatibility: Firefly project root. Python 3 stdlib. Windows PowerShell OK.
 
 ```
 1 确认触发帖（slug）→ 2 cascade_check.py
-→ 3 若公开帖缺「新笔记」动态 → emit
+→ 3 （发文级联动态已关闭，跳过 emit；除非园主显式开回 includeSystemNotes）
 → 4 核对侧栏组件位置（只读/必要时修 enable）
-→ 5 Agent 协作者评论（当前工具 pnpm agent-comment → 刚 emit 的 /dynamic/{entryId}/；语气 humanizer-tta）
+→ 5 Agent 协作者评论（评在园主相关真实动态或文章页；语气 humanizer-tta）
 → 6 汇报四表面验收项 + 评论是否发出
 ```
 
@@ -60,6 +60,8 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-sav
 脚本输出：文章/分类/标签/字数、热力日期分布、侧栏组件 enable 位、某 slug 是否已有关联动态。
 
 ### 3. 最新动态（新笔记）
+
+**已关闭（园主 2026-08-29 拍板）**：发文不再级联生成「发布了新笔记」动态。`dynamicConfig.includeSystemNotes` 非 `true` 时 `--emit-dynamic` 会被脚本拒绝，也不要手写该类动态文件。动态只允许园主手写（`pnpm new-dynamic`）或 Agent 以本人身份发布；历史级联条目已由配置过滤不出站。以下流程仅当园主显式把 `includeSystemNotes` 改回 `true` 时恢复：
 
 对 **已出箱且 `draft: false`** 的新帖（或用户明确要求），若尚无指向该帖的动态，则创建。  
 **草稿箱**（`posts/_draftbox/`）本地 WIP：**不要** `--emit-dynamic`，也不要为进箱动作改侧栏/假统计。
@@ -113,7 +115,7 @@ python .cursor/skills/site-cascade/scripts/cascade_check.py \
 
 - 触发 slug / draft / **category（须已确认）**  
 - cascade_check 摘要（帖数、分类、标签、字数）  
-- 是否 emit 动态及路径；**是否含批注**（`--blurb` / description / 兜底）  
+- 动态：级联 emit 已关闭；除非园主显式开回 `includeSystemNotes`，不产生新系统动态  
 - **协作者评论**：agent key / path / 成功或限流·代理失败原因  
 - 侧栏 / 热力 WARN  
 - 建议用户刷新的页面：`/` 、`/dynamic/`
