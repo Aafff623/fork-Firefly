@@ -101,6 +101,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "lucide:link",
 		// 子菜单
 		children: [
+			// 站点导航（藏经阁）
+			LinkPresets.NavSites,
+
 			{
 				name: "GitHub",
 				url: "https://github.com/Aafff623",
@@ -212,6 +215,12 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "/ask/",
 		icon: "lucide:bot-message-square",
 		pageKey: "ask",
+	},
+	NavSites: {
+		name: "藏经阁",
+		url: "/nav/",
+		icon: "lucide:library-big",
+		pageKey: "navSites",
 	},
 	Achievements: {
 		name: "摘星录",

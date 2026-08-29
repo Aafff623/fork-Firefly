@@ -127,6 +127,8 @@ export const siteConfig: SiteConfig = {
 		agents: true,
 		// 问答助手：DEV 可测；生产藏入口（MaxKB 仍绑本机）。上云后改 true
 		ask: import.meta.env?.PROD !== true,
+		// 站点导航（藏经阁）页面开关
+		navSites: true,
 		// 摘星录（成就徽章墙）页面开关
 		achievements: true,
 	},
