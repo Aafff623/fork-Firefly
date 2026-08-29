@@ -1,20 +1,19 @@
 ---
-import LiveChatWidget from "@components/widget/LiveChatWidget.astro";
-
+import { getImage } from "astro:assets";
+import * as path from "node:path";
 import SpineModel from "@components/features/SpineModel.astro";
 import SpritePet from "@components/features/SpritePet.svelte";
 import Footer from "@components/layout/Footer.astro";
 import Navbar from "@components/layout/Navbar.astro";
 import SideBar from "@components/layout/SideBar.astro";
+import LiveChatWidget from "@components/widget/LiveChatWidget.astro";
 import type { ImageMetadata, MarkdownHeading } from "astro";
-import { getImage } from "astro:assets";
-import * as path from "node:path";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
 import ScrollDownIndicator from "@/components/controls/ScrollDownIndicator.astro";
-import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
 import AtmosphereLayer from "@/components/features/AtmosphereLayer.astro";
+import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
 import CategoryBar from "@/components/layout/CategoryBar.astro";
 import {
@@ -73,6 +72,8 @@ interface Props {
 		words?: number;
 		minutes?: number;
 	};
+	/** 全宽页（如站点导航 /nav/）：SSR 直出单列 + 侧栏 wrapper 隐藏（保留 swup 容器） */
+	wide?: boolean;
 }
 
 const backgroundImages = getBackgroundImages();
@@ -100,6 +101,7 @@ const {
 	headings = [],
 	encrypted = false,
 	bannerPostMeta,
+	wide = false,
 } = Astro.props;
 
 const postTagsJson = Array.isArray(postTags) ? JSON.stringify(postTags) : "";
@@ -279,6 +281,8 @@ const updatedGridConfig: ResponsiveSidebarConfig = {
 };
 
 const { gridCols } = generateGridClasses(updatedGridConfig);
+// 全宽页强制单列：SSR 与客户端（data-grid-force-single → applySingleColLayout）双份对齐
+const effectiveGridCols = wide ? "grid-cols-1" : gridCols;
 const sidebarClass = generateSidebarClasses(updatedGridConfig);
 const rightSidebarClass =
 	effectiveIsBothSidebars || sidebarLayoutConfig.position === "right"
@@ -408,10 +412,7 @@ async function buildLazyWallpaperSlides(
 }
 const lazyWallpaperRest = hasMultipleImages
 	? {
-			mobile: await buildLazyWallpaperSlides(
-				backgroundImages.mobile,
-				"mobile",
-			),
+			mobile: await buildLazyWallpaperSlides(backgroundImages.mobile, "mobile"),
 			desktop: await buildLazyWallpaperSlides(
 				backgroundImages.desktop,
 				"desktop",
@@ -799,9 +800,10 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
     <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给 .banner-title.repel-text；可点区域由 [&>*]:pointer-events-auto 收回 -->
     <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-none">
         <div id="main-grid"
-          class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
+          class={`transition duration-700 w-full left-0 right-0 grid ${effectiveGridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
           data-sidebar-enable={sidebarLayoutConfig.enable ? "true" : "false"}
           data-grid-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
+          data-grid-force-single={wide ? "true" : "false"}
           data-sidebar-position={sidebarLayoutConfig.position}
           data-tablet-sidebar={sidebarLayoutConfig.tabletSidebar ?? "left"}
           data-show-both-sidebars-on-post={sidebarLayoutConfig.showBothSidebarsOnPostPage ? "true" : "false"}
@@ -816,7 +818,13 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             {sidebarLayoutConfig.position !== "right" ? (
                 <>
                     {sidebarLayoutConfig.enable ? (
-                        <div id="left-sidebar-wrapper" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"} style="contain: layout style paint;">
+                        <div
+                            id="left-sidebar-wrapper"
+                            class="contents"
+                            data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
+                            data-hide-on-nav={wide ? "true" : undefined}
+                            style={`contain: layout style paint;${wide ? " display: none;" : ""}`}
+                        >
                             {effectiveHasLeftComponents && (
                                 <SideBar
                                     side={effectiveIsBothSidebars ? "left" : undefined}
@@ -838,7 +846,7 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             ) : (
                 <div id="left-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasLeftComponents && (
-						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
+							<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
@@ -859,7 +867,7 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
                     data-related-posts={relatedPostsJson}
                 >
                 {/* 携带网格布局类名，用于JS更新父容器 */}
-                <div id="grid-class-carrier" data-grid-class={gridCols} class="hidden"></div>
+                <div id="grid-class-carrier" data-grid-class={effectiveGridCols} class="hidden"></div>
                 {/* 为每个页面提供一个隐藏的h1标题，用于SEO和可访问性 */}
                 <h1 class="sr-only">{title}</h1>
                 <div id="content-wrapper" class="onload-animation transition-leaving">
@@ -885,7 +893,13 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             {(sidebarLayoutConfig.position === "both" || sidebarLayoutConfig.position === "right") ? (
                 <>
                     {sidebarLayoutConfig.enable ? (
-                        <div id="right-sidebar-static" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
+                        <div
+                            id="right-sidebar-static"
+                            class="contents"
+                            data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}
+                            data-hide-on-nav={wide ? "true" : undefined}
+                            style={wide ? "display: none;" : undefined}
+                        >
                             {(effectiveIsBothSidebars || sidebarLayoutConfig.position === "right") && effectiveHasRightComponents && (
 								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} postCategory={postCategory} currentPostId={currentPostId}></SideBar>
                             )}
@@ -898,14 +912,19 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             ) : (
                 <div id="right-sidebar-dynamic" class="contents transition-swup-fade">
                     {effectiveIsBothSidebars && effectiveHasRightComponents && (
-						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} postCategory={postCategory} currentPostId={currentPostId}></SideBar>
+							<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} postCategory={postCategory} currentPostId={currentPostId}></SideBar>
                     )}
                 </div>
             )}
 
             {/* 移动端底部组件 - 768px及以下显示 */}
             {sidebarLayoutConfig.mobileBottomComponents && sidebarLayoutConfig.mobileBottomComponents.length > 0 && (
-                <div id="mobile-bottom-sidebar" class="col-span-1 block md:hidden mt-4">
+                <div
+                    id="mobile-bottom-sidebar"
+                    class="col-span-1 block md:hidden mt-4"
+                    data-hide-on-nav={wide ? "true" : undefined}
+                    style={wide ? "display: none;" : undefined}
+                >
 					<SideBar side="bottom" headings={headings} encrypted={encrypted} postTags={postTags} postThemeTags={postThemeTags} relatedPosts={relatedPosts} currentPostId={currentPostId}></SideBar>
                 </div>
             )}

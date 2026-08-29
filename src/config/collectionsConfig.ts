@@ -15,7 +15,7 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 改本文件后：`python .cursor/skills/knowledge-output/scripts/sync_collection_model.py --apply`
  *
  * 现行一级：AI 编程工具 · Agentic Workflow · 视觉媒体 · 模型评测 ·
- * 大模型概述 · AI 早报 · GitHub 每周热点 · 课程推荐 · 求职攻略 · 前端工程 ·
+ * 大模型概述 · Java 全栈工程师 · 课程推荐 · 求职攻略 · 前端工程 ·
  * 后端 · 数据库 · 运维 · 产品经理 · 文史 · 本站系列
  */
 export const collectionsConfig: CollectionsConfig = {
@@ -124,7 +124,7 @@ export const collectionsConfig: CollectionsConfig = {
 			slug: "visual-media",
 			name: "视觉媒体",
 			description:
-				"海报与版式、提示词资产、视频与手绘生成、MiniMax 做片。前端工程实现见「前端工程」。",
+				"海报与版式、提示词资产、视频与手绘素材整理。前端工程实现见「前端工程」。",
 			emoji: "🎬",
 			cover: "/assets/collections/visual-media.jpg",
 		},
@@ -165,22 +165,70 @@ export const collectionsConfig: CollectionsConfig = {
 			cover: "/assets/collections/llm-overview.jpg",
 		},
 
-		// ── 6. 报刊 ──
+		// ── 6. Java 全栈工程师 ──
 		{
-			slug: "ai-morning-brief",
-			name: "AI 早报",
+			slug: "java-fullstack",
+			name: "Java 全栈工程师",
 			description:
-				"按期 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。",
-			emoji: "🗞️",
-			cover: "/assets/collections/ai-morning-brief.jpg",
+				"Java+AI 全栈工程师体系课：从单体到分布式、微服务、AI 融合与云原生部署的完整学习路径。",
+			emoji: "☕",
+			cover: "/assets/collections/java-fullstack.jpg",
 		},
 		{
-			slug: "github-weekly-hot",
-			name: "GitHub 每周热点",
-			description:
-				"按期自写的开源项目解读。周刊只当目录；日更热榜卡不进本夹。",
-			emoji: "⭐",
-			cover: "/assets/collections/github-weekly-hot.jpg",
+			slug: "java-fullstack-intro",
+			name: "开篇导学",
+			description: "课程导学与 Java+AI 全栈工程师概论。",
+			emoji: "📖",
+			cover: "/assets/collections/java-fullstack-intro.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-spring",
+			name: "Spring 全家桶",
+			description: "Spring 核心、Spring MVC、Spring Data、Spring Security。",
+			emoji: "🌱",
+			cover: "/assets/collections/java-fullstack-spring.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-frontend-basic",
+			name: "前端基础",
+			description: "Thymeleaf 模板引擎与 Bootstrap 样式框架。",
+			emoji: "🎨",
+			cover: "/assets/collections/java-fullstack-frontend-basic.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-monolith",
+			name: "单体实战：仿小红书",
+			description: "从零到一构建仿小红书单体全栈项目。",
+			emoji: "📕",
+			cover: "/assets/collections/java-fullstack-monolith.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-distributed",
+			name: "分布式进阶",
+			description: "分布式原理、Git、Redis、Kafka、MongoDB、Nginx、Prometheus 与演进实战。",
+			emoji: "🌐",
+			cover: "/assets/collections/java-fullstack-distributed.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-microservices",
+			name: "前后端分离与微服务",
+			description: "Vue 3、前后端分离实战、微服务架构设计、Spring Cloud 与改造实战。",
+			emoji: "🧩",
+			cover: "/assets/collections/java-fullstack-microservices.jpg",
+			parent: "java-fullstack",
+		},
+		{
+			slug: "java-fullstack-ai-cloud",
+			name: "AI 赋能与云原生",
+			description: "Spring AI、AI 融合实战、Docker、Kubernetes 与部署运维。",
+			emoji: "🤖",
+			cover: "/assets/collections/java-fullstack-ai-cloud.jpg",
+			parent: "java-fullstack",
 		},
 
 		// ── 7. 课程推荐 ──
@@ -297,7 +345,65 @@ export const collectionsConfig: CollectionsConfig = {
 			cover: "/assets/collections/humanities.jpg",
 		},
 
-		// ── 11. 本站系列 ──
+		// ── 11. 修行 ──
+		{
+			slug: "xiuxing",
+			name: "修行",
+			description:
+				"修仙、修行、玄学世界观与灵性实证。人身难得，这一世怎么修、修到哪里。按 UP 主分二级：散人小沅 / 修炼者小烨 / 玄成先生 / 林晓丁 / 卦师玄灵 / up主山吒。",
+			emoji: "🧘",
+			cover: "/assets/collections/xiuxing.jpg",
+		},
+		{
+			slug: "sanren-xiaoyuan",
+			name: "散人小沅",
+			description: "人间规则、能量系统与世界运转的底层逻辑。",
+			emoji: "🏔️",
+			cover: "/assets/collections/sanren-xiaoyuan.jpg",
+			parent: "xiuxing",
+		},
+		{
+			slug: "xiulianzhe-xiaoye",
+			name: "修炼者小烨",
+			description: "修行实证体验、修仙路径与心性淬炼。",
+			emoji: "🌿",
+			cover: "/assets/collections/xiulianzhe-xiaoye.jpg",
+			parent: "xiuxing",
+		},
+		{
+			slug: "xuancheng-xiansheng",
+			name: "玄成先生",
+			description: "地府、因果、幽冥问答与死后世界。",
+			emoji: "🌒",
+			cover: "/assets/collections/xuancheng-xiansheng.jpg",
+			parent: "xiuxing",
+		},
+		{
+			slug: "lin-xiaoding",
+			name: "林晓丁",
+			description: "阳间修行指南、功德与实践。",
+			emoji: "🕯️",
+			cover: "/assets/collections/lin-xiaoding.jpg",
+			parent: "xiuxing",
+		},
+		{
+			slug: "guashi-xuanling",
+			name: "卦师玄灵",
+			description: "起卦问九幽：阴间生存指南系列与修真四族大解析。",
+			emoji: "🔮",
+			cover: "/assets/collections/guashi-xuanling.jpg",
+			parent: "xiuxing",
+		},
+		{
+			slug: "up-shanzha",
+			name: "up主山吒",
+			description: "山吒的宇宙观：入世、出世与世界真相三部曲的玄学思考。",
+			emoji: "🌌",
+			cover: "/assets/collections/up-shanzha.jpg",
+			parent: "xiuxing",
+		},
+
+		// ── 12. 本站系列 ──
 		{
 			slug: "site-series",
 			name: "本站系列",
