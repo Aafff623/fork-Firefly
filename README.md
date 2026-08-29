@@ -116,7 +116,7 @@
 | Reading | list / grid / waterfall；Index-First TOC；亮暗色 / 色相 / 壁纸 | `PostPage.astro` · `displaySettingsConfig.ts` |
 | Performance | Swup 泄漏治理 · 图片按需物化 · 移动端组件裁剪 · 首屏 LCP 渲染门控 | `src/lib/page-lifecycle.ts` · `MainGridLayout.astro` |
 | Ask | `/ask` HeroUI Pro 聊天岛、站内检索、SSE、桌宠 LiveChat；默认生产关闭 | `src/components/ask/` · `src/pages/api/ask.ts` |
-| Personal | Dynamic 时间线、GitHub Discussions 社区、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
+| Personal | Dynamic 时间线、摘星录成就墙、GitHub Discussions 社区、Gallery 手风琴 + Three.js 画布、About / Friends / Guestbook | `src/pages/` · `src/content/spec/` |
 | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、站点统计、桌宠 | `src/components/widget/` |
 | Delivery | EdgeOne CDN 主入口、Vercel 源站与回滚、Cloudflare R2 外置大图 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
 
@@ -134,6 +134,7 @@
 | Reading | Display controls | 亮暗色、系统主题、色相、壁纸模式、卡片表现 | `src/config/displaySettingsConfig.ts` |
 | Reading | Interaction model | Swup 页面过渡与 Svelte islands 按需注水 | `src/components/` · `src/layouts/` |
 | Personal surfaces | Dynamic | 碎碎念时间线，可接本地内容或 Memos | `src/pages/dynamic/index.astro` |
+| Personal surfaces | Achievements | 摘星录成就徽章墙：金/银/铜星墙 + 弹窗详情，未解锁灰星占位 | `src/config/achievementsConfig.ts` |
 | Personal surfaces | Gallery | 作品集手风琴与 Three.js 无限画布双模式 | `src/pages/gallery/` |
 | Personal surfaces | Extended pages | Community、About、Friends、Guestbook、Anime 等独立页面 | `src/pages/` · `src/content/spec/` |
 | Personal surfaces | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、统计、桌宠 | `src/components/widget/` |
