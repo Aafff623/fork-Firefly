@@ -100,6 +100,9 @@ export async function readAskSse(
 				const delta = typeof ev.content === "string" ? ev.content : "";
 				if (delta) {
 					fullText += delta;
+				}
+				// reasoning_content 常随 content:"" 的空帧到达，不能只认 delta
+				if (delta || typeof ev.reasoning_content === "string") {
 					onDelta(delta, fullText, ev);
 				}
 				if (ev.is_end) {
@@ -118,6 +121,8 @@ export async function readAskSse(
 				const delta = typeof ev.content === "string" ? ev.content : "";
 				if (delta) {
 					fullText += delta;
+				}
+				if (delta || typeof ev.reasoning_content === "string") {
 					onDelta(delta, fullText, ev);
 				}
 				if (ev.is_end) ended = true;
