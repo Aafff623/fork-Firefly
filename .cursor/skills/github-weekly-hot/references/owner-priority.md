@@ -1,6 +1,6 @@
 # 园主热榜筛选词表（可改）
 
-依据：`CONTEXT.md` 分类/合集、`siteConfig`（Agent Engineering · Spec-driven / Harness）、近期 posts 的 category/tags（Cursor / Claude / Kimi / GLM / DeepSeek / 通义、Harness、MCP / Skill、OpenCode、Pi、Codex、MiniMax、本地模型）。
+依据：`CONTEXT.md` 分类/合集、`siteConfig`（Agent Engineering · Spec-driven / Harness）、近期 posts 的 category/tags（Cursor / Claude / Kimi / GLM / DeepSeek / 通义、Harness、MCP / Skill、OpenCode、Pi、Codex、本地模型）。
 
 以后焦点变了，改本表，不必改 SKILL 主文流程。
 
@@ -18,7 +18,7 @@
 | 焦点 | 仓库/简介里出现这些就抬 | 站内锚点（判断时链，勿当转载源） |
 |---|---|---|
 | 编程 Agent / Harness | Claude Code、Cowork、Cursor、Codex、OpenCode、Kimi Code、Pi、Reasonix、DeepSeek 编程 agent、Harness | `ai-coding-tools` 各手册 |
-| 园主常用模型与本地推理 | DeepSeek、Qwen / 千问、Kimi / K3、GLM、豆包、MiniMax、AirLLM、llama.cpp、vLLM | `aug-coding-model-discounts-2026-08` |
+| 园主常用模型与本地推理 | DeepSeek、Qwen / 千问、Kimi / K3、GLM、豆包、AirLLM、llama.cpp、vLLM | `aug-coding-model-discounts-2026-08` |
 | 技能与记忆 | SKILL.md、Agent Skills、book-to-skill、路由表、Agent Memory、MCP | `agent-skills-handbook`、`mcp-handbook` |
 | 定价与自托管入口 | Coding Plan、免费网关、自托管部署、OpenAI 兼容代理（影响明天能不能打） | `wool-freebies`、`transit-relay` |
 

@@ -38,7 +38,7 @@ description: >-
 |----------|------|
 | 四渠判定 + 粘贴深度（公众号 / BibiGPT） | [`source-modules.md`](references/source-modules.md) |
 | 渠道 3 广搜 + 配图检索 | [`research-intake.md`](references/research-intake.md) |
-| 各渠配图 / R2 / MiniMax 兜底 | [`images.md`](references/images.md) |
+| 各渠配图 / R2 / 缺图处理 | [`images.md`](references/images.md) |
 | Theme × facet | [`theme-taxonomy.md`](references/theme-taxonomy.md) |
 | 公众号保真分层（渠道 2 工序，不是入口） | [`wechat-mp.md`](references/wechat-mp.md) |
 | Vault 附件 / `![[…]]` | [`vault/obsidian-vault.md`](references/vault/obsidian-vault.md) |
@@ -91,7 +91,7 @@ Knowledge\todo 只读旧库存，不再作为 extract 默认产出。
 1 收材料   → 渠道 1：extract_vault.py；渠道 2：清洗粘贴（公众号见 wechat-mp）；渠道 3：并发广搜
 2 求全写入 → 客观信息尽量收全。渠道 1–3 都写 vault（见上「落盘硬规则」）
 3 问现场   → 经验稿核当时 / 例子 / 心得 / 货 / 原句；空了问，不准编
-4 配图     → 见 images.md：有原图用原图；渠道 3 必须检索；上 R2；缺图才 MiniMax
+4 配图     → 见 images.md：有原图用原图；渠道 3 必须检索；上 R2；缺图标记待补，不调用模型生图
 5 停       → 文件树 + section 表。提示园主在 Obsidian 调到理想，再调用 knowledge-output
 ```
 
@@ -129,7 +129,7 @@ python .cursor/skills/_shared/scripts/sync_check.py --slug <slug>
 - 早报 → `.cursor/skills/ai-morning-brief/SKILL.md`
 - 热榜 → `.cursor/skills/github-weekly-hot/SKILL.md`
 
-合集落盘 / R2 / lint：`../_shared/periodical.md`。不要经 Knowledge，不要 MiniMax。
+合集落盘 / R2 / lint：`../_shared/periodical.md`。不要经 Knowledge，不调用外部图片生成。
 
 ## 提炼原则
 
@@ -179,5 +179,5 @@ YAML 字段见 `theme-taxonomy.md`。
 1. 渠道 + `source` / `theme` / `facet` + **实际 vault 路径**。
 2. 文件树。
 3. section 表（标题 / 内容 / 形式）。
-4. 配图：原图 / 检索 / MiniMax / 未上 R2 的原因。
+4. 配图：原图 / 检索 / 待补 / 未上 R2 的原因。
 5. **停在这里。** 园主在 Obsidian 调完再走 knowledge-output（点名主题只发命中的；否则 output 优先读刚调完的 vault 笔记，旧库存才分批扫 `Knowledge/todo`）。`paste_kind` 为 wechat/bibigpt 时默认草稿箱。

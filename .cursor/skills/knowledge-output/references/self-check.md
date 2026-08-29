@@ -36,13 +36,13 @@ TTA 的 50 分自评不当放行条件。
 
 ## 3. 配图
 
-封面 / 列表卡：必须 MiniMax 自生成（默认二次元人物，主题元素编进画面）。禁止园主配图、禁止检索素材当 `image:`。  
-正文插图：园主截图 / 官方图 → 检索场景素材 → 仍空才 MiniMax（`check_quota.py`）。GIF 仅用户当场要。  
+封面 / 列表卡：必须有已存在的合规本地素材或已上传的 R2 图片；不在发布流程中调用模型生图。
+正文插图：优先园主截图 / 官方图，其次使用合规检索素材；没有合适素材时标记待补，不虚构图片。GIF 仅用户当场要。
 Mermaid：禁止灰/单色；多色节点、分区、深浅色都能看。
 
 - 正文大图必须是 `https://img.threetwoa.live/...`（桶 `firefly-comment`）。禁止只留微信外链。
 - 比例：每个主要 H2 附近至少一张能说明该节的图；禁止零图；禁止堆无关科技库存。
-- 点名本站角色（DeepSeek 猫娘）必须先搜 `SpritePet` / `public/pets/maid-deepseek-whale`，禁止自造鲸背杂志风。见 [`../knowledge-extract/references/images.md`](../knowledge-extract/references/images.md)。
+- 点名本站角色（DeepSeek 猫娘）必须优先使用 `SpritePet` / `public/pets/maid-deepseek-whale` 的真实素材，禁止凭空绘制。见 [`../knowledge-extract/references/images.md`](../knowledge-extract/references/images.md)。
 - 已是 R2 URL 的不要再 `place_post` 拷进 git。本地 `./assets/` 残留才 webify 后上 R2。
 
 ## 4. 合集缓存

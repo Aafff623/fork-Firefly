@@ -72,7 +72,7 @@
 ## 配图
 
 1. **先用原文图**（Archive 已落盘）  
-2. extract 阶段原图精选后按 [`images.md`](images.md) 上 R2；检索仍空才 MiniMax  
+2. extract 阶段原图精选后按 [`images.md`](images.md) 上 R2；检索仍空就标记待补
 3. 禁止把微信外链图直接写进主体笔记当唯一引用（易失效）
 
 ## 反例

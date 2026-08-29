@@ -78,7 +78,7 @@
 | Components | 侧栏 widget、阅读控件、相册、动态时间线等 | `src/components/` |
 | Ask | HeroUI Pro 问答页、桌宠 LiveChat、同源安全代理与站内检索 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Plugins | KaTeX、Mermaid(merman)、PlantUML、Wiki Link、directive | `src/plugins/` |
-| Agent skills | 发文四渠（extract → output / 合集 skill）、级联、MiniMax、GSAP | `.cursor/skills/` |
+| Agent skills | 发文四渠（extract → output / 合集 skill）、级联、GSAP | `.cursor/skills/` |
 | Scripts | LQIP、字体子集、new-post / new-d、Showcase 截图 | `scripts/` |
 | Docs | CONTEXT / ADR / workflow / inventory（非运行时） | `docs/` · 根目录治理文件 |
 
@@ -494,7 +494,7 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 | Delivery | Vercel origin（`@astrojs/vercel`）· EdgeOne CDN · Cloudflare DNS / R2 | 三者各司其职 | 静态出站 + 少量 API + 外置大图 |
 | Site integrations | Giscus · GitHub Discussions · Dynamic Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 评论双通道按路由门控；分析 ID 多为空 | 配置门控 |
 | Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
-| Agent tooling | knowledge-extract / output · `site-cascade` · minimax-media · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
+| Agent tooling | knowledge-extract / output · `site-cascade` · gsap-* skills | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
 
 完整包名、插件链与入口路径：[docs/knowledge/tech-stack-inventory.md](docs/knowledge/tech-stack-inventory.md)。
 

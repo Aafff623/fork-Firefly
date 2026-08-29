@@ -1,6 +1,6 @@
 # 园主早报筛选词表（可改）
 
-依据：`CONTEXT.md` 分类/合集、`siteConfig`（Agent Engineering · Spec-driven / Harness）、近期 posts 的 category/tags（Agentic Coding、羊毛揭秘、Cursor / Claude / Kimi / GLM / DeepSeek / 通义 / 豆包、Coding Plan、Harness、MCP / Skill、OpenCode、Pi、Codex、MiniMax、中转）。
+依据：`CONTEXT.md` 分类/合集、`siteConfig`（Agent Engineering · Spec-driven / Harness）、近期 posts 的 category/tags（Agentic Coding、羊毛揭秘、Cursor / Claude / Kimi / GLM / DeepSeek / 通义 / 豆包、Coding Plan、Harness、MCP / Skill、OpenCode、Pi、Codex、中转）。
 
 以后焦点变了，改本表，不必改 SKILL 主文流程。
 
@@ -18,7 +18,7 @@
 | 焦点 | 标题/出处里出现这些就抬 | 站内锚点（判断时链，勿当转载源） |
 |---|---|---|
 | 编程 Agent / Harness | Claude Code、Claude Cowork、Cursor、Codex、OpenCode、Kimi Code、Pi、ZCode、Kiro、WorkBuddy、Harness、subagent、Agent 导入/迁移 | `ai-coding-tools` 各手册、`cursor-claude-harness-migration` |
-| 园主常用模型更新 | DeepSeek、Qwen / 通义 / 千问、Kimi / Moonshot、GLM / 智谱、豆包 / Seed / 方舟、MiniMax、Grok（进 Cursor 池时） | `aug-coding-model-discounts-2026-08` |
+| 园主常用模型更新 | DeepSeek、Qwen / 通义 / 千问、Kimi / Moonshot、GLM / 智谱、豆包 / Seed / 方舟、Grok（进 Cursor 池时） | `aug-coding-model-discounts-2026-08` |
 | 官方定价与限免 | Coding Plan、Token Plan、API 涨价/降价、额度重置、限免、首发折扣、包月积分 | `wool-freebies`、`ai-coding-save-money` |
 | 工具链能力 | MCP、Skill / SKILL.md、Hooks、Rules、CLAUDE.md、合规 API 接到 CLI | `mcp-handbook`、`agent-skills-handbook`、`review-skill-mcp` |
 | 中转 / 号池 | 中转、号池、403、额度线路（仅当影响 Codex/Claude 实际能打） | `transit-relay`、`codex-k12-pool-403` |

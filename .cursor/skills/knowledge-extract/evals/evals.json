@@ -16,7 +16,7 @@
     {
       "id": 3,
       "prompt": "把这次讨论整理成博客文章发到我的 blog 项目里。",
-      "expected_output": "识别为提炼+发布两段；先 knowledge-extract（渠道 2）写入 vault；提示发布交给 knowledge-output（优先读 vault 理想稿；旧库存才分批扫 todo）；不越权直接写 posts；配图按 images.md（有则用、缺则检索/R2，MiniMax 仅兜底）",
+      "expected_output": "识别为提炼+发布两段；先 knowledge-extract（渠道 2）写入 vault；提示发布交给 knowledge-output（优先读 vault 理想稿；旧库存才分批扫 todo）；不越权直接写 posts；配图按 images.md（有则用、缺则检索/R2，仍缺则标记待补）",
       "files": []
     },
     {
@@ -40,13 +40,13 @@
     {
       "id": 7,
       "prompt": "没有参考材料，帮我调研一下某某工具大家怎么用，写成笔记。",
-      "expected_output": "渠道 3 research；默认并发子代理：网页+视频站+大佬言论+使用心得；必须检索场景配图并上 R2；缺图才 MiniMax；YAML source=research；落盘 vault 已有主题夹（优先 Agentic Coding/）；不写 Knowledge",
+      "expected_output": "渠道 3 research；默认并发子代理：网页+视频站+大佬言论+使用心得；必须检索场景配图并上 R2；缺图标记待补；YAML source=research；落盘 vault 已有主题夹（优先 Agentic Coding/）；不写 Knowledge",
       "files": []
     },
     {
       "id": 8,
       "prompt": "跑一期今天的 AI 早报。",
-      "expected_output": "渠道 4 rss；交接并执行 ai-morning-brief（不经 Knowledge、不走 output、不 MiniMax）；落盘/R2 按 periodical.md",
+      "expected_output": "渠道 4 rss；交接并执行 ai-morning-brief（不经 Knowledge、不走 output、不调用外部图片生成）；落盘/R2 按 periodical.md",
       "files": []
     }
   ]

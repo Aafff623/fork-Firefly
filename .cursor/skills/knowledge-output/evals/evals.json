@@ -34,7 +34,7 @@
     {
       "id": 6,
       "prompt": "合集里没有合适的夹，你直接在 collectionsConfig 加一个新一级吧。",
-      "expected_output": "提案新 L1/L2，等园主点头；禁止私开空壳；新封面 MiniMax 也要先问",
+      "expected_output": "提案新 L1/L2，等园主点头；禁止私开空壳；封面使用已有合规素材，不在发布流程中调用模型生图",
       "files": []
     }
   ]

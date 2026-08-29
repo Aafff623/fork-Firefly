@@ -60,7 +60,7 @@ package/
 src/content/posts/_draftbox/**
 !src/content/posts/_draftbox/README.md
 
-# local temp (Skill Lab / MiniMax locks / agent scratch)
+# local temp (Skill Lab / media locks / agent scratch)
 tmp/
 __tmp__/
 temp/

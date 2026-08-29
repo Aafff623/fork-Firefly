@@ -7,11 +7,11 @@
 
 ## 各渠默认
 
-| 渠 | 图从哪来 | MiniMax |
+| 渠 | 图从哪来 | 缺图处理 |
 |----|----------|---------|
-| 1 Obsidian | vault 附件（`extract_vault.py` 拷到 `assets/`） | 仅附件缺失且检索也空 |
-| 2 粘贴 | 用户/原文配图；公众号从 `source/images/` 精选 | 仅原图不够说明论点时 |
-| 3 调研 | **必须检索**场景匹配图（官方 OG / docs / README / 产品 UI） | 检索落空才允许 |
+| 1 Obsidian | vault 附件（`extract_vault.py` 拷到 `assets/`） | 附件缺失时标记待补 |
+| 2 粘贴 | 用户/原文配图；公众号从 `source/images/` 精选 | 原图不足时检索，仍缺则标记待补 |
+| 3 调研 | **必须检索**场景匹配图（官方 OG / docs / README / 产品 UI） | 检索落空时标记待补 |
 
 GIF：仅当用户在本轮提示词里明确要动图。
 
@@ -53,10 +53,9 @@ python .cursor/skills/_shared/scripts/upload_r2.py \
 
 `assets/` 可留本地副本方便预览；主体 md **优先写 R2 URL**，避免 output 再把大图拷进 git。
 
-## 封面 ≠ 正文插图
+## 封面与正文插图
 
-`image:` / 列表卡背景：必须 MiniMax 自生成（默认二次元人物，主题元素编进画面；或场景图）。禁止把园主配图或检索素材当封面。  
-正文插图：园主截图、官方图、检索图可以。合集（渠道 4）仍禁止生图。
+`image:` / 列表卡背景：必须使用已存在的合规本地素材或 R2 图片，不在提炼或发布流程中调用模型生图。正文插图可以使用园主截图、官方图或合规检索图；没有合适素材时标记待补。合集（渠道 4）同样只使用已有素材。
 
 ## 封面点名本站角色
 
@@ -66,13 +65,4 @@ python .cursor/skills/_shared/scripts/upload_r2.py \
 - 默认宠：`maid-deepseek-whale`（`src/lib/pets/builtinPets.ts` / `src/config/petConfig.ts`）
 - 精灵：`public/pets/maid-deepseek-whale/`（`/pets/maid-deepseek-whale/spritesheet.webp`）
 
-禁止自造鲸背杂志风。生图走 `firefly-minimax-media`（先 `check_quota.py`），不要在本页重写 prompt 工艺。
-
-## MiniMax 兜底
-
-正文缺图才走这里。封面不走兜底，见上一节「封面 ≠ 正文插图」。
-
-1. 检索（或原图）确实没有能说明该节的图。点名本站角色时先过上一节真源。
-2. 读 `firefly-minimax-media`，先 `scripts/check_quota.py`。
-3. 交付写明：哪几张是生图、额度是否过门禁。
-4. 合集（渠道 4）默认禁止生图。
+禁止凭空绘制本站角色；点名角色时优先使用 `SpritePet` / `public/pets/maid-deepseek-whale` 的真实素材。图片仍缺失时，在交付说明里写明待补位置和原因。

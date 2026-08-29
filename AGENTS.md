@@ -71,14 +71,13 @@ pnpm new-d <content>
 | `ai-morning-brief` | `.cursor/skills/ai-morning-brief/` | 由 extract 渠道 4 交接；橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
 | `github-weekly-hot` | `.cursor/skills/github-weekly-hot/` | 由 extract 渠道 4 交接；IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
 | `site-cascade` | `.cursor/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
-| `firefly-minimax-media` | `.cursor/skills/firefly-minimax-media/` | MiniMax 封面/语音/音乐/短视频；extract 配图检索落空才兜底。先 `check_quota.py` |
 | `release-post` | `.cursor/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create` |
 | `wiki-post` | `.cursor/skills/wiki-post/` | GitHub Wiki 手册；用户说「发布/推送 Wiki」才 push `.wiki.git` |
 | `gsap-*`（官方 8 件） | `.cursor/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画 |
 
 vault 机械脚本在 `_shared/scripts/`（`vault_lib.py` / `prep_convert.py` / `sync_check.py` / `validate_post.py` / `upload_r2.py`）；渠道 1 入口是 `knowledge-extract/scripts/extract_vault.py`。映射表仍是 `.ob2blog/manifest.json`。
 
-分工：进料一律 `knowledge-extract` → 园主在 Obsidian 调到理想 → `knowledge-output`（发布 + 用语进库）→ 收尾 `site-cascade`。媒体兜底 `firefly-minimax-media`。全局 CLI 另见 `~/.cursor/skills/mmx-cli`（非本仓）。
+分工：进料一律 `knowledge-extract` → 园主在 Obsidian 调到理想 → `knowledge-output`（发布 + 用语进库）→ 收尾 `site-cascade`。配图只使用已有的本地、官方或合规素材；缺图时标记待补，不在发布链路中调用模型生图。
 
 列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；成帖**勿**写入 frontmatter `title`（见 `_shared/title-mood.md`）。
 

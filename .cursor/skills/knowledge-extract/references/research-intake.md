@@ -47,10 +47,10 @@
 按笔记小节列「这一节读者在看什么场景」→ 搜对应画面（产品 UI、架构示意图、官方 OG、操作截图）→ 上 R2 → 插入正文。  
 装饰性风景、无关科技库存图不要。GIF 仅当用户在本轮明确要动图。
 
-检索仍空：降优先级走 `firefly-minimax-media`（先 `check_quota.py`），并在交付里写明「检索未命中，已生图 / 未生图原因」。
+检索仍空：在交接里标记「检索未命中，待补图」，不调用模型生图，也不虚构素材。
 
 ## 落盘
 
 `source: research`。写入 `D:\OneDrive\Desktop\Notes\threetwoa_ob` 已有主题夹（优先 `Agentic Coding/`）。关键出处写在笔记里（链接+日期），不要另造空 `source/` 目录除非用户给了长文原料。不要写 Knowledge。
 
-交接 output 时说明：这是调研稿，图已是 R2 或仍待 MiniMax；理想稿在 vault。
+交接 output 时说明：这是调研稿，图已是 R2 或仍待补；理想稿在 vault。

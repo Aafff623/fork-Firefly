@@ -81,7 +81,7 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列�
 
 ### 2. 自检
 
-打开 [`self-check.md`](references/self-check.md)。完成标准：详细度、标题、配图三关都过，合集缓存已 diff。形态红线（title / H2 / 开篇 / Markdown / 封面必须 MiniMax / Mermaid 配色）见 [`../_shared/post-redlines.md`](../_shared/post-redlines.md)。过不了就补完再检。预览验收写入 `_draftbox/`，不要直接写入 `posts/`。
+打开 [`self-check.md`](references/self-check.md)。完成标准：详细度、标题、配图三关都过，合集缓存已 diff。形态红线（title / H2 / 开篇 / Markdown / 封面素材 / Mermaid 配色）见 [`../_shared/post-redlines.md`](../_shared/post-redlines.md)。过不了就补完再检。预览验收写入 `_draftbox/`，不要直接写入 `posts/`。
 
 ### 3. 重建 frontmatter
 
@@ -92,7 +92,7 @@ python .cursor/skills/knowledge-output/scripts/select_todo.py --all   # 只列�
 - **tags**：3–8 个，读者会搜的词，不要把 Theme ID 原样堆进去。
 - **collections**：读 [`collection-model.md`](references/collection-model.md) 的 `route:`。只挂一二级 slug（极客时间课表等 L3 `leaves`：仅当正文就是那一课才挂叶，不要挂完叶再挂父、更不要记课表正文）。
 - 双挂：跨树才写两个 slug（例 `tool-claude-code` + `agentic-workflow`）。已挂二级则**不要**再挂它的一级父夹（一级页会滚子夹）。
-- 对不上现有夹：提案新 L1/L2，园主点头再改 `collectionsConfig.ts`；禁止私开空壳。新封面 MiniMax 也要先问。
+- 对不上现有夹：提案新 L1/L2，园主点头再改 `collectionsConfig.ts`；禁止私开空壳。
 - 不沿用素材临时字段；`source` / theme / facet 可写进描述或 `@blog`。
 
 ### 4. 落盘
@@ -137,6 +137,6 @@ python .cursor/skills/knowledge-output/scripts/place_post.py \
 3. 无参 = 分批全量，不是一次做完、也不是拒绝开工。
 4. 不 `git add` / `push`，除非用户这轮明确要提交。
 5. 汇报：本批 `slug → category / collections`、validate 全文、进了哪些词、是否 cascade / 归档、下一批 `--offset`。把 lint FAIL 贴出来。
-6. 成帖形态只守 [`../_shared/post-redlines.md`](../_shared/post-redlines.md) 的机器门禁，不要另起文档。经验稿听 tta-tone `canon.md`。title 完整点题；每篇要有 `##`；开篇日期必须对；该强调时用加粗/引用/行内代码，禁满篇 `<mark>`；封面必须 MiniMax（默认人物）；Mermaid 禁灰块。自检不过只回跳缺的那一段，不整段重跑 extract，也不把理想稿重写成另一张嘴。
+6. 成帖形态只守 [`../_shared/post-redlines.md`](../_shared/post-redlines.md) 的机器门禁，不要另起文档。经验稿听 tta-tone `canon.md`。title 完整点题；每篇要有 `##`；开篇日期必须对；该强调时用加粗/引用/行内代码，禁满篇 `<mark>`；封面使用已有的合规素材，不在发布流程中调用模型生图；Mermaid 禁灰块。自检不过只回跳缺的那一段，不整段重跑 extract，也不把理想稿重写成另一张嘴。
 7. 粘贴素材的问题说明 / 数字表 / 插件清单优先保留结构。
 8. 用语进库默认做。用户点名范围则只抽那些；说「这轮不要进库」则跳过。词表写入只在本岗；tta-tone 成稿只读 `lexicon.md`。

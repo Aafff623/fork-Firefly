@@ -42,11 +42,9 @@
 | `ai-morning-brief` | 橘鸦 RSS → 按园主焦点筛成「早报」合集一期（不转载全文；默认草稿箱） |
 | `github-weekly-hot` | IT咖啡馆周刊 RSS 当目录 → 对 GitHub 自写「热榜」合集一期（不搬原文；默认草稿箱） |
 | `site-cascade` | 发文后级联索引（动态 / 统计 / 分类标签 / 热力图） |
-| `firefly-minimax-media` | MiniMax 出图·配音·音乐·短视频（额度门禁 + 落盘脚本） |
 | `release-post` | GitHub Release notes / SemVer；本地中英预览 `preview-release.html` |
 | `wiki-post` | GitHub Wiki 手册（Home/FAQ/功能页）；先起草，用户说「发布/推送 Wiki」才 push `.wiki.git` |
 
-出封面/语音/BGM/短片前读 `firefly-minimax-media/SKILL.md`；先跑 `scripts/check_quota.py`。  
 发版前读 `release-post/SKILL.md`；先起草，用户说「发布」才 `gh release create`。  
 建/改 Wiki 前读 `wiki-post/SKILL.md`；先起草，用户说「发布/推送 Wiki」才 push `.wiki.git`。  
 工作区根若为上一级 `blog/`，须在 `blog/.cursor/skills/` 建 junction 指向本表 skill（见 `AGENTS.md`）。
