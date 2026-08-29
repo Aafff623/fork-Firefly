@@ -1,0 +1,224 @@
+---
+/* Hallmark · macrostructure: Stat-Led · tone: playful-restrained
+ * genre: playful · theme: Firefly tokens (hue 290) · enrichment: none
+ * pre-emit critique: P4 H4 E4 S4 R4 V4
+ */
+import { Icon } from "astro-icon/components";
+import {
+	achievementsBadges,
+	achievementsPageConfig,
+	getUnlockedBadges,
+	siteConfig,
+} from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import "@/styles/achievements.css";
+
+if (!siteConfig.pages.achievements) {
+	return Astro.redirect("/404/");
+}
+
+const title = achievementsPageConfig.title || "摘星录";
+const description = achievementsPageConfig.description || "";
+
+const unlocked = getUnlockedBadges();
+const lockedCount = achievementsBadges.length - unlocked.length;
+
+const TIER_LABEL: Record<string, string> = {
+	gold: "金",
+	silver: "银",
+	bronze: "铜",
+};
+---
+
+<MainGridLayout title={title} description={description}>
+  <achievement-wall class="acv-page block w-full">
+    {/* Stat Hero：大数字 + 文字标题（数字不单独成题） */}
+    <div class="card-base acv-hero">
+      <h1 class="acv-hero-title">{title}</h1>
+      <div class="acv-figure-row">
+        <span class="acv-figure" data-acv-count={unlocked.length}>0</span>
+        <span class="acv-figure-words">颗亲手摘下的星，挂在墙上，也落在来路上。</span>
+      </div>
+      {description && <p class="acv-hero-lede">{description}</p>}
+      <div class="acv-hero-stats">
+        <div class="acv-stat"><b>{unlocked.length}</b><span>已摘之星</span></div>
+        <div class="acv-stat"><b>{lockedCount}</b><span>待解锁</span></div>
+      </div>
+    </div>
+
+    {/* 星墙 */}
+    <section class="acv-section">
+      <div class="acv-section-head">
+        <h2>星墙</h2>
+        <p>悬停的星会发光；灰星是还没走到的路。点一颗看看。</p>
+      </div>
+      <div class="acv-wall">
+        {
+          achievementsBadges.map((b, i) =>
+            b.unlocked ? (
+              <button
+                type="button"
+                class="acv-badge acv-reveal"
+                style={`--acv-tier: var(--acv-${b.tier}); --i: ${Math.min(i, 8)}`}
+                data-acv-open={b.id}
+                aria-label={`徽章：${b.name}，${TIER_LABEL[b.tier]}级，查看详情`}
+              >
+                <span class="acv-tier-chip">{TIER_LABEL[b.tier]}</span>
+                <span class="acv-medal">
+                  <Icon is:inline name={b.icon} />
+                </span>
+                <span class="acv-badge-name">{b.name}</span>
+                <span class="acv-badge-date">{b.date}</span>
+              </button>
+            ) : (
+              <div
+                class="acv-badge is-locked acv-reveal"
+                style={`--i: ${Math.min(i, 8)}`}
+                aria-label="未解锁徽章"
+              >
+                <span class="acv-tier-chip">?</span>
+                <span class="acv-medal">
+                  <Icon is:inline name="lucide:lock" />
+                </span>
+                <span class="acv-badge-name">{b.name}</span>
+                <span class="acv-badge-date">未解锁</span>
+              </div>
+            ),
+          )
+        }
+      </div>
+    </section>
+
+    <p class="acv-foot">数据维护于 src/config/achievementsConfig.ts</p>
+
+    {/* 徽章详情模板（服务端渲染好，弹窗按 id 取用） */}
+    {
+      unlocked.map((b) => (
+        <template data-acv-detail={b.id}>
+          <span
+            class="acv-medal"
+            style={`--acv-tier: var(--acv-${b.tier})`}
+          >
+            <Icon is:inline name={b.icon} />
+          </span>
+          <h3 class="acv-modal-name">{b.name}</h3>
+          <div class="acv-modal-meta" style={`--acv-tier: var(--acv-${b.tier})`}>
+            {b.date} · {TIER_LABEL[b.tier]}级
+          </div>
+          {b.desc && <p class="acv-modal-desc">{b.desc}</p>}
+        </template>
+      ))
+    }
+
+    {/* 徽章详情弹窗 */}
+    <div class="acv-modal-mask" data-acv-mask>
+      <div class="acv-modal" role="dialog" aria-modal="true" aria-label="徽章详情">
+        <div data-acv-modal-body></div>
+        <button type="button" class="acv-modal-close" data-acv-close>
+          收 起
+        </button>
+      </div>
+    </div>
+  </achievement-wall>
+</MainGridLayout>
+
+<script>
+  // custom element：定义一次，Swup 换页后新 DOM 自动升级，无需重绑
+  if (!customElements.get("achievement-wall")) {
+    const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    class AchievementWall extends HTMLElement {
+      private io?: IntersectionObserver;
+
+      connectedCallback() {
+        this.setupReveal();
+        this.setupCounter();
+        this.setupModal();
+      }
+
+      disconnectedCallback() {
+        this.io?.disconnect();
+      }
+
+      private setupReveal() {
+        const targets = this.querySelectorAll(".acv-reveal");
+        if (REDUCED.matches || !("IntersectionObserver" in window)) {
+          targets.forEach((el) => el.classList.add("in"));
+          return;
+        }
+        this.io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((en) => {
+              if (en.isIntersecting) {
+                en.target.classList.add("in");
+                this.io?.unobserve(en.target);
+              }
+            });
+          },
+          { threshold: 0.15 },
+        );
+        targets.forEach((el) => this.io?.observe(el));
+      }
+
+      private setupCounter() {
+        const figure = this.querySelector<HTMLElement>("[data-acv-count]");
+        if (!figure) return;
+        const target = Number(figure.dataset.acvCount || "0");
+        if (REDUCED.matches || target <= 0) {
+          figure.textContent = String(target);
+          return;
+        }
+        const DURATION = 500;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min((now - start) / DURATION, 1);
+          // ease-out 曲线，与 CSS --acv-ease-out 同族
+          const eased = 1 - Math.pow(1 - p, 3);
+          figure.textContent = String(Math.round(eased * target));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      private setupModal() {
+        const mask = this.querySelector<HTMLElement>("[data-acv-mask]");
+        const body = this.querySelector<HTMLElement>("[data-acv-modal-body]");
+        const closeBtn = this.querySelector<HTMLButtonElement>("[data-acv-close]");
+        if (!mask || !body || !closeBtn) return;
+
+        let lastFocused: HTMLElement | null = null;
+
+        const open = (id: string) => {
+          const tpl = this.querySelector<HTMLTemplateElement>(
+            `template[data-acv-detail="${CSS.escape(id)}"]`,
+          );
+          if (!tpl) return;
+          body.replaceChildren(tpl.content.cloneNode(true));
+          lastFocused = document.activeElement as HTMLElement | null;
+          mask.classList.add("open");
+          closeBtn.focus();
+        };
+        const close = () => {
+          mask.classList.remove("open");
+          lastFocused?.focus();
+        };
+
+        this.querySelectorAll<HTMLElement>("[data-acv-open]").forEach((el) => {
+          el.addEventListener("click", () => {
+            const id = el.getAttribute("data-acv-open");
+            if (id) open(id);
+          });
+        });
+        closeBtn.addEventListener("click", close);
+        mask.addEventListener("click", (e) => {
+          if (e.target === mask) close();
+        });
+        this.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && mask.classList.contains("open")) close();
+        });
+      }
+    }
+
+    customElements.define("achievement-wall", AchievementWall);
+  }
+</script>

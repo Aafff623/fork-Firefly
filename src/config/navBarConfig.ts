@@ -63,6 +63,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			// 动态
 			LinkPresets.Dynamic,
 
+			// 摘星录（成就徽章墙）
+			LinkPresets.Achievements,
+
 			// 相册
 			LinkPresets.Gallery,
 
@@ -209,6 +212,12 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		url: "/ask/",
 		icon: "lucide:bot-message-square",
 		pageKey: "ask",
+	},
+	Achievements: {
+		name: "摘星录",
+		url: "/achievements/",
+		icon: "lucide:sparkles",
+		pageKey: "achievements",
 	},
 };
 

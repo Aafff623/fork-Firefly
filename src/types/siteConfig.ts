@@ -99,6 +99,7 @@ export type SiteConfig = {
 		dynamic: boolean; // 动态页面开关
 		agents: boolean; // 角色名录页面开关
 		ask: boolean; // 问答助手；现行 DEV 开 / PROD 关（MaxKB 仍绑本机）
+		achievements: boolean; // 摘星录（成就徽章墙）页面开关
 	};
 
 	/** 留言页顶卡右半竹蝉岛（自研；默认启用） */

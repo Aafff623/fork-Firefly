@@ -42,6 +42,11 @@ export type {
 	FontDefinition,
 	FontSelectionConfig,
 } from "../types/fontConfig"; // 字体类型定义
+export {
+	achievementsBadges,
+	achievementsPageConfig,
+	getUnlockedBadges,
+} from "./achievementsConfig"; // 摘星录（成就徽章墙）配置
 export { agentPersonas } from "./agentPersonas"; // agent 协作者人格配置
 export { analyticsConfig } from "./analyticsConfig"; // 统计分析配置
 export { announcementConfig } from "./announcementConfig"; // 公告配置

@@ -1,0 +1,338 @@
+/* Hallmark · genre: playful · macrostructure: Stat-Led · theme: Firefly tokens (hue 290) · enrichment: none
+ * nav: existing-site · footer: existing-site
+ * 规约：禁玻璃拟态 / 禁渐变文字 / 仅 transform+opacity 动效 / IO 代替 scroll 监听 / reduced-motion 折叠
+ * 本文件经页面 import 进全局 CSS 入口（Swup updateHead 卸不掉），类名统一 acv- 前缀防碰撞。
+ */
+
+.acv-page {
+	--acv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--acv-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+	--acv-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+	--acv-dur-micro: 120ms;
+	--acv-dur-short: 220ms;
+	--acv-dur-long: 420ms;
+	/* 等级色：低彩度，贴 hue 体系但固定色相（金/银/铜语义不随换色跑） */
+	--acv-gold: oklch(0.72 0.12 90);
+	--acv-silver: oklch(0.62 0.02 260);
+	--acv-bronze: oklch(0.60 0.10 60);
+	--acv-locked: oklch(0.55 0.01 260);
+	/* 站点文字色约定（对齐 main.css 的 text-90）：暗色由 :root.dark 祖先覆写 */
+	color: rgb(0 0 0 / 0.9);
+}
+:root.dark .acv-page {
+	--acv-gold: oklch(0.82 0.13 92);
+	--acv-silver: oklch(0.82 0.02 260);
+	--acv-bronze: oklch(0.72 0.11 62);
+	--acv-locked: oklch(0.60 0.01 260);
+	color: rgb(255 255 255 / 0.9);
+}
+
+/* ---------- Stat Hero ---------- */
+.acv-hero {
+	padding: 2.75rem 2rem 2rem;
+}
+.acv-hero-title {
+	font-size: 1.05rem;
+	font-weight: 700;
+	letter-spacing: 0.35em;
+	color: var(--primary);
+}
+.acv-figure-row {
+	display: flex;
+	align-items: baseline;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-top: 1.25rem;
+}
+.acv-figure {
+	font-size: clamp(4.5rem, 11vw, 7.5rem);
+	font-weight: 800;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	color: var(--primary);
+}
+.acv-figure-words {
+	font-size: 1.35rem;
+	font-weight: 700;
+	line-height: 1.4;
+	max-width: 18em;
+}
+.acv-hero-lede {
+	margin-top: 0.9rem;
+	font-size: 0.92rem;
+	color: var(--text-75, inherit);
+	opacity: 0.75;
+	max-width: 40em;
+}
+.acv-hero-stats {
+	margin-top: 1.75rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--line-divider);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem 3rem;
+}
+.acv-stat b {
+	display: block;
+	font-size: 1.45rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+.acv-stat span {
+	font-size: 0.78rem;
+	letter-spacing: 0.15em;
+	opacity: 0.6;
+}
+
+/* ---------- 节标题（无 eyebrow，单列） ---------- */
+.acv-section {
+	margin-top: 3.5rem;
+}
+.acv-section-head {
+	margin-bottom: 1.5rem;
+}
+.acv-section-head h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+.acv-section-head p {
+	margin-top: 0.5rem;
+	font-size: 0.88rem;
+	opacity: 0.65;
+}
+
+/* ---------- 星墙 ---------- */
+.acv-wall {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+	gap: 1rem;
+}
+.acv-badge {
+	appearance: none;
+	border: 1px solid var(--line-divider);
+	background: var(--card-bg);
+	border-radius: 0.9rem;
+	padding: 1.25rem 0.9rem 1.1rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.65rem;
+	cursor: pointer;
+	text-align: center;
+	font: inherit;
+	color: inherit;
+	transition:
+		transform var(--acv-dur-short) var(--acv-ease-out),
+		border-color var(--acv-dur-short) var(--acv-ease-out);
+}
+.acv-badge:hover {
+	transform: translateY(-2px);
+	border-color: var(--acv-tier, var(--primary));
+}
+.acv-badge:active {
+	transform: translateY(0);
+}
+.acv-badge:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+.acv-medal {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	border: 2px solid var(--acv-tier);
+	background: color-mix(in oklch, var(--acv-tier) 14%, var(--card-bg));
+	color: var(--acv-tier);
+}
+:root.dark .acv-medal {
+	background: color-mix(in oklch, var(--acv-tier) 18%, var(--card-bg));
+}
+.acv-medal svg {
+	width: 1.75rem;
+	height: 1.75rem;
+}
+.acv-badge-name {
+	font-weight: 600;
+	font-size: 0.92rem;
+	white-space: nowrap;
+}
+.acv-badge-date {
+	font-size: 0.72rem;
+	letter-spacing: 0.1em;
+	opacity: 0.55;
+	font-variant-numeric: tabular-nums;
+}
+.acv-tier-chip {
+	align-self: flex-end;
+	font-size: 0.66rem;
+	letter-spacing: 0.1em;
+	padding: 0.1rem 0.55rem;
+	border-radius: 999px;
+	border: 1px solid var(--acv-tier);
+	color: var(--acv-tier);
+}
+/* 灰星：未解锁 */
+.acv-badge.is-locked {
+	cursor: default;
+	border-style: dashed;
+	border-color: var(--acv-locked);
+	opacity: 0.55;
+}
+.acv-badge.is-locked:hover {
+	transform: none;
+}
+.acv-badge.is-locked .acv-medal {
+	border-color: var(--acv-locked);
+	background: transparent;
+	color: var(--acv-locked);
+}
+.acv-badge.is-locked .acv-tier-chip {
+	border-color: var(--acv-locked);
+	color: var(--acv-locked);
+}
+
+/* ---------- 弹窗（scale 0.96→1 + 透明度交叉淡入） ---------- */
+.acv-modal-mask {
+	position: fixed;
+	inset: 0;
+	z-index: 90;
+	display: grid;
+	place-items: center;
+	background: rgb(0 0 0 / 0.5);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity calc(var(--acv-dur-long) * 0.75) var(--acv-ease-in);
+}
+.acv-modal-mask.open {
+	opacity: 1;
+	pointer-events: auto;
+	transition: opacity var(--acv-dur-long) var(--acv-ease-out);
+}
+.acv-modal {
+	width: min(24rem, calc(100vw - 3rem));
+	border-radius: 1.1rem;
+	border: 1px solid var(--line-divider);
+	background: var(--card-bg);
+	padding: 2.25rem 1.75rem 1.75rem;
+	text-align: center;
+	transform: scale(0.96) translateY(12px);
+	opacity: 0;
+	transition:
+		transform var(--acv-dur-long) var(--acv-ease-out),
+		opacity var(--acv-dur-long) var(--acv-ease-out);
+}
+.acv-modal-mask.open .acv-modal {
+	transform: none;
+	opacity: 1;
+}
+.acv-modal .acv-medal {
+	width: 5rem;
+	height: 5rem;
+	margin: 0 auto 1.1rem;
+}
+.acv-modal .acv-medal svg {
+	width: 2.2rem;
+	height: 2.2rem;
+}
+.acv-modal-name {
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+.acv-modal-meta {
+	margin-top: 0.45rem;
+	font-size: 0.78rem;
+	letter-spacing: 0.12em;
+	font-variant-numeric: tabular-nums;
+	color: var(--acv-tier, var(--primary));
+}
+.acv-modal-desc {
+	margin-top: 1rem;
+	font-size: 0.9rem;
+	line-height: 1.8;
+	opacity: 0.75;
+}
+.acv-modal-close {
+	margin-top: 1.6rem;
+	padding: 0.5rem 1.75rem;
+	border-radius: 999px;
+	border: 1px solid var(--primary);
+	background: transparent;
+	color: var(--primary);
+	font: inherit;
+	font-size: 0.82rem;
+	letter-spacing: 0.15em;
+	cursor: pointer;
+	white-space: nowrap;
+	transition:
+		background-color var(--acv-dur-micro) var(--acv-ease-out),
+		color var(--acv-dur-micro) var(--acv-ease-out);
+}
+.acv-modal-close:hover {
+	background: var(--primary);
+	color: var(--card-bg);
+}
+.acv-modal-close:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+
+/* ---------- 入场（IO reveal-once，DOM 序 stagger） ---------- */
+.acv-reveal {
+	opacity: 0;
+	transform: translateY(8px);
+	transition:
+		opacity var(--acv-dur-long) var(--acv-ease-out),
+		transform var(--acv-dur-long) var(--acv-ease-out);
+	transition-delay: calc(var(--i, 0) * 60ms);
+}
+.acv-reveal.in {
+	opacity: 1;
+	transform: none;
+}
+/* JS 未执行时兜底：内容直接可见 */
+@media (scripting: none) {
+	.acv-reveal {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.acv-foot {
+	margin-top: 3rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--line-divider);
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	opacity: 0.5;
+}
+
+/* ---------- 移动端 ---------- */
+@media (max-width: 720px) {
+	.acv-hero {
+		padding: 2rem 1.25rem 1.5rem;
+	}
+	.acv-wall {
+		grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+		gap: 0.75rem;
+	}
+	.acv-hero-stats {
+		gap: 1rem 1.75rem;
+	}
+}
+
+/* ---------- reduced motion：空间动效折叠为短淡入 ---------- */
+@media (prefers-reduced-motion: reduce) {
+	.acv-page *,
+	.acv-page *::before,
+	.acv-page *::after {
+		animation-duration: 150ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 150ms !important;
+		transition-delay: 0ms !important;
+	}
+	.acv-reveal {
+		transform: none;
+	}
+}
