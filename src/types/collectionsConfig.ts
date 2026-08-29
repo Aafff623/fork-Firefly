@@ -10,7 +10,7 @@ export type CollectionMeta = {
 	emoji?: string;
 	/**
 	 * 合集卡片背景图（站点根路径，如 `/assets/collections/<slug>.jpg`）。
-	 * 新增合集时用 MiniMax 出一张贴题 4:3 图落盘后再填此字段。
+	 * 新增合集时使用一张贴题的 4:3 图片落盘后再填此字段。
 	 */
 	cover?: string;
 	/**

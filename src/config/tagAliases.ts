@@ -10,7 +10,6 @@ export const tagAliases: Record<string, string[]> = {
 	"AI Agent": ["Agent", "智能体", "代理"],
 	Agent: ["智能体", "代理"],
 	MCP: ["Model Context Protocol", "模型上下文"],
-	MiniMax: ["MM", "大模型"],
 	Pi: ["pi-coding-agent", "pi agent"],
 	"Vibe Coding": ["氛围编程", "vibe"],
 	Harness: ["框架", "脚手架", "外壳"],

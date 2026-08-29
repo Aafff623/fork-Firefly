@@ -23,7 +23,7 @@ export interface LayeredClockWeatherConfig {
 	refreshMinutes: number;
 }
 
-/** 天空 GIF 资产（MiniMax 视频→GIF；未就绪时 CSS 兜底） */
+/** 天空 GIF 资产（已落盘时使用；未就绪时 CSS 兜底） */
 export interface LayeredClockSkyAssetsConfig {
 	// 是否启用 GIF 天空层
 	enable: boolean;
