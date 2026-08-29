@@ -19,7 +19,7 @@ IT咖啡馆官方周刊当**项目目录**，按 [`references/owner-priority.md`
 ## 何时用 / 不用
 
 - **用**：跑一期热榜 / GitHub 每周热榜（也可由 `knowledge-extract` 渠道 4 交接过来）。
-- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `knowledge-output`）；日更图卡 `github-trending-11-cards-*` 不是本合集。默认禁止 MiniMax。
+- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `knowledge-output`）；日更图卡 `github-trending-11-cards-*` 不是本合集。只使用已有的官方或合规素材，不调用外部图片生成。
 
 ## 信息源（只订这一条）
 

@@ -19,7 +19,7 @@ compatibility: Firefly 项目根。Python 3 stdlib。Windows PowerShell OK。
 ## 何时用 / 不用
 
 - **用**：跑一期早报 / 今天的早报（也可由 `knowledge-extract` 渠道 4 交接过来）。
-- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `knowledge-output`）。默认禁止 MiniMax。
+- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `knowledge-output`）。只使用已有的官方或合规素材，不调用外部图片生成。
 - **不用接 RSS MCP**：不接 glean / zenfeed / TrendRadar，也不用本机 `user-aigc-news` 榜单当主源。拉取橘鸦 RSS 只用 `curl.exe`（见下）。
 
 ## 信息源（只订这一个）

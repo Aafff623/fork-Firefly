@@ -30,6 +30,7 @@ KNOWN_CATEGORIES = {
     "早报",
     "开源",
     "功能",
+    "修行",
 }
 
 SLUG_RE = re.compile(

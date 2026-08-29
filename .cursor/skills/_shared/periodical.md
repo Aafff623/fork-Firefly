@@ -26,7 +26,7 @@
 ## 配图与 R2
 
 - 每条至少一张**相关**图。优先官方 OG / 产品页 / README 演示帧 / 公告截图。不要空洞装饰图。
-- **默认禁止 MiniMax 付费生图**。仅官方图实在没有、且用户当场授权，才过 `firefly-minimax-media` 的 `check_quota.py`。
+- 只使用已有的官方或合规素材；没有合适素材时标记待补，不调用外部图片生成。
 - 正文大图不进 git。上传 Cloudflare R2 后写公网 URL。
 - 桶：**`firefly-comment`**。公网：**`https://img.threetwoa.live`**。不要写到 `threetwoa-blog-assets`（无 `img.` 域）。
 - object key：`posts/<slug>/<ascii-name>.jpg`

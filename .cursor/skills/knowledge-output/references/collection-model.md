@@ -74,8 +74,8 @@ purpose: 从会聊天到能交付的踩坑短篇（CSDN 精选提炼）。
 route: 从会聊天到能交付的踩坑短篇（CSDN 精选提炼）。
 
 ## L1 `visual-media` · 视觉媒体
-purpose: 海报与版式、提示词资产、视频与手绘生成、MiniMax 做片。前端工程实现见「前端工程」。
-route: 海报、版式、提示词资产、视频/手绘生成、MiniMax 做片挂本夹。前端实现（Lottie/SVG/小程序）走 `frontend-eng`。
+purpose: 海报与版式、提示词资产、视频与手绘素材整理。前端工程实现见「前端工程」。
+route: 海报、版式、提示词资产、视频/手绘素材挂本夹。前端实现（Lottie/SVG/小程序）走 `frontend-eng`。
 
 ## L1 `model-eval` · 模型评测
 purpose: 厂商新模型实测，以及中转 / 羊毛场景里真正跑得动的模型评测。
@@ -95,13 +95,44 @@ route: 订阅、限免、试用情报里带模型水位判断的篇目。
 purpose: RAG、MoE、应用栈与底层概念，以及 Python 库地图。实测跑分见「模型评测」。
 route: RAG / MoE / 库地图等概念向。跑分实测走 `model-eval`（含中转/羊毛二级）。
 
-## L1 `ai-morning-brief` · AI 早报
-purpose: 按期 AI 资讯摘要：官方渠道与可核对来源为主，B 站等视频源只作片单线索。
-route: 只收合集 skill 出的早报一期。普通 Knowledge 笔记不要挂这里。
+## L1 `java-fullstack` · Java 全栈工程师
+purpose: Java+AI 全栈工程师体系课：从单体到分布式、微服务、AI 融合与云原生部署的完整学习路径。
+route: Java+AI 全栈工程师体系课：从单体到分布式、微服务、AI 融合与云原生部署的完整学习路径。
 
-## L1 `github-weekly-hot` · GitHub 每周热点
-purpose: 按期自写的开源项目解读。周刊只当目录；日更热榜卡不进本夹。
-route: 只收合集 skill 出的热榜一期。普通笔记不要挂这里。
+### L2 `java-fullstack-intro` · 开篇导学
+parent: java-fullstack
+purpose: 课程导学与 Java+AI 全栈工程师概论。
+route: 课程导学与 Java+AI 全栈工程师概论。
+
+### L2 `java-fullstack-spring` · Spring 全家桶
+parent: java-fullstack
+purpose: Spring 核心、Spring MVC、Spring Data、Spring Security。
+route: Spring 核心、Spring MVC、Spring Data、Spring Security。
+
+### L2 `java-fullstack-frontend-basic` · 前端基础
+parent: java-fullstack
+purpose: Thymeleaf 模板引擎与 Bootstrap 样式框架。
+route: Thymeleaf 模板引擎与 Bootstrap 样式框架。
+
+### L2 `java-fullstack-monolith` · 单体实战：仿小红书
+parent: java-fullstack
+purpose: 从零到一构建仿小红书单体全栈项目。
+route: 从零到一构建仿小红书单体全栈项目。
+
+### L2 `java-fullstack-distributed` · 分布式进阶
+parent: java-fullstack
+purpose: 分布式原理、Git、Redis、Kafka、MongoDB、Nginx、Prometheus 与演进实战。
+route: 分布式原理、Git、Redis、Kafka、MongoDB、Nginx、Prometheus 与演进实战。
+
+### L2 `java-fullstack-microservices` · 前后端分离与微服务
+parent: java-fullstack
+purpose: Vue 3、前后端分离实战、微服务架构设计、Spring Cloud 与改造实战。
+route: Vue 3、前后端分离实战、微服务架构设计、Spring Cloud 与改造实战。
+
+### L2 `java-fullstack-ai-cloud` · AI 赋能与云原生
+parent: java-fullstack
+purpose: Spring AI、AI 融合实战、Docker、Kubernetes 与部署运维。
+route: Spring AI、AI 融合实战、Docker、Kubernetes 与部署运维。
 
 ## L1 `courses` · 课程推荐
 purpose: 训练营与课程拆解。下面按机构 / 系列挂二级。
@@ -145,6 +176,30 @@ route: 人效、精益、成本与产品判断。有帖再往这里挂。
 ## L1 `humanities` · 文史
 purpose: 历史、神话、人物与地图。神话地图先占坑；以后史识、人物也可往这里挂。
 route: 历史、神话、人物与地图。神话地图先占坑；以后史识、人物也可往这里挂。
+
+## L1 `xiuxing` · 修行
+purpose: 修仙、修行、玄学世界观与灵性实证。人身难得，这一世怎么修、修到哪里。按 UP 主分二级：散人小沅 / 修炼者小烨 / 玄成先生 / 林晓丁。
+route: 修仙、修行、玄学世界观与灵性实证。人身难得，这一世怎么修、修到哪里。按 UP 主分二级：散人小沅 / 修炼者小烨 / 玄成先生 / 林晓丁。
+
+### L2 `sanren-xiaoyuan` · 散人小沅
+parent: xiuxing
+purpose: 人间规则、能量系统与世界运转的底层逻辑。
+route: 人间规则、能量系统与世界运转的底层逻辑。
+
+### L2 `xiulianzhe-xiaoye` · 修炼者小烨
+parent: xiuxing
+purpose: 修行实证体验、修仙路径与心性淬炼。
+route: 修行实证体验、修仙路径与心性淬炼。
+
+### L2 `xuancheng-xiansheng` · 玄成先生
+parent: xiuxing
+purpose: 地府、因果、幽冥问答与死后世界。
+route: 地府、因果、幽冥问答与死后世界。
+
+### L2 `lin-xiaoding` · 林晓丁
+parent: xiuxing
+purpose: 阳间修行指南、功德与实践。
+route: 阳间修行指南、功德与实践。
 
 ## L1 `site-series` · 本站系列
 purpose: 园主本站：部署与域名、桌宠、发文流水线等站点自身记录。
