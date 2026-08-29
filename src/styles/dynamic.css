@@ -317,12 +317,39 @@
 	border-radius: 0.7rem;
 	transition:
 		border-color 180ms var(--dyn-ease),
-		box-shadow 180ms var(--dyn-ease);
+		box-shadow 180ms var(--dyn-ease),
+		transform 180ms var(--dyn-ease);
 }
 
 .ff-tl-panel:hover {
 	border-color: color-mix(in oklab, var(--primary) 32%, var(--line-divider));
 	box-shadow: 0 1px 0 color-mix(in oklab, var(--primary) 8%, transparent);
+	transform: translateY(-2px);
+}
+
+/* 星轨年份胶囊：相邻行跨年时插入，滚动吸顶（摘星录 acv-year 同款） */
+.ff-tl-year-pill {
+	list-style: none;
+	position: sticky;
+	top: 5.5rem;
+	z-index: 5;
+	display: flex;
+	justify-content: center;
+	margin: 0.75rem 0;
+	pointer-events: none;
+}
+
+.ff-tl-year-pill span {
+	font-size: 0.85rem;
+	font-weight: 700;
+	letter-spacing: 0.25em;
+	font-variant-numeric: tabular-nums;
+	padding: 0.3rem 1.1rem;
+	border-radius: 999px;
+	background: var(--card-bg);
+	border: 1px solid color-mix(in oklab, var(--primary) 55%, transparent);
+	color: var(--primary);
+	box-shadow: 0 2px 12px color-mix(in oklab, var(--primary) 12%, transparent);
 }
 
 .ff-tl-date-link {
