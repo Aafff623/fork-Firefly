@@ -7,10 +7,11 @@
 import type { APIRoute } from "astro";
 import { siteConfig } from "@/config";
 import {
-	buildAskPrompt,
-	retrieveSiteHits,
 	type AskHit,
 	type AskIntent,
+	type AskPromptAttachment,
+	buildAskPrompt,
+	retrieveSiteHits,
 } from "@/utils/ask-retrieve";
 
 export const prerender = false;
@@ -152,19 +153,25 @@ export const POST: APIRoute = async ({ request, url }) => {
 		const authUrl = upstreamUrl("/auth/anonymous");
 		let auth: { ok: boolean; status: number; data: unknown };
 		try {
-			const authRes = await fetch(new Request(authUrl, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Accept: "application/json",
-				},
-				body: JSON.stringify({ access_token: ACCESS_TOKEN }),
-			}));
+			const authRes = await fetch(
+				new Request(authUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					},
+					body: JSON.stringify({ access_token: ACCESS_TOKEN }),
+				}),
+			);
 			auth = await readUpstreamJson(authRes);
 		} catch (err) {
 			auth = upstreamUnreachable(err);
 		}
-		const authBody = auth.data as { code?: number; message?: string; data?: string };
+		const authBody = auth.data as {
+			code?: number;
+			message?: string;
+			data?: string;
+		};
 		if (!auth.ok || authBody?.code !== 200 || !authBody.data) {
 			return json(
 				{
@@ -178,18 +185,24 @@ export const POST: APIRoute = async ({ request, url }) => {
 		const openUrl = upstreamUrl("/open");
 		let open: { ok: boolean; status: number; data: unknown };
 		try {
-			const openRes = await fetch(new Request(openUrl, {
-				method: "GET",
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${authBody.data}`,
-				},
-			}));
+			const openRes = await fetch(
+				new Request(openUrl, {
+					method: "GET",
+					headers: {
+						Accept: "application/json",
+						Authorization: `Bearer ${authBody.data}`,
+					},
+				}),
+			);
 			open = await readUpstreamJson(openRes);
 		} catch (err) {
 			open = upstreamUnreachable(err);
 		}
-		const openBody = open.data as { code?: number; message?: string; data?: string };
+		const openBody = open.data as {
+			code?: number;
+			message?: string;
+			data?: string;
+		};
 		if (!open.ok || openBody?.code !== 200 || !openBody.data) {
 			return json(
 				{
@@ -221,11 +234,9 @@ export const POST: APIRoute = async ({ request, url }) => {
 		const limit = Math.min(Math.max(Number(body.limit) || 5, 1), 10);
 		// 每次现算；禁止中间层把检索结果当答案缓存
 		const data = await retrieveSiteHits(message, limit);
-		return json(
-			{ code: 200, message: "成功", data },
-			200,
-			{ "Cache-Control": "no-store, no-cache, must-revalidate" },
-		);
+		return json({ code: 200, message: "成功", data }, 200, {
+			"Cache-Control": "no-store, no-cache, must-revalidate",
+		});
 	}
 
 	if (action === "chat") {
@@ -238,6 +249,11 @@ export const POST: APIRoute = async ({ request, url }) => {
 			/** 人设：guide | scholar | builder | muse（兼容旧 mode） */
 			persona?: string;
 			mode?: "garden" | "deep";
+			attachments?: Array<{
+				name?: unknown;
+				kind?: unknown;
+				text?: unknown;
+			}>;
 		};
 		try {
 			body = (await request.json()) as typeof body;
@@ -255,6 +271,31 @@ export const POST: APIRoute = async ({ request, url }) => {
 			return json({ code: 400, message: "chatId 格式非法" }, 400);
 		}
 
+		// 附件：最多 4 个；名字截 120；单段文本截 6000；总文本 12000（顺序保留先到的）
+		const ASK_ATTACH_MAX = 4;
+		const rawAttachments = Array.isArray(body.attachments)
+			? body.attachments
+			: [];
+		const attachments: AskPromptAttachment[] = [];
+		let attachTextBudget = 12000;
+		for (const raw of rawAttachments.slice(0, ASK_ATTACH_MAX)) {
+			const name = String(raw?.name ?? "")
+				.slice(0, 120)
+				.trim();
+			if (!name) continue;
+			const kind = raw?.kind === "image" ? "image" : "text";
+			let text = "";
+			if (
+				kind === "text" &&
+				typeof raw?.text === "string" &&
+				attachTextBudget > 0
+			) {
+				text = raw.text.slice(0, Math.min(6000, attachTextBudget));
+				attachTextBudget -= text.length;
+			}
+			attachments.push({ name, kind, text: text || undefined });
+		}
+
 		const intent: AskIntent =
 			body.intent === "recent"
 				? "recent"
@@ -264,11 +305,12 @@ export const POST: APIRoute = async ({ request, url }) => {
 		const hits = Array.isArray(body.hits) ? body.hits.slice(0, 10) : [];
 		/** 旧 mode=deep → 书虫；否则走人设 */
 		const persona =
-			body.persona ||
-			(body.mode === "deep" ? "scholar" : "guide");
-		const prompt = buildAskPrompt(message, hits, intent, persona);
+			body.persona || (body.mode === "deep" ? "scholar" : "guide");
+		const prompt = buildAskPrompt(message, hits, intent, persona, attachments);
 		// chatId 已过严格字符白名单 + upstreamUrl 路径校验双重防线
-		const upstreamUrlStr = upstreamUrl(`/chat_message/${encodeURIComponent(chatId)}`);
+		const upstreamUrlStr = upstreamUrl(
+			`/chat_message/${encodeURIComponent(chatId)}`,
+		);
 
 		let upstream: Response;
 		try {
@@ -323,7 +365,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 					upstream.status >= 400 ? upstream.status : 200,
 				);
 			} catch {
-				return json({ code: 502, message: text.slice(0, 200) || "非 JSON 响应" }, 502);
+				return json(
+					{ code: 502, message: text.slice(0, 200) || "非 JSON 响应" },
+					502,
+				);
 			}
 		}
 

@@ -1,14 +1,19 @@
 /**
  * /ask 富文本：单次 GFM 渲染（不用 HeroUI Markdown 的 marked.lexer 分块，
  * 分块会把表格拆烂，只剩最后一块能显示）。
+ * 引用：模型按提示词在句末标 [n]（n 对应站内检索结果编号）→
+ * linkifyCitations 把 [n] 转成真链接，渲染层识别纯数字链接换成可悬停角标。
  */
+import { ExternalLink } from "lucide-react";
 import type { ReactElement } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
+import type { Components as StreamdownComponents } from "streamdown";
+import { type AskSource, SourceHoverCard } from "./AskGrokBits";
 
 /** 模型偶尔仍输出「链接：/posts/…」纯文本 → 收成可点 Markdown */
 export function normalizeAskMarkdown(src: string): string {
@@ -49,41 +54,113 @@ export function normalizeAskMarkdown(src: string): string {
 	return md;
 }
 
-const components: Components = {
-	a: ({ href, children, ...props }) => (
-		<a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-			{children}
-		</a>
-	),
-	blockquote: ({ children, ...props }) => (
-		<blockquote className="ask-md-quote" {...props}>
-			{children}
-		</blockquote>
-	),
-	strong: ({ children, ...props }) => (
-		<strong className="ask-md-strong" {...props}>
-			{children}
-		</strong>
-	),
-	em: ({ children, ...props }) => (
-		<em className="ask-md-em" {...props}>
-			{children}
-		</em>
-	),
-	table: ({ children, ...props }) => (
-		<div className="ask-md-table-wrap" data-slot="ask-md-table-wrap">
-			<table {...props}>{children}</table>
-		</div>
-	),
-};
+/** [n]（n ≤ 来源数）→ [n](来源url)；跳过代码围栏段，避免改坏代码块 */
+export function linkifyCitations(md: string, sources?: AskSource[]): string {
+	if (!sources?.length || !md) return md;
+	const parts = md.split(/(```[\s\S]*?(?:```|$))/g);
+	return parts
+		.map((part, i) => {
+			if (i % 2 === 1) return part;
+			return part.replace(/\[(\d{1,2})\]/g, (m, n) => {
+				const src = sources[Number(n) - 1];
+				return src ? `[${n}](${src.url})` : m;
+			});
+		})
+		.join("");
+}
+
+/** 纯数字链接 → 可悬停引用角标；其余照常渲染 */
+function makeComponents(sources?: AskSource[]): Components {
+	const findSource = (href: string): AskSource | undefined => {
+		if (!sources?.length) return undefined;
+		const key = decodeURIComponent(href || "");
+		return sources.find((s) => s.url === key);
+	};
+	return {
+		a: ({ href, children, ...props }) => {
+			const text = typeof children === "string" ? children.trim() : "";
+			const src = /^\d+$/.test(text) && href ? findSource(href) : undefined;
+			if (src && text) {
+				return (
+					<sup className="ask-cite" data-cite={text}>
+						<SourceHoverCard
+							title={src.title}
+							url={src.url}
+							snippet={src.snippet}
+							date={src.date}
+						>
+							<a
+								href={href}
+								target="_blank"
+								rel="noopener noreferrer"
+								aria-label={`来源 ${text}：${src.title}`}
+							>
+								{text}
+							</a>
+						</SourceHoverCard>
+					</sup>
+				);
+			}
+			return (
+				<a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+					{children}
+					{href && /^https?:\/\//.test(href) ? (
+						<ExternalLink
+							className="ask-md-link-ext"
+							aria-hidden="true"
+							width={12}
+							height={12}
+						/>
+					) : null}
+				</a>
+			);
+		},
+		blockquote: ({ children, ...props }) => (
+			<blockquote className="ask-md-quote" {...props}>
+				{children}
+			</blockquote>
+		),
+		strong: ({ children, ...props }) => (
+			<strong className="ask-md-strong" {...props}>
+				{children}
+			</strong>
+		),
+		em: ({ children, ...props }) => (
+			<em className="ask-md-em" {...props}>
+				{children}
+			</em>
+		),
+		table: ({ children, ...props }) => (
+			<div className="ask-md-table-wrap" data-slot="ask-md-table-wrap">
+				<table {...props}>{children}</table>
+			</div>
+		),
+	};
+}
 
 type Props = {
 	children: string;
 	className?: string;
+	/** 行内角标 [n] 的映射来源（完成态传入；流式可不传） */
+	sources?: AskSource[];
 };
 
-export default function AskMarkdown({ children, className }: Props): ReactElement {
-	const content = normalizeAskMarkdown(children || "");
+/** 流式渲染（StreamMarkdown）复用同一套组件覆盖：纯数字链接 → 引用角标 */
+export function askMarkdownComponents(
+	sources?: AskSource[],
+): StreamdownComponents {
+	return makeComponents(sources) as unknown as StreamdownComponents;
+}
+
+export default function AskMarkdown({
+	children,
+	className,
+	sources,
+}: Props): ReactElement {
+	const content = linkifyCitations(
+		normalizeAskMarkdown(children || ""),
+		sources,
+	);
 	return (
 		<div
 			className={`ask-markdown markdown${className ? ` ${className}` : ""}`}
@@ -92,7 +169,7 @@ export default function AskMarkdown({ children, className }: Props): ReactElemen
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
 				rehypePlugins={[rehypeKatex]}
-				components={components}
+				components={makeComponents(sources)}
 			>
 				{content}
 			</ReactMarkdown>

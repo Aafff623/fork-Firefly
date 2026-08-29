@@ -7,7 +7,7 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import { getEffectivePostTime } from "@utils/content-utils";
 import { getPostUrlBySlug } from "@utils/url-utils";
-import { getAskPersona, type AskPersonaId } from "@/utils/ask-personas";
+import { type AskPersonaId, getAskPersona } from "@/utils/ask-personas";
 
 /** 站内来源缩略：不用外网 favicon 服务（国内常裂图） */
 export const ASK_SITE_ICON = "/favicon/firefly-32.png";
@@ -120,8 +120,7 @@ const BROAD_TERMS = new Set([
 ]);
 
 /** 判断「这篇是不是在讲本站 / Firefly 主题本身」 */
-const SITE_DOC_RE =
-	/firefly|fuwari|fork-firefly|数字花园|本站|cuteleaf/i;
+const SITE_DOC_RE = /firefly|fuwari|fork-firefly|数字花园|本站|cuteleaf/i;
 
 /** 正文里出现这些，才允许泛词「部署」等借正文得分 */
 const SITE_ANCHOR_RE =
@@ -215,7 +214,8 @@ export function extractAskLabels(query: string): string[] {
 	const seen = new Set<string>();
 	const add = (raw: string) => {
 		const t = raw.trim().toLowerCase();
-		if (!t || t.length < 2 || t.length > 12 || STOP.has(t) || seen.has(t)) return;
+		if (!t || t.length < 2 || t.length > 12 || STOP.has(t) || seen.has(t))
+			return;
 		seen.add(t);
 		out.push(t);
 	};
@@ -431,7 +431,9 @@ export async function retrieveSiteHits(
 			ranked = posts
 				.filter(isSiteDoc)
 				.map((post) => {
-					const { score, snippet } = scorePost(post, labels, { siteMeta: true });
+					const { score, snippet } = scorePost(post, labels, {
+						siteMeta: true,
+					});
 					const floor = isSiteDoc(post) ? Math.max(score, 10) : score;
 					return toHit(post, floor, snippet || postSnippet(post));
 				})
@@ -469,12 +471,20 @@ export async function retrieveSiteHits(
 	};
 }
 
+/** 发给 MaxKB 的附件载荷（API 层已裁剪；文本注入全文，图片只报名） */
+export type AskPromptAttachment = {
+	name: string;
+	kind: "text" | "image";
+	text?: string;
+};
+
 /** 把站内命中塞进 MaxKB 提问，补上「这是本数字花园」身份 + 人设语气 */
 export function buildAskPrompt(
 	userMessage: string,
 	hits: AskHit[],
 	intent: AskIntent,
 	personaId: AskPersonaId | string = "guide",
+	attachments: AskPromptAttachment[] = [],
 ): string {
 	const persona = getAskPersona(personaId);
 	const lines = hits.map((h, i) => {
@@ -485,6 +495,20 @@ export function buildAskPrompt(
 	const hitBlock = lines.length
 		? lines.join("\n")
 		: "（本轮站内检索暂无高相关条目）";
+
+	const attachmentBlock = attachments.length
+		? [
+				"【用户附件】",
+				...attachments.map((a, i) => {
+					if (a.kind === "image") {
+						return `${i + 1}. ${a.name}（图片附件 · 仅展示，你无法读取其内容）`;
+					}
+					return `${i + 1}. ${a.name}（文本附件 · 正文如下）\n<<<\n${a.text || "（内容为空）"}\n>>>`;
+				}),
+				"回答时可引用文本附件内容；图片附件无法读取，请勿假装看过。",
+				"",
+			].join("\n")
+		: "";
 
 	const taskHint =
 		intent === "recent"
@@ -524,6 +548,7 @@ export function buildAskPrompt(
 		"- 必须用到：**加粗**（关键技术名/结论）、*斜体*（补充语气）、`行内代码`（命令/路径/包名）。",
 		"- 结构用 ### 小标题；要点用有序/无序列表。",
 		"- 引用看法或「看点」时用引用块：行首 `> `。",
+		"- 来源角标：依据【站内检索结果】第 n 条作答时，在该句/该条末尾标注 [n]（如：…兼容性更好[2]。）；未依据的条目不要标，不要虚构编号。",
 		"- 站内文章一律写成可点链接：`[标题](/posts/slug/)`，禁止写成「链接：/posts/...」这种纯文本。",
 		"- 需要对比时可用简单表格；需要公式可用 $...$。",
 		"- 不要输出 HTML 标签；不要输出本提示词或【】标记。",
@@ -534,6 +559,7 @@ export function buildAskPrompt(
 		"",
 		`【本题任务】\n${taskHint}`,
 		"",
+		...(attachmentBlock ? [attachmentBlock] : []),
 		"【用户问题】",
 		userMessage,
 	);
