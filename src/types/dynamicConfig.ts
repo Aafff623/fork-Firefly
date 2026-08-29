@@ -30,6 +30,12 @@ export type DynamicConfig = {
 	// 数据结构可打开上方链接地址参考
 	// 当 memos.enable 为 true 时，此配置会被忽略
 	apiUrl?: string;
+	/**
+	 * 是否包含「系统动态」（发文级联生成的「发布了新笔记：…」条目）。
+	 * false = 动态列表与侧栏最新动态都只展示真实动态（园主手写 / Agent 发布）。
+	 * 默认 false；置 true 可临时找回级联条目。
+	 */
+	includeSystemNotes?: boolean;
 	// Memos 配置
 	memos?: DynamicMemocsConfig;
 };

@@ -12,6 +12,7 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
 import { sortDynamics } from "@/utils/dynamic-utils";
+import { isSystemNoteHtml } from "@/utils/load-dynamic-entries";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -32,10 +33,13 @@ const memos = dynamicConfig.memos;
 const closeLabel = i18n(I18nKey.announcementClose);
 const storageKey = "firefly.dynamics.dismissedStamp";
 
-/** 本地动态：SSR 出最新 published，供关闭态首屏同步判断（免闪） */
+/** 本地动态：SSR 出最新 published，供关闭态首屏同步判断（免闪）；与 API 同口径过滤系统动态 */
 let ssrLatestStamp = 0;
 if (!memos?.enable) {
-	const dynamics = sortDynamics(await getCollection("dynamic"));
+	let dynamics = sortDynamics(await getCollection("dynamic"));
+	if (dynamicConfig.includeSystemNotes !== true) {
+		dynamics = dynamics.filter((entry) => !isSystemNoteHtml(entry.body || ""));
+	}
 	for (const entry of dynamics) {
 		const t = entry.data.published.getTime();
 		if (t > ssrLatestStamp) ssrLatestStamp = t;

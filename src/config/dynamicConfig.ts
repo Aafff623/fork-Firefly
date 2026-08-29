@@ -35,6 +35,9 @@ export const dynamicConfig: DynamicConfig = {
 	// 当 memos.enable 为 true 时，此配置会被忽略
 	apiUrl: "/api/dynamic.json",
 
+	// 是否包含发文级联的「系统动态」（发布了新笔记：…）。false = 只展示真实动态
+	includeSystemNotes: false,
+
 	// ========== Memos 配置 ==========
 	// 启用后客户端会直接从 Memos API 实时获取数据，apiUrl 配置将被忽略
 	// Memos 记得配置 CORS，否则可能会出现跨域问题

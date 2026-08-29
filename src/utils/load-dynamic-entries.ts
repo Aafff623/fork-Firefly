@@ -14,6 +14,12 @@ const defaultLocation = (
 	""
 ).trim();
 
+/** 系统动态标记：site-cascade 发文级联生成的「发布了新笔记：…」前缀 */
+export const SYSTEM_NOTE_PREFIX = "发布了新笔记：";
+
+export const isSystemNoteHtml = (html: string): boolean =>
+	(html || "").includes(SYSTEM_NOTE_PREFIX);
+
 export type DynamicEntryJson = {
 	id: string;
 	published: number;
@@ -36,7 +42,13 @@ function resolveDynamicImageSrc(src: string, entryId: string): string {
 /** 供 /api/dynamic.json 与 /dynamic/ SSR 共用 */
 export async function loadDynamicEntries(): Promise<DynamicEntryJson[]> {
 	const processor = await createMarkdownProcessor();
-	const dynamics = sortDynamics(await getCollection("dynamic"));
+	let dynamics = sortDynamics(await getCollection("dynamic"));
+	// 系统动态过滤：默认只留真实动态（园主手写 / Agent 发布）
+	if (dynamicConfig.includeSystemNotes !== true) {
+		dynamics = dynamics.filter(
+			(entry) => !isSystemNoteHtml(entry.body || ""),
+		);
+	}
 	return Promise.all(
 		dynamics.map(async (entry) => {
 			const images: Array<{ alt: string; src: string; title?: string }> = [];
