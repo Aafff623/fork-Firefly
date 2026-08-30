@@ -450,6 +450,8 @@ docs/idea/{theme}/ → Issue(.scratch/) → PRD(draft) → 你批准
 
 **V9（2026-08-21 · [v1.4.0](https://github.com/Aafff623/fork-Firefly/releases/tag/v1.4.0)）**：未缓存文章先进入 2 并发意图队列，HTML 准备完成后再一次提交 URL、DOM 与即时回顶；请求失败保留旧 URL/DOM/滚动并提示重试，导航等待期暂停桌宠、标签球与装饰动画。新增 GitHub numeric-id 园主会话、本地 Markdown/图片编辑与软归档；DEV bypass 仅在显式开关与真实 loopback 下生效，退出登录需确认；搜索迁至分类条「更多」右侧，樱花开关回到设置面板。生产 GitHub 写回和真实 OAuth 尚未启用，不把本地 mock 当线上后台。专项门禁为 `scripts/check-article-navigation-gates.mjs`、`scripts/check-ui-motion-gates.mjs` 与 `pnpm check:owner`。
 
+**V10（2026-08-30 · [v1.5.0](https://github.com/Aafff623/fork-Firefly/releases/tag/v1.5.0)）**：新增 Java 全栈课程文章 531 篇（小红书课程体系转换）；修复 114 篇误标 `draft: true` 文章线上点不开走 error 兜底的问题，全部转为发布，本地构建文章页 589→703 全部生成；清理两个只有图片、无正文的半成品目录；分支收敛为本地与远端仅留 `master` 主分支。
+
 完整测试边界、20-hop 回归和后续项：Wiki [Performance](https://github.com/Aafff623/fork-Firefly/wiki/Performance) · [V3 handoff](docs/outputs/handoff/perf-optimization-2026-08-13-v3.md) · [V5 review+收口](docs/outputs/handoff/perf-optimization-2026-08-15-v5-plan.md) · [V6/V7 收官](docs/outputs/handoff/perf-optimization-2026-08-15-v6-final.md)。
 
 ## Style and assets
