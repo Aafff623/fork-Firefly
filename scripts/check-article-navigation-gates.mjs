@@ -11,6 +11,7 @@ const astroConfig = read("astro.config.mjs");
 const mainCss = read("src/styles/main.css");
 const postPage = read("src/components/layout/PostPage.astro");
 const postCard = read("src/components/layout/PostCard.astro");
+const backToHome = read("src/components/controls/BackToHome.astro");
 const failures = [];
 
 function assert(name, condition) {
@@ -110,9 +111,10 @@ assert(
 	) && layout.includes("window.swup.navigate(link.href"),
 );
 assert(
-	"cold fetch failure preserves the current page and shows feedback",
-	layout.includes("showArticleNavigationError()") &&
-		layout.includes('classList.remove("is-page-transitioning")'),
+	"cold fetch failure falls back to native article navigation",
+	layout.includes("canUseSwupArticleNavigation") &&
+		layout.includes("queueArticleReveal(link.href)") &&
+		layout.includes("window.location.assign(link.href)"),
 );
 assert(
 	"navigation priority has success abort error and timeout recovery",
@@ -121,6 +123,36 @@ assert(
 		layout.includes('hooks.on("fetch:error", endNavigationPriority)') &&
 		layout.includes("15_000"),
 );
+assert(
+	"article entry records the source page scroll position",
+	layout.includes('FIREFLY_SCROLL_KEY = "fireflyScrollPosition"') &&
+		layout.includes("window.history.replaceState") &&
+		layout.includes("saveCurrentScrollPosition();") &&
+		layout.includes("[FIREFLY_SCROLL_KEY]: { left: 0, top: 0 }"),
+);
+assert(
+	"return navigation restores the saved scroll position without resetting to top",
+	layout.includes('FIREFLY_RETURN_KEY = "fireflyReturn"') &&
+		layout.includes("fireflyRestoreScroll") &&
+		layout.includes("restoreScrollPosition(restoredScroll)") &&
+		/visit\.history\.popstate\s*\?\s*getScrollPosition\(currentHistoryState\)/.test(
+			layout,
+		),
+);
+assert(
+	"floating home control returns through the original history entry",
+	backToHome.includes("fireflyReturn") &&
+		backToHome.includes("window.history.back()"),
+);
+assert(
+	"article entry reveals the main content grid without smooth scrolling",
+	layout.includes("const scrollToArticleContent") &&
+		layout.includes(
+			'mainGrid.scrollIntoView({ behavior: "auto", block: "start" })',
+		) &&
+		layout.includes("runWithoutSmoothScrolling") &&
+		layout.includes("revealQueuedArticleOnLoad"),
+);
 
 if (failures.length > 0) {
 	console.error("Article navigation gates failed:");
@@ -128,4 +160,4 @@ if (failures.length > 0) {
 	process.exit(1);
 }
 
-console.log("Article navigation gates passed (18/18).");
+console.log("Article navigation gates passed (22/22).");

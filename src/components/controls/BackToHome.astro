@@ -19,6 +19,31 @@ import { url } from "@/utils/url-utils";
 <script is:raw is:inline define:vars={{ homeUrl: url("/")}}>
   window.backToHome = function() {
     const url = homeUrl;
+    const state = window.history.state;
+    const returnState = state && typeof state === "object" ? state.fireflyReturn : null;
+    const returnUrl =
+      returnState && typeof returnState === "object" && typeof returnState.url === "string"
+        ? returnState.url
+        : "";
+    const normalizePath = (value) => {
+      try {
+        return new URL(value, window.location.href).pathname.replace(/\/$/, "") || "/";
+      } catch {
+        return value.replace(/\/$/, "") || "/";
+      }
+    };
+
+    if (
+      window.swup &&
+      state &&
+      typeof state === "object" &&
+      typeof state.index === "number" &&
+      normalizePath(returnUrl) === normalizePath(url)
+    ) {
+      window.history.back();
+      return;
+    }
+
     if (window.swup) {
       window.swup.navigate(url);
     } else {

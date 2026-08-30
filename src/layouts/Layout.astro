@@ -1180,6 +1180,70 @@ function disableAnimation() {
     }
   };
 
+  type FireflyScrollPosition = { left: number; top: number };
+  type FireflyHistoryState = Record<string, unknown>;
+  const FIREFLY_SCROLL_KEY = "fireflyScrollPosition";
+  const FIREFLY_RETURN_KEY = "fireflyReturn";
+  const FIREFLY_REVEAL_ARTICLE_KEY = "fireflyRevealArticleOnLoad";
+
+  const isScrollPosition = (value: unknown): value is FireflyScrollPosition => {
+    if (!value || typeof value !== "object") return false;
+    const position = value as Partial<FireflyScrollPosition>;
+    return (
+      typeof position.left === "number" &&
+      typeof position.top === "number" &&
+      Number.isFinite(position.left) &&
+      Number.isFinite(position.top) &&
+      position.left >= 0 &&
+      position.top >= 0
+    );
+  };
+
+  const getHistoryState = (): FireflyHistoryState => {
+    const state = window.history.state;
+    return state && typeof state === "object"
+      ? (state as FireflyHistoryState)
+      : {};
+  };
+
+  const getScrollPosition = (state: unknown): FireflyScrollPosition | null => {
+    if (!state || typeof state !== "object") return null;
+    const position = (state as FireflyHistoryState)[FIREFLY_SCROLL_KEY];
+    return isScrollPosition(position) ? position : null;
+  };
+
+  const getReturnNavigation = (
+    state: unknown,
+  ): { url: string; scroll: FireflyScrollPosition } | null => {
+    if (!state || typeof state !== "object") return null;
+    const returned = (state as FireflyHistoryState)[FIREFLY_RETURN_KEY];
+    if (!returned || typeof returned !== "object") return null;
+    const returnState = returned as { url?: unknown; scroll?: unknown };
+    return typeof returnState.url === "string" && isScrollPosition(returnState.scroll)
+      ? { url: returnState.url, scroll: returnState.scroll }
+      : null;
+  };
+
+  const saveCurrentScrollPosition = () => {
+    const state = getHistoryState();
+    window.history.replaceState(
+      {
+        ...state,
+        [FIREFLY_SCROLL_KEY]: { left: window.scrollX, top: window.scrollY },
+      },
+      "",
+      window.location.href,
+    );
+  };
+
+  const queueArticleReveal = (href: string) => {
+    try {
+      sessionStorage.setItem(FIREFLY_REVEAL_ARTICLE_KEY, href);
+    } catch {
+      // Storage can be blocked by browser privacy settings. Native navigation still works.
+    }
+  };
+
   type ArticlePrefetchResult = { url: string; html: string };
   type ArticlePrefetchTask = {
     href: string;
@@ -1193,6 +1257,13 @@ function disableAnimation() {
   let articlePrefetchActive = 0;
   let articleNavigationSequence = 0;
   let navigationPriorityTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  const canUseSwupArticleNavigation = () =>
+    Boolean(
+      window.swup?.cache &&
+      typeof window.swup.fetchPage === "function" &&
+      typeof window.swup.navigate === "function"
+    );
 
   const emitNavigationPriority = (active: boolean) => {
     document.documentElement.classList.toggle("is-navigation-priority", active);
@@ -1269,6 +1340,9 @@ function disableAnimation() {
     href: string,
     options: { priority: boolean; force: boolean },
   ): Promise<ArticlePrefetchResult> => {
+    if (!canUseSwupArticleNavigation()) {
+      return Promise.reject(new Error("swup_unavailable"));
+    }
     if (window.swup.cache.has(href)) {
       return Promise.resolve(window.swup.cache.get(href) as ArticlePrefetchResult);
     }
@@ -1302,13 +1376,29 @@ function disableAnimation() {
       currentHistoryIndex: number;
     };
     const nextIndex = swupInternal.currentHistoryIndex + 1;
+    const sourceState = getHistoryState();
+    const sourceScroll = getScrollPosition(sourceState);
+    const sourceUrl =
+      typeof visit.meta.fireflySourceArticleUrl === "string"
+        ? visit.meta.fireflySourceArticleUrl
+        : window.location.pathname + window.location.search + window.location.hash;
 
     window.history.pushState(
       {
+        ...sourceState,
         url: nextUrl,
         random: Math.random(),
         source: "swup",
         index: nextIndex,
+        [FIREFLY_SCROLL_KEY]: { left: 0, top: 0 },
+        ...(sourceScroll
+          ? {
+              [FIREFLY_RETURN_KEY]: {
+                url: sourceUrl,
+                scroll: sourceScroll,
+              },
+            }
+          : {}),
       },
       "",
       nextUrl,
@@ -1340,7 +1430,7 @@ function disableAnimation() {
     (window as Window & { __fireflyArticleIntentBound?: boolean }).__fireflyArticleIntentBound = true;
     const intent = (event: Event) => {
       const link = articleLinkFromEvent(event);
-      if (!link) return;
+      if (!link || !canUseSwupArticleNavigation()) return;
       void prepareArticle(link.href, { priority: true, force: false }).catch(() => undefined);
     };
     document.addEventListener("pointerover", intent, { capture: true, passive: true });
@@ -1359,7 +1449,12 @@ function disableAnimation() {
           return;
         }
         const link = articleLinkFromEvent(event);
-        if (!link || window.swup.cache.has(link.href)) return;
+        if (!link) return;
+        if (!canUseSwupArticleNavigation()) {
+          queueArticleReveal(link.href);
+          return;
+        }
+        if (window.swup.cache.has(link.href)) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         const sequence = ++articleNavigationSequence;
@@ -1371,19 +1466,29 @@ function disableAnimation() {
               meta: { fireflyPreparedArticle: true },
             });
           })
-          .catch(() => {
+          .catch((error) => {
             if (sequence !== articleNavigationSequence) return;
             document.documentElement.classList.remove("is-page-transitioning");
             endNavigationPriority();
             const progressBar = document.getElementById("progress-bar");
             progressBar?.classList.remove("loading", "finishing", "done");
-            showArticleNavigationError();
+            console.warn(
+              "[firefly] Swup article prefetch failed; using native navigation.",
+              error,
+            );
+            queueArticleReveal(link.href);
+            try {
+              window.location.assign(link.href);
+            } catch {
+              showArticleNavigationError();
+            }
           });
       },
       { capture: true },
     );
 
     const preloadMarkedArticles = () => {
+      if (!canUseSwupArticleNavigation()) return;
       const marked = [...document.querySelectorAll<HTMLAnchorElement>("a[data-swup-preload]")].slice(0, 2);
       for (const link of marked) {
         void prepareArticle(link.href, { priority: false, force: false }).catch(() => undefined);
@@ -1395,6 +1500,58 @@ function disableAnimation() {
       setTimeout(preloadMarkedArticles, 250);
     }
     document.addEventListener("swup:page:view", preloadMarkedArticles);
+  }
+
+  const runWithoutSmoothScrolling = (action: () => void) => {
+    const root = document.documentElement;
+    const previousBehavior = root.style.getPropertyValue("scroll-behavior");
+    const previousPriority = root.style.getPropertyPriority("scroll-behavior");
+    root.style.setProperty("scroll-behavior", "auto", "important");
+    try {
+      action();
+    } finally {
+      if (previousBehavior) {
+        root.style.setProperty("scroll-behavior", previousBehavior, previousPriority);
+      } else {
+        root.style.removeProperty("scroll-behavior");
+      }
+    }
+  };
+
+  const scrollToArticleContent = () => {
+    const mainGrid = document.getElementById("main-grid");
+    runWithoutSmoothScrolling(() => {
+      if (mainGrid) {
+        mainGrid.scrollIntoView({ behavior: "auto", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      }
+    });
+  };
+
+  const revealQueuedArticleOnLoad = () => {
+    let queuedUrl: string | null = null;
+    try {
+      queuedUrl = sessionStorage.getItem(FIREFLY_REVEAL_ARTICLE_KEY);
+      sessionStorage.removeItem(FIREFLY_REVEAL_ARTICLE_KEY);
+    } catch {
+      return;
+    }
+    if (
+      !queuedUrl ||
+      window.location.hash ||
+      !isPostPath(window.location.href) ||
+      !pathsEqual(queuedUrl, window.location.href)
+    ) {
+      return;
+    }
+    requestAnimationFrame(() => requestAnimationFrame(scrollToArticleContent));
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", revealQueuedArticleOnLoad, { once: true });
+  } else {
+    revealQueuedArticleOnLoad();
   }
 
   const commitIncomingLayout = (visit: {
@@ -1504,8 +1661,14 @@ function disableAnimation() {
     if (toc) toc.classList.add("toc-not-ready");
 
     if (visit.meta.fireflyAtomicArticle === true) {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      scrollToArticleContent();
     }
+  };
+
+  const restoreScrollPosition = (position: FireflyScrollPosition) => {
+    runWithoutSmoothScrolling(() => {
+      window.scrollTo({ left: position.left, top: position.top, behavior: "auto" });
+    });
   };
 
   const setup = () => {
@@ -1630,6 +1793,24 @@ function disableAnimation() {
       // 文章正文优先：缓存命中时直接替换，冷请求时旧页原地等待，不播放 120ms×2 的装饰动画。
       const isArticleVisit =
         !visit.history.popstate && !visit.to.hash && isPostPath(visit.to.url);
+      const currentHistoryState = getHistoryState();
+      const returnNavigation = getReturnNavigation(currentHistoryState);
+      const restoredScroll = visit.history.popstate
+        ? getScrollPosition(currentHistoryState)
+        : isPostPath(window.location.href) &&
+            returnNavigation &&
+            pathsEqual(visit.to.url, returnNavigation.url)
+          ? returnNavigation.scroll
+          : null;
+
+      if (isArticleVisit) {
+        // 文章请求期间旧页面保持原位；在真正切换前记录来源页的视窗位置。
+        saveCurrentScrollPosition();
+      }
+      if (restoredScroll) {
+        visit.meta.fireflyRestoreScroll = restoredScroll;
+        visit.scroll.reset = false;
+      }
       if (isArticleVisit) {
 		beginNavigationPriority();
 		document.documentElement.classList.add("is-page-transitioning");
@@ -1668,7 +1849,7 @@ function disableAnimation() {
     });
     // C：time 主题的小时格式化器会话级缓存（软导航复用，免逐次构造）
     let timeThemeHourFormatter: Intl.DateTimeFormat | null = null;
-    window.swup.hooks.on("page:view", () => {
+    window.swup.hooks.on("page:view", (visit: { meta: Record<string, unknown> }) => {
       // 恢复 #main-grid 的过渡动画（visit:start 中禁用了）
       const mainGrid = document.getElementById("main-grid");
       if (mainGrid) {
@@ -1760,6 +1941,12 @@ function disableAnimation() {
           );
         }
       }, 300);
+
+      const restoredScroll = visit.meta.fireflyRestoreScroll;
+      if (isScrollPosition(restoredScroll)) {
+        restoreScrollPosition(restoredScroll);
+        requestAnimationFrame(() => restoreScrollPosition(restoredScroll));
+      }
     });
     window.swup.hooks.on("visit:end", (_visit: { to: { url: string } }) => {
 		endNavigationPriority();
