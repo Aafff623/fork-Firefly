@@ -6,7 +6,7 @@ description: 卡通文旅宣传图的 GPT 提示词，可直接改地名套用�
 image: ./cover.jpg
 tags: [GPT, 提示词, 文旅]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: gpt-cartoon-travel-poster-prompt
 pinned: false

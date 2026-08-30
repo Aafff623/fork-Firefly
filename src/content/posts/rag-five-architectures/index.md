@@ -6,7 +6,7 @@ description: Hybrid / GraphRAG / Agentic / CRAG / Multimodal 按失败模式选�
 image: ./cover.jpg
 tags: [RAG, GraphRAG, CRAG, Agentic, 检索]
 category: Agentic Coding
-draft: true
+draft: false
 lang: ''
 slug: rag-five-architectures
 pinned: false

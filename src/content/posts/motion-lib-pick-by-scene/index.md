@@ -6,7 +6,7 @@ description: 十个前端动效方案按场景选型，附 GSAP 全员免费拐�
 image: ./cover.jpg
 tags: [动效, GSAP, anime.js, ScrollTrigger, 前端]
 category: 前端开发
-draft: true
+draft: false
 lang: ''
 slug: motion-lib-pick-by-scene
 pinned: false

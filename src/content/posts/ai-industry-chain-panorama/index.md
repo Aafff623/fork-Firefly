@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [AI产业链, 产业分层, 大模型, Agent, 企业AI]
 category: 指南
 slug: ai-industry-chain-panorama
-draft: true
+draft: false
 lang: ''
 pinned: false
 comment: true

@@ -6,7 +6,7 @@ image: ./cover.jpg
 tags: [AI Coding, Cursor, 省钱]
 category: Agentic Coding
 collections: [agentic-coding]
-draft: true
+draft: false
 slug: ai-coding-save-money
 pinned: false
 comment: true

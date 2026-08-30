@@ -6,7 +6,7 @@ description: 人效提升的四层框架，别只在最表层抠工时。
 image: ./cover.jpg
 tags: [人效, 组织]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: people-efficiency-four-layers
 pinned: false

@@ -8,7 +8,7 @@ tags: [Firefly, 桌宠]
 themeTags: [DeepSeek, SpritePet, Maid, OpenPet, atlas]
 category: 指南
 collections: [agentic-coding]
-draft: true
+draft: false
 lang: ''
 slug: dual-pet-deepseek
 pinned: false

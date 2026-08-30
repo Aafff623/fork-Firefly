@@ -6,7 +6,7 @@ description: 短剧男主脸型与风格提示词六十种，选角向出图用�
 image: ./cover.jpg
 tags: [短剧, 脸型, 提示词]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: short-drama-male-face-60
 pinned: false

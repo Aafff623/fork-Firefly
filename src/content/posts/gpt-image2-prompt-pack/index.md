@@ -6,7 +6,7 @@ description: GPT Image 2 四风格提示词骨架：可改槽位、身份一致�
 image: ./cover.jpg
 tags: [GPT Image 2, 提示词, 生图, Prompt]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: gpt-image2-prompt-pack
 pinned: false

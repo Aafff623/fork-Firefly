@@ -6,7 +6,7 @@ description: Matt Pocock 演讲向：Spec-to-Code 喂出软件熵；四本旧书
 image: ./cover.jpg
 tags: [Matt Pocock, 软件工程, Spec-to-Code, Deep Module, 读书]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: matt-pocock-four-books
 pinned: false

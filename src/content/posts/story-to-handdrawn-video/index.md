@@ -6,7 +6,7 @@ description: story-to-handdrawn-video：中文故事或有序图 → 3:4 竖屏�
 image: ./cover.jpg
 tags: [story-to-handdrawn-video, 手绘动画, Remotion, Codex Skill, 竖屏]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: story-to-handdrawn-video
 pinned: false

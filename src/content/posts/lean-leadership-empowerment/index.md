@@ -6,7 +6,7 @@ description: 精益领导力：从管人管事，走到现场赋能。
 image: ./cover.jpg
 tags: [精益, 领导力, Gemba]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: lean-leadership-empowerment
 pinned: false

@@ -6,7 +6,7 @@ image: ''
 tags: [Spring Cloud, 微服务, Nacos]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]
-draft: true
+draft: false
 lang: ''
 slug: java-course20-5-6
 pinned: false

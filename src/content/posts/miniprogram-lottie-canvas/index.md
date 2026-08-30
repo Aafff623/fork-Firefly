@@ -6,7 +6,7 @@ description: uni-app 微信端用 lottie-miniprogram + canvas 2d 落地复杂动
 tags: [小程序, Lottie, uni-app, canvas, 动效]
 category: 前端开发
 image: ./cover.jpg
-draft: true
+draft: false
 lang: ''
 slug: miniprogram-lottie-canvas
 pinned: false

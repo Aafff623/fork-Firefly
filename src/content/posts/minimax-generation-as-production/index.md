@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [MiniMax, H3, 提示词, 视频生成, 音乐生成, AI Coding]
 category: Agentic Coding
 collections: [agentic-workflow]
-draft: true
+draft: false
 lang: ''
 slug: minimax-generation-as-production
 pinned: false

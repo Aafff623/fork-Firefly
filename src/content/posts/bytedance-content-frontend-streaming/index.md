@@ -4,7 +4,7 @@ published: 2026-08-11
 description: 大二冲字节内容消费前端实习，约 60 分钟一面挂掉。复盘把 SSE/Fetch Stream、Fiber 可中断、Worker 串成一条业务叙事，比散装八股更贴 2025-2026。
 tags: [前端, 字节, 面经, SSE, React]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: bytedance-content-frontend-streaming
 image: ./cover.jpg

@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [极客时间, AI 编程, SDD, Harness, Claude Code]
 category: Agentic Coding
 collections: [course-geektime-enterprise-coding]
-draft: true
+draft: false
 lang: ''
 slug: geektime-enterprise-ai-coding
 pinned: false

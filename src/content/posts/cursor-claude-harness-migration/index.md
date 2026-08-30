@@ -6,7 +6,7 @@ image: ./cover.jpg
 tags: [Cursor, Claude, 迁移, AI Coding]
 category: Agentic Coding
 collections: [tool-cursor]
-draft: true
+draft: false
 slug: cursor-claude-harness-migration
 lang: ''
 pinned: false

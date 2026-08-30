@@ -6,7 +6,7 @@ image: ''
 tags: [Java, Spring Boot, 实战, 小红书]
 category: 指南
 collections: [java-fullstack, java-fullstack-monolith]
-draft: true
+draft: false
 lang: ''
 slug: java-course8-13-10
 pinned: false

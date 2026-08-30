@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [IP角色, 配图工作流, Agent Skill, PPT, 知识卡]
 category: 指南
 slug: ip-diagram-creator
-draft: true
+draft: false
 lang: ''
 pinned: false
 comment: true

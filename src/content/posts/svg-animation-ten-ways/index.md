@@ -6,7 +6,7 @@ description: SVG 动画十种实现手法对照：CSS、描边、WAAPI、GSAP Mo
 tags: [SVG, 动效, WAAPI, GSAP, MorphSVG]
 category: 前端开发
 image: ./cover.jpg
-draft: true
+draft: false
 lang: ''
 slug: svg-animation-ten-ways
 pinned: false

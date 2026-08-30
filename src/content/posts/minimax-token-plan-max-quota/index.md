@@ -6,7 +6,7 @@ image: ./cover.jpg
 tags: [MiniMax, TokenPlan, 额度, 拼车]
 category: 指南
 collections: [agentic-workflow]
-draft: true
+draft: false
 slug: minimax-token-plan-max-quota
 lang: ''
 pinned: false

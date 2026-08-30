@@ -6,7 +6,7 @@ description: 一百种冷门职业图鉴，长见识也当选题库。
 image: ./cover.jpg
 tags: [职业, 图鉴]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: 100-niche-jobs-gallery
 pinned: false

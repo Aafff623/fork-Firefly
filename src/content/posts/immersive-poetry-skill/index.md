@@ -5,7 +5,7 @@ description: Codex 创作型 Skill，把古典诗做成可滚动、可听、可�
 image: ./cover.jpg
 tags: [古诗词, Skill, Codex, 沉浸式网页]
 category: skill 测评
-draft: true
+draft: false
 lang: ''
 slug: immersive-poetry-skill
 pinned: false

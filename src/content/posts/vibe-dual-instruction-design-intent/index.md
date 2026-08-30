@@ -5,7 +5,7 @@ description: 别只靠口头 Prompt：源文件当知识底座、代码绘图优
 image: ./cover.jpg
 tags: [Vibe Coding, 上下文, Mermaid, Sphinx, 设计意图]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: vibe-dual-instruction-design-intent
 pinned: false

@@ -6,7 +6,7 @@ description: GPT Image 2 做 UI：分层、切图、交付怎么串。
 image: ./cover.jpg
 tags: [GPT Image, UI, 切图]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: gpt-image2-ui-layer-slice
 pinned: false

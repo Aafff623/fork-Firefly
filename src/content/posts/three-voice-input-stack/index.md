@@ -6,7 +6,7 @@ description: Typeless 扛长 prompt，闪电说扛技能生态，微信 Ctrl+Win
 image: ./cover.jpg
 tags: [语音输入, Typeless, 闪电说, 微信, 效率工具]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: three-voice-input-stack
 pinned: false

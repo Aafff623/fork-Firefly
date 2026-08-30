@@ -5,7 +5,7 @@ description: 查重红一片时别先开同义词。先锁事实、诊断重复�
 tags: [论文降重, Skill, 学术写作, 改写, Agent]
 category: 写作
 image: ./cover.jpg
-draft: true
+draft: false
 lang: ''
 slug: paper-rewrite-beyond-synonyms
 pinned: false

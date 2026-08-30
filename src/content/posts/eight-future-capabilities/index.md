@@ -5,7 +5,7 @@ description: 舟舟清单：未来顶尖人才八种能力——带走一张表�
 image: ./cover.jpg
 tags: [软技能, 自我管理, 团队合作, 逆商, 思辨]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: eight-future-capabilities
 pinned: false

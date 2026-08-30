@@ -5,7 +5,7 @@ description: 把 Claude Code 从会写代码的聊天框，升级成 CLAUDE.md �
 image: ./cover.jpg
 tags: [Vibe Coding, CLAUDE.md, Skills, Subagents, 工作流]
 category: Agentic Coding
-draft: true
+draft: false
 lang: ''
 slug: vibe-chat-to-workflow-system
 pinned: false

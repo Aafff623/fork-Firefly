@@ -7,7 +7,7 @@ image: ../images/minimax/v2-layout.jpg
 tags: [Firefly, 布局]
 category: 指南
 slug: guide/firefly-layout-system
-draft: true
+draft: false
 ---
 
 ## 📖 概述

@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [就业政策, 高校毕业生, 扩岗补助]
 themeTags: [一次性扩岗补助, 社保补贴, 税收优惠, 创业担保贷款, 应届生]
 category: 指南
-draft: true
+draft: false
 lang: ""
 slug: graduate-hire-subsidy-not-free
 pinned: false

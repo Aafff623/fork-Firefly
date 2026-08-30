@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [科研绘图, 机理图, 器件图, PictureFlow, 学术配图]
 category: 指南
 slug: pictureflow-research-diagrams
-draft: true
+draft: false
 lang: ''
 pinned: false
 comment: true

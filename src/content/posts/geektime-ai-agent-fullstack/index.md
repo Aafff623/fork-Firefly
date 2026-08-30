@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [极客时间, AI Agent, LangGraph, RAG, Agent Eval]
 category: Agentic Coding
 collections: [course-geektime-agent-fullstack]
-draft: true
+draft: false
 lang: ''
 slug: geektime-ai-agent-fullstack
 pinned: false

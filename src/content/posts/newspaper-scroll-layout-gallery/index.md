@@ -6,7 +6,7 @@ description: 报纸与卷轴创意排版图鉴，拿来改版式很快。
 image: ./cover.jpg
 tags: [排版, 报纸, 设计]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: newspaper-scroll-layout-gallery
 pinned: false

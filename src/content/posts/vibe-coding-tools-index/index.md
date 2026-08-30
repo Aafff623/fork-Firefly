@@ -7,7 +7,7 @@ tags: [Vibe Coding, 教程索引, 编程工具, Cursor]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
 collections: [vibe-tutorial-index]
-draft: true
+draft: false
 lang: ""
 slug: vibe-coding-tools-index
 pinned: false

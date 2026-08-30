@@ -7,7 +7,7 @@ tags: [Vibe Coding, 教程索引, 编程学习, 面试]
 themeTags: [索引摘要, 鱼皮, ai-guide]
 category: Agentic Coding
 collections: [vibe-tutorial-index]
-draft: true
+draft: false
 lang: ""
 slug: vibe-learning-index
 pinned: false

@@ -8,7 +8,7 @@ tags: [AI Agent, 搜索 API, 选型, Tavily, Exa, Bocha, 实测]
 category: Agentic Coding
 
 collections: [review-skill-mcp]
-draft: true
+draft: false
 lang: ''
 slug: ai-search-api-comparison
 pinned: false

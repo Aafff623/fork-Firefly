@@ -6,7 +6,7 @@ description: 大模型应用开发常用 Python 库地图，按层找轮子。
 image: ./cover.jpg
 tags: [Python, LLM, 库]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: llm-python-libs-map
 pinned: false

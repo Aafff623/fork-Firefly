@@ -6,7 +6,7 @@ description: 读懂 122B-A10B：MoE 总参大、激活小；省算力不省显�
 image: ./cover.jpg
 tags: [MoE, 大模型, Mixture of Experts, 架构, DeepSeek]
 category: Agentic Coding
-draft: true
+draft: false
 lang: ''
 slug: moe-mixture-of-experts
 pinned: false

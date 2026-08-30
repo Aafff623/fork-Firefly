@@ -6,7 +6,7 @@ image: ./cover.jpg
 tags: [Claude, OpenCode, Kimi, 迁移, AI Coding]
 category: Agentic Coding
 collections: [tool-kimi-code, tool-opencode]
-draft: true
+draft: false
 slug: claude-migration-opencode-kimi
 lang: ''
 pinned: false

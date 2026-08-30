@@ -6,7 +6,7 @@ image: ''
 tags: [微服务, 架构设计]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]
-draft: true
+draft: false
 lang: ''
 slug: java-course19-3-1
 pinned: false

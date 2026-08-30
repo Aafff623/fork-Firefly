@@ -6,7 +6,7 @@ description: 用 Codex + GPT Image 2 做宋代园区设计的完整工作流。
 image: ./cover.jpg
 tags: [Codex, GPT Image, 建筑]
 category: Agentic Coding
-draft: true
+draft: false
 lang: ''
 slug: song-era-campus-gpt-image2-workflow
 pinned: false

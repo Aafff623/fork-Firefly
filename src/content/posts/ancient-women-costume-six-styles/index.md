@@ -6,7 +6,7 @@ description: 古代女子服饰六种风格的出图提示词，直接套。
 image: ./cover.jpg
 tags: [古风, 提示词]
 category: 指南
-draft: true
+draft: false
 lang: ''
 slug: ancient-women-costume-six-styles
 pinned: false

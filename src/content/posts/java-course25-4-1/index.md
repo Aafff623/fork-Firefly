@@ -6,7 +6,7 @@ image: ''
 tags: [Docker, 容器化, 部署]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]
-draft: true
+draft: false
 lang: ''
 slug: java-course25-4-1
 pinned: false

@@ -6,7 +6,7 @@ image: ''
 tags: [Kubernetes, K8s, 部署]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]
-draft: true
+draft: false
 lang: ''
 slug: java-course27-2-1
 pinned: false

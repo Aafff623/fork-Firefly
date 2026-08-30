@@ -6,7 +6,7 @@ description: 人物海报 Prompt 一次够用，Skill 可复用：调研 → 确
 image: ./cover.jpg
 tags: [Codex, Skill, 海报]
 category: Agentic Coding
-draft: true
+draft: false
 lang: ''
 slug: portrait-poster-codex-skill
 pinned: false

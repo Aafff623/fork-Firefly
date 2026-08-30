@@ -7,7 +7,7 @@ image: ./cover.jpg
 tags: [网页反代, DeepSeek, 智谱, MCP, Agent, 白嫖, Claude]
 category: 羊毛揭秘
 collections: [wool-freebies]
-draft: true
+draft: false
 lang: ''
 slug: web-reverse-freeload-agent-absurd
 pinned: false
