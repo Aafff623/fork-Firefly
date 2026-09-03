@@ -245,8 +245,8 @@ Harness 不是「装得越多越强」。是 Agent 每次醒来都能摸到同�
 内容流水线也挂在同一治理层上，而不是另起一套玄学：
 
 ```text
-甲 · Obsidian 笔记 → ob2blog → posts/<slug> → site-cascade
-乙 · 会话/调研   → knowledge-extract → knowledge-output → site-cascade
+甲 · Obsidian 笔记 → ob2blog → posts/<slug> → cascade 收尾
+乙 · 会话/调研   → post-publish → post-publish → cascade 收尾
 ```
 
 再加一条多 agent 并行纪律：壁纸、音乐、配图、发文各管各的模块，看到别人的未提交改动别瞎慌。这是「项目记忆」的一部分，写进 AGENTS 比写进某次聊天有用得多。

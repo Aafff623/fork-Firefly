@@ -187,9 +187,9 @@ pi 的 prompt template 机制有个妙处：文件名就是命令，`commit.md` 
 | 命令 | 映射 skill | 干的活 |
 |---|---|---|
 | `/commit` | commit-commands | 规范化提交，禁止自动 commit |
-| `/dynamic` | dynamic-post | 在博客发一条动态，内容当参数 |
-| `/extract` | knowledge-extract | 把会话提炼成知识笔记 |
-| `/publish` | knowledge-output | 素材发布成博客文章 |
+| `/dynamic` | dynamic-publish | 在博客发一条动态，内容当参数 |
+| `/extract` | post-publish | 把会话提炼成知识笔记 |
+| `/publish` | post-publish | 素材发布成博客文章 |
 | `/status` | 配合 pi_env 工具 | 看环境全景 |
 | `/assess` | 配合 assess_change 工具 | 评估工作区变更 |
 

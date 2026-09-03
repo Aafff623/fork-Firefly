@@ -309,7 +309,7 @@ OpenCode 的 Skill 不等于斜杠命令。它由 Agent 的 `skill` 工具按需
 正确的触发方式是直接告诉 Agent：
 
 ```text
-用 knowledge-extract 提炼这次会话。
+用 post-publish 提炼这次会话。
 ```
 
 如果 Skill 已被当前 CLI 的 available skills 发现，Agent 就可以加载它。模型 variants 是 API 推理参数问题，Skill 则是 Agent 工具入口问题，这两件事不要混成一个“索引失败”。

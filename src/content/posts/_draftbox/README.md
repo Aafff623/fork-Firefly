@@ -27,7 +27,7 @@
 
 1. 整目录迁到 `src/content/posts/<slug>/`（移出 `_draftbox`）
 2. 按需改 `draft: false`、补封面、校验
-3. `site-cascade`（公开帖可 `--emit-dynamic`）
+3. `cascade 收尾`（公开帖可 `--emit-dynamic`）
 4. 再纳入 git → 用户确认后 commit / push → 核线上
 
 进箱与出箱不得夹带其他 agent 的无关 WIP。

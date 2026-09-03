@@ -1836,8 +1836,8 @@ Depointify Mode 是成稿后能打分，50 分制，低于 45 就继续改。直
 
 | 路 | 素材来源 | 走法 |
 | --- | --- | --- |
-| 甲 | Obsidian vault 里的笔记 | `ob2blog` → `site-cascade` |
-| 乙 | 会话/调研结论 | `knowledge-extract` → `knowledge-output` → `site-cascade` |
+| 甲 | Obsidian vault 里的笔记 | `ob2blog` → `cascade 收尾` |
+| 乙 | 会话/调研结论 | `post-publish` → `post-publish` → `cascade 收尾` |
 
 ```mermaid
 flowchart LR
@@ -1848,12 +1848,12 @@ flowchart LR
         C[会话/调研] -->|extract| N[知识笔记]
         N -->|output| PB[文章]
     end
-    PA --> SC[site-cascade 级联]
+    PA --> SC[cascade 收尾 级联]
     PB --> SC
     SC --> O[线上]
 ```
 
-两条路互补：笔记已经躺在 Obsidian 里就走甲；素材是对话里现聊出来的就走乙。收尾都是同一个 `site-cascade`——它负责发文后的四件事：生成「新笔记」动态、更新站点统计、分类标签、热力图。
+两条路互补：笔记已经躺在 Obsidian 里就走甲；素材是对话里现聊出来的就走乙。收尾都是同一个 `cascade 收尾`——它负责发文后的四件事：生成「新笔记」动态、更新站点统计、分类标签、热力图。
 
 ### 乙路全流程：从一句话到线上
 
@@ -1863,7 +1863,7 @@ flowchart LR
 flowchart LR
     S[会话/调研结论] -->|extract 提炼| N[知识笔记<br>Knowledge/todo]
     N -->|output 成帖| P[博客文章<br>posts/slug]
-    P -->|site-cascade 级联| D[动态/统计/分类/热力图]
+    P -->|cascade 收尾 级联| D[动态/统计/分类/热力图]
     D -->|预览| C[commit / push]
     C -->|部署| O[线上可见]
 ```
@@ -1872,11 +1872,11 @@ flowchart LR
 
 | skill | 只管什么 | 产出 |
 | --- | --- | --- |
-| knowledge-extract | 会话提炼成高密度笔记 | Knowledge\todo\ 草稿 |
-| knowledge-output | 素材补成帖 + 落盘 + 校验 + 级联 + 归档 | posts\{slug}\ 成品 |
+| post-publish | 会话提炼成高密度笔记 | Knowledge\todo\ 草稿 |
+| post-publish | 素材补成帖 + 落盘 + 校验 + 级联 + 归档 | posts\{slug}\ 成品 |
 | ob2blog | Obsidian vault↔帖双边同步 | posts\ + manifest 映射 |
-| site-cascade | 发文后级联四表面 | 动态/统计/分类/热力图 |
-| dynamic-post | 即时短内容（不进 posts） | dynamic\ 动态 |
+| cascade 收尾 | 发文后级联四表面 | 动态/统计/分类/热力图 |
+| dynamic-publish | 即时短内容（不进 posts） | dynamic\ 动态 |
 | firefly-minimax-media | MiniMax 生图（style-taste） | 封面/配图 |
 
 ### 调度依赖：谁等谁
@@ -1884,9 +1884,9 @@ flowchart LR
 这条链能流水线化，靠的是明确的上下游关系：
 
 - **output 等 extract 的产物**——extract 不落笔记，output 没料可发
-- **site-cascade 等任何一方的落盘**——ob2blog/output/手写 posts 都行
+- **cascade 收尾 等任何一方的落盘**——ob2blog/output/手写 posts 都行
 - **ob2blog 和 output 互补不互调**——一个管 vault 笔记，一个管会话素材
-- **dynamic-post 独立**——发动态不触发级联，跟成帖互不干扰
+- **dynamic-publish 独立**——发动态不触发级联，跟成帖互不干扰
 - **output 复用 ob2blog 的模板**——frontmatter 结构和校验脚本是共享的
 
 因为每个 skill 边界单一、依赖单向，才能像流水线一样一个接一个跑，中途任何一步出问题都能单独重跑。
@@ -1903,12 +1903,12 @@ flowchart LR
 
 ### 配套的两个小件
 
-- **dynamic-post**：发「最新动态」这类即时短内容，独立于成帖流程，发完即出现在动态时间线
+- **dynamic-publish**：发「最新动态」这类即时短内容，独立于成帖流程，发完即出现在动态时间线
 - **agent-comment**：文章/动态发完后，agent 能以协作者身份在评论区追加点评——这是另一个会话里做出来的「agent 评论机制」
 
 ### 这流水线是真跑过的
 
-不是纸上设计。看 git log，这套是从 `feat(ob2blog)` 起步，逐步加 `feat(site-cascade)`、`Knowledge 引入 todo/Archive`，再一批批发文章发动态积累起来的。dynamic-post 还经历过「并入 output」又「还原独立」的反复，最后定型为独立 skill。最近连着发的「会话命名」「记忆方案」两篇，就是这条乙路流水线现跑的。
+不是纸上设计。看 git log，这套是从 `feat(ob2blog)` 起步，逐步加 `feat(cascade 收尾)`、`Knowledge 引入 todo/Archive`，再一批批发文章发动态积累起来的。dynamic-publish 还经历过「并入 output」又「还原独立」的反复，最后定型为独立 skill。最近连着发的「会话命名」「记忆方案」两篇，就是这条乙路流水线现跑的。
 
 一句话收束：所谓「一键发布」，不是有个神奇按钮，是把「提炼 → 成帖 → 级联 → 归档」拆成可复用的积木，让 agent 按序拼装。积木越拆越稳，发帖就越接近一键。
 
