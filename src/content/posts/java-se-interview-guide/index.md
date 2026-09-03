@@ -3,7 +3,7 @@ title: 【计算机八股】Java SE 基础八股大总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天想跟大家一起复习一下 Java 基础，也就是 Java SE，梳理计算机校园招聘面试中经常被问到的一些八股。
-image: ./cover.png
+image: ./cover.webp
 tags: [Java, Java SE, 面试, 基础]
 category: 指南
 draft: false
@@ -16,10 +16,10 @@ comment: true
 这里既有常见知识点，也有我根据个人面试经历总结出的 Java 基础重点。下面按照不同模块依次来看。
 
 ## 一、Java 基础知识
-![plan-java-se-h1-01](./images/plan-java-se-h1-01.png)
+![plan-java-se-h1-01](./images/plan-java-se-h1-01.webp)
 
 ## Java 的语言特点
-![plan-java-se-h1-01-h2-01](./images/plan-java-se-h1-01-h2-01.png)
+![plan-java-se-h1-01-h2-01](./images/plan-java-se-h1-01-h2-01.webp)
 
 Java 为什么能够长期流行？核心原因在于它具备以下特点：
 
@@ -45,7 +45,7 @@ Java 的健壮性则主要体现在：
 我在面试时也被问到过：“Java 和 Python 有什么区别？”或者“Java 为什么会这么流行？”回答时，可以围绕 *面向对象、平台无关、自动内存管理和多线程支持* 这些核心特性展开。
 
 ## JVM、JRE 和 JDK 的区别
-![plan-java-se-h1-01-h2-02](./images/plan-java-se-h1-01-h2-02.png)
+![plan-java-se-h1-01-h2-02](./images/plan-java-se-h1-01-h2-02.webp)
 
 ### JVM：Java 虚拟机
 
@@ -78,7 +78,7 @@ Java 的健壮性则主要体现在：
 在生产环境部署时，服务器上安装完整 JDK、精简版 JDK，或者通过 `jlink` 生成的定制运行时，通常都可以运行打包好的 JAR。
 
 ## Java 的基本数据类型
-![plan-java-se-h1-01-h2-03](./images/plan-java-se-h1-01-h2-03.png)
+![plan-java-se-h1-01-h2-03](./images/plan-java-se-h1-01-h2-03.webp)
 
 Java 有八种基本数据类型：
 
@@ -116,10 +116,10 @@ Java 有八种基本数据类型：
 但严格来说，**基本数据类型只有前面列出的八种**。
 
 ## 二、面向对象核心知识
-![plan-java-se-h1-02](./images/plan-java-se-h1-02.png)
+![plan-java-se-h1-02](./images/plan-java-se-h1-02.webp)
 
 ## 封装
-![plan-java-se-h1-02-h2-01](./images/plan-java-se-h1-02-h2-01.png)
+![plan-java-se-h1-02-h2-01](./images/plan-java-se-h1-02-h2-01.webp)
 
 封装简单来说，就是把对象内部的属性和实现细节隐藏起来，只向外部暴露规定好的操作入口。
 
@@ -130,7 +130,7 @@ Java 有八种基本数据类型：
 数据库连接密码等敏感配置也通常不会直接公开，而是通过配置类或受控方法读取，避免外部随意访问和篡改。
 
 ## 继承
-![plan-java-se-h1-02-h2-02](./images/plan-java-se-h1-02-h2-02.png)
+![plan-java-se-h1-02-h2-02](./images/plan-java-se-h1-02-h2-02.webp)
 
 继承是指一个类复用现有类的属性和方法，从而提高代码的复用性。
 
@@ -155,7 +155,7 @@ public class BusinessException extends BaseException {
 在全局异常处理器中，可以直接捕获 `BaseException`。这样，无论抛出的是哪个具体子类异常，都能够进行统一处理。
 
 ## 多态
-![plan-java-se-h1-02-h2-03](./images/plan-java-se-h1-02-h2-03.png)
+![plan-java-se-h1-02-h2-03](./images/plan-java-se-h1-02-h2-03.webp)
 
 多态最直观的理解是：
 
@@ -200,7 +200,7 @@ private final UserService userService;
 多态主要提高了代码的**灵活性、可扩展性和可维护性**。动态绑定允许程序在运行时确定实际调用哪个实现的方法。
 
 ## `this` 关键字
-![plan-java-se-h1-02-h2-04](./images/plan-java-se-h1-02-h2-04.png)
+![plan-java-se-h1-02-h2-04](./images/plan-java-se-h1-02-h2-04.webp)
 
 面向对象强调“万物皆对象”，而 `this` 代表的就是**当前对象本身的引用**。
 
@@ -241,7 +241,7 @@ public User(String name) {
 这样能够复用构造逻辑，避免重复代码。
 
 ## 重载与重写
-![plan-java-se-h1-02-h2-05](./images/plan-java-se-h1-02-h2-05.png)
+![plan-java-se-h1-02-h2-05](./images/plan-java-se-h1-02-h2-05.webp)
 
 ### 方法重载
 
@@ -272,7 +272,7 @@ public User(String name) {
 重写和重载属于比较基础的面试题。大型互联网公司未必会单独提问，但部分国企和传统企业比较重视基础知识，我在面试一些国企时就遇到过这类问题。
 
 ## 抽象类与接口
-![plan-java-se-h1-02-h2-06](./images/plan-java-se-h1-02-h2-06.png)
+![plan-java-se-h1-02-h2-06](./images/plan-java-se-h1-02-h2-06.webp)
 
 抽象类主要用于继承，一个类只能直接继承一个父类。它表达的通常是 **“is-a”** 关系，也就是“是什么”。
 
@@ -304,7 +304,7 @@ JDK 9 之后，接口还可以包含私有方法，用于复用接口内部逻�
 之所以常常先定义接口、再编写实现类，是为了实现面向接口编程和解耦。Spring AOP 既可以使用 **JDK 动态代理**，也可以使用 **CGLIB 代理**：JDK 动态代理依赖接口，而 CGLIB 可以基于类生成代理。事务管理、日志记录等功能都可能通过 AOP 实现。
 
 ## 深拷贝与浅拷贝
-![plan-java-se-h1-02-h2-07](./images/plan-java-se-h1-02-h2-07.png)
+![plan-java-se-h1-02-h2-07](./images/plan-java-se-h1-02-h2-07.webp)
 
 ### 浅拷贝
 
@@ -342,7 +342,7 @@ List<OrderItem> orderItems;
 这样可以让业务逻辑操作副本，保证缓存原数据纹丝不动。
 
 ## `hashCode()` 与 `equals()`
-![plan-java-se-h1-02-h2-08](./images/plan-java-se-h1-02-h2-08.png)
+![plan-java-se-h1-02-h2-08](./images/plan-java-se-h1-02-h2-08.webp)
 
 `hashCode()` 方法用于返回对象的哈希码，可以粗暴地理解为对象用于哈希定位的一个整数标识。它主要应用在哈希表结构中，用于快速确定对象所在的桶。
 
@@ -366,10 +366,10 @@ Java 对 `equals()` 与 `hashCode()` 的约定是：
 让工具帮助生成对应方法。不过，使用可变对象作为 `HashMap` 的 Key 仍然需要谨慎：如果参与哈希计算的字段在放入集合后发生变化，同样可能导致无法正常取出。
 
 ## 三、Java 异常处理
-![plan-java-se-h1-03](./images/plan-java-se-h1-03.png)
+![plan-java-se-h1-03](./images/plan-java-se-h1-03.webp)
 
 ## `Throwable` 体系
-![plan-java-se-h1-03-h2-01](./images/plan-java-se-h1-03-h2-01.png)
+![plan-java-se-h1-03-h2-01](./images/plan-java-se-h1-03-h2-01.webp)
 
 `Throwable` 是 Java 错误与异常体系的顶层父类。通常只有它及其子类实例才能被 JVM 抛出，或被 `catch` 捕获。
 
@@ -379,7 +379,7 @@ Java 对 `equals()` 与 `hashCode()` 的约定是：
 2. `Exception`
 
 ## `Error`：系统级严重错误
-![plan-java-se-h1-03-h2-02](./images/plan-java-se-h1-03-h2-02.png)
+![plan-java-se-h1-03-h2-02](./images/plan-java-se-h1-03-h2-02.webp)
 
 `Error` 通常表示 JVM 内部错误、系统资源耗尽等严重问题，例如：
 
@@ -405,7 +405,7 @@ java.lang.OutOfMemoryError: Java heap space
 比如导出百万级 Excel 时，如果一次性把全部数据加载到内存，就很容易触发内存溢出。这也是面试官询问“你遇到过哪些线上异常”时可以举的例子。
 
 ## `Exception`：程序可以处理的异常
-![plan-java-se-h1-03-h2-03](./images/plan-java-se-h1-03-h2-03.png)
+![plan-java-se-h1-03-h2-03](./images/plan-java-se-h1-03-h2-03.webp)
 
 `Exception` 是平时编写代码时需要重点关注的部分，主要可以分为：
 
@@ -455,7 +455,7 @@ Integer.parseInt("ABC");
 这些异常往往说明代码的参数校验或逻辑处理不够严谨。
 
 ## 异常处理方式
-![plan-java-se-h1-03-h2-04](./images/plan-java-se-h1-03-h2-04.png)
+![plan-java-se-h1-03-h2-04](./images/plan-java-se-h1-03-h2-04.webp)
 
 ### 使用 `throws` 向上抛出
 
@@ -485,10 +485,10 @@ throw new BusinessException(errorCode);
 这样，主流程不会因为一次接口超时而完全失控。
 
 ## 四、String、StringBuilder 与 StringBuffer
-![plan-java-se-h1-04](./images/plan-java-se-h1-04.png)
+![plan-java-se-h1-04](./images/plan-java-se-h1-04.webp)
 
 ## String：不可变字符串
-![plan-java-se-h1-04-h2-01](./images/plan-java-se-h1-04-h2-01.png)
+![plan-java-se-h1-04-h2-01](./images/plan-java-se-h1-04-h2-01.webp)
 
 `String` 是不可变字符串。`String` 类本身被 `final` 修饰，其内部用于保存字符内容的结构也不会在字符串创建后被直接修改。
 
@@ -503,7 +503,7 @@ str += value;
 可能产生大量中间对象，带来不必要的内存和性能开销。
 
 ## StringBuilder：可变、线程不安全
-![plan-java-se-h1-04-h2-02](./images/plan-java-se-h1-04-h2-02.png)
+![plan-java-se-h1-04-h2-02](./images/plan-java-se-h1-04-h2-02.webp)
 
 `StringBuilder` 是可变字符序列。它会在内部缓冲区中完成追加、删除、替换等操作，减少多余对象的产生。
 
@@ -527,7 +527,7 @@ builder.append(" AND status = ?");
 不过，动态 SQL 更推荐使用 MyBatis 的动态 SQL 能力或参数化查询，避免手工拼接造成 SQL 注入风险。
 
 ## StringBuffer：可变、线程安全
-![plan-java-se-h1-04-h2-03](./images/plan-java-se-h1-04-h2-03.png)
+![plan-java-se-h1-04-h2-03](./images/plan-java-se-h1-04-h2-03.webp)
 
 `StringBuffer` 与 `StringBuilder` 用法类似，但它的许多方法使用了 `synchronized` 进行同步，因此线程安全，性能通常略低于 `StringBuilder`。
 
@@ -538,10 +538,10 @@ Web 应用虽然会并发处理多个请求，但方法内部创建的局部 `St
 `StringBuffer` 在现代 Web 开发中使用较少。只有多个线程确实需要共享并修改同一个字符缓冲区时，才可能考虑使用它。不过，即便如此，也要结合整体并发设计进行判断，而不能只依赖单个类的同步方法。
 
 ## 五、Java 进阶语法与机制
-![plan-java-se-h1-05](./images/plan-java-se-h1-05.png)
+![plan-java-se-h1-05](./images/plan-java-se-h1-05.webp)
 
 ## 序列化与反序列化
-![plan-java-se-h1-05-h2-01](./images/plan-java-se-h1-05-h2-01.png)
+![plan-java-se-h1-05-h2-01](./images/plan-java-se-h1-05-h2-01.webp)
 
 序列化是把 Java 对象，也就是内存中的对象数据，转换成便于存储或网络传输的字节序列。
 
@@ -565,7 +565,7 @@ Web 应用虽然会并发处理多个请求，但方法内部创建的局部 `St
 需要注意，Redis 本身存储的是字节序列，具体使用哪种序列化方式，取决于客户端和框架配置，并非固定采用某一种默认机制。
 
 ## 泛型
-![plan-java-se-h1-05-h2-02](./images/plan-java-se-h1-05-h2-02.png)
+![plan-java-se-h1-05-h2-02](./images/plan-java-se-h1-05-h2-02.webp)
 
 泛型是给类、接口或方法添加一个类型占位符，用于限制传入参数、成员或返回值的类型。
 
@@ -593,7 +593,7 @@ public interface UserMapper extends BaseMapper<User> {
 通过指定 `User` 类型，框架就能够结合泛型信息和实体元数据完成对应表的增删改查。
 
 ## 反射
-![plan-java-se-h1-05-h2-03](./images/plan-java-se-h1-05-h2-03.png)
+![plan-java-se-h1-05-h2-03](./images/plan-java-se-h1-05-h2-03.webp)
 
 反射允许 Java 程序在运行期间检查类的结构，包括：
 
@@ -616,7 +616,7 @@ JVM 加载类后，会为其生成对应的 `Class` 对象。反射 API 可以�
 反射相当于给代码提供了一个“上帝视角”，但也会带来一定的性能开销、类型安全风险和维护成本，因此业务代码中不应无节制使用。
 
 ## Socket 与 RPC
-![plan-java-se-h1-05-h2-04](./images/plan-java-se-h1-05-h2-04.png)
+![plan-java-se-h1-05-h2-04](./images/plan-java-se-h1-05-h2-04.webp)
 
 Socket 是网络通信的基础，可以理解为两台设备之间进行通信的端点，常用于建立 TCP 或 UDP 通信。
 
@@ -642,7 +642,7 @@ userService.getUser(userId);
 Feign 也能提供类似本地接口调用的开发体验。在 Spring Cloud 中，它通常属于声明式 HTTP 客户端，底层一般通过 HTTP 调用远程服务，广义上也可以被视为远程调用的一种形式，但与 gRPC、Dubbo 等典型 RPC 框架的协议和实现机制并不完全相同。
 
 ## Stream 流
-![plan-java-se-h1-05-h2-05](./images/plan-java-se-h1-05-h2-05.png)
+![plan-java-se-h1-05-h2-05](./images/plan-java-se-h1-05-h2-05.webp)
 
 Stream 是 Java 8 引入的重要语法，用于对集合或其他数据源进行流水线式处理。
 
@@ -676,10 +676,10 @@ Stream 分为：
 并行流可以利用多核 CPU 处理部分适合拆分的大数据任务，但必须注意线程安全、任务拆分成本、数据量大小和线程池占用问题。并不是用了并行流就一定更快，也不要在共享可变数据上随意进行并行修改。
 
 ## 六、Java I/O 流
-![plan-java-se-h1-06](./images/plan-java-se-h1-06.png)
+![plan-java-se-h1-06](./images/plan-java-se-h1-06.webp)
 
 ## 按数据流方向划分
-![plan-java-se-h1-06-h2-01](./images/plan-java-se-h1-06-h2-01.png)
+![plan-java-se-h1-06-h2-01](./images/plan-java-se-h1-06-h2-01.webp)
 
 按照数据流方向，I/O 流可以分为输入流和输出流。
 
@@ -712,7 +712,7 @@ response.getOutputStream();
 把响应数据写回浏览器，这就是输出。
 
 ## 按处理数据的单位划分
-![plan-java-se-h1-06-h2-02](./images/plan-java-se-h1-06-h2-02.png)
+![plan-java-se-h1-06-h2-02](./images/plan-java-se-h1-06-h2-02.webp)
 
 ### 字节流
 
@@ -749,7 +749,7 @@ Java 中常见的字符流顶层抽象包括：
 需要注意，网络传输和磁盘存储的底层最终仍是字节。字符流只是对字节流和字符编解码过程进行了封装。
 
 ## 按功能角色划分
-![plan-java-se-h1-06-h2-03](./images/plan-java-se-h1-06-h2-03.png)
+![plan-java-se-h1-06-h2-03](./images/plan-java-se-h1-06-h2-03.webp)
 
 ### 节点流
 
@@ -807,10 +807,10 @@ BufferedReader reader =
 不过在实际开发中，管道流使用得比较少。线程间通信通常还可以选择阻塞队列、消息队列、并发工具类等更容易控制的方式。
 
 ## 七、BIO、NIO 与 AIO
-![plan-java-se-h1-07](./images/plan-java-se-h1-07.png)
+![plan-java-se-h1-07](./images/plan-java-se-h1-07.webp)
 
 ## BIO：同步阻塞
-![plan-java-se-h1-07-h2-01](./images/plan-java-se-h1-07-h2-01.png)
+![plan-java-se-h1-07-h2-01](./images/plan-java-se-h1-07-h2-01.webp)
 
 BIO 是**同步阻塞 I/O**。
 
@@ -821,7 +821,7 @@ BIO 是**同步阻塞 I/O**。
 传统 `Socket` 与阻塞式流操作就是典型代表。
 
 ## NIO：同步非阻塞
-![plan-java-se-h1-07-h2-02](./images/plan-java-se-h1-07-h2-02.png)
+![plan-java-se-h1-07-h2-02](./images/plan-java-se-h1-07-h2-02.webp)
 
 NIO 通常指**同步非阻塞 I/O**。可以把它理解为在家点外卖：等待外卖期间，你还可以看电视、玩游戏，不需要一直原地干等。
 
@@ -837,7 +837,7 @@ Java NIO 中的典型组件包括：
 `Selector` 可以实现 I/O 多路复用，让一个线程监听多个 Channel 的事件。
 
 ## AIO：异步非阻塞
-![plan-java-se-h1-07-h2-03](./images/plan-java-se-h1-07-h2-03.png)
+![plan-java-se-h1-07-h2-03](./images/plan-java-se-h1-07-h2-03.webp)
 
 AIO 是**异步非阻塞 I/O**。
 
@@ -852,7 +852,7 @@ Java 中常见的 AIO API 包括：
 - `CompletionHandler`
 
 ## Tomcat 与 I/O 模型
-![plan-java-se-h1-07-h2-04](./images/plan-java-se-h1-07-h2-04.png)
+![plan-java-se-h1-07-h2-04](./images/plan-java-se-h1-07-h2-04.webp)
 
 现代 Tomcat 版本通常默认采用 NIO Connector。较早版本和旧式配置中更常见 BIO，而 Tomcat 8.5、Tomcat 9 等版本默认主要使用 NIO。
 
@@ -870,7 +870,7 @@ NIO 能够通过较少的线程管理大量连接，是现代 Web 容器支撑�
 在 Windows 上，Java AIO 具备相应的异步实现；而在 Linux 服务端，高性能网络框架和服务器更常采用基于 `epoll` 的 NIO 多路复用模型。由于 Linux 下 Java AIO 的实现方式、生态成熟度和工程复杂度等因素，NIO 依然是主流选择。
 
 ## 八、复习重点
-![plan-java-se-h1-08](./images/plan-java-se-h1-08.png)
+![plan-java-se-h1-08](./images/plan-java-se-h1-08.webp)
 
 这次总结的 Java SE 基础八股主要包括：
 

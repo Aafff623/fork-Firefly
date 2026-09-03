@@ -3,7 +3,7 @@ title: 【Spring 系列八股】Spring、Spring Boot 面试考点大总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天想和大家一起总结一下计算机校园招聘中，Java 开发岗位经常提问的 Spring 八股知识点。我们可以通过思维导图的方式，理清整个 Spring 家族及其相关考点的脉络。
-image: ./cover.png
+image: ./cover.webp
 tags: [Spring, Spring Boot, Java, 面试, 框架]
 category: 指南
 draft: false
@@ -14,10 +14,10 @@ comment: true
 大家好，我是程序员Dan。今天想和大家一起总结一下计算机校园招聘中，Java 开发岗位经常提问的 Spring 八股知识点。我们可以通过思维导图的方式，理清整个 Spring 家族及其相关考点的脉络。
 
 ## Spring 家族核心框架
-![plan-spring-h1-01](./images/plan-spring-h1-01.png)
+![plan-spring-h1-01](./images/plan-spring-h1-01.webp)
 
 ## Spring：整个生态的地基
-![plan-spring-h1-01-h2-01](./images/plan-spring-h1-01-h2-01.png)
+![plan-spring-h1-01-h2-01](./images/plan-spring-h1-01-h2-01.webp)
 
 首先需要弄清楚：**Spring、Spring MVC、Spring Boot 和 Spring Cloud 分别是什么，它们之间又有什么关系。**如果要面试 Java 开发岗位，这部分内容是必须掌握的。
 
@@ -31,14 +31,14 @@ Spring 主要解决 Java 开发中对象之间的耦合问题。以前我们可�
 Spring 本身并不关心你做的是 Web 项目、定时任务还是批处理任务，它最核心的职责就是**管理对象**。
 
 ## Spring MVC：处理 Web 请求的施工队
-![plan-spring-h1-01-h2-02](./images/plan-spring-h1-01-h2-02.png)
+![plan-spring-h1-01-h2-02](./images/plan-spring-h1-01-h2-02.webp)
 
 如果说 Spring 是“地基加生态”，那么 Spring MVC 就像一支专门处理 Web 请求的施工队。它是 Spring 生态中的一个子模块，负责接收前端发来的 HTTP 请求并返回响应。
 
 Spring MVC 必须依赖 Spring，因为它本身不负责提供独立的 IoC 容器，而是把 Controller、Service 等对象交给 Spring 容器管理。
 
 ## Spring Boot：提供精装房的开发商
-![plan-spring-h1-01-h2-03](./images/plan-spring-h1-01-h2-03.png)
+![plan-spring-h1-01-h2-03](./images/plan-spring-h1-01-h2-03.webp)
 
 Spring Boot 有点像提供精装商品房的开发商。它并不是一个全新的框架，而是建立在 Spring 和 Spring MVC 之上的**启动脚手架**。
 
@@ -62,7 +62,7 @@ Spring Boot 有点像提供精装商品房的开发商。它并不是一个全�
 > 以前自己做建筑，需要买水泥、砌墙、装水电，最后才能入住；Spring Boot 相当于直接把精装商品房的钥匙交给你，开门就能运行项目。
 
 ## Spring Cloud：微服务治理解决方案
-![plan-spring-h1-01-h2-04](./images/plan-spring-h1-01-h2-04.png)
+![plan-spring-h1-01-h2-04](./images/plan-spring-h1-01-h2-04.webp)
 
 Spring Cloud 是近几年面试中经常涉及的微服务知识。它不像 Spring MVC 那样是一个功能相对集中的单一模块，而是一整套微服务治理解决方案。
 
@@ -73,10 +73,10 @@ Spring Cloud 构建在 Spring Boot 的基础之上：
 > **Spring 提供对象管理能力，Spring MVC 负责 Web 请求，Spring Boot 简化项目开发和启动，Spring Cloud 负责微服务治理。**
 
 ## Spring 基础知识与常见注解
-![plan-spring-h1-02](./images/plan-spring-h1-02.png)
+![plan-spring-h1-02](./images/plan-spring-h1-02.webp)
 
 ## Web 开发相关注解
-![plan-spring-h1-02-h2-01](./images/plan-spring-h1-02-h2-01.png)
+![plan-spring-h1-02-h2-01](./images/plan-spring-h1-02-h2-01.webp)
 
 在 Web 开发中，首先需要记住以下常见注解。
 
@@ -105,7 +105,7 @@ Spring Cloud 构建在 Spring Boot 的基础之上：
 - `@PutMapping`：处理 PUT 请求
 
 ## 容器与组件注解
-![plan-spring-h1-02-h2-02](./images/plan-spring-h1-02-h2-02.png)
+![plan-spring-h1-02-h2-02](./images/plan-spring-h1-02-h2-02.webp)
 
 `@Component` 用于把一个类注册为 Spring Bean。在它的基础上，又衍生出了多个具有分层语义的注解：
 
@@ -117,7 +117,7 @@ Spring Cloud 构建在 Spring Boot 的基础之上：
 例如，编写用户服务 `UserService` 时，通常添加 `@Service`；编写 `UserDAO` 时，则可以添加 `@Repository`。
 
 ## 依赖注入注解
-![plan-spring-h1-02-h2-03](./images/plan-spring-h1-02-h2-03.png)
+![plan-spring-h1-02-h2-03](./images/plan-spring-h1-02-h2-03.webp)
 
 `@Autowired` 用于自动装配依赖。例如，在 Controller 中的 `UserService` 字段上添加 `@Autowired`，Spring 启动时就会自动把对应的 Service 实例注入进来。
 
@@ -127,7 +127,7 @@ Spring Cloud 构建在 Spring Boot 的基础之上：
 - `@Resource` 是 Jakarta/Java 规范提供的注解，默认优先按名称匹配，再按类型匹配。
 
 ## 配置属性注解
-![plan-spring-h1-02-h2-04](./images/plan-spring-h1-02-h2-04.png)
+![plan-spring-h1-02-h2-04](./images/plan-spring-h1-02-h2-04.webp)
 
 如果想读取 `application.yml` 中的配置，例如把 `server.port` 读取到一个变量中，可以使用 `@Value`：
 
@@ -139,7 +139,7 @@ private Integer port;
 如果配置项较多，更推荐使用 `@ConfigurationProperties` 批量绑定属性。相比一个个编写 `@Value`，这种方式更加清晰、优雅。
 
 ## AOP 相关注解
-![plan-spring-h1-02-h2-05](./images/plan-spring-h1-02-h2-05.png)
+![plan-spring-h1-02-h2-05](./images/plan-spring-h1-02-h2-05.webp)
 
 常见的 AOP 注解包括：
 
@@ -152,7 +152,7 @@ private Integer port;
 例如，可以定义一个切面，通过 `@Around` 环绕通知，在 Service 方法执行前后记录日志、统计耗时或监控执行步骤。
 
 ## 事务注解
-![plan-spring-h1-02-h2-06](./images/plan-spring-h1-02-h2-06.png)
+![plan-spring-h1-02-h2-06](./images/plan-spring-h1-02-h2-06.webp)
 
 `@Transactional` 用于声明事务。把它添加到 Service 方法上后，如果执行过程中抛出符合回滚规则的异常，Spring 就会自动回滚数据。
 
@@ -161,7 +161,7 @@ private Integer port;
 > **不要把 `@Transactional` 添加到 `private` 方法上，否则在常规代理模式下事务不会生效。**
 
 ## Spring 的组成模块
-![plan-spring-h1-02-h2-07](./images/plan-spring-h1-02-h2-07.png)
+![plan-spring-h1-02-h2-07](./images/plan-spring-h1-02-h2-07.webp)
 
 Spring 之所以被称为轻量级框架，其中一个原因就是它采用了**模块化设计**。面试时一般能够说明主要模块及其职责即可，不一定要求展开所有细节。
 
@@ -197,7 +197,7 @@ AOP 相关模块包括 Spring AOP、AspectJ 集成等。引入这些模块后，
 Spring Test 负责测试支持。使用 `@SpringBootTest` 运行测试时，它可以帮助我们加载整个 Spring 容器，不需要手动 `new` 各种依赖对象。
 
 ## 分层注解能否混用
-![plan-spring-h1-02-h2-08](./images/plan-spring-h1-02-h2-08.png)
+![plan-spring-h1-02-h2-08](./images/plan-spring-h1-02-h2-08.webp)
 
 面试官还可能会问：**`@Component`、`@Service`、`@Repository` 和 `@Controller` 能不能混用？**
 
@@ -211,10 +211,10 @@ Spring Test 负责测试支持。使用 `@SpringBootTest` 运行测试时，它�
 - AOP 切点可以根据分层注解进行更精准的定位。
 
 ## IoC、DI 与 Bean 管理
-![plan-spring-h1-03](./images/plan-spring-h1-03.png)
+![plan-spring-h1-03](./images/plan-spring-h1-03.webp)
 
 ## 什么是 IoC
-![plan-spring-h1-03-h2-01](./images/plan-spring-h1-03-h2-01.png)
+![plan-spring-h1-03-h2-01](./images/plan-spring-h1-03-h2-01.webp)
 
 IoC 的全称是 *Inversion of Control*，即**控制反转**。
 
@@ -229,7 +229,7 @@ UserService userService = new UserService();
 使用 Spring 后，只需要声明依赖，Spring 就会在启动时创建对象并注入进来。对象的创建权和管理权从开发者手中转移到了 Spring 容器，因此称为“控制反转”。
 
 ## IoC 与 DI 的关系
-![plan-spring-h1-03-h2-02](./images/plan-spring-h1-03-h2-02.png)
+![plan-spring-h1-03-h2-02](./images/plan-spring-h1-03-h2-02.webp)
 
 DI 的全称是 *Dependency Injection*，即**依赖注入**。
 
@@ -240,7 +240,7 @@ DI 的全称是 *Dependency Injection*，即**依赖注入**。
 IoC 表示把对象的控制权交给容器，DI 则是容器把对象所需要的依赖“塞”给它。
 
 ## 三种依赖注入方式
-![plan-spring-h1-03-h2-03](./images/plan-spring-h1-03-h2-03.png)
+![plan-spring-h1-03-h2-03](./images/plan-spring-h1-03-h2-03.webp)
 
 Web 开发中常见的依赖注入方式有三种。
 
@@ -270,7 +270,7 @@ Web 开发中常见的依赖注入方式有三种。
    ```
 
 ## 什么是 Bean
-![plan-spring-h1-03-h2-04](./images/plan-spring-h1-03-h2-04.png)
+![plan-spring-h1-03-h2-04](./images/plan-spring-h1-03-h2-04.webp)
 
 Bean 就是被 Spring 容器管理的 Java 对象。例如：
 
@@ -283,7 +283,7 @@ Bean 就是被 Spring 容器管理的 Java 对象。例如：
 这些对象都可以统称为 Spring Bean。
 
 ## Bean 的生命周期
-![plan-spring-h1-03-h2-05](./images/plan-spring-h1-03-h2-05.png)
+![plan-spring-h1-03-h2-05](./images/plan-spring-h1-03-h2-05.webp)
 
 Bean 的生命周期主要包括以下阶段：
 
@@ -300,7 +300,7 @@ Bean 的生命周期主要包括以下阶段：
    容器关闭时执行销毁回调并释放资源。
 
 ## 单例 Bean 的线程安全问题
-![plan-spring-h1-03-h2-06](./images/plan-spring-h1-03-h2-06.png)
+![plan-spring-h1-03-h2-06](./images/plan-spring-h1-03-h2-06.webp)
 
 Spring 中的 Bean 默认通常是单例的，即整个应用中只有一个实例。如果在 Service 中定义了可变成员变量，例如：
 
@@ -322,7 +322,7 @@ private int count;
 例如，在 Web 项目或“苍穹外卖”这类项目中，可以使用 `ThreadLocal` 保存当前登录用户的信息。
 
 ## 循环依赖
-![plan-spring-h1-03-h2-07](./images/plan-spring-h1-03-h2-07.png)
+![plan-spring-h1-03-h2-07](./images/plan-spring-h1-03-h2-07.webp)
 
 循环依赖指的是对象之间形成闭环依赖，例如：
 
@@ -341,7 +341,7 @@ Spring 能够解决的典型情况是：
 Spring 无法通过传统三级缓存机制直接解决构造器循环依赖，因为对象执行构造方法时就必须得到完整依赖，无法先暴露一个尚未完成构造的半成品。
 
 ## 三级缓存机制
-![plan-spring-h1-03-h2-08](./images/plan-spring-h1-03-h2-08.png)
+![plan-spring-h1-03-h2-08](./images/plan-spring-h1-03-h2-08.webp)
 
 Spring 解决部分循环依赖问题的核心机制是**三级缓存**，本质上是提前暴露尚未完成属性注入的对象引用。
 
@@ -373,10 +373,10 @@ Spring 解决部分循环依赖问题的核心机制是**三级缓存**，本质
 > Spring 通过 IoC 管理 Bean。默认单例模式下，应避免在 Bean 中使用可变成员变量，以保障线程安全。对于部分单例 Bean 的字段注入或 Setter 注入循环依赖，Spring 可以借助三级缓存提前暴露早期引用；构造器循环依赖则无法通过这种方式解决。
 
 ## AOP 面向切面编程
-![plan-spring-h1-04](./images/plan-spring-h1-04.png)
+![plan-spring-h1-04](./images/plan-spring-h1-04.webp)
 
 ## 什么是 AOP
-![plan-spring-h1-04-h2-01](./images/plan-spring-h1-04-h2-01.png)
+![plan-spring-h1-04-h2-01](./images/plan-spring-h1-04-h2-01.webp)
 
 AOP 的全称是 *Aspect-Oriented Programming*，即**面向切面编程**。
 
@@ -393,7 +393,7 @@ System.out.println("开始执行");
 > AOP 就像给工厂里的所有流水线统一加装监控记录仪，而不是让每条流水线自己重复安装一套。
 
 ## AOP 核心概念
-![plan-spring-h1-04-h2-02](./images/plan-spring-h1-04-h2-02.png)
+![plan-spring-h1-04-h2-02](./images/plan-spring-h1-04-h2-02.webp)
 
 ### 切面 Aspect
 
@@ -417,7 +417,7 @@ System.out.println("开始执行");
 连接点是程序运行过程中所有可以被增强的位置。在 Spring AOP 中，连接点通常就是方法执行的时刻。
 
 ## JDK 动态代理与 CGLIB 代理
-![plan-spring-h1-04-h2-03](./images/plan-spring-h1-04-h2-03.png)
+![plan-spring-h1-04-h2-03](./images/plan-spring-h1-04-h2-03.webp)
 
 这是面试中提问非常频繁的问题。
 
@@ -442,7 +442,7 @@ JDK 动态代理要求目标对象实现接口。例如，`UserService` 实现�
 需要结合具体 Spring 与 Spring Boot 版本、AOP 配置判断最终使用哪种代理。Spring Boot 中通常默认使用 CGLIB 类代理，也可以通过配置切换代理策略。
 
 ## AOP 记录操作日志
-![plan-spring-h1-04-h2-04](./images/plan-spring-h1-04-h2-04.png)
+![plan-spring-h1-04-h2-04](./images/plan-spring-h1-04-h2-04.webp)
 
 一个典型应用是使用 AOP 记录操作日志，基本思路如下：
 
@@ -455,10 +455,10 @@ JDK 动态代理要求目标对象实现接口。例如，`UserService` 实现�
 如果学过外卖项目，这类应用一般都接触过。面试时可以结合自己真实做过的项目进行回答。
 
 ## Spring MVC 工作流程
-![plan-spring-h1-05](./images/plan-spring-h1-05.png)
+![plan-spring-h1-05](./images/plan-spring-h1-05.webp)
 
 ## Spring MVC 的职责
-![plan-spring-h1-05-h2-01](./images/plan-spring-h1-05-h2-01.png)
+![plan-spring-h1-05-h2-01](./images/plan-spring-h1-05-h2-01.webp)
 
 Spring MVC 是 Spring 生态中负责处理 Web 请求的模块。假设用户在浏览器中访问：
 
@@ -475,7 +475,7 @@ http://localhost:8080/user/delete
 后台会经历一套完整的请求处理流程。
 
 ## 请求处理的八个步骤
-![plan-spring-h1-05-h2-02](./images/plan-spring-h1-05-h2-02.png)
+![plan-spring-h1-05-h2-02](./images/plan-spring-h1-05-h2-02.webp)
 
 1. **客户端发起请求**  
    客户端通过 HTTP 协议向服务器发送请求。
@@ -504,10 +504,10 @@ http://localhost:8080/user/delete
 Spring MVC 的完整流程看起来比较复杂，但实际开发并不复杂。大部分组件都不需要开发者手动创建和管理，真正需要重点处理的通常是 Controller、Model 和 View，或者前后端分离场景中的 JSON 响应数据。
 
 ## Spring Boot 核心原理
-![plan-spring-h1-06](./images/plan-spring-h1-06.png)
+![plan-spring-h1-06](./images/plan-spring-h1-06.webp)
 
 ## Spring Boot 解决了什么问题
-![plan-spring-h1-06-h2-01](./images/plan-spring-h1-06-h2-01.png)
+![plan-spring-h1-06-h2-01](./images/plan-spring-h1-06-h2-01.webp)
 
 Spring Boot 是一个用于简化 Spring 应用初始化和开发过程的框架。
 
@@ -531,7 +531,7 @@ Spring Boot 是一个用于简化 Spring 应用初始化和开发过程的框架
 Spring Boot 的出现就是为了解决这些痛点。
 
 ## Spring Boot 的四个核心优点
-![plan-spring-h1-06-h2-02](./images/plan-spring-h1-06-h2-02.png)
+![plan-spring-h1-06-h2-02](./images/plan-spring-h1-06-h2-02.webp)
 
 ### 1. 起步依赖
 
@@ -573,7 +573,7 @@ Spring Boot Actuator 可以通过一系列端点查看应用的：
 这些能力对运维和线上排查非常重要。
 
 ## 自动配置原理
-![plan-spring-h1-06-h2-03](./images/plan-spring-h1-06-h2-03.png)
+![plan-spring-h1-06-h2-03](./images/plan-spring-h1-06-h2-03.webp)
 
 面试官经常会问：
 
@@ -639,10 +639,10 @@ server:
 > Spring Boot 自动配置的核心是 `@EnableAutoConfiguration`。它会导入大量候选自动配置类，但导入不等于生效。Spring Boot 会结合项目依赖、配置属性和 `@Conditional` 系列条件注解进行按需装配。如果容器中已经存在用户自定义的 Bean，默认配置还可以通过 `@ConditionalOnMissingBean` 自动让位，这体现了约定优于配置的设计思想。
 
 ## Spring 事务管理
-![plan-spring-h1-07](./images/plan-spring-h1-07.png)
+![plan-spring-h1-07](./images/plan-spring-h1-07.webp)
 
 ## 事务的本质
-![plan-spring-h1-07-h2-01](./images/plan-spring-h1-07-h2-01.png)
+![plan-spring-h1-07-h2-01](./images/plan-spring-h1-07-h2-01.webp)
 
 事务的本质就是：**要么全部成功，要么全部回滚。**
 
@@ -655,7 +655,7 @@ server:
 其中任何一步失败，前面已经执行的操作都必须撤销。
 
 ## `@Transactional` 的实现原理
-![plan-spring-h1-07-h2-02](./images/plan-spring-h1-07-h2-02.png)
+![plan-spring-h1-07-h2-02](./images/plan-spring-h1-07-h2-02.webp)
 
 在 Service 方法上添加 `@Transactional` 后，Spring 底层主要依靠 AOP 动态代理实现事务管理。
 
@@ -678,7 +678,7 @@ orderService.createOrder();
 > **AOP 动态代理 + 数据库事务与连接管理。**
 
 ## 事务失效的四种典型场景
-![plan-spring-h1-07-h2-03](./images/plan-spring-h1-07-h2-03.png)
+![plan-spring-h1-07-h2-03](./images/plan-spring-h1-07-h2-03.webp)
 
 ### 1. 捕获异常后没有继续抛出
 
@@ -735,7 +735,7 @@ public void methodA() {
 ```
 
 ## 声明式事务与编程式事务
-![plan-spring-h1-07-h2-04](./images/plan-spring-h1-07-h2-04.png)
+![plan-spring-h1-07-h2-04](./images/plan-spring-h1-07-h2-04.webp)
 
 ### 声明式事务
 
@@ -768,7 +768,7 @@ public void methodA() {
 一般来说，除非事务控制粒度非常细，否则优先使用声明式事务。
 
 ## 事务隔离级别
-![plan-spring-h1-07-h2-05](./images/plan-spring-h1-07-h2-05.png)
+![plan-spring-h1-07-h2-05](./images/plan-spring-h1-07-h2-05.webp)
 
 在高并发情况下，多个事务同时操作同一份数据，可能出现：
 
@@ -801,7 +801,7 @@ public void methodA() {
 实际开发中一般使用 `DEFAULT`，由数据库默认隔离级别处理大多数业务场景。
 
 ## 事务传播机制
-![plan-spring-h1-07-h2-06](./images/plan-spring-h1-07-h2-06.png)
+![plan-spring-h1-07-h2-06](./images/plan-spring-h1-07-h2-06.webp)
 
 当一个事务方法调用另一个事务方法时，事务应该如何传递，这就是**事务传播机制**。
 
@@ -838,15 +838,15 @@ Spring 一共提供了多种传播行为，其中最常见、最应该掌握的�
 例如，用户下单时需要赠送积分。赠送积分失败，不希望影响主订单生成；但如果订单最终被撤销，那么对应积分也必须一起撤销。
 
 ## Spring 事务总结
-![plan-spring-h1-07-h2-07](./images/plan-spring-h1-07-h2-07.png)
+![plan-spring-h1-07-h2-07](./images/plan-spring-h1-07-h2-07.webp)
 
 > Spring 声明式事务基于 AOP 动态代理实现，在目标方法执行前后织入事务开启、提交和回滚逻辑。使用时应确保事务方法能够通过代理调用，通常应为 `public`，避免类内部自调用；异常需要向外抛出，并建议通过 `rollbackFor = Exception.class` 处理受检异常。方法嵌套调用时，默认使用 `REQUIRED` 合并为一个大事务；`REQUIRES_NEW` 可以隔离出独立子事务，常用于操作日志等必须独立提交的场景。
 
 ## Spring Cloud 与微服务
-![plan-spring-h1-08](./images/plan-spring-h1-08.png)
+![plan-spring-h1-08](./images/plan-spring-h1-08.webp)
 
 ## 什么是微服务
-![plan-spring-h1-08-h2-01](./images/plan-spring-h1-08-h2-01.png)
+![plan-spring-h1-08-h2-01](./images/plan-spring-h1-08-h2-01.webp)
 
 微服务是一种架构风格。它的核心思想是把一个大而全的单体系统，按照业务功能拆分成多个独立的小型服务。
 
@@ -861,7 +861,7 @@ Spring 一共提供了多种传播行为，其中最常见、最应该掌握的�
 这些服务都可以是独立的 Spring Boot 项目，也可以拥有独立数据库。服务之间通过轻量级 HTTP 接口或 RPC 通信，不能像单体项目那样简单地使用 `@Autowired` 直接调用另一个模块中的对象。
 
 ## 微服务的核心能力
-![plan-spring-h1-08-h2-02](./images/plan-spring-h1-08-h2-02.png)
+![plan-spring-h1-08-h2-02](./images/plan-spring-h1-08-h2-02.webp)
 
 ### 服务注册与发现
 
@@ -904,7 +904,7 @@ Spring 一共提供了多种传播行为，其中最常见、最应该掌握的�
 从而尽量保证多个服务之间的数据状态一致。
 
 ## 单体架构与微服务架构的区别
-![plan-spring-h1-08-h2-03](./images/plan-spring-h1-08-h2-03.png)
+![plan-spring-h1-08-h2-03](./images/plan-spring-h1-08-h2-03.webp)
 
 ### 单体架构
 
@@ -937,7 +937,7 @@ Spring 一共提供了多种传播行为，其中最常见、最应该掌握的�
 这些正是 Spring Cloud 等微服务体系需要解决的问题。
 
 ## Spring Cloud 核心组件
-![plan-spring-h1-08-h2-04](./images/plan-spring-h1-08-h2-04.png)
+![plan-spring-h1-08-h2-04](./images/plan-spring-h1-08-h2-04.webp)
 
 ### 注册中心：Nacos 或 Eureka
 
@@ -1002,7 +1002,7 @@ Spring Cloud Stream 用于屏蔽底层消息中间件之间的差异，提供统
 - SkyWalking
 
 ## 面试复习与整体总结
-![plan-spring-h1-09](./images/plan-spring-h1-09.png)
+![plan-spring-h1-09](./images/plan-spring-h1-09.webp)
 
 以上就是 Spring 体系中经常被问到的主要知识点。大家可以通过思维导图在每次面试前进行回顾，加深对 Spring、Spring MVC、Spring Boot、Spring Cloud、IoC、AOP 和事务等内容的理解。
 

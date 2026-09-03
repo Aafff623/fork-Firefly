@@ -3,7 +3,7 @@ title: Redis 面试八股总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: Redis 是校招面试中经常被问到的技术，涉及基础、持久化、缓存、高可用、集群、分布式锁等多个模块。对于找工作前没有接触过开发的同学来说，Redis 可能是一个比较陌生的概念。
-image: ./cover.png
+image: ./cover.webp
 tags: [Redis, 缓存, 分布式, 面试]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## 复习说明
-![plan-redis-overview-h2-01](./images/plan-redis-overview-h2-01.png)
+![plan-redis-overview-h2-01](./images/plan-redis-overview-h2-01.webp)
 
 Redis 是校招面试中经常被问到的技术，涉及**基础、持久化、缓存、高可用、集群、分布式锁**等多个模块。对于找工作前没有接触过开发的同学来说，Redis 可能是一个比较陌生的概念。
 
@@ -23,10 +23,10 @@ Redis 是校招面试中经常被问到的技术，涉及**基础、持久化、
 > 学习 Redis 面试题时，既要掌握一个个细小的知识点，也要形成整体视角：面对一个具体场景或业务问题，应该怎样设计完整方案。
 
 ## Redis 基础
-![plan-redis-h1-01](./images/plan-redis-h1-01.png)
+![plan-redis-h1-01](./images/plan-redis-h1-01.webp)
 
 ## Redis 的常见用途
-![plan-redis-h1-01-h2-01](./images/plan-redis-h1-01-h2-01.png)
+![plan-redis-h1-01-h2-01](./images/plan-redis-h1-01-h2-01.webp)
 
 Redis 主要有三类常见用途：
 
@@ -43,7 +43,7 @@ Redis 主要有三类常见用途：
    Redis 可以协调多个进程或服务器实例对共享资源的访问，用于解决并发环境下的资源竞争问题。
 
 ## 基本数据类型与底层结构
-![plan-redis-h1-01-h2-02](./images/plan-redis-h1-01-h2-02.png)
+![plan-redis-h1-01-h2-02](./images/plan-redis-h1-01-h2-02.webp)
 
 Redis 常见的基本数据类型包括：
 
@@ -60,7 +60,7 @@ Redis 常见的基本数据类型包括：
 跳表是一种有序数据结构，通过在每个节点中维护多个指向其他节点的指针，实现对节点的快速访问。需要理解跳表的节点组成，以及节点之间如何通过多层指针建立联系。
 
 ## Redis 为什么快
-![plan-redis-h1-01-h2-03](./images/plan-redis-h1-01-h2-03.png)
+![plan-redis-h1-01-h2-03](./images/plan-redis-h1-01-h2-03.webp)
 
 Redis 性能高，主要有以下几个原因：
 
@@ -83,7 +83,7 @@ Redis 性能高，主要有以下几个原因：
 > 面试回答“Redis 为什么快”时，可以围绕**纯内存、单线程、I/O 多路复用、高效数据结构**四点展开。
 
 ## I/O 多路复用
-![plan-redis-h1-01-h2-04](./images/plan-redis-h1-01-h2-04.png)
+![plan-redis-h1-01-h2-04](./images/plan-redis-h1-01-h2-04.webp)
 
 Linux 常见的 I/O 多路复用实现包括：
 
@@ -94,10 +94,10 @@ Linux 常见的 I/O 多路复用实现包括：
 需要了解三者之间的区别、各自适用的场景，以及 Redis 如何利用 I/O 多路复用机制提升网络请求处理效率。当前 Redis 在 Linux 环境下通常优先使用 `epoll`。
 
 ## Redis 持久化
-![plan-redis-h1-02](./images/plan-redis-h1-02.png)
+![plan-redis-h1-02](./images/plan-redis-h1-02.webp)
 
 ## RDB 持久化
-![plan-redis-h1-02-h2-01](./images/plan-redis-h1-02-h2-01.png)
+![plan-redis-h1-02-h2-01](./images/plan-redis-h1-02-h2-01.webp)
 
 RDB 本质上是创建数据集快照：在指定时间间隔内，将 Redis 在某一时刻的数据状态保存到磁盘中的 RDB 文件。
 
@@ -118,7 +118,7 @@ RDB 的常见执行时机包括：
 3. 在主从复制场景中，从节点首次与主节点建立同步时，通常会通过主节点生成的 RDB 文件初始化数据集。
 
 ## AOF 持久化
-![plan-redis-h1-02-h2-02](./images/plan-redis-h1-02-h2-02.png)
+![plan-redis-h1-02-h2-02](./images/plan-redis-h1-02-h2-02.webp)
 
 AOF 通过记录每一次写操作命令，并将命令追加到 AOF 文件中实现持久化。它主要解决数据持久化的实时性问题。
 
@@ -143,7 +143,7 @@ AOF 主要有三种同步策略：
    Redis 只负责将数据写入操作系统缓冲区，具体何时同步到磁盘由操作系统决定。性能较好，但发生故障时可能丢失更多数据。
 
 ## RDB 与 AOF 的区别及选择
-![plan-redis-h1-02-h2-03](./images/plan-redis-h1-02-h2-03.png)
+![plan-redis-h1-02-h2-03](./images/plan-redis-h1-02-h2-03.webp)
 
 RDB 是一个非常紧凑的单文件，代表 Redis 在某个时间点的数据快照，因此很适合用于备份。例如，可以在夜间生成备份，再复制到远程服务器。
 
@@ -157,7 +157,7 @@ AOF 最大的优点是灵活、实时性好，可以设置不同的同步策略�
 - 有些用户只使用 AOF，但这不利于快速备份和恢复，因此不太建议单独依赖 AOF。
 
 ## Redis 数据恢复流程
-![plan-redis-h1-02-h2-04](./images/plan-redis-h1-02-h2-04.png)
+![plan-redis-h1-02-h2-04](./images/plan-redis-h1-02-h2-04.webp)
 
 Redis 数据恢复的基本方式，是将 RDB 或 AOF 文件复制到 Redis 的数据目录中。如果使用 AOF，需要先启用 AOF 功能。
 
@@ -169,10 +169,10 @@ Redis 启动时加载数据的流程如下：
 4. 如果 AOF 或 RDB 文件存在错误，Redis 可能启动失败，并打印相应的错误信息。
 
 ## Redis 缓存核心问题
-![plan-redis-h1-03](./images/plan-redis-h1-03.png)
+![plan-redis-h1-03](./images/plan-redis-h1-03.webp)
 
 ## 缓存穿透、缓存击穿与缓存雪崩
-![plan-redis-h1-03-h2-01](./images/plan-redis-h1-03-h2-01.png)
+![plan-redis-h1-03-h2-01](./images/plan-redis-h1-03-h2-01.webp)
 
 缓存异常是 Redis 面试中的重点，主要包括：
 
@@ -235,7 +235,7 @@ Redis 启动时加载数据的流程如下：
 > 对缓存异常，不仅要熟记解决方案，最好还能结合项目说明自己是怎么处理的。例如项目规模较小时，可以说自己通过“缓存空值”预防缓存穿透。
 
 ## 双写一致性
-![plan-redis-h1-03-h2-02](./images/plan-redis-h1-03-h2-02.png)
+![plan-redis-h1-03-h2-02](./images/plan-redis-h1-03-h2-02.webp)
 
 双写一致性是指修改数据库数据时，也要同步处理缓存，使缓存与数据库尽量保持一致。
 
@@ -284,7 +284,7 @@ Redis 数据位于内存中，而 MySQL 数据位于磁盘中，两者如何同�
 也可以通过相关中间件监听数据库变更，再异步同步缓存。
 
 ## 数据过期策略
-![plan-redis-h1-03-h2-03](./images/plan-redis-h1-03-h2-03.png)
+![plan-redis-h1-03-h2-03](./images/plan-redis-h1-03-h2-03.webp)
 
 Redis 的数据过期主要由两种策略配合完成。
 
@@ -305,7 +305,7 @@ Redis 每隔一段时间抽样检查 Key，并删除其中已经过期的 Key。
 - `fast` 快模式
 
 ## 数据淘汰策略
-![plan-redis-h1-03-h2-04](./images/plan-redis-h1-03-h2-04.png)
+![plan-redis-h1-03-h2-04](./images/plan-redis-h1-03-h2-04.webp)
 
 Redis 常见的内存淘汰策略一共有八种：
 
@@ -346,10 +346,10 @@ Redis 常见的内存淘汰策略一共有八种：
 **LFU（Least Frequently Used）**是“最不经常使用”，更关注访问频率。它认为访问频率高的数据才是热点，因此优先淘汰几乎没人访问的冷数据。
 
 ## Redis 高可用
-![plan-redis-h1-04](./images/plan-redis-h1-04.png)
+![plan-redis-h1-04](./images/plan-redis-h1-04.webp)
 
 ## 高可用的三种模式
-![plan-redis-h1-04-h2-01](./images/plan-redis-h1-04-h2-01.png)
+![plan-redis-h1-04-h2-01](./images/plan-redis-h1-04-h2-01.webp)
 
 Redis 主要通过三种模式实现高可用：
 
@@ -366,7 +366,7 @@ Redis 主要通过三种模式实现高可用：
    Redis Cluster 通过分片方式存储数据，每个节点只存储一部分数据，用户请求可以分散处理。
 
 ## 主从复制的作用
-![plan-redis-h1-04-h2-02](./images/plan-redis-h1-04-h2-02.png)
+![plan-redis-h1-04-h2-02](./images/plan-redis-h1-04-h2-02.webp)
 
 Redis 支持主从同步，也支持从从同步。从从同步是后续版本增加的能力，可以进一步减轻主节点压力。
 
@@ -389,7 +389,7 @@ Redis 支持主从同步，也支持从从同步。从从同步是后续版本�
    哨兵和 Redis Cluster 都依赖主从复制，因此主从复制是 Redis 高可用的重要基础。
 
 ## 主从复制连接与同步流程
-![plan-redis-h1-04-h2-03](./images/plan-redis-h1-04-h2-03.png)
+![plan-redis-h1-04-h2-03](./images/plan-redis-h1-04-h2-03.webp)
 
 主从复制的基本流程如下：
 
@@ -435,7 +435,7 @@ Redis 支持主从同步，也支持从从同步。从从同步是后续版本�
 Redis 会根据主节点的复制 ID（`replid`）、从节点保存的复制偏移量以及复制积压缓冲区判断能否进行增量同步。如果条件允许，主节点只需把偏移量之后的写命令发送给从节点，而不需要重新发送全部数据。
 
 ## 哨兵模式
-![plan-redis-h1-04-h2-04](./images/plan-redis-h1-04-h2-04.png)
+![plan-redis-h1-04-h2-04](./images/plan-redis-h1-04-h2-04.webp)
 
 主从复制本身无法自动完成故障转移，哨兵模式就是为了解决这个问题。
 
@@ -502,7 +502,7 @@ Redis 会根据主节点的复制 ID（`replid`）、从节点保存的复制偏
 新主节点具体如何筛选和选举，过程相对复杂，也应当单独掌握。
 
 ## Redis Cluster 集群
-![plan-redis-h1-04-h2-05](./images/plan-redis-h1-04-h2-05.png)
+![plan-redis-h1-04-h2-05](./images/plan-redis-h1-04-h2-05.webp)
 
 ### 数据分区与哈希槽
 
@@ -529,7 +529,7 @@ Redis Cluster 一共有 `16384` 个哈希槽，编号范围为 `0～16383`。每
 当超过半数、且持有槽的主节点都认为某个节点主观下线时，就会将其标记为客观下线，并触发故障转移。这个过程与哨兵模式中的主观下线、客观下线比较相似。
 
 ## 如何设计 Redis 集群方案
-![plan-redis-h1-04-h2-06](./images/plan-redis-h1-04-h2-06.png)
+![plan-redis-h1-04-h2-06](./images/plan-redis-h1-04-h2-06.webp)
 
 Redis 的高可用和集群方案可以从三个层次回答：
 
@@ -544,10 +544,10 @@ Redis 的高可用和集群方案可以从三个层次回答：
 现在技术要求较高的公司，尤其是大厂，可能会问较多场景题。因此学习时既要有微观知识，也要有宏观设计能力。
 
 ## Redis 分布式锁
-![plan-redis-h1-05](./images/plan-redis-h1-05.png)
+![plan-redis-h1-05](./images/plan-redis-h1-05.webp)
 
 ## 分布式锁的作用与基本原理
-![plan-redis-h1-05-h2-01](./images/plan-redis-h1-05-h2-01.png)
+![plan-redis-h1-05-h2-01](./images/plan-redis-h1-05-h2-01.webp)
 
 分布式锁用于保证在多个服务实例并存的环境下，同一时间只有一个实例能够操作某个共享资源，例如数据库中的某条数据。
 
@@ -575,14 +575,14 @@ SET key value NX PX milliseconds
 - `PX` 表示以毫秒为单位设置过期时间，用于避免死锁。
 
 ## 锁的有效时长与续期
-![plan-redis-h1-05-h2-02](./images/plan-redis-h1-05-h2-02.png)
+![plan-redis-h1-05-h2-02](./images/plan-redis-h1-05-h2-02.webp)
 
 锁的有效时长应该根据实际业务执行时间进行预估。同时还要考虑业务执行时间超出预估时，如何为锁续期。
 
 常见做法是另开一个线程监控当前业务线程的执行情况，并定期更新锁的有效时间。
 
 ## Redisson 的实现机制
-![plan-redis-h1-05-h2-03](./images/plan-redis-h1-05-h2-03.png)
+![plan-redis-h1-05-h2-03](./images/plan-redis-h1-05-h2-03.webp)
 
 实际开发中常使用 **Redisson** 实现分布式锁。它的底层会结合 Redis 命令和 Lua 脚本实现加锁、续期、释放等操作。
 
@@ -615,10 +615,10 @@ Redis 分布式锁还需要考虑主从一致性问题。
 如果业务要求较强的一致性，也可以考虑使用 **ZooKeeper** 实现分布式锁。
 
 ## Redis 应用与场景题
-![plan-redis-h1-06](./images/plan-redis-h1-06.png)
+![plan-redis-h1-06](./images/plan-redis-h1-06.webp)
 
 ## 如何回答“Redis 是单线程，为什么还这么快”
-![plan-redis-h1-06-h2-01](./images/plan-redis-h1-06-h2-01.png)
+![plan-redis-h1-06-h2-01](./images/plan-redis-h1-06-h2-01.webp)
 
 这个问题可以从以下几点回答：
 
@@ -629,7 +629,7 @@ Redis 分布式锁还需要考虑主从一致性问题。
 5. Redis 内部使用了多种高效的数据结构。
 
 ## 热 Key 问题
-![plan-redis-h1-06-h2-02](./images/plan-redis-h1-06-h2-02.png)
+![plan-redis-h1-06-h2-02](./images/plan-redis-h1-06-h2-02.webp)
 
 Redis 通常以集群方式部署。热 Key 可能造成集群流量不均衡，使个别节点出现负载过高的问题。极端情况下，热 Key 的访问量甚至会超过单个 Redis 实例所能承受的 QPS。
 
@@ -672,14 +672,14 @@ Redis 通常以集群方式部署。热 Key 可能造成集群流量不均衡，
 2. 尽可能保证数据一致性。
 
 ## 缓存预热
-![plan-redis-h1-06-h2-03](./images/plan-redis-h1-06-h2-03.png)
+![plan-redis-h1-06-h2-03](./images/plan-redis-h1-06-h2-03.webp)
 
 缓存预热是指系统重启或上线时，提前把预定义的热点数据加载到缓存中，避免系统运行初期因为大量缓存未命中而影响性能。
 
 缓存预热可以让系统上线后立即提供较高效的服务，并减少首次访问的延迟。
 
 ## 大 Key 问题
-![plan-redis-h1-06-h2-04](./images/plan-redis-h1-06-h2-04.png)
+![plan-redis-h1-06-h2-04](./images/plan-redis-h1-06-h2-04.webp)
 
 大 Key 是指存储数据量较大的 Key，例如：
 
@@ -711,7 +711,7 @@ Redis 通常以集群方式部署。热 Key 可能造成集群流量不均衡，
 - 如果 Value 是 `List`、`Set` 等集合类型，则可以进行分片，将一个大集合拆成多个小集合。
 
 ## Redis 事务
-![plan-redis-h1-06-h2-05](./images/plan-redis-h1-06-h2-05.png)
+![plan-redis-h1-06-h2-05](./images/plan-redis-h1-06-h2-05.webp)
 
 我曾经被面试官问过：“Redis 中有事务吗？”当时对 Redis 还不太熟悉，以为只有 MySQL 这类数据库才有事务，于是回答 Redis 没有事务，但实际上 Redis 支持简单事务。
 
@@ -733,10 +733,10 @@ Redis 可以将多个命令打包，按照顺序一次性执行，主要涉及�
 Redis 事务可以保证队列中的命令按顺序、不中断地执行，但它不像传统关系型数据库事务那样提供完整的回滚能力，这一点也需要注意。
 
 ## 面试复习与总结方法
-![plan-redis-h1-07](./images/plan-redis-h1-07.png)
+![plan-redis-h1-07](./images/plan-redis-h1-07.webp)
 
 ## 用思维导图形成知识体系
-![plan-redis-h1-07-h2-01](./images/plan-redis-h1-07-h2-01.png)
+![plan-redis-h1-07-h2-01](./images/plan-redis-h1-07-h2-01.webp)
 
 以上是 Redis 面试中经常被问到的一些知识点，可能仍有不全面的地方，可以继续补充。
 

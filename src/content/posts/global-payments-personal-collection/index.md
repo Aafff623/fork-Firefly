@@ -3,7 +3,7 @@ title: 01-个人收款与国际数字产品
 published: 2026-08-31
 updated: 2026-08-31T00:00:00
 description: 这篇文章处理个人阶段的收款问题：先判断业务类型和客户所在地区，再选择国内个人渠道、国际数字产品平台或稳定的手机号方案。重点不是把所有账户都开一遍，而是让产品、客户、支付方式、退款和结算路径能够相互解释。
-image: ./cover.png
+image: ./cover.webp
 tags: [Obsidian]
 category: 指南
 draft: false
@@ -119,7 +119,7 @@ comment: true
 
 ### Creem：数字产品个人国际收款的适用边界
 
-![global-payments-page-018](./images/global-payments-page-018.png)
+![global-payments-page-018](./images/global-payments-page-018.webp)
 
 *国际数字产品平台费率页面*
 
@@ -141,7 +141,7 @@ comment: true
 
 ### 从创建产品到提现：一条完整的数字产品链路
 
-![global-payments-page-020](./images/global-payments-page-020.png)
+![global-payments-page-020](./images/global-payments-page-020.webp)
 
 *数字产品价格与支付页面*
 
@@ -183,7 +183,7 @@ comment: true
 
 ### Ultra Mobile、Tello 与 WiFi Calling 的实际使用
 
-![global-payments-page-065](./images/global-payments-page-065.png)
+![global-payments-page-065](./images/global-payments-page-065.webp)
 
 *WiFi Calling 设置页面*
 

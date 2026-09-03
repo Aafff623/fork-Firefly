@@ -3,7 +3,7 @@ title: 黑马点评项目概览
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 黑马点评是黑马程序员为教学设计的一个基于 Spring Boot、前后端分离的本地生活服务项目，整体业务类似大众点评，属于 Java 后端从入门走向进阶的经典实战项目。
-image: ./cover.png
+image: ./cover.webp
 tags: [黑马点评, Java, Spring Boot, 项目, 面试]
 category: 指南
 draft: false
@@ -11,8 +11,8 @@ slug: heima-dianping-interview-guide
 pinned: false
 comment: true
 ---
-![plan-hmdp-overview-h2-01](./images/plan-hmdp-overview-h2-01.png)
-![plan-hmdp-overview-h2-02](./images/plan-hmdp-overview-h2-02.png)
+![plan-hmdp-overview-h2-01](./images/plan-hmdp-overview-h2-01.webp)
+![plan-hmdp-overview-h2-02](./images/plan-hmdp-overview-h2-02.webp)
 
 ## 项目定位与学习价值
 
@@ -52,10 +52,10 @@ Redis 在 Java 后端面试中的提问频率很高。面试官通常不会只�
 如果目标是应对中等难度的面试，把项目逻辑和常见八股结合起来，通常已经足够。如果是大厂中更深入的场景题，则还需要继续掌握 Redis 底层数据结构、跳表、持久化、主从复制和集群等知识。
 
 ## 登录模块：基于 Redis 的短信验证码登录
-![plan-hmdp-h1-01](./images/plan-hmdp-h1-01.png)
+![plan-hmdp-h1-01](./images/plan-hmdp-h1-01.webp)
 
 ## 整体业务流程
-![plan-hmdp-h1-01-h2-01](./images/plan-hmdp-h1-01-h2-01.png)
+![plan-hmdp-h1-01-h2-01](./images/plan-hmdp-h1-01-h2-01.webp)
 
 黑马点评的登录模块主要包含三个步骤：
 
@@ -80,7 +80,7 @@ Redis 在 Java 后端面试中的提问频率很高。面试官通常不会只�
 这种方式与现在很多网站的登录逻辑类似：用户输入手机号和验证码后，如果账号已经存在就直接登录；如果不存在，系统便自动完成注册，不再要求用户先点击注册按钮并填写大量信息。
 
 ## 用户信息为什么使用 Hash 存储
-![plan-hmdp-h1-01-h2-02](./images/plan-hmdp-h1-01-h2-02.png)
+![plan-hmdp-h1-01-h2-02](./images/plan-hmdp-h1-01-h2-02.webp)
 
 用户信息可以使用 Redis 的 String 或 Hash 存储。
 
@@ -114,7 +114,7 @@ Hash 以哈希表的形式保存用户信息，可以针对单个字段执行增
 > 面试时可以把“使用 Redis Hash 存储用户信息”作为登录模块的一个实现亮点，但不能只说技术名词，还要说明为什么这样选择。
 
 ## 为什么用 Redis 替代 Session
-![plan-hmdp-h1-01-h2-03](./images/plan-hmdp-h1-01-h2-03.png)
+![plan-hmdp-h1-01-h2-03](./images/plan-hmdp-h1-01-h2-03.webp)
 
 传统 Session 保存在 Tomcat 的本地内存中。单机部署时没有问题，但生产环境通常会部署多台 Tomcat，并通过 Nginx 做负载均衡。
 
@@ -141,7 +141,7 @@ Redis 独立于应用服务器，所有 Tomcat 节点都从同一个 Redis 读�
 - 用户登录信息可以设置为 30 分钟，并通过访问续期。
 
 ## 双拦截器设计
-![plan-hmdp-h1-01-h2-04](./images/plan-hmdp-h1-01-h2-04.png)
+![plan-hmdp-h1-01-h2-04](./images/plan-hmdp-h1-01-h2-04.webp)
 
 如果只配置一个登录拦截器，并且它只拦截个人中心、下单等需要登录的接口，就会出现一个问题：用户登录后，如果一直浏览首页、商户信息等不需要登录的页面，这些请求不会经过登录拦截器，Token 的有效期也不会刷新。
 
@@ -182,7 +182,7 @@ Redis 独立于应用服务器，所有 Tomcat 节点都从同一个 Redis 读�
 - 两层各司其职，互不干扰。
 
 ## ThreadLocal 的作用与清理
-![plan-hmdp-h1-01-h2-05](./images/plan-hmdp-h1-01-h2-05.png)
+![plan-hmdp-h1-01-h2-05](./images/plan-hmdp-h1-01-h2-05.webp)
 
 ThreadLocal 是 Java 提供的线程局部变量，每个线程都拥有独立的数据副本。Tomcat 处理请求时会从线程池中分配一个线程，外层拦截器可以在 `preHandle` 中把用户信息放入 ThreadLocal，Controller 层和 Service 层便可以直接获取当前用户，而不需要层层传参。
 
@@ -206,10 +206,10 @@ UserHolder.removeUser();
 - 请求结束后必须清理 ThreadLocal。
 
 ## 店铺查询：缓存策略与数据一致性
-![plan-hmdp-h1-02](./images/plan-hmdp-h1-02.png)
+![plan-hmdp-h1-02](./images/plan-hmdp-h1-02.webp)
 
 ## 店铺数据查询流程
-![plan-hmdp-h1-02-h2-01](./images/plan-hmdp-h1-02-h2-01.png)
+![plan-hmdp-h1-02-h2-01](./images/plan-hmdp-h1-02-h2-01.webp)
 
 用户查询店铺详情时，基本流程如下：
 
@@ -227,7 +227,7 @@ UserHolder.removeUser();
 3. 下次查询时重新从数据库加载并重建缓存。
 
 ## 三类缓存更新策略
-![plan-hmdp-h1-02-h2-02](./images/plan-hmdp-h1-02-h2-02.png)
+![plan-hmdp-h1-02-h2-02](./images/plan-hmdp-h1-02-h2-02.webp)
 
 ### 内存淘汰
 
@@ -261,7 +261,7 @@ UserHolder.removeUser();
 黑马点评主要采用 **主动更新为主、超时剔除兜底** 的组合策略。主动更新保证数据库变化后缓存能及时失效，TTL 则用于防止主动更新失败后，脏数据永久存在。
 
 ## 主动更新的三种方案
-![plan-hmdp-h1-02-h2-03](./images/plan-hmdp-h1-02-h2-03.png)
+![plan-hmdp-h1-02-h2-03](./images/plan-hmdp-h1-02-h2-03.webp)
 
 ### 双写方案
 
@@ -299,7 +299,7 @@ UserHolder.removeUser();
 它的性能很高，因为同步链路只操作内存中的缓存；但数据丢失风险较大。如果缓存故障，而数据尚未持久化到数据库，就可能发生丢失。
 
 ## 先删缓存还是先更新数据库
-![plan-hmdp-h1-02-h2-04](./images/plan-hmdp-h1-02-h2-04.png)
+![plan-hmdp-h1-02-h2-04](./images/plan-hmdp-h1-02-h2-04.webp)
 
 采用“更新数据库并删除缓存”时，还需要考虑操作顺序。
 
@@ -330,10 +330,10 @@ UserHolder.removeUser();
 > 黑马点评使用主动更新解决缓存和数据库的一致性问题，采用更新数据库后删除缓存的方式，减少无效写操作和并发不一致的概率。同时为缓存设置 TTL，并配合 Redis 的内存淘汰机制兜底。数据库更新和缓存删除应放在同一业务事务边界中，尽量保证整体操作的一致性。
 
 ## Redis 缓存异常及解决方案
-![plan-hmdp-h1-03](./images/plan-hmdp-h1-03.png)
+![plan-hmdp-h1-03](./images/plan-hmdp-h1-03.webp)
 
 ## 缓存穿透
-![plan-hmdp-h1-03-h2-01](./images/plan-hmdp-h1-03-h2-01.png)
+![plan-hmdp-h1-03-h2-01](./images/plan-hmdp-h1-03-h2-01.webp)
 
 缓存穿透是指客户端请求的数据在 Redis 和数据库中都不存在，因此缓存永远无法生效，每次请求都会打到数据库。
 
@@ -382,7 +382,7 @@ UserHolder.removeUser();
 如果面试时选择布隆过滤器方案，还要说明它应该怎样接入当前业务，不能只说一个技术名词。
 
 ## 缓存雪崩
-![plan-hmdp-h1-03-h2-02](./images/plan-hmdp-h1-03-h2-02.png)
+![plan-hmdp-h1-03-h2-02](./images/plan-hmdp-h1-03-h2-02.webp)
 
 缓存雪崩是指大量 Key 在同一时间失效，或者 Redis 服务宕机，导致大量请求同时到达数据库，给数据库带来巨大压力。
 
@@ -402,7 +402,7 @@ UserHolder.removeUser();
 这是最容易结合项目说明的方案。如果要回答 Redis 集群、限流或多级缓存，也要准备好面试官继续追问时的实现细节。
 
 ## 缓存击穿
-![plan-hmdp-h1-03-h2-03](./images/plan-hmdp-h1-03-h2-03.png)
+![plan-hmdp-h1-03-h2-03](./images/plan-hmdp-h1-03-h2-03.webp)
 
 缓存击穿是指某个高并发访问的热点 Key 突然失效，而该数据的缓存重建又比较复杂，导致大量请求瞬间进入数据库。
 
@@ -448,10 +448,10 @@ UserHolder.removeUser();
 > 逻辑过期并不是真正删除缓存，而是增加一个字段标记过期时间，让热点 Key 不会因为 Redis TTL 到期而被自动删除，从根本上避免热点 Key 突然消失造成的缓存击穿。
 
 ## 优惠券秒杀：超卖、一人一单与异步下单
-![plan-hmdp-h1-04](./images/plan-hmdp-h1-04.png)
+![plan-hmdp-h1-04](./images/plan-hmdp-h1-04.webp)
 
 ## 秒杀业务流程
-![plan-hmdp-h1-04-h2-01](./images/plan-hmdp-h1-04-h2-01.png)
+![plan-hmdp-h1-04-h2-01](./images/plan-hmdp-h1-04-h2-01.webp)
 
 优惠券秒杀的基础流程如下：
 
@@ -467,7 +467,7 @@ UserHolder.removeUser();
 扣减库存和创建订单需要保证业务一致性，否则可能出现库存扣减成功但订单创建失败，或者订单创建成功但库存没有正确扣减的问题。
 
 ## 全局唯一 ID
-![plan-hmdp-h1-04-h2-02](./images/plan-hmdp-h1-04-h2-02.png)
+![plan-hmdp-h1-04-h2-02](./images/plan-hmdp-h1-04-h2-02.webp)
 
 如果订单表直接使用 MySQL 自增主键，会产生两个问题。
 
@@ -494,7 +494,7 @@ UserHolder.removeUser();
 时间戳保证 ID 整体趋势递增，有利于 MySQL 索引；Redis 自增序列号保证同一时间范围内不重复，同时避免订单 ID 暴露明显的连续规律。该方案不依赖单表自增主键，因此在分库分表场景中也不容易冲突。
 
 ## 使用乐观锁解决超卖
-![plan-hmdp-h1-04-h2-03](./images/plan-hmdp-h1-04-h2-03.png)
+![plan-hmdp-h1-04-h2-03](./images/plan-hmdp-h1-04-h2-03.webp)
 
 假设库存只剩 1 件，同时有 1000 个用户抢购。多个线程都可能读取到 `stock = 1`，随后分别执行扣减，最终卖出多笔订单，这就是超卖。
 
@@ -534,7 +534,7 @@ WHERE id = ?
 悲观锁可以通过数据库行锁让请求串行执行，但在高并发场景下性能较差，还可能增加死锁风险，因此秒杀业务中通常优先考虑乐观锁。
 
 ## 一人一单与分布式锁
-![plan-hmdp-h1-04-h2-04](./images/plan-hmdp-h1-04-h2-04.png)
+![plan-hmdp-h1-04-h2-04](./images/plan-hmdp-h1-04-h2-04.webp)
 
 除了防止超卖，秒杀还需要保证同一用户对同一张优惠券只能购买一次。
 
@@ -548,7 +548,7 @@ WHERE id = ?
 但在分布式部署下，多台 Tomcat 拥有不同的 JVM 锁，`synchronized` 无法锁住跨服务请求，因此需要使用分布式锁。
 
 ## Redisson 可重入锁
-![plan-hmdp-h1-04-h2-05](./images/plan-hmdp-h1-04-h2-05.png)
+![plan-hmdp-h1-04-h2-05](./images/plan-hmdp-h1-04-h2-05.webp)
 
 项目使用 **Redisson** 实现分布式锁。Redisson 是 Redis 生态中常用的分布式锁实现，其可重入锁会使用 Redis Hash 保存锁信息：
 
@@ -573,7 +573,7 @@ WHERE id = ?
 可重入性很重要。例如，一个已经加锁的方法内部又调用了另一个需要同一把锁的方法。如果锁不可重入，线程第二次加锁时就会被自己阻塞，最终形成死锁。
 
 ## 为什么释放锁要使用 Lua 脚本
-![plan-hmdp-h1-04-h2-06](./images/plan-hmdp-h1-04-h2-06.png)
+![plan-hmdp-h1-04-h2-06](./images/plan-hmdp-h1-04-h2-06.webp)
 
 释放锁不能简单地执行删除操作，必须先确认锁的持有者是当前线程。
 
@@ -587,7 +587,7 @@ WHERE id = ?
 因此，必须把“判断锁持有者”和“删除锁”封装成一个原子操作，通过 Lua 脚本在 Redis 服务端一次性执行，避免中间被其他命令打断。
 
 ## 异步秒杀
-![plan-hmdp-h1-04-h2-07](./images/plan-hmdp-h1-04-h2-07.png)
+![plan-hmdp-h1-04-h2-07](./images/plan-hmdp-h1-04-h2-07.webp)
 
 如果每个秒杀请求都同步完成整条业务链路，包括：
 
@@ -640,10 +640,10 @@ XREADGROUP ... BLOCK 0 ...
 4. **异步秒杀**：Lua 脚本完成校验、扣减 Redis 库存和发送消息，再由后台线程消费 Redis Stream 并写入 MySQL。
 
 ## 达人探店：点赞、关注与 Feed 流
-![plan-hmdp-h1-05](./images/plan-hmdp-h1-05.png)
+![plan-hmdp-h1-05](./images/plan-hmdp-h1-05.webp)
 
 ## 点赞功能
-![plan-hmdp-h1-05-h2-01](./images/plan-hmdp-h1-05-h2-01.png)
+![plan-hmdp-h1-05-h2-01](./images/plan-hmdp-h1-05-h2-01.webp)
 
 用户可以对探店笔记点赞，一个用户只能点赞一次，再次点击则取消点赞。
 
@@ -656,7 +656,7 @@ XREADGROUP ... BLOCK 0 ...
 使用 Set 保存点赞用户列表，比在 MySQL 中维护关联表并频繁查询更快。高并发写入时，也可以减少数据库压力。
 
 ## 点赞排行榜
-![plan-hmdp-h1-05-h2-02](./images/plan-hmdp-h1-05-h2-02.png)
+![plan-hmdp-h1-05-h2-02](./images/plan-hmdp-h1-05-h2-02.webp)
 
 如果需要展示点赞时间靠前或靠后的用户，并按时间排序，可以使用 Redis Sorted Set，也就是 ZSet。
 
@@ -674,7 +674,7 @@ score  = 点赞时间戳
 > 普通点赞关系使用 Redis Set 去重；需要按照点赞时间展示前几名用户时，使用 ZSet，把时间戳作为 Score，再按 Score 查询前五名。
 
 ## 关注、取关与共同关注
-![plan-hmdp-h1-05-h2-03](./images/plan-hmdp-h1-05-h2-03.png)
+![plan-hmdp-h1-05-h2-03](./images/plan-hmdp-h1-05-h2-03.webp)
 
 用户可以关注或取关其他用户，还可以查看自己和某个用户的共同关注。
 
@@ -690,7 +690,7 @@ score  = 点赞时间戳
 如果使用 MySQL，通常需要编写较复杂的关联查询并进行去重；使用 Redis Set 求交集，逻辑更直接，性能也更好。
 
 ## Feed 流的三种模式
-![plan-hmdp-h1-05-h2-04](./images/plan-hmdp-h1-05-h2-04.png)
+![plan-hmdp-h1-05-h2-04](./images/plan-hmdp-h1-05-h2-04.webp)
 
 Feed 流用于实现关注内容推送。用户进入关注页后，可以看到所有已关注用户发布的探店笔记，并按时间倒序排列。
 
@@ -739,7 +739,7 @@ Feed 流用于实现关注内容推送。用户进入关注页后，可以看到
 黑马点评采用的是**纯推模式**，因为项目体量有限，业务实现也更直观。
 
 ## 使用 ZSet 保存收件箱
-![plan-hmdp-h1-05-h2-05](./images/plan-hmdp-h1-05-h2-05.png)
+![plan-hmdp-h1-05-h2-05](./images/plan-hmdp-h1-05-h2-05.webp)
 
 项目使用 ZSet 保存 Feed 流收件箱：
 
@@ -760,7 +760,7 @@ Feed 流用于实现关注内容推送。用户进入关注页后，可以看到
 3. 按 ZSet 返回的 ID 顺序重新排列结果。
 
 ## 滚动分页
-![plan-hmdp-h1-05-h2-06](./images/plan-hmdp-h1-05-h2-06.png)
+![plan-hmdp-h1-05-h2-06](./images/plan-hmdp-h1-05-h2-06.webp)
 
 传统分页通常使用 `pageNumber` 和 `pageSize`。但 Feed 流中的新数据会不断插入，如果使用页码和固定偏移量分页，就可能出现数据重复或遗漏。
 
@@ -784,10 +784,10 @@ ZREVRANGEBYSCORE key max min WITHSCORES LIMIT offset count
 博主发布笔记时，从粉丝 Set 中获取粉丝 ID，并将笔记 ID 写入每个粉丝的 ZSet，时间戳作为 Score；用户查看关注页时，从自己的 ZSet 中滚动分页取出笔记 ID，再批量查询 MySQL 获取详情。
 
 ## 项目面试复习重点
-![plan-hmdp-h1-06](./images/plan-hmdp-h1-06.png)
+![plan-hmdp-h1-06](./images/plan-hmdp-h1-06.webp)
 
 ## 四个核心模块
-![plan-hmdp-h1-06-h2-01](./images/plan-hmdp-h1-06-h2-01.png)
+![plan-hmdp-h1-06-h2-01](./images/plan-hmdp-h1-06-h2-01.webp)
 
 黑马点评需要重点掌握以下四部分：
 
@@ -821,7 +821,7 @@ ZREVRANGEBYSCORE key max min WITHSCORES LIMIT offset count
    - 滚动分页解决重复和遗漏
 
 ## 面试表达方式
-![plan-hmdp-h1-06-h2-02](./images/plan-hmdp-h1-06-h2-02.png)
+![plan-hmdp-h1-06-h2-02](./images/plan-hmdp-h1-06-h2-02.webp)
 
 这些内容可以背，但不能背得过于僵硬。面试时最好按照“业务场景——问题——方案——选择原因——项目实现”的顺序表达，而不是只罗列八股文。
 

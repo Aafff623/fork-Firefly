@@ -3,7 +3,7 @@ title: 苍穹外卖项目面试八股大总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。过了很久没有更新，后台也收到了不少同学的私信，希望我继续更新八股系列。今天要总结的，是计算机专业学生在校招中最常接触、甚至可能是第一个接触到的练手项目——苍穹外卖。
-image: ./cover.png
+image: ./cover.webp
 tags: [苍穹外卖, Java, Spring Boot, 项目, 面试]
 category: 指南
 draft: false
@@ -18,10 +18,10 @@ comment: true
 这篇内容汇总了苍穹外卖项目中可能被问到的问题，也包括我当时把苍穹外卖作为简历项目时，在面试中实际碰到的一些问题。
 
 ## 一、苍穹外卖项目概述
-![plan-cqwm-h1-01](./images/plan-cqwm-h1-01.png)
+![plan-cqwm-h1-01](./images/plan-cqwm-h1-01.webp)
 
 ## 1. 管理端与用户端
-![plan-cqwm-h1-01-h2-01](./images/plan-cqwm-h1-01-h2-01.png)
+![plan-cqwm-h1-01-h2-01](./images/plan-cqwm-h1-01-h2-01.webp)
 
 整个项目有两个核心端：
 
@@ -48,7 +48,7 @@ comment: true
 面试时，可以先从这两个端及其实现的功能入手，介绍整个项目。
 
 ## 2. 项目技术栈
-![plan-cqwm-h1-01-h2-02](./images/plan-cqwm-h1-01-h2-02.png)
+![plan-cqwm-h1-01-h2-02](./images/plan-cqwm-h1-01-h2-02.webp)
 
 苍穹外卖最大的亮点，是技术覆盖比较全面，并且采用了**前后端分离架构**，基本涵盖了当前主流的 Java 开发技术。
 
@@ -82,7 +82,7 @@ comment: true
 - 事务管理：**`@Transactional`**
 
 ## 3. 项目上线与业务难点
-![plan-cqwm-h1-01-h2-03](./images/plan-cqwm-h1-01-h2-03.png)
+![plan-cqwm-h1-01-h2-03](./images/plan-cqwm-h1-01-h2-03.webp)
 
 项目的另一个亮点，是按照接近生产环境的方式进行部署，因此可以对项目上线流程形成比较清晰的认识。
 
@@ -100,10 +100,10 @@ comment: true
 事务管理可以通过 Spring 提供的 **`@Transactional`** 注解实现。
 
 ## 二、Redis 在项目中的应用
-![plan-cqwm-h1-02](./images/plan-cqwm-h1-02.png)
+![plan-cqwm-h1-02](./images/plan-cqwm-h1-02.webp)
 
 ## 1. 缓存店铺营业状态
-![plan-cqwm-h1-02-h2-01](./images/plan-cqwm-h1-02-h2-01.png)
+![plan-cqwm-h1-02-h2-01](./images/plan-cqwm-h1-02-h2-01.webp)
 
 用户查看店铺营业状态时，需要保证相关数据的一致性。因为店铺未营业时，用户不能继续点单，所以这一数据对实时性要求比较高。
 
@@ -114,7 +114,7 @@ comment: true
 相较于基于磁盘的 MySQL，Redis 作为内存数据库，在这类高频查询场景中的性能更好。
 
 ## 2. 使用读写锁保证一致性
-![plan-cqwm-h1-02-h2-02](./images/plan-cqwm-h1-02-h2-02.png)
+![plan-cqwm-h1-02-h2-02](./images/plan-cqwm-h1-02-h2-02.webp)
 
 为了保证数据库与 Redis 中的店铺状态一致，可以使用 **Redisson 读写锁**。
 
@@ -125,7 +125,7 @@ comment: true
 > 读方法和写方法必须使用**同一把锁**，否则无法真正实现互斥和一致性控制。
 
 ## 3. 缓存菜品数据
-![plan-cqwm-h1-02-h2-03](./images/plan-cqwm-h1-02-h2-03.png)
+![plan-cqwm-h1-02-h2-03](./images/plan-cqwm-h1-02-h2-03.webp)
 
 如果用户端展示菜品时，每次都直接查询数据库，那么随着访问量增大，数据库压力也会随之增大，系统响应可能变慢，用户体验也会变差。
 
@@ -140,7 +140,7 @@ comment: true
 项目中可以按照菜品分类进行缓存，即**每一个分类保存一份菜品缓存数据**。当数据库中的菜品信息发生变更时，需要清理对应缓存，避免读取到旧数据。
 
 ## 4. 布隆过滤器与缓存穿透
-![plan-cqwm-h1-02-h2-04](./images/plan-cqwm-h1-02-h2-04.png)
+![plan-cqwm-h1-02-h2-04](./images/plan-cqwm-h1-02-h2-04.webp)
 
 布隆过滤器主要用于防止**缓存穿透**。
 
@@ -176,7 +176,7 @@ comment: true
 - 如果所有位置都为 `1`，只能说明该元素**可能存在**。
 
 ## 5. 布隆过滤器是否会误判
-![plan-cqwm-h1-02-h2-05](./images/plan-cqwm-h1-02-h2-05.png)
+![plan-cqwm-h1-02-h2-05](./images/plan-cqwm-h1-02-h2-05.webp)
 
 布隆过滤器存在误判。
 
@@ -189,10 +189,10 @@ comment: true
 换句话说，布隆过滤器说某个 ID 存在，它不一定真的存在，也可能只是其他几个 ID 的哈希值凑巧把相关位置占了。
 
 ## 三、微信登录、JWT 与身份认证
-![plan-cqwm-h1-03](./images/plan-cqwm-h1-03.png)
+![plan-cqwm-h1-03](./images/plan-cqwm-h1-03.webp)
 
 ## 1. 微信登录中的 HttpClient
-![plan-cqwm-h1-03-h2-01](./images/plan-cqwm-h1-03-h2-01.png)
+![plan-cqwm-h1-03-h2-01](./images/plan-cqwm-h1-03-h2-01.webp)
 
 在微信登录模块中，后端不需要自行验证用户的微信账号和密码，而是接收前端传来的临时授权码 `code`，再通过 **HttpClient** 调用微信官方 API。
 
@@ -206,7 +206,7 @@ HttpClient 可以理解为后端用于模拟浏览器发送 HTTP 请求的工具
 在微信登录开发中，后端需要携带登录凭证，请求微信提供的指定 URL，这项任务可以通过 HttpClient 完成。
 
 ## 2. 微信登录流程
-![plan-cqwm-h1-03-h2-02](./images/plan-cqwm-h1-03-h2-02.png)
+![plan-cqwm-h1-03-h2-02](./images/plan-cqwm-h1-03-h2-02.webp)
 
 微信登录的大致流程如下：
 
@@ -221,7 +221,7 @@ HttpClient 可以理解为后端用于模拟浏览器发送 HTTP 请求的工具
 这里的核心是：后端通过前端传来的 `code`，向微信官方接口换取用户的 `openid`，再完成登录。
 
 ## 3. 管理端登录流程
-![plan-cqwm-h1-03-h2-03](./images/plan-cqwm-h1-03-h2-03.png)
+![plan-cqwm-h1-03-h2-03](./images/plan-cqwm-h1-03-h2-03.webp)
 
 管理端登录的整体流程如下：
 
@@ -235,7 +235,7 @@ HttpClient 可以理解为后端用于模拟浏览器发送 HTTP 请求的工具
 8. 后端拦截器负责验证 JWT。
 
 ## 4. JWT 的验证流程
-![plan-cqwm-h1-03-h2-04](./images/plan-cqwm-h1-03-h2-04.png)
+![plan-cqwm-h1-03-h2-04](./images/plan-cqwm-h1-03-h2-04.webp)
 
 JWT 的全称是 **JSON Web Token**。用户在管理端输入账号和密码，后端校验通过后，会生成一串 JWT 字符串并返回给前端。
 
@@ -255,7 +255,7 @@ JWT 的全称是 **JSON Web Token**。用户在管理端输入账号和密码，
 *首次登录时，服务端校验用户名和密码；之后接收 HTTP 请求时，主要依据 Token 判断用户身份。*
 
 ## 5. 拦截器的作用
-![plan-cqwm-h1-03-h2-05](./images/plan-cqwm-h1-03-h2-05.png)
+![plan-cqwm-h1-03-h2-05](./images/plan-cqwm-h1-03-h2-05.webp)
 
 拦截器类似“门卫”，会在请求到达 Controller 前进行检查。
 
@@ -270,7 +270,7 @@ JWT 的全称是 **JSON Web Token**。用户在管理端输入账号和密码，
 2. 保存当前登录用户的身份信息。
 
 ## 6. ThreadLocal 的作用
-![plan-cqwm-h1-03-h2-06](./images/plan-cqwm-h1-03-h2-06.png)
+![plan-cqwm-h1-03-h2-06](./images/plan-cqwm-h1-03-h2-06.webp)
 
 ThreadLocal 会为每个线程提供独立的存储空间，具有**线程隔离**能力。只有在同一个线程中，才能获取该线程保存的值，因此它可以用来保存线程本地变量。
 
@@ -281,10 +281,10 @@ ThreadLocal 会为每个线程提供独立的存储空间，具有**线程隔离
 需要注意的是，请求结束后通常应及时清理 ThreadLocal 中的数据，避免在线程池复用线程时产生数据残留。
 
 ## 四、Nginx、负载均衡与实时通信
-![plan-cqwm-h1-04](./images/plan-cqwm-h1-04.png)
+![plan-cqwm-h1-04](./images/plan-cqwm-h1-04.webp)
 
 ## 1. Nginx 反向代理
-![plan-cqwm-h1-04-h2-01](./images/plan-cqwm-h1-04-h2-01.png)
+![plan-cqwm-h1-04-h2-01](./images/plan-cqwm-h1-04-h2-01.webp)
 
 项目部署时，为了避免单个服务器承受不住访问压力，通常会启动多个后端服务，例如监听 `8080`、`8081` 等不同端口。
 
@@ -297,7 +297,7 @@ Nginx 反向代理就像站在最前面的“经理人”。用户并不知道�
 Nginx 位于系统入口，也可以在这一层进行访问控制等安全处理，相当于在后端服务前增加了一道门槛。
 
 ## 2. Nginx 负载均衡
-![plan-cqwm-h1-04-h2-02](./images/plan-cqwm-h1-04-h2-02.png)
+![plan-cqwm-h1-04-h2-02](./images/plan-cqwm-h1-04-h2-02.webp)
 
 负载均衡是指 Nginx 通过轮询、权重等算法，把请求分摊给多台后端服务器，避免其中某一台服务器“累死”。
 
@@ -310,7 +310,7 @@ Nginx 位于系统入口，也可以在这一层进行访问控制等安全处�
 - **其他策略**：可以根据连接数、客户端信息等进行分发。
 
 ## 3. WebSocket 实现来单与催单提醒
-![plan-cqwm-h1-04-h2-03](./images/plan-cqwm-h1-04-h2-03.png)
+![plan-cqwm-h1-04-h2-03](./images/plan-cqwm-h1-04-h2-03.webp)
 
 后端与商家端需要建立实时通信。例如，用户下单成功后，系统应第一时间通知商家。
 
@@ -345,10 +345,10 @@ Nginx 位于系统入口，也可以在这一层进行访问控制等安全处�
 这样就能实现秒级的实时提醒。
 
 ## 五、库存超卖与并发控制
-![plan-cqwm-h1-05](./images/plan-cqwm-h1-05.png)
+![plan-cqwm-h1-05](./images/plan-cqwm-h1-05.webp)
 
 ## 1. 什么是商品超卖
-![plan-cqwm-h1-05-h2-01](./images/plan-cqwm-h1-05-h2-01.png)
+![plan-cqwm-h1-05-h2-01](./images/plan-cqwm-h1-05-h2-01.webp)
 
 如果面试官问项目中比较难实现的问题，可以把**商品超卖**作为例子。
 
@@ -357,7 +357,7 @@ Nginx 位于系统入口，也可以在这一层进行访问控制等安全处�
 库存已经不足，却仍然产生了多笔成功订单，这就是超卖问题。
 
 ## 2. 悲观锁
-![plan-cqwm-h1-05-h2-02](./images/plan-cqwm-h1-05-h2-02.png)
+![plan-cqwm-h1-05-h2-02](./images/plan-cqwm-h1-05-h2-02.webp)
 
 使用悲观锁时，需要在商品购买过程中对库存数据加锁，确保同一时间只有一个用户能够执行减库存操作，从而避免并发冲突。
 
@@ -370,7 +370,7 @@ Nginx 位于系统入口，也可以在这一层进行访问控制等安全处�
 悲观锁的思路是：*默认并发操作很可能发生冲突，因此先加锁，再执行操作。*
 
 ## 3. 乐观锁
-![plan-cqwm-h1-05-h2-03](./images/plan-cqwm-h1-05-h2-03.png)
+![plan-cqwm-h1-05-h2-03](./images/plan-cqwm-h1-05-h2-03.webp)
 
 乐观锁不会在一开始就锁住数据，而是在更新时检查数据是否已被其他请求修改。
 
@@ -398,14 +398,14 @@ WHERE id = ?
 这种方式由数据库行锁保证并发安全，通常比在 Java 中直接使用 `synchronized` 更高效。
 
 ## 4. 分布式锁
-![plan-cqwm-h1-05-h2-04](./images/plan-cqwm-h1-05-h2-04.png)
+![plan-cqwm-h1-05-h2-04](./images/plan-cqwm-h1-05-h2-04.webp)
 
 在分布式系统中，后台可能部署了多个服务节点。此时，仅使用单个 JVM 内的锁，无法约束其他节点。
 
 可以使用分布式锁对库存操作加锁，确保同一时间只有一个节点能够执行减库存操作，从而避免多个节点之间发生并发冲突。
 
 ## 5. Redis 与 Lua 脚本
-![plan-cqwm-h1-05-h2-05](./images/plan-cqwm-h1-05-h2-05.png)
+![plan-cqwm-h1-05-h2-05](./images/plan-cqwm-h1-05-h2-05.webp)
 
 还可以利用 Redis 的原子操作，并结合 **Lua 脚本**预防库存超卖。
 
@@ -414,10 +414,10 @@ Lua 脚本可以把 Redis 中的多个操作合并为一个整体执行。在脚
 面试时，可以把悲观锁、乐观锁、分布式锁和 Redis + Lua 都介绍出来，也可以选择其中一种，作为项目“吹水”的重点。
 
 ## 六、分页查询与 Spring Cache
-![plan-cqwm-h1-06](./images/plan-cqwm-h1-06.png)
+![plan-cqwm-h1-06](./images/plan-cqwm-h1-06.webp)
 
 ## 1. PageHelper 分页查询
-![plan-cqwm-h1-06-h2-01](./images/plan-cqwm-h1-06-h2-01.png)
+![plan-cqwm-h1-06-h2-01](./images/plan-cqwm-h1-06-h2-01.webp)
 
 项目中的分页查询可以使用 **PageHelper**。它是 MyBatis 的分页插件。
 
@@ -439,7 +439,7 @@ PageHelper.startPage(pageNum, pageSize);
 面试时不一定要把底层实现全部背下来，能够说明它通过 MyBatis 拦截机制改写 SQL、完成分页查询即可。
 
 ## 2. Spring Cache 的作用
-![plan-cqwm-h1-06-h2-02](./images/plan-cqwm-h1-06-h2-02.png)
+![plan-cqwm-h1-06-h2-02](./images/plan-cqwm-h1-06-h2-02.webp)
 
 **Spring Cache** 是 Spring 提供的注解驱动缓存框架。它为应用提供统一的缓存抽象，开发者不需要过度关心底层使用的是哪一种缓存技术。
 
@@ -470,7 +470,7 @@ Spring Cache 提供的是一层抽象，底层可以使用不同的缓存实现�
 - 其他兼容的缓存组件。
 
 ## 3. 菜品缓存与一致性
-![plan-cqwm-h1-06-h2-03](./images/plan-cqwm-h1-06-h2-03.png)
+![plan-cqwm-h1-06-h2-03](./images/plan-cqwm-h1-06-h2-03.webp)
 
 用户端小程序展示菜品时，如果每次都查询数据库，访问量增大后会给数据库造成较大压力。
 
@@ -483,10 +483,10 @@ Spring Cache 提供的是一层抽象，底层可以使用不同的缓存实现�
 一般面试官会先让你介绍某个功能是如何实现的。当你提到使用了某项技术后，他可能继续追问对应的八股知识。很多国企面试时间相对较短，问题通常以这种方式展开；如果是大厂或私企，可能还会加入难度更高的场景题。
 
 ## 七、定时任务与订单状态处理
-![plan-cqwm-h1-07](./images/plan-cqwm-h1-07.png)
+![plan-cqwm-h1-07](./images/plan-cqwm-h1-07.webp)
 
 ## 1. Spring Task
-![plan-cqwm-h1-07-h2-01](./images/plan-cqwm-h1-07-h2-01.png)
+![plan-cqwm-h1-07-h2-01](./images/plan-cqwm-h1-07-h2-01.webp)
 
 定时任务主要使用 **Spring Task** 实现。Spring Task 是 Spring 框架提供的任务调度工具，可以用于：
 
@@ -496,7 +496,7 @@ Spring Cache 提供的是一层抽象，底层可以使用不同的缓存实现�
 - 任务调度。
 
 ## 2. 支付超时订单处理
-![plan-cqwm-h1-07-h2-02](./images/plan-cqwm-h1-07-h2-02.png)
+![plan-cqwm-h1-07-h2-02](./images/plan-cqwm-h1-07-h2-02.webp)
 
 项目通过定时任务，每分钟检查一次是否存在支付超时的订单。
 
@@ -508,7 +508,7 @@ Spring Cache 提供的是一层抽象，底层可以使用不同的缓存实现�
 4. 将订单状态修改为“已取消”。
 
 ## 3. 派送中订单处理
-![plan-cqwm-h1-07-h2-03](./images/plan-cqwm-h1-07-h2-03.png)
+![plan-cqwm-h1-07-h2-03](./images/plan-cqwm-h1-07-h2-03.webp)
 
 系统还可以每天凌晨一点检查一次是否存在仍处于“派送中”状态的订单。
 
@@ -517,10 +517,10 @@ Spring Cache 提供的是一层抽象，底层可以使用不同的缓存实现�
 通过定时任务，可以自动处理因用户未操作、商家未点击完成等原因而长期停留在中间状态的订单。
 
 ## 八、反射、AOP 与公共字段填充
-![plan-cqwm-h1-08](./images/plan-cqwm-h1-08.png)
+![plan-cqwm-h1-08](./images/plan-cqwm-h1-08.webp)
 
 ## 1. Java 反射机制
-![plan-cqwm-h1-08-h2-01](./images/plan-cqwm-h1-08-h2-01.png)
+![plan-cqwm-h1-08-h2-01](./images/plan-cqwm-h1-08-h2-01.webp)
 
 反射是一种在程序运行期间检查和操作类的机制。程序可以通过反射获取类的信息，并动态完成以下操作：
 
@@ -541,7 +541,7 @@ Spring 等底层框架会通过反射获取类的方法和属性，并进行动�
 - 框架内部的方法和属性解析。
 
 ## 2. AOP 的作用
-![plan-cqwm-h1-08-h2-02](./images/plan-cqwm-h1-08-h2-02.png)
+![plan-cqwm-h1-08-h2-02](./images/plan-cqwm-h1-08-h2-02.webp)
 
 项目中的很多数据表都包含重复的公共字段，例如：
 
@@ -574,7 +574,7 @@ void insert(Entity entity);
 这样，业务层只需要关心核心业务，不需要在每个插入或更新方法中重复设置公共字段。
 
 ## 3. 公共字段自动填充的实现步骤
-![plan-cqwm-h1-08-h2-03](./images/plan-cqwm-h1-08-h2-03.png)
+![plan-cqwm-h1-08-h2-03](./images/plan-cqwm-h1-08-h2-03.webp)
 
 完整实现流程可以概括为：
 
@@ -589,10 +589,10 @@ void insert(Entity entity);
 这里的 AOP 公共字段填充内容，应该与反射机制放在一起理解。
 
 ## 九、Swagger、Knife4j 与接口文档
-![plan-cqwm-h1-09](./images/plan-cqwm-h1-09.png)
+![plan-cqwm-h1-09](./images/plan-cqwm-h1-09.webp)
 
 ## 1. Swagger
-![plan-cqwm-h1-09-h2-01](./images/plan-cqwm-h1-09-h2-01.png)
+![plan-cqwm-h1-09-h2-01](./images/plan-cqwm-h1-09-h2-01.webp)
 
 Swagger 可以自动生成在线 API 接口文档。
 
@@ -608,17 +608,17 @@ Swagger 可以自动生成在线 API 接口文档。
 例如，可以使用接口描述类注解或操作说明注解，为接口补充文档信息。
 
 ## 2. Knife4j
-![plan-cqwm-h1-09-h2-02](./images/plan-cqwm-h1-09-h2-02.png)
+![plan-cqwm-h1-09-h2-02](./images/plan-cqwm-h1-09-h2-02.webp)
 
 **Knife4j** 可以理解为 Swagger 的增强工具。相比基础的 Swagger UI，它的界面更美观，接口调试也更方便。
 
 在前后端分离开发中，前端开发人员可以直接查看接口文档，并根据文档完成接口联调。Swagger 和 Knife4j 不仅适合真实项目，也很适合在练手项目中使用。
 
 ## 十、面试介绍思路
-![plan-cqwm-h1-10](./images/plan-cqwm-h1-10.png)
+![plan-cqwm-h1-10](./images/plan-cqwm-h1-10.webp)
 
 ## 1. 先介绍整体架构
-![plan-cqwm-h1-10-h2-01](./images/plan-cqwm-h1-10-h2-01.png)
+![plan-cqwm-h1-10-h2-01](./images/plan-cqwm-h1-10-h2-01.webp)
 
 面试时，可以先说明项目分为两端：
 
@@ -628,7 +628,7 @@ Swagger 可以自动生成在线 API 接口文档。
 然后分别介绍两端的核心功能，再说明项目使用了 Spring Boot、MyBatis、MySQL、Redis、JWT、Nginx、WebSocket 等技术。
 
 ## 2. 再介绍重点功能
-![plan-cqwm-h1-10-h2-02](./images/plan-cqwm-h1-10-h2-02.png)
+![plan-cqwm-h1-10-h2-02](./images/plan-cqwm-h1-10-h2-02.webp)
 
 可以选择几个自己最熟悉的模块展开，例如：
 
@@ -643,7 +643,7 @@ Swagger 可以自动生成在线 API 接口文档。
 9. AOP 与公共字段自动填充。
 
 ## 3. 最后准备技术追问
-![plan-cqwm-h1-10-h2-03](./images/plan-cqwm-h1-10-h2-03.png)
+![plan-cqwm-h1-10-h2-03](./images/plan-cqwm-h1-10-h2-03.webp)
 
 面试官通常会根据你主动提到的技术继续追问。例如：
 

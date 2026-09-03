@@ -3,7 +3,7 @@ title: 消息队列面试考点大总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 消息队列是计算机校招面试中的常见考点。在私企或互联网公司，面试官往往会结合项目、实习经历深入追问，甚至设计具体的场景题；而在不少国企的面试中，相关问题通常更偏向基础概念。
-image: ./cover.png
+image: ./cover.webp
 tags: [消息队列, Kafka, RocketMQ, RabbitMQ, 面试]
 category: 指南
 draft: false
@@ -12,17 +12,17 @@ pinned: false
 comment: true
 ---
 ## 面试中的考查侧重点
-![plan-mq-overview-h2-01](./images/plan-mq-overview-h2-01.png)
+![plan-mq-overview-h2-01](./images/plan-mq-overview-h2-01.webp)
 
 消息队列是计算机校招面试中的常见考点。在私企或互联网公司，面试官往往会结合项目、实习经历深入追问，甚至设计具体的场景题；而在不少国企的面试中，相关问题通常更偏向基础概念。
 
 本文围绕消息队列的基础原理、推拉模式、使用风险、应用场景、可靠性保障、协议规范，以及 Kafka、RocketMQ、RabbitMQ、Pulsar、ActiveMQ 等主流产品的技术选型展开。
 
 ## 消息队列基础
-![plan-mq-h1-01](./images/plan-mq-h1-01.png)
+![plan-mq-h1-01](./images/plan-mq-h1-01.webp)
 
 ## 什么是消息队列
-![plan-mq-h1-01-h2-01](./images/plan-mq-h1-01-h2-01.png)
+![plan-mq-h1-01-h2-01](./images/plan-mq-h1-01-h2-01.webp)
 
 消息队列可以理解为一个存放消息的容器，类似于一条先进先出的排队通道：
 
@@ -42,7 +42,7 @@ comment: true
 > 它让系统从串行执行变成各自独立执行，再通过消息完成衔接。
 
 ## 消息队列的三大作用
-![plan-mq-h1-01-h2-02](./images/plan-mq-h1-01-h2-02.png)
+![plan-mq-h1-01-h2-02](./images/plan-mq-h1-01-h2-02.webp)
 
 ### 1. 异步处理
 
@@ -98,10 +98,10 @@ comment: true
 通过消息队列解耦后，订单系统只负责发送一条“订单已创建”的消息。库存、财务、物流、积分等系统各自订阅并处理。如果后续增加风控系统或反洗钱系统，只需要让新系统订阅同一条消息，订单系统一行代码都不用改。
 
 ## 消息队列的推拉模式
-![plan-mq-h1-02](./images/plan-mq-h1-02.png)
+![plan-mq-h1-02](./images/plan-mq-h1-02.webp)
 
 ## 推拉发生在哪些组件之间
-![plan-mq-h1-02-h2-01](./images/plan-mq-h1-02-h2-01.png)
+![plan-mq-h1-02-h2-01](./images/plan-mq-h1-02-h2-01.webp)
 
 消息队列中的“推模式”和“拉模式”，通常指的是 **Consumer 与 Broker 之间的交互方式**。
 
@@ -124,7 +124,7 @@ Broker 通常拥有磁盘和副本机制，可以集中保障消息可靠性。�
 例如，在日志采集系统中，业务服务作为 Producer，每次请求结束后，通过 SDK 直接把日志发送给 MQ 集群中的 Broker。不能让 MQ 定时扫描业务服务器磁盘上的日志文件，因为业务服务器随时可能重启或扩容，MQ 甚至无法稳定找到这些机器。
 
 ## 推模式
-![plan-mq-h1-02-h2-02](./images/plan-mq-h1-02-h2-02.png)
+![plan-mq-h1-02-h2-02](./images/plan-mq-h1-02-h2-02.webp)
 
 推模式是指 Broker 主动向 Consumer 推送消息，Consumer 被动接收，由 Broker 主导消息发送节奏。
 
@@ -143,7 +143,7 @@ Broker 不一定了解消费者的真实处理能力。如果生产端瞬间产�
 另外，为了适配不同消费者，Broker 还需要记录每个消费者的状态并调整推送速度，这会增加 Broker 的复杂度。
 
 ## 拉模式
-![plan-mq-h1-02-h2-03](./images/plan-mq-h1-02-h2-03.png)
+![plan-mq-h1-02-h2-03](./images/plan-mq-h1-02-h2-03.webp)
 
 拉模式是指 Consumer 主动向 Broker 请求消息，Broker 被动返回。
 
@@ -168,7 +168,7 @@ Broker 不一定了解消费者的真实处理能力。如果生产端瞬间产�
 例如，在报表导出系统中，用户每天可能只上传几次数据。如果消费者每隔 5 分钟拉取一次，大部分请求都是空的；如果把拉取间隔设置为 500 ms，空请求频率又会过高，Broker 的 CPU 会消耗在无效问询上。
 
 ## Kafka 与 RocketMQ 的长轮询
-![plan-mq-h1-02-h2-04](./images/plan-mq-h1-02-h2-04.png)
+![plan-mq-h1-02-h2-04](./images/plan-mq-h1-02-h2-04.webp)
 
 Kafka 和 RocketMQ 都选择以拉模式为主，因为 Broker 是整个系统的核心枢纽，需要尽量保持轻量。如果把控制推送节奏的复杂逻辑全部放在 Broker 中，Broker 会越来越重，最终可能成为系统瓶颈。
 
@@ -192,10 +192,10 @@ Kafka 和 RocketMQ 都选择以拉模式为主，因为 Broker 是整个系统�
 开发过程中可以配置相应的轮询超时时间，例如设置为 5,000 ms。业务低谷时，请求最多挂起 5 秒后超时返回，一晚上只会产生有限数量的请求；早上流量到来时，消息刚写入 Broker，就能唤醒正在等待的请求并立即返回。
 
 ## 使用消息队列的风险与判断准则
-![plan-mq-h1-03](./images/plan-mq-h1-03.png)
+![plan-mq-h1-03](./images/plan-mq-h1-03.webp)
 
 ## 可用性与系统复杂度
-![plan-mq-h1-03-h2-01](./images/plan-mq-h1-03-h2-01.png)
+![plan-mq-h1-03-h2-01](./images/plan-mq-h1-03-h2-01.webp)
 
 引入 MQ 会增加系统的单点故障风险，需要应对 Broker 宕机、网络分区等异常情况。
 
@@ -238,7 +238,7 @@ Broker 可能因为没有收到消费者确认而重新投递同一条消息。�
 例如，数据库已经完成扣款，但发送消息时网络中断，下游没有收到减库存指令，最终出现“钱扣了，货还在”的情况。
 
 ## 什么时候该用 MQ
-![plan-mq-h1-03-h2-02](./images/plan-mq-h1-03-h2-02.png)
+![plan-mq-h1-03-h2-02](./images/plan-mq-h1-03-h2-02.webp)
 
 可以参考两条判断规律。
 
@@ -275,17 +275,17 @@ RPC 和 MQ 最核心的区别，可以理解为“急不急”：
 例如，用户登录必须立即验证并返回结果，不适合使用 MQ；“双 11”下单时，可以先返回“订单已收到”，再异步处理后续流程，适合使用 MQ。
 
 ## 消息队列的典型应用场景
-![plan-mq-h1-04](./images/plan-mq-h1-04.png)
+![plan-mq-h1-04](./images/plan-mq-h1-04.webp)
 
 ## 分布式事务
-![plan-mq-h1-04-h2-01](./images/plan-mq-h1-04-h2-01.png)
+![plan-mq-h1-04-h2-01](./images/plan-mq-h1-04-h2-01.webp)
 
 MQ 事务是分布式事务的解决方案之一。主流消息队列通常提供相应保障，也可以支持“消费消息——处理业务——再次生产消息”的全过程作为一个事务单元执行。
 
 分布式事务常见的方案包括 2PC、TCC 和事务消息。
 
 ## 2PC：两阶段提交
-![plan-mq-h1-04-h2-02](./images/plan-mq-h1-04-h2-02.png)
+![plan-mq-h1-04-h2-02](./images/plan-mq-h1-04-h2-02.webp)
 
 2PC 即 Two-Phase Commit，两阶段提交，主要提供数据库层面的强一致性。
 
@@ -314,7 +314,7 @@ MQ 事务是分布式事务的解决方案之一。主流消息队列通常提�
 - **极端情况下仍可能不一致**：协调者发送提交命令时，如果某个参与者因网络问题没有收到，其他参与者已经提交，而该参与者重启后回滚，就可能造成数据不一致。
 
 ## TCC：业务层事务
-![plan-mq-h1-04-h2-03](./images/plan-mq-h1-04-h2-03.png)
+![plan-mq-h1-04-h2-03](./images/plan-mq-h1-04-h2-03.webp)
 
 TCC 可以理解为业务层面的“手动挡”。它不局限于数据库，上传图片、调用外部 API 等操作也可以纳入事务控制。
 
@@ -333,7 +333,7 @@ TCC 可以理解为业务层面的“手动挡”。它不局限于数据库，�
 TCC 的业务侵入性较强，而且 `Confirm` 和 `Cancel` 必须具备**幂等性**。
 
 ## 事务消息
-![plan-mq-h1-04-h2-04](./images/plan-mq-h1-04-h2-04.png)
+![plan-mq-h1-04-h2-04](./images/plan-mq-h1-04-h2-04.webp)
 
 事务消息适合异步场景下的最终一致性问题。它主要解决：
 
@@ -375,7 +375,7 @@ Kafka 可以保证同一事务中的多条消息要么全部成功，要么全�
 在这条受控链路中，可以做到消息不重不丢，但超出这条链路后，仍然需要业务侧配合。
 
 ## 顺序消息与延时消息
-![plan-mq-h1-04-h2-05](./images/plan-mq-h1-04-h2-05.png)
+![plan-mq-h1-04-h2-05](./images/plan-mq-h1-04-h2-05.webp)
 
 消息队列可以保证数据按照特定顺序处理，适用于对顺序有严格要求的场景。
 
@@ -391,7 +391,7 @@ Kafka 可以保证同一事务中的多条消息要么全部成功，要么全�
 - 延迟重试任务。
 
 ## 即时通信与数据流处理
-![plan-mq-h1-04-h2-06](./images/plan-mq-h1-04-h2-06.png)
+![plan-mq-h1-04-h2-06](./images/plan-mq-h1-04-h2-06.webp)
 
 RabbitMQ 可以通过 MQTT 插件支持物联网设备在低带宽环境中的消息传递。
 
@@ -405,10 +405,10 @@ RabbitMQ 可以通过 MQTT 插件支持物联网设备在低带宽环境中的�
 采集后的数据可以导入 Flink、Spark 等大数据引擎进行实时分析，也可以进入 Hadoop 等平台完成离线分析。
 
 ## 消息队列的可靠性保障
-![plan-mq-h1-05](./images/plan-mq-h1-05.png)
+![plan-mq-h1-05](./images/plan-mq-h1-05.webp)
 
 ## 全链路可靠性设计
-![plan-mq-h1-05-h2-01](./images/plan-mq-h1-05-h2-01.png)
+![plan-mq-h1-05-h2-01](./images/plan-mq-h1-05-h2-01.webp)
 
 不同 MQ 的实现细节不同，但可靠性设计的思路基本一致，包括：
 
@@ -430,7 +430,7 @@ RabbitMQ 可以通过 MQTT 插件支持物联网设备在低带宽环境中的�
 每一段都有可能出问题。因此，必须同时保证生产者、Broker 和消费者三个阶段的可靠性，再通过幂等与积压治理兜底。
 
 ## 生产者阶段
-![plan-mq-h1-05-h2-02](./images/plan-mq-h1-05-h2-02.png)
+![plan-mq-h1-05-h2-02](./images/plan-mq-h1-05-h2-02.webp)
 
 生产者发送消息后，不能想当然地认为 Broker 一定收到了。网络抖动或 Broker 宕机都可能导致消息在途中丢失。
 
@@ -455,7 +455,7 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 这就是**本地消息表方案**。如果希望使用更完整的产品能力，也可以采用 RocketMQ 事务消息，其本质思路类似。
 
 ## Broker 存储阶段
-![plan-mq-h1-05-h2-03](./images/plan-mq-h1-05-h2-03.png)
+![plan-mq-h1-05-h2-03](./images/plan-mq-h1-05-h2-03.webp)
 
 消息到达 Broker 后，需要保证它被可靠存储，不能只放在内存中。否则 Broker 突然宕机时，内存中的数据可能全部丢失。
 
@@ -485,7 +485,7 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 - `acks=all` 或 `acks=-1`：等待所有同步副本确认，可靠性最高。
 
 ## 消费者阶段
-![plan-mq-h1-05-h2-04](./images/plan-mq-h1-05-h2-04.png)
+![plan-mq-h1-05-h2-04](./images/plan-mq-h1-05-h2-04.webp)
 
 消费者从 Broker 获取消息后，可能在处理过程中宕机或抛出异常。如果提前告诉 Broker“已经消费完成”，但业务后来失败，这条消息就可能真正丢失。
 
@@ -502,14 +502,14 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 5. 下次拉取时再次获取这条消息并重试。
 
 ## 重试与死信队列
-![plan-mq-h1-05-h2-05](./images/plan-mq-h1-05-h2-05.png)
+![plan-mq-h1-05-h2-05](./images/plan-mq-h1-05-h2-05.webp)
 
 如果一条消息因为格式错误，或者依赖的下游服务长期不可用而一直失败，不能无限重试。
 
 可以设置最大重试次数，例如三次。超过次数后，将消息放入**死信队列 Dead Letter Queue，DLQ**，等待后续人工排查。
 
 ## 业务层兜底
-![plan-mq-h1-05-h2-06](./images/plan-mq-h1-05-h2-06.png)
+![plan-mq-h1-05-h2-06](./images/plan-mq-h1-05-h2-06.webp)
 
 即使 MQ 链路已经采取了多重保障，业务层仍然需要兜底：
 
@@ -519,10 +519,10 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 - **人工介入**：处理无法自动修复的极端情况。
 
 ## 幂等设计与消息积压治理
-![plan-mq-h1-06](./images/plan-mq-h1-06.png)
+![plan-mq-h1-06](./images/plan-mq-h1-06.webp)
 
 ## 重复消费与幂等性
-![plan-mq-h1-06-h2-01](./images/plan-mq-h1-06-h2-01.png)
+![plan-mq-h1-06-h2-01](./images/plan-mq-h1-06-h2-01.webp)
 
 在 **At Least Once，至少一次投递**语义下，重复消费几乎不可避免。
 
@@ -555,7 +555,7 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 把消息 ID 存入 Redis，并设置过期时间。例如过期时间为 5 分钟，那么 5 分钟内到达的重复消息都会被过滤。
 
 ## 消息积压的原因
-![plan-mq-h1-06-h2-02](./images/plan-mq-h1-06-h2-02.png)
+![plan-mq-h1-06-h2-02](./images/plan-mq-h1-06-h2-02.webp)
 
 消息积压是 MQ 最常见的问题之一，主要原因通常有三个：
 
@@ -566,7 +566,7 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 如果积压长期不处理，队列可能被写满，新消息无法进入，最终导致系统故障。
 
 ## 消息积压的处理步骤
-![plan-mq-h1-06-h2-03](./images/plan-mq-h1-06-h2-03.png)
+![plan-mq-h1-06-h2-03](./images/plan-mq-h1-06-h2-03.webp)
 
 ### 1. 限流止血
 
@@ -597,10 +597,10 @@ Broker 确认收到消息后，再将状态改为“已发送”。如果发送�
 对于已经堆积的大量消息，可以创建临时应急消费者。它不处理复杂业务，只负责将消息快速转发到新的 MQ 或新的 Topic 中，再挂载一批消费者并行处理。
 
 ## 消息队列的协议与模型规范
-![plan-mq-h1-07](./images/plan-mq-h1-07.png)
+![plan-mq-h1-07](./images/plan-mq-h1-07.webp)
 
 ## JMS：Java 消息服务
-![plan-mq-h1-07-h2-01](./images/plan-mq-h1-07-h2-01.png)
+![plan-mq-h1-07-h2-01](./images/plan-mq-h1-07-h2-01.webp)
 
 JMS 全称为 **Java Message Service**，即 Java 消息服务。它是 Java 官方制定的一套消息中间件 API 规范，不是某个具体的软件。
 
@@ -620,7 +620,7 @@ JMS 中常见的五种消息类型包括：
 - **BytesMessage**：传输字节数据，例如图片、文件或其他二进制内容。
 
 ## JMS 的两种消息模型
-![plan-mq-h1-07-h2-02](./images/plan-mq-h1-07-h2-02.png)
+![plan-mq-h1-07-h2-02](./images/plan-mq-h1-07-h2-02.webp)
 
 ### 点对点模型 P2P
 
@@ -631,7 +631,7 @@ JMS 中常见的五种消息类型包括：
 一条消息可以被多个订阅者消费，类似广播电台发布新闻，所有打开收音机并订阅频道的人都可以收到。
 
 ## AMQP：高级消息队列协议
-![plan-mq-h1-07-h2-03](./images/plan-mq-h1-07-h2-03.png)
+![plan-mq-h1-07-h2-03](./images/plan-mq-h1-07-h2-03.webp)
 
 JMS 的局限是主要服务于 Java 生态。如果系统使用 Python、Node.js、Go 或 C++，JMS 就不适合充当跨语言协议。
 
@@ -640,7 +640,7 @@ AMQP 全称为 **Advanced Message Queuing Protocol**，即高级消息队列协�
 无论使用 Java、Python、Go 还是 C++，只要按照 AMQP 规定的格式发送消息，支持 AMQP 的消息中间件就可以接收和处理。RabbitMQ 是 AMQP 的典型代表。
 
 ## RabbitMQ 的 Exchange 路由模型
-![plan-mq-h1-07-h2-04](./images/plan-mq-h1-07-h2-04.png)
+![plan-mq-h1-07-h2-04](./images/plan-mq-h1-07-h2-04.webp)
 
 AMQP 与 RabbitMQ 中的核心概念之一是 **Exchange，交换机**。生产者将消息发送给 Exchange，Exchange 再根据路由规则把消息转发到对应队列。
 
@@ -654,10 +654,10 @@ RabbitMQ 常用的 Exchange 类型主要有四种：
 此外，部分协议资料中还会提到用于系统内部管理的 **System Exchange**，但在 RabbitMQ 的日常业务开发中，通常重点掌握前面四种交换机类型。
 
 ## RPC 与 MQ 的对比
-![plan-mq-h1-08](./images/plan-mq-h1-08.png)
+![plan-mq-h1-08](./images/plan-mq-h1-08.webp)
 
 ## 同步响应与异步通信
-![plan-mq-h1-08-h2-01](./images/plan-mq-h1-08-h2-01.png)
+![plan-mq-h1-08-h2-01](./images/plan-mq-h1-08-h2-01.webp)
 
 RPC 是远程过程调用，就像给同事打电话。必须等待对方接听、处理并返回结果，才能继续执行后续操作。因此，RPC 强调的是：
 
@@ -676,31 +676,31 @@ MQ 就像给同事发微信。消息发送后，发送者可以继续做其他�
 用户登录适合 RPC，用户下单后的邮件、积分、物流通知等流程适合 MQ。
 
 ## 双向直连与存储转发
-![plan-mq-h1-08-h2-02](./images/plan-mq-h1-08-h2-02.png)
+![plan-mq-h1-08-h2-02](./images/plan-mq-h1-08-h2-02.webp)
 
 RPC 中，A 连接 B，发送请求并等待返回结果，属于双向直连的网络通信。A 和 B 之间没有中间缓冲，B 宕机后，A 的调用通常会直接失败。
 
 MQ 中，A 先把消息发送给 Broker，B 再从 Broker 获取。它属于经过中间件的存储转发通信。A 和 B 不需要同时在线，Broker 天然具备消息暂存能力。
 
 ## 实时处理与延迟容忍
-![plan-mq-h1-08-h2-03](./images/plan-mq-h1-08-h2-03.png)
+![plan-mq-h1-08-h2-03](./images/plan-mq-h1-08-h2-03.webp)
 
 RPC 要求被调用方立即处理并返回结果，适合实时性要求高的场景。
 
 MQ 允许业务存在一定的时间窗口，消息发送到 Broker 后不一定立即消费，适合能够容忍延迟的场景。
 
 ## 是否需要持久化
-![plan-mq-h1-08-h2-04](./images/plan-mq-h1-08-h2-04.png)
+![plan-mq-h1-08-h2-04](./images/plan-mq-h1-08-h2-04.webp)
 
 RPC 没有“稍后处理”的概念，一般不需要对请求进行持久化存储。
 
 MQ 的消费者可能暂时不在线，也可能处理较慢，因此 Broker 需要把消息持久化到磁盘，等待消费者后续获取。
 
 ## 主流消息队列技术选型
-![plan-mq-h1-09](./images/plan-mq-h1-09.png)
+![plan-mq-h1-09](./images/plan-mq-h1-09.webp)
 
 ## Kafka：高吞吐的分布式流处理平台
-![plan-mq-h1-09-h2-01](./images/plan-mq-h1-09-h2-01.png)
+![plan-mq-h1-09-h2-01](./images/plan-mq-h1-09-h2-01.webp)
 
 Kafka 的定位不只是消息队列，更是一个分布式流处理平台。其核心设计理念包括：
 
@@ -729,7 +729,7 @@ Kafka 追求的是高吞吐，而不是极致低延迟。其消息延迟通常�
 电商网站需要采集用户点击、浏览、搜索等埋点日志，一天可能产生数亿条数据。这些日志不一定要求立即处理，可以先通过 Kafka 存储，再导入 Hadoop 进行离线分析，或者导入 Flink 完成实时推荐。
 
 ## RocketMQ：金融级可靠性
-![plan-mq-h1-09-h2-02](./images/plan-mq-h1-09-h2-02.png)
+![plan-mq-h1-09-h2-02](./images/plan-mq-h1-09-h2-02.webp)
 
 RocketMQ 由阿里巴巴开源，经历过“双 11”大规模流量场景的检验，定位偏向金融级可靠性。
 
@@ -755,7 +755,7 @@ RocketMQ 采用 Java 实现，整体架构相对清晰，不依赖 ZooKeeper 等
 - 对事务消息、顺序消息和延时消息有较强要求的业务。
 
 ## RabbitMQ：灵活路由与低延迟
-![plan-mq-h1-09-h2-03](./images/plan-mq-h1-09-h2-03.png)
+![plan-mq-h1-09-h2-03](./images/plan-mq-h1-09-h2-03.webp)
 
 RabbitMQ 是 AMQP 的典型实现，最大的特点是灵活。它提供 Direct、Fanout、Topic、Headers 等 Exchange 路由模型，可以支持复杂的消息分发规则。
 
@@ -781,7 +781,7 @@ RabbitMQ 的吞吐量一般不如 Kafka 和 RocketMQ。每秒十几万条消息�
 - 对低延迟要求较高的业务。
 
 ## Pulsar：面向云原生的新一代消息平台
-![plan-mq-h1-09-h2-04](./images/plan-mq-h1-09-h2-04.png)
+![plan-mq-h1-09-h2-04](./images/plan-mq-h1-09-h2-04.webp)
 
 Pulsar 是面向云原生场景的新一代消息平台，采用**存算分离架构**：
 
@@ -806,7 +806,7 @@ Pulsar 是面向云原生场景的新一代消息平台，采用**存算分离�
 存算分离虽然灵活，但也让部署和运维比 Kafka 更复杂。Pulsar 的生态相对年轻，与 Kafka 十几年的积累相比仍有差距。
 
 ## ActiveMQ：老牌 JMS 实现
-![plan-mq-h1-09-h2-05](./images/plan-mq-h1-09-h2-05.png)
+![plan-mq-h1-09-h2-05](./images/plan-mq-h1-09-h2-05.webp)
 
 ActiveMQ 是 JMS 规范的老牌实现，很多历史系统仍然在使用。
 
@@ -819,10 +819,10 @@ ActiveMQ 是 JMS 规范的老牌实现，很多历史系统仍然在使用。
 如果是在维护原本就使用 ActiveMQ 的老系统，可以继续根据成本评估；新项目一般不建议主动选择。
 
 ## 消息队列选型建议
-![plan-mq-h1-10](./images/plan-mq-h1-10.png)
+![plan-mq-h1-10](./images/plan-mq-h1-10.webp)
 
 ## 按业务场景选择
-![plan-mq-h1-10-h2-01](./images/plan-mq-h1-10-h2-01.png)
+![plan-mq-h1-10-h2-01](./images/plan-mq-h1-10-h2-01.webp)
 
 - **日志采集、大数据计算、流式处理**：选择 Kafka；
 - **交易、订单、支付、事务一致性要求较高**：选择 RocketMQ；
@@ -831,14 +831,14 @@ ActiveMQ 是 JMS 规范的老牌实现，很多历史系统仍然在使用。
 - **维护已有老系统**：根据现状继续使用 ActiveMQ。
 
 ## 按技术栈选择
-![plan-mq-h1-10-h2-02](./images/plan-mq-h1-10-h2-02.png)
+![plan-mq-h1-10-h2-02](./images/plan-mq-h1-10-h2-02.webp)
 
 - Java 生态：RocketMQ、Kafka 都比较友好；
 - 多语言混合：RabbitMQ 基于 AMQP，跨语言支持较好；
 - Erlang 技术栈：RabbitMQ 与其原生技术生态更加契合。
 
 ## 按运维能力选择
-![plan-mq-h1-10-h2-03](./images/plan-mq-h1-10-h2-03.png)
+![plan-mq-h1-10-h2-03](./images/plan-mq-h1-10-h2-03.webp)
 
 - 能够驾驭复杂架构：Pulsar、Kafka；
 - 希望架构相对简单、省事：RocketMQ、RabbitMQ；

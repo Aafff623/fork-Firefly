@@ -3,7 +3,7 @@ title: 【计算机八股】AI 基础核心概念大总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员 Dan。今天主要想和大家分享人工智能在计算机校园招聘面试中经常被问到的一些基础核心概念，并按照不同模块整理成一套完整的知识框架。
-image: ./cover.png
+image: ./cover.webp
 tags: [AI, 人工智能, 计算机基础, 面试]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## 为什么所有技术岗位都应该了解 AI
-![plan-ai-overview-h2-01](./images/plan-ai-overview-h2-01.png)
+![plan-ai-overview-h2-01](./images/plan-ai-overview-h2-01.webp)
 
 大家好，我是程序员 Dan。今天主要想和大家分享人工智能在计算机校园招聘面试中经常被问到的一些基础核心概念，并按照不同模块整理成一套完整的知识框架。
 
@@ -30,10 +30,10 @@ comment: true
 所以，大家确实有必要系统掌握一些 AI 的基础核心知识。后续关于 AI 应用和 AI 开发，我也打算继续做一系列内容，和大家一起深入学习。
 
 ## 一、大模型基础
-![plan-ai-h1-01](./images/plan-ai-h1-01.png)
+![plan-ai-h1-01](./images/plan-ai-h1-01.webp)
 
 ## 大语言模型的本质
-![plan-ai-h1-01-h2-01](./images/plan-ai-h1-01-h2-01.png)
+![plan-ai-h1-01-h2-01](./images/plan-ai-h1-01-h2-01.webp)
 
 大模型，也就是**大语言模型**（Large Language Model，LLM），本质上是一个非常复杂的概率预测器。
 
@@ -44,7 +44,7 @@ comment: true
 因此，我们围绕大模型所做的很多工作，本质上都是在研究如何更好地使用这个概率工具。
 
 ## 自回归生成
-![plan-ai-h1-01-h2-02](./images/plan-ai-h1-01-h2-02.png)
+![plan-ai-h1-01-h2-02](./images/plan-ai-h1-01-h2-02.webp)
 
 **自回归生成**是指模型根据已有上下文，逐个 Token 预测下一个 Token 的生成方式。它是 LLM 最底层的运行机制之一。
 
@@ -63,7 +63,7 @@ comment: true
 因此，**生成速度是大模型工程中的核心瓶颈之一**。
 
 ## Token 与子词切分
-![plan-ai-h1-01-h2-03](./images/plan-ai-h1-01-h2-03.png)
+![plan-ai-h1-01-h2-03](./images/plan-ai-h1-01-h2-03.webp)
 
 Token 是模型处理文本的基本单位。文本通常会通过 **BPE**、**Unigram** 等算法被切分成子词片段。
 
@@ -100,7 +100,7 @@ Unigram 通常从一个较大的候选词表开始，逐步删除概率较低的
 如果要做国际化产品，就必须评估不同语言的 **Token 膨胀率**。一般来说，中文在某些分词器中的 Token 消耗可能达到英文的 2～3 倍，但具体比例取决于模型所使用的 Tokenizer。
 
 ## 上下文窗口
-![plan-ai-h1-01-h2-04](./images/plan-ai-h1-01-h2-04.png)
+![plan-ai-h1-01-h2-04](./images/plan-ai-h1-01-h2-04.webp)
 
 **上下文窗口**是指一次模型调用中，模型能够处理的总 Token 上限。它会直接影响对话连续性和单次任务处理能力。
 
@@ -119,7 +119,7 @@ Unigram 通常从一个较大的候选词表开始，逐步删除概率较低的
 这也推动了 **RAG（检索增强生成）**的发展。与其把全文硬塞进上下文，不如只检索并放入与当前问题最相关的片段。
 
 ## 采样参数
-![plan-ai-h1-01-h2-05](./images/plan-ai-h1-01-h2-05.png)
+![plan-ai-h1-01-h2-05](./images/plan-ai-h1-01-h2-05.webp)
 
 模型通过自回归计算出下一个 Token 的概率分布后，还要决定究竟选择哪一个 Token。这个过程主要由采样参数控制。
 
@@ -151,7 +151,7 @@ Top-k 更直接：只保留概率最高的前 `k` 个候选 Token，再从中采
 - 写 SQL 或代码时，可以降低 Temperature，追求更稳定、精确的输出。
 
 ## Prompt 工程
-![plan-ai-h1-01-h2-06](./images/plan-ai-h1-01-h2-06.png)
+![plan-ai-h1-01-h2-06](./images/plan-ai-h1-01-h2-06.webp)
 
 Prompt 是指挥模型完成任务的语言。一个比较标准的 Prompt 通常包含四个要素：
 
@@ -187,7 +187,7 @@ Prompt 是指挥模型完成任务的语言。一个比较标准的 Prompt 通�
 这就是比较标准的四要素框架。
 
 ## 结构化输出
-![plan-ai-h1-01-h2-07](./images/plan-ai-h1-01-h2-07.png)
+![plan-ai-h1-01-h2-07](./images/plan-ai-h1-01-h2-07.webp)
 
 结构化输出可以理解为 Prompt Engineering 在工程上的一种“契约精神”。业务后端通常需要处理 JSON，因此需要通过不同机制约束模型输出。
 
@@ -208,7 +208,7 @@ Structured Outputs 不只是通过 Prompt 要求模型遵守结构，而是在�
 **严格的结构化输出非常重要**。如果缺少结构约束，工具调用时的参数解析就很容易出错。
 
 ## 工具调用
-![plan-ai-h1-01-h2-08](./images/plan-ai-h1-01-h2-08.png)
+![plan-ai-h1-01-h2-08](./images/plan-ai-h1-01-h2-08.webp)
 
 工具调用是模型从“动嘴”走向“动手”的关键转折点。
 
@@ -235,7 +235,7 @@ Structured Outputs 不只是通过 Prompt 要求模型遵守结构，而是在�
 > 明天飞往上海的航班目前只剩商务舱，票价约为 2500 元，需要为您预订吗？
 
 ## Transformer：大模型的“物理心脏”
-![plan-ai-h1-01-h2-09](./images/plan-ai-h1-01-h2-09.png)
+![plan-ai-h1-01-h2-09](./images/plan-ai-h1-01-h2-09.webp)
 
 Transformer 可以说是现代大模型的核心架构，其中最重要的机制之一就是**自注意力机制**。
 
@@ -290,7 +290,7 @@ FFN 通常是一个包含非线性激活的全连接网络，用于对每个位�
 随着 Transformer 层数不断增加，数值可能出现爆炸或消失。**Layer Normalization（层归一化）**会对每一层的表示进行标准化，像给数据流加了稳定器，使梯度能够更稳定地反向传播。
 
 ## 预训练与微调
-![plan-ai-h1-01-h2-10](./images/plan-ai-h1-01-h2-10.png)
+![plan-ai-h1-01-h2-10](./images/plan-ai-h1-01-h2-10.webp)
 
 预训练和微调，可以类比成模型的“上学”和“上班”。
 
@@ -336,10 +336,10 @@ SFT 主要是模仿，但模型未必知道答案的好坏。RLHF 会先训练�
 例如，面对违法或危险内容，单纯经过 SFT 的模型未必知道应该拒绝，而经过偏好对齐后，模型会强化安全拒答行为。
 
 ## 二、Agent：从回答问题到自主执行任务
-![plan-ai-h1-02](./images/plan-ai-h1-02.png)
+![plan-ai-h1-02](./images/plan-ai-h1-02.webp)
 
 ## Agent 的定义
-![plan-ai-h1-02-h2-01](./images/plan-ai-h1-02-h2-01.png)
+![plan-ai-h1-02-h2-01](./images/plan-ai-h1-02-h2-01.webp)
 
 使用 DeepSeek 或 ChatGPT 时，如果你输入一行字，它回复一段内容，然后任务就结束了，这更像一台高级打字机。
 
@@ -371,7 +371,7 @@ Agent，也就是**智能体**，则更像你手下的一名实习生。你给�
 - Tools：工具和外部执行能力。
 
 ## 推理与规划
-![plan-ai-h1-02-h2-02](./images/plan-ai-h1-02-h2-02.png)
+![plan-ai-h1-02-h2-02](./images/plan-ai-h1-02-h2-02.webp)
 
 推理与规划相当于大脑的前额叶。
 
@@ -396,7 +396,7 @@ Agent，也就是**智能体**，则更像你手下的一名实习生。你给�
 这就是推理与规划能力。
 
 ## 记忆系统
-![plan-ai-h1-02-h2-03](./images/plan-ai-h1-02-h2-03.png)
+![plan-ai-h1-02-h2-03](./images/plan-ai-h1-02-h2-03.webp)
 
 Agent 必须有“记性”，记忆通常分为短期记忆和长期记忆。
 
@@ -428,7 +428,7 @@ Agent 必须有“记性”，记忆通常分为短期记忆和长期记忆。
 事实记忆更像客观存在的 Key-Value 信息；经验记忆未必是绝对正确答案，但能为下一次相似任务提供参考。
 
 ## 工具：Agent 的手脚
-![plan-ai-h1-02-h2-04](./images/plan-ai-h1-02-h2-04.png)
+![plan-ai-h1-02-h2-04](./images/plan-ai-h1-02-h2-04.webp)
 
 大模型生活在数字世界里，无法直接触碰现实世界。Tools 就像它伸向外部世界的机械臂。
 
@@ -442,7 +442,7 @@ Agent 必须有“记性”，记忆通常分为短期记忆和长期记忆。
 没有工具，Agent 只能纸上谈兵；有了工具，它才能真正下场执行。
 
 ## Observation：观察与自我纠错
-![plan-ai-h1-02-h2-05](./images/plan-ai-h1-02-h2-05.png)
+![plan-ai-h1-02-h2-05](./images/plan-ai-h1-02-h2-05.webp)
 
 Observation 是 Agent 区别于固定脚本的重要特征。
 
@@ -461,7 +461,7 @@ Agent 观察到错误后，会重新判断：
 于是它修正参数并再次调用工具。这就是 Agent 的自我纠错机制。
 
 ## Agent 的运行循环
-![plan-ai-h1-02-h2-06](./images/plan-ai-h1-02-h2-06.png)
+![plan-ai-h1-02-h2-06](./images/plan-ai-h1-02-h2-06.webp)
 
 Agent 的核心循环可以概括为：
 
@@ -473,7 +473,7 @@ Agent 的核心循环可以概括为：
 - **更新**：将结果写回状态和记忆，继续下一轮推理。
 
 ## 两种工作模式
-![plan-ai-h1-02-h2-07](./images/plan-ai-h1-02-h2-07.png)
+![plan-ai-h1-02-h2-07](./images/plan-ai-h1-02-h2-07.webp)
 
 ### ReAct：走一步看一步
 
@@ -510,7 +510,7 @@ ReAct 模式可以理解为在陌生山路上开车：没有完整地图，只�
 这种模式效率高、步骤可控，但如果中间某一步失败，整个任务可能直接中断，应变能力相对有限。
 
 ## 工作流与有向图
-![plan-ai-h1-02-h2-08](./images/plan-ai-h1-02-h2-08.png)
+![plan-ai-h1-02-h2-08](./images/plan-ai-h1-02-h2-08.webp)
 
 当 Agent 任务非常复杂时，不能让代码变成一团 `if-else`。这时可以使用有向图管理工作流。
 
@@ -542,7 +542,7 @@ ReAct 模式可以理解为在陌生山路上开车：没有完整地图，只�
 这样既能保证宏观流程的确定性，又保留了 Agent 处理模糊问题的灵活性。
 
 ## 上下文工程
-![plan-ai-h1-02-h2-09](./images/plan-ai-h1-02-h2-09.png)
+![plan-ai-h1-02-h2-09](./images/plan-ai-h1-02-h2-09.webp)
 
 上下文工程相当于在有限窗口中排兵布阵。
 
@@ -568,10 +568,10 @@ Agent 每次推理时，上下文窗口都非常拥挤，需要同时放入：
 这样既可以节省 Token，又能减轻 Lost in the Middle 问题。
 
 ## 三、RAG：给大模型外挂一座图书馆
-![plan-ai-h1-03](./images/plan-ai-h1-03.png)
+![plan-ai-h1-03](./images/plan-ai-h1-03.webp)
 
 ## 纯大模型的三类硬伤
-![plan-ai-h1-03-h2-01](./images/plan-ai-h1-03-h2-01.png)
+![plan-ai-h1-03-h2-01](./images/plan-ai-h1-03-h2-01.webp)
 
 纯大模型像一个记忆力很强、但又有点自负的偏科学霸，主要有三个硬伤。
 
@@ -590,7 +590,7 @@ Agent 每次推理时，上下文窗口都非常拥挤，需要同时放入：
 例如，让模型生成论文参考文献时，它可能凭空捏造论文标题、作者和期刊，而且格式看起来还很真实。
 
 ## RAG 的核心理念
-![plan-ai-h1-03-h2-02](./images/plan-ai-h1-03-h2-02.png)
+![plan-ai-h1-03-h2-02](./images/plan-ai-h1-03-h2-02.webp)
 
 **RAG（Retrieval-Augmented Generation，检索增强生成）**可以缓解以上问题。
 
@@ -604,7 +604,7 @@ RAG 通常包含两条工作链路：
 2. **在线检索**
 
 ## 离线索引
-![plan-ai-h1-03-h2-03](./images/plan-ai-h1-03-h2-03.png)
+![plan-ai-h1-03-h2-03](./images/plan-ai-h1-03-h2-03.webp)
 
 离线索引相当于把杂乱无章的书籍整理成标准化索引，主要包括：
 
@@ -656,7 +656,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 - 索引构建与更新。
 
 ## 在线检索
-![plan-ai-h1-03-h2-04](./images/plan-ai-h1-03-h2-04.png)
+![plan-ai-h1-03-h2-04](./images/plan-ai-h1-03-h2-04.webp)
 
 在线检索发生在用户真正提问时，是 RAG 系统中的高频实时动作，通常需要在毫秒级完成。
 
@@ -709,7 +709,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 模型手里有了资料，就不需要完全依赖参数记忆，而是可以基于资料整理答案，并标注引用来源。
 
 ## 文档切分是一门手艺
-![plan-ai-h1-03-h2-05](./images/plan-ai-h1-03-h2-05.png)
+![plan-ai-h1-03-h2-05](./images/plan-ai-h1-03-h2-05.webp)
 
 文档切分会直接影响 RAG 效果。
 
@@ -738,7 +738,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 这样能够同时兼顾检索精度和上下文完整性。
 
 ## 混合检索
-![plan-ai-h1-03-h2-06](./images/plan-ai-h1-03-h2-06.png)
+![plan-ai-h1-03-h2-06](./images/plan-ai-h1-03-h2-06.webp)
 
 混合检索通常是：
 
@@ -757,7 +757,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 两类结果可以通过 **RRF（Reciprocal Rank Fusion，倒数排名融合）**进行综合排序，达到既懂语义、又抠字眼的效果。
 
 ## 查询改写的五种操作
-![plan-ai-h1-03-h2-07](./images/plan-ai-h1-03-h2-07.png)
+![plan-ai-h1-03-h2-07](./images/plan-ai-h1-03-h2-07.webp)
 
 ### 1. 规范化
 
@@ -793,7 +793,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 假设答案可能不正确，但它的语义风格和关键词密度通常比原始问题更丰富，因此更容易命中真实相关文档。
 
 ## 向量检索与重排序的黄金组合
-![plan-ai-h1-03-h2-08](./images/plan-ai-h1-03-h2-08.png)
+![plan-ai-h1-03-h2-08](./images/plan-ai-h1-03-h2-08.webp)
 
 向量检索会把问题和文档分别编码，速度快，但只能判断大致相似度。
 
@@ -806,7 +806,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 3. 最终保留前 5 条。
 
 ## GraphRAG
-![plan-ai-h1-03-h2-09](./images/plan-ai-h1-03-h2-09.png)
+![plan-ai-h1-03-h2-09](./images/plan-ai-h1-03-h2-09.webp)
 
 普通 RAG 的一个短板是：检索到的知识比较碎片化，片段之间不一定能连接起来。
 
@@ -829,7 +829,7 @@ Embedding 会把文本转换成高维稠密向量，相当于给每个文本片�
 GraphRAG 还可以生成 **Community Summary（社区摘要）**。例如，将阿里系高管打包成一个关系紧密的社区，并生成概括性摘要。用户提出宏观问题时，可以直接返回社区摘要，提高效率。
 
 ## RAG 的评估指标
-![plan-ai-h1-03-h2-10](./images/plan-ai-h1-03-h2-10.png)
+![plan-ai-h1-03-h2-10](./images/plan-ai-h1-03-h2-10.webp)
 
 评估 RAG 系统时，需要分别看检索端和生成端。
 
@@ -865,10 +865,10 @@ GraphRAG 还可以生成 **Community Summary（社区摘要）**。例如，将�
 Agent 具备“推理——行动——观察”的循环能力，而 RAG 往往就是 Agent 最常调用的工具之一。至于重排序、混合检索等复杂逻辑，通常都会被封装在 RAG 的工程系统内部。
 
 ## 四、MCP 与 Skills：连接工具和沉淀经验
-![plan-ai-h1-04](./images/plan-ai-h1-04.png)
+![plan-ai-h1-04](./images/plan-ai-h1-04.webp)
 
 ## MCP 是什么
-![plan-ai-h1-04-h2-01](./images/plan-ai-h1-04-h2-01.png)
+![plan-ai-h1-04-h2-01](./images/plan-ai-h1-04-h2-01.webp)
 
 RAG 系统可能需要处理大量 PDF、Word 和私密文档，这些数据需要以安全、标准化的方式连接起来。
 
@@ -891,7 +891,7 @@ RAG 系统可能需要处理大量 PDF、Word 和私密文档，这些数据需�
 MCP 的目标就是提供一个通用插座。任何遵守标准的工具，都可以更方便地被 AI 应用发现和调用。
 
 ## 三层关系
-![plan-ai-h1-04-h2-02](./images/plan-ai-h1-04-h2-02.png)
+![plan-ai-h1-04-h2-02](./images/plan-ai-h1-04-h2-02.webp)
 
 ### 1. 模型能力层
 
@@ -926,7 +926,7 @@ Function Calling 负责“意图如何表达”，但不负责请求具体传给
 例如，先点凉菜，再点热菜，最后点甜品；如果凉菜卖完了，就改点另一道。这些属于 Agent 的规划和决策能力。
 
 ## MCP Server
-![plan-ai-h1-04-h2-03](./images/plan-ai-h1-04-h2-03.png)
+![plan-ai-h1-04-h2-03](./images/plan-ai-h1-04-h2-03.webp)
 
 MCP Server 是真正提供能力的一方，就像厨房里拿起锅铲炒菜的人。
 
@@ -939,7 +939,7 @@ MCP Server 是真正提供能力的一方，就像厨房里拿起锅铲炒菜的
 它的价值在于：开发者不必不断修改 AI 应用的核心代码，只需要把现有系统 API 包装成标准 MCP 协议，AI 应用就能发现并使用这些能力。
 
 ## Skills：任务说明与经验沉淀
-![plan-ai-h1-04-h2-04](./images/plan-ai-h1-04-h2-04.png)
+![plan-ai-h1-04-h2-04](./images/plan-ai-h1-04-h2-04.webp)
 
 假设你招来一名清华毕业的高材生。他像大模型一样，智商很高、会使用电脑，但如果让他处理客户投诉，他可能毫无经验。
 
@@ -972,10 +972,10 @@ Prompt 和 Skills 很容易混淆，但两者并不相同。
 Prompt 往往是一次性的静态指令，每次任务都可能需要重新编写。Skill 则是结构化、可复用的外部经验，Agent 可以根据用户问题动态检索并加载。
 
 ## 五、AI 工程实践
-![plan-ai-h1-05](./images/plan-ai-h1-05.png)
+![plan-ai-h1-05](./images/plan-ai-h1-05.webp)
 
 ## Harness Engineering：给模型配一套完整系统
-![plan-ai-h1-05-h2-01](./images/plan-ai-h1-05-h2-01.png)
+![plan-ai-h1-05-h2-01](./images/plan-ai-h1-05-h2-01.webp)
 
 假设你买了一块世界顶级 CPU，但没有给它配：
 
@@ -1007,7 +1007,7 @@ Prompt 往往是一次性的静态指令，每次任务都可能需要重新编�
 Agent 不应该直接操作核心数据库，而应该经过沙箱和权限控制。整个系统还需要记录每一次调用的 Token 消耗、延迟和错误情况。
 
 ## 提示、上下文与执行
-![plan-ai-h1-05-h2-02](./images/plan-ai-h1-05-h2-02.png)
+![plan-ai-h1-05-h2-02](./images/plan-ai-h1-05-h2-02.webp)
 
 AI 工程可以分为三层。
 
@@ -1045,7 +1045,7 @@ Execution Engineering 解决的是纠错、观测和恢复问题。
 - 如何让模型根据错误自行修正参数。
 
 ## 循环工程
-![plan-ai-h1-05-h2-03](./images/plan-ai-h1-05-h2-03.png)
+![plan-ai-h1-05-h2-03](./images/plan-ai-h1-05-h2-03.webp)
 
 Agent 的“推理——行动——观察”循环很强大，但也很危险。
 
@@ -1063,10 +1063,10 @@ Agent 的“推理——行动——观察”循环很强大，但也很危险�
 因此，需要把当前执行到第几步、中间结果是什么等信息存入 Redis 或数据库。服务重启后再读取状态，实现断点续传。
 
 ## 六、常见面试考点
-![plan-ai-h1-06](./images/plan-ai-h1-06.png)
+![plan-ai-h1-06](./images/plan-ai-h1-06.webp)
 
 ## 如何系统性减少大模型幻觉
-![plan-ai-h1-06-h2-01](./images/plan-ai-h1-06-h2-01.png)
+![plan-ai-h1-06-h2-01](./images/plan-ai-h1-06-h2-01.webp)
 
 可以从以下几个方面回答：
 
@@ -1086,7 +1086,7 @@ Agent 的“推理——行动——观察”循环很强大，但也很危险�
    收集用户点赞、点踩等线上低分数据，定期优化 Prompt、检索链路或训练数据。
 
 ## 如何设计可靠的 Agent
-![plan-ai-h1-06-h2-02](./images/plan-ai-h1-06-h2-02.png)
+![plan-ai-h1-06-h2-02](./images/plan-ai-h1-06-h2-02.webp)
 
 一个可靠的 Agent 应该具备：
 
@@ -1109,7 +1109,7 @@ Agent 的“推理——行动——观察”循环很强大，但也很危险�
 对于删除数据、转账、物理设备控制等高风险操作，至少应增加二次确认或人工审批。
 
 ## 如何评估 RAG 系统
-![plan-ai-h1-06-h2-03](./images/plan-ai-h1-06-h2-03.png)
+![plan-ai-h1-06-h2-03](./images/plan-ai-h1-06-h2-03.webp)
 
 可以拆成三个层面。
 
@@ -1142,7 +1142,7 @@ Agent 的“推理——行动——观察”循环很强大，但也很危险�
 可以先让 10% 的线上流量使用新方案，再观察用户真实的点击率、采纳率和满意度，判断新方案是否有效。
 
 ## 多模态模型与部署加速
-![plan-ai-h1-06-h2-04](./images/plan-ai-h1-06-h2-04.png)
+![plan-ai-h1-06-h2-04](./images/plan-ai-h1-06-h2-04.webp)
 
 多模态模型不只能读取文字，还可以：
 
@@ -1163,7 +1163,7 @@ Agent 的“推理——行动——观察”循环很强大，但也很危险�
 例如，可以让 700 亿参数的大模型教一个 70 亿参数的小模型，尽量把大模型的知识和能力迁移到小模型中，从而降低部署成本。
 
 ## 七、AI 核心模块的整体关系
-![plan-ai-h1-07](./images/plan-ai-h1-07.png)
+![plan-ai-h1-07](./images/plan-ai-h1-07.webp)
 
 前面的几个模块并不是孤立存在的，而是彼此关联、共同组成完整 AI 系统。
 

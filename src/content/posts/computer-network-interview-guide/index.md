@@ -3,7 +3,7 @@ title: 计算机网络面试八股总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天想和大家一起总结计算机校园招聘面试中经常提问的计算机网络八股。我把这些内容分模块整理在了一张思维导图中，希望借此帮助大家理清计算机网络相关考点的知识脉络，也方便大家在面试前快速回顾重点。
-image: ./cover.png
+image: ./cover.webp
 tags: [计算机网络, 网络协议, 面试, 基础]
 category: 指南
 draft: false
@@ -12,17 +12,17 @@ pinned: false
 comment: true
 ---
 ## 内容说明
-![plan-network-overview-h2-01](./images/plan-network-overview-h2-01.png)
+![plan-network-overview-h2-01](./images/plan-network-overview-h2-01.webp)
 
 大家好，我是程序员Dan。今天想和大家一起总结计算机校园招聘面试中经常提问的计算机网络八股。我把这些内容分模块整理在了一张思维导图中，希望借此帮助大家理清计算机网络相关考点的知识脉络，也方便大家在面试前快速回顾重点。
 
 其实我之前已经录过一版计算机网络视频，但那版非常尴尬，我自己都听不下去，因为里面有太多语气助词。也可能是第一次录这种课程，准备得不够充分，所以今天重新录制一版，希望大家能通过新版获得更多收获。
 
 ## 计算机网络体系结构
-![plan-network-h1-01](./images/plan-network-h1-01.png)
+![plan-network-h1-01](./images/plan-network-h1-01.webp)
 
 ## OSI 七层模型
-![plan-network-h1-01-h2-01](./images/plan-network-h1-01-h2-01.png)
+![plan-network-h1-01-h2-01](./images/plan-network-h1-01-h2-01.webp)
 
 OSI 七层模型是一个理论模型，包括：
 
@@ -147,7 +147,7 @@ Web 浏览器、电子邮件客户端、FTP 客户端和服务器等，都直接
 在 Java Web 中，通过 `@RequestMapping` 接收请求、返回 JSON 数据，也可以理解为应用层相关的工作。
 
 ## TCP/IP 四层模型
-![plan-network-h1-01-h2-02](./images/plan-network-h1-01-h2-02.png)
+![plan-network-h1-01-h2-02](./images/plan-network-h1-01-h2-02.webp)
 
 TCP/IP 四层模型与 OSI 七层模型类似，具体对应关系如下：
 
@@ -161,7 +161,7 @@ TCP/IP 四层模型与 OSI 七层模型类似，具体对应关系如下：
 只要掌握了 OSI 七层模型，每一层的功能就很容易映射到 TCP/IP 四层模型中。
 
 ## 五层网络模型
-![plan-network-h1-01-h2-03](./images/plan-network-h1-01-h2-03.png)
+![plan-network-h1-01-h2-03](./images/plan-network-h1-01-h2-03.webp)
 
 五层网络模型包括：
 
@@ -196,10 +196,10 @@ TCP/IP 四层模型与 OSI 七层模型类似，具体对应关系如下：
 回答时可以把这些内容与 Java Web 的日常开发场景结合起来，让整体逻辑更完整。
 
 ## 浏览器访问、DNS 与 HTTP
-![plan-network-h1-02](./images/plan-network-h1-02.png)
+![plan-network-h1-02](./images/plan-network-h1-02.webp)
 
 ## 从输入 URL 到页面显示
-![plan-network-h1-02-h2-01](./images/plan-network-h1-02-h2-01.png)
+![plan-network-h1-02-h2-01](./images/plan-network-h1-02-h2-01.webp)
 
 在浏览器地址栏输入 URL，到最终显示主页，通常经历以下过程。
 
@@ -251,7 +251,7 @@ TCP/IP 四层模型与 OSI 七层模型类似，具体对应关系如下：
 整个过程也可以与网络体系结构结合起来，说明每一步分别发生在哪一层。
 
 ## Cookie 与 Session 的状态管理
-![plan-network-h1-02-h2-02](./images/plan-network-h1-02-h2-02.png)
+![plan-network-h1-02-h2-02](./images/plan-network-h1-02-h2-02.webp)
 
 HTTP 本身是无状态协议。每一次请求都是相对独立的，服务器默认不会因为当前请求自动记住上一次请求的身份状态。
 
@@ -270,7 +270,7 @@ session.setAttribute("user", user);
 在服务器端创建或更新 Session。服务器通常会通过响应头中的 `Set-Cookie` 返回 `JSESSIONID`。浏览器保存后，下次请求会自动在请求头的 `Cookie` 字段中携带这个 ID，服务器便可以根据它识别用户身份。
 
 ## DNS 解析过程
-![plan-network-h1-02-h2-03](./images/plan-network-h1-02-h2-03.png)
+![plan-network-h1-02-h2-03](./images/plan-network-h1-02-h2-03.webp)
 
 DNS 解析通常会依次检查多级缓存和服务器。简化后的流程如下：
 
@@ -286,7 +286,7 @@ DNS 解析通常会依次检查多级缓存和服务器。简化后的流程如�
 根域名服务器和顶级域名服务器通常不会直接返回最终网站的 IP，而是告诉查询方下一步应该询问哪台服务器。
 
 ## GET 与 POST 的区别
-![plan-network-h1-02-h2-04](./images/plan-network-h1-02-h2-04.png)
+![plan-network-h1-02-h2-04](./images/plan-network-h1-02-h2-04.webp)
 
 GET 和 POST 可以从多个维度进行比较。
 
@@ -305,7 +305,7 @@ GET 参数通常放在 URL 中，因此实际可传输长度会受到浏览器�
 这里提到的“安全”是 HTTP 方法语义上的安全，即请求原则上只读取资源，不应修改服务器状态，并不等于网络传输层面的安全。无论 GET 还是 POST，如果需要保护传输内容，都应使用 HTTPS。
 
 ## HTTP 报文结构
-![plan-network-h1-02-h2-05](./images/plan-network-h1-02-h2-05.png)
+![plan-network-h1-02-h2-05](./images/plan-network-h1-02-h2-05.webp)
 
 ### 请求报文
 
@@ -348,7 +348,7 @@ HTTP 响应报文通常包括：
 - Cookie 设置。
 
 ## 常见 HTTP 状态码
-![plan-network-h1-02-h2-06](./images/plan-network-h1-02-h2-06.png)
+![plan-network-h1-02-h2-06](./images/plan-network-h1-02-h2-06.webp)
 
 HTTP 状态码按类别划分如下：
 
@@ -377,7 +377,7 @@ HTTP 状态码按类别划分如下：
 平时比较常见的是 `404` 和 `502`，但其他高频状态码也需要记住。
 
 ## HTTPS 的工作流程
-![plan-network-h1-02-h2-07](./images/plan-network-h1-02-h2-07.png)
+![plan-network-h1-02-h2-07](./images/plan-network-h1-02-h2-07.webp)
 
 HTTPS 可以理解为 **HTTP over TLS**。其简化工作流程如下：
 
@@ -393,7 +393,7 @@ HTTPS 可以理解为 **HTTP over TLS**。其简化工作流程如下：
 在较早的 RSA 密钥交换流程中，客户端可能生成预主密钥并使用服务器公钥加密后发送给服务器；现代 TLS 通常更多使用基于（EC）DHE 的密钥交换方式，以提供前向保密能力。
 
 ## Cookie 与 Session 的区别
-![plan-network-h1-02-h2-08](./images/plan-network-h1-02-h2-08.png)
+![plan-network-h1-02-h2-08](./images/plan-network-h1-02-h2-08.webp)
 
 | 对比维度 | Cookie | Session |
 |---|---|---|
@@ -406,10 +406,10 @@ HTTPS 可以理解为 **HTTP over TLS**。其简化工作流程如下：
 Cookie 并不是只能保存 ASCII 字符，但其值需要遵循相应编码规则。实际使用时，通常会把数据编码为适合 HTTP 头传输的字符串。
 
 ## IP 协议与 ARP 协议
-![plan-network-h1-03](./images/plan-network-h1-03.png)
+![plan-network-h1-03](./images/plan-network-h1-03.webp)
 
 ## IP 协议的作用
-![plan-network-h1-03-h2-01](./images/plan-network-h1-03-h2-01.png)
+![plan-network-h1-03-h2-01](./images/plan-network-h1-03-h2-01.webp)
 
 IP 协议最核心的作用是：**寻址和路由**。
 
@@ -426,7 +426,7 @@ IP 数据报在传输过程中可能经过不同网络，而不同网络允许�
 需要注意的是，IPv6 中间路由器不会像 IPv4 那样对数据包进行分片，相关处理机制有所不同。
 
 ## ARP 协议的工作过程
-![plan-network-h1-03-h2-02](./images/plan-network-h1-03-h2-02.png)
+![plan-network-h1-03-h2-02](./images/plan-network-h1-03-h2-02.webp)
 
 ARP 的核心目的是根据 IPv4 地址查询局域网内对应的 MAC 地址，它工作在网络层与数据链路层的衔接位置，通常被视为链路层相关协议。
 
@@ -451,10 +451,10 @@ ARP 的核心目的是根据 IPv4 地址查询局域网内对应的 MAC 地址�
 如果目标主机不在同一局域网内，发送方通常查询并使用的是**下一跳网关的 MAC 地址**，而不是远程目标主机的 MAC 地址。
 
 ## TCP 核心知识
-![plan-network-h1-04](./images/plan-network-h1-04.png)
+![plan-network-h1-04](./images/plan-network-h1-04.webp)
 
 ## TCP 三次握手
-![plan-network-h1-04-h2-01](./images/plan-network-h1-04-h2-01.png)
+![plan-network-h1-04-h2-01](./images/plan-network-h1-04-h2-01.webp)
 
 TCP 三次握手是面试中的高频基础题。除了说清楚每一步，还要掌握客户端与服务端的状态变化，以及 SYN、ACK、序列号和确认号的设置。
 
@@ -499,7 +499,7 @@ SYN_RECEIVED
 客户端发送后进入 `ESTABLISHED` 状态；服务器收到该确认报文后，也进入 `ESTABLISHED` 状态，连接正式建立。
 
 ## 为什么不是两次握手
-![plan-network-h1-04-h2-02](./images/plan-network-h1-04-h2-02.png)
+![plan-network-h1-04-h2-02](./images/plan-network-h1-04-h2-02.webp)
 
 如果只有两次握手，服务器发送 `SYN + ACK` 后就认为连接已经建立，但这个报文可能丢失。客户端没有收到响应，就不会认为连接成功，也不会继续发送数据；服务器却可能一直等待，白白占用资源。
 
@@ -508,7 +508,7 @@ SYN_RECEIVED
 第三次握手能让服务器确认客户端确实收到了自己的同步与确认报文。
 
 ## 为什么不是四次握手
-![plan-network-h1-04-h2-03](./images/plan-network-h1-04-h2-03.png)
+![plan-network-h1-04-h2-03](./images/plan-network-h1-04-h2-03.webp)
 
 三次握手已经能够确认双方的收发能力，并同步彼此的初始序列号。
 
@@ -517,7 +517,7 @@ SYN_RECEIVED
 因此，三次刚刚好。
 
 ## 三次握手与 Java Web
-![plan-network-h1-04-h2-04](./images/plan-network-h1-04-h2-04.png)
+![plan-network-h1-04-h2-04](./images/plan-network-h1-04-h2-04.webp)
 
 在 Java Web 开发中，调用网络接口时，底层会通过 Socket 建立连接，例如：
 
@@ -540,7 +540,7 @@ Tomcat 中的 `acceptCount` 表示当工作线程已达到上限时，操作系�
 面试时如果能把网络原理与真实 Java 开发场景联系起来，通常会让回答更有深度。
 
 ## TCP 四次挥手
-![plan-network-h1-04-h2-05](./images/plan-network-h1-04-h2-05.png)
+![plan-network-h1-04-h2-05](./images/plan-network-h1-04-h2-05.webp)
 
 数据传输结束后，通信双方都可以主动发起关闭连接。这里假设由客户端主动关闭。
 
@@ -615,7 +615,7 @@ TIME_WAIT
 服务器收到客户端的 ACK 后，关闭连接并进入 `CLOSED` 状态。
 
 ## 为什么挥手需要四次
-![plan-network-h1-04-h2-06](./images/plan-network-h1-04-h2-06.png)
+![plan-network-h1-04-h2-06](./images/plan-network-h1-04-h2-06.webp)
 
 TCP 是全双工通信，两个方向的数据通道需要分别关闭。
 
@@ -626,7 +626,7 @@ TCP 是全双工通信，两个方向的数据通道需要分别关闭。
 握手阶段的 SYN 和 ACK 可以合并，但挥手阶段，服务端的 ACK 与 FIN 之间可能存在一段数据处理时间，所以通常不能直接合并。
 
 ## 为什么 TIME_WAIT 要等待 2MSL
-![plan-network-h1-04-h2-07](./images/plan-network-h1-04-h2-07.png)
+![plan-network-h1-04-h2-07](./images/plan-network-h1-04-h2-07.webp)
 
 `MSL` 是报文在网络中的最大生存时间。主动关闭方需要等待 `2MSL`，主要有两个原因。
 
@@ -649,7 +649,7 @@ TCP 是全双工通信，两个方向的数据通道需要分别关闭。
 系统内核参数不能盲目修改，需要结合操作系统版本、网络角色和实际业务场景评估。
 
 ## TCP 如何保证可靠性
-![plan-network-h1-04-h2-08](./images/plan-network-h1-04-h2-08.png)
+![plan-network-h1-04-h2-08](./images/plan-network-h1-04-h2-08.webp)
 
 TCP 的可靠性并不是由单一机制实现的，而是多种机制共同作用的结果。
 
@@ -688,7 +688,7 @@ TCP 的流量控制主要通过**滑动窗口**实现。
 如果网络非常拥堵，数据可能在到达接收端前就被丢弃。TCP 会使用慢启动、拥塞避免、快速重传和快速恢复等机制，根据网络拥塞情况动态调整发送速度。
 
 ## TCP 流量控制与滑动窗口
-![plan-network-h1-04-h2-09](./images/plan-network-h1-04-h2-09.png)
+![plan-network-h1-04-h2-09](./images/plan-network-h1-04-h2-09.webp)
 
 流量控制解决的是：
 
@@ -705,7 +705,7 @@ TCP 的流量控制主要通过**滑动窗口**实现。
 如果接收窗口变为零，发送方会暂停发送数据，并启动持续计时器，定期发送窗口探测报文，直到接收方重新通告非零窗口。
 
 ## TCP 拥塞控制
-![plan-network-h1-04-h2-10](./images/plan-network-h1-04-h2-10.png)
+![plan-network-h1-04-h2-10](./images/plan-network-h1-04-h2-10.webp)
 
 流量控制主要关注接收端的处理能力，拥塞控制则主要关注网络中的路由器、链路等是否过于拥堵。
 
@@ -765,7 +765,7 @@ ssthresh
 具体行为会因 TCP 拥塞控制算法和实现版本而不同。
 
 ## TCP 重传机制
-![plan-network-h1-04-h2-11](./images/plan-network-h1-04-h2-11.png)
+![plan-network-h1-04-h2-11](./images/plan-network-h1-04-h2-11.webp)
 
 常见重传机制包括：
 
@@ -778,10 +778,10 @@ ssthresh
 SACK 可以让接收方告诉发送方哪些不连续的数据块已经收到，发送方只需要重传真正缺失的部分，减少不必要的重复传输。
 
 ## UDP 核心知识
-![plan-network-h1-05](./images/plan-network-h1-05.png)
+![plan-network-h1-05](./images/plan-network-h1-05.webp)
 
 ## TCP 与 UDP 的区别
-![plan-network-h1-05-h2-01](./images/plan-network-h1-05-h2-01.png)
+![plan-network-h1-05-h2-01](./images/plan-network-h1-05-h2-01.webp)
 
 TCP 与 UDP 可以从多个维度比较。
 
@@ -803,7 +803,7 @@ UDP 在发送前不建立连接，数据发出去后，协议本身不会确认�
 TCP 常用于不能容忍数据丢失的场景，例如文件和邮件传输。UDP 常用于更重视实时性的场景，例如视频通话。视频通话偶尔卡顿、缺失一小段声音，就可能与 UDP 丢包有关。
 
 ## UDP 如何保证消息不丢失
-![plan-network-h1-05-h2-02](./images/plan-network-h1-05-h2-02.png)
+![plan-network-h1-05-h2-02](./images/plan-network-h1-05-h2-02.webp)
 
 首先要开门见山地说明：
 
@@ -881,17 +881,17 @@ UDP 数据包可能乱序到达，也可能因为重传而重复到达。因此�
 3. 最后结合实际场景进行技术选型：强可靠场景优先使用 TCP 或 WebSocket；实时性优先且允许少量丢包的场景，可以继续使用 UDP，并针对关键数据设计重传策略。
 
 ## 面试复习重点
-![plan-network-h1-06](./images/plan-network-h1-06.png)
+![plan-network-h1-06](./images/plan-network-h1-06.webp)
 
 ## 基础体系结构
-![plan-network-h1-06-h2-01](./images/plan-network-h1-06-h2-01.png)
+![plan-network-h1-06-h2-01](./images/plan-network-h1-06-h2-01.webp)
 
 - 掌握 OSI 七层模型、TCP/IP 四层模型和五层模型。
 - 能说清楚每一层的功能及常见协议。
 - 能结合“输入 URL 后发生了什么”进行分层说明。
 
 ## HTTP 与状态管理
-![plan-network-h1-06-h2-02](./images/plan-network-h1-06-h2-02.png)
+![plan-network-h1-06-h2-02](./images/plan-network-h1-06-h2-02.webp)
 
 - 掌握 DNS 解析流程。
 - 掌握 GET 与 POST 的区别。
@@ -901,14 +901,14 @@ UDP 数据包可能乱序到达，也可能因为重传而重复到达。因此�
 - 能从多个维度对比 Cookie 与 Session。
 
 ## IP 与 ARP
-![plan-network-h1-06-h2-03](./images/plan-network-h1-06-h2-03.png)
+![plan-network-h1-06-h2-03](./images/plan-network-h1-06-h2-03.webp)
 
 - 理解 IP 协议的寻址、路由、分片与重组。
 - 掌握 ARP 根据 IPv4 地址查询 MAC 地址的完整过程。
 - 理解跨网段通信时查询的是下一跳网关的 MAC 地址。
 
 ## TCP 与 UDP
-![plan-network-h1-06-h2-04](./images/plan-network-h1-06-h2-04.png)
+![plan-network-h1-06-h2-04](./images/plan-network-h1-06-h2-04.webp)
 
 - 熟练描述 TCP 三次握手和四次挥手。
 - 记住 SYN、ACK、FIN、序列号、确认号及状态变化。

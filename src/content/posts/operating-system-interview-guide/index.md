@@ -3,7 +3,7 @@ title: 操作系统基础概念
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天总结一下操作系统在校招面试中经常被问到的“八股”，也就是常见的操作系统面试题。
-image: ./cover.png
+image: ./cover.webp
 tags: [操作系统, 计算机基础, 面试]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## 操作系统的定义
-![plan-os-overview-h2-01](./images/plan-os-overview-h2-01.png)
+![plan-os-overview-h2-01](./images/plan-os-overview-h2-01.webp)
 
 大家好，我是程序员Dan。今天总结一下操作系统在校招面试中经常被问到的“八股”，也就是常见的操作系统面试题。
 
@@ -23,7 +23,7 @@ comment: true
 - macOS
 
 ## 操作系统的主要功能
-![plan-os-overview-h2-02](./images/plan-os-overview-h2-02.png)
+![plan-os-overview-h2-02](./images/plan-os-overview-h2-02.webp)
 
 操作系统的功能主要可以分为四类：
 
@@ -35,7 +35,7 @@ comment: true
 具体来说，操作系统需要负责创建和终止进程，为进程分配资源，并提供创建、删除、读取和写入文件的功能。此外，操作系统还要通过设备驱动程序控制和管理计算机的硬件设备，例如键盘、鼠标和打印机等。
 
 ## 操作系统内核
-![plan-os-overview-h2-03](./images/plan-os-overview-h2-03.png)
+![plan-os-overview-h2-03](./images/plan-os-overview-h2-03.webp)
 
 **内核（Kernel）**是一个计算机程序，也是操作系统的核心。它提供了操作系统最核心的能力，可以控制和管理系统中的各种资源。
 
@@ -57,10 +57,10 @@ comment: true
 当应用程序执行系统调用时，CPU 会从用户态切换到内核态，进入内核空间执行相应的内核代码，完成后再切回用户态。
 
 ## 进程与进程管理
-![plan-os-h1-01](./images/plan-os-h1-01.png)
+![plan-os-h1-01](./images/plan-os-h1-01.webp)
 
 ## 并发与并行
-![plan-os-h1-01-h2-01](./images/plan-os-h1-01-h2-01.png)
+![plan-os-h1-01-h2-01](./images/plan-os-h1-01-h2-01.webp)
 
 ### 并发
 
@@ -82,14 +82,14 @@ comment: true
 从微观上看，并行系统可以同时执行多条指令，不同程序被放在不同的处理器核心上运行。这才是物理意义上的多个任务同时进行。
 
 ## 进程上下文切换
-![plan-os-h1-01-h2-02](./images/plan-os-h1-01-h2-02.png)
+![plan-os-h1-01-h2-02](./images/plan-os-h1-01-h2-02.webp)
 
 **进程上下文切换**是指操作系统在多任务处理环境中，将 CPU 从一个进程切换到另一个进程的过程。
 
 通过上下文切换，多个进程可以共享 CPU 资源，使系统能够并发执行多个任务。切换过程中，操作系统需要保存当前进程的运行上下文，并恢复下一个进程此前保存的上下文。
 
 ## 进程的五种状态
-![plan-os-h1-01-h2-03](./images/plan-os-h1-01-h2-03.png)
+![plan-os-h1-01-h2-03](./images/plan-os-h1-01-h2-03.webp)
 
 进程通常包括五种状态，其中运行态、就绪态和阻塞态最常被问到。
 
@@ -100,7 +100,7 @@ comment: true
 - **终止态**：进程执行结束，即将从系统中消失。
 
 ## 僵尸进程与孤儿进程
-![plan-os-h1-01-h2-04](./images/plan-os-h1-01-h2-04.png)
+![plan-os-h1-01-h2-04](./images/plan-os-h1-01-h2-04.webp)
 
 ### 僵尸进程
 
@@ -117,10 +117,10 @@ comment: true
 这些子进程会被 `init` 进程收养。在传统 Unix/Linux 系统中，`init` 进程的 PID 为 1，它会负责对这些孤儿进程完成状态收集。因此，孤儿进程通常不会对系统造成危害。
 
 ## 进程间通信
-![plan-os-h1-02](./images/plan-os-h1-02.png)
+![plan-os-h1-02](./images/plan-os-h1-02.webp)
 
 ## 六种常见的进程间通信方式
-![plan-os-h1-02-h2-01](./images/plan-os-h1-02-h2-01.png)
+![plan-os-h1-02-h2-01](./images/plan-os-h1-02-h2-01.webp)
 
 进程间通信，也就是 **IPC（Inter-Process Communication）**，常见方式主要包括：
 
@@ -132,7 +132,7 @@ comment: true
 6. 套接字
 
 ## 管道
-![plan-os-h1-02-h2-02](./images/plan-os-h1-02-h2-02.png)
+![plan-os-h1-02-h2-02](./images/plan-os-h1-02-h2-02.webp)
 
 进程间的**管道**可以理解为内核中的一串缓存。数据从管道的一端写入，再从另一端读取，并且通常只能单向流动。
 
@@ -141,17 +141,17 @@ comment: true
 管道遵循**先进先出（FIFO）**原则，并可进一步分为匿名管道和命名管道等类型。
 
 ## 信号
-![plan-os-h1-02-h2-03](./images/plan-os-h1-02-h2-03.png)
+![plan-os-h1-02-h2-03](./images/plan-os-h1-02-h2-03.webp)
 
 **信号（Signal）**用于通知接收进程某个事件已经发生，是一种比较简单的进程间通信方式。
 
 ## 消息队列
-![plan-os-h1-02-h2-04](./images/plan-os-h1-02-h2-04.png)
+![plan-os-h1-02-h2-04](./images/plan-os-h1-02-h2-04.webp)
 
 **消息队列**是保存在内核中的消息链表，可以按照消息类型进行传递，具有较高的可靠性和稳定性。
 
 ## 共享内存
-![plan-os-h1-02-h2-05](./images/plan-os-h1-02-h2-05.png)
+![plan-os-h1-02-h2-05](./images/plan-os-h1-02-h2-05.webp)
 
 **共享内存**允许两个或多个进程共享同一块内存区域。一个进程写入数据后，其他进程可以马上看到。
 
@@ -160,7 +160,7 @@ comment: true
 它是针对其他进程间通信方式效率较低的问题而设计的。不过，由于多个进程可以同时访问共享区域，通常还需要配合锁或信号量保证同步。
 
 ## 信号量
-![plan-os-h1-02-h2-06](./images/plan-os-h1-02-h2-06.png)
+![plan-os-h1-02-h2-06](./images/plan-os-h1-02-h2-06.webp)
 
 **信号量（Semaphore）**可以理解成红绿灯：
 
@@ -179,15 +179,15 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 这就是常说的 **PV 操作**，属于操作系统基础知识，需要理解清楚。
 
 ## 套接字
-![plan-os-h1-02-h2-07](./images/plan-os-h1-02-h2-07.png)
+![plan-os-h1-02-h2-07](./images/plan-os-h1-02-h2-07.webp)
 
 **套接字（Socket）**主要用于提供网络通信端点，可以让运行在不同机器上的进程进行双向通信。Java 中也提供了 Socket 相关 API。
 
 ## 进程调度算法
-![plan-os-h1-03](./images/plan-os-h1-03.png)
+![plan-os-h1-03](./images/plan-os-h1-03.webp)
 
 ## 六种常见调度算法
-![plan-os-h1-03-h2-01](./images/plan-os-h1-03-h2-01.png)
+![plan-os-h1-03-h2-01](./images/plan-os-h1-03-h2-01.webp)
 
 常见的进程调度算法包括：
 
@@ -199,19 +199,19 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 6. 多级反馈队列
 
 ## 先来先服务
-![plan-os-h1-03-h2-02](./images/plan-os-h1-03-h2-02.png)
+![plan-os-h1-03-h2-02](./images/plan-os-h1-03-h2-02.webp)
 
 **先来先服务（FCFS）**按照进程请求 CPU 的先后顺序进行调度。谁先进入队列，就优先调度谁。
 
 ## 短作业优先
-![plan-os-h1-03-h2-03](./images/plan-os-h1-03-h2-03.png)
+![plan-os-h1-03-h2-03](./images/plan-os-h1-03-h2-03.webp)
 
 **短作业优先（SJF）**选择预计运行时间最短的进程优先执行。
 
 这种方式可能导致长作业持续被推迟，产生长作业“饥饿”的问题。
 
 ## 优先级调度
-![plan-os-h1-03-h2-04](./images/plan-os-h1-03-h2-04.png)
+![plan-os-h1-03-h2-04](./images/plan-os-h1-03-h2-04.webp)
 
 **优先级调度**会为每个进程分配一个优先级，CPU 优先分配给优先级最高的进程。
 
@@ -221,12 +221,12 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 - **抢占式调度**：更高优先级的进程可以中断正在执行的低优先级进程。
 
 ## 时间片轮转
-![plan-os-h1-03-h2-05](./images/plan-os-h1-03-h2-05.png)
+![plan-os-h1-03-h2-05](./images/plan-os-h1-03-h2-05.webp)
 
 **时间片轮转调度**会为每个进程分配一个固定的时间段，也就是时间片。每个进程可以在自己的时间片内运行，时间片用完后再切换到其他进程。
 
 ## 最短剩余时间优先
-![plan-os-h1-03-h2-06](./images/plan-os-h1-03-h2-06.png)
+![plan-os-h1-03-h2-06](./images/plan-os-h1-03-h2-06.webp)
 
 **最短剩余时间优先（SRTF）**可以看成短作业优先的抢占式版本。
 
@@ -235,17 +235,17 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 这种算法也会面临一个问题：*应该如何准确预测进程的执行时间？*
 
 ## 多级反馈队列
-![plan-os-h1-03-h2-07](./images/plan-os-h1-03-h2-07.png)
+![plan-os-h1-03-h2-07](./images/plan-os-h1-03-h2-07.webp)
 
 假设一个进程需要执行 100 个时间片，如果只采用普通的时间片轮转算法，就可能需要交互、切换 100 次。
 
 **多级反馈队列**会设置多个队列，每个队列拥有不同的优先级和时间片大小，并考虑需要连续执行多个时间片的进程。它可以看成时间片轮转调度算法与优先级调度算法的结合。
 
 ## 线程与线程同步
-![plan-os-h1-04](./images/plan-os-h1-04.png)
+![plan-os-h1-04](./images/plan-os-h1-04.webp)
 
 ## 进程与线程的区别
-![plan-os-h1-04-h2-01](./images/plan-os-h1-04-h2-01.png)
+![plan-os-h1-04-h2-01](./images/plan-os-h1-04-h2-01.webp)
 
 **进程**是一个正在执行的程序实例。每个进程都有独立的地址空间、全局变量、堆、栈和文件描述符等。
 
@@ -268,7 +268,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 线程的生命周期由进程控制。如果进程终止，进程中的线程也会随之终止。
 
 ## 线程上下文切换
-![plan-os-h1-04-h2-02](./images/plan-os-h1-04-h2-02.png)
+![plan-os-h1-04-h2-02](./images/plan-os-h1-04-h2-02.webp)
 
 分析线程上下文切换时，首先要判断两个线程是否属于同一个进程。
 
@@ -278,7 +278,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 因此，线程上下文切换的开销通常比进程上下文切换更小。
 
 ## 线程的三种实现方式
-![plan-os-h1-04-h2-03](./images/plan-os-h1-04-h2-03.png)
+![plan-os-h1-04-h2-03](./images/plan-os-h1-04-h2-03.webp)
 
 线程的实现方式主要包括：
 
@@ -303,7 +303,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 需要注意的是，内核级线程的数量通常较少，用户级线程的数量通常较多。
 
 ## 线程同步与临界区
-![plan-os-h1-04-h2-04](./images/plan-os-h1-04-h2-04.png)
+![plan-os-h1-04-h2-04](./images/plan-os-h1-04-h2-04.webp)
 
 线程同步主要解决多线程操作共享资源时的一致性问题。不管多个线程如何穿插执行，最终结果都必须正确。
 
@@ -319,17 +319,17 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 对于互斥锁，需要理解加锁和解锁的概念；对于信号量，则需要掌握 PV 操作。根据等待方式和实现机制不同，锁还可以区分为忙等待锁和非忙等待锁等类型。
 
 ## 死锁、饥饿与活锁
-![plan-os-h1-05](./images/plan-os-h1-05.png)
+![plan-os-h1-05](./images/plan-os-h1-05.webp)
 
 ## 什么是死锁
-![plan-os-h1-05-h2-01](./images/plan-os-h1-05-h2-01.png)
+![plan-os-h1-05-h2-01](./images/plan-os-h1-05-h2-01.webp)
 
 **死锁**是指在两个或多个并发线程中，每个线程都持有某种资源，同时又在等待其他线程释放其持有的资源。在这种状态发生改变之前，所有线程都无法继续推进。
 
 换句话说，多个线程会无限期阻塞，并相互等待对方释放资源。
 
 ## 死锁产生的四个必要条件
-![plan-os-h1-05-h2-02](./images/plan-os-h1-05-h2-02.png)
+![plan-os-h1-05-h2-02](./images/plan-os-h1-05-h2-02.webp)
 
 死锁的产生需要同时满足以下四个条件：
 
@@ -339,7 +339,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 4. **循环等待条件**
 
 ## 如何预防死锁
-![plan-os-h1-05-h2-03](./images/plan-os-h1-05-h2-03.png)
+![plan-os-h1-05-h2-03](./images/plan-os-h1-05-h2-03.webp)
 
 预防死锁的核心思路，就是破坏上述四个条件中的至少一个。
 
@@ -360,24 +360,24 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 可以为资源建立统一的申请顺序，并要求线程按照规定顺序申请资源，从而避免形成环路等待。
 
 ## 饥饿
-![plan-os-h1-05-h2-04](./images/plan-os-h1-05-h2-04.png)
+![plan-os-h1-05-h2-04](./images/plan-os-h1-05-h2-04.webp)
 
 **饥饿**是指某个线程一直得不到它所需要的资源，因此无法继续推进。
 
 这就像一个人长期处于饥饿状态，自然没有办法正常成长。
 
 ## 活锁
-![plan-os-h1-05-h2-05](./images/plan-os-h1-05-h2-05.png)
+![plan-os-h1-05-h2-05](./images/plan-os-h1-05-h2-05.webp)
 
 在**活锁**状态下，线程的状态会不断发生变化，但整个线程组仍然无法向前推进。
 
 可以把它理解成两个人在独木桥上相遇，都想让对方先过，于是两个人同时往旁边让。如果两个人每次都让到同一边，他们的状态虽然一直在变化，却始终无法向前走，相当于“动着动着卡住了”。
 
 ## 内存管理
-![plan-os-h1-06](./images/plan-os-h1-06.png)
+![plan-os-h1-06](./images/plan-os-h1-06.webp)
 
 ## 物理内存与虚拟内存
-![plan-os-h1-06-h2-01](./images/plan-os-h1-06-h2-01.png)
+![plan-os-h1-06-h2-01](./images/plan-os-h1-06-h2-01.webp)
 
 ### 物理内存
 
@@ -398,7 +398,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 操作系统会把虚拟内存划分成很多页，也就是 *pages*。每一页都可以映射到物理内存中的一个页框。如果物理内存不足，操作系统会把不常用的页暂时存储到磁盘交换区，也就是 **Swap** 区域，这个过程称为页面换出或页面交换。
 
 ## 内存分段
-![plan-os-h1-06-h2-02](./images/plan-os-h1-06-h2-02.png)
+![plan-os-h1-06-h2-02](./images/plan-os-h1-06-h2-02.webp)
 
 一个程序由若干个逻辑分段组成，例如：
 
@@ -417,7 +417,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 虚拟地址与物理地址通过段表进行映射。段表中通常包含段号、段基址和段界限等信息。
 
 ## 内存分页
-![plan-os-h1-06-h2-03](./images/plan-os-h1-06-h2-03.png)
+![plan-os-h1-06-h2-03](./images/plan-os-h1-06-h2-03.webp)
 
 **内存分页**是把整个虚拟内存和物理内存空间切分成一段段固定大小的区域。这种连续且尺寸固定的内存空间称为**页（Page）**。在常见的 Linux 系统中，默认页大小通常为 4 KB。
 
@@ -427,7 +427,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 2. 第二次根据得到的物理地址访问内存，取出数据。
 
 ## 分页与分段的区别
-![plan-os-h1-06-h2-04](./images/plan-os-h1-06-h2-04.png)
+![plan-os-h1-06-h2-04](./images/plan-os-h1-06-h2-04.webp)
 
 | 对比维度 | 分段 | 分页 |
 |---|---|---|
@@ -438,7 +438,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 | 共享与保护 | 更符合程序逻辑，较方便 | 受到页面粒度限制 |
 
 ## 多级页表
-![plan-os-h1-06-h2-05](./images/plan-os-h1-06-h2-05.png)
+![plan-os-h1-06-h2-05](./images/plan-os-h1-06-h2-05.webp)
 
 **多级页表**是一种虚拟内存管理技术，用于高效完成虚拟地址到物理地址的转换。
 
@@ -452,7 +452,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 通过这种方式，没有使用到的二级页表可以不分配，从而减少内存浪费。
 
 ## 快表与 TLB
-![plan-os-h1-06-h2-06](./images/plan-os-h1-06-h2-06.png)
+![plan-os-h1-06-h2-06](./images/plan-os-h1-06-h2-06.webp)
 
 程序在一段时间内的执行通常集中在某一部分，相应访问的存储空间也会局限在某个内存区域，这就是**局部性原理**。
 
@@ -466,7 +466,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 实际讨论中最常用的说法就是“快表”或 TLB。
 
 ## 交换空间
-![plan-os-h1-06-h2-07](./images/plan-os-h1-06-h2-07.png)
+![plan-os-h1-06-h2-07](./images/plan-os-h1-06-h2-07.webp)
 
 操作系统会把物理内存划分成一块块页。当内存资源不足时，Linux 可以把某些页的内容转移到磁盘上的另一块空间，以释放物理内存。
 
@@ -478,7 +478,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 - 程序启动过程中，某些内存页只用于初始化，之后可能不再需要，可以被换出。
 
 ## 缺页中断
-![plan-os-h1-06-h2-08](./images/plan-os-h1-06-h2-08.png)
+![plan-os-h1-06-h2-08](./images/plan-os-h1-06-h2-08.webp)
 
 **缺页中断（Page Fault）**是虚拟内存管理中的一个概念。当程序访问的页不在物理内存中时，就会发生缺页中断。操作系统需要从磁盘交换区或文件系统中把缺失的页调入内存。
 
@@ -489,7 +489,7 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 这就类似缺页中断发生后的页面调入与置换过程。
 
 ## 页面置换算法
-![plan-os-h1-06-h2-09](./images/plan-os-h1-06-h2-09.png)
+![plan-os-h1-06-h2-09](./images/plan-os-h1-06-h2-09.webp)
 
 常见页面置换算法一共有五种：
 
@@ -529,10 +529,10 @@ Java 的 `java.util.concurrent` 包中也有相关类来实现类似功能。
 LFU 的实现比较复杂，因为系统需要记录每个页面的访问频率。
 
 ## I/O 模型与多路复用
-![plan-os-h1-07](./images/plan-os-h1-07.png)
+![plan-os-h1-07](./images/plan-os-h1-07.webp)
 
 ## 阻塞 I/O
-![plan-os-h1-07-h2-01](./images/plan-os-h1-07-h2-01.png)
+![plan-os-h1-07-h2-01](./images/plan-os-h1-07-h2-01.webp)
 
 **阻塞 I/O**是指用户程序执行 `read()` 后，线程会被阻塞，直到：
 
@@ -544,14 +544,14 @@ LFU 的实现比较复杂，因为系统需要记录每个页面的访问频率�
 因此，阻塞 I/O 等待的既包括内核准备数据的过程，也包括数据从内核态复制到用户态的过程。
 
 ## 非阻塞 I/O
-![plan-os-h1-07-h2-02](./images/plan-os-h1-07-h2-02.png)
+![plan-os-h1-07-h2-02](./images/plan-os-h1-07-h2-02.webp)
 
 在**非阻塞 I/O**中，如果数据还没有准备好，非阻塞的 `read()` 请求会立即返回，程序可以继续向下执行。
 
 应用程序需要不断轮询内核，直到数据准备完成。随后，内核把数据复制到应用程序缓冲区，`read()` 调用才能真正取得结果。
 
 ## I/O 多路复用
-![plan-os-h1-07-h2-03](./images/plan-os-h1-07-h2-03.png)
+![plan-os-h1-07-h2-03](./images/plan-os-h1-07-h2-03.webp)
 
 普通非阻塞 I/O 需要应用程序持续轮询，在这个过程中很难去做其他事情，因此引入了 **I/O 多路复用**技术。
 
@@ -570,7 +570,7 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 - `epoll`
 
 ## select
-![plan-os-h1-07-h2-04](./images/plan-os-h1-07-h2-04.png)
+![plan-os-h1-07-h2-04](./images/plan-os-h1-07-h2-04.webp)
 
 `select` 会把已经连接的 Socket 放入一个文件描述符集合，也就是 `fd_set`。调用 `select()` 时，需要把 `fd_set` 从用户态复制到内核态，由内核检查是否有网络事件发生。
 
@@ -594,7 +594,7 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 为了减少数据复制导致的性能问题，内核会对被监控的 `fd_set` 大小进行限制，通常是 1024。如果要修改这一限制，有时还需要重新编译内核，比较麻烦。
 
 ## poll
-![plan-os-h1-07-h2-05](./images/plan-os-h1-07-h2-05.png)
+![plan-os-h1-07-h2-05](./images/plan-os-h1-07-h2-05.webp)
 
 `poll` 不再使用固定长度的 Bitmap 存储需要关注的文件描述符，而是使用动态数组进行组织，因此突破了 `select` 的文件描述符数量限制，但仍会受到操作系统文件描述符总数的限制。
 
@@ -603,7 +603,7 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 同时，`poll` 也需要在用户态和内核态之间复制文件描述符集合。并发数量很高时，性能损耗仍会明显增长。
 
 ## epoll
-![plan-os-h1-07-h2-06](./images/plan-os-h1-07-h2-06.png)
+![plan-os-h1-07-h2-06](./images/plan-os-h1-07-h2-06.webp)
 
 `epoll` 解决了 `select` 和 `poll` 的很多问题，是 I/O 多路复用中需要重点关注的内容。Redis 等系统在监听 Socket 时也会使用 `epoll`。
 
@@ -624,10 +624,10 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 当某个 Socket 有事件发生时，内核通过回调机制把它加入就绪事件列表。用户调用 `epoll_wait()` 时，只会返回已经发生事件的文件描述符，不需要再次轮询整个 Socket 集合，因此检测效率会高很多。
 
 ## 文件链接与存储设备
-![plan-os-h1-08](./images/plan-os-h1-08.png)
+![plan-os-h1-08](./images/plan-os-h1-08.webp)
 
 ## 硬链接
-![plan-os-h1-08-h2-01](./images/plan-os-h1-08-h2-01.png)
+![plan-os-h1-08-h2-01](./images/plan-os-h1-08-h2-01.webp)
 
 硬链接会在目录中创建一个新的条目，记录文件名及其对应的 **inode** 编号。多个硬链接指向同一个 inode，也就是指向同一份文件数据。
 
@@ -639,7 +639,7 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 - 通常不能对目录创建硬链接。
 
 ## 软链接
-![plan-os-h1-08-h2-02](./images/plan-os-h1-08-h2-02.png)
+![plan-os-h1-08-h2-02](./images/plan-os-h1-08-h2-02.webp)
 
 软链接相当于重新创建了一个独立文件。这个文件有自己的 inode，但文件内容保存的是另一个文件的路径。
 
@@ -648,14 +648,14 @@ I/O 多路复用允许一个进程或线程维护多个 Socket。所谓“多路
 即使目标文件已经被删除，软链接文件本身仍然存在，只不过它会变成无法正确打开目标文件的“悬空链接”。
 
 ## 机械硬盘与固态硬盘
-![plan-os-h1-08-h2-03](./images/plan-os-h1-08-h2-03.png)
+![plan-os-h1-08-h2-03](./images/plan-os-h1-08-h2-03.webp)
 
 **机械硬盘（HDD）**通过磁盘旋转和磁头移动存储、读取数据。它的读写速度比较慢，与内存相比可能慢数万乃至十万倍。
 
 另一种硬盘是**固态硬盘（SSD）**。固态硬盘没有机械结构，读写速度通常比机械硬盘快很多，因此正在逐渐取代机械硬盘。
 
 ## 操作系统面试知识整理
-![plan-os-h1-09](./images/plan-os-h1-09.png)
+![plan-os-h1-09](./images/plan-os-h1-09.webp)
 
 以上是操作系统面试中比较常见的问题，涉及：
 

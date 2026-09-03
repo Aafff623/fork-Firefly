@@ -3,7 +3,7 @@ title: Java 虚拟机 JVM 面试八股总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天想和大家分享 JVM，也就是 Java 虚拟机，在计算机校园招聘中经常被面试官问到的知识点。这些内容既包括 JVM 的基础知识，也包括我在近百家公司面试过程中遇到的常见问题。我把它们整理成了一套完整的知识脉络，
-image: ./cover.png
+image: ./cover.webp
 tags: [JVM, Java, 面试, 虚拟机]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## JVM 在校招面试中的重要性
-![plan-jvm-overview-h2-01](./images/plan-jvm-overview-h2-01.png)
+![plan-jvm-overview-h2-01](./images/plan-jvm-overview-h2-01.webp)
 
 大家好，我是程序员Dan。今天想和大家分享 **JVM，也就是 Java 虚拟机**，在计算机校园招聘中经常被面试官问到的知识点。这些内容既包括 JVM 的基础知识，也包括我在近百家公司面试过程中遇到的常见问题。我把它们整理成了一套完整的知识脉络，方便大家在面试前快速浏览，及时定位自己还没有掌握清楚的部分。
 
@@ -28,11 +28,11 @@ comment: true
 不过，把 JVM 的基础知识快速过一遍仍然很有必要。对于重视开发能力的岗位来说，这部分知识会成为非常好的助力。
 
 ## JVM 整体架构与运行时内存
-![plan-jvm-h1-01](./images/plan-jvm-h1-01.png)
+![plan-jvm-h1-01](./images/plan-jvm-h1-01.webp)
 
 ## JVM 的三个核心组成部分
-![plan-jvm-h1-01-h2-01](./images/plan-jvm-h1-01-h2-01.png)
-![Pi 与 DeepSeek Harness：两种不同的核心思路](./images/pi-deepseek-harness.png)
+![plan-jvm-h1-01-h2-01](./images/plan-jvm-h1-01-h2-01.webp)
+![Pi 与 DeepSeek Harness：两种不同的核心思路](./images/pi-deepseek-harness.webp)
 
 可以把 JVM 想象成一个专门运行 Java 程序的工厂，这个工厂有三个核心部门。
 
@@ -65,10 +65,10 @@ comment: true
 - **垃圾回收器 GC**：像清洁工，负责清理不再使用的对象所占用的内存。
 
 ## JVM 运行时数据区
-![plan-jvm-h1-02](./images/plan-jvm-h1-02.png)
+![plan-jvm-h1-02](./images/plan-jvm-h1-02.webp)
 
 ## 程序计数器
-![plan-jvm-h1-02-h2-01](./images/plan-jvm-h1-02-h2-01.png)
+![plan-jvm-h1-02-h2-01](./images/plan-jvm-h1-02-h2-01.webp)
 
 程序计数器是**线程私有**的，每个线程都有一份，内部保存当前线程正在执行的字节码指令地址。
 
@@ -81,7 +81,7 @@ comment: true
 程序计数器占用的内存非常小，也是《Java 虚拟机规范》中唯一没有规定任何 `OutOfMemoryError` 情况的区域。
 
 ## Java 虚拟机栈
-![plan-jvm-h1-02-h2-02](./images/plan-jvm-h1-02-h2-02.png)
+![plan-jvm-h1-02-h2-02](./images/plan-jvm-h1-02-h2-02.webp)
 
 Java 虚拟机栈也是**线程私有**的，可以把它理解为每个线程独享的个人工位。线程运行 Java 方法时所需要的内存，会分配在虚拟机栈中。
 
@@ -103,7 +103,7 @@ java.lang.StackOverflowError
 ```
 
 ## 堆
-![plan-jvm-h1-02-h2-03](./images/plan-jvm-h1-02-h2-03.png)
+![plan-jvm-h1-02-h2-03](./images/plan-jvm-h1-02-h2-03.webp)
 
 堆像一个公共大仓库，由所有线程共享，主要用于保存：
 
@@ -129,7 +129,7 @@ java.lang.OutOfMemoryError: Java heap space
 新生代用于存放刚创建或存活时间较短的对象，老年代主要保存生命周期较长的对象。
 
 ## 方法区与元空间
-![plan-jvm-h1-02-h2-04](./images/plan-jvm-h1-02-h2-04.png)
+![plan-jvm-h1-02-h2-04](./images/plan-jvm-h1-02-h2-04.webp)
 
 方法区是各线程共享的一块内存区域，可以把它想象成所有线程共享的档案室，主要存放类的元数据，也就是类的“说明书”，包括：
 
@@ -156,7 +156,7 @@ java.lang.OutOfMemoryError: Metaspace
 ```
 
 ## 运行时常量池
-![plan-jvm-h1-02-h2-05](./images/plan-jvm-h1-02-h2-05.png)
+![plan-jvm-h1-02-h2-05](./images/plan-jvm-h1-02-h2-05.webp)
 
 运行时常量池是方法区的一部分，可以把它看成档案室里的常用记录本，主要保存编译期生成的：
 
@@ -174,7 +174,7 @@ String str = "Hello World";
 需要注意，**从 JDK 7 开始，字符串常量池被移到了堆中**。因此，如果在循环中不断生成并驻留大量字符串，也可能持续占用堆空间，需要由 GC 进行回收。
 
 ## 直接内存
-![plan-jvm-h1-02-h2-06](./images/plan-jvm-h1-02-h2-06.png)
+![plan-jvm-h1-02-h2-06](./images/plan-jvm-h1-02-h2-06.webp)
 
 直接内存像一个临时的外部仓库，它不属于 JVM 堆，而是直接向操作系统申请的物理内存，通常会在 NIO 等场景中使用。
 
@@ -185,7 +185,7 @@ java.lang.OutOfMemoryError: Direct buffer memory
 ```
 
 ## 堆与栈的区别
-![plan-jvm-h1-03](./images/plan-jvm-h1-03.png)
+![plan-jvm-h1-03](./images/plan-jvm-h1-03.webp)
 
 可以从几个维度理解堆和栈。
 
@@ -200,10 +200,10 @@ java.lang.OutOfMemoryError: Direct buffer memory
 *简单记忆：堆是公共仓库，栈是个人工位。*
 
 ## JVM 垃圾回收机制
-![plan-jvm-h1-04](./images/plan-jvm-h1-04.png)
+![plan-jvm-h1-04](./images/plan-jvm-h1-04.webp)
 
 ## 新生代与老年代
-![plan-jvm-h1-04-h2-01](./images/plan-jvm-h1-04-h2-01.png)
+![plan-jvm-h1-04-h2-01](./images/plan-jvm-h1-04-h2-01.webp)
 
 可以用一家公司来理解 JVM 的分代内存。
 
@@ -226,7 +226,7 @@ Survivor 区又分为：
 可以理解为：经历了 15 次“大扫除”还没有被清理掉的对象，已经是资深员工了。
 
 ## 如何判断对象是不是垃圾
-![plan-jvm-h1-04-h2-02](./images/plan-jvm-h1-04-h2-02.png)
+![plan-jvm-h1-04-h2-02](./images/plan-jvm-h1-04-h2-02.webp)
 
 ### 引用计数法
 
@@ -249,7 +249,7 @@ Java 主要通过**可达性分析算法**判断对象是否存活。
 > **注意：GC Root 本质上是垃圾回收搜索的起点引用，不是某一种固定对象。**
 
 ## 常见的 GC Roots
-![plan-jvm-h1-04-h2-03](./images/plan-jvm-h1-04-h2-03.png)
+![plan-jvm-h1-04-h2-03](./images/plan-jvm-h1-04-h2-03.webp)
 
 Java 中常见的 GC Roots 包括以下几类。
 
@@ -276,10 +276,10 @@ Java 中常见的 GC Roots 包括以下几类。
    例如字符串常量、类相关常量等，也可能形成 GC Roots 的引用来源。
 
 ## 垃圾回收算法
-![plan-jvm-h1-05](./images/plan-jvm-h1-05.png)
+![plan-jvm-h1-05](./images/plan-jvm-h1-05.webp)
 
 ## 标记——清除算法
-![plan-jvm-h1-05-h2-01](./images/plan-jvm-h1-05-h2-01.png)
+![plan-jvm-h1-05-h2-01](./images/plan-jvm-h1-05-h2-01.webp)
 
 标记——清除算法分为两个阶段：
 
@@ -291,7 +291,7 @@ Java 中常见的 GC Roots 包括以下几类。
 优点是实现直接；缺点是容易产生**内存碎片**。就像一个大办公区中，东边空一个座位，西边空一个座位。虽然空闲空间总量不少，但如果来了一个很大的对象，需要连续的内存空间，就可能无法放下。
 
 ## 标记——整理算法
-![plan-jvm-h1-05-h2-02](./images/plan-jvm-h1-05-h2-02.png)
+![plan-jvm-h1-05-h2-02](./images/plan-jvm-h1-05-h2-02.webp)
 
 标记——整理算法会先标记对象，再让所有存活对象向内存的一端移动，最后清理边界以外的空间。
 
@@ -301,7 +301,7 @@ Java 中常见的 GC Roots 包括以下几类。
 - **缺点**：需要移动对象并更新引用，效率相对较低。
 
 ## 复制算法
-![plan-jvm-h1-05-h2-03](./images/plan-jvm-h1-05-h2-03.png)
+![plan-jvm-h1-05-h2-03](./images/plan-jvm-h1-05-h2-03.webp)
 
 复制算法把内存划分为两块，每次只使用其中一块。垃圾回收时，把仍然存活的对象复制到另一块，再把当前使用的整块空间直接清空。
 
@@ -311,10 +311,10 @@ Java 中常见的 GC Roots 包括以下几类。
 - **缺点**：需要预留复制空间，内存利用率较低。
 
 ## 分代回收与 GC 类型
-![plan-jvm-h1-06](./images/plan-jvm-h1-06.png)
+![plan-jvm-h1-06](./images/plan-jvm-h1-06.webp)
 
 ## 新生代的回收流程
-![plan-jvm-h1-06-h2-01](./images/plan-jvm-h1-06-h2-01.png)
+![plan-jvm-h1-06-h2-01](./images/plan-jvm-h1-06-h2-01.webp)
 
 新对象通常先分配到 Eden 区。Eden 区满后，会触发 Minor GC。
 
@@ -331,24 +331,24 @@ Stop The World，简称 STW
 相当于清洁工打扫时，其他员工先暂停工作。暂停时间越长，对系统响应速度的影响就越明显。
 
 ## Minor GC
-![plan-jvm-h1-06-h2-02](./images/plan-jvm-h1-06-h2-02.png)
+![plan-jvm-h1-06-h2-02](./images/plan-jvm-h1-06-h2-02.webp)
 
 Minor GC 主要发生在新生代，暂停时间通常较短。
 
 常见触发条件是：新对象优先进入 Eden 区，但 Eden 区已经没有足够空间完成本次分配。
 
 ## Mixed GC
-![plan-jvm-h1-06-h2-03](./images/plan-jvm-h1-06-h2-03.png)
+![plan-jvm-h1-06-h2-03](./images/plan-jvm-h1-06-h2-03.webp)
 
 Mixed GC 是 G1 收集器特有的回收方式，除了回收新生代，还会回收部分老年代 Region。
 
 ## Major GC
-![plan-jvm-h1-06-h2-04](./images/plan-jvm-h1-06-h2-04.png)
+![plan-jvm-h1-06-h2-04](./images/plan-jvm-h1-06-h2-04.webp)
 
 Major GC 通常指发生在老年代的垃圾回收。不同资料或不同收集器对这一术语的使用可能略有差异，面试时最好结合具体收集器和上下文说明。
 
 ## Full GC
-![plan-jvm-h1-06-h2-05](./images/plan-jvm-h1-06-h2-05.png)
+![plan-jvm-h1-06-h2-05](./images/plan-jvm-h1-06-h2-05.webp)
 
 Full GC 可以理解为一次大扫除，通常会涉及整个 Java 堆，部分情况下还会涉及方法区或元空间，暂停时间往往比较长。
 
@@ -381,7 +381,7 @@ Full GC 可以理解为一次大扫除，通常会涉及整个 Java 堆，部分
    这只是向 JVM 提出执行垃圾回收的建议，但往往会带来明显的性能开销，业务代码中不应随意调用。
 
 ## Minor GC 过于频繁怎么办
-![plan-jvm-h1-06-h2-06](./images/plan-jvm-h1-06-h2-06.png)
+![plan-jvm-h1-06-h2-06](./images/plan-jvm-h1-06-h2-06.webp)
 
 Minor GC 频繁，通常可能是新生代空间过小，导致 Eden 区很快被填满。
 
@@ -395,7 +395,7 @@ Minor GC 频繁，通常可能是新生代空间过小，导致 Eden 区很快�
 - 系统吞吐量
 
 ## Full GC 过于频繁怎么办
-![plan-jvm-h1-06-h2-07](./images/plan-jvm-h1-06-h2-07.png)
+![plan-jvm-h1-06-h2-07](./images/plan-jvm-h1-06-h2-07.webp)
 
 Full GC 频繁是一个比较严重的问题，可以借助 `jstat`、`jmap`、堆转储文件等工具进行排查。
 
@@ -415,10 +415,10 @@ Full GC 频繁是一个比较严重的问题，可以借助 `jstat`、`jmap`、�
 - 是否存在持续增长且无法回收的对象
 
 ## Java 对象的创建、销毁与晋升
-![plan-jvm-h1-07](./images/plan-jvm-h1-07.png)
+![plan-jvm-h1-07](./images/plan-jvm-h1-07.webp)
 
 ## 对象的创建过程
-![plan-jvm-h1-07-h2-01](./images/plan-jvm-h1-07-h2-01.png)
+![plan-jvm-h1-07-h2-01](./images/plan-jvm-h1-07-h2-01.webp)
 
 假设代码中写了：
 
@@ -462,14 +462,14 @@ JVM 在后台大致会完成以下步骤。
 至此，一个 Java 对象正式创建完成。
 
 ## 对象的销毁
-![plan-jvm-h1-07-h2-02](./images/plan-jvm-h1-07-h2-02.png)
+![plan-jvm-h1-07-h2-02](./images/plan-jvm-h1-07-h2-02.webp)
 
 当没有任何 GC Root 能够沿引用链找到某个对象时，该对象就会变成不可达对象。垃圾收集器下一次工作时，可能会回收它所占用的内存。
 
 需要注意，对象不可达后不一定会立刻销毁，实际回收时间由 JVM 和垃圾收集器决定。
 
 ## 对象进入老年代的三种常见情况
-![plan-jvm-h1-07-h2-03](./images/plan-jvm-h1-07-h2-03.png)
+![plan-jvm-h1-07-h2-03](./images/plan-jvm-h1-07-h2-03.webp)
 
 ### 1. 达到年龄阈值
 
@@ -498,10 +498,10 @@ JVM 在后台大致会完成以下步骤。
 这样做是为了提前转移大量存活对象，避免 Survivor 区空间不足和复制失败。
 
 ## 常见垃圾收集器
-![plan-jvm-h1-08](./images/plan-jvm-h1-08.png)
+![plan-jvm-h1-08](./images/plan-jvm-h1-08.webp)
 
 ## Serial 串行收集器
-![plan-jvm-h1-08-h2-01](./images/plan-jvm-h1-08-h2-01.png)
+![plan-jvm-h1-08-h2-01](./images/plan-jvm-h1-08-h2-01.webp)
 
 Serial 是单线程垃圾收集器，只使用一个处理器或一条收集线程完成垃圾回收。
 
@@ -513,7 +513,7 @@ Serial 是单线程垃圾收集器，只使用一个处理器或一条收集线�
 它更适合堆较小、单核或客户端类场景。
 
 ## Parallel 并行收集器
-![plan-jvm-h1-08-h2-02](./images/plan-jvm-h1-08-h2-02.png)
+![plan-jvm-h1-08-h2-02](./images/plan-jvm-h1-08-h2-02.webp)
 
 Parallel 可以看成 Serial 的多线程版本。多个垃圾回收线程同时工作，但回收期间业务线程仍然需要暂停。
 
@@ -523,7 +523,7 @@ Parallel 可以看成 Serial 的多线程版本。多个垃圾回收线程同时
 - **缺点**：停顿时间依然可能较长，不适合对延迟非常敏感的系统，比如支付接口。
 
 ## CMS 收集器
-![plan-jvm-h1-08-h2-03](./images/plan-jvm-h1-08-h2-03.png)
+![plan-jvm-h1-08-h2-03](./images/plan-jvm-h1-08-h2-03.webp)
 
 CMS 全称为 **Concurrent Mark Sweep**，核心目标是降低停顿时间。它尽量让垃圾回收线程与业务线程并发工作，采用的是标记——清除思路。
 
@@ -553,7 +553,7 @@ CMS 的优势是停顿时间较短，用户体验相对较好；缺点包括：
 - 空间不足时可能发生并发模式失败，退化为串行回收，导致较长停顿。
 
 ## G1 收集器
-![plan-jvm-h1-08-h2-04](./images/plan-jvm-h1-08-h2-04.png)
+![plan-jvm-h1-08-h2-04](./images/plan-jvm-h1-08-h2-04.webp)
 
 G1 是目前常见的垃圾收集器之一。它把 Java 堆划分为多个大小相等的独立区域，也就是 **Region**。每个 Region 都可以根据需要扮演 Eden、Survivor 或老年代的角色。
 
@@ -586,7 +586,7 @@ JVM 会尽可能在这一时间目标内选择需要回收的 Region。
 CMS 的停顿较短但不容易精确预测，而且容易产生碎片；G1 的停顿目标相对可预测，也重点解决了内存碎片问题。
 
 ## 如何选择垃圾收集器
-![plan-jvm-h1-08-h2-05](./images/plan-jvm-h1-08-h2-05.png)
+![plan-jvm-h1-08-h2-05](./images/plan-jvm-h1-08-h2-05.webp)
 
 不同收集器适合不同场景：
 
@@ -599,10 +599,10 @@ CMS 的停顿较短但不容易精确预测，而且容易产生碎片；G1 的�
 如果系统要求垃圾回收暂停时间尽量控制在较短范围内，通常需要优先考虑 G1、ZGC 等更适合低延迟场景的收集器。
 
 ## Java 的四种引用
-![plan-jvm-h1-09](./images/plan-jvm-h1-09.png)
+![plan-jvm-h1-09](./images/plan-jvm-h1-09.webp)
 
 ## 强引用
-![plan-jvm-h1-09-h2-01](./images/plan-jvm-h1-09-h2-01.png)
+![plan-jvm-h1-09-h2-01](./images/plan-jvm-h1-09-h2-01.webp)
 
 强引用是最常见的引用形式，例如：
 
@@ -617,7 +617,7 @@ User user = new User();
 强引用常见的坑是：把数据库连接、大文件流等对象放入静态 `Map`，使用后又忘记清理。由于静态变量可能处于强引用链上，这些资源可能长期无法回收，最终导致内存泄漏。
 
 ## 软引用
-![plan-jvm-h1-09-h2-02](./images/plan-jvm-h1-09-h2-02.png)
+![plan-jvm-h1-09-h2-02](./images/plan-jvm-h1-09-h2-02.webp)
 
 软引用像一份临时工合同：内存够用时可以继续保留，内存紧张时会优先回收。
 
@@ -630,7 +630,7 @@ SoftReference<User> ref = new SoftReference<>(new User());
 不过在实际工程中，缓存通常还需要明确的容量限制和淘汰策略，不能只依赖软引用。
 
 ## 弱引用
-![plan-jvm-h1-09-h2-03](./images/plan-jvm-h1-09-h2-03.png)
+![plan-jvm-h1-09-h2-03](./images/plan-jvm-h1-09-h2-03.webp)
 
 弱引用比软引用更弱。只被弱引用关联的对象，一旦发生垃圾回收，无论当前内存是否充足，通常都会被回收。
 
@@ -652,7 +652,7 @@ try {
 ```
 
 ## 虚引用
-![plan-jvm-h1-09-h2-04](./images/plan-jvm-h1-09-h2-04.png)
+![plan-jvm-h1-09-h2-04](./images/plan-jvm-h1-09-h2-04.webp)
 
 虚引用是最弱的一种引用，无法通过虚引用直接取得对象实例。它更像一份“死亡通知”。
 
@@ -666,17 +666,17 @@ PhantomReference<Object> ref =
 典型场景是直接内存管理。NIO 等组件使用直接内存时，当对应 Java 对象被回收，后台清理机制可以感知引用状态并执行 `clean` 操作，释放操作系统层面的直接内存，避免物理内存泄漏。
 
 ## 逃逸分析与 JVM 优化
-![plan-jvm-h1-10](./images/plan-jvm-h1-10.png)
+![plan-jvm-h1-10](./images/plan-jvm-h1-10.webp)
 
 ## 什么是逃逸分析
-![plan-jvm-h1-10-h2-01](./images/plan-jvm-h1-10-h2-01.png)
+![plan-jvm-h1-10-h2-01](./images/plan-jvm-h1-10-h2-01.webp)
 
 逃逸分析可以理解为 JVM 中的高级侦察兵。在代码执行和即时编译优化过程中，JVM 会分析某个对象的动态作用范围，判断它是否只在当前方法或当前线程内部使用。
 
 如果一个对象一辈子都没有离开当前方法，JVM 就有机会对它进行更多优化。
 
 ## 方法逃逸
-![plan-jvm-h1-10-h2-02](./images/plan-jvm-h1-10-h2-02.png)
+![plan-jvm-h1-10-h2-02](./images/plan-jvm-h1-10-h2-02.webp)
 
 假设在方法内部创建一个对象，最后又把它返回给调用方：
 
@@ -692,7 +692,7 @@ public User getUser() {
 既然对象已经被外部引用，JVM 就不能随意消除它。
 
 ## 线程逃逸
-![plan-jvm-h1-10-h2-03](./images/plan-jvm-h1-10-h2-03.png)
+![plan-jvm-h1-10-h2-03](./images/plan-jvm-h1-10-h2-03.webp)
 
 假设类中有一个所有线程共享的静态 `Map`：
 
@@ -710,7 +710,7 @@ public void createUser() {
 线程逃逸还意味着对象可能面临并发访问和并发修改问题，JVM 通常需要按照更保守的方式进行内存分配与同步处理。
 
 ## 逃逸分析带来的优化
-![plan-jvm-h1-10-h2-04](./images/plan-jvm-h1-10-h2-04.png)
+![plan-jvm-h1-10-h2-04](./images/plan-jvm-h1-10-h2-04.webp)
 
 ### 1. 栈上分配
 
@@ -738,10 +738,10 @@ public void createUser() {
 这就是标量替换带来的优化效果。
 
 ## JVM 内存问题与调优
-![plan-jvm-h1-11](./images/plan-jvm-h1-11.png)
+![plan-jvm-h1-11](./images/plan-jvm-h1-11.webp)
 
 ## 内存溢出与内存泄漏
-![plan-jvm-h1-11-h2-01](./images/plan-jvm-h1-11-h2-01.png)
+![plan-jvm-h1-11-h2-01](./images/plan-jvm-h1-11-h2-01.webp)
 
 ### 内存溢出
 
@@ -765,7 +765,7 @@ public void createUser() {
 它相当于有人借用了仓库中的箱子，使用完后既不归还，还把箱子锁住。其他物资无法再使用这些位置。随着泄漏不断积累，可用内存越来越少，最终可能进一步导致 OOM。
 
 ## 常见内存泄漏原因
-![plan-jvm-h1-11-h2-02](./images/plan-jvm-h1-11-h2-02.png)
+![plan-jvm-h1-11-h2-02](./images/plan-jvm-h1-11-h2-02.webp)
 
 ### 1. 静态集合长期不清理
 
@@ -817,10 +817,10 @@ try (FileInputStream input = new FileInputStream(file)) {
 `ThreadLocalMap` 的 Key 是弱引用，但 Value 是强引用。如果使用线程池，线程会长期存活；使用完 `ThreadLocal` 后又没有调用 `remove()`，Value 就可能一直挂在线程的 `ThreadLocalMap` 上，最终导致内存泄漏。
 
 ## 内存问题的排查流程
-![plan-jvm-h1-12](./images/plan-jvm-h1-12.png)
+![plan-jvm-h1-12](./images/plan-jvm-h1-12.webp)
 
 ## OOM 排查思路
-![plan-jvm-h1-12-h2-01](./images/plan-jvm-h1-12-h2-01.png)
+![plan-jvm-h1-12-h2-01](./images/plan-jvm-h1-12-h2-01.webp)
 
 发生 OOM 后，可以按以下流程处理：
 
@@ -840,7 +840,7 @@ try (FileInputStream input = new FileInputStream(file)) {
 ```
 
 ## 内存泄漏排查思路
-![plan-jvm-h1-12-h2-02](./images/plan-jvm-h1-12-h2-02.png)
+![plan-jvm-h1-12-h2-02](./images/plan-jvm-h1-12-h2-02.webp)
 
 如果发现 Full GC 频繁，可以怀疑是否存在内存泄漏。
 
@@ -878,10 +878,10 @@ try (FileInputStream input = new FileInputStream(file)) {
 重点查看大对象、对象数量、支配树以及对象到 GC Roots 的引用链。
 
 ## 常见 JVM 参数与工具
-![plan-jvm-h1-13](./images/plan-jvm-h1-13.png)
+![plan-jvm-h1-13](./images/plan-jvm-h1-13.webp)
 
 ## 常见调优参数
-![plan-jvm-h1-13-h2-01](./images/plan-jvm-h1-13-h2-01.png)
+![plan-jvm-h1-13-h2-01](./images/plan-jvm-h1-13-h2-01.webp)
 
 常见 JVM 参数包括：
 
@@ -900,7 +900,7 @@ try (FileInputStream input = new FileInputStream(file)) {
 调优不能只靠把内存调大，还要结合业务流量、对象分配速率、延迟要求、吞吐量和 GC 日志综合判断。
 
 ## 常见 JVM 工具
-![plan-jvm-h1-13-h2-02](./images/plan-jvm-h1-13-h2-02.png)
+![plan-jvm-h1-13-h2-02](./images/plan-jvm-h1-13-h2-02.webp)
 
 - `jps`：查看 Java 进程。
 - `jstack`：导出线程堆栈。
@@ -911,7 +911,7 @@ try (FileInputStream input = new FileInputStream(file)) {
 - `VisualVM`：可视化查看线程、堆、GC 等信息。
 
 ## CPU 飙高排查
-![plan-jvm-h1-14](./images/plan-jvm-h1-14.png)
+![plan-jvm-h1-14](./images/plan-jvm-h1-14.webp)
 
 CPU 飙高通常有两个常见方向：
 
@@ -955,10 +955,10 @@ CPU 飙高通常有两个常见方向：
 如果线程堆栈没有明显死循环，就需要结合 GC 日志和 `jstat` 判断是否是频繁 Full GC 导致 CPU 占用过高。
 
 ## JVM 类加载机制
-![plan-jvm-h1-15](./images/plan-jvm-h1-15.png)
+![plan-jvm-h1-15](./images/plan-jvm-h1-15.webp)
 
 ## 什么是类加载
-![plan-jvm-h1-15-h2-01](./images/plan-jvm-h1-15-h2-01.png)
+![plan-jvm-h1-15-h2-01](./images/plan-jvm-h1-15-h2-01.webp)
 
 类加载就是把硬盘上的 `.class` 文件读入 JVM 内存，经过一系列校验和处理，最终形成 JVM 可以直接使用的类信息，供后续创建对象和执行方法使用。
 
@@ -969,7 +969,7 @@ CPU 飙高通常有两个常见方向：
 - 双亲委派模型
 
 ## 类加载过程
-![plan-jvm-h1-15-h2-02](./images/plan-jvm-h1-15-h2-02.png)
+![plan-jvm-h1-15-h2-02](./images/plan-jvm-h1-15-h2-02.webp)
 
 完整的类加载生命周期通常包括加载、连接和初始化，其中连接又包括验证、准备和解析。
 
@@ -1013,10 +1013,10 @@ public static int count = 10;
 初始化是类加载过程中非常关键的一步，类中的 Java 代码从这里开始真正执行。
 
 ## 类加载器与双亲委派模型
-![plan-jvm-h1-16](./images/plan-jvm-h1-16.png)
+![plan-jvm-h1-16](./images/plan-jvm-h1-16.webp)
 
 ## 四类常见类加载器
-![plan-jvm-h1-16-h2-01](./images/plan-jvm-h1-16-h2-01.png)
+![plan-jvm-h1-16-h2-01](./images/plan-jvm-h1-16-h2-01.webp)
 
 ### 1. 启动类加载器
 
@@ -1061,7 +1061,7 @@ public static int count = 10;
 可以把它理解为外部猎头或专门处理特殊招聘任务的团队。
 
 ## 双亲委派模型
-![plan-jvm-h1-16-h2-02](./images/plan-jvm-h1-16-h2-02.png)
+![plan-jvm-h1-16-h2-02](./images/plan-jvm-h1-16-h2-02.webp)
 
 一个类加载器收到类加载请求后，通常不会立刻自己加载，而是先把请求委派给父类加载器。父类加载器继续向上委派，直到启动类加载器。
 
@@ -1074,7 +1074,7 @@ public static int count = 10;
 需要注意，这里的“父子关系”通常不是 Java 语法上的继承关系，而是类加载器之间的组合和委派关系。
 
 ## 为什么需要双亲委派
-![plan-jvm-h1-16-h2-03](./images/plan-jvm-h1-16-h2-03.png)
+![plan-jvm-h1-16-h2-03](./images/plan-jvm-h1-16-h2-03.webp)
 
 ### 1. 保证安全性
 
@@ -1097,7 +1097,7 @@ java.lang.String
 双亲委派能够让 Java 核心类优先由更高层级的类加载器处理，保证类库体系结构相对稳定。
 
 ## 如何打破双亲委派
-![plan-jvm-h1-16-h2-04](./images/plan-jvm-h1-16-h2-04.png)
+![plan-jvm-h1-16-h2-04](./images/plan-jvm-h1-16-h2-04.webp)
 
 双亲委派并不是绝对不能打破。Tomcat 就有自己的类加载机制。
 
@@ -1113,7 +1113,7 @@ Tomcat 需要同时部署多个 Web 应用。如果两个应用分别依赖不�
 重写 `loadClass()` 时必须非常谨慎，否则可能引发核心类冲突、类型转换异常和类隔离问题。
 
 ## JVM 面试知识的整体脉络
-![plan-jvm-h1-17](./images/plan-jvm-h1-17.png)
+![plan-jvm-h1-17](./images/plan-jvm-h1-17.webp)
 
 JVM 的知识可以按照下面的顺序理解和复习：
 

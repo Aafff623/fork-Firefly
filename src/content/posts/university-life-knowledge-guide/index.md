@@ -3,7 +3,7 @@ title: 进大学后的一些常识性知识学习
 published: 2026-08-31
 updated: 2026-08-31T00:00:00
 description: "视频来源：https://www.bilibili.com/video/BV1kftw62EMk/?"
-image: ./cover.png
+image: ./cover.webp
 tags: [Obsidian]
 category: 指南
 draft: false
@@ -21,7 +21,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 1. 新生报到的完整流程
 
-![01-新生报到流程](./images/01.png)
+![01-新生报到流程](./images/01.webp)
 
 准大一新生马上开学，第一次上大学，既紧张又兴奋，不知道报到流程是什么、该做什么、不该做什么。到学校后的第一件事就是**报到**。通常校门两侧会设有各学院的帐篷，先找到自己学院的报到处，依次完成以下事项：
 
@@ -70,7 +70,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 2. 大学第一台电脑怎么选
 
-![05-大学第一台电脑怎么选](./images/05.png)
+![05-大学第一台电脑怎么选](./images/05.webp)
 
 轻薄本、游戏本、全能本让人看得眼花缭乱，选电脑时应先判断自己的真实需求。
 
@@ -106,7 +106,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 3. 新生军训需要注意什么
 
-![06-新生军训注意事项](./images/06.png)
+![06-新生军训注意事项](./images/06.webp)
 
 军训并不只是晒太阳、走方阵。有人站半小时军姿就晕倒，有人脚上磨满水泡，连路都走不了，还有人直接晒到脱皮。军训时方法用对，确实能少受一半罪。
 
@@ -130,7 +130,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 4. 大学班干部应该怎么选
 
-![07-大学班干部选择指南](./images/07.png)
+![07-大学班干部选择指南](./images/07.webp)
 
 大学班干部选对了，对评优评先、入党、考研、考公等都有帮助；选错了，可能会变成四年的免费劳动力，还容易得罪人。
 
@@ -256,7 +256,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 7. 大学生每个月需要多少生活费
 
-![08-大学生每月生活费预算](./images/08.png)
+![08-大学生每月生活费预算](./images/08.webp)
 
 以一日三餐都在学校吃为例：早餐一个包子加一盒牛奶，大约5元；午餐两荤一素或加一份汤，按15元计算；晚餐也按15元计算。三餐一天至少35元，一个月就是1050元。
 
@@ -389,7 +389,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 12. 如何处理宿舍关系
 
-![02-宿舍关系相处原则](./images/02.png)
+![02-宿舍关系相处原则](./images/02.webp)
 
 大学四年过得好不好，很大程度上取决于宿舍关系。和观点、习惯、背景都不同的人相处四年，发生冲突很正常，聊不到一起才是常态。
 
@@ -426,7 +426,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 13. 实习期、试用期和试岗期的区别
 
-![04-实习期试用期试岗期对比](./images/04.png)
+![04-实习期试用期试岗期对比](./images/04.webp)
 
 ### 实习期
 
@@ -503,7 +503,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 16. 医保到底怎么使用
 
-![03-医保三大目录](./images/03.png)
+![03-医保三大目录](./images/03.webp)
 
 医保主要包括**职工基本医疗保险**和**城乡居民基本医疗保险**。
 
@@ -538,7 +538,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 17. 五险一金分别有什么用
 
-![09-五险一金图解](./images/09.png)
+![09-五险一金图解](./images/09.webp)
 
 “五险”通常包括：
 
@@ -582,7 +582,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 18. 应届生如何准备秋招
 
-![10-应届生秋招时间线](./images/10.png)
+![10-应届生秋招时间线](./images/10.webp)
 
 秋招不是学校随便划一块场地、邀请企业摆桌子收简历。真正的秋招，是企业专门面向应届生开放的线上招聘渠道，岗位会发布在官网、公众号和各类招聘平台上，需要学生主动投递。
 

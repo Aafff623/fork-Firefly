@@ -3,7 +3,7 @@ title: 03-BOI、税务、提款与福利
 published: 2026-08-31
 updated: 2026-08-31T00:00:00
 description: 收款链路开通后，真正长期消耗精力的是合规记录、税务申报、公司与个人资金分离、转账成本和工具续费。这篇文章把 BOI、联邦与州税务、公司账户提款、支付费率和创业福利压缩成一套后续管理框架。
-image: ./cover.png
+image: ./cover.webp
 tags: [Obsidian]
 category: 指南
 draft: false
@@ -43,7 +43,7 @@ comment: true
 
 ### BOIR 在线申报：公司、申请人和受益所有人字段
 
-![global-payments-page-102](./images/global-payments-page-102.png)
+![global-payments-page-102](./images/global-payments-page-102.webp)
 
 *BOIR 提交成功页面*
 
@@ -131,7 +131,7 @@ comment: true
 
 ### 州级年度要求：特拉华州与怀俄明州示例
 
-![global-payments-page-118](./images/global-payments-page-118.png)
+![global-payments-page-118](./images/global-payments-page-118.webp)
 
 *特拉华州 LLC 税费页面*
 
@@ -159,7 +159,7 @@ comment: true
 
 ### 公司账户提款：先把分配与个人消费分开
 
-![global-payments-page-124](./images/global-payments-page-124.png)
+![global-payments-page-124](./images/global-payments-page-124.webp)
 
 *Wise USD 账户转账页面*
 
@@ -183,7 +183,7 @@ ACH 是美国境内自动清算转账；Wire 是电汇，通常适合金额较�
 
 ### Wise 到香港与中国内地：两条路径的成本和限制
 
-![global-payments-page-129](./images/global-payments-page-129.png)
+![global-payments-page-129](./images/global-payments-page-129.webp)
 
 *香港 FPS 账户信息页面*
 
@@ -257,7 +257,7 @@ Stripe 适合需要深度集成和支付生态的业务，PayPal 适合客户已
 
 ### Supabase：通过 Mercury 合作渠道兑换额度
 
-![global-payments-page-139](./images/global-payments-page-139.png)
+![global-payments-page-139](./images/global-payments-page-139.webp)
 
 *Mercury 合作福利申请页面*
 
@@ -277,7 +277,7 @@ Stripe 适合需要深度集成和支付生态的业务，PayPal 适合客户已
 
 ### Notion、Namecheap 与工具福利的持续管理
 
-![global-payments-page-144](./images/global-payments-page-144.png)
+![global-payments-page-144](./images/global-payments-page-144.webp)
 
 *域名福利说明页面*
 

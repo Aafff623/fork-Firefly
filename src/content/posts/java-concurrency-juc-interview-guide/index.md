@@ -3,7 +3,7 @@ title: Java 并发编程 JUC 面试知识总览
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: Java 并发编程常见面试考点可以分成五部分：
-image: ./cover.png
+image: ./cover.webp
 tags: [Java, 并发编程, JUC, 面试]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## 为什么用思维导图复习 JUC
-![plan-juc-overview-h2-01](./images/plan-juc-overview-h2-01.png)
+![plan-juc-overview-h2-01](./images/plan-juc-overview-h2-01.webp)
 
 Java 并发编程常见面试考点可以分成五部分：
 
@@ -25,10 +25,10 @@ Java 并发编程常见面试考点可以分成五部分：
 思维导图的好处，是能够把零散知识串成完整的知识脉络。面试前既可以用它快速复习，也能迅速定位自己尚未掌握或已经遗忘的知识点，提高复习效率。
 
 ## 一、Java 并发基础
-![plan-juc-h1-01](./images/plan-juc-h1-01.png)
+![plan-juc-h1-01](./images/plan-juc-h1-01.webp)
 
 ## 进程和线程的区别
-![plan-juc-h1-01-h2-01](./images/plan-juc-h1-01-h2-01.png)
+![plan-juc-h1-01-h2-01](./images/plan-juc-h1-01-h2-01.webp)
 
 **进程**可以理解为电脑上启动的一个个应用程序。比如运行微信时，微信进程拥有自己独立的内存空间，因此进程是操作系统进行资源分配的基本单位，其中包括程序数据、进程控制块等内容。
 
@@ -41,7 +41,7 @@ Java 并发编程常见面试考点可以分成五部分：
 > 一个进程可以包含多个线程。多个线程共享进程的堆和方法区资源，但每个线程拥有独立的程序计数器、虚拟机栈和本地方法栈。
 
 ## 线程的创建方式
-![plan-juc-h1-01-h2-02](./images/plan-juc-h1-01-h2-02.png)
+![plan-juc-h1-01-h2-02](./images/plan-juc-h1-01-h2-02.webp)
 
 Java 中常见的线程创建方式有以下几种：
 
@@ -64,7 +64,7 @@ Java 中常见的线程创建方式有以下几种：
    实际企业级项目中，绝大多数场景都会使用线程池。它就像外卖骑手调度中心，不需要每来一个订单就重新招聘一个骑手，而是复用已有骑手，从而节省资源。
 
 ## 什么是线程安全
-![plan-juc-h1-01-h2-03](./images/plan-juc-h1-01-h2-03.png)
+![plan-juc-h1-01-h2-03](./images/plan-juc-h1-01-h2-03.webp)
 
 如果一个代码块或方法在多线程环境中被多个线程同时执行时，仍然能够正确处理共享数据，那么这段代码或方法就是**线程安全的**。
 
@@ -126,7 +126,7 @@ public class Singleton {
 如果使用 `synchronized` 等方式加锁，就会变成一个线程转账完成后，另一个线程才能重新读取余额并继续处理。
 
 ## 线程常用的调度方法
-![plan-juc-h1-01-h2-04](./images/plan-juc-h1-01-h2-04.png)
+![plan-juc-h1-01-h2-04](./images/plan-juc-h1-01-h2-04.webp)
 
 ### `wait()`：等待并释放锁
 
@@ -168,7 +168,7 @@ public class Singleton {
 可以把它理解为线程抱着锁睡觉。时间到后线程会恢复为可运行状态，也可以通过中断使其提前结束休眠。
 
 ## 线程之间的通信方式
-![plan-juc-h1-01-h2-05](./images/plan-juc-h1-01-h2-05.png)
+![plan-juc-h1-01-h2-05](./images/plan-juc-h1-01-h2-05.webp)
 
 ### 使用共享对象
 
@@ -225,7 +225,7 @@ count++;
 在 Web 项目中，拦截器可以把当前登录用户的 ID 放入 `ThreadLocal`，后续的 Service 层、DAO 层都能通过 `get()` 获取，不必层层传参。
 
 ## `sleep()` 和 `wait()` 的区别
-![plan-juc-h1-01-h2-06](./images/plan-juc-h1-01-h2-06.png)
+![plan-juc-h1-01-h2-06](./images/plan-juc-h1-01-h2-06.webp)
 
 | 对比维度 | `sleep()` | `wait()` |
 |---|---|---|
@@ -239,10 +239,10 @@ count++;
 `sleep()` 常用于延时或定时心跳；`wait()` 更适合生产者——消费者等线程协作场景。
 
 ## 二、Java 内存模型 JMM
-![plan-juc-h1-02](./images/plan-juc-h1-02.png)
+![plan-juc-h1-02](./images/plan-juc-h1-02.webp)
 
 ## JMM 解决什么问题
-![plan-juc-h1-02-h2-01](./images/plan-juc-h1-02-h2-01.png)
+![plan-juc-h1-02-h2-01](./images/plan-juc-h1-02-h2-01.webp)
 
 JMM，即 **Java Memory Model，Java 内存模型**，定义了多线程环境下共享变量的访问规则，用于解决：
 
@@ -258,7 +258,7 @@ JMM 是一种抽象规范，它定义了线程工作内存与主内存之间的�
 线程不能直接随意操作主内存中的共享变量，而是要把变量读入工作内存，操作后再按规则同步回主内存。
 
 ## 原子性、可见性与有序性
-![plan-juc-h1-02-h2-02](./images/plan-juc-h1-02-h2-02.png)
+![plan-juc-h1-02-h2-02](./images/plan-juc-h1-02-h2-02.webp)
 
 ### 原子性
 
@@ -290,7 +290,7 @@ JMM 能保证基本读取、赋值等操作具有一定的原子性，但 `i++` 
 `synchronized` 和 `volatile` 都可以在一定范围内保证有序性。
 
 ## 指令重排序
-![plan-juc-h1-02-h2-03](./images/plan-juc-h1-02-h2-03.png)
+![plan-juc-h1-02-h2-03](./images/plan-juc-h1-02-h2-03.webp)
 
 为了提高执行性能，编译器和处理器可能对指令重新排序，常见类型包括：
 
@@ -326,7 +326,7 @@ JMM 能保证基本读取、赋值等操作具有一定的原子性，但 `i++` 
 这不意味着底层实现必须严格按照物理顺序逐条执行。只要重排序后的结果与 `happens-before` 规则要求的结果一致，这种重排序就是合法的。
 
 ## 双重检查锁中的指令重排序
-![plan-juc-h1-02-h2-04](./images/plan-juc-h1-02-h2-04.png)
+![plan-juc-h1-02-h2-04](./images/plan-juc-h1-02-h2-04.webp)
 
 对象创建大致可以拆分为三个步骤：
 
@@ -339,7 +339,7 @@ JMM 能保证基本读取、赋值等操作具有一定的原子性，但 `i++` 
 因此双重检查锁中的单例引用必须使用 `volatile` 修饰，以防止这类重排序。
 
 ## `volatile` 的作用与原理
-![plan-juc-h1-02-h2-05](./images/plan-juc-h1-02-h2-05.png)
+![plan-juc-h1-02-h2-05](./images/plan-juc-h1-02-h2-05.webp)
 
 `volatile` 是 Java 提供的一种轻量级同步机制，主要有两项能力：
 
@@ -377,10 +377,10 @@ JMM 能保证基本读取、赋值等操作具有一定的原子性，但 `i++` 
 > JMM 定义了原子性、可见性和有序性的规则：原子性让操作不能“半途而废”，可见性让线程看到一致的数据，有序性则防止编译器和 CPU 的重排序破坏并发语义。
 
 ## 三、Java 线程池
-![plan-juc-h1-03](./images/plan-juc-h1-03.png)
+![plan-juc-h1-03](./images/plan-juc-h1-03.webp)
 
 ## 为什么使用线程池
-![plan-juc-h1-03-h2-01](./images/plan-juc-h1-03-h2-01.png)
+![plan-juc-h1-03-h2-01](./images/plan-juc-h1-03-h2-01.webp)
 
 线程池就是一个管理线程的池子，主要好处包括：
 
@@ -394,7 +394,7 @@ JMM 能保证基本读取、赋值等操作具有一定的原子性，但 `i++` 
 对于大量不需要立即响应的批量任务，可以通过任务队列进行缓冲。
 
 ## `ThreadPoolExecutor` 的核心参数
-![plan-juc-h1-03-h2-02](./images/plan-juc-h1-03-h2-02.png)
+![plan-juc-h1-03-h2-02](./images/plan-juc-h1-03-h2-02.webp)
 
 ```java
 public ThreadPoolExecutor(
@@ -454,7 +454,7 @@ public ThreadPoolExecutor(
 拒绝策略。当线程池达到最大线程数且任务队列已满时，新提交的任务会按照拒绝策略处理。
 
 ## 线程池的工作流程
-![plan-juc-h1-03-h2-03](./images/plan-juc-h1-03-h2-03.png)
+![plan-juc-h1-03-h2-03](./images/plan-juc-h1-03-h2-03.webp)
 
 1. 创建线程池并调用 `execute()` 提交任务。
 2. 如果当前线程数小于 `corePoolSize`，创建核心线程执行任务。
@@ -467,7 +467,7 @@ public ThreadPoolExecutor(
 这套流程最好和线程池的核心参数放在一起理解记忆。
 
 ## 常见拒绝策略
-![plan-juc-h1-03-h2-04](./images/plan-juc-h1-03-h2-04.png)
+![plan-juc-h1-03-h2-04](./images/plan-juc-h1-03-h2-04.webp)
 
 `ThreadPoolExecutor` 提供了四种内置拒绝策略：
 
@@ -477,7 +477,7 @@ public ThreadPoolExecutor(
 - **`DiscardPolicy`**：直接丢弃新任务，不抛异常，属于“默默摆烂”。
 
 ## 常见阻塞队列
-![plan-juc-h1-03-h2-05](./images/plan-juc-h1-03-h2-05.png)
+![plan-juc-h1-03-h2-05](./images/plan-juc-h1-03-h2-05.webp)
 
 ### `ArrayBlockingQueue`
 
@@ -500,7 +500,7 @@ public ThreadPoolExecutor(
 容量为零，不真正存储任务。任务必须直接交给一个等待中的线程处理，否则就需要创建新线程或触发拒绝策略。
 
 ## 线程池的生命周期状态
-![plan-juc-h1-03-h2-06](./images/plan-juc-h1-03-h2-06.png)
+![plan-juc-h1-03-h2-06](./images/plan-juc-h1-03-h2-06.webp)
 
 线程池有五种主要状态：
 
@@ -534,10 +534,10 @@ public ThreadPoolExecutor(
 线程本身也会经历 `NEW`、`RUNNABLE`、`WAITING`、`TIMED_WAITING`、`BLOCKED`、`TERMINATED` 等状态。线程池状态与线程状态是两个不同层面的概念，不要混为一谈。
 
 ## 四、Java 锁机制
-![plan-juc-h1-04](./images/plan-juc-h1-04.png)
+![plan-juc-h1-04](./images/plan-juc-h1-04.webp)
 
 ## `synchronized` 的实现原理
-![plan-juc-h1-04-h2-01](./images/plan-juc-h1-04-h2-01.png)
+![plan-juc-h1-04-h2-01](./images/plan-juc-h1-04-h2-01.webp)
 
 `synchronized` 是 Java 开发必须掌握的内置锁。
 
@@ -554,7 +554,7 @@ public ThreadPoolExecutor(
 面试时没必要死记所有内部名称。只要能说明持有者、重入计数、竞争队列、等待集合以及大致流程，通常比结结巴巴地背术语更能体现真正理解。
 
 ## `synchronized` 与 `ReentrantLock` 的区别
-![plan-juc-h1-04-h2-02](./images/plan-juc-h1-04-h2-02.png)
+![plan-juc-h1-04-h2-02](./images/plan-juc-h1-04-h2-02.webp)
 
 | 对比维度 | `synchronized` | `ReentrantLock` |
 |---|---|---|
@@ -590,7 +590,7 @@ try {
 可以想象成同一个线程进门时拿到一把钥匙，进门后又遇到一扇小门，仍然能用同一把钥匙继续打开。
 
 ## `synchronized` 如何保证并发语义
-![plan-juc-h1-04-h2-03](./images/plan-juc-h1-04-h2-03.png)
+![plan-juc-h1-04-h2-03](./images/plan-juc-h1-04-h2-03.webp)
 
 ### 可见性
 
@@ -609,7 +609,7 @@ try {
 - 计数归零后，锁才真正释放。
 
 ## 锁优化与锁升级
-![plan-juc-h1-04-h2-04](./images/plan-juc-h1-04-h2-04.png)
+![plan-juc-h1-04-h2-04](./images/plan-juc-h1-04-h2-04.webp)
 
 > 以下偏向锁、轻量级锁等内容主要对应 HotSpot JVM 过去常见的实现与面试语境。偏向锁在较新的 JDK 中已经被禁用并进一步移除，但相关设计思想仍可能出现在面试题中。
 
@@ -661,7 +661,7 @@ JVM 可以根据历史自旋结果进行自适应调整，并不是永远固定�
 JIT 编译器会进行逃逸分析。如果确认某个对象不会被多个线程共享，相应的同步操作就可能被完全消除，减少无意义的同步开销。
 
 ## AQS：抽象队列同步器
-![plan-juc-h1-04-h2-05](./images/plan-juc-h1-04-h2-05.png)
+![plan-juc-h1-04-h2-05](./images/plan-juc-h1-04-h2-05.webp)
 
 AQS，即 `AbstractQueuedSynchronizer`，可以把它理解成一个**排队管理器**。
 
@@ -696,7 +696,7 @@ AQS 本身提供框架，具体资源获取和释放规则由子类实现，常�
 AQS 的同步队列通常被描述为 CLH 队列的一种变体。线程获取锁失败后，会把自己包装成节点加入队尾，并关注前驱节点的状态，在合适时机被唤醒后再次尝试获取资源。
 
 ## `ReentrantLock` 的实现原理
-![plan-juc-h1-04-h2-06](./images/plan-juc-h1-04-h2-06.png)
+![plan-juc-h1-04-h2-06](./images/plan-juc-h1-04-h2-06.webp)
 
 `ReentrantLock` 是基于 AQS 实现的可重入独占锁。
 
@@ -728,7 +728,7 @@ ReentrantLock fairLock = new ReentrantLock(true);
 ```
 
 ## CAS 的原理
-![plan-juc-h1-04-h2-07](./images/plan-juc-h1-04-h2-07.png)
+![plan-juc-h1-04-h2-07](./images/plan-juc-h1-04-h2-07.webp)
 
 CAS 全称为 **Compare And Swap，比较并交换**，是一种无锁原子操作，也是乐观锁的重要实现方式。
 
@@ -776,7 +776,7 @@ CAS 通常针对单个内存位置。如果多个变量必须作为一个整体�
 - 使用 `synchronized` 或 `Lock` 保护整个代码块。
 
 ## 乐观锁与悲观锁
-![plan-juc-h1-04-h2-08](./images/plan-juc-h1-04-h2-08.png)
+![plan-juc-h1-04-h2-08](./images/plan-juc-h1-04-h2-08.webp)
 
 ### 悲观锁
 
@@ -810,7 +810,7 @@ WHERE id = ?
 乐观锁通常适合读多写少、冲突概率较低的场景，例如配置查询、部分缓存更新。
 
 ## 死锁
-![plan-juc-h1-04-h2-09](./images/plan-juc-h1-04-h2-09.png)
+![plan-juc-h1-04-h2-09](./images/plan-juc-h1-04-h2-09.webp)
 
 死锁是指多个线程互相等待对方释放资源，最终所有相关线程都无法继续执行。
 
@@ -840,10 +840,10 @@ WHERE id = ?
 - 写并发代码时要始终警惕死锁的四个必要条件，可以通过统一加锁顺序、超时获取和减少嵌套来破局。
 
 ## 五、ThreadLocal 线程隔离
-![plan-juc-h1-05](./images/plan-juc-h1-05.png)
+![plan-juc-h1-05](./images/plan-juc-h1-05.webp)
 
 ## ThreadLocal 的作用
-![plan-juc-h1-05-h2-01](./images/plan-juc-h1-05-h2-01.png)
+![plan-juc-h1-05-h2-01](./images/plan-juc-h1-05-h2-01.webp)
 
 `ThreadLocal` 是 Java 提供的线程局部变量工具类。它允许每个线程保存一份独立的数据副本，从而实现线程隔离，避免多个线程直接共享同一个可变对象。
 
@@ -856,7 +856,7 @@ WHERE id = ?
 - 避免层层传递上下文参数。
 
 ## ThreadLocal 的实现原理
-![plan-juc-h1-05-h2-02](./images/plan-juc-h1-05-h2-02.png)
+![plan-juc-h1-05-h2-02](./images/plan-juc-h1-05-h2-02.webp)
 
 每个 `Thread` 对象内部都可以维护一个 `ThreadLocalMap`。其中：
 
@@ -884,7 +884,7 @@ threadLocal.get();
 `ThreadLocalMap` 并没有实现标准的 `Map` 接口，但结构上使用了数组和散列定位。它处理哈希冲突时使用的是**开放定址法**，而不是 `HashMap` 常见的链表或红黑树结构。
 
 ## ThreadLocal 的内存泄漏问题
-![plan-juc-h1-05-h2-03](./images/plan-juc-h1-05-h2-03.png)
+![plan-juc-h1-05-h2-03](./images/plan-juc-h1-05-h2-03.webp)
 
 `ThreadLocalMap.Entry` 中：
 
@@ -913,7 +913,7 @@ try {
 ```
 
 ## 在线程池中的风险
-![plan-juc-h1-05-h2-04](./images/plan-juc-h1-05-h2-04.png)
+![plan-juc-h1-05-h2-04](./images/plan-juc-h1-05-h2-04.webp)
 
 Tomcat 等 Web 容器会维护线程池。一次请求结束后，工作线程不会被销毁，而是回到线程池中等待复用。
 
@@ -929,7 +929,7 @@ Tomcat 等 Web 容器会维护线程池。一次请求结束后，工作线程�
 因此，在 Web 项目中使用 `ThreadLocal` 时，务必在 `finally` 代码块中清理。
 
 ## 父子线程如何共享数据
-![plan-juc-h1-05-h2-05](./images/plan-juc-h1-05-h2-05.png)
+![plan-juc-h1-05-h2-05](./images/plan-juc-h1-05-h2-05.webp)
 
 普通 `ThreadLocal` 默认不会自动把父线程的数据传递给子线程。主线程创建子线程后，子线程拥有自己的 `ThreadLocalMap`，无法直接读取父线程普通 `ThreadLocal` 中的数据。
 
@@ -957,10 +957,10 @@ child.start();
 需要注意，传递通常发生在**创建子线程时**。在线程池中，线程往往早已创建并被反复复用，因此 `InheritableThreadLocal` 不能可靠解决线程池任务之间的上下文传递问题，还可能带来脏数据。实际项目中可以显式传参，或者使用专门的上下文传递方案。
 
 ## 六、JUC 复习主线
-![plan-juc-h1-06](./images/plan-juc-h1-06.png)
+![plan-juc-h1-06](./images/plan-juc-h1-06.webp)
 
 ## 五大模块的关联
-![plan-juc-h1-06-h2-01](./images/plan-juc-h1-06-h2-01.png)
+![plan-juc-h1-06-h2-01](./images/plan-juc-h1-06-h2-01.webp)
 
 JUC 并发编程可以沿着下面这条主线复习：
 

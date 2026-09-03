@@ -51,7 +51,7 @@ comment: true
 ## 技巧
 1) 使用  [cockpit tools](https://github.com/jlcodes99/cockpit-tools/releases)  管理各个类型的订阅号池, 可以保存登录态
 
-![邪修 AI Coding 省钱-2](./images/ai-coding-2.png)
+![邪修 AI Coding 省钱-2](./images/ai-coding-2.webp)
 
 2) 使用claude code cli 做轻量任务, cursor ide 配套维护重型任务,复杂操作(如e2e测试, 文件索引拖拽, 内置浏览器div选择..)
 

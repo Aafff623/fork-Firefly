@@ -3,7 +3,7 @@ title: 【计算机基础】MySQL 面试八股总结
 published: 2026-08-30
 updated: 2026-08-30T23:58:22
 description: 大家好，我是程序员Dan。今天主要和大家一起总结 MySQL 在计算机校园招聘面试过程中，经常被面试官问到的一些八股知识。
-image: ./cover.png
+image: ./cover.webp
 tags: [MySQL, 数据库, 面试, 基础]
 category: 指南
 draft: false
@@ -12,7 +12,7 @@ pinned: false
 comment: true
 ---
 ## 内容概览
-![plan-mysql-overview-h2-01](./images/plan-mysql-overview-h2-01.png)
+![plan-mysql-overview-h2-01](./images/plan-mysql-overview-h2-01.webp)
 
 大家好，我是程序员Dan。今天主要和大家一起总结 MySQL 在计算机校园招聘面试过程中，经常被面试官问到的一些八股知识。
 
@@ -26,10 +26,10 @@ comment: true
 - 分库分表与主从复制
 
 ## 一、MySQL 基础与存储引擎
-![plan-mysql-h1-01](./images/plan-mysql-h1-01.png)
+![plan-mysql-h1-01](./images/plan-mysql-h1-01.webp)
 
 ## 1. SQL 查询语句的执行流程
-![plan-mysql-h1-01-h2-01](./images/plan-mysql-h1-01-h2-01.png)
+![plan-mysql-h1-01-h2-01](./images/plan-mysql-h1-01-h2-01.webp)
 
 面试官可能会问：一条 SQL 语句进入 MySQL 后，内部会发生怎样的过程？
 
@@ -70,7 +70,7 @@ comment: true
    MySQL 将执行结果返回客户端，客户端收到查询结果后，本次查询结束。
 
 ## 2. MySQL 常用命令
-![plan-mysql-h1-01-h2-02](./images/plan-mysql-h1-01-h2-02.png)
+![plan-mysql-h1-01-h2-02](./images/plan-mysql-h1-01-h2-02.webp)
 
 MySQL 的常用命令一定要掌握，主要包括：
 
@@ -85,7 +85,7 @@ MySQL 的常用命令一定要掌握，主要包括：
 建议真正到电脑上手敲这些命令，并观察执行结果。相比单纯背诵，实际执行更有助于加深印象。
 
 ## 3. MySQL 的常见存储引擎
-![plan-mysql-h1-01-h2-03](./images/plan-mysql-h1-01-h2-03.png)
+![plan-mysql-h1-01-h2-03](./images/plan-mysql-h1-01-h2-03.webp)
 
 MySQL 支持多种存储引擎，常见的包括：
 
@@ -122,10 +122,10 @@ MyISAM 具有以下特点：
 MyISAM 目前已经比较少用，更适合只读或读多写少的静态报表场景。
 
 ## 二、MySQL 日志系统
-![plan-mysql-h1-02](./images/plan-mysql-h1-02.png)
+![plan-mysql-h1-02](./images/plan-mysql-h1-02.webp)
 
 ## 1. MySQL 有哪些日志
-![plan-mysql-h1-02-h2-01](./images/plan-mysql-h1-02-h2-01.png)
+![plan-mysql-h1-02-h2-01](./images/plan-mysql-h1-02-h2-01.webp)
 
 MySQL 中常见的日志包括以下几类。
 
@@ -169,14 +169,14 @@ undo log 主要保存数据修改前的旧版本，用于：
 事务需要回滚时，InnoDB 可以根据 undo log 将数据恢复到修改前的状态。
 
 ## 2. binlog 的作用
-![plan-mysql-h1-02-h2-02](./images/plan-mysql-h1-02-h2-02.png)
+![plan-mysql-h1-02-h2-02](./images/plan-mysql-h1-02-h2-02.webp)
 
 binlog 是一种逻辑日志，记录数据库发生的逻辑变更。发生数据误删或丢失时，可以结合全量备份与 binlog，将数据库恢复到特定时间点。
 
 主服务器上的 binlog 还可以被从服务器读取，从而实现主从数据同步。binlog 需要通过配置启用并设置相应参数。
 
 ## 3. binlog 与 redo log 的区别
-![plan-mysql-h1-02-h2-03](./images/plan-mysql-h1-02-h2-03.png)
+![plan-mysql-h1-02-h2-03](./images/plan-mysql-h1-02-h2-03.webp)
 
 这是一个非常高频的面试考点。
 
@@ -194,7 +194,7 @@ redo log 可以类比为 Java 系统中的 *checkpoint* 机制，主要防止程
 binlog 则有点像 Kafka 中的 Topic：每次数据变更都会被记录下来，随后可以交给下游消费者，也就是从库进行重放。
 
 ## 4. 为什么需要两阶段提交
-![plan-mysql-h1-02-h2-04](./images/plan-mysql-h1-02-h2-04.png)
+![plan-mysql-h1-02-h2-04](./images/plan-mysql-h1-02-h2-04.webp)
 
 一条更新语句通常会同时涉及 redo log 和 binlog。由于 redo log 属于 InnoDB，而 binlog 属于 Server 层，它们是两套相互独立的日志系统。如果不做协调，就可能导致两份日志状态不一致，进而造成主从数据不一致或恢复结果不一致。
 
@@ -230,7 +230,7 @@ binlog 则有点像 Kafka 中的 Topic：每次数据变更都会被记录下来
 两阶段提交的核心目标，是保证 redo log 与 binlog 在逻辑上最终一致。
 
 ## 5. redo log 与 WAL
-![plan-mysql-h1-02-h2-05](./images/plan-mysql-h1-02-h2-05.png)
+![plan-mysql-h1-02-h2-05](./images/plan-mysql-h1-02-h2-05.webp)
 
 InnoDB 采用 **WAL（Write-Ahead Logging，预写日志）** 策略。
 
@@ -241,7 +241,7 @@ InnoDB 采用 **WAL（Write-Ahead Logging，预写日志）** 策略。
 如果系统崩溃，重启后可以重放 redo log 中还没来得及写入数据文件的操作，从而恢复数据。事务提交时，只要相应日志已经持久化，即使下一秒服务器断电，数据也可以在重启后恢复。
 
 ## 6. redo log 的刷盘时机
-![plan-mysql-h1-02-h2-06](./images/plan-mysql-h1-02-h2-06.png)
+![plan-mysql-h1-02-h2-06](./images/plan-mysql-h1-02-h2-06.webp)
 
 redo log 常见的刷盘时机包括：
 
@@ -272,7 +272,7 @@ redo log 常见的刷盘时机包括：
 - `0`：事务提交时不主动写盘，由后台线程大约每秒写入并刷盘，MySQL 异常退出时可能丢失最近一段时间的数据。
 
 ## 7. redo log 的循环写与 checkpoint
-![plan-mysql-h1-02-h2-07](./images/plan-mysql-h1-02-h2-07.png)
+![plan-mysql-h1-02-h2-07](./images/plan-mysql-h1-02-h2-07.webp)
 
 redo log 可以理解为一个环形结构，写满之后会从头复用空间。但在覆盖旧日志之前，必须确保旧日志对应的数据页已经成功写入磁盘。
 
@@ -284,10 +284,10 @@ redo log 可以理解为一个环形结构，写满之后会从头复用空间�
 当 `write pos` 追上 `checkpoint` 时，说明日志空间不足。此时必须推进 checkpoint，将相应脏页刷入磁盘，再清理并复用对应日志空间。
 
 ## 三、MySQL 索引原理
-![plan-mysql-h1-03](./images/plan-mysql-h1-03.png)
+![plan-mysql-h1-03](./images/plan-mysql-h1-03.webp)
 
 ## 1. 索引为什么能加快查询
-![plan-mysql-h1-03-h2-01](./images/plan-mysql-h1-03-h2-01.png)
+![plan-mysql-h1-03-h2-01](./images/plan-mysql-h1-03-h2-01.webp)
 
 索引可以类比为书的目录，或者字典中的拼音检索表。
 
@@ -296,7 +296,7 @@ redo log 可以理解为一个环形结构，写满之后会从头复用空间�
 有了索引后，MySQL 可以利用 B+ 树等数据结构，将查询复杂度降低到近似 `O(log n)`。数据库能够直接定位索引指向的数据位置，大幅减少磁盘 I/O 次数，而磁盘 I/O 往往是数据库查询中非常耗时的操作。
 
 ## 2. 索引的分类
-![plan-mysql-h1-03-h2-02](./images/plan-mysql-h1-03-h2-02.png)
+![plan-mysql-h1-03-h2-02](./images/plan-mysql-h1-03-h2-02.webp)
 
 ### 按功能分类
 
@@ -320,7 +320,7 @@ redo log 可以理解为一个环形结构，写满之后会从头复用空间�
 通过二级索引找到主键后，再去聚簇索引中查找完整记录的过程，称为**回表**。
 
 ## 3. 创建索引时的注意事项
-![plan-mysql-h1-03-h2-03](./images/plan-mysql-h1-03-h2-03.png)
+![plan-mysql-h1-03-h2-03](./images/plan-mysql-h1-03-h2-03.webp)
 
 适合创建索引的列通常包括：
 
@@ -342,7 +342,7 @@ redo log 可以理解为一个环形结构，写满之后会从头复用空间�
 对于 UUID、身份证号等无序或跨度较大的值，如果直接作为聚簇索引主键，随机插入可能导致页分裂和存储碎片，影响写入性能。
 
 ## 4. 常见的索引失效场景
-![plan-mysql-h1-03-h2-04](./images/plan-mysql-h1-03-h2-04.png)
+![plan-mysql-h1-03-h2-04](./images/plan-mysql-h1-03-h2-04.webp)
 
 常见的索引失效或无法被有效利用的情况包括：
 
@@ -357,7 +357,7 @@ redo log 可以理解为一个环形结构，写满之后会从头复用空间�
 > 索引“可能失效”并不意味着某种写法在任何情况下都绝对不走索引，最终仍应结合优化器选择和 `EXPLAIN` 的结果判断。
 
 ## 5. InnoDB 为什么选择 B+ 树
-![plan-mysql-h1-03-h2-05](./images/plan-mysql-h1-03-h2-05.png)
+![plan-mysql-h1-03-h2-05](./images/plan-mysql-h1-03-h2-05.webp)
 
 面试官经常会问：InnoDB 为什么选择 B+ 树，而不是 B 树？
 
@@ -389,7 +389,7 @@ B+ 树的非叶子节点主要保存索引键和子节点指针，不保存完�
 因此，B+ 树既矮胖，又适合范围查询，磁盘 I/O 较少，更适合作为 InnoDB 的主要索引结构。
 
 ## 6. 聚簇索引与非聚簇索引
-![plan-mysql-h1-03-h2-06](./images/plan-mysql-h1-03-h2-06.png)
+![plan-mysql-h1-03-h2-06](./images/plan-mysql-h1-03-h2-06.webp)
 
 聚簇索引的叶子节点存储完整行数据，非聚簇索引的叶子节点通常存储索引列和主键值。
 
@@ -409,7 +409,7 @@ B+ 树的非叶子节点主要保存索引键和子节点指针，不保存完�
 因此，建表时最好显式指定合理的自增主键。否则隐藏行 ID 不方便维护，在某些高并发场景下也可能增加额外开销。
 
 ## 7. 回表与覆盖索引
-![plan-mysql-h1-03-h2-07](./images/plan-mysql-h1-03-h2-07.png)
+![plan-mysql-h1-03-h2-07](./images/plan-mysql-h1-03-h2-07.webp)
 
 ### 回表
 
@@ -422,7 +422,7 @@ B+ 树的非叶子节点主要保存索引键和子节点指针，不保存完�
 这种索引称为**覆盖索引**。覆盖索引能够避免回表，减少 I/O，提高查询效率。
 
 ## 8. 最左前缀匹配原则
-![plan-mysql-h1-03-h2-08](./images/plan-mysql-h1-03-h2-08.png)
+![plan-mysql-h1-03-h2-08](./images/plan-mysql-h1-03-h2-08.webp)
 
 最左前缀匹配原则可以说是联合索引的“生命线”。
 
@@ -441,7 +441,7 @@ INDEX idx_abc (a, b, c)
 查询一般需要从索引最左侧列开始匹配，不能随意跳过前面的列。面试和笔试中经常考查联合索引能够生效和失效的具体场景，建议结合示例题进行练习。
 
 ## 9. 索引条件下推
-![plan-mysql-h1-03-h2-09](./images/plan-mysql-h1-03-h2-09.png)
+![plan-mysql-h1-03-h2-09](./images/plan-mysql-h1-03-h2-09.webp)
 
 索引条件下推即 **ICP（Index Condition Pushdown）**。
 
@@ -456,10 +456,10 @@ INDEX idx_abc (a, b, c)
 - 不必要的数据读取
 
 ## 四、MySQL 事务与 MVCC
-![plan-mysql-h1-04](./images/plan-mysql-h1-04.png)
+![plan-mysql-h1-04](./images/plan-mysql-h1-04.webp)
 
 ## 1. 事务的 ACID 特性
-![plan-mysql-h1-04-h2-01](./images/plan-mysql-h1-04-h2-01.png)
+![plan-mysql-h1-04-h2-01](./images/plan-mysql-h1-04-h2-01.webp)
 
 事务具有四大特性：原子性、一致性、隔离性和持久性。
 
@@ -499,7 +499,7 @@ MySQL 主要通过以下机制实现隔离性：
 MySQL 主要依靠 **redo log** 保证持久性。只要 redo log 成功持久化，即使服务器随后断电，重启后也能通过日志恢复数据。
 
 ## 2. 并发事务的三类问题
-![plan-mysql-h1-04-h2-02](./images/plan-mysql-h1-04-h2-02.png)
+![plan-mysql-h1-04-h2-02](./images/plan-mysql-h1-04-h2-02.webp)
 
 ### 脏读
 
@@ -519,7 +519,7 @@ MySQL 主要依靠 **redo log** 保证持久性。只要 redo log 成功持久�
 - **幻读**：符合条件的记录数量变了。
 
 ## 3. 事务隔离级别
-![plan-mysql-h1-04-h2-03](./images/plan-mysql-h1-04-h2-03.png)
+![plan-mysql-h1-04-h2-03](./images/plan-mysql-h1-04-h2-03.webp)
 
 MySQL 中常见的事务隔离级别包括：
 
@@ -563,7 +563,7 @@ InnoDB 还会结合 MVCC、Next-Key Lock 等机制，在很多场景下解决幻
 它能解决脏读、不可重复读和幻读，但并发性能较差，有点像在 Java 中使用 `synchronized` 将并发操作严格串行化。
 
 ## 4. 各隔离级别的实现思路
-![plan-mysql-h1-04-h2-04](./images/plan-mysql-h1-04-h2-04.png)
+![plan-mysql-h1-04-h2-04](./images/plan-mysql-h1-04-h2-04.webp)
 
 - **读未提交**：读取时可以直接看到其他事务尚未提交的数据版本。
 - **读已提交**：通过 MVCC 实现，每次一致性读取前通常都会生成新的 Read View。
@@ -571,7 +571,7 @@ InnoDB 还会结合 MVCC、Next-Key Lock 等机制，在很多场景下解决幻
 - **串行化**：通过更严格的锁机制控制并发读写，使事务串行执行。
 
 ## 5. MVCC 的作用
-![plan-mysql-h1-04-h2-05](./images/plan-mysql-h1-04-h2-05.png)
+![plan-mysql-h1-04-h2-05](./images/plan-mysql-h1-04-h2-05.webp)
 
 MVCC 即 **Multi-Version Concurrency Control，多版本并发控制**，主要用于解决数据库并发访问问题。
 
@@ -588,7 +588,7 @@ MVCC 即 **Multi-Version Concurrency Control，多版本并发控制**，主要�
 - Read View 读视图
 
 ## 6. 版本链
-![plan-mysql-h1-04-h2-06](./images/plan-mysql-h1-04-h2-06.png)
+![plan-mysql-h1-04-h2-06](./images/plan-mysql-h1-04-h2-06.webp)
 
 InnoDB 的每行记录除了业务字段外，还包含一些隐藏字段，其中与 MVCC 密切相关的包括：
 
@@ -600,7 +600,7 @@ InnoDB 的每行记录除了业务字段外，还包含一些隐藏字段，其�
 这样，不同版本的数据就形成了一条版本链。事务可以沿着版本链查找对自己可见的历史版本。
 
 ## 7. Read View 读视图
-![plan-mysql-h1-04-h2-07](./images/plan-mysql-h1-04-h2-07.png)
+![plan-mysql-h1-04-h2-07](./images/plan-mysql-h1-04-h2-07.webp)
 
 Read View 是 InnoDB 为一致性读取创建的数据结构，用于判断某个版本的数据对当前事务是否可见。
 
@@ -630,7 +630,7 @@ Read View 中的重要信息包括：
 如果当前版本不可见，就沿着 `DB_ROLL_PTR` 查找版本链中的上一个版本，直到找到可见版本。
 
 ## 8. 读已提交与可重复读的关键区别
-![plan-mysql-h1-04-h2-08](./images/plan-mysql-h1-04-h2-08.png)
+![plan-mysql-h1-04-h2-08](./images/plan-mysql-h1-04-h2-08.webp)
 
 ### 读已提交
 
@@ -645,10 +645,10 @@ Read View 中的重要信息包括：
 事务第一次执行一致性读取时生成 Read View，后续查询继续复用这个视图。即使中间有其他事务提交，新版本对原来的 Read View 仍然可能不可见，因此事务读到的始终是第一次快照读取时所对应的一致性数据。
 
 ## 五、MySQL 锁机制
-![plan-mysql-h1-05](./images/plan-mysql-h1-05.png)
+![plan-mysql-h1-05](./images/plan-mysql-h1-05.webp)
 
 ## 1. 按锁粒度分类
-![plan-mysql-h1-05-h2-01](./images/plan-mysql-h1-05-h2-01.png)
+![plan-mysql-h1-05-h2-01](./images/plan-mysql-h1-05-h2-01.webp)
 
 ### 表锁
 
@@ -674,7 +674,7 @@ Read View 中的重要信息包括：
 页锁的粒度介于表锁和行锁之间，其开销、并发能力也介于二者之间。
 
 ## 2. 按兼容性分类
-![plan-mysql-h1-05-h2-02](./images/plan-mysql-h1-05-h2-02.png)
+![plan-mysql-h1-05-h2-02](./images/plan-mysql-h1-05-h2-02.webp)
 
 ### 共享锁
 
@@ -687,7 +687,7 @@ Read View 中的重要信息包括：
 在同一时间内，通常只有持有相应排他锁的事务能够修改被锁定的数据。
 
 ## 3. 乐观锁与悲观锁
-![plan-mysql-h1-05-h2-03](./images/plan-mysql-h1-05-h2-03.png)
+![plan-mysql-h1-05-h2-03](./images/plan-mysql-h1-05-h2-03.webp)
 
 ### 乐观锁
 
@@ -726,7 +726,7 @@ FOR UPDATE;
 该语句会对符合条件的数据加锁，锁通常会持续到当前事务提交或回滚。
 
 ## 4. InnoDB 行锁的实现
-![plan-mysql-h1-05-h2-04](./images/plan-mysql-h1-05-h2-04.png)
+![plan-mysql-h1-05-h2-04](./images/plan-mysql-h1-05-h2-04.webp)
 
 ### 记录锁：Record Lock
 
@@ -761,7 +761,7 @@ FOR UPDATE;
 如果没有意向锁，事务 B 可能需要检查表中每一行是否被加锁。有了意向锁后，事务 A 在加行锁前，先在表级别添加相应意向锁；事务 B 只需检查表级意向锁，就能快速判断表内是否存在可能冲突的行锁。
 
 ## 5. 死锁排查
-![plan-mysql-h1-05-h2-05](./images/plan-mysql-h1-05-h2-05.png)
+![plan-mysql-h1-05-h2-05](./images/plan-mysql-h1-05-h2-05.webp)
 
 排查数据库死锁可以按照以下步骤进行：
 
@@ -773,10 +773,10 @@ FOR UPDATE;
 6. 根据分析结果统一加锁顺序、缩小事务范围或优化索引。
 
 ## 六、SQL 性能定位与优化
-![plan-mysql-h1-06](./images/plan-mysql-h1-06.png)
+![plan-mysql-h1-06](./images/plan-mysql-h1-06.webp)
 
 ## 1. 如何定位慢 SQL
-![plan-mysql-h1-06-h2-01](./images/plan-mysql-h1-06-h2-01.png)
+![plan-mysql-h1-06-h2-01](./images/plan-mysql-h1-06-h2-01.webp)
 
 ### 使用慢查询日志
 
@@ -800,7 +800,7 @@ FOR UPDATE;
 找到问题 SQL 后，可以使用 `EXPLAIN` 查看执行计划，分析 MySQL 如何访问表、是否使用索引、是否创建临时表以及是否进行了额外排序。
 
 ## 2. 避免查询不必要的列
-![plan-mysql-h1-06-h2-02](./images/plan-mysql-h1-06-h2-02.png)
+![plan-mysql-h1-06-h2-02](./images/plan-mysql-h1-06-h2-02.webp)
 
 尽量避免无脑使用：
 
@@ -819,7 +819,7 @@ FROM user;
 同时也更有利于使用覆盖索引。
 
 ## 3. 分页优化
-![plan-mysql-h1-06-h2-03](./images/plan-mysql-h1-06-h2-03.png)
+![plan-mysql-h1-06-h2-03](./images/plan-mysql-h1-06-h2-03.webp)
 
 对于大数据量场景，传统的 `LIMIT offset, size` 性能可能较差，因为数据库通常需要扫描并丢弃前面 `offset` 条数据。
 
@@ -857,7 +857,7 @@ LIMIT 20;
 这种方式也叫游标分页或 Keyset Pagination，可以避免扫描大量不需要的行。
 
 ## 4. 索引优化
-![plan-mysql-h1-06-h2-04](./images/plan-mysql-h1-06-h2-04.png)
+![plan-mysql-h1-06-h2-04](./images/plan-mysql-h1-06-h2-04.webp)
 
 索引优化可以从以下方面入手：
 
@@ -870,7 +870,7 @@ LIMIT 20;
 - 根据查询、排序和分组需求综合设计索引。
 
 ## 5. JOIN 优化
-![plan-mysql-h1-06-h2-05](./images/plan-mysql-h1-06-h2-05.png)
+![plan-mysql-h1-06-h2-05](./images/plan-mysql-h1-06-h2-05.webp)
 
 ### 优化子查询
 
@@ -891,7 +891,7 @@ LIMIT 20;
 JOIN 表数量过多会增加优化器选择和执行成本。可以考虑把复杂 JOIN 拆成多个简单查询，再在 Java 内存中组装结果，但也要权衡网络往返和一致性问题。
 
 ## 6. 排序优化
-![plan-mysql-h1-06-h2-06](./images/plan-mysql-h1-06-h2-06.png)
+![plan-mysql-h1-06-h2-06](./images/plan-mysql-h1-06-h2-06.webp)
 
 设计索引时应充分考虑排序需求。如果查询顺序与索引顺序一致，MySQL 可以直接按照索引顺序扫描，得到天然有序的结果，避免额外排序。
 
@@ -907,7 +907,7 @@ ORDER BY create_time;
 可以结合过滤条件和排序条件设计联合索引。
 
 ## 7. UNION 优化
-![plan-mysql-h1-06-h2-07](./images/plan-mysql-h1-06-h2-07.png)
+![plan-mysql-h1-06-h2-07](./images/plan-mysql-h1-06-h2-07.webp)
 
 ### 条件下推
 
@@ -920,7 +920,7 @@ ORDER BY create_time;
 `UNION ALL` 只负责合并结果，不进行去重。如果业务上可以确定没有重复数据，或者允许结果重复，可以优先使用 `UNION ALL`。
 
 ## 8. 如何查看 EXPLAIN
-![plan-mysql-h1-06-h2-08](./images/plan-mysql-h1-06-h2-08.png)
+![plan-mysql-h1-06-h2-08](./images/plan-mysql-h1-06-h2-08.webp)
 
 ### type：访问类型
 
@@ -958,10 +958,10 @@ ALL
 - **Using where**：Server 层还需要根据 `WHERE` 条件进行过滤。
 
 ## 七、分库分表
-![plan-mysql-h1-07](./images/plan-mysql-h1-07.png)
+![plan-mysql-h1-07](./images/plan-mysql-h1-07.webp)
 
 ## 1. 为什么需要分库分表
-![plan-mysql-h1-07-h2-01](./images/plan-mysql-h1-07-h2-01.png)
+![plan-mysql-h1-07-h2-01](./images/plan-mysql-h1-07-h2-01.webp)
 
 当单机 MySQL 无法继续承受业务压力时，就需要通过分库分表、主从复制等方式，构建高可用、高性能的存储层。
 
@@ -971,7 +971,7 @@ ALL
 - **分库**：将数据分散到多台机器，突破单机资源瓶颈。
 
 ## 2. 垂直分表与水平分表
-![plan-mysql-h1-07-h2-02](./images/plan-mysql-h1-07-h2-02.png)
+![plan-mysql-h1-07-h2-02](./images/plan-mysql-h1-07-h2-02.webp)
 
 ### 垂直分表
 
@@ -990,7 +990,7 @@ ALL
 当单表数据量过大时，可以按照某个分片键，将同一张表的数据分散到多张结构相同的表中，从而减轻单表查询和写入压力。
 
 ## 3. 常见分表策略
-![plan-mysql-h1-07-h2-03](./images/plan-mysql-h1-07-h2-03.png)
+![plan-mysql-h1-07-h2-03](./images/plan-mysql-h1-07-h2-03.webp)
 
 ### 范围路由
 
@@ -1056,7 +1056,7 @@ user_id -> 物理库名 -> 物理表名
 - 路由表本身可能成为性能瓶颈或单点风险。
 
 ## 4. 垂直分库与水平分库
-![plan-mysql-h1-07-h2-04](./images/plan-mysql-h1-07-h2-04.png)
+![plan-mysql-h1-07-h2-04](./images/plan-mysql-h1-07-h2-04.webp)
 
 ### 垂直分库
 
@@ -1083,7 +1083,7 @@ user_id -> 物理库名 -> 物理表名
 如果一个项目有用户服务和订单服务，每个服务连接自己的数据库，这是垂直分库；如果用户服务压力太大，又将用户表水平拆分到多个库中，这就是水平分库。
 
 ## 5. 分库分表的代价
-![plan-mysql-h1-07-h2-05](./images/plan-mysql-h1-07-h2-05.png)
+![plan-mysql-h1-07-h2-05](./images/plan-mysql-h1-07-h2-05.webp)
 
 ### 分布式 ID
 
@@ -1131,10 +1131,10 @@ Java 中可以使用 Stream 等方式组装查询结果，但要注意内存占�
 实际项目中往往更倾向于通过业务补偿实现最终一致性。
 
 ## 八、主从复制与高可用
-![plan-mysql-h1-08](./images/plan-mysql-h1-08.png)
+![plan-mysql-h1-08](./images/plan-mysql-h1-08.webp)
 
 ## 1. 主从复制原理
-![plan-mysql-h1-08-h2-01](./images/plan-mysql-h1-08-h2-01.png)
+![plan-mysql-h1-08-h2-01](./images/plan-mysql-h1-08-h2-01.webp)
 
 主从复制的基本流程如下：
 
@@ -1146,7 +1146,7 @@ Java 中可以使用 Stream 等方式组装查询结果，但要注意内存占�
 6. 主库的数据修改被同步到从库。
 
 ## 2. 常见主从架构
-![plan-mysql-h1-08-h2-02](./images/plan-mysql-h1-08-h2-02.png)
+![plan-mysql-h1-08-h2-02](./images/plan-mysql-h1-08-h2-02.webp)
 
 ### 一主一从
 
@@ -1161,7 +1161,7 @@ Java 中可以使用 Stream 等方式组装查询结果，但要注意内存占�
 两台数据库互为主从，用于提高可用性。但双主架构需要特别处理并发写入、主键冲突和数据一致性问题。
 
 ## 3. 主从延迟
-![plan-mysql-h1-08-h2-03](./images/plan-mysql-h1-08-h2-03.png)
+![plan-mysql-h1-08-h2-03](./images/plan-mysql-h1-08-h2-03.webp)
 
 主从复制通常是异步的。业务写入主库后，如果立即查询从库，可能查不到最新数据，这就是主从延迟。
 
@@ -1184,7 +1184,7 @@ Java 中可以使用 Stream 等方式组装查询结果，但要注意内存占�
    大事务、长事务、从库执行能力不足以及单条 SQL 过慢，都可能加剧主从延迟，需要结合监控具体分析。
 
 ## 九、MySQL 面试复习思路
-![plan-mysql-h1-09](./images/plan-mysql-h1-09.png)
+![plan-mysql-h1-09](./images/plan-mysql-h1-09.webp)
 
 MySQL 面试内容可以按照以下逻辑串联：
 

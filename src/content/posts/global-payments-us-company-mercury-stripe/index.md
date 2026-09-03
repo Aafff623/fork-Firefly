@@ -3,7 +3,7 @@ title: 02-美国公司、Mercury与Stripe
 published: 2026-08-31
 updated: 2026-08-31T00:00:00
 description: 这篇文章把公司注册、公司银行账户和 Stripe 支付平台放在同一条经营链里。公司注册解决主体问题，Mercury 承接公司资金，Stripe 面向客户收款；手机号、网站、地址、EIN 和业务描述则负责把这些环节连接起来。
-image: ./cover.png
+image: ./cover.webp
 tags: [Obsidian]
 category: 指南
 draft: false
@@ -103,7 +103,7 @@ Mercury 的作用不是替代公司注册或支付平台，而是承接公司资
 
 ### Mercury 开户：公司资料、地址证明与申请表
 
-![global-payments-page-048](./images/global-payments-page-048.png)
+![global-payments-page-048](./images/global-payments-page-048.webp)
 
 *Mercury 公司地址填写页面*
 
@@ -181,7 +181,7 @@ Stripe 需要公司授权签字代表的法定姓名、出生日期、家庭住�
 
 ### Stripe 激活收尾：客服信息、银行绑定与自动收税
 
-![global-payments-page-077](./images/global-payments-page-077.png)
+![global-payments-page-077](./images/global-payments-page-077.webp)
 
 *Stripe 绑定收款银行页面*
 
@@ -207,7 +207,7 @@ Stripe 的公开详情页面会让你填写客服地址、客服电话、对账�
 
 ### Stripe 账户维护：避免把正常业务做成异常画像
 
-![global-payments-page-082](./images/global-payments-page-082.png)
+![global-payments-page-082](./images/global-payments-page-082.webp)
 
 *Stripe 账户业务信息补充页面*
 

@@ -3,7 +3,7 @@ title: 0 项目介绍
 published: 2026-08-31
 updated: 2026-08-31T00:00:00
 description: "三个实战项目/小程序共用一个微服务：java、python、vue、go、uniapp"
-image: ./cover.png
+image: ./cover.webp
 tags: [Obsidian]
 category: 指南
 draft: false
@@ -41,10 +41,10 @@ comment: true
 
 整体系统定位为基于上述技术构建的微服务架构 RBAC（基于角色的访问控制）权限管理系统，并包含证件照服务与八卦系统服务等业务模块。
 
-![0 项目介绍](./images/0.png)
+![0 项目介绍](./images/0.webp)
 
-![0 项目介绍-1](./images/0-1.png)
+![0 项目介绍-1](./images/0-1.webp)
 
-![0 项目介绍-2](./images/0-2.png)
+![0 项目介绍-2](./images/0-2.webp)
 
 
