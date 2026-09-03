@@ -24,6 +24,8 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
+.env.*.local
 
 # macOS-specific files
 .DS_Store
@@ -52,18 +54,23 @@ package/
 .mimocode
 .vercel
 
-# local agent scratch
-.scratch/
+# local agent tool state
 .mimosa/
 
 # 博文草稿箱：本地可预览，正文不入库不 push（仅保留 README 约定）
 src/content/posts/_draftbox/**
 !src/content/posts/_draftbox/README.md
 
-# local temp (Skill Lab / media locks / agent scratch)
+# temp/ 项目统一临时工作区：除入口文件外全部忽略（细则见 temp/README.md）
+temp/**
+!temp/README.md
+!temp/AGENTS.md
+!temp/.gitignore
+!temp/secrets/
+temp/secrets/*
+!temp/secrets/README.md
 tmp/
 __tmp__/
-temp/
 
 # calendar GIF compression backups (local only)
 public/assets/images/widgets/calendar/_orig-backup/
@@ -73,20 +80,7 @@ public/assets/images/widgets/calendar/_orig-backup/
 .wrangler/
 
 # Cloudflare/Workers official skills：skills-lock 锁定版本，本地 npx skills 安装；
-# 不 vendor 进仓（cloudflare 单包 300+ 文件）。.agents/skills 下为指向 .cursor/skills 的 junction。
-.cursor/skills/agents-sdk/
-.cursor/skills/cloudflare/
-.cursor/skills/cloudflare-email-service/
-.cursor/skills/cloudflare-one/
-.cursor/skills/cloudflare-one-migrations/
-.cursor/skills/durable-objects/
-.cursor/skills/sandbox-migrate-to-next/
-.cursor/skills/sandbox-next/
-.cursor/skills/sandbox-stable/
-.cursor/skills/turnstile-spin/
-.cursor/skills/web-perf/
-.cursor/skills/workers-best-practices/
-.cursor/skills/wrangler/
+# 不 vendor 进仓（cloudflare 单包 300+ 文件）。真源区 .agents/skills/；.cursor/skills 为 junction 桥接。
 .agents/skills/agents-sdk/
 .agents/skills/cloudflare/
 .agents/skills/cloudflare-email-service/
@@ -100,15 +94,14 @@ public/assets/images/widgets/calendar/_orig-backup/
 .agents/skills/web-perf/
 .agents/skills/workers-best-practices/
 .agents/skills/wrangler/
+.cursor/skills
 
-# 发文链：.agents 下只挂 junction，正文在 .cursor/skills（避免 git 把联接当第二份文件入库）
-.agents/skills/knowledge-extract/
-.agents/skills/knowledge-output/
-.agents/skills/_shared/
-.agents/skills/ai-morning-brief/
-.agents/skills/github-weekly-hot/
-.agents/skills/site-cascade/
-.agents/skills/wiki-post/
+# MCP 本机配置：.agents/mcp.json 是唯一主配置；各工具原生配置是本机适配产物，均不入库
+.agents/mcp.json
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+opencode.json
 
 # Python 脚本缓存
 __pycache__/

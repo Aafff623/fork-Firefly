@@ -125,8 +125,9 @@ export const siteConfig: SiteConfig = {
 		dynamic: true,
 		// 角色名录页面开关（园主 + AI 协作者）
 		agents: true,
-		// 问答助手：DEV 可测；生产藏入口（MaxKB 仍绑本机）。上云后改 true
-		ask: import.meta.env?.PROD !== true,
+		// 问答助手：生产由服务端 StepFun/MaxKB provider 决定是否可用。
+		// 没有服务端密钥时页面仍可打开，接口返回可理解的配置提示，不再伪装成 404。
+		ask: true,
 		// 站点导航（藏经阁）页面开关
 		navSites: true,
 		// 摘星录（成就徽章墙）页面开关

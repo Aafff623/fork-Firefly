@@ -53,25 +53,28 @@ type R2Config = {
 type UploadConfig = R2Config | CosConfig;
 
 function readEnvFile(): Record<string, string> {
-	try {
-		const text = fs.readFileSync(path.join(process.cwd(), ".env"), "utf8");
-		const out: Record<string, string> = {};
-		for (const raw of text.split(/\r?\n/)) {
-			const line = raw.trim();
-			if (!line || line.startsWith("#")) continue;
-			const i = line.indexOf("=");
-			if (i <= 0) continue;
-			const k = line.slice(0, i).trim();
-			const v = line
-				.slice(i + 1)
-				.trim()
-				.replace(/^["']|["']$/g, "");
-			out[k] = v;
+	const out: Record<string, string> = {};
+	// `.env.local` is the local override; `.env` remains a compatible fallback.
+	for (const filename of [".env", ".env.local"]) {
+		try {
+			const text = fs.readFileSync(path.join(process.cwd(), filename), "utf8");
+			for (const raw of text.split(/\r?\n/)) {
+				const line = raw.trim();
+				if (!line || line.startsWith("#")) continue;
+				const i = line.indexOf("=");
+				if (i <= 0) continue;
+				const k = line.slice(0, i).trim();
+				const v = line
+					.slice(i + 1)
+					.trim()
+					.replace(/^["']|["']$/g, "");
+				out[k] = v;
+			}
+		} catch {
+			// Missing local env files are expected in CI and fresh checkouts.
 		}
-		return out;
-	} catch {
-		return {};
 	}
+	return out;
 }
 
 function env(name: string, file: Record<string, string>): string {

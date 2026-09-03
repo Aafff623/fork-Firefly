@@ -14,9 +14,7 @@ export async function GET(): Promise<Response> {
 
 	const allPostsData = posts
 		.map((post) => {
-			const tags = (post.data.tags || [])
-				.map((t) => t.trim())
-				.filter(Boolean);
+			const tags = (post.data.tags || []).map((t) => t.trim()).filter(Boolean);
 			let topicHeat = 0;
 			for (const t of tags) {
 				topicHeat += tagCorpusFreq.get(t.toLowerCase()) || 0;
@@ -29,6 +27,9 @@ export async function GET(): Promise<Response> {
 				updated: post.data.updated?.getTime() ?? null,
 				category: post.data.category || "",
 				tags,
+				themeTags: (post.data.themeTags || [])
+					.map((t) => t.trim())
+					.filter(Boolean),
 				password: !!post.data.password,
 				pinned: !!post.data.pinned,
 				topicHeat,

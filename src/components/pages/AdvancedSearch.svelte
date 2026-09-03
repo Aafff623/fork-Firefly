@@ -4,7 +4,12 @@ import { i18n } from "@i18n/translation";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
 import type { SearchResult } from "@/global";
-import { url as formatUrl } from "@/utils/url-utils";
+import {
+	isPostSearchError,
+	SEARCH_MODE_OPTIONS,
+	type SearchMode,
+	searchPosts,
+} from "@/utils/post-search";
 
 // --- Props ---
 export let title = i18n(I18nKey.search);
@@ -15,6 +20,10 @@ let keyword = "";
 let results: SearchResult[] = [];
 let isSearching = false;
 let initialized = false;
+let searchError = "";
+let searchMode: SearchMode = "tag";
+let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+let searchRequestId = 0;
 
 // 在客户端获取 URL 参数
 const getInitialKeyword = (): string => {
@@ -25,54 +34,38 @@ const getInitialKeyword = (): string => {
 	return "";
 };
 
-// --- Mocks for Dev Mode ---
-const fakeResult: SearchResult[] = [
-	{
-		url: formatUrl("/"),
-		meta: { title: "Dev Mode Search Result 1" },
-		excerpt: "This is a <mark>mock</mark> result for development.",
-	},
-	{
-		url: formatUrl("/"),
-		meta: { title: "Dev Mode Search Result 2" },
-		excerpt: "Pagefind only works in <mark>production</mark> build.",
-	},
-];
-
 // --- Core Search Logic ---
 const search = async () => {
-	if (!initialized || !keyword.trim()) {
+	const trimmedKeyword = keyword.trim();
+	if (!initialized || !trimmedKeyword) {
 		results = [];
+		searchError = "";
 		return;
 	}
 	isSearching = true;
+	searchError = "";
+	const requestId = ++searchRequestId;
 
 	try {
-		if (import.meta.env.PROD && window.pagefind) {
-			const response = await window.pagefind.search(keyword);
-			const rawResults = await Promise.all(
-				response.results.map((item) => item.data()),
-			);
-			results = rawResults;
-		} else if (import.meta.env.DEV) {
-			// 开发模式下的模拟结果
-			results = fakeResult.filter(
-				(item) =>
-					item.excerpt.toLowerCase().includes(keyword.toLowerCase()) ||
-					item.meta.title.toLowerCase().includes(keyword.toLowerCase()),
-			);
-		}
+		const nextResults = await searchPosts(searchMode, trimmedKeyword);
+		if (requestId !== searchRequestId) return;
+		results = nextResults;
 	} catch (error) {
-		console.error("Search error:", error);
+		if (requestId !== searchRequestId) return;
+		if (!isPostSearchError(error)) console.error("Search error:", error);
+		searchError = isPostSearchError(error)
+			? error.message
+			: "搜索暂时不可用，请稍后再试";
 		results = [];
 	} finally {
-		isSearching = false;
+		if (requestId === searchRequestId) isSearching = false;
 	}
 };
 
 // --- Initialization onMount ---
 onMount(() => {
 	const initialize = async () => {
+		if (initialized) return;
 		initialized = true;
 
 		// 从 URL 获取初始关键词
@@ -87,27 +80,25 @@ onMount(() => {
 		}
 	};
 
-	// 开发环境直接初始化
-	if (import.meta.env.DEV) {
-		initialize();
-	} else {
-		// 生产环境等待 Pagefind 加载
-		if (window.pagefind) {
-			initialize();
-		} else {
-			document.addEventListener("pagefindready", initialize, {
-				once: true,
-			});
-		}
+	// 搜索元数据独立于 Pagefind；Pagefind 只在后台继续预热。
+	void initialize();
+	if (!window.pagefind) {
+		document.addEventListener("pagefindready", initialize, { once: true });
+		document.addEventListener("pagefindloaderror", initialize, { once: true });
+		const pagefindPromise = window.__loadPagefind?.();
+		if (pagefindPromise) void pagefindPromise.catch(() => undefined);
 	}
 });
 
-let debounceTimer: NodeJS.Timeout;
 const handleInput = () => {
-	clearTimeout(debounceTimer);
+	if (debounceTimer) clearTimeout(debounceTimer);
 	debounceTimer = setTimeout(() => {
 		search();
 	}, 300);
+};
+
+const handleModeChange = () => {
+	if (keyword.trim()) search();
 };
 </script>
 
@@ -143,6 +134,14 @@ const handleInput = () => {
                 on:input={handleInput}
             >
         </div>
+        <div class="search-mode-control">
+            <label for="advanced-search-mode" class="text-xs text-50">搜索维度</label>
+            <select id="advanced-search-mode" bind:value={searchMode} on:change={handleModeChange}>
+                {#each SEARCH_MODE_OPTIONS as option}
+                    <option value={option.value}>{option.label}</option>
+                {/each}
+            </select>
+        </div>
     </div>
 </div>
 
@@ -152,6 +151,10 @@ const handleInput = () => {
         {#if isSearching}
             <div class="flex justify-center py-10">
                 <Icon icon="svg-spinners:ring-resize" class="text-4xl text-(--primary)" />
+            </div>
+        {:else if searchError}
+            <div class="card-base p-10 text-center text-50 rounded-(--radius-large)">
+                {searchError}
             </div>
         {:else if results.length > 0}
             <div class="space-y-4">
@@ -168,7 +171,7 @@ const handleInput = () => {
                     </div>
                 {/each}
             </div>
-        {:else if keyword}
+        {:else if keyword.trim()}
             <div class="card-base p-10 text-center text-50 rounded-(--radius-large)">
                 {i18n(I18nKey.searchNoResults)}
             </div>
@@ -187,5 +190,43 @@ const handleInput = () => {
         color: var(--primary);
         font-weight: 600;
         padding: 0 0.1em;
+    }
+
+    .search-mode-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-left: 0.75rem;
+    }
+
+    .search-mode-control select {
+        min-height: 3.25rem;
+        border: 1px solid rgb(0 0 0 / 0.1);
+        border-radius: 0.5rem;
+        background: transparent;
+        color: inherit;
+        padding: 0 2rem 0 0.75rem;
+        font-size: 0.75rem;
+        outline: none;
+    }
+
+    :global(.dark) .search-mode-control select {
+        border-color: rgb(255 255 255 / 0.12);
+    }
+
+    @media (max-width: 640px) {
+        .relative.flex {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .search-mode-control {
+            justify-content: flex-end;
+            padding-left: 0;
+        }
+
+        .search-mode-control select {
+            min-height: 2.5rem;
+        }
     }
 </style>

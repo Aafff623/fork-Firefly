@@ -174,13 +174,16 @@ const relatedHighlight = relatedPosts[0] ?? null;
               )}
             </div>
             <div class="absolute inset-x-0 bottom-0 px-6 md:px-9 pt-10 pb-3 bg-gradient-to-t from-black/80 via-black/45 to-transparent">
-              <div
-                data-pagefind-body
-                data-pagefind-weight="10"
-                data-pagefind-meta="title"
-                class="post-banner-title mb-2 text-xl md:text-2xl font-bold leading-tight text-white"
-              >
-                {entry.data.title}
+              <div data-pagefind-body data-pagefind-weight="10">
+                <div
+                  data-pagefind-meta="title"
+                  class="post-banner-title mb-2 text-xl md:text-2xl font-bold leading-tight text-white"
+                >
+                  {entry.data.title}
+                </div>
+                <span data-pagefind-meta="tags" class="sr-only">
+                  {[...(entry.data.tags || []), ...(entry.data.themeTags || [])].join(" ")}
+                </span>
               </div>
               <PostMetadata
                 variant="cover"
@@ -251,17 +254,20 @@ const relatedHighlight = relatedPosts[0] ?? null;
       {
         !usePostCoverOverlay && (
           <div class="relative onload-animation">
-            <div
-              data-pagefind-body
-              data-pagefind-weight="10"
-              data-pagefind-meta="title"
-              class="transition w-full block font-bold mb-3
-                        post-article-title-art text-3xl md:text-[2.25rem]/[2.75rem]
-                        text-black/90 dark:text-white/90
-                        md:before:w-1 before:h-5 before:rounded-md before:bg-(--primary)
-                        before:absolute before:top-3 before:-left-4.5"
-            >
-              {entry.data.title}
+            <div data-pagefind-body data-pagefind-weight="10">
+              <div
+                data-pagefind-meta="title"
+                class="transition w-full block font-bold mb-3
+                          post-article-title-art text-3xl md:text-[2.25rem]/[2.75rem]
+                          text-black/90 dark:text-white/90
+                          md:before:w-1 before:h-5 before:rounded-md before:bg-(--primary)
+                          before:absolute before:top-3 before:-left-4.5"
+              >
+                {entry.data.title}
+              </div>
+              <span data-pagefind-meta="tags" class="sr-only">
+                {[...(entry.data.tags || []), ...(entry.data.themeTags || [])].join(" ")}
+              </span>
             </div>
           </div>
         )

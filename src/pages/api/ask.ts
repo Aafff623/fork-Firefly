@@ -67,6 +67,20 @@ const ACCESS_TOKEN =
 	process.env.MAXKB_ACCESS_TOKEN ||
 	"";
 
+const STEPFUN_API_KEY =
+	(import.meta.env.STEPFUN_API_KEY as string | undefined) ||
+	process.env.STEPFUN_API_KEY ||
+	"";
+const STEPFUN_API_BASE = (
+	(import.meta.env.STEPFUN_API_BASE as string | undefined) ||
+	process.env.STEPFUN_API_BASE ||
+	"https://api.stepfun.com/step_plan/v1"
+).replace(/\/+$/, "");
+const STEPFUN_MODEL =
+	(import.meta.env.STEPFUN_MODEL as string | undefined) ||
+	process.env.STEPFUN_MODEL ||
+	"step-3.5-flash";
+
 function json(
 	data: unknown,
 	status = 200,
@@ -90,7 +104,7 @@ function tokenMissing(): Response {
 		{
 			code: 503,
 			message:
-				"未配置 MAXKB_ACCESS_TOKEN。本地请写入 .env（勿入库）；生产问答关闭时本接口应 404。",
+				"未配置问答服务。请在服务端配置 STEPFUN_API_KEY，或继续配置 MAXKB_ACCESS_TOKEN。",
 		},
 		503,
 	);
@@ -98,7 +112,7 @@ function tokenMissing(): Response {
 
 function guardAsk(): Response | null {
 	if (!siteConfig.pages.ask) return askClosed();
-	if (!ACCESS_TOKEN) return tokenMissing();
+	if (!STEPFUN_API_KEY && !ACCESS_TOKEN) return tokenMissing();
 	return null;
 }
 
@@ -149,6 +163,13 @@ export const POST: APIRoute = async ({ request, url }) => {
 	const action = url.searchParams.get("action") || "session";
 
 	if (action === "session") {
+		if (STEPFUN_API_KEY) {
+			return json({
+				code: 200,
+				message: "成功",
+				data: { token: "stepfun", chatId: "stepfun" },
+			});
+		}
 		// 与 chat 分支同构：上游 URL 一律经 upstreamUrl 字面量校验
 		const authUrl = upstreamUrl("/auth/anonymous");
 		let auth: { ok: boolean; status: number; data: unknown };
@@ -307,6 +328,50 @@ export const POST: APIRoute = async ({ request, url }) => {
 		const persona =
 			body.persona || (body.mode === "deep" ? "scholar" : "guide");
 		const prompt = buildAskPrompt(message, hits, intent, persona, attachments);
+
+		if (STEPFUN_API_KEY && token === "stepfun") {
+			let stepfun: Response;
+			try {
+				stepfun = await fetch(`${STEPFUN_API_BASE}/chat/completions`, {
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${STEPFUN_API_KEY}`,
+						"Content-Type": "application/json",
+						Accept: "text/event-stream, application/json",
+					},
+					body: JSON.stringify({
+						model: STEPFUN_MODEL,
+						stream: true,
+						messages: [
+							{
+								role: "system",
+								content:
+									"你是本站的问答助手。优先基于提供的站内文章检索结果回答；不确定时明确说不确定，不要编造本站不存在的事实。",
+							},
+							{ role: "user", content: prompt },
+						],
+					}),
+				});
+			} catch {
+				return json(
+					{ code: 502, message: "阶跃星辰问答服务暂时无法连接" },
+					502,
+				);
+			}
+			if (!stepfun.ok || !stepfun.body) {
+				return json({ code: 502, message: "阶跃星辰问答服务暂时不可用" }, 502);
+			}
+			return new Response(stepfun.body, {
+				status: 200,
+				headers: {
+					"Content-Type": "text/event-stream; charset=utf-8",
+					"Cache-Control": "no-cache, no-transform",
+					Connection: "keep-alive",
+					"X-Accel-Buffering": "no",
+				},
+			});
+		}
+
 		// chatId 已过严格字符白名单 + upstreamUrl 路径校验双重防线
 		const upstreamUrlStr = upstreamUrl(
 			`/chat_message/${encodeURIComponent(chatId)}`,

@@ -61,6 +61,6 @@ export const ASK_TEXT_ACCEPT = ".txt,.md,.markdown,.csv,.json,.log";
 export const ASK_IMAGE_ACCEPT = "image/png,image/jpeg,image/webp,image/gif";
 
 /** 文本附件读入上限：超过则截断并提示 */
-export const ASK_TEXT_MAX_BYTES = 200 * 1024;
+export const ASK_TEXT_MAX_BYTES: number = 200 * 1024;
 /** 图片附件预览上限：超过拒绝（避免 dataURL 撑爆内存/请求体） */
-export const ASK_IMAGE_MAX_BYTES = 2 * 1024 * 1024;
+export const ASK_IMAGE_MAX_BYTES: number = 2 * 1024 * 1024;

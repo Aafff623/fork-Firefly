@@ -34,10 +34,10 @@ const description = "";
                     "excerptLength": 20
                 });
                 window.pagefind = pagefind;
-                window.dispatchEvent(new Event('pagefindready'));
+                document.dispatchEvent(new Event('pagefindready'));
             } catch (error) {
                 console.warn("Pagefind script not found or failed to load.");
-                window.dispatchEvent(new Event('pagefindloaderror'));
+                document.dispatchEvent(new Event('pagefindloaderror'));
             }
         }
         loadPagefind();
