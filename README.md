@@ -78,7 +78,7 @@
 | Components | 侧栏 widget、阅读控件、相册、动态时间线等 | `src/components/` |
 | Ask | HeroUI Pro 问答页、桌宠 LiveChat、同源安全代理与站内检索 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Plugins | KaTeX、Mermaid(merman)、PlantUML、Wiki Link、directive | `src/plugins/` |
-| Agent skills | 发文四渠（extract → output / 合集 skill）、级联、GSAP | `.cursor/skills/` |
+| Agent skills | 发文四渠（extract → output / 合集 skill）、级联、GSAP | `.agents/skills/`（`.cursor/skills` 为桥接） |
 | Scripts | LQIP、字体子集、new-post / new-d、Showcase 截图 | `scripts/` |
 | Docs | CONTEXT / ADR / workflow / inventory（非运行时） | `docs/` · 根目录治理文件 |
 

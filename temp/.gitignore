@@ -1,0 +1,8 @@
+# temp 自身防护：除入口文件外全部忽略（与根 .gitignore 的 temp 规则互为双保险）
+*
+!README.md
+!AGENTS.md
+!.gitignore
+!secrets/
+secrets/*
+!secrets/README.md

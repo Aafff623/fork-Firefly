@@ -1,18 +1,18 @@
 # 任务流（workflow）
 
 ```text
-../docs/idea/Firefly/{theme}/        # 可选：灵感库沉淀（弱关联，在工作区）
+temp/research/idea/{theme}/          # 可选：灵感库沉淀
   → 新 session 提取
-Issue(.scratch/<feature>/)
-  → ../docs/outputs/report/Firefly/{theme}/  # 可选调研（弱关联，在工作区）
+Issue(temp/research/<task-slug>/)
+  → temp/reports/{theme}/  # 可选调研
   → docs/outputs/prd/{theme}/prd.md  # draft → 你批准
-  → ../docs/outputs/handoff/Firefly/{theme}/YYYY-MM-DD-{branch}-{task}.md
+  → temp/handoff/{theme}/YYYY-MM-DD-{branch}-{task}.md
   → 实施 → awaiting-review【停】
   → 通过 → commit + docs/outputs/commit-history/{branch}/YYYY-MM-DD.md
   → archive
 ```
 
-灵感只进工作区 `../docs/idea/Firefly/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
+灵感只进 `temp/research/idea/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
 
 ## Phase / 交付闭环（强制）
 
@@ -47,7 +47,7 @@ Issue(.scratch/<feature>/)
 
 ## 内容流水线（轻量，可不建 PRD）
 
-与功能 PRD 流并行。**唯一进料口**是 `knowledge-extract`（按输入分流，用户不必点名渠道）。工作区根若为 `blog/`：skills 经 junction 暴露到 `blog/.cursor/`（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.cursor/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
+与功能 PRD 流并行。**唯一进料口**是 `knowledge-extract`（按输入分流，用户不必点名渠道）。skills 真源在 `.agents/skills/`，`.cursor/skills` 为 junction 桥接（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.agents/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
 
 ```text
 写篇博客 / 丢路径 / 粘贴 / 调研 / 早报

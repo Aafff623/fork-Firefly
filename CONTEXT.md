@@ -36,7 +36,7 @@
 | `src/` | 产品层（pages / layouts / components / config / content / plugins / utils） |
 | `public/` | 原样静态资源 |
 | `scripts/` | LQIP、字体子集、new-post / new-dynamic |
-| `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/outputs/{prd,commit-history}`）；弱关联产物（灵感 / 调研 / handoff / 知识文）已提取至工作区 `../docs/` |
+| `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/outputs/{prd,commit-history}`）；弱关联产物（灵感 / 调研 / handoff / 知识文 / 临时脚本）归本仓 `temp/` 对应分类 |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
@@ -62,7 +62,7 @@ Content Collections（`src/content.config.ts`）：
 
 **草稿箱 ≠ `draft: true` demo**：箱内正文永不入库；主题示例帖 `posts/draft.md` 可跟踪且仅靠 FM 藏生产首页。见 `AGENTS.md` / `docs/agents/workflow.md`。
 
-**2026-08 内容收束**：生产只留手册、早报、八月国产模型折扣和 Zcode ADE 文（约 24 篇）。其余成帖改 `draft: true` 藏生产，文件仍在库里。8-17 误整库清空后已撤回，再按第 2 档名单收。
+**内容收束状态**：原「2026-08 约 24 篇生产文章」是历史快照，已不再代表当前 checkout。当前工作树包含 734 个文章入口（其中 31 个仍是未跟踪导入 WIP）；最终生产公开名单待园主确认，不能仅按当前文件数量发布。
 
 ### 现行分类词表（发帖门禁）
 
@@ -230,7 +230,7 @@ Content Collections（`src/content.config.ts`）：
 
 ## 已知缺口（非阻塞）
 
-- 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见工作区 `../docs/outputs/handoff/Firefly/perf-optimization-*`
+- 性能基线（2026-08-16，V7 后）：dist 185MB、内容重复 0、孤儿 chunk 0、每页内联脚本 ~49KB、CLS 0.01；门禁 `scripts/check-v41-gates.mjs` 29 项（含 dist 产物断言，凡改加载策略必跑）。首页 CSS ~510KB 渲染阻塞（生产 brotli 后约 60KB 传输；降到 <300KB 需 Tailwind 层重构，拍板项）。史料链 V2→V7 见 `temp/handoff/perf-optimization-*`
 - 主题 demo 帖已 `draft: true`（生产列表隐藏，DEV 仍可开）；Bangumi 页已关，追番 ID 仍可后续改
 - 统计 GA / Clarity / Umami / 51la 配置全空，等园主给 ID 再填 `analyticsConfig`（不造假 ID）
 - 文章评论现行 `type: "giscus"`，Dynamic 评论页显式覆盖为 Waline（ADR-0006，ADR-0001 已被取代）；勿再按 `none` 或全站 Waline 理解
