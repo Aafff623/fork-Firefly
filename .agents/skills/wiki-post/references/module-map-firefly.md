@@ -24,7 +24,7 @@ Stack: Astro 7 · Svelte 5 · Tailwind 4 · pnpm 9 · Vercel
 | Dynamic-and-Timeline | `content/dynamic`, `pages/dynamic`, `pages/agents.astro`, `components/pages/dynamic/*`, `scripts/agent-comment.ts` | User — Agent identity |
 | Markdown-Syntax | `src/plugins/*`, Mermaid landscape default in workflow | User |
 | Deploy-Vercel | `vercel.json`, `astro.config.mjs` | User |
-| FAQ / Troubleshooting | ops notes in workspace `../docs/knowledge/Firefly/firefly-ops.md` (link, don’t paste) | User |
+| FAQ / Troubleshooting | ops notes in `temp/research/knowledge/firefly-ops.md` (link, don’t paste) | User |
 | Architecture | `layouts/Layout.astro`, `MainGridLayout.astro` | Contributor short |
 | Contributing | link `AGENTS.md`, `docs/agents/workflow.md` | Contributor |
 
@@ -82,5 +82,5 @@ Sprite-Pets · Sidebar-Widgets · Search-Pagefind · Dynamic-and-Timeline
 Troubleshooting · Architecture · Contributing
 ```
 
-Workspace clone: `d:\OneDrive\Desktop\blog\fork-Firefly.wiki`  
+Workspace clone: `D:\code\fork-Firefly.wiki`
 Local official mirror: `docs/official/` (gitignore) · index: `docs/knowledge/official-docs.tree.json`

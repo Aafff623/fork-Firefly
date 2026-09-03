@@ -190,11 +190,11 @@ Getting-Started skeleton: [examples/getting-started.md](examples/getting-started
 - Delivery still follows site rules for the **main** site (`pnpm dev` etc.); Wiki publish is a separate `.wiki.git` push gate
 - Local README/Release preview on **8090** is unrelated to GitHub Wiki
 - **Workspace clone (preferred staging)**: 多仓工作区 `blog/` 下旁挂  
-  `d:\OneDrive\Desktop\blog\fork-Firefly.wiki`  
+  `D:\code\fork-Firefly.wiki`
   （`git remote` → `https://github.com/Aafff623/fork-Firefly.wiki.git`）。  
   草稿与后续改页优先落这里，不要只写在主仓 `Firefly/` 树内。  
   若远程尚未因「Create the first page」而出生，本地可先 `git init` + 提交；网页点过一次 Create（或远程已可 `ls-remote`）后再 `push`。  
-  `.scratch/wiki-draft/` 仅作临时草稿，确认后应同步进上述 wiki 工作副本。
+  `temp/research/wiki-draft/` 仅作临时草稿，确认后应同步进上述 wiki 工作副本。
 
 ## Progressive disclosure
 

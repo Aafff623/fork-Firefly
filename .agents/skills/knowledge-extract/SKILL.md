@@ -30,7 +30,7 @@ description: >-
 
 相对路径 `../_shared/` 依赖 extract 本身是 junction（解析到仓内 `_shared`）。禁止把 SKILL.md 拷到 `~/.codex` / OpenCode 当独立副本。
 
-当前不在 Firefly 工作区时：渠道 1–3 仍落 `threetwoa_ob`，不要改落 Knowledge。R2 上传与渠道 4 先定位 `D:\OneDrive\Desktop\blog\Firefly`（脚本会沿 `package.json` name=firefly 找根）。
+当前不在 Firefly 工作区时：渠道 1–3 仍落 `threetwoa_ob`，不要改落 Knowledge。R2 上传与渠道 4 先定位 `D:\code\Firefly`（脚本会沿 `package.json` name=firefly 找根）。
 
 ## 按需阅读
 

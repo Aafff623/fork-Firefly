@@ -6,7 +6,7 @@ description: >-
   帮我发一条、new-dynamic、动态配图、同步一条动态到博客。任何「把一句即时的想法/状态/图片
   发到博客动态流」的诉求都用本技能——轻量、单条、即时，区别于 knowledge-extract → knowledge-output（长文成帖）。本技能熟悉动态全链路：内容集合 schema、API 图片抽取、
   kind 启发式分类、配图缩略图规范、侧栏/时间线渲染、pnpm new-dynamic 脚本。
-compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/content.config.ts）。配图压缩用 Python PIL（可选）。
+compatibility: 默认博客仓库根 D:\code\Firefly（含 src/content.config.ts）。配图压缩用 Python PIL（可选）。
 ---
 
 # dynamic-post — Firefly 最新动态发布
@@ -17,10 +17,10 @@ compatibility: 默认博客仓库根 D:\OneDrive\Desktop\blog\Firefly（含 src/
 
 ## 第 0 步：定位博客仓库
 
-默认博客仓库根：`D:\OneDrive\Desktop\blog\Firefly`（含 `src/content.config.ts`）。
+默认博客仓库根：`D:\code\Firefly`（含 `src/content.config.ts`）。
 
 - 当前已在该仓库内 → 直接用。
-- 不在 → 先确认仓库存在（`ls "D:/OneDrive/Desktop/blog/Firefly/src/content/dynamic"`）；用户告知了别的路径时以用户为准。
+- 不在 → 先确认仓库存在（`ls "D:/code/blog/Firefly/src/content/dynamic"`）；用户告知了别的路径时以用户为准。
 - 后续所有路径都相对博客仓库根。
 
 ## 何时用 / 不用
