@@ -25,7 +25,7 @@
 | 产品代码 | `src/` |
 | 站点配置 | `src/config/` |
 | 文章 | `src/content/posts/` |
-| 成帖红线 / 合集共通 | `.agents/skills/_shared/`（被 output / 早报 / 热榜引用，不是独立 skill） |
+| 成帖红线 / 图片 / 脚本共享 | `.agents/skills/_shared/`（被 post-publish / 早报 / 热榜引用，不是独立 skill） |
 | 官方配置文档（本地，gitignore） | `docs/official/` |
 | 官方文档路由模型 | `docs/knowledge/official-docs.tree.json` |
 | 临时产物（唯一临时区） | `temp/`（分类见 `temp/README.md`；密钥备份 `temp/secrets/`） |
@@ -64,22 +64,21 @@ pnpm new-d <content>
 
 ## Agent skills
 
-项目级 Skill **正文（真源）**在 `.agents/skills/`（仓内提交）。`.cursor/skills` 是指向它的 **junction 桥接**（Cursor 工具入口）。全局与各 AI 工具只建 **目录联接（junction）**，禁止复制 SKILL.md。旧入口 `ob2blog` / `firefly-md-to-post` 已并入 `knowledge-extract` 渠道 1，仓内不再保留该 skill 目录。
+项目级 Skill **正文（真源）**在 `.agents/skills/`（仓内提交）。`.cursor/skills` 是指向它的 **junction 桥接**（Cursor 工具入口）。全局与各 AI 工具只建 **目录联接（junction）**，禁止复制 SKILL.md。旧入口 `ob2blog` / `firefly-md-to-post` / `knowledge-extract` / `knowledge-output` / `dynamic-post` / `site-cascade` 已并入 `post-publish` / `dynamic-publish` 一条链，仓内不再保留旧 skill 目录。
 
 | Skill | 路径 | 何时用 |
 |---|---|---|
-| `knowledge-extract` | `.agents/skills/knowledge-extract/` | **写稿唯一进料口**（用户不必点名渠道）：① vault 路径 ② 粘贴图文 ③ 无材料调研（并发广搜+配图）④ 早报/热榜交接合集 skill。落盘进 `threetwoa_ob`，不落 Knowledge。求全写入后停；不发布、不抽用语。见 `source-modules.md` |
-| `knowledge-output` | `.agents/skills/knowledge-output/` | 园主在 Obsidian 调完理想稿之后：缺口补提 + 自检 + 落盘 + 用语进库（默认自动，也可点名只抽某节/词）；优先读 vault 笔记；旧库存才分批扫 todo；正式发才 Archive + `site-cascade` |
-| `ai-morning-brief` | `.agents/skills/ai-morning-brief/` | 由 extract 渠道 4 交接；橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
-| `github-weekly-hot` | `.agents/skills/github-weekly-hot/` | 由 extract 渠道 4 交接；IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
-| `site-cascade` | `.agents/skills/site-cascade/` | 发文后级联：最新动态（含新笔记）、站点统计、分类/标签、热力图；配套 rule `site-cascade-after-content.mdc` |
+| `post-publish` | `.agents/skills/post-publish/` | **发文唯一入口**（用户不必点名渠道）：识别输入（Obsidian 笔记 / 对话提炼 / 外部文章 / 粘贴 / 调研）→ 沉淀 vault → 成帖发布（图片压缩上 R2、封面视觉选图、validate 门禁、cascade 收尾）。落盘进 `threetwoa_ob`。见 `SKILL.md` |
+| `dynamic-publish` | `.agents/skills/dynamic-publish/` | 发布短动态（碎碎念/心情/配图分享），落盘 `src/content/dynamic/`，即时上时间线+侧栏。取代旧 `dynamic-post` |
+| `ai-morning-brief` | `.agents/skills/ai-morning-brief/` | 橘鸦 RSS → 早报合集一期；默认 `_draftbox/` |
+| `github-weekly-hot` | `.agents/skills/github-weekly-hot/` | IT咖啡馆周刊 → 热榜合集一期；默认 `_draftbox/` |
 | `release-post` | `.agents/skills/release-post/` | GitHub Release notes / SemVer；先起草，用户明确说「发布」才 `gh release create` |
 | `wiki-post` | `.agents/skills/wiki-post/` | GitHub Wiki 手册；用户说「发布/推送 Wiki」才 push `.wiki.git` |
 | `gsap-*`（官方 8 件） | `.agents/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画 |
 
-vault 机械脚本在 `_shared/scripts/`（`vault_lib.py` / `prep_convert.py` / `sync_check.py` / `validate_post.py` / `upload_r2.py`）；渠道 1 入口是 `knowledge-extract/scripts/extract_vault.py`。映射表仍是 `.ob2blog/manifest.json`。
+vault / 图片 / 校验机械脚本在 `_shared/scripts/`（`vault_lib.py` / `image_utils.py` / `upload_r2.py` / `validate_post.py` / `cascade_check.py` 等）；post-publish 的脚本在 `post-publish/scripts/`。映射表仍是 `.ob2blog/manifest.json`。
 
-分工：进料一律 `knowledge-extract` → 园主在 Obsidian 调到理想 → `knowledge-output`（发布 + 用语进库）→ 收尾 `site-cascade`。配图只使用已有的本地、官方或合规素材；缺图时标记待补，不在发布链路中调用模型生图。
+分工：发文一律 `post-publish`（内置「沉淀 → 成帖 → 发布 → 收尾」一条链），短动态走 `dynamic-publish`。配图只使用已有的本地、官方或合规素材；缺图时标记待补，不在发布链路中调用模型生图（封面生图需园主点头）。
 
 列表卡标题情绪点缀（emoji / 颜文字）：仅 `PostCard` + `src/utils/title-mood.ts` 展示层；成帖**勿**写入 frontmatter `title`（见 `_shared/title-mood.md`）。
 
@@ -97,25 +96,24 @@ vault 机械脚本在 `_shared/scripts/`（`vault_lib.py` / `prep_convert.py` / 
 
 Windows：`cmd /c mklink /J <dest> <Firefly/.agents/skills/<name>>`（桥接整个目录时 dest 为 `.cursor/skills`）。已有过期**副本**先删再联。`dir /AL` 才能看出 junction（`pathlib.is_symlink()` 对 junction 为假）。仓库搬家后 junction 会断裂，需按新路径重建。
 
-### 发文（唯一入口 = extract）
+### 发文（唯一入口 = post-publish）
 
-用户说「写篇博客 / 整理 / 调研 / 早报 / 丢路径」→ **先 `knowledge-extract`**，按输入分流。不要让用户点名渠道。固定 vault：`D:\OneDrive\Desktop\Notes\threetwoa_ob`（变更先改 `CONTEXT.md` + manifest `vaultRoot`）。
+用户说「写篇博客 / 整理 / 调研 / 发笔记 / 把这段发出去」→ **先 `post-publish`**，按输入分流（自动识别，不让用户点名渠道）。固定 vault：`D:\OneDrive\Desktop\Notes\threetwoa_ob`（变更先改 `CONTEXT.md` + manifest `vaultRoot`）。
 
 ```text
 用户给材料或题目
-  → knowledge-extract（落盘 = vault：D:\OneDrive\Desktop\Notes\threetwoa_ob）
-       1 路径在 vault     → extract_vault.py → 写回该笔记所在目录
-       2 粘贴图文         → 清洗分类 → vault 已有主题夹（优先 Agentic Coding/；公众号工序见 wechat-mp）
-       3 无材料只要调研   → 并发广搜 + 检索配图 → vault 已有主题夹
-       4 早报 / 热榜      → 交接 ai-morning-brief / github-weekly-hot（不经 Knowledge，不抽用语）
-  → 园主在 Obsidian 调到理想
-  → 渠道 1–3：knowledge-output（发布 + 用语进库；优先读 vault 理想稿；旧库存才分批扫 Knowledge/todo；公众号/BibiGPT 默认草稿箱）
-  → 正式发：site-cascade（--blurb）；草稿箱禁止 emit
+  → post-publish（一条链）
+       1 识别输入：Obsidian 笔记路径 / 对话提炼 / 外部文章 URL / 粘贴 / 只有题目 / RSS 口令
+       2 沉淀：整理成 vault 笔记（author + create_time + update_time，缺则问用户）
+       3 成帖：vault 理想稿 → posts/<slug>/（图片压缩上 R2、封面视觉选图、validate 门禁）
+       4 收尾：cascade_check 验收 + 可选协作者评论 → 园主确认 → push → 核线上
+  → 短动态（碎碎念/心情）→ dynamic-publish
+  → 早报 / 热榜 → ai-morning-brief / github-weekly-hot（合集，不经 vault）
 ```
 
 旧称甲/乙/丙 = 渠道 1 / 渠道 2–3 / 渠道 4，仅作别名。  
-Theme 词表：`theme-taxonomy.md`（YAML 索引；落盘夹用 vault 已有目录）。`Knowledge/todo` 只读旧库存。  
-成帖红线：`.agents/skills/_shared/post-redlines.md`，由 `validate_post.py` 执行。
+成帖红线：`.agents/skills/_shared/post-redlines.md`，由 `validate_post.py` 执行。  
+时间口径：站点 `published/updated` 一律按发布动作时间（方案 A），不映射 vault 笔记时间。
 
 ### 草稿箱（draftbox · 本地可预览，不进远端）
 

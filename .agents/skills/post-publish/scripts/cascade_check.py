@@ -2,10 +2,10 @@
 """Cascade-check homepage/sidebar indices after content changes.
 
 Usage (Firefly/):
-  python .cursor/skills/site-cascade/scripts/cascade_check.py
-  python .cursor/skills/site-cascade/scripts/cascade_check.py --slug ai-coding-save-money
-  python .cursor/skills/site-cascade/scripts/cascade_check.py --slug X --emit-dynamic
-  python .cursor/skills/site-cascade/scripts/cascade_check.py --slug X --emit-dynamic --blurb "作者批注一句"
+  python .agents/skills/post-publish/scripts/cascade_check.py
+  python .agents/skills/post-publish/scripts/cascade_check.py --slug ai-coding-save-money
+  python .agents/skills/post-publish/scripts/cascade_check.py --slug X --emit-dynamic
+  python .agents/skills/post-publish/scripts/cascade_check.py --slug X --emit-dynamic --blurb "作者批注一句"
 """
 
 from __future__ import annotations
@@ -299,7 +299,7 @@ def build_report(repo: Path, slug: str | None) -> dict:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="site-cascade index check")
+    ap = argparse.ArgumentParser(description="cascade 收尾 index check")
     ap.add_argument("--slug", default="", help="focus post slug")
     ap.add_argument(
         "--emit-dynamic",

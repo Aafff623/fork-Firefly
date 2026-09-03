@@ -32,12 +32,12 @@ Stack: Astro 7 · Svelte 5 · Tailwind 4 · pnpm 9 · Vercel
 
 | ID | Input | Skill note |
 |---|---|---|
-| `obsidian` | Vault note path | extract channel 1 (`extract_vault.py`) |
+| `obsidian` | Vault note path | post-publish 渠道 1（读笔记 → 沉淀回原目录） |
 | `paste` | Pasted 图文 (Grok / 公众号 / web / session) | extract channel 2 |
 | `research` | Topic only | extract channel 3 (wide search + images) |
 | `rss` | 早报 / 热榜 | extract channel 4 → collection skills |
 
-Detail SSOT: `.cursor/skills/knowledge-extract/references/source-modules.md`
+Detail SSOT: `post-publish/SKILL.md` §0 分流表
 
 ## Component folder counts (approx., 2026-08)
 

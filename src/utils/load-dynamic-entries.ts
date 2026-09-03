@@ -14,7 +14,7 @@ const defaultLocation = (
 	""
 ).trim();
 
-/** 系统动态标记：site-cascade 发文级联生成的「发布了新笔记：…」前缀 */
+/** 系统动态标记：cascade 收尾 发文级联生成的「发布了新笔记：…」前缀 */
 export const SYSTEM_NOTE_PREFIX = "发布了新笔记：";
 
 export const isSystemNoteHtml = (html: string): boolean =>

@@ -9,7 +9,7 @@
 python .cursor/skills/_shared/scripts/validate_post.py <path-to-index.md>
 ```
 
-小节标题范例（禁/赞对照，人工起名时打开）：[`../knowledge-output/references/heading-anti-ai.md`](../knowledge-output/references/heading-anti-ai.md)  
+小节标题范例（禁/赞对照，人工起名时打开）：[`../post-publish/references/heading-anti-ai.md`](../post-publish/references/heading-anti-ai.md)  
 列表卡 emoji / 颜文字：只挂展示层，见 [`title-mood.md`](title-mood.md)
 
 ## 脚本已拦（ERROR）

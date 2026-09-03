@@ -47,35 +47,34 @@ Issue(temp/research/<task-slug>/)
 
 ## 内容流水线（轻量，可不建 PRD）
 
-与功能 PRD 流并行。**唯一进料口**是 `knowledge-extract`（按输入分流，用户不必点名渠道）。skills 真源在 `.agents/skills/`，`.cursor/skills` 为 junction 桥接（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.agents/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
+与功能 PRD 流并行。**唯一进料口**是 `post-publish`（一条链：识别输入 → 沉淀 vault → 成帖 → 校验 → 级联收尾；用户不必点名渠道）。短动态 → `dynamic-publish`；早报/热榜 → `ai-morning-brief` / `github-weekly-hot`（合集，不经 vault）。skills 真源在 `.agents/skills/`，`.cursor/skills` 为 junction 桥接（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.agents/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
 
 ```text
 写篇博客 / 丢路径 / 粘贴 / 调研 / 早报
-  → knowledge-extract（求全 → 问现场 → 配图 → 停；落盘 = vault）
-       1 vault 路径     → extract_vault.py → 写回该笔记所在目录（附件图 → R2）
-       2 粘贴图文       → 清洗分类 → vault 已有主题夹（优先 Agentic Coding/；有图用原图）
-       3 无材料调研     → 并发广搜 + 检索配图 → vault 已有主题夹
-       4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot（不抽用语）
+  → post-publish（识别输入 → 沉淀（先沉淀再发）→ 成帖 → 校验 → cascade 收尾）
+       1 vault 路径     → 读笔记 → 确认发它 → 沉淀回原目录（附件图 → R2）
+       2 粘贴图文       → 清洗分类 → 沉淀 vault 已有主题夹（优先 Agentic Coding/；有图用原图）
+       3 无材料调研     → 并发广搜 + 检索配图 → 沉淀 vault 已有主题夹
+       4 早报 / 热榜    → 交接 ai-morning-brief / github-weekly-hot（不经 vault）
   → 园主在 Obsidian 调到理想
-  → 渠道 1–3：knowledge-output（自检 → 落盘 → 用语进库；优先读 vault 理想稿；旧库存才分批扫 Knowledge/todo）
+  → 成帖发布：vault 理想稿 → posts/<slug>/（图片压缩上 R2、封面选图、validate 门禁）
   → 本地预览验收 → `_draftbox/`（未点头禁止出箱 / cascade / push）
-  → 正式发：site-cascade（`--blurb`）→ Agent 协作者评论
-  → 发布成功：旧 Knowledge\todo 素材才迁 Archive；vault 新稿留在 vault
+  → 正式发：cascade_check 级联核对 → Agent 协作者评论
+  → 发布成功：旧 Knowledge	odo 素材才迁 Archive；vault 新稿留在 vault
 ```
 
-旧称甲/乙/丙 = 渠道 1 / 2–3 / 4。映射表仍是 `.ob2blog/manifest.json`（vault 路径 ↔ slug）。列表卡 emoji 仅 `title-mood` 展示层，**勿**写入 `title`。
+旧称甲/乙/丙 = 渠道 1 / 2–3 / 4。映射表仍是 `.ob2blog/manifest.json`（vault 路径 ↔ slug）。列表卡 emoji 仅 `title-mood` 展示层，**勿**写入 `title`。时间口径：站点 `published/updated` 按发布动作时间（方案 A）。
 
-- Skill：`.cursor/skills/knowledge-extract/`、`knowledge-output/`、`site-cascade/`；合集细则 `_shared/periodical.md`
-- 四渠判定：`knowledge-extract/references/source-modules.md`（`obsidian` / `paste` / `research` / `rss`）
-- 渠道 3 广搜：`research-intake.md`；配图/R2：`images.md`
-- 粘贴进料若是公众号：仍走 `wechat-mp.md` 四岗（工序，不是第五入口）；BibiGPT 先搜证。二者默认草稿箱
-- Theme/facet：`theme-taxonomy.md`（≠ 博客 category）
-- **分类 / 合集**：对照 `CONTEXT.md` 词表自动建议 `category`；合集按 `knowledge-output/references/collection-model.md` 一二级 `route:` 自动挂（可双挂）；批次汇报表过目。禁止默填 Agentic Coding；禁止私开合集空壳
-- extract **不落 posts**、不抽用语、不做封面。配图在 extract 完成（原图或检索 → R2）；缺图标记待补，不在流程中调用模型生图。渠道 4 同样只使用已有素材
+- Skill：`.agents/skills/post-publish/`（真源；`.cursor/skills` 为 junction）· `.agents/skills/dynamic-publish/`；合集细则 `_shared/periodical.md`
+- 分流判定：`post-publish/SKILL.md` §0（obsidian / 对话 / URL / 粘贴 / 题目 / RSS）；成帖红线：`_shared/post-redlines.md`；图片/配图/R2：`post-publish/SKILL.md` §3-4 + `_shared/periodical.md`
+- 粘贴进料若是公众号：并入 post-publish 渠道 2 清洗工序（Archive 求全 → Classify 去重 → Extract 求薄 → TTA 去课件腔）；BibiGPT 先搜证。二者默认草稿箱
+- Theme/facet 管素材检索（≠ 博客 category，词表见 CONTEXT）
+- **分类 / 合集**：对照 `CONTEXT.md` 词表自动建议 `category`；合集挂 `collections: [slug]` 按 `src/config/collectionsConfig.ts` 一二级（可双挂，不另存缓存）；批次汇报表过目。禁止默填 Agentic Coding；禁止私开合集空壳
+- 沉淀不落 posts、不抽用语、不做封面。配图在沉淀阶段完成（原图或检索 → R2）；缺图标记待补，不在流程中调用模型生图。渠道 4 同样只使用已有素材
 
-#### 公众号 Multi-Agent（渠道 2 工序）
+#### 公众号 Multi-Agent（渠道 2 清洗工序）
 
-父 Agent 开 Multi-Task，四岗：`Archive`（原文+图无损）∥ `Classify`（Theme/facet + 去重）→ `Extract`（薄笔记）→ `TTA`。见 `wechat-mp.md`。
+父 Agent 开 Multi-Task，四岗：`Archive`（原文+图无损）∥ `Classify`（Theme/facet + 去重）→ `Extract`（薄笔记）→ `TTA`（并入 post-publish 渠道 2）。
 
 ### Agent 协作者评论（发帖 / 发动态后必做）
 
@@ -83,10 +82,10 @@ Issue(temp/research/<task-slug>/)
 
 | 项 | 约定 |
 |---|---|
-| 何时 | `site-cascade` emit 动态之后，或 `dynamic-post` 落盘之后 |
+| 何时 | `post-publish` / 合集出箱 cascade 之后，或 `dynamic-publish` 落盘之后 |
 | 谁 | 当前工具 key：`cursor` / `claude-code` / `pi` / `opencode` / `codex` |
 | 命令 | `pnpm agent-comment --agent <key> --comment "…" --path "/dynamic/{entryId}/"`（发帖级联动态优先评动态 path；也可 `/posts/{slug}/`） |
-| 语气 | **接梗 → 同频（损/共情）→ 人话**；钩原帖细节；禁金句说教。细则见 `dynamic-post` skill「语气公式」+ `agentPersonas` |
+| 语气 | **接梗 → 同频（损/共情）→ 人话**；钩原帖细节；禁金句说教。细则见 `dynamic-publish/SKILL.md` §5（接梗→同频→说人话）+ `agentPersonas` |
 | 密钥 | 仅本机 Claude memory / 本地约定；**禁止写入仓库** |
 | 环境 | `NODE_USE_ENV_PROXY=1`、`MSYS_NO_PATHCONV=1`；Waline 限流约 60s |
 
@@ -105,7 +104,7 @@ Issue(temp/research/<task-slug>/)
 出箱：用户说从草稿箱出来 / 可以发了
   → 迁到 src/content/posts/<slug>/
   → draft: false（除非仍要求草稿态 demo）
-  → validate + site-cascade（可 --emit-dynamic）
+  → validate + cascade_check 级联核对（合集期刊可 --emit-dynamic，成帖禁 emit）
   → 纳入 git → 确认后 push → 核线上
 ```
 

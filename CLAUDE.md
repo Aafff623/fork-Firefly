@@ -7,6 +7,6 @@
 
 加载顺序：
 
-1. **Rules**：全局 `%USERPROFILE%\.cursor\rules\`（宪法 + Windows/Answer/Commit/Karpathy）+ 仓内专有 mdc（礼盒 / site-cascade）
+1. **Rules**：全局 `%USERPROFILE%\.cursor\rules\`（宪法 + Windows/Answer/Commit/Karpathy）+ 仓内专有 mdc（礼盒 / cascade 收尾）
 2. **仓级**：`AGENTS.md`（硬约束 / 任务流 / Skill 触发）→ `CONTEXT.md`（领域事实 / 术语）→ `LANGUAGES.md`（共享用词）
 3. **细则**：`docs/agents/workflow.md`；主题配置文档 `docs/official/`（gitignore）；路由模型 `docs/knowledge/official-docs.tree.json`

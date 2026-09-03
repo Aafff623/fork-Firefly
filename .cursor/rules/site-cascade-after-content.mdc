@@ -1,22 +1,22 @@
 ---
-description: 新增/更新博客文章或动态后，必须级联维护最新动态、站点统计、分类标签与热力图（调用 site-cascade skill）。
+description: 新增/更新博客文章或动态后，必须级联维护最新动态、站点统计、分类标签与热力图（调用 cascade 收尾 skill）。
 globs: src/content/posts/**/*,src/content/dynamic/**/*
 alwaysApply: false
 ---
 
-# 发文后站点级联（site-cascade）
+# 发文后站点级联（cascade 收尾）
 
-当本规则因编辑 `src/content/posts/**` 或 `src/content/dynamic/**` 而生效，或你刚完成 `knowledge-output` / 合集 skill / 手写新帖时：
+当本规则因编辑 `src/content/posts/**` 或 `src/content/dynamic/**` 而生效，或你刚完成 `post-publish` / 合集 skill / 手写新帖时：
 
-1. **必须**读取并遵循项目 skill：`.cursor/skills/site-cascade/SKILL.md`
+1. **必须**读取并遵循项目 skill：`.cursor/skills/cascade 收尾/SKILL.md`
 2. 在 `Firefly/` 根目录跑：
 
 ```bash
-python .cursor/skills/site-cascade/scripts/cascade_check.py --slug <slug>
+python .agents/skills/post-publish/scripts/cascade_check.py --slug <slug>
 ```
 
 3. 路径含 `_draftbox/` 或 `draft: true`：**禁止** `--emit-dynamic`。
 4. **发文级联动态已关闭**（园主 2026-08-29 拍板）：`dynamicConfig.includeSystemNotes` 非 `true` 时**禁止** `--emit-dynamic`，也不要手写「发布了新笔记」动态文件。`cascade_check.py --emit-dynamic` 会读配置拒绝，不要绕过。动态只允许园主手写（`pnpm new-dynamic`）或 Agent 以本人身份发布。
 5. 汇报：统计摘要、侧栏/热力 WARN；不要手写假统计数字进组件。
 
-与上游的关系：`knowledge-output` / `ai-morning-brief` / `github-weekly-hot` / 手写负责正文落盘；**本规则负责发文后的站点表面级联**。正文 + 级联都做完再宣称「文章已挂上首页」。
+与上游的关系：`post-publish` / `ai-morning-brief` / `github-weekly-hot` / 手写负责正文落盘；**本规则负责发文后的站点表面级联**。正文 + 级联都做完再宣称「文章已挂上首页」。

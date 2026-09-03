@@ -145,6 +145,7 @@ def main() -> int:
     p.add_argument("--file", required=True)
     p.add_argument("--key", required=True, help="object key, e.g. posts/slug/foo.jpg")
     p.add_argument("--verify", action="store_true", help="GET public URL after upload")
+    p.add_argument("--content-type", default="image/jpeg", help="Content-Type for object (default image/jpeg; use image/webp for .webp)")
     args = p.parse_args()
 
     repo = firefly_root()
@@ -175,7 +176,7 @@ def main() -> int:
         bucket=bucket,
         object_key=args.key,
         body=body,
-        content_type="image/jpeg",
+        content_type=args.content_type,
     )
     url = f"{public}/{args.key}"
     result = {"ok": True, "key": args.key, "bytes": len(body), "url": url}

@@ -11,8 +11,7 @@ import type { CollectionsConfig } from "../types/collectionsConfig";
  * 极客时间四门课是既有三级叶子，仍挂在 `course-geektime` 下。
  *
  * output 发布岗只缓存一二级（干什么 / 什么样的文章该进），不记文章名单：
- * `.cursor/skills/knowledge-output/references/collection-model.md`
- * 改本文件后：`python .cursor/skills/knowledge-output/scripts/sync_collection_model.py --apply`
+ * 合集由 post-publish 成帖时按本文件一二级挂载；不另存缓存
  *
  * 现行一级：AI 编程工具 · Agentic Workflow · 视觉媒体 · 模型评测 ·
  * 大模型概述 · Java 全栈工程师 · 课程推荐 · 求职攻略 · 前端工程 ·

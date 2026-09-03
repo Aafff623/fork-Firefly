@@ -41,7 +41,7 @@ Discovery mirrors（一律 **junction** 指向 SSOT，禁止物理复制防漂�
 - User asks to learn from popular Wikis (Oh My Zsh, FiraCode, VS Code) or to map repo modules into Wiki structure
 - Keywords: wiki, wiki-post, `.wiki.git`, `_Sidebar`, Home, FAQ, 说明书, 手册, 多页文档
 
-Not this skill: single-file README polish → use repo docs/README skills; release notes → `release-post`; blog posts → `knowledge-extract` / `knowledge-output`.
+Not this skill: single-file README polish → use repo docs/README skills; release notes → `release-post`; blog posts → `post-publish` / `post-publish`.
 
 ## Audience cuts (pick one first)
 

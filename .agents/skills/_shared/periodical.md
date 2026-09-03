@@ -7,7 +7,7 @@
 | 用户口令 | 路径 | `draft` | git / 级联 |
 |---|---|---|---|
 | 没说发 / 草稿 / 先本地 | `src/content/posts/_draftbox/<slug>/` | `true` | **禁止** `git add` 箱内正文；**禁止** `--emit-dynamic` |
-| 「发 / 从草稿箱出来 / 可以发了」 | `src/content/posts/<slug>/` | `false` | `validate_post` → `site-cascade --emit-dynamic --blurb "…"`；确认后才 commit/push |
+| 「发 / 从草稿箱出来 / 可以发了」 | `src/content/posts/<slug>/` | `false` | `validate_post` → `cascade 收尾 --emit-dynamic --blurb "…"`；确认后才 commit/push |
 
 成帖红线与 lint：[`post-redlines.md`](post-redlines.md)。  
 `published` = 源期号日；`updated` = 落盘当下（含时分）。`title` 无 emoji / 颜文字。正文无 H1。
@@ -60,7 +60,7 @@ python .cursor/skills/_shared/scripts/validate_post.py src/content/posts/_draftb
 正式发把路径换成 `src/content/posts/<slug>/index.md`，再：
 
 ```bash
-python .cursor/skills/site-cascade/scripts/cascade_check.py \
+python .agents/skills/post-publish/scripts/cascade_check.py \
   --slug <slug> --emit-dynamic --blurb "口语短批注"
 ```
 

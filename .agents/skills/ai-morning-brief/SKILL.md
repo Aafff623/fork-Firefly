@@ -4,7 +4,7 @@ description: >-
   从橘鸦Juya 早报 RSS 按园主焦点筛选 3–7 条，写成 Firefly「AI 早报」合集一期（判断稿，不转载全文）。
   触发词：跑一期早报、写早报、AI 早报、橘鸦早报、juya daily、morning brief、
   今天的早报、发早报、早报草稿、ai-morning-brief。
-  默认进 _draftbox；用户说「发 / 从草稿箱出来 / 可以发了」才出箱 + validate_post + site-cascade。
+  默认进 _draftbox；用户说「发 / 从草稿箱出来 / 可以发了」才出箱 + validate_post + cascade 收尾。
 compatibility: Firefly 项目根。Python 3 stdlib。Windows PowerShell OK。
 ---
 
@@ -18,8 +18,8 @@ compatibility: Firefly 项目根。Python 3 stdlib。Windows PowerShell OK。
 
 ## 何时用 / 不用
 
-- **用**：跑一期早报 / 今天的早报（也可由 `knowledge-extract` 渠道 4 交接过来）。
-- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `knowledge-output`）。只使用已有的官方或合规素材，不调用外部图片生成。
+- **用**：跑一期早报 / 今天的早报（也可由 `post-publish` 渠道 4 交接过来）。
+- **不用**：渠道 1–3 的 Knowledge 成帖（那是 `post-publish`）。只使用已有的官方或合规素材，不调用外部图片生成。
 - **不用接 RSS MCP**：不接 glean / zenfeed / TrendRadar，也不用本机 `user-aigc-news` 榜单当主源。拉取橘鸦 RSS 只用 `curl.exe`（见下）。
 
 ## 信息源（只订这一个）

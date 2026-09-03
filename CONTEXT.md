@@ -66,7 +66,7 @@ Content Collections（`src/content.config.ts`）：
 
 ### 现行分类词表（发帖门禁）
 
-文章 frontmatter `category` 由 `knowledge-output` 按本表自动建议，批次汇报表一次性过目；园主要改当场说。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
+文章 frontmatter `category` 由 `post-publish` 按本表自动建议，批次汇报表一次性过目；园主要改当场说。对照下表选桶或经园主同意新建；**禁止**因「AI/工具相关」一律填 `Agentic Coding`。
 
 | 分类 | 适用（启发式） |
 |---|---|
@@ -90,7 +90,7 @@ Content Collections（`src/content.config.ts`）：
 
 ### 合集（人工策展）
 
-登记在 `src/config/collectionsConfig.ts`；文章 frontmatter `collections: [slug, ...]`（多对多，允许跨一级复用）。output 路由只读一二级心智缓存 `knowledge-output/references/collection-model.md`（干什么、什么样的文章该进；不记文章名单、不记三级正文）。每次 output 先 `sync_collection_model.py` diff 真源。
+登记在 `src/config/collectionsConfig.ts`；文章 frontmatter `collections: [slug, ...]`（多对多，允许跨一级复用）。post-publish 成帖时直接对照 `src/config/collectionsConfig.ts` 真源挂一二级（干什么、什么样的文章该进；不记文章名单、不记三级正文），不另维护缓存文件。
 
 | 层级 | 规则 |
 |---|---|
@@ -128,34 +128,34 @@ Content Collections（`src/content.config.ts`）：
 
 一般不变更；变更时先改 `CONTEXT.md` 与 manifest 的 `vaultRoot`，再改 skill 文档。
 
-发文流水线（唯一入口 `knowledge-extract`，按输入分流）：
+发文流水线（唯一入口 `post-publish`，按输入分流，用户不必点名渠道）：
 
 **extract 落盘 = vault**（本表上栏固定根）。渠道 1 写回该笔记所在目录；渠道 2–3 写入已有主题夹（优先 `Agentic Coding/`）。禁止把「写到 Obsidian」理解成 Knowledge。
 
 | 渠 | 源 | 技能链 |
 |---|---|---|
-| 1 | Obsidian vault 路径 | extract（写回该目录）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
-| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | extract（vault 已有夹）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
-| 3 | 无材料、只要调研 | extract（并发广搜+配图 → vault 已有夹）→ 园主微调 → output（发布 + 用语进库）→ **site-cascade** |
-| 4 | 早报 / GitHub 周榜 | extract 交接 `ai-morning-brief` / `github-weekly-hot` → **site-cascade**（不抽用语） |
+| 1 | Obsidian vault 路径 | post-publish：读笔记 → 沉淀原目录 → 园主微调 → 成帖发布 → cascade 收尾 |
+| 2 | 粘贴图文（Grok / 公众号 / 网页 / 会话） | post-publish：清洗 → 沉淀 vault 已有夹 → 园主微调 → 成帖发布 → cascade 收尾 |
+| 3 | 无材料、只要调研 | post-publish：并发广搜+配图 → 沉淀 vault 已有夹 → 园主微调 → 成帖发布 → cascade 收尾 |
+| 4 | 早报 / GitHub 周榜 | post-publish 交接 `ai-morning-brief` / `github-weekly-hot`（合集，不经 vault）→ 出箱后 cascade 收尾 |
 
 ### Knowledge 旧库存（仓外，只读）
 
 | 项 | 值 |
 |---|---|
 | 根 | `D:\OneDrive\Desktop\Knowledge` |
-| 角色 | **只读旧库存**。新 extract 禁止再写入。output 无主题时仍可分批扫 `todo/` |
+| 角色 | **只读旧库存**。post-publish 沉淀禁止写入 Knowledge；无主题时仍可分批扫 `todo/` |
 | 待发布（旧） | `todo/{Theme}/{facet}/{YYYY-MM-DD}_{短题}/` |
 | 已发布（旧） | `Archive/{Theme}/{facet}/…` |
 | 小林coding 离线 | `Archive/xiaolincoding/source/`（私有检索；禁批量发帖；站上仅导览合集） |
 | 兼容 | 历史扁平 `todo/{日期_主题}/` 仍可读 |
-| 来源索引 | `obsidian` / `paste` / `research` / `rss`（见 extract `source-modules.md`） |
-| Theme 词表 | Firefly skill：`.cursor/skills/knowledge-extract/references/theme-taxonomy.md`（YAML；落盘夹用 vault 已有目录） |
-| 公众号流 | 同目录 `wechat-mp.md`（Multi-Agent + `source/` 保真 + TTA；落 vault） |
+| 来源索引 | `obsidian` / `paste` / `research` / `rss`（见 `post-publish/SKILL.md` §0 分流判定） |
+| Theme 词表 | 落盘夹用 vault 已有目录（Theme/facet 管素材检索；词表见 CONTEXT 分类表） |
+| 公众号流 | 并入 post-publish 渠道 2 清洗工序（Archive 求全 → Classify 去重 → Extract 求薄 → TTA 去课件腔；落 vault） |
 
-**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 走上文「现行分类词表」，output 自动建议后批次过目。合集一二级路由缓存见 `knowledge-output/references/collection-model.md`（不记文章名单）。不要整库把 Knowledge 搬进 vault。
+**Theme ≠ 博客 category**：Theme/facet 管素材检索；成帖 `category` 走上文「现行分类词表」，post-publish 自动建议后批次过目。合集挂载直接对照 `src/config/collectionsConfig.ts`（不记文章名单）。不要整库把 Knowledge 搬进 vault。
 
-细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。旧入口 `ob2blog` 已并入 extract 渠道 1。
+细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。旧入口 `ob2blog` / `knowledge-extract` / `knowledge-output` / `site-cascade` / `dynamic-post` 已并入 `post-publish` / `dynamic-publish` 一条链。
 
 ## 部署事实
 
