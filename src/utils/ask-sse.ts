@@ -38,7 +38,28 @@ export function parseSseBuffer(buffer: string): {
 		const raw = dataLines.join("\n").trim();
 		if (!raw || raw === "[DONE]") continue;
 		try {
-			events.push(JSON.parse(raw) as AskSseEvent);
+			const ev = JSON.parse(raw) as AskSseEvent;
+			// OpenAI 兼容上游（StepFun）把增量嵌在 choices[0].delta 里；
+			// 提升到顶层，MaxKB 的顶层 content / reasoning_content 不受影响。
+			const delta = (
+				ev as {
+					choices?: Array<{
+						delta?: { content?: unknown; reasoning_content?: unknown };
+					}>;
+				}
+			).choices?.[0]?.delta;
+			if (delta) {
+				if (typeof delta.content === "string" && ev.content === undefined) {
+					ev.content = delta.content;
+				}
+				if (
+					typeof delta.reasoning_content === "string" &&
+					ev.reasoning_content === undefined
+				) {
+					ev.reasoning_content = delta.reasoning_content;
+				}
+			}
+			events.push(ev);
 		} catch {
 			/* 半截 JSON 留给 rest 不成立：整帧坏了就跳过 */
 		}
@@ -92,6 +113,8 @@ export async function readAskSse(
 			const { done, value } = await reader.read();
 			if (done) break;
 			buffer += decoder.decode(value, { stream: true });
+			// 兼容 CRLF 上游：先标准化为 LF 再解析
+			buffer = buffer.replace(/\r\n/g, "\n");
 			const parsed = parseSseBuffer(buffer);
 			buffer = parsed.rest;
 

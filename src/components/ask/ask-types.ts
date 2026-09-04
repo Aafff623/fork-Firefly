@@ -1,6 +1,6 @@
 /**
  * /ask 共享类型：来源、命中、思考链步骤、附件。
- * AskChat / AskThinking / AskGrokBits / AskMarkdown 共用，避免循环 import。
+ * AskChat / AskThinking / AskMarkdown 共用，避免循环 import。
  */
 
 export type AskHit = {

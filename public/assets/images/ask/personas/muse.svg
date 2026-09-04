@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 闲聊猫：圆头 + 竖耳 + 翘尾 + 眯眼笑 -->
+  <!-- 头 -->
+  <circle cx="16" cy="17" r="8" fill="#7c3aed"/>
+  <!-- 左耳 -->
+  <path d="M9 12 L7 5 L13 11 Z" fill="#7c3aed"/>
+  <!-- 右耳 -->
+  <path d="M23 12 L25 5 L19 11 Z" fill="#7c3aed"/>
+  <!-- 左耳内 -->
+  <path d="M9.5 11 L9 7 L11.5 11 Z" fill="#f8c8dc"/>
+  <!-- 右耳内 -->
+  <path d="M22.5 11 L23 7 L20.5 11 Z" fill="#f8c8dc"/>
+  <!-- 眯眼（弯月） -->
+  <path d="M11 16 Q13 14 15 16" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M17 16 Q19 14 21 16" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- 嘴（猫嘴，Y形） -->
+  <path d="M16 19 L16 20" stroke="#1a1a1a" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M14 21 Q16 22.5 18 21" stroke="#1a1a1a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- 鼻子 -->
+  <path d="M15 19.5 L17 19.5 L16 21 Z" fill="#f8c8dc"/>
+  <!-- 翘尾（右） -->
+  <path d="M23 24 Q29 22 28 16" stroke="#7c3aed" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- 胡须 -->
+  <line x1="8" y1="18" x2="11" y2="18" stroke="#f5f5f5" stroke-width="0.6" stroke-linecap="round"/>
+  <line x1="21" y1="18" x2="24" y2="18" stroke="#f5f5f5" stroke-width="0.6" stroke-linecap="round"/>
+</svg>

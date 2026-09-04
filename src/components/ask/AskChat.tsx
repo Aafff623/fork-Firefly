@@ -1,12 +1,10 @@
-import { ChatConversation } from "@heroui-pro/react/chat-conversation";
-import { ChatLoader } from "@heroui-pro/react/chat-loader";
-import { ChatMessage } from "@heroui-pro/react/chat-message";
-import { ChatMessageActions } from "@heroui-pro/react/chat-message-actions";
-import { StreamMarkdown } from "@heroui-pro/react/markdown";
-import type { ChatStatus } from "@heroui-pro/react/prompt-input";
-import { PromptSuggestion } from "@heroui-pro/react/prompt-suggestion";
-import { TextShimmer } from "@heroui-pro/react/text-shimmer";
-import { Share2 } from "lucide-react";
+/**
+ * /ask 主聊天组件（自写，无 HeroUI）。
+ * 状态机：idle → thinking（检索+思考）→ streaming（正文流出）→ idle。
+ * 状态行只说真话：检索结果一次性展示，不做假节奏；
+ * reasoning_content 实时进 DeepSeek 式折叠思考面板。
+ */
+import { Copy, Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import {
 	type ReactElement,
 	useCallback,
@@ -20,18 +18,11 @@ import {
 	getAskPersona,
 } from "@/utils/ask-personas";
 import { readAskSse } from "@/utils/ask-sse";
-import {
-	AskAttachmentChips,
-	AskFollowUps,
-	AskGrokComposer,
-	AskSourcesPill,
-	buildFollowUps,
-} from "./AskGrokBits";
-import AskMarkdown, {
-	askMarkdownComponents,
-	linkifyCitations,
-} from "./AskMarkdown";
+import AskMarkdown from "./AskMarkdown";
 import { AskThinking } from "./AskThinking";
+import { AskComposer } from "./Composer";
+import { AskFollowUps, buildFollowUps, fmtBytes } from "./FollowUps";
+import { AskSourcesPill } from "./Sources";
 import {
 	ASK_IMAGE_MAX_BYTES,
 	ASK_TEXT_MAX_BYTES,
@@ -55,12 +46,7 @@ const SUGGESTIONS = [
 
 const MAX_ATTACHMENTS = 4;
 
-type RetrieveMeta = {
-	scanned: number;
-	elapsedMs: number;
-	matched: number;
-	cached: false;
-};
+type ChatStatus = "idle" | "thinking" | "streaming";
 
 type Message = {
 	id: string;
@@ -69,37 +55,20 @@ type Message = {
 	sources?: AskSource[];
 	followUps?: string[];
 	trace?: TraceStep[];
-	/** reasoning_content 聚合（MaxKB 上游为思考模型时到达） */
+	/** reasoning_content 聚合 */
 	reasoning?: string;
-	/** 思考+检索总耗时（首个正文 token 到达时刻） */
+	/** 检索+思考总耗时（首个正文 token 到达时刻） */
 	thinkMs?: number;
 	attachments?: AskAttachment[];
-	/** 正在接收 MaxKB SSE */
+	/** 正在接收 SSE */
 	streaming?: boolean;
 };
 
-function understandQuestion(q: string): string {
-	const trimmed = q.trim();
-	if (/最近|近期|写了什么|新笔记|新文章/.test(trimmed)) {
-		return "理解为：你想看园主最近在数字花园里写了哪些笔记。";
-	}
-	if (trimmed.length <= 48) {
-		return `理解为：你想了解「${trimmed}」。`;
-	}
-	return `理解为：你想了解「${trimmed.slice(0, 48)}…」。`;
-}
-
-/** 豆包式耗时文案：<1s 记「1 秒内」，其余取整秒 */
+/** 耗时文案：<1s 记「1 秒内」，其余取整秒 */
 function fmtThinkDuration(ms: number): string {
 	return ms < 1000
 		? "用时 1 秒内"
 		: `用时 ${Math.max(1, Math.round(ms / 1000))} 秒`;
-}
-
-function fmtBytes(bytes: number): string {
-	if (bytes < 1024) return `${bytes} B`;
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-	return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function readFileAsText(file: File): Promise<string> {
@@ -204,19 +173,18 @@ async function ensureSession(
 
 type AskIntent = "recent" | "keyword" | "site-meta";
 
-async function retrieveHits(message: string): Promise<{
+type RetrieveResult = {
 	labels: string[];
 	intent: AskIntent;
 	hits: AskHit[];
 	scope: string;
-	meta: RetrieveMeta;
-}> {
+	meta: { scanned: number; elapsedMs: number; matched: number };
+};
+
+async function retrieveHits(message: string): Promise<RetrieveResult> {
 	const res = await fetch(`${ASK_API}?action=retrieve`, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Cache-Control": "no-cache",
-		},
+		headers: { "Content-Type": "application/json" },
 		cache: "no-store",
 		body: JSON.stringify({ message, limit: 6 }),
 	});
@@ -225,12 +193,10 @@ async function retrieveHits(message: string): Promise<{
 		message?: string;
 		data?: {
 			labels?: string[];
-			/** 旧字段兼容 */
-			terms?: string[];
 			intent?: AskIntent;
 			hits?: AskHit[];
 			scope?: string;
-			meta?: Partial<RetrieveMeta>;
+			meta?: Partial<RetrieveResult["meta"]>;
 		};
 	};
 	if (data.code !== 200 || !data.data) {
@@ -244,7 +210,7 @@ async function retrieveHits(message: string): Promise<{
 				? "site-meta"
 				: "keyword";
 	return {
-		labels: data.data.labels || data.data.terms || [],
+		labels: data.data.labels || [],
 		intent,
 		hits: data.data.hits || [],
 		scope: data.data.scope || "本站文章库",
@@ -252,17 +218,20 @@ async function retrieveHits(message: string): Promise<{
 			scanned: Number(meta?.scanned) || 0,
 			elapsedMs: Number(meta?.elapsedMs) || 0,
 			matched: Number(meta?.matched) || 0,
-			cached: false,
 		},
 	};
 }
 
-export default function AskChat(): ReactElement {
+
+export default function AskChat({
+	mode = "page",
+}: {
+	/** page = /ask 全功能页；widget = 浮窗轻量（跳过检索与思考链，直发直答） */
+	mode?: "page" | "widget";
+}): ReactElement {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [value, setValue] = useState("");
-	const [status, setStatus] = useState<ChatStatus>("ready");
-	const [thinking, setThinking] = useState(false);
-	const [liveTrace, setLiveTrace] = useState<TraceStep[]>([]);
+	const [status, setStatus] = useState<ChatStatus>("idle");
 	const [attachments, setAttachments] = useState<AskAttachment[]>([]);
 	const [debugOpen, setDebugOpen] = useState<Record<string, boolean>>({});
 	const [votes, setVotes] = useState<Record<string, "up" | "down" | undefined>>(
@@ -277,8 +246,8 @@ export default function AskChat(): ReactElement {
 	const tokenRef = useRef<string | null>(null);
 	const chatIdRef = useRef<string | null>(null);
 	const abortRef = useRef<AbortController | null>(null);
-	const shellRef = useRef<HTMLDivElement>(null);
-	const viewportRef = useRef<HTMLDivElement>(null);
+	const convRef = useRef<HTMLDivElement>(null);
+	const stickRef = useRef(true);
 
 	useEffect(() => {
 		if (!actionHint) return;
@@ -292,8 +261,51 @@ export default function AskChat(): ReactElement {
 		};
 	}, []);
 
-	// 暗色适配只认站点的 html.dark（CSS 祖先选择器），组件不再自算主题：
-	// 之前组件自己挂 data-theme 在水合时被 React 卡死在 light，暗色下题卡一直发白。
+	/** 流式时若用户没往上翻，保持吸底 */
+	useEffect(() => {
+		const el = convRef.current;
+		if (!el || !stickRef.current) return;
+		el.scrollTop = el.scrollHeight;
+	}, [messages]);
+
+	const handleConvScroll = useCallback(() => {
+		const el = convRef.current;
+		if (!el) return;
+		stickRef.current =
+			el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+	}, []);
+
+	/** 流式节流：累积增量 → 每 80ms 落一次 setState */
+	const streamBuf = useRef<{ text: string; reasoning: string }>({
+		text: "",
+		reasoning: "",
+	});
+	const streamTimer = useRef<number | null>(null);
+	const flushStream = useCallback((assistantId: string) => {
+		const snap = { ...streamBuf.current };
+		setMessages((prev) =>
+			prev.map((m) =>
+				m.id === assistantId
+					? {
+							...m,
+							text: snap.text,
+							reasoning: snap.reasoning || m.reasoning,
+							streaming: true,
+						}
+					: m,
+			),
+		);
+	}, []);
+	const queueStream = useCallback(
+		(assistantId: string) => {
+			if (streamTimer.current !== null) return;
+			streamTimer.current = window.setTimeout(() => {
+				streamTimer.current = null;
+				flushStream(assistantId);
+			}, 80);
+		},
+		[flushStream],
+	);
 
 	const pickFiles = useCallback(
 		async (files: FileList | null) => {
@@ -317,7 +329,7 @@ export default function AskChat(): ReactElement {
 					if (isImage) {
 						const dataUrl = await readFileAsDataUrl(f);
 						picked.push({
-							id: `at-${Date.now()}-${picked.length}`,
+							id: crypto.randomUUID(),
 							name: f.name,
 							size: f.size,
 							mime: f.type,
@@ -327,7 +339,7 @@ export default function AskChat(): ReactElement {
 					} else {
 						const text = await readFileAsText(f);
 						picked.push({
-							id: `at-${Date.now()}-${picked.length}`,
+							id: crypto.randomUUID(),
 							name: f.name,
 							size: f.size,
 							mime: f.type || "text/plain",
@@ -349,6 +361,122 @@ export default function AskChat(): ReactElement {
 		[attachments.length],
 	);
 
+	const patchAssistant = useCallback(
+		(assistantId: string, patch: Partial<Message>) => {
+			setMessages((prev) =>
+				prev.map((m) => (m.id === assistantId ? { ...m, ...patch } : m)),
+			);
+		},
+		[],
+	);
+
+	/** 浮窗轻量发送：跳过检索与思考链，直发（答案仍带 markdown 渲染与来源） */
+	const sendLiteText = useCallback(
+		async (raw: string) => {
+			const text = raw.trim();
+			if (!text) return;
+			abortRef.current?.abort();
+			const ac = new AbortController();
+			abortRef.current = ac;
+			lastUserRef.current = text;
+			setMessages((prev) => [
+				...prev,
+				{ id: crypto.randomUUID(), role: "user", text },
+			]);
+			setValue("");
+			setStatus("thinking");
+			const assistantId = crypto.randomUUID();
+			setMessages((prev) => [
+				...prev,
+				{ id: assistantId, role: "assistant", text: "", streaming: true },
+			]);
+				try {
+					// 边收边流式展示（与 page 路径同款 80ms 节流）
+					streamBuf.current = { text: "", reasoning: "" };
+					const { text: full, sources } = await (async () => {
+						const acStream = ac;
+						await ensureSession(tokenRef, chatIdRef);
+						const res = await fetch(`${ASK_API}?action=chat`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({
+								token: tokenRef.current,
+								chatId: chatIdRef.current,
+								message: text,
+								hits: [],
+								persona: personaId,
+							}),
+							signal: acStream.signal,
+						});
+						const ctype = res.headers.get("content-type") || "";
+						if (!res.ok || !ctype.includes("text/event-stream")) {
+							let errMsg = `HTTP ${res.status}`;
+							try {
+								const errBody = (await res.json()) as { message?: string };
+								errMsg = errBody.message || errMsg;
+							} catch {
+								/* keep */
+							}
+							throw new Error(errMsg);
+						}
+						const { text: fullText, last } = await readAskSse(res, {
+							signal: acStream.signal,
+							onDelta: (_d, full) => {
+								streamBuf.current.text = full;
+								queueStream(assistantId);
+							},
+						});
+						const srcs: AskSource[] = (last?.paragraph_list || []).map(
+							(p) => ({
+								title: p.title || p.document_name || "文章",
+								url: p.source_url || "#",
+							}),
+						);
+						return { text: fullText, sources: srcs };
+					})();
+					if (streamTimer.current !== null) {
+						window.clearTimeout(streamTimer.current);
+						streamTimer.current = null;
+					}
+					flushStream(assistantId);
+					setMessages((prev) =>
+						prev.map((m) =>
+							m.id === assistantId
+								? {
+										...m,
+										streaming: false,
+										text: full || "（没拿到回答）",
+										sources: sources.length ? sources : undefined,
+									}
+								: m,
+						),
+					);
+				} catch (err) {
+					const isAbort = err instanceof DOMException && err.name === "AbortError";
+					setMessages((prev) =>
+						prev.map((m) =>
+							m.id === assistantId
+								? {
+										...m,
+										streaming: false,
+										text: isAbort
+											? m.text || "（已中断）"
+											: `出了点问题：${err instanceof Error ? err.message : "未知错误"}`,
+									}
+								: m,
+						),
+					);
+				} finally {
+					if (streamTimer.current !== null) {
+						window.clearTimeout(streamTimer.current);
+						streamTimer.current = null;
+					}
+					setStatus("idle");
+				}
+			},
+			[personaId, patchAssistant, flushStream, queueStream],
+		);
+
 	const sendText = useCallback(
 		async (
 			raw: string,
@@ -361,7 +489,7 @@ export default function AskChat(): ReactElement {
 			const turnAttachments = opts?.attachments ?? [];
 			const text = raw.trim();
 			if (!text && !turnAttachments.length) return;
-			if (!opts?.force && status !== "ready") return;
+			if (!opts?.force && status !== "idle") return;
 
 			abortRef.current?.abort();
 			const ac = new AbortController();
@@ -370,21 +498,22 @@ export default function AskChat(): ReactElement {
 			lastUserRef.current = text;
 			const t0 = performance.now();
 			if (!opts?.regenerate) {
-				const userMessage: Message = {
-					id: `u-${Date.now()}`,
-					role: "user",
-					text,
-					attachments: turnAttachments.length ? turnAttachments : undefined,
-				};
-				setMessages((prev) => [...prev, userMessage]);
+				setMessages((prev) => [
+					...prev,
+					{
+						id: crypto.randomUUID(),
+						role: "user",
+						text,
+						attachments: turnAttachments.length ? turnAttachments : undefined,
+					},
+				]);
 			}
 			setValue("");
 			setAttachments([]);
-			setStatus("submitted");
-			setThinking(true);
-			setLiveTrace([]);
+			setStatus("thinking");
+			stickRef.current = true;
 
-			/** record：出现新步骤时把前面的 running 步收尾；同 id 覆盖（渐进展示） */
+			/** record：出现新步骤时把前面的 running 步收尾；同 id 覆盖 */
 			const trace: TraceStep[] = [];
 			const record = (step: Omit<TraceStep, "status">) => {
 				for (const t of trace) if (t.status === "running") t.status = "done";
@@ -392,115 +521,71 @@ export default function AskChat(): ReactElement {
 				const idx = trace.findIndex((x) => x.id === t.id);
 				if (idx >= 0) trace[idx] = t;
 				else trace.push(t);
-				setLiveTrace(trace.map((x) => ({ ...x })));
+				setMessages((prev) =>
+					prev.map((m) =>
+						m.id === assistantId
+							? { ...m, trace: trace.map((x) => ({ ...x })) }
+							: m,
+					),
+				);
 			};
-			/** 收尾：全部打勾；stillAnswering 时「生成回答」步保持 running（流式中仍在作答） */
 			const finalizeTrace = (stillAnswering = false): TraceStep[] =>
 				trace.map((t) =>
 					stillAnswering && t.id === "answer" ? t : { ...t, status: "done" },
 				);
 
-			const assistantId = `a-${Date.now()}`;
+			const assistantId = crypto.randomUUID();
+			// 先把助手占位消息放进去（trace 靠 record 渐进填）
+			setMessages((prev) => [
+				...prev,
+				{
+					id: assistantId,
+					role: "assistant",
+					text: "",
+					streaming: false,
+					trace: [],
+				},
+			]);
 
 			try {
-				const understood = understandQuestion(
-					text || turnAttachments.map((a) => a.name).join("、"),
-				);
-				record({
-					id: "understand",
-					kind: "parse",
-					label: "解析问题",
-					summary: understood,
-				});
-
 				// 会话与检索并行；检索始终现算（无答案缓存）
 				record({
-					id: "scope",
+					id: "retrieve",
 					kind: "search",
 					label: "检索站内文章",
-					summary: "正在扫描本站文章库并打分（非缓存）…",
 				});
 				const [, retrieved] = await Promise.all([
 					ensureSession(tokenRef, chatIdRef),
 					retrieveHits(text),
 				]);
 				if (ac.signal.aborted) throw new DOMException("Aborted", "AbortError");
-				setStatus("streaming");
 
-				const labelText =
-					retrieved.labels.length > 0
-						? retrieved.labels.join(" · ")
-						: "（未抽出可用关键词）";
 				const { scanned, elapsedMs, matched } = retrieved.meta;
-				const scopeSummary =
-					retrieved.intent === "recent"
-						? `去向：${retrieved.scope}\n策略：按发布时间取最新笔记\n扫描 ${scanned} 篇 · 耗时 ${elapsedMs}ms · 无答案缓存`
-						: retrieved.intent === "site-meta"
-							? `去向：${retrieved.scope}\n策略：本站元问题（优先 Firefly/主题文档，忽略「部署」泛匹配）\n关注点：${labelText}\n扫描 ${scanned} 篇 · 候选 ${matched} · 耗时 ${elapsedMs}ms · 无答案缓存`
-							: `去向：${retrieved.scope}\n关注点：${labelText}\n扫描 ${scanned} 篇 · 相关候选 ${matched} · 耗时 ${elapsedMs}ms · 无答案缓存`;
 				record({
-					id: "scope",
+					id: "retrieve",
 					kind: "search",
-					label: "检索站内文章",
-					summary: scopeSummary,
+					label: retrieved.hits.length
+						? `已找到 ${retrieved.hits.length} 篇相关笔记`
+						: "未命中站内文",
+					summary: retrieved.hits.length
+						? `扫描 ${scanned} 篇 · 候选 ${matched} · ${elapsedMs}ms`
+						: `扫描 ${scanned} 篇 · ${elapsedMs}ms · 本轮无高相关条目`,
+					hits: retrieved.hits,
 				});
 
 				if (turnAttachments.length) {
-					const lines = turnAttachments.map((a) => {
-						const how =
-							a.kind === "text"
-								? `文本 · ${fmtBytes(a.size)} · 已注入`
-								: `图片 · ${fmtBytes(a.size)} · 仅展示`;
-						return `- ${a.name}（${how}）`;
-					});
 					record({
 						id: "attachment",
 						kind: "attachment",
 						label: `读取附件 ${turnAttachments.length} 个`,
-						summary: lines.join("\n"),
+						summary: turnAttachments
+							.map(
+								(a) =>
+									`- ${a.name}（${a.kind === "text" ? `文本 · ${fmtBytes(a.size)} · 已注入` : `图片 · ${fmtBytes(a.size)} · 仅展示`}）`,
+							)
+							.join("\n"),
 					});
 				}
-
-				// 逐条亮出真实命中（展示节奏，不是假装搜索）
-				const revealed: AskHit[] = [];
-				if (!retrieved.hits.length) {
-					record({
-						id: "hits",
-						kind: "read",
-						label: "未命中站内文",
-						summary:
-							retrieved.intent === "site-meta"
-								? "站内少有「部署本站」专文；将依据站点硬事实（Astro / Vercel / pnpm）作答，不会拿无关「部署」文凑数。"
-								: "本轮关键词未在标题/摘要/标签/正文中找到足够相关条目；将主要依赖模型上下文作答，不会背预制答案。",
-					});
-				} else {
-					for (let i = 0; i < retrieved.hits.length; i++) {
-						if (ac.signal.aborted) {
-							throw new DOMException("Aborted", "AbortError");
-						}
-						revealed.push(retrieved.hits[i]);
-						const label =
-							retrieved.intent === "recent"
-								? `最近 ${revealed.length}/${retrieved.hits.length} 篇`
-								: retrieved.intent === "site-meta"
-									? `本站相关 ${revealed.length}/${retrieved.hits.length}`
-									: `命中 ${revealed.length}/${retrieved.hits.length} 篇`;
-						record({
-							id: "hits",
-							kind: "read",
-							label,
-							hits: revealed.slice(),
-						});
-						if (i < retrieved.hits.length - 1) await sleep(120);
-					}
-				}
-
-				record({
-					id: "answer",
-					kind: "answer",
-					label: "生成回答",
-					summary: "根据本轮命中段落与会话上下文实时生成（流式）…",
-				});
 
 				const fromSite: AskSource[] = retrieved.hits.map((h) => ({
 					title: h.title,
@@ -509,24 +594,23 @@ export default function AskChat(): ReactElement {
 					snippet: h.snippet,
 					date: h.date,
 				}));
+				patchAssistant(assistantId, {
+					sources: fromSite.length ? fromSite : undefined,
+				});
 
-				setMessages((prev) => [
-					...prev,
-					{
-						id: assistantId,
-						role: "assistant",
-						text: "",
-						streaming: true,
-						sources: fromSite.length ? fromSite : undefined,
-						trace: trace.map((t) => ({ ...t })),
-					},
-				]);
-				setThinking(false);
-				setLiveTrace([]);
+				record({
+					id: "answer",
+					kind: "answer",
+					label: "生成回答",
+				});
+				setStatus("streaming");
 
-				const payloadAttachments: AskAttachmentPayload[] = turnAttachments.map(
-					(a) => ({ name: a.name, kind: a.kind, text: a.text }),
-				);
+				const payloadAttachments: AskAttachmentPayload[] =
+					turnAttachments.map((a) => ({
+						name: a.name,
+						kind: a.kind,
+						text: a.text,
+					}));
 
 				const res = await fetch(`${ASK_API}?action=chat`, {
 					method: "POST",
@@ -578,12 +662,6 @@ export default function AskChat(): ReactElement {
 					const cur = reasoningRef.current;
 					reasoningRef.current =
 						rc.startsWith(cur) && rc.length > cur.length ? rc : cur + rc;
-					const snap = reasoningRef.current;
-					setMessages((prev) =>
-						prev.map((m) =>
-							m.id === assistantId ? { ...m, reasoning: snap } : m,
-						),
-					);
 				};
 				let firstTokenAt = 0;
 
@@ -595,41 +673,35 @@ export default function AskChat(): ReactElement {
 								? ev.reasoning_content
 								: "";
 						if (rc) appendReasoning(rc);
-						// 首个正文 token（reasoning 帧不算）：思考链收尾、计时定格
+						streamBuf.current = {
+							text: fullText,
+							reasoning: reasoningRef.current,
+						};
+						// 首个正文 token：思考链收尾（answer 步留到作答完成），计时定格
 						if (!firstTokenAt && fullText) {
 							firstTokenAt = performance.now();
-							// 首个正文 token：思考链收尾（answer 步留到作答完成），计时定格
-							const done = finalizeTrace(true);
-							const thinkMs = firstTokenAt - t0;
-							setMessages((prev) =>
-								prev.map((m) =>
-									m.id === assistantId
-										? {
-												...m,
-												text: fullText,
-												streaming: true,
-												trace: done,
-												thinkMs,
-											}
-										: m,
-								),
-							);
-							return;
+							patchAssistant(assistantId, {
+								trace: finalizeTrace(true),
+								thinkMs: firstTokenAt - t0,
+							});
 						}
-						setMessages((prev) =>
-							prev.map((m) =>
-								m.id === assistantId
-									? { ...m, text: fullText, streaming: true }
-									: m,
-							),
-						);
+						queueStream(assistantId);
 					},
 				});
 
-				const fromKb: AskSource[] = (last?.paragraph_list || []).map((p) => ({
-					title: p.title || p.document_name || "文章",
-					url: p.source_url || "#",
-				}));
+				// 流结束：冲掉节流里最后一批
+				if (streamTimer.current !== null) {
+					window.clearTimeout(streamTimer.current);
+					streamTimer.current = null;
+				}
+				flushStream(assistantId);
+
+				const fromKb: AskSource[] = (last?.paragraph_list || []).map(
+					(p) => ({
+						title: p.title || p.document_name || "文章",
+						url: p.source_url || "#",
+					}),
+				);
 				const seen = new Set<string>();
 				const sources: AskSource[] = [];
 				for (const s of [...fromSite, ...fromKb]) {
@@ -681,46 +753,38 @@ export default function AskChat(): ReactElement {
 					: `出了点问题：${detail}`;
 
 				const traceSnapshot = trace.length ? finalizeTrace() : undefined;
-				setMessages((prev) => {
-					const has = prev.some((m) => m.id === assistantId);
-					if (has) {
-						return prev.map((m) =>
-							m.id === assistantId
-								? {
-										...m,
-										streaming: false,
-										text: errText,
-										trace: traceSnapshot ?? m.trace,
-										thinkMs: m.thinkMs ?? performance.now() - t0,
-									}
-								: m,
-						);
-					}
-					return [
-						...prev,
-						{
-							id: assistantId,
-							role: "assistant",
-							text: errText,
-							trace: traceSnapshot,
-							thinkMs: performance.now() - t0,
-						},
-					];
-				});
+				setMessages((prev) =>
+					prev.map((m) =>
+						m.id === assistantId
+							? {
+									...m,
+									streaming: false,
+									text: errText,
+									trace: traceSnapshot ?? m.trace,
+									thinkMs: performance.now() - t0,
+								}
+							: m,
+					),
+				);
 			} finally {
-				setThinking(false);
-				setLiveTrace([]);
-				setStatus("ready");
+				// 冲掉可能挂起的节流定时器，否则它会把已收尾的消息改回 streaming
+				if (streamTimer.current !== null) {
+					window.clearTimeout(streamTimer.current);
+					streamTimer.current = null;
+				}
+				setStatus("idle");
 			}
 		},
-		[status, personaId],
+		[status, personaId, flushStream, queueStream, patchAssistant],
 	);
 
 	const handleStop = useCallback(() => {
 		abortRef.current?.abort();
-		setThinking(false);
-		setLiveTrace([]);
-		setStatus("ready");
+		if (streamTimer.current !== null) {
+			window.clearTimeout(streamTimer.current);
+			streamTimer.current = null;
+		}
+		setStatus("idle");
 		setActionHint("已停止生成");
 		setMessages((prev) =>
 			prev.map((m) => (m.streaming ? { ...m, streaming: false } : m)),
@@ -728,23 +792,33 @@ export default function AskChat(): ReactElement {
 	}, []);
 
 	const handleSubmit = () => {
-		void sendText(value, { attachments });
+		if (status !== "idle") {
+			handleStop();
+		}
+		if (mode === "widget") {
+			void sendLiteText(value);
+			return;
+		}
+		void sendText(value, { force: true, attachments });
 	};
 
 	const handleSuggestion = (prompt: string) => {
+		if (status !== "idle") handleStop();
 		setValue(prompt);
-		void sendText(prompt);
+		if (mode === "widget") {
+			void sendLiteText(prompt);
+			return;
+		}
+		void sendText(prompt, { force: true });
 	};
 
 	const handleRegenerate = useCallback(
 		(assistantId: string) => {
-			if (status !== "ready") return;
 			let question = "";
 			setMessages((prev) => {
 				const idx = prev.findIndex((m) => m.id === assistantId);
 				if (idx < 0) return prev;
 				question = findPrecedingUserText(prev, assistantId);
-				// 去掉该条助手回复及其后内容，再重跑
 				return prev.slice(0, idx);
 			});
 			if (!question && lastUserRef.current) question = lastUserRef.current;
@@ -757,7 +831,7 @@ export default function AskChat(): ReactElement {
 				void sendText(question, { force: true, regenerate: true });
 			});
 		},
-		[sendText, status],
+		[sendText],
 	);
 
 	const handleVote = useCallback((messageId: string, next: "up" | "down") => {
@@ -804,143 +878,111 @@ export default function AskChat(): ReactElement {
 		[messages, personaId],
 	);
 
-	useEffect(() => {
-		const shell = shellRef.current;
-		const viewport = viewportRef.current;
-		if (!shell || !viewport) return;
-
-		const onWheel = (e: WheelEvent) => {
-			const delta = e.deltaY;
-			if (!delta) return;
-
-			const ta = shell.querySelector("textarea");
-			if (ta && (e.target === ta || ta.contains(e.target as Node))) {
-				if (ta.scrollHeight > ta.clientHeight + 1) {
-					const atTop = ta.scrollTop <= 0;
-					const atBottom =
-						ta.scrollTop + ta.clientHeight >= ta.scrollHeight - 1;
-					if ((delta < 0 && !atTop) || (delta > 0 && !atBottom)) return;
-				}
-			}
-
-			const hasOverflow = viewport.scrollHeight > viewport.clientHeight + 1;
-			if (hasOverflow && viewport.contains(e.target as Node)) {
-				const atTop = viewport.scrollTop <= 0;
-				const atBottom =
-					viewport.scrollTop + viewport.clientHeight >=
-					viewport.scrollHeight - 1;
-				if ((delta < 0 && !atTop) || (delta > 0 && !atBottom)) return;
-			}
-
-			e.preventDefault();
-			window.scrollBy({ top: delta, left: 0, behavior: "auto" });
-		};
-
-		shell.addEventListener("wheel", onWheel, { passive: false });
-		return () => shell.removeEventListener("wheel", onWheel);
-	}, []);
-
-	const empty = messages.length === 0 && !thinking;
+	const empty = messages.length === 0;
+	const busy = status !== "idle";
 	const persona = getAskPersona(personaId);
+	const isWidget = mode === "widget";
 
 	return (
-		<div
-			ref={shellRef}
-			className="ask-heroui-root flex w-full flex-col overflow-hidden"
-		>
-			<img
-				className="ask-card-char"
-				src={persona.avatar}
-				alt=""
-				aria-hidden="true"
-				decoding="async"
-			/>
-			<ChatConversation ref={viewportRef} className="flex-1 min-h-0">
-				<ChatConversation.Content className="ask-conversation-pad mx-auto w-full max-w-[714px] flex-col gap-8 pb-8 pt-8">
+		<div className={`ask-root${isWidget ? " compact" : ""}`}>
+			<div
+				className="ask-conv"
+				ref={convRef}
+				onScroll={handleConvScroll}
+				role="log"
+				aria-live="polite"
+			>
+				<div className="ask-conv-inner">
 					{empty ? (
-						<PromptSuggestion className="mx-auto w-full py-6">
-							<PromptSuggestion.Header>
-								<PromptSuggestion.Title>
-									有什么想了解的？
-								</PromptSuggestion.Title>
-								<PromptSuggestion.Description>
-									问一句，我先在数字花园文章库里检索，再基于命中内容回答。也可以点下面的建议直接开始。
-								</PromptSuggestion.Description>
-							</PromptSuggestion.Header>
-							<PromptSuggestion.Group label="你可以试着问：">
-								<PromptSuggestion.Items>
-									{SUGGESTIONS.map((prompt) => (
-										<PromptSuggestion.Item
-											key={prompt}
-											onPress={() => handleSuggestion(prompt)}
-										>
-											{prompt}
-										</PromptSuggestion.Item>
-									))}
-								</PromptSuggestion.Items>
-							</PromptSuggestion.Group>
-						</PromptSuggestion>
+						<div className="ask-welcome">
+							{isWidget ? (
+								<h2>有什么想了解的？</h2>
+							) : (
+								<div className="ask-welcome-head">
+									<img
+										className="ask-char"
+										src={persona.avatar}
+										alt=""
+										aria-hidden="true"
+										decoding="async"
+									/>
+									<h2>有什么想了解的？</h2>
+								</div>
+							)}
+							<p>
+								问一句，我先在数字花园文章库里检索，再基于命中内容回答。也可以点下面的建议直接开始。
+							</p>
+							<p className="ask-welcome-sugg-label">你可以试着问：</p>
+							<div className="ask-welcome-sugg">
+								{SUGGESTIONS.map((prompt) => (
+									<button
+										key={prompt}
+										type="button"
+										className="ask-sugg"
+										onClick={() => handleSuggestion(prompt)}
+									>
+										{prompt}
+									</button>
+								))}
+							</div>
+						</div>
 					) : null}
 
 					{messages.map((message) =>
 						message.role === "user" ? (
-							<ChatMessage.User key={message.id}>
-								<ChatMessage.Bubble>
-									<ChatMessage.Content>{message.text}</ChatMessage.Content>
-									{message.attachments?.length ? (
-										<AskAttachmentChips items={message.attachments} />
-									) : null}
-								</ChatMessage.Bubble>
-							</ChatMessage.User>
+							<div key={message.id} className="ask-msg user">
+								<div className="ask-msg-body">
+									<div className="ask-bubble">
+										{message.text}
+										{message.attachments?.length ? (
+											<AskAttachmentChipsReadonly
+												items={message.attachments}
+											/>
+										) : null}
+									</div>
+								</div>
+							</div>
 						) : (
-							<ChatMessage.Assistant key={message.id}>
-								<ChatMessage.Avatar
-									show
+							<div key={message.id} className="ask-msg assistant">
+								<img
+									className="ask-msg-avatar"
 									alt={persona.label}
 									src={persona.avatar}
-									fallback={persona.label.slice(0, 1)}
 								/>
-								<ChatMessage.Body>
-									{message.trace?.length || message.reasoning ? (
+								<div className="ask-msg-body">
+									{!isWidget && (message.trace?.length || message.reasoning) ? (
 										<AskThinking
 											steps={message.trace ?? []}
 											reasoning={message.reasoning}
-											running={!!message.streaming && !message.text}
+											running={busy && !message.text && !message.streaming}
 											durationText={
 												typeof message.thinkMs === "number"
 													? fmtThinkDuration(message.thinkMs)
 													: ""
 											}
+											defaultOpen
 										/>
 									) : null}
 
-									<ChatMessage.Content>
-										{message.streaming ? (
-											message.text ? (
-												<div
-													className="ask-markdown markdown"
-													data-slot="ask-markdown"
-												>
-													<StreamMarkdown
-														isStreaming
-														caret="block"
-														components={askMarkdownComponents(message.sources)}
-													>
-														{linkifyCitations(message.text, message.sources)}
-													</StreamMarkdown>
-												</div>
-											) : (
-												<div className="flex items-center gap-3 py-1">
-													<ChatLoader.Dots />
-													<TextShimmer>正在流式生成回答…</TextShimmer>
-												</div>
-											)
-										) : (
-											<AskMarkdown sources={message.sources}>
+									<div className="ask-bubble ask-bubble-md">
+										{message.streaming || message.text ? (
+											<AskMarkdown
+												sources={message.sources}
+												streaming={message.streaming}
+											>
 												{message.text}
 											</AskMarkdown>
+										) : (
+											<div className="ask-loading">
+												<span className="ask-dots">
+													<span />
+													<span />
+													<span />
+												</span>
+												<span>正在生成回答…</span>
+											</div>
 										)}
-									</ChatMessage.Content>
+									</div>
 
 									{!message.streaming && message.sources?.length ? (
 										<AskSourcesPill sources={message.sources} />
@@ -958,7 +1000,9 @@ export default function AskChat(): ReactElement {
 													}))
 												}
 											>
-												{debugOpen[message.id] ? "收起原文" : "调试：查看原文"}
+												{debugOpen[message.id]
+													? "收起原文"
+													: "调试：查看原文"}
 											</button>
 											{debugOpen[message.id] ? (
 												<pre className="ask-debug-pre">{message.text}</pre>
@@ -966,48 +1010,62 @@ export default function AskChat(): ReactElement {
 										</div>
 									) : null}
 
-									{!message.streaming ? (
-										<ChatMessageActions>
-											<ChatMessageActions.Copy
+									{!message.streaming && message.text ? (
+										<div className="ask-actions">
+											<button
+												type="button"
+												className="ask-action"
 												aria-label="复制"
-												tooltip="复制"
-												onPress={() => {
+												title="复制"
+												onClick={() => {
 													void copyText(message.text)
 														.then(() => setActionHint("已复制回答"))
 														.catch(() =>
 															setActionHint("复制失败，请手动选择文本"),
 														);
 												}}
-											/>
-											<ChatMessageActions.Regenerate
-												aria-label="重新生成"
-												tooltip="重新生成"
-												onPress={() => handleRegenerate(message.id)}
-											/>
-											<ChatMessage.Action
-												aria-label="导出 Markdown"
-												tooltip="导出本轮对话 Markdown"
-												onPress={() => handleExportMd(message.id, message.text)}
 											>
-												<Share2 className="size-4" />
-											</ChatMessage.Action>
-											<ChatMessageActions.ThumbsUp
-												aria-label="有用"
-												tooltip="有用"
+												<Copy />
+											</button>
+											<button
+												type="button"
+												className="ask-action"
+												aria-label="重新生成"
+												title="重新生成"
+												onClick={() => handleRegenerate(message.id)}
+											>
+												<Loader2 />
+											</button>
+											<button
+												type="button"
+												className="ask-action"
+												aria-label="导出 Markdown"
+												title="导出本轮对话 Markdown"
+												onClick={() => handleExportMd(message.id, message.text)}
+											>
+												<Share2 />
+											</button>
+											<button
+												type="button"
 												className={[
-													"ask-vote-up",
-													votes[message.id] === "up" ? "ask-action-active" : "",
+													"ask-action",
+													votes[message.id] === "up"
+														? "ask-action-active"
+														: "",
 													voteAnim[message.id] === "pop" ? "is-pop" : "",
 												]
 													.filter(Boolean)
 													.join(" ")}
-												onPress={() => handleVote(message.id, "up")}
-											/>
-											<ChatMessageActions.ThumbsDown
-												aria-label="不太对"
-												tooltip="不太对"
+												aria-label="有用"
+												title="有用"
+												onClick={() => handleVote(message.id, "up")}
+											>
+												<ThumbsUp />
+											</button>
+											<button
+												type="button"
 												className={[
-													"ask-vote-down",
+													"ask-action",
 													votes[message.id] === "down"
 														? "ask-action-active"
 														: "",
@@ -1015,55 +1073,41 @@ export default function AskChat(): ReactElement {
 												]
 													.filter(Boolean)
 													.join(" ")}
-												onPress={() => handleVote(message.id, "down")}
-											/>
-										</ChatMessageActions>
+												aria-label="不太对"
+												title="不太对"
+												onClick={() => handleVote(message.id, "down")}
+											>
+												<ThumbsDown />
+											</button>
+										</div>
 									) : null}
 
 									{!message.streaming && message.followUps?.length ? (
 										<AskFollowUps
 											items={message.followUps}
-											onPick={(q) => {
-												setValue(q);
-												void sendText(q);
-											}}
+											onPick={(q) => handleSuggestion(q)}
 										/>
 									) : null}
-								</ChatMessage.Body>
-							</ChatMessage.Assistant>
+								</div>
+							</div>
 						),
 					)}
+				</div>
+			</div>
 
-					{thinking ? (
-						<ChatMessage.Assistant>
-							<ChatMessage.Avatar
-								show
-								alt={persona.label}
-								src={persona.avatar}
-								fallback={persona.label.slice(0, 1)}
-							/>
-							<ChatMessage.Body>
-								<AskThinking steps={liveTrace} running defaultOpen />
-							</ChatMessage.Body>
-						</ChatMessage.Assistant>
-					) : null}
-				</ChatConversation.Content>
-				<ChatConversation.ScrollButton />
-			</ChatConversation>
-
-			<div className="ask-grok-dock">
-				<div className="ask-grok-dock-inner">
+			<div className="ask-dock">
+				<div className="ask-dock-inner">
 					{actionHint ? (
 						<p className="ask-action-hint" role="status">
 							{actionHint}
 						</p>
 					) : null}
-					<AskGrokComposer
+					<AskComposer
 						value={value}
 						onValueChange={setValue}
 						onSubmit={handleSubmit}
 						onStop={handleStop}
-						status={status}
+						busy={busy}
 						persona={personaId}
 						onPersonaChange={setPersonaId}
 						plusSuggestions={SUGGESTIONS}
@@ -1073,14 +1117,41 @@ export default function AskChat(): ReactElement {
 							setAttachments((prev) => prev.filter((a) => a.id !== id))
 						}
 						onPickFiles={(files) => void pickFiles(files)}
+						allowAttachments={!isWidget}
 					/>
-					<p className="ask-grok-disclaimer">AI 回答仅供参考，重要信息请核实</p>
+					{isWidget ? null : (
+						<p className="ask-disclaimer">
+							AI 回答仅供参考，重要信息请核实
+						</p>
+					)}
 				</div>
 			</div>
 		</div>
 	);
 }
 
-function sleep(ms: number) {
-	return new Promise((r) => setTimeout(r, ms));
+/** 用户消息里的附件展示（不可移除） */
+function AskAttachmentChipsReadonly({
+	items,
+}: {
+	items: AskAttachment[];
+}): ReactElement | null {
+	if (!items.length) return null;
+	return (
+		<span className="ask-attach-row" style={{ padding: "0.4rem 0 0" }}>
+			{items.map((a) => (
+				<span
+					key={a.id}
+					className="ask-attach-chip"
+					title={`${a.name} · ${fmtBytes(a.size)}`}
+				>
+					{a.kind === "image" && a.dataUrl ? (
+						<img className="ask-attach-thumb" src={a.dataUrl} alt={a.name} />
+					) : null}
+					<span className="ask-attach-name">{a.name}</span>
+					<span className="ask-attach-size">{fmtBytes(a.size)}</span>
+				</span>
+			))}
+		</span>
+	);
 }

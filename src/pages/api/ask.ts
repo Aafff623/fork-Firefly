@@ -16,6 +16,32 @@ import {
 
 export const prerender = false;
 
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 20;
+const rateHits = new Map<string, number[]>();
+
+function getClientAddress(request: Request): string {
+	return (
+		request.headers.get("cf-connecting-ip") ||
+		request.headers.get("x-forwarded-for")?.split(",")[0] ||
+		"unknown"
+	).trim();
+}
+
+function isRateLimited(address: string): boolean {
+	const now = Date.now();
+	const recent = (rateHits.get(address) || []).filter(
+		(timestamp) => now - timestamp < RATE_WINDOW_MS,
+	);
+	if (recent.length >= RATE_MAX) {
+		rateHits.set(address, recent);
+		return true;
+	}
+	recent.push(now);
+	rateHits.set(address, recent);
+	return false;
+}
+
 /**
  * 上游基址在模块加载期一次性校验：协议仅 http(s)、禁 userinfo、
  * 主机白名单（回环/内网默认放行；公网上游需在 MAXKB_ALLOWED_UPSTREAM_HOSTS
@@ -79,7 +105,7 @@ const STEPFUN_API_BASE = (
 const STEPFUN_MODEL =
 	(import.meta.env.STEPFUN_MODEL as string | undefined) ||
 	process.env.STEPFUN_MODEL ||
-	"step-3.5-flash";
+	"step-3.7-flash";
 
 function json(
 	data: unknown,
@@ -155,12 +181,18 @@ function upstreamUnreachable(err: unknown): {
 	};
 }
 
-/** POST /api/ask/?action=… */
-export const POST: APIRoute = async ({ request, url }) => {
-	const closed = guardAsk();
-	if (closed) return closed;
+	/** POST /api/ask/?action=… */
+	export const POST: APIRoute = async ({ request, url }) => {
+		const closed = guardAsk();
+		if (closed) return closed;
 
-	const action = url.searchParams.get("action") || "session";
+		const action = url.searchParams.get("action") || "session";
+		const addr = getClientAddress(request);
+		if (action === "session" || action === "retrieve" || action === "chat") {
+			if (isRateLimited(addr)) {
+				return json({ code: 429, message: "太频繁了，请稍后再试（每 10 分钟最多 20 次）" }, 429);
+			}
+		}
 
 	if (action === "session") {
 		if (STEPFUN_API_KEY) {
@@ -267,9 +299,8 @@ export const POST: APIRoute = async ({ request, url }) => {
 			message?: string;
 			hits?: AskHit[];
 			intent?: AskIntent;
-			/** 人设：guide | scholar | builder | muse（兼容旧 mode） */
+			/** 人设：guide | scholar | builder | muse */
 			persona?: string;
-			mode?: "garden" | "deep";
 			attachments?: Array<{
 				name?: unknown;
 				kind?: unknown;
@@ -281,12 +312,15 @@ export const POST: APIRoute = async ({ request, url }) => {
 		} catch {
 			return json({ code: 400, message: "请求体不是合法 JSON" }, 400);
 		}
-		const token = body.token?.trim();
-		const chatId = body.chatId?.trim();
-		const message = body.message?.trim();
-		if (!token || !chatId || !message) {
-			return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
-		}
+			const token = body.token?.trim();
+			const chatId = body.chatId?.trim();
+			const message = body.message?.trim();
+			if (!token || !chatId || !message) {
+				return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
+			}
+			if (message.length > 4000) {
+				return json({ code: 400, message: "单次消息请控制在 4000 字符以内" }, 400);
+			}
 		// chatId 会拼进上游 URL 路径：严格字符白名单 + 长度上限，杜绝路径形态注入
 		if (!/^[A-Za-z0-9\-_]{1,64}$/.test(chatId)) {
 			return json({ code: 400, message: "chatId 格式非法" }, 400);
@@ -324,9 +358,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 					? "site-meta"
 					: "keyword";
 		const hits = Array.isArray(body.hits) ? body.hits.slice(0, 10) : [];
-		/** 旧 mode=deep → 书虫；否则走人设 */
-		const persona =
-			body.persona || (body.mode === "deep" ? "scholar" : "guide");
+		const persona = body.persona || "guide";
 		const prompt = buildAskPrompt(message, hits, intent, persona, attachments);
 
 		if (STEPFUN_API_KEY && token === "stepfun") {

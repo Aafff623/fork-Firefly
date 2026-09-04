@@ -12,8 +12,8 @@ import rehypeKatex from "rehype-katex";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import type { Components as StreamdownComponents } from "streamdown";
-import { type AskSource, SourceHoverCard } from "./AskGrokBits";
+import { SourceHoverCard } from "./Sources";
+import type { AskSource } from "./ask-types";
 
 /** 模型偶尔仍输出「链接：/posts/…」纯文本 → 收成可点 Markdown */
 export function normalizeAskMarkdown(src: string): string {
@@ -141,21 +141,17 @@ function makeComponents(sources?: AskSource[]): Components {
 type Props = {
 	children: string;
 	className?: string;
-	/** 行内角标 [n] 的映射来源（完成态传入；流式可不传） */
+	/** 行内角标 [n] 的映射来源 */
 	sources?: AskSource[];
+	/** 流式中：末尾挂打字光标 */
+	streaming?: boolean;
 };
-
-/** 流式渲染（StreamMarkdown）复用同一套组件覆盖：纯数字链接 → 引用角标 */
-export function askMarkdownComponents(
-	sources?: AskSource[],
-): StreamdownComponents {
-	return makeComponents(sources) as unknown as StreamdownComponents;
-}
 
 export default function AskMarkdown({
 	children,
 	className,
 	sources,
+	streaming = false,
 }: Props): ReactElement {
 	const content = linkifyCitations(
 		normalizeAskMarkdown(children || ""),
@@ -173,6 +169,7 @@ export default function AskMarkdown({
 			>
 				{content}
 			</ReactMarkdown>
+			{streaming ? <span className="ask-caret" aria-hidden="true" /> : null}
 		</div>
 	);
 }

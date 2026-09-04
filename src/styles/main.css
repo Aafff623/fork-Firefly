@@ -19,6 +19,7 @@
 @import './announcement-press.css';
 @import './gift-surprise.css';
 @import './hero-bg.css';
+@import './ask.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -163,56 +164,16 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 }
 
 @layer components {
-    /* View Transitions API 主题切换动画 */
-    /* 为整个文档根元素设置视图过渡 */
+    /* 亮暗切换圆形扩散（移植自 pane / jazii.dev）：禁用默认 cross-fade，
+       新主题快照由 JS 用 clip-path: circle() 从按钮位置展开，圆边保持锐利。
+       注：动画进行中（约 500ms）快照层会拦截点击，与参考实现 pane 行为一致，
+       动画结束即可继续点击；连点中断由 skipTransition 兜底 */
     ::view-transition-old(root),
     ::view-transition-new(root) {
-        animation-duration: 0.5s;
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        /* 使用混合模式使颜色过渡更平滑 */
+        animation: none;
         mix-blend-mode: normal;
     }
-    
-    /* 视图过渡组 - 使用交叉淡化效果 */
-    ::view-transition-group(root) {
-        animation-duration: 0.5s;
-        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 淡出旧视图 - 使用更平滑的曲线 */
-    ::view-transition-old(root) {
-        animation-name: theme-fade-out;
-        /* 确保背景色同步切换 */
-        z-index: 2;
-    }
-    
-    /* 淡入新视图 - 使用更平滑的曲线 */
-    ::view-transition-new(root) {
-        animation-name: theme-fade-in;
-        /* 确保新视图在上层 */
-        z-index: 1;
-    }
-    
-    /* 定义淡出动画 - 使用更平滑的缓动函数 */
-    @keyframes theme-fade-out {
-        0% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-        }
-    }
-    
-    /* 定义淡入动画 - 从下层淡入 */
-    @keyframes theme-fade-in {
-        0% {
-            opacity: 0;
-        }
-        100% {
-            opacity: 1;
-        }
-    }
-    
+
     /* 仅显式 .transition；勿用 [class*="border|transition"] 误伤海量 Tailwind 节点（主题切换卡顿源） */
     .transition {
         transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;

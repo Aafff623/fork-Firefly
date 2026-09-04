@@ -968,7 +968,10 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
     )}
 </div>
 
-{siteConfig.pages.ask && <LiveChatWidget />}
+{/* /ask 页本身就是聊天，不再叠加浮窗（避免同一页面两套聊天 UI） */}
+{siteConfig.pages.ask && !Astro.url.pathname.startsWith("/ask") && (
+	<LiveChatWidget />
+)}
 
 <FloatingControls headings={headings} encrypted={encrypted} />
 

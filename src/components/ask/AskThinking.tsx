@@ -18,7 +18,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 import { type ReactElement, useEffect, useRef, useState } from "react";
-import { SourceHoverCard } from "./AskGrokBits";
+import { SourceHoverCard } from "./Sources";
 import type { AskHit, TraceKind, TraceStep } from "./ask-types";
 
 const KIND_ICON: Record<TraceKind, LucideIcon> = {
@@ -132,6 +132,10 @@ export function AskThinking({
 
 	if (!steps.length && !reasoning) return null;
 
+	// 收起态也透出真实检索结果数（来自 search 步骤的 hits）
+	const searchStep = steps.find((s) => s.kind === "search");
+	const hitCount = searchStep?.hits?.length ?? 0;
+
 	return (
 		<div className="ask-think" data-open={open ? "" : undefined}>
 			<button
@@ -145,15 +149,20 @@ export function AskThinking({
 				) : (
 					<Brain className="ask-think-trigger-icon" aria-hidden="true" />
 				)}
-				<span className="ask-think-trigger-text">
-					{running
-						? reasoning
-							? "深度思考中…"
-							: "思考中…"
-						: durationText
-							? `已思考（${durationText}）`
-							: "已思考"}
-				</span>
+					<span className="ask-think-trigger-text">
+						{running
+							? reasoning
+								? "深度思考中…"
+								: "思考中…"
+							: durationText
+								? `已深度思考（${durationText}）`
+								: "已深度思考"}
+					</span>
+					{!running && hitCount > 0 ? (
+						<span className="ask-think-trigger-hits">
+							· 找到 {hitCount} 篇相关笔记
+						</span>
+					) : null}
 				<ChevronDown className="ask-think-chevron" aria-hidden="true" />
 			</button>
 

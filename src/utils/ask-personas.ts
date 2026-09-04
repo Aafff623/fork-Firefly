@@ -18,7 +18,7 @@ export const ASK_PERSONAS: AskPersona[] = [
 		id: "guide",
 		label: "向导",
 		blurb: "温和带路，先结论再指路",
-		avatar: "/assets/images/ask/personas/guide.jpg",
+		avatar: "/assets/images/ask/personas/guide.svg",
 		systemHint: [
 			"【角色人设 · 向导】",
 			"你是数字花园的提灯向导：沉稳、好客、不啰嗦。",
@@ -31,7 +31,7 @@ export const ASK_PERSONAS: AskPersona[] = [
 		id: "scholar",
 		label: "书虫",
 		blurb: "细读引用，分节讲透",
-		avatar: "/assets/images/ask/personas/scholar.jpg",
+		avatar: "/assets/images/ask/personas/scholar.svg",
 		systemHint: [
 			"【角色人设 · 书虫】",
 			"你是爱抠原文的书虫助手：耐心、精确、爱引用。",
@@ -44,7 +44,7 @@ export const ASK_PERSONAS: AskPersona[] = [
 		id: "builder",
 		label: "基建佬",
 		blurb: "工程师口吻，直给可落地",
-		avatar: "/assets/images/ask/personas/builder.jpg",
+		avatar: "/assets/images/ask/personas/builder.svg",
 		systemHint: [
 			"【角色人设 · 基建佬】",
 			"你是站点基建向的工程师同事：直接、有判断、偏可操作。",
@@ -57,7 +57,7 @@ export const ASK_PERSONAS: AskPersona[] = [
 		id: "muse",
 		label: "闲聊猫",
 		blurb: "轻松闲聊，短句有脾气",
-		avatar: "/assets/images/ask/personas/muse.jpg",
+		avatar: "/assets/images/ask/personas/muse.svg",
 		systemHint: [
 			"【角色人设 · 闲聊猫】",
 			"你是花园里的闲聊猫：轻松、俏皮、仍尊重事实。",

@@ -220,8 +220,8 @@ Content Collections（`src/content.config.ts`）：
 | 配置驱动 | 功能开关与文案落在 `src/config`，非硬编码散落 |
 | 岛屿（island） | Svelte 客户端组件（搜索、设置、分页等） |
 | 站内桌宠 | 双 DeepSeek spritesheet（浏览 Maid / 文章 OpenPet；`petConfig` / `SpritePet`）；浏览侧栏失衡时分类折叠 + 宠钉日历（`sidebarBalance`）；与 Spine/Live2D 互斥；**点击触发问答浮窗**（见下） |
-| 侧栏 Firefly Bot | `Profile` 圆槽宏切：站点头像 : Bot ≈ 1:4（`profile-firefly-timing.ts`）。Bot 六桶巡演，**开场 rest/idle 黑团白眼、两眼中缝留空**（勿默认 thinking 三点加载，勿让两眼贴死）；歇着时也穿插 bounce/hop/humming/burst，不靠鼠标才跳或出环。形状池圆润族（正圆 blob 双权重 / 鹅卵石 / 卵形 / 圆角六边形），纯黑身体 + 白眼（ADR-0005）；引擎自研入库 `public/vendor/firefly-bot/`，xAI replica 仅本机对照（ADR-0003/0004）。**HTML 首屏是站点头像**（进场轻晃 + 招手一次，引擎预热后仍等 macroDue 才切 Bot）；眼神跟全局鼠标，宏切/离开头像槽不清 `pointerRaw`。线上缺文件 / 无 `FireflyCharacter` 则不切 Bot（含悬停）。≠ Ask 输入条 class `.ask-grok-row` |
-| 问答助手 | 基于 **MaxKB** 的站点 RAG：`/ask` 为 HeroUI Pro React 岛 + 同源 `/api/ask`（本站检索 + SSE）；桌宠点击弹 `LiveChatWidget`（仍直连本机 MaxKB）。**`siteConfig.pages.ask`**：现行 `!import.meta.env.PROD`（DEV 开 / 生产关）。上云见 `docs/ask-maxkb-cloud-plan.md`；浮窗强依赖桌宠 `enable` 且仅 ask 开时挂载。Ask 页 Grok Bot 吉祥物**尚未接线** |
+| 侧栏 Firefly Bot | `Profile` 圆槽宏切：站点头像 : Bot ≈ 1:4（`profile-firefly-timing.ts`）。Bot 六桶巡演，**开场 rest/idle 黑团白眼、两眼中缝留空**（勿默认 thinking 三点加载，勿让两眼贴死）；歇着时也穿插 bounce/hop/hend（见 timeline.humming/burst）。形状池圆润族（正圆 blob 双权重 / 鹅卵石 / 卵形 / 圆角六边形），纯黑身体 + 白眼（ADR-0005）；引擎自研入库 `public/vendor/firefly-bot/`，xAI replica 仅本机对照（ADR-0003/0004）。**HTML 首屏是站点头像**（进场轻晃 + 招手一次，引擎预热后仍等 macroDue 才切 Bot）；眼神跟全局鼠标，宏切/离开头像槽不清 `pointerRaw`。线上缺文件 / 无 `FireflyCharacter` 则不切 Bot（含悬停）。 |
+| 问答助手 | 站点 RAG（StepFun 优先 / MaxKB 兜底）：`/ask` 自写组件（AskChat + Sources + FollowUps + Composer + ask.css）无 HeroUI；同源 `/api/ask`（本站检索 + SSE）；思考链收起态透出「找到 N 篇相关笔记」。**浮窗内嵌同一 AskChat 岛（mode="widget"）**（lite 直发，跳过检索）。桌宠点击唤起浮窗；**桌宠在 /ask 页停靠不游走**（disableOnPathPrefixes: ["/ask"]）。**`siteConfig.pages.ask`** 开启时才挂浮窗。限流：20 次/10 分钟/IP，单次消息 4000 字符 |
 | 站点音乐 | 默认 `musicConfig.mode=local`（ADR-0002）；导航栏音符=音频面板，三角播放=横幅背景视频，二者互斥 |
 | 动态 | `content/dynamic` 或 Memos 时间线，非「动态 SSR」 |
 | LQIP | 低质量图片占位，构建脚本生成 |
