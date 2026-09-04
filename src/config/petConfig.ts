@@ -51,6 +51,7 @@ export const spritePetConfig: SpritePetConfig = {
 
 	// 浏览态：侧栏卡片外侧留白游走（左留白朝右 / 右留白朝左；固定 7.5s）
 	// 仅拖拽改坐标后：作废原目标 → 松开后 2s → 在当前视口卡里重新随机
+	// /ask 页除外：该路径停靠右下不游走（避免盖住聊天按钮吃点击）
 	roam: {
 		enable: true,
 		intervalMs: 7_500,
@@ -64,6 +65,8 @@ export const spritePetConfig: SpritePetConfig = {
 		nearMoveMs: 520,
 		balanceParkMinGapPx: 160,
 		pauseWhenPinned: false,
+		/** 该路径前缀下停用游走（只停靠） */
+		disableOnPathPrefixes: ["/ask"],
 	},
 
 	// 须高于主内容层(z-30)与 sticky 侧栏；与 FloatingControls 同级

@@ -39,6 +39,8 @@ export type SpritePetRoamConfig = {
 	 * 现默认 false：松开后走 resumeAfterDragMs 快速倒计时再继续换卡。
 	 */
 	pauseWhenPinned: boolean;
+	/** 这些路径前缀下停用游走（只停靠），如 /ask 聊天页避免盖住按钮吃点击 */
+	disableOnPathPrefixes?: string[];
 };
 
 export type SpritePetConfig = {

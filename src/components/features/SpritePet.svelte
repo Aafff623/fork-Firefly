@@ -941,6 +941,13 @@ function canRoamNow(): boolean {
 	if (!roam.enable || hidden) return false;
 	if (!canRoamOnBrowse()) return false;
 	if (balanceParkActive) return false;
+	// /ask 等聊天页停靠不游走（避免盖住按钮吃点击）
+	if (
+		roam.disableOnPathPrefixes?.some((p) =>
+			window.location.pathname.startsWith(p),
+		)
+	)
+		return false;
 	if (roam.pauseWhenPinned && userPinnedPosition) return false;
 	if (dragging || roamMoving) return false;
 	return true;

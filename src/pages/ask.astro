@@ -1,7 +1,7 @@
 ---
-import AskChatIsland from "@/components/ask/AskChatIsland.astro";
+import AskChat from "@/components/ask/AskChat";
 import { siteConfig } from "@/config";
-import "@/styles/ask-heroui.css";
+import "@/styles/ask.css";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 
 if (!siteConfig.pages.ask) {
@@ -14,6 +14,6 @@ const description = "基于站点内容回答你的问题，欢迎来问。";
 
 <MainGridLayout title={title} description={description}>
 	<div class="card-base z-10 relative w-full">
-		<AskChatIsland />
+		<AskChat client:load />
 	</div>
 </MainGridLayout>

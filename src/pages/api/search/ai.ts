@@ -188,7 +188,7 @@ export const POST: APIRoute = async ({ request }) => {
 		"STEPFUN_API_BASE",
 		"https://api.stepfun.com/step_plan/v1",
 	).replace(/\/$/, "");
-	const model = env("STEPFUN_MODEL", "step-3.5-flash");
+	const model = env("STEPFUN_MODEL", "step-3.7-flash");
 	const promptCandidates = candidates.map((candidate) => ({
 		id: candidate.id,
 		title: candidate.title,
