@@ -4,6 +4,7 @@
  * pre-emit critique: P4 H4 E4 S4 R4 V4
  */
 import { Icon } from "astro-icon/components";
+import WorkInProgress from "@/components/common/WorkInProgress.astro";
 import {
 	achievementsBadges,
 	achievementsPageConfig,
@@ -16,6 +17,8 @@ import "@/styles/achievements.css";
 if (!siteConfig.pages.achievements) {
 	return Astro.redirect("/404/");
 }
+
+const isLocalPreview = import.meta.env.DEV;
 
 const title = achievementsPageConfig.title || "摘星录";
 const description = achievementsPageConfig.description || "";
@@ -31,6 +34,10 @@ const TIER_LABEL: Record<string, string> = {
 ---
 
 <MainGridLayout title={title} description={description}>
+{
+	!isLocalPreview ? (
+		<WorkInProgress title={title} moduleName="摘星录" />
+	) : (
   <achievement-wall class="acv-page block w-full">
     {/* Stat Hero：大数字 + 文字标题（数字不单独成题） */}
     <div class="card-base acv-hero">
@@ -120,8 +127,11 @@ const TIER_LABEL: Record<string, string> = {
       </div>
     </div>
   </achievement-wall>
+	)
+}
 </MainGridLayout>
 
+{isLocalPreview && (
 <script>
   // custom element：定义一次，Swup 换页后新 DOM 自动升级，无需重绑
   if (!customElements.get("achievement-wall")) {
@@ -222,3 +232,4 @@ const TIER_LABEL: Record<string, string> = {
     customElements.define("achievement-wall", AchievementWall);
   }
 </script>
+)}

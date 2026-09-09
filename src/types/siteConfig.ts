@@ -98,9 +98,9 @@ export type SiteConfig = {
 		anime: boolean; // 追番页面开关
 		dynamic: boolean; // 动态页面开关
 		agents: boolean; // 角色名录页面开关
-		ask: boolean; // 问答助手；现行 DEV 开 / PROD 关（MaxKB 仍绑本机）
-		navSites: boolean; // 站点导航（藏经阁）页面开关
-		achievements: boolean; // 摘星录（成就徽章墙）页面开关
+		ask: boolean; // 问答助手；PROD 展示开发中，DEV 可完整调试
+		navSites: boolean; // 藏经阁；PROD 展示开发中，DEV 可完整调试
+		achievements: boolean; // 摘星录；PROD 展示开发中，DEV 可完整调试
 	};
 
 	/** 留言页顶卡右半竹蝉岛（自研；默认启用） */

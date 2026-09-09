@@ -969,14 +969,15 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 </div>
 
 {/* /ask 页本身就是聊天，不再叠加浮窗（避免同一页面两套聊天 UI） */}
-{siteConfig.pages.ask && !Astro.url.pathname.startsWith("/ask") && (
+{/* 线上问答未完工：浮窗只留本地 DEV */}
+{siteConfig.pages.ask && import.meta.env.DEV && !Astro.url.pathname.startsWith("/ask") && (
 	<LiveChatWidget />
 )}
 
 <FloatingControls headings={headings} encrypted={encrypted} />
 
 {
-	siteConfig.pages.ask && (
+	siteConfig.pages.ask && import.meta.env.DEV && (
 		<script is:inline data-swup-ignore-script>
 			(function initPetLiveChatTrigger() {
 				document.addEventListener("click", function (event) {

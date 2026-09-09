@@ -136,13 +136,19 @@ function tokenMissing(): Response {
 	);
 }
 
+function askWip(): Response {
+	return json({ code: 503, message: "正在开发中" }, 503);
+}
+
 function guardAsk(): Response | null {
+	if (import.meta.env.PROD) return askWip();
 	if (!siteConfig.pages.ask) return askClosed();
 	if (!STEPFUN_API_KEY && !ACCESS_TOKEN) return tokenMissing();
 	return null;
 }
 
 export const GET: APIRoute = async () => {
+	if (import.meta.env.PROD) return askWip();
 	if (!siteConfig.pages.ask) return askClosed();
 	return new Response(null, { status: 405 });
 };

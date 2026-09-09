@@ -279,6 +279,10 @@ let dockHost: HTMLElement | null = null;
 /** 卡片锚定的视口坐标（fixed）；随滚动/resize 重算 */
 let dockFixedX = $state(0);
 let dockFixedY = $state(0);
+/**
+ * 奔跑关：钉在日历整卡底边。单独 $state，好让模板订住坐标、滚动当帧跟上。
+ */
+let stillPinnedToCalendar = $state(false);
 /** 当前贴着的侧栏锚点（浏览态游走） */
 let currentAnchorId: PetRoamAnchorId | null = null;
 let roamTimer: ReturnType<typeof setTimeout> | null = null;
@@ -709,7 +713,7 @@ function actionForPetClick(
 /** 用户是否拖过（本会话或 v3 存储）；有则不再自动贴「最新动态」 */
 let userPinnedPosition = false;
 
-/** 设置面板「桌宠奔跑」开关（默认关=钉日历右下角，文档绝对坐标不随滚） */
+/** 设置面板「桌宠奔跑」开关（默认关=钉日历右下角，fixed 跟卡走） */
 let roamSwitchOn: boolean = getPetRoamEnabled();
 
 function loadStoredPosition(): boolean {
@@ -754,11 +758,107 @@ function resolveDockHost(el: HTMLElement): HTMLElement {
 	return layout instanceof HTMLElement ? layout : el;
 }
 
+/** 整张日历卡（widget-layout），不要用内部 #calendar-widget（collapse 可能 0×0） */
+function resolveLiveCalendarHost(): HTMLElement | null {
+	if (typeof document === "undefined") return null;
+	const cards = document.querySelectorAll(
+		"widget-layout.calendar-notebook-widget",
+	);
+	for (const el of cards) {
+		if (!(el instanceof HTMLElement)) continue;
+		const r = el.getBoundingClientRect();
+		if (r.width > 8 && r.height > 8) return el;
+	}
+	const inner = document.getElementById("calendar-widget");
+	if (inner instanceof HTMLElement) {
+		const host = resolveDockHost(inner);
+		const r = host.getBoundingClientRect();
+		if (r.width > 8 && r.height > 8) return host;
+	}
+	return null;
+}
+
+const SUPPORTS_CSS_ANCHOR =
+	typeof CSS !== "undefined" &&
+	CSS.supports("anchor-name", "--ff-pet-calendar") &&
+	CSS.supports("position-anchor", "--ff-pet-calendar");
+
+let cardDockRaf = 0;
+let cardDockSettle = 0;
+let calendarHostObserver: ResizeObserver | null = null;
+
+function observeCalendarHost(host: HTMLElement | null) {
+	calendarHostObserver?.disconnect();
+	calendarHostObserver = null;
+	if (!host || typeof ResizeObserver === "undefined") return;
+	calendarHostObserver = new ResizeObserver(() => {
+		queueCardDockSync(0);
+	});
+	calendarHostObserver.observe(host);
+}
+
 function clearDockHost() {
 	if (dockHost) {
 		dockHost.classList.remove("has-sprite-pet-anchor");
 		dockHost = null;
 	}
+}
+
+function bindCalendarStillHost(host: HTMLElement) {
+	if (dockHost !== host) {
+		clearDockHost();
+		host.classList.add("has-sprite-pet-anchor");
+		dockHost = host;
+		observeCalendarHost(host);
+	}
+	dockCorner = "bottom-right";
+	dockFacing = "left";
+	dockMode = "card";
+	posX = null;
+	posY = null;
+	currentAnchorId = "calendar";
+	stillPinnedToCalendar = true;
+	skinOpacity = 1;
+	if (SUPPORTS_CSS_ANCHOR && rootEl) {
+		rootEl.style.removeProperty("left");
+		rootEl.style.removeProperty("top");
+		rootEl.style.removeProperty("right");
+		rootEl.style.removeProperty("bottom");
+		rootEl.style.removeProperty("inset");
+		rootEl.style.removeProperty("transform");
+	}
+}
+
+/** 滚动当帧写到 DOM，不等 Svelte 下一拍（模板函数调用可能订不住 dockFixed*） */
+function applyCardDockStyleToDom() {
+	if (!rootEl || (SUPPORTS_CSS_ANCHOR && stillPinnedToCalendar)) return;
+	rootEl.style.left = "0px";
+	rootEl.style.top = "0px";
+	rootEl.style.right = "auto";
+	rootEl.style.bottom = "auto";
+	rootEl.style.transform = `translate3d(${dockFixedX}px, ${dockFixedY}px, 0)`;
+}
+
+function queueCardDockSync(settleFrames = 0) {
+	if (settleFrames > cardDockSettle) cardDockSettle = settleFrames;
+	if (cardDockRaf) return;
+	cardDockRaf = requestAnimationFrame(() => {
+		cardDockRaf = 0;
+		if (!roamSwitchOn && !dragging && !hidden) {
+			const host = resolveLiveCalendarHost();
+			if (host) {
+				bindCalendarStillHost(host);
+				if (rootEl) mountPetToBody(rootEl);
+				syncCardDockFixedPos();
+			}
+		} else if (dockMode === "card") {
+			syncCardDockFixedPos();
+		}
+		if (cardDockSettle > 0) {
+			cardDockSettle -= 1;
+			queueCardDockSync(0);
+		}
+	});
 }
 
 /**
@@ -767,9 +867,15 @@ function clearDockHost() {
  * 不夹进视口：卡片滚出窗口时宠跟着离开视野（再由 onScrollRoamCheck 换到可见卡）。
  */
 function syncCardDockFixedPos() {
-	if (dockMode !== "card" || !dockHost?.isConnected) return;
+	if (dockMode !== "card") return;
 	if (typeof window === "undefined") return;
+	if (stillPinnedToCalendar || currentAnchorId === "calendar") {
+		const live = resolveLiveCalendarHost();
+		if (live) bindCalendarStillHost(live);
+	}
+	if (!dockHost?.isConnected) return;
 	const r = dockHost.getBoundingClientRect();
+	if (r.width < 8 || r.height < 8) return;
 	const hang = Math.round(effectiveSize * 0.72);
 	const sink = Math.round(height * 0.08);
 	let x: number;
@@ -783,6 +889,7 @@ function syncCardDockFixedPos() {
 	}
 	dockFixedX = Math.round(x);
 	dockFixedY = Math.round(y);
+	applyCardDockStyleToDom();
 }
 
 /** 从卡片锚定卸下，按当前屏幕坐标挂回 body（拖拽 / 自由停靠用） */
@@ -791,6 +898,7 @@ function undockToBodyAtCurrentScreenPos() {
 	const r = rootEl.getBoundingClientRect();
 	posX = r.left;
 	posY = r.top;
+	stillPinnedToCalendar = false;
 	clearDockHost();
 	dockMode = "free";
 	mountPetToBody(rootEl);
@@ -802,7 +910,7 @@ function undockToBodyAtCurrentScreenPos() {
  */
 function applyPostViewportLock(pathname = window.location.pathname) {
 	if (typeof window === "undefined" || !isPostViewportMode(pathname)) return;
-	// 奔跑开关关（默认）：文章页不锁视口角，改钉日历右下（文档绝对坐标）
+	// 奔跑开关关（默认）：文章页不锁视口角，改钉日历整卡底边
 	if (!roamSwitchOn) {
 		pinToCalendarStill();
 		return;
@@ -810,6 +918,7 @@ function applyPostViewportLock(pathname = window.location.pathname) {
 	stopRoamLoop();
 	clearResumeAfterDragTimer();
 	clearScrollLeaveTimer();
+	stillPinnedToCalendar = false;
 	clearDockHost();
 	dockMode = "free";
 	currentAnchorId = null;
@@ -829,10 +938,14 @@ function dockToCard(
 	corner: PetRoamCorner,
 	anchorId: PetRoamAnchorId,
 	facing: PetRoamFacing = facingForCorner(corner),
+	allowOnPost = false,
 ) {
 	if (!rootEl || typeof document === "undefined") return;
-	// 文章页禁止贴卡片：只认视口固定位
-	if (isPostViewportMode()) return;
+	// 文章页默认不贴卡（视口定格）；奔跑关闭的日历驻留例外
+	if (isPostViewportMode() && !allowOnPost) {
+		stillPinnedToCalendar = false;
+		return;
+	}
 	const mountEl = resolveDockHost(host);
 	clearDockHost();
 	mountEl.classList.add("has-sprite-pet-anchor");
@@ -843,6 +956,7 @@ function dockToCard(
 	posX = null;
 	posY = null;
 	currentAnchorId = anchorId;
+	stillPinnedToCalendar = !roamSwitchOn && anchorId === "calendar";
 	recentRoamAnchorIds = [
 		anchorId,
 		...recentRoamAnchorIds.filter((id) => id !== anchorId),
@@ -857,6 +971,7 @@ function dockToCard(
  */
 function parkAtBrowseFallback(wave = true) {
 	if (userPinnedPosition || isPostPath() || hidden) return;
+	stillPinnedToCalendar = false;
 	clearDockHost();
 	dockMode = "free";
 	currentAnchorId = null;
@@ -907,6 +1022,10 @@ function chooseNextRoamAnchor(
 /** 浏览态默认落点：侧栏卡片角；找不到锚点时钉视口角兜底 */
 function applyBrowseDefaultPlacement() {
 	if (userPinnedPosition || isPostPath()) return;
+	if (!roamSwitchOn) {
+		pinToCalendarStill();
+		return;
+	}
 	if (placeNearDynamicsWidget()) return;
 	if (placeOnAnyVisibleAnchor()) return;
 	parkAtBrowseFallback(true);
@@ -954,41 +1073,26 @@ function canRoamNow(): boolean {
 }
 
 /**
- * 「奔跑开关关闭」的驻留形态：钉在日历右下角，文档绝对坐标（is-page-anchored）。
- * 不跟滚动：窗口上滑宠物随文档离场，滚回来还在原地。无可见日历则视口角兜底。
+ * 「奔跑开关关闭」的驻留形态：钉在日历右下角。
+ * 必须走 card dock（body + position:fixed，滚动态同步矩形）：
+ * 日历在 sticky 侧栏里，文档绝对坐标会随窗口上飘，卡还在原地。
+ * 无日历则视口角兜底。
  */
 function pinToCalendarStill() {
 	if (typeof window === "undefined") return;
 	if (hidden || dragging) return;
 	stopRoamLoop();
-	exitBalancePark();
-	clearDockHost();
-	dockMode = "free";
-	currentAnchorId = null;
+	// 只清失衡标记，勿走 exitBalancePark（那会再拉起 roam）
+	balanceParkActive = false;
 	plannedRoamTargetId = null;
-	// 不经 findVisibleAnchorById 的可见性过滤：日历滚出视口也要钉在它的文档位置
-	const cal =
-		document.getElementById("calendar-widget") ??
-		document.querySelector("widget-layout.calendar-notebook-widget");
-	const cr = cal ? cal.getBoundingClientRect() : null;
-	// rect 无效（未渲染/折叠）→ 视口角兜底，勿钉 (0,0)
-	if (cal && cr && cr.width > 0 && cr.height > 0) {
-		// 几何同 syncCardDockFixedPos 右下分支：大半身子挂卡右外，脚与卡底齐
-		const r = cr;
-		const hang = Math.round(effectiveSize * 0.72);
-		const sink = Math.round(height * 0.08);
-		const vx = r.right - effectiveSize + hang;
-		const vy = r.bottom - height + sink;
-		const page = viewportToPage(vx, vy);
-		const clamped = clampToDocument(page.x, page.y);
-		posX = Math.round(clamped.x);
-		posY = Math.round(clamped.y);
-		dockCorner = "bottom-right";
-		dockFacing = "left";
-		skinOpacity = 1;
+	const host = resolveLiveCalendarHost();
+	if (host) {
+		bindCalendarStillHost(host);
 		if (rootEl) mountPetToBody(rootEl);
+		syncCardDockFixedPos();
 		return;
 	}
+	stillPinnedToCalendar = false;
 	parkAtBrowseFallback(false);
 }
 
@@ -1456,6 +1560,10 @@ function defaultStyle(): string {
 function positionedStyle(): string {
 	// 定位走 transform（translate3d 合成层）：CLS 免计分 + 漫游更顺。
 	// 根元素基点固定 left:0/top:0，posX/posY 语义与原 left/top 完全一致
+	if (stillPinnedToCalendar && SUPPORTS_CSS_ANCHOR) {
+		// 日历驻留走 CSS anchor，跟 sticky / 横幅 transform 同一帧，不写 inline transform
+		return "";
+	}
 	if (dockMode === "card") {
 		// fixed 视口坐标：由 syncCardDockFixedPos 跟卡片走
 		return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${dockFixedX}px, ${dockFixedY}px, 0);`;
@@ -1463,6 +1571,9 @@ function positionedStyle(): string {
 	if (posX === null || posY === null) return defaultStyle();
 	return `left:0;top:0;right:auto;bottom:auto;transform:translate3d(${posX}px, ${posY}px, 0);`;
 }
+
+/** 订住 dock 坐标，避免模板里函数调用漏订 $state、滚动后样式不刷新 */
+const petPosStyle = $derived(positionedStyle());
 
 function flushPendingLook() {
 	lookRaf = 0;
@@ -1830,16 +1941,22 @@ onMount(() => {
 		if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
 			startRoamLoop();
 		}
-		// 奔跑开关关闭（默认）：覆盖默认停靠，钉日历右下角（文档绝对坐标）。
-		// 延到入场动画结束再取日历矩形，否则钉到动画中的偏移位上。
+		// 奔跑开关关闭（默认）：覆盖默认停靠，钉日历整卡底边（跟卡，不跟窗口）。
+		// 入场后再钉一次，避免封面 GIF 撑高后错位。
 		if (!roamSwitchOn) {
+			pinToCalendarStill();
 			window.setTimeout(() => {
 				if (!roamSwitchOn) pinToCalendarStill();
 			}, 1100);
 		}
 	};
 
-	const rendererGate = createPetRendererGate(bootRenderer);
+	const rendererGate = createPetRendererGate(() => {
+		void import("@/lib/boot-schedule").then(({ startBootSchedule, whenBootPhase }) => {
+			startBootSchedule();
+			void whenBootPhase("secondary").then(bootRenderer);
+		});
+	});
 	const applyRendererGate = () =>
 		rendererGate.evaluate(livePetRendererContext());
 
@@ -1892,8 +2009,8 @@ onMount(() => {
 				posY = clamped.y;
 			}
 		}
-		if (dockMode === "card") {
-			syncCardDockFixedPos();
+		if (dockMode === "card" || !roamSwitchOn) {
+			queueCardDockSync(8);
 		}
 		if (balanceParkActive && !isPostPath()) {
 			enterBalancePark();
@@ -1928,8 +2045,18 @@ onMount(() => {
 
 	const onScroll = () => {
 		resetIdleTimer();
-		if (dockMode === "card") {
-			syncCardDockFixedPos();
+		if (dockMode === "card" || !roamSwitchOn) {
+			// 先同步写坐标，再排队补几帧（sticky / 横幅 transform 可能晚一拍）
+			if (!roamSwitchOn) {
+				const host = resolveLiveCalendarHost();
+				if (host) {
+					bindCalendarStillHost(host);
+					syncCardDockFixedPos();
+				}
+			} else {
+				syncCardDockFixedPos();
+			}
+			queueCardDockSync(12);
 		}
 		onScrollRoamCheck();
 		if (!reactToSiteUi || !effectiveMotion || !isPostPath() || hidden) {
@@ -1956,6 +2083,7 @@ onMount(() => {
 		}, READ_SCROLL_TRIGGER_MS);
 	};
 	window.addEventListener("scroll", onScroll, { passive: true });
+	document.addEventListener("scroll", onScroll, { capture: true, passive: true });
 
 	type SwupLike = {
 		hooks?: {
@@ -2162,6 +2290,7 @@ onMount(() => {
 			(e as CustomEvent<{ enabled?: boolean }>).detail?.enabled ?? false;
 		roamSwitchOn = enabled;
 		if (enabled) {
+			stillPinnedToCalendar = false;
 			if (isPostPath()) {
 				applyPostViewportLock();
 			} else if (balanceParkActive) {
@@ -2192,6 +2321,9 @@ onMount(() => {
 		window.removeEventListener("keydown", onUserActivity);
 		window.removeEventListener("pointermove", onUserActivity);
 		window.removeEventListener("scroll", onScroll);
+		document.removeEventListener("scroll", onScroll, true);
+		if (cardDockRaf) cancelAnimationFrame(cardDockRaf);
+		calendarHostObserver?.disconnect();
 		document.removeEventListener("swup:enable", bindSwup);
 		win.swup?.hooks?.off?.("page:view", onSwupArrive);
 		window.removeEventListener(
@@ -2229,6 +2361,7 @@ onDestroy(() => {
 		bind:this={rootEl}
 		class="sprite-pet-root"
 		class:is-card-docked={dockMode === "card"}
+		class:is-calendar-still={stillPinnedToCalendar}
 		class:is-page-anchored={
 			dockMode === "free" &&
 			!dragging &&
@@ -2239,7 +2372,7 @@ onDestroy(() => {
 		class:is-face-left={dockMode === "card" && dockFacing === "left" && !animationState.startsWith("running")}
 		class:is-dragging={dragging}
 		class:is-theme-pulse={themePulse}
-		style={`z-index:${zIndex};${positionedStyle()}`}
+		style={`z-index:${zIndex};${petPosStyle}`}
 		data-swup-permanent
 		data-pet-id={pet.id}
 		data-pet-atlas={pet.atlasVariant}
@@ -2300,6 +2433,28 @@ onDestroy(() => {
 	.sprite-pet-root.is-card-docked {
 		position: fixed;
 		z-index: 1100;
+	}
+
+	/* 日历整卡底边：CSS anchor 跟 sticky 同一帧，避免滚动时往上飘 */
+	:global(widget-layout.calendar-notebook-widget) {
+		anchor-name: --ff-pet-calendar;
+	}
+
+	.sprite-pet-root.is-calendar-still {
+		position: fixed;
+		z-index: 1100;
+	}
+
+	@supports (anchor-name: --ff-pet-calendar) {
+		.sprite-pet-root.is-calendar-still {
+			position-anchor: --ff-pet-calendar;
+			left: anchor(right);
+			top: anchor(bottom);
+			right: auto;
+			bottom: auto;
+			/* 与 syncCardDockFixedPos 一致：右外探 28%、底边下沉 8% */
+			transform: translate(-28%, -92%);
+		}
 	}
 
 	/* 文章页：强制贴视口，避免被 is-page-anchored 的 absolute 带走 */

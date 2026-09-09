@@ -1,7 +1,9 @@
 ---
+import WorkInProgress from "@/components/common/WorkInProgress.astro";
 import NavSideNav from "@components/pages/nav/NavSideNav.astro";
 // 藏经阁视图：mast + 侧边栏 + 搜索 + 模块分区 + 预览弹层 + 交互脚本
 // 总览页传全部模块（showPinned 开「常用」行）；模块页传单模块，侧栏显示其二级子类锚点
+// PROD 只出「正在开发中」；DEV 才跑完整目录（与 /ask、/achievements 同一口径）
 import SiteCard from "@components/pages/nav/SiteCard.astro";
 import { Icon } from "astro-icon/components";
 import { isNavSitePreviewable, type NavModule, type NavSite } from "@/config";
@@ -63,6 +65,8 @@ const pinnedSites = showPinned
 		})()
 	: [];
 
+const isLocalPreview = import.meta.env.DEV;
+
 // 预览弹层的客户端数据（url → 详情），卡片 DOM 里只带 url 引用
 const previewData = Object.fromEntries(
 	renderedSubs.flatMap((sub) =>
@@ -82,6 +86,10 @@ const previewData = Object.fromEntries(
 const previewDataJson = JSON.stringify(previewData);
 ---
 
+{!isLocalPreview ? (
+  <WorkInProgress title={title} moduleName="藏经阁" />
+) : (
+<>
 <div class="nav-shell w-full relative min-h-32">
   <div class="nav-panel card-base z-10 relative w-full">
     <header class="nav-mast">
@@ -94,7 +102,9 @@ const previewDataJson = JSON.stringify(previewData);
     </header>
 
     <div class="nav-body">
-      <NavSideNav activeSlug={activeSlug} />
+      <div class="nav-sidenav-slot" id="nav-sidenav-slot">
+        <NavSideNav activeSlug={activeSlug} />
+      </div>
 
       <div class="nav-main">
         <nav-sites-app class="nav-app">
@@ -416,12 +426,49 @@ const previewDataJson = JSON.stringify(previewData);
     customElements.define("nav-sites-app", NavSitesApp);
   }
 
-  // —— 移动端抽屉 + 锚点平滑滚动（元素随 swup 换页重建，直接绑新节点） ——
+  // —— 桌面目录钉视口垂直居中 + 移动端抽屉 + 锚点滚动（随 swup 换页重建） ——
   (() => {
     const sidebar = document.getElementById("nav-sidenav");
+    const slot = document.getElementById("nav-sidenav-slot");
     const toggle = document.getElementById("nav-sidenav-toggle");
     const backdrop = document.getElementById("nav-sidenav-backdrop");
-    if (!sidebar || !toggle) return;
+    if (!sidebar) return;
+
+    // #main-grid 在 banner 下带 transform，fixed/sticky 会被困在格子里。
+    // 桌面把目录挂到 body，才能相对窗口垂直居中且滚页不跟着走。
+    const desktopMq = window.matchMedia("(min-width: 901px)");
+    const restoreToSlot = () => {
+      sidebar.classList.remove("is-viewport-pin");
+      sidebar.style.left = "";
+      sidebar.style.width = "";
+      if (slot && sidebar.parentElement !== slot) slot.appendChild(sidebar);
+    };
+    const pinToViewport = () => {
+      if (!slot || !desktopMq.matches) {
+        restoreToSlot();
+        return;
+      }
+      if (sidebar.parentElement !== document.body) {
+        document.body.appendChild(sidebar);
+      }
+      sidebar.classList.add("is-viewport-pin");
+      const rect = slot.getBoundingClientRect();
+      sidebar.style.left = `${Math.round(rect.left)}px`;
+      sidebar.style.width = "12.5rem";
+    };
+    const schedulePin = () => requestAnimationFrame(pinToViewport);
+    schedulePin();
+    desktopMq.addEventListener("change", schedulePin);
+    window.addEventListener("resize", schedulePin);
+    const onLeave = () => {
+      desktopMq.removeEventListener("change", schedulePin);
+      window.removeEventListener("resize", schedulePin);
+      restoreToSlot();
+      document.removeEventListener("swup:visit:start", onLeave);
+    };
+    document.addEventListener("swup:visit:start", onLeave);
+
+    if (!toggle) return;
 
     const close = () => document.body.removeAttribute("data-nav-sidenav-open");
     toggle.addEventListener("click", () => {
@@ -446,6 +493,8 @@ const previewDataJson = JSON.stringify(previewData);
     });
   })();
 </script>
+</>
+)}
 
 <style>
   .nav-panel {
@@ -499,10 +548,36 @@ const previewDataJson = JSON.stringify(previewData);
 
   :global(html.dark) .nav-mast-meta,
   :global(html.dark) .nav-lede {
-    color: rgb(255 255 255 / 0.68);
+    color: rgb(248 250 252 / 0.78);
   }
 
-  /* —— 双栏：侧边栏 | 主内容 —— */
+  :global(html.dark) .nav-module-name,
+  :global(html.dark) .nav-section-title {
+    color: rgb(248 250 252 / 0.94);
+    font-weight: 700;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :global(html.dark) .nav-section-count,
+  :global(html.dark) .nav-section-desc {
+    color: rgb(248 250 252 / 0.72);
+  }
+
+  :global(html.dark) .nav-search-icon {
+    color: rgb(248 250 252 / 0.62);
+  }
+
+  :global(html.dark) .nav-search-input {
+    color: rgb(248 250 252 / 0.92);
+    background: rgb(255 255 255 / 0.07);
+    border-color: rgb(255 255 255 / 0.16);
+  }
+
+  :global(html.dark) .nav-search-input::placeholder {
+    color: rgb(248 250 252 / 0.52);
+  }
+
+  /* —— 双栏：侧边栏占位 | 主内容（目录本体桌面 pin 到 viewport） —— */
   .nav-body {
     display: grid;
     grid-template-columns: 12.5rem minmax(0, 1fr);
@@ -510,9 +585,19 @@ const previewDataJson = JSON.stringify(previewData);
     align-items: start;
   }
 
+  .nav-sidenav-slot {
+    align-self: start;
+    min-height: 1px;
+  }
+
   @media (max-width: 900px) {
     .nav-body {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nav-sidenav-slot {
+      display: contents;
+      min-height: 0;
     }
   }
 
@@ -598,6 +683,7 @@ const previewDataJson = JSON.stringify(previewData);
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: -0.01em;
+    color: var(--deep-text, rgb(0 0 0 / 0.88));
   }
 
   .nav-section {
@@ -626,6 +712,7 @@ const previewDataJson = JSON.stringify(previewData);
     font-size: 1.02rem;
     font-weight: 700;
     letter-spacing: -0.01em;
+    color: var(--deep-text, rgb(0 0 0 / 0.88));
   }
 
   .nav-section-count {
@@ -917,8 +1004,12 @@ const previewDataJson = JSON.stringify(previewData);
     margin-top: 0.7rem;
   }
 
+  :global(html.dark) .nav-dialog-title {
+    color: rgb(248 250 252 / 0.94);
+  }
+
   :global(html.dark) .nav-dialog-detail {
-    color: rgb(255 255 255 / 0.72);
+    color: rgb(248 250 252 / 0.82);
   }
 
   @media (max-width: 640px) {

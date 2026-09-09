@@ -146,8 +146,9 @@ html.dark .site-footer {
 }
 
 html.dark .site-footer__scape {
-	opacity: 0.36;
-	filter: brightness(0.58) saturate(0.76) contrast(1.08);
+	/* 能认出左侧小人，但不把底边洗成一片亮青 */
+	opacity: 0.38;
+	filter: brightness(0.64) saturate(0.8) contrast(1.06);
 }
 
 .site-footer__veil {
@@ -171,17 +172,12 @@ html.dark .site-footer__scape {
 }
 
 html.dark .site-footer__veil {
-	background:
-		linear-gradient(
-			180deg,
-			color-mix(in oklch, var(--sf-paper) 92%, transparent) 0%,
-			color-mix(in oklch, var(--sf-paper-2) 88%, transparent) 100%
-		),
-		radial-gradient(
-			ellipse 68% 58% at 58% 36%,
-			color-mix(in oklch, var(--sf-paper) 82%, transparent),
-			transparent 70%
-		);
+	/* 下半段加罩，栏题/链接压得住底光 */
+	background: linear-gradient(
+		180deg,
+		color-mix(in oklch, var(--sf-paper) 36%, transparent) 0%,
+		color-mix(in oklch, var(--sf-paper-2) 58%, transparent) 100%
+	);
 }
 
 .site-footer__mist {
@@ -201,13 +197,14 @@ html.dark .site-footer__veil {
 }
 
 html.dark .site-footer__mist {
+	opacity: 0.55;
 	background:
 		radial-gradient(
-			ellipse 70% 80% at 18% 100%,
-			color-mix(in oklch, var(--sf-moss) 20%, transparent),
+			ellipse 56% 60% at 78% 100%,
+			color-mix(in oklch, var(--sf-moss) 10%, transparent),
 			transparent 70%
 		),
-		linear-gradient(0deg, color-mix(in oklch, var(--sf-paper-2) 72%, transparent) 0%, transparent 65%);
+		linear-gradient(0deg, color-mix(in oklch, var(--sf-paper-2) 48%, transparent) 0%, transparent 55%);
 }
 
 /*
@@ -290,9 +287,9 @@ html.dark body.wallpaper-transparent .site-footer__veil {
 	background: linear-gradient(
 		180deg,
 		transparent 0,
-		color-mix(in oklch, var(--page-bg) 48%, transparent) 8vh,
-		color-mix(in oklch, var(--sf-paper) 62%, transparent) 16vh,
-		color-mix(in oklch, var(--sf-paper-2) 90%, transparent) 100%
+		color-mix(in oklch, var(--page-bg) 22%, transparent) 6vh,
+		color-mix(in oklch, var(--sf-paper) 40%, transparent) 14vh,
+		color-mix(in oklch, var(--sf-paper-2) 64%, transparent) 100%
 	);
 }
 
@@ -302,7 +299,23 @@ html.dark:is(
 	[data-wallpaper-mode="fullscreen"]
 ) .site-footer__scape,
 html.dark body.wallpaper-transparent .site-footer__scape {
-	opacity: 0.28;
+	opacity: 0.38;
+	filter: brightness(0.64) saturate(0.82) contrast(1.06);
+	/* 暗色只溶很短一截顶边，别把小人脑袋裁没 */
+	-webkit-mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		rgba(0, 0, 0, 0.5) 2.5vh,
+		rgba(0, 0, 0, 0.88) 7vh,
+		#000 12vh
+	);
+	mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		rgba(0, 0, 0, 0.5) 2.5vh,
+		rgba(0, 0, 0, 0.88) 7vh,
+		#000 12vh
+	);
 }
 
 :is(
@@ -332,6 +345,8 @@ html.dark body.wallpaper-transparent .site-footer__scape {
 }
 
 .site-footer__wordmark {
+	display: grid;
+	justify-items: start;
 	font-family: var(--sf-display);
 	font-weight: 400;
 	font-style: italic;
@@ -343,6 +358,52 @@ html.dark body.wallpaper-transparent .site-footer__scape {
 	/* M17 雾罩溶底：字脚下沿淡进园纸 */
 	-webkit-mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
 	mask-image: linear-gradient(180deg, #000 38%, transparent 96%);
+}
+
+.site-footer__wordmark-sizer,
+.site-footer__wordmark-ink {
+	grid-area: 1 / 1;
+}
+
+.site-footer__wordmark-sizer {
+	visibility: hidden;
+	pointer-events: none;
+	user-select: none;
+}
+
+.site-footer__wordmark-ch {
+	color: color-mix(in oklch, var(--sf-forest) 26%, transparent);
+	opacity: 0.28;
+	animation: sf-wordmark-ink 0.72s var(--sf-ease) forwards;
+}
+
+@keyframes sf-wordmark-ink {
+	to {
+		color: var(--sf-forest);
+		opacity: 1;
+	}
+}
+
+@media (scripting: none) {
+	.site-footer__wordmark-sizer {
+		visibility: visible;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.site-footer__wordmark-sizer {
+		visibility: visible;
+	}
+
+	.site-footer__wordmark-ink {
+		display: none;
+	}
+
+	.site-footer__wordmark-ch {
+		animation: none;
+		opacity: 1;
+		color: inherit;
+	}
 }
 
 .site-footer__blurb-stack {
@@ -583,9 +644,10 @@ html.dark .site-footer__col-title-cn {
 }
 
 html.dark .site-footer__list a {
-	font-weight: 450;
+	font-weight: 500;
 	letter-spacing: 0.015em;
-	color: color-mix(in oklch, var(--sf-ink) 68%, transparent);
+	color: oklch(0.93 0.012 95);
+	text-shadow: 0 1px 10px oklch(0.1 0.02 145 / 0.72);
 }
 
 .site-footer__list a::after {
@@ -1354,7 +1416,7 @@ html.dark .site-footer__fruit-note {
 	}
 
 	html.dark .site-footer__scape {
-		opacity: 0.28;
+		opacity: 0.4;
 	}
 
 	.site-footer__veil {

@@ -1,0 +1,159 @@
+---
+/**
+ * 对照 https://github.com/Aafff623 的 profile 主页：左栏资料 + README + Pinned。
+ */
+import { Icon } from "astro-icon/components";
+import {
+	GITHUB_LOGIN,
+	GITHUB_PROFILE_URL,
+	fetchProfileReadmeHtml,
+	githubAchievements,
+	githubPinnedRepos,
+	githubProfile,
+	githubProfileTabs,
+} from "@/lib/github-profile";
+
+const readmeHtml = await fetchProfileReadmeHtml();
+const p = githubProfile;
+---
+
+<div class="gh-profile">
+	<div class="gh-profile__grid">
+		<aside class="gh-side">
+			<img
+				class="gh-avatar"
+				src={p.avatar}
+				alt={`${p.login} 的头像`}
+				width="296"
+				height="296"
+			/>
+			<h1 class="gh-name">{p.name}</h1>
+			<p class="gh-login">{p.login}</p>
+			<p class="gh-status">
+				<span aria-hidden="true">{p.statusEmoji}</span>
+				<span>{p.statusText}</span>
+			</p>
+			<p class="gh-bio">{p.bio}</p>
+			<p class="gh-follow">
+				<a href={`${GITHUB_PROFILE_URL}?tab=followers`}>
+					<strong>{p.followers}</strong> follower
+				</a>
+				{" · "}
+				<a href={`${GITHUB_PROFILE_URL}?tab=following`}>
+					<strong>{p.following}</strong> following
+				</a>
+			</p>
+			<ul class="gh-meta">
+				<li>
+					<Icon is:inline name="lucide:building-2" aria-hidden="true" />
+					<span>{p.company}</span>
+				</li>
+				<li>
+					<Icon is:inline name="lucide:link" aria-hidden="true" />
+					<a href={p.website} target="_blank" rel="noopener noreferrer">{p.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}</a>
+				</li>
+				<li>
+					<Icon is:inline name="simple-icons:x" aria-hidden="true" />
+					<a href={p.twitterUrl} target="_blank" rel="noopener noreferrer">@{p.twitter}</a>
+				</li>
+				<li>
+					<Icon is:inline name="lucide:library" aria-hidden="true" />
+					<a href={p.zhihu} target="_blank" rel="noopener noreferrer">知乎</a>
+				</li>
+			</ul>
+			<h2>Achievements</h2>
+			<div class="gh-achievements">
+				{
+					githubAchievements.map((item) => (
+						<a
+							href={`${GITHUB_PROFILE_URL}?achievement=${item.id}&tab=achievements`}
+							title={item.label}
+						>
+							<img src={item.src} alt={item.label} width="64" height="64" />
+							{"count" in item && item.count ? (
+								<span class="gh-achievements__count">x{item.count}</span>
+							) : null}
+						</a>
+					))
+				}
+			</div>
+			<h2>Highlights</h2>
+			<div>
+				{p.highlights.map((item) => <span class="gh-pro">{item}</span>)}
+			</div>
+		</aside>
+
+		<div class="gh-main">
+			<nav aria-label="GitHub profile">
+				<ul class="gh-tabs">
+					{
+						githubProfileTabs.map((tab) =>
+							tab.current ? (
+								<li>
+									<a class="is-current" href="#about-overview" aria-current="page">
+										{tab.label}
+									</a>
+								</li>
+							) : (
+								<li>
+									<a href={tab.href} target="_blank" rel="noopener noreferrer">
+										{tab.label}
+									</a>
+								</li>
+							),
+						)
+					}
+				</ul>
+			</nav>
+
+			<section id="about-overview" class="gh-readme" aria-label="README.md">
+				<div class="gh-readme__bar">
+					<Icon is:inline name="lucide:book-open" aria-hidden="true" />
+					<span>
+						<a href={`${GITHUB_PROFILE_URL}/${GITHUB_LOGIN}`}>{GITHUB_LOGIN}</a>
+						{" / "}
+						<strong>README.md</strong>
+					</span>
+				</div>
+				{
+					readmeHtml ? (
+						<div class="gh-readme__body" set:html={readmeHtml} />
+					) : (
+						<p class="gh-readme-fallback">
+							README 这次没拉下来。直接看
+							<a href={GITHUB_PROFILE_URL} target="_blank" rel="noopener noreferrer">
+								github.com/{GITHUB_LOGIN}
+							</a>
+							。
+						</p>
+					)
+				}
+			</section>
+
+			<div class="gh-pinned-head">
+				<h2>Pinned</h2>
+			</div>
+			<div class="gh-pinned">
+				{
+					githubPinnedRepos.map((repo) => (
+						<a class="gh-pin" href={repo.url} target="_blank" rel="noopener noreferrer">
+							<div class="gh-pin__name">
+								<Icon is:inline name="lucide:book-marked" aria-hidden="true" />
+								<span>{repo.nameWithOwner}</span>
+							</div>
+							<p class="gh-pin__desc">{repo.description}</p>
+							<div class="gh-pin__meta">
+								<span class="gh-pin__lang">
+									<span class="gh-pin__dot" style={`background:${repo.languageColor}`} />
+									{repo.language}
+								</span>
+								<span>★ {repo.stars}</span>
+								{repo.forks > 0 ? <span>Fork {repo.forks}</span> : null}
+							</div>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</div>

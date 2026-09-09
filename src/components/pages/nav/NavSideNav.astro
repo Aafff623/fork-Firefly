@@ -66,6 +66,22 @@ const modules = getEnabledNavModules();
     background: color-mix(in oklab, var(--content-meta) 4%, transparent);
   }
 
+  /* 挂到 body 后相对视口垂直居中（left/width 由脚本写） */
+  .nav-sidenav.is-viewport-pin {
+    position: fixed;
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    align-self: auto;
+    z-index: 40;
+    width: 12.5rem;
+    max-width: 12.5rem;
+    box-sizing: border-box;
+    max-height: min(72vh, calc(100vh - 7rem));
+    transform: translateY(-50%);
+    box-shadow: 0 10px 36px rgb(0 0 0 / 0.28);
+  }
+
   .nav-sidenav-head {
     display: flex;
     align-items: center;
@@ -145,13 +161,21 @@ const modules = getEnabledNavModules();
   }
 
   :global(html.dark) .nav-sidenav {
-    background: rgb(255 255 255 / 0.04);
-    border-color: rgb(255 255 255 / 0.1);
+    background: rgb(22 22 28 / 0.92);
+    border-color: rgb(255 255 255 / 0.16);
+  }
+
+  :global(html.dark) .nav-sidenav-title {
+    color: rgb(248 250 252 / 0.94);
   }
 
   :global(html.dark) .nav-side-link,
   :global(html.dark) .nav-side-sub {
-    color: rgb(255 255 255 / 0.62);
+    color: rgb(248 250 252 / 0.88);
+  }
+
+  :global(html.dark) .nav-side-icon {
+    opacity: 0.92;
   }
 
   :global(html.dark) .nav-side-link:hover,

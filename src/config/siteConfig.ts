@@ -125,12 +125,11 @@ export const siteConfig: SiteConfig = {
 		dynamic: true,
 		// 角色名录页面开关（园主 + AI 协作者）
 		agents: true,
-		// 问答助手：生产由服务端 StepFun/MaxKB provider 决定是否可用。
-		// 没有服务端密钥时页面仍可打开，接口返回可理解的配置提示，不再伪装成 404。
+		// 问答：导航仍露出；PROD 显示「正在开发中」，DEV 才跑完整聊天。
 		ask: true,
-		// 站点导航（藏经阁）页面开关
+		// 藏经阁：导航仍露出；PROD 显示「正在开发中」，DEV 才跑完整目录。
 		navSites: true,
-		// 摘星录（成就徽章墙）页面开关
+		// 摘星录：导航仍露出；PROD 显示「正在开发中」，DEV 才跑徽章墙。
 		achievements: true,
 	},
 

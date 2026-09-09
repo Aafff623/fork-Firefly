@@ -1,5 +1,6 @@
 ---
 import AskChat from "@/components/ask/AskChat";
+import WorkInProgress from "@/components/common/WorkInProgress.astro";
 import { siteConfig } from "@/config";
 import "@/styles/ask.css";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -10,10 +11,17 @@ if (!siteConfig.pages.ask) {
 
 const title = "站点问答助手";
 const description = "基于站点内容回答你的问题，欢迎来问。";
+const isLocalPreview = import.meta.env.DEV;
 ---
 
 <MainGridLayout title={title} description={description}>
-	<div class="card-base z-10 relative w-full">
-		<AskChat client:load />
-	</div>
+	{
+		isLocalPreview ? (
+			<div class="card-base z-10 relative w-full">
+				<AskChat client:load />
+			</div>
+		) : (
+			<WorkInProgress title={title} moduleName="问答" />
+		)
+	}
 </MainGridLayout>

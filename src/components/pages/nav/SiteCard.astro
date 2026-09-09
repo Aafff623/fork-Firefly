@@ -149,6 +149,8 @@ const previewable = isNavSitePreviewable(site);
     white-space: nowrap;
     font-size: 0.95rem;
     font-weight: 700;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
   }
 
   .nav-site-card:hover .nav-site-name {
@@ -190,20 +192,24 @@ const previewable = isNavSitePreviewable(site);
   .nav-site-desc {
     margin: 0;
     font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.45;
     color: color-mix(in oklab, var(--content-meta) 88%, transparent);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    -webkit-font-smoothing: antialiased;
   }
 
   .nav-site-meta {
     margin: 0;
     font-size: 0.72rem;
+    font-weight: 500;
     color: color-mix(in oklab, var(--content-meta) 72%, transparent);
   }
 
   :global(html.dark) .nav-site-card {
-    background: rgb(255 255 255 / 0.05);
+    background: rgb(255 255 255 / 0.07);
   }
 
   :global(html.dark) .nav-site-card:hover {
@@ -212,15 +218,15 @@ const previewable = isNavSitePreviewable(site);
   }
 
   :global(html.dark) .nav-site-name {
-    color: rgb(255 255 255 / 0.9);
+    color: rgb(248 250 252 / 0.96);
   }
 
   :global(html.dark) .nav-site-desc {
-    color: rgb(255 255 255 / 0.58);
+    color: rgb(248 250 252 / 0.78);
   }
 
   :global(html.dark) .nav-site-meta {
-    color: rgb(255 255 255 / 0.48);
+    color: rgb(248 250 252 / 0.66);
   }
 
   @media (prefers-reduced-motion: reduce) {

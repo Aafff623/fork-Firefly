@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+import { url } from "@/utils/url-utils";
+
+interface Props {
+	title: string;
+	moduleName: string;
+}
+
+const { title, moduleName } = Astro.props;
+---
+
+<div class="card-base z-10 relative w-full px-8 py-14 text-center">
+	<p class="inline-flex items-center gap-2 text-sm font-medium text-(--primary) mb-4">
+		<Icon is:inline name="lucide:construction" class="text-lg" aria-hidden="true" />
+		正在开发中
+	</p>
+	<h1 class="text-2xl font-bold text-90 mb-3">{title}</h1>
+	<p class="text-75 max-w-md mx-auto mb-8 leading-relaxed">
+		{moduleName}还在本地打磨，线上先不开放。过阵子再来看。
+	</p>
+	<a
+		href={url("/")}
+		class="inline-flex items-center gap-2 px-5 py-2.5 rounded-(--radius-large) bg-(--primary) text-white hover:bg-(--btn-content) transition-colors duration-200"
+	>
+		<Icon is:inline name="lucide:house" class="text-lg" aria-hidden="true" />
+		回首页
+	</a>
+</div>
