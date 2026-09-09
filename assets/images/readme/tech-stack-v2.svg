@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">threetwoa's blog technology map</title>
+  <desc id="desc">A hand-drawn technology map for the Astro blog, grouped by runtime, content, interaction, build, delivery, and integrations.</desc>
+  <defs>
+    <pattern id="paper" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#EDE8DE" stroke-width="1"/></pattern>
+    <style>
+      .sans{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;fill:#27252B}.mono{font-family:ui-monospace,"JetBrains Mono",Consolas,monospace;fill:#514B5A}
+      .eyebrow{font-size:15px;letter-spacing:2px;font-weight:700;fill:#6B5DD3}.title{font-size:34px;font-weight:800}.lane{font-size:19px;font-weight:800}.body{font-size:17px}.chip{font-size:16px;font-weight:700}
+    </style>
+  </defs>
+  <rect width="1200" height="600" rx="24" fill="#FFFDF8"/><rect x="20" y="20" width="1160" height="560" rx="18" fill="url(#paper)" stroke="#D8D0C2" stroke-width="2"/>
+  <text x="58" y="72" class="sans eyebrow">THREETWOA'S BLOG / TECHNOLOGY MAP / 03</text>
+  <text x="58" y="119" class="sans title">Tools grouped by the job they perform</text>
+  <text x="58" y="149" class="sans body">小而可组合的工具，围绕内容发布和阅读体验服务。</text>
+  <g transform="rotate(-1 180 370)"><rect x="58" y="190" width="240" height="320" rx="20" fill="#20222A" stroke="#2F5BDB" stroke-width="4"/><text x="86" y="228" class="sans eyebrow" fill="#C7D5FF">RUNTIME CORE</text><text x="86" y="278" class="sans" font-size="32" font-weight="800" fill="#fff">Astro 7</text><text x="86" y="310" class="sans body" fill="#E1E0E4">static output first</text><path d="M86 334h180" stroke="#565A66"/><text x="86" y="376" class="sans lane" fill="#fff">Svelte 5</text><text x="86" y="402" class="sans body" fill="#D1D0D5">interactive islands</text><text x="86" y="448" class="sans lane" fill="#fff">TypeScript</text><text x="86" y="474" class="sans body" fill="#D1D0D5">typed contracts</text></g>
+  <g transform="rotate(1 720 260)">
+    <rect x="336" y="190" width="806" height="76" rx="16" fill="#EAF0FF" stroke="#5875D6" stroke-width="3"/><rect x="336" y="190" width="9" height="76" rx="4" fill="#5875D6"/><text x="366" y="222" class="sans lane">PUBLISHING</text><text x="366" y="247" class="sans body">MD / MDX · Content Collections · remark / rehype</text>
+    <rect x="336" y="282" width="806" height="76" rx="16" fill="#F0EAFE" stroke="#8066D5" stroke-width="3"/><rect x="336" y="282" width="9" height="76" rx="4" fill="#8066D5"/><text x="366" y="314" class="sans lane">INTERACTION</text><text x="366" y="339" class="sans body">Tailwind CSS 4 · Swup · Iconify · Three.js</text>
+    <rect x="336" y="374" width="806" height="76" rx="16" fill="#FFF2D8" stroke="#D89424" stroke-width="3"/><rect x="336" y="374" width="9" height="76" rx="4" fill="#D89424"/><text x="366" y="406" class="sans lane">BUILD ENRICHMENT</text><text x="366" y="431" class="sans body">Sharp · LQIP · font subset · merman · Pagefind · Satori</text>
+    <rect x="336" y="466" width="806" height="76" rx="16" fill="#E6F6EC" stroke="#3B9A69" stroke-width="3"/><rect x="336" y="466" width="9" height="76" rx="4" fill="#3B9A69"/><text x="366" y="498" class="sans lane">DELIVERY &amp; INTEGRATIONS</text><text x="366" y="523" class="sans body">EdgeOne CDN · Vercel origin · Giscus + Dynamic Waline · SpritePet · local music · R2</text>
+  </g>
+  <text x="60" y="554" class="mono" font-size="15">NODE ≥ 22 · PNPM 9 · CONFIG-GATED · QUALITY: BIOME / ASTRO CHECK / TSC</text>
+</svg>

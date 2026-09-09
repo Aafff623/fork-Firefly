@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">threetwoa's blog architecture map</title>
+  <desc id="desc">A colorful hand-drawn map from Markdown and configuration through Astro composition and build enrichment to EdgeOne, Vercel, Cloudflare R2, and browser islands.</desc>
+  <defs>
+    <pattern id="paper" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#EDE8DE" stroke-width="1"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#6B5DD3"/></marker>
+    <style>
+      .sans{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;fill:#27252B}
+      .mono{font-family:ui-monospace,"JetBrains Mono",Consolas,monospace;fill:#514B5A}
+      .eyebrow{font-size:15px;letter-spacing:2px;font-weight:700;fill:#6B5DD3}
+      .title{font-size:34px;font-weight:800}.small{font-size:16px}.label{font-size:19px;font-weight:800}.body{font-size:17px}
+    </style>
+  </defs>
+  <rect width="1200" height="620" rx="24" fill="#FFFDF8"/>
+  <rect x="20" y="20" width="1160" height="580" rx="18" fill="url(#paper)" stroke="#D8D0C2" stroke-width="2"/>
+  <text x="58" y="72" class="sans eyebrow">THREETWOA'S BLOG / SYSTEM MAP / 02</text>
+  <text x="58" y="119" class="sans title">Static-first, from note to page</text>
+  <text x="58" y="149" class="sans small">配置和内容进入构建链，浏览器只承载必要的交互。</text>
+  <path d="M72 238 C270 215 440 260 610 234 S930 214 1124 239" fill="none" stroke="#6B5DD3" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <g transform="rotate(-1 140 380)">
+    <rect x="58" y="205" width="188" height="282" rx="18" fill="#EAF0FF" stroke="#5875D6" stroke-width="3"/>
+    <circle cx="86" cy="238" r="15" fill="#5875D6"/><text x="78" y="244" class="sans small" fill="#fff">01</text>
+    <text x="112" y="244" class="sans label">AUTHORING</text>
+    <path d="M82 268h138" stroke="#A9BAEB" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="82" y="308" class="sans label">Markdown / MDX</text><text x="82" y="338" class="mono small">src/content/</text><text x="82" y="364" class="mono small">src/config/</text>
+    <text x="82" y="414" class="sans body">posts · dynamic</text><text x="82" y="440" class="sans body">spec · site settings</text>
+  </g>
+  <g transform="rotate(1 370 380)">
+    <rect x="268" y="205" width="188" height="282" rx="18" fill="#F0EAFE" stroke="#8066D5" stroke-width="3"/>
+    <circle cx="296" cy="238" r="15" fill="#8066D5"/><text x="288" y="244" class="sans small" fill="#fff">02</text>
+    <text x="322" y="244" class="sans label">COMPOSE</text>
+    <path d="M292 268h138" stroke="#BBA9EA" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="292" y="308" class="sans label">Astro pages</text><text x="292" y="338" class="sans body">layouts · components</text><text x="292" y="364" class="sans body">plugins · styles</text>
+    <text x="292" y="414" class="sans body">Content Collections</text><text x="292" y="440" class="sans body">typed by schema</text>
+  </g>
+  <g transform="rotate(-1 600 380)">
+    <rect x="478" y="205" width="188" height="282" rx="18" fill="#FFF2D8" stroke="#D89424" stroke-width="3"/>
+    <circle cx="506" cy="238" r="15" fill="#D89424"/><text x="498" y="244" class="sans small" fill="#fff">03</text>
+    <text x="532" y="244" class="sans label">BUILD</text>
+    <path d="M502 268h138" stroke="#E6C37D" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="502" y="308" class="sans label">Astro SSG</text><text x="502" y="338" class="sans body">Sharp · LQIP</text><text x="502" y="364" class="sans body">font subset</text><text x="502" y="390" class="sans body">Pagefind index</text>
+    <text x="502" y="440" class="sans body">贵的工作在部署前完成</text>
+  </g>
+  <g transform="rotate(1 830 380)">
+    <rect x="688" y="205" width="188" height="282" rx="18" fill="#E6F6EC" stroke="#3B9A69" stroke-width="3"/>
+    <circle cx="716" cy="238" r="15" fill="#3B9A69"/><text x="708" y="244" class="sans small" fill="#fff">04</text>
+    <text x="742" y="244" class="sans label">DELIVERY</text>
+    <path d="M712 268h138" stroke="#9BCEAE" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="712" y="308" class="sans label">EdgeOne CDN</text><text x="712" y="338" class="sans body">→ Vercel origin</text><text x="712" y="364" class="sans body">Cloudflare DNS</text><text x="712" y="390" class="sans body">+ R2 images</text>
+    <text x="712" y="440" class="sans body">静态输出 · 少量 API</text>
+  </g>
+  <g transform="rotate(-1 1060 380)">
+    <rect x="898" y="205" width="244" height="282" rx="18" fill="#FFE9E6" stroke="#D6655E" stroke-width="3"/>
+    <circle cx="926" cy="238" r="15" fill="#D6655E"/><text x="918" y="244" class="sans small" fill="#fff">05</text>
+    <text x="952" y="244" class="sans label">BROWSER</text>
+    <path d="M922 268h194" stroke="#E5A7A1" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="922" y="308" class="sans label">HTML / CSS</text><text x="922" y="338" class="sans body">Svelte islands</text><text x="922" y="364" class="sans body">Swup transitions</text><text x="922" y="390" class="sans body">Giscus / Waline</text>
+    <text x="922" y="440" class="sans body">按需注水，内容先到</text>
+  </g>
+  <text x="60" y="554" class="mono small">AUTHOR → COMPOSE → BUILD → SHIP → INTERACT</text>
+  <text x="1140" y="554" text-anchor="end" class="mono small">STATIC-FIRST / CONFIG-DRIVEN</text>
+</svg>
