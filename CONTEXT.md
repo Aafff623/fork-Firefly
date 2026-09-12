@@ -162,24 +162,24 @@ Content Collections（`src/content.config.ts`）：
 - 默认页面仍 **prerender/static**；adapter 三选一：
   - 默认 / Vercel CI → `@astrojs/vercel`（**现行唯一源站构建**）
   - `CF_WORKERS=1` → `@astrojs/cloudflare`（备选，主链路不用）
-  - `EDGEONE=1` → `@edgeone/astro`（Pages 托管路径已放弃；`edgeone.json` / `build:edgeone` 仅作历史适配保留）
-- **三层入口（2026-08-12）**：
-  - **Phase 1 主入口（已通）**：`https://www.threetwoa.live` → EdgeOne CDN（不含大陆）→ 回源 Vercel；HTTPS 已部署
+  - `EDGEONE=1` → `@edgeone/astro`（已随 EO 退场废弃，仅历史适配保留；`edgeone.json` / `build:edgeone` 待清理）
+- **三层入口（2026-09-12 更新）**：
+  - **主入口**：`https://www.threetwoa.live` → Cloudflare DNS（灰云）→ 直连 Vercel；HTTPS 已部署（2026-09-12 EdgeOne 退场）
   - **源站**：Vercel Hobby 项目 `fork-firefly`（唯一构建）
   - **EdgeOne**：站点加速 / zones 个人版；**不做 Pages Git 构建**（OOM 路径已放弃）
   - **部署完整 Plan**：`docs/agents/deploy-edge-cf-plan.md`（Phase 1 已通 / Phase CF 主能力已通 / Phase ICP 后续）
-  - **当前权益**：EdgeOne **个人版按月续费**（体验价曾 ¥9.9，官价常见 ¥29.9；以控制台为准）含约 50GB/300万次 + 基础安全；主站防护用满 EO，大图走 CF R2 省配额。详见 `docs/agents/architecture-cost-optimized.md` §0
+  - **EdgeOne（2026-09-12 已退场）**：个人版到期未续费，主站 DNS 已切直连 Vercel；回滚窗口至停服后 60 天（≈2026-11-13，期内续费可恢复）。方案与实测：`temp/research/edgeone-offboarding/`
   - **新图纪律**：封面与正文大图优先 `https://img.threetwoa.live`（R2 桶 `firefly-comment`），禁止再把大 jpg 推进 git；存量 pack 另开任务
   - **成本优化架构**：尽量吃 CF 免费档（R2 图床）；主站 EO；现金刚需约 EO 个人版月费 → `docs/agents/architecture-cost-optimized.md`
-  - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2 桶 `firefly-comment`（`https://img.threetwoa.live`）。`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床。主站灰云指 EO。调度仅可选。见 runbook §Phase CF
-  - **Phase ICP（后续优化）**：备案后 EdgeOne 含大陆节点 → `docs/agents/edgeone-mainland-icp-plan.md`
+  - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2 桶 `firefly-comment`（`https://img.threetwoa.live`）。`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床。主站灰云已切直连 Vercel（2026-09-12）。见 runbook §Phase CF
+  - **Phase ICP（后续优化，前置已变）**：`.live` 可备案；EdgeOne 已退场，未来备案需重建 EO → `docs/agents/edgeone-mainland-icp-plan.md`
   - **备用直链**：`https://fork-firefly.vercel.app`（国内常因 DNS 污染打不开）
   - 旧域 `threetwoa.me` 不续
   - `siteConfig.site_url` 本地已改为 `https://www.threetwoa.live`（待确认后 push）
-  - Phase 1：`www` + apex 均已走 EdgeOne（不含大陆）
-- Vercel：自定义域 Valid；EdgeOne：`www` / apex 已通（2026-08-12）
+  - EdgeOne：`www` / apex 已于 2026-09-12 切离（直连 Vercel）
+- Vercel：自定义域 Valid，当前唯一源站与入口（2026-09-12 起 DNS 直连）
 - 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind → sync）
-- 操作清单：`docs/agents/edgeone-domain-runbook.md`
+- 操作清单：`docs/agents/edgeone-domain-runbook.md`（历史参考，2026-09-12 起部分失效）
 - 交付验收：同学打开 `https://www.threetwoa.live`；未备案勿宣称大陆节点加速
 
 ## 本地双端口预览（运维记忆 · 2026-08）
