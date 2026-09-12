@@ -18,12 +18,16 @@
 
     var SCRIPT_SRC = "/scripts/vendor/tagcloud.min.js";
     var DRAG_PX = 6;
-    // 闲置再快一档；拖拽跟手但别飞（0.42 是拖拽过灵敏的旧值）
-    var IDLE_MAX_SPEED = 0.48;
-    var DRAG_MAX_SPEED = 1.85;
-    var IDLE_DIV = 5;
-    // 越大越钝：鼠标位移 / DRAG_DIV → 角速度
-    var DRAG_DIV = 1.35;
+    // —— 旋转模型 v3（drag-delta）：速度与指针位置彻底解耦 ——
+    // 闲置固定角速度（deg / 基准帧 16.7ms，每轴）≈18°/s/轴，约为旧位置模型闲置速度的 4 倍
+    var IDLE_TICK_DEG = 0.3;
+    // 拖拽增量驱动：每 px 位移转多少度；单帧上限防甩飞
+    var DRAG_DEG_PER_PX = 0.45;
+    var DRAG_MAX_TICK_DEG = 6;
+    // 松手惯性：摩擦系数（每基准帧）与停转阈值
+    var DRAG_FRICTION = 0.9;
+    var DRAG_STOP_TICK_DEG = 0.02;
+    var FRAME_MS = 1000 / 60;
     // 进墙首次悬停 0.5s；墙内再换签 1s；整墙离开后再进又回到 0.5s
     var HOVER_FIRST_MS = 500;
     var HOVER_NEXT_MS = 500;
@@ -115,16 +119,13 @@
         nodes[i].classList.remove("tag-sphere__item--focus");
       }
       if (el._skipResume) return;
-      if (el._tagVisSync) {
-        el._tagVisSync();
-      } else {
-        startTagCloudRaf(el._tagCloudInstance);
-        setIdleSpeed(el._tagCloudInstance);
-      }
+      if (el._tagVisSync) el._tagVisSync();
+      else startTagCloudRaf(el._tagCloudInstance);
     }
 
     function destroyCloud(el) {
       if (!el) return;
+      if (el._dragCancel) el._dragCancel();
       el._skipResume = true;
       clearHoverFocus(el);
       el._skipResume = false;
@@ -203,24 +204,159 @@
       });
     }
 
-    /** sensitivityDiv：闲置 IDLE_DIV，拖拽 DRAG_DIV（更小更跟手） */
-    function applyPointerToInstance(instance, cloudEl, clientX, clientY, sensitivityDiv) {
-      if (!instance || !cloudEl) return;
-      var div = sensitivityDiv || IDLE_DIV;
-      var rect = cloudEl.getBoundingClientRect();
-      instance.mouseX = (clientX - (rect.left + rect.width / 2)) / div;
-      instance.mouseY = (clientY - (rect.top + rect.height / 2)) / div;
-      instance.active = true;
+    function clampTick(deg) {
+      if (deg > DRAG_MAX_TICK_DEG) return DRAG_MAX_TICK_DEG;
+      if (deg < -DRAG_MAX_TICK_DEG) return -DRAG_MAX_TICK_DEG;
+      return deg;
     }
 
-    function setIdleSpeed(instance) {
-      if (!instance) return;
-      instance.maxSpeed = IDLE_MAX_SPEED;
+    /**
+     * 绕 X / Y 轴旋转 instance 并写回 DOM（角度单位：度）。
+     * 闲置自转（patched _next）与拖拽增量（drag loop）共用同一套数学。
+     */
+    function ffRotate(instance, angX, angY) {
+      if (!instance || !instance.items) return;
+      var n = Math.PI / 180;
+      var a = [
+        Math.sin(angX * n),
+        Math.cos(angX * n),
+        Math.sin(angY * n),
+        Math.cos(angY * n),
+      ];
+      var items = instance.items;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var x = item.x;
+        var y2 = item.y * a[1] + item.z * -a[0];
+        var z1 = item.y * a[0] + item.z * a[1];
+        var z2 = z1 * a[3] - x * a[2];
+        var r = (2 * instance.depth) / (2 * instance.depth + z2);
+        item.x = x * a[3] + z1 * a[2];
+        item.y = y2;
+        item.z = z2;
+        item.scale = r.toFixed(3);
+        var node = item.el;
+        if (!node) continue;
+        var hw = (item._ow != null ? item._ow : node.offsetWidth) / 2;
+        var hh = (item._oh != null ? item._oh : node.offsetHeight) / 2;
+        var tr =
+          "translate3d(" +
+          (item.x - hw).toFixed(2) +
+          "px, " +
+          (item.y - hh).toFixed(2) +
+          "px, 0) scale(" +
+          item.scale +
+          ")";
+        node.style.WebkitTransform = tr;
+        node.style.transform = tr;
+      }
     }
 
-    function setDragSpeed(instance) {
-      if (!instance) return;
-      instance.maxSpeed = DRAG_MAX_SPEED;
+    function nowMs() {
+      return window.performance && performance.now
+        ? performance.now()
+        : Date.now();
+    }
+
+    /** 帧时长归一系数（相对 60fps 基准帧）；限幅防后台回来跳变 */
+    function frameK(instance) {
+      var now = nowMs();
+      var dt = instance._ffLastT ? now - instance._ffLastT : FRAME_MS;
+      instance._ffLastT = now;
+      if (dt <= 0 || dt > 120) return 1;
+      return dt / FRAME_MS;
+    }
+
+    /**
+     * 拖拽增量循环：pointermove 只累计像素位移，rAF 每帧按 Δ 旋转；
+     * 松手后带惯性衰减，衰减完自动交还闲置自转。
+     * el 上挂三个入口：_dragFeed(dx,dy) / _dragEnd() / _dragCancel()
+     */
+    function startDragLoop(el) {
+      var instance = el._tagCloudInstance;
+      if (!instance || el._dragRaf) return;
+      stopTagCloudRaf(instance);
+      instance._ffDragOwn = true;
+      var pendX = 0;
+      var pendY = 0;
+      var vX = 0;
+      var vY = 0;
+      var dragging = true;
+      var lastT = 0;
+
+      function finish() {
+        if (el._dragRaf) cancelAnimationFrame(el._dragRaf);
+        el._dragRaf = 0;
+        el._dragFeed = null;
+        el._dragEnd = null;
+        el._dragCancel = null;
+        var inst = el._tagCloudInstance;
+        if (inst) {
+          inst._ffDragOwn = false;
+          inst._ffLastT = 0;
+        }
+        // 经可见性闸门回到闲置自转（隐藏/离屏/列表态保持暂停）
+        if (el._tagVisSync) el._tagVisSync();
+        else startTagCloudRaf(inst);
+      }
+
+      el._dragFeed = function (dx, dy) {
+        pendX += dx;
+        pendY += dy;
+      };
+      el._dragEnd = function () {
+        dragging = false;
+      };
+      el._dragCancel = function () {
+        dragging = false;
+        vX = vY = 0;
+        pendX = pendY = 0;
+        finish();
+      };
+
+      function tick(now) {
+        el._dragRaf = 0;
+        var inst = el._tagCloudInstance;
+        if (!inst) return;
+        if (document.hidden) {
+          lastT = 0;
+          el._dragRaf = requestAnimationFrame(tick);
+          return;
+        }
+        var dt = lastT ? now - lastT : FRAME_MS;
+        lastT = now;
+        if (dt <= 0 || dt > 120) dt = FRAME_MS;
+        var k = dt / FRAME_MS;
+        var angX = 0;
+        var angY = 0;
+        if (dragging) {
+          angY = clampTick(pendX * DRAG_DEG_PER_PX);
+          angX = clampTick(-pendY * DRAG_DEG_PER_PX);
+          vX = angX / k;
+          vY = angY / k;
+          pendX = 0;
+          pendY = 0;
+        } else {
+          var f = Math.pow(DRAG_FRICTION, k);
+          vX *= f;
+          vY *= f;
+          angX = vX * k;
+          angY = vY * k;
+          if (
+            Math.abs(vX) < DRAG_STOP_TICK_DEG &&
+            Math.abs(vY) < DRAG_STOP_TICK_DEG
+          ) {
+            finish();
+            return;
+          }
+        }
+        if (angX !== 0 || angY !== 0) {
+          ffRotate(inst, angX, angY);
+          paintSphereDepth(inst);
+        }
+        el._dragRaf = requestAnimationFrame(tick);
+      }
+      el._dragRaf = requestAnimationFrame(tick);
     }
 
     function cacheItemMetrics(instance) {
@@ -301,7 +437,11 @@
           item._spot = spotKey;
           node.style.setProperty("--tag-spot", spotKey);
         }
-        node.style.opacity = op.toFixed(3);
+        var opKey = op.toFixed(3);
+        if (item._op !== opKey) {
+          item._op = opKey;
+          node.style.opacity = opKey;
+        }
         node.style.zIndex = String(Math.round(rs[i] * 1000));
       }
     }
@@ -311,67 +451,18 @@
       if (!instance) return;
       var proto = Object.getPrototypeOf(instance);
       if (!proto) return;
-      if (proto._fireflyDepthPaint === 9) return;
-      proto._fireflyDepthPaint = 9;
+      if (proto._fireflyDepthPaint === 10) return;
+      proto._fireflyDepthPaint = 10;
       proto._fireflyNextPatched = true;
+      // v3（drag-delta）：闲置固定角速度 + 帧时长归一，彻底移除「指针位置→角速度」模型
+      // （旧模型的球心死区、位置变速、过心反向正是「速率不一 / 静止感」的根因）
       proto._next = function () {
         var s = this;
         if (s.paused) return;
-        if (!s.keep && !s.active) {
-          s.mouseX =
-            Math.abs(s.mouseX - s.mouseX0) < 1
-              ? s.mouseX0
-              : (s.mouseX + s.mouseX0) / 2;
-          s.mouseY =
-            Math.abs(s.mouseY - s.mouseY0) < 1
-              ? s.mouseY0
-              : (s.mouseY + s.mouseY0) / 2;
-        }
-        var angX =
-          -(Math.min(Math.max(-s.mouseY, -s.size), s.size) / s.radius) *
-          s.maxSpeed;
-        var angY =
-          (Math.min(Math.max(-s.mouseX, -s.size), s.size) / s.radius) *
-          s.maxSpeed;
-        if (s.config && s.config.reverseDirection) {
-          angX = -angX;
-          angY = -angY;
-        }
-        if (Math.abs(angX) <= 0.01 && Math.abs(angY) <= 0.01) return;
-        var n = Math.PI / 180;
-        var a = [
-          Math.sin(angX * n),
-          Math.cos(angX * n),
-          Math.sin(angY * n),
-          Math.cos(angY * n),
-        ];
-        var items = s.items || [];
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i];
-          var x = item.x;
-          var y2 = item.y * a[1] + item.z * -a[0];
-          var z1 = item.y * a[0] + item.z * a[1];
-          var z2 = z1 * a[3] - x * a[2];
-          var r = (2 * s.depth) / (2 * s.depth + z2);
-          item.x = x * a[3] + z1 * a[2];
-          item.y = y2;
-          item.z = z2;
-          item.scale = r.toFixed(3);
-          var node = item.el;
-          if (!node) continue;
-          var hw = (item._ow != null ? item._ow : node.offsetWidth) / 2;
-          var hh = (item._oh != null ? item._oh : node.offsetHeight) / 2;
-          var tr =
-            "translate3d(" +
-            (item.x - hw).toFixed(2) +
-            "px, " +
-            (item.y - hh).toFixed(2) +
-            "px, 0) scale(" +
-            item.scale +
-            ")";
-          node.style.WebkitTransform = tr;
-          node.style.transform = tr;
-        }
+        // 拖拽/惯性循环持有旋转权时，库循环空转
+        if (s._ffDragOwn) return;
+        var k = frameK(s);
+        ffRotate(s, IDLE_TICK_DEG * k, -IDLE_TICK_DEG * k);
         paintSphereDepth(s);
       };
     }
@@ -402,6 +493,7 @@
       if (next === "list") {
         if (fallback) fallback.hidden = false;
         if (frame) frame.setAttribute("hidden", "");
+        if (cloudHost && cloudHost._dragCancel) cloudHost._dragCancel();
         stopTagCloudRaf(instance);
       } else {
         if (fallback) fallback.hidden = true;
@@ -628,10 +720,7 @@
           nodes[i].classList.remove("tag-sphere__item--focus");
         }
         if (el._tagVisSync) el._tagVisSync();
-        else {
-          startTagCloudRaf(el._tagCloudInstance);
-          setIdleSpeed(el._tagCloudInstance);
-        }
+        else startTagCloudRaf(el._tagCloudInstance);
       }
 
       function fireFocus(itemEl) {
@@ -801,10 +890,8 @@
       var pointerId = null;
       var sx = 0;
       var sy = 0;
-
-      function cloudBox() {
-        return el.querySelector(".tagcloud") || el;
-      }
+      var lastX = 0;
+      var lastY = 0;
 
       function onDown(ev) {
         if (ev.button != null && ev.button !== 0) return;
@@ -826,22 +913,22 @@
           el._tagInteract.dragged = true;
           el._tagInteract.suppressClick = true;
           frame.classList.add("is-dragging");
-          // 拖拽打断悬停聚焦
+          // 拖拽打断悬停聚焦，并接管旋转（增量驱动）
           clearHoverFocus(el);
+          startDragLoop(el);
+          lastX = ev.clientX;
+          lastY = ev.clientY;
           try {
             if (pointerId != null) frame.setPointerCapture(pointerId);
           } catch (e) {}
         }
         if (!el._tagInteract.dragged) return;
         if (ev.cancelable) ev.preventDefault();
-        setDragSpeed(el._tagCloudInstance);
-        applyPointerToInstance(
-          el._tagCloudInstance,
-          cloudBox(),
-          ev.clientX,
-          ev.clientY,
-          DRAG_DIV,
-        );
+        if (el._dragFeed) {
+          el._dragFeed(ev.clientX - lastX, ev.clientY - lastY);
+          lastX = ev.clientX;
+          lastY = ev.clientY;
+        }
       }
 
       function onUp() {
@@ -856,7 +943,8 @@
           pointerId = null;
         }
         frame.classList.remove("is-dragging");
-        setIdleSpeed(el._tagCloudInstance);
+        // 松手 → 惯性衰减，衰减完 drag loop 自行交还闲置自转
+        if (el._dragEnd) el._dragEnd();
         if (el._tagInteract.suppressClick) {
           setTimeout(function () {
             el._tagInteract.suppressClick = false;
@@ -949,6 +1037,7 @@
           el._tagVisIntersecting === false ||
           (host && host.getAttribute("data-view-mode") === "list");
         if (off) {
+          if (el._dragCancel) el._dragCancel();
           if (el._focusHold) {
             el._skipResume = true;
             clearHoverFocus(el);
@@ -966,7 +1055,6 @@
           return;
         }
         startTagCloudRaf(instance);
-        setIdleSpeed(instance);
       };
 
       document.addEventListener("visibilitychange", el._tagVisSync);
@@ -1053,7 +1141,6 @@
         cacheItemMetrics(existing);
         syncTagCloudStyles(existing);
         bindMetricsAndVisibility(el, root);
-        setIdleSpeed(existing);
         if (fallback) fallback.hidden = true;
         markReady(root, true);
         applyViewMode(root, "sphere");
@@ -1075,7 +1162,6 @@
         useHTML: true,
       });
       el._tagCloudInstance = instance || null;
-      setIdleSpeed(instance);
 
       el._tagCloudDestroy = function () {
         el._skipResume = true;
