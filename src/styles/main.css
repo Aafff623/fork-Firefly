@@ -165,9 +165,8 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 
 @layer components {
     /* 亮暗切换圆形扩散（移植自 pane / jazii.dev）：禁用默认 cross-fade，
-       新主题快照由 JS 用 clip-path: circle() 从按钮位置展开，圆边保持锐利。
-       注：动画进行中（约 500ms）快照层会拦截点击，与参考实现 pane 行为一致，
-       动画结束即可继续点击；连点中断由 skipTransition 兜底 */
+       新主题快照由 JS 用 clip-path: circle() 从按钮半径展开，带一点透明度以免圆边太硬。
+       注：动画进行中（约 720ms）快照层会拦截点击；连点中断由 skipTransition 兜底 */
     ::view-transition-old(root),
     ::view-transition-new(root) {
         animation: none;
@@ -183,22 +182,25 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     
     /* 主题过渡保护类 - 仅在非 View Transitions 模式下使用 */
     /* 当使用 View Transitions API 时，浏览器会自动处理过渡，不需要禁用 transition */
+    /* 动画用「暂停」而非「抹除」：animation:none 会把 fill 停在可见态的入场动画
+       （如 .onload-animation 基础态 opacity:0）打回不可见，VT 快照/圆外旧页即整片空白；
+       paused 冻结当前帧，撤类后 paused→running 对已播完动画是 no-op，不会重播入场闪烁 */
     .is-theme-transitioning:not(.use-view-transition) *,
     .is-theme-transitioning:not(.use-view-transition) *::before,
     .is-theme-transitioning:not(.use-view-transition) *::after {
         transition: none !important;
-        animation: none !important;
+        animation-play-state: paused !important;
     }
-    
+
     /* 在主题切换时禁用代码块的复杂效果以提升性能 */
     /* 使用 View Transitions 时也需要禁用代码块动画，因为它们太多了 */
     .is-theme-transitioning .expressive-code,
     .is-theme-transitioning .expressive-code * {
         transition: none !important;
-        animation: none !important;
+        animation-play-state: paused !important;
         will-change: auto !important;
     }
-    
+
     /* 禁用复杂选择器元素的过渡 - 仅在非 View Transitions 模式下 */
     .is-theme-transitioning:not(.use-view-transition) .float-panel,
     .is-theme-transitioning:not(.use-view-transition) .float-panel *,
@@ -209,7 +211,7 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
     .is-theme-transitioning:not(.use-view-transition) .dropdown-content,
     .is-theme-transitioning:not(.use-view-transition) .dropdown-content * {
         transition: none !important;
-        animation: none !important;
+        animation-play-state: paused !important;
     }
     
     /* 强制使用 contain 隔离渲染上下文 - 仅在非 View Transitions 模式下 */

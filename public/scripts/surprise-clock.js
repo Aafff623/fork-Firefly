@@ -282,6 +282,9 @@
     function tick() {
       if (!visible) return;
       scheduleNextTick();
+      // 主题切换窗口让位：tick 的字形重刷 + 逐位测量的重算/强制回流
+      // 会和 VT 扩散动画抢主线程（1Hz × 40-110ms），跳拍一次无感知
+      if (document.documentElement.classList.contains("is-theme-transitioning")) return;
       const root = document.getElementById(ROOT_ID);
       if (!root || document.hidden) return;
       if (

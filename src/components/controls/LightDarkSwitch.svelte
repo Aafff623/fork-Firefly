@@ -13,6 +13,7 @@ import {
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 import {
 	applyThemeToDocument,
+	finishThemeTransition,
 	getStoredTheme,
 	getTimeTheme,
 	resolveTheme,
@@ -32,6 +33,12 @@ type WindowWithSwup = Window & { swup?: SwupInstance };
 let mode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
 let displayedMode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
 
+/** 进行中的视图过渡；连点时用它中断上一个扩散 */
+let activeTransition: ViewTransition | null = null;
+
+/** 过渡代数：连点 skipTransition 时保证只有最新一次的 finished 负责撤保护类 */
+let transitionSeq = 0;
+
 const isDark = $derived(displayedMode === DARK_MODE);
 
 function updateDisplayedMode() {
@@ -50,8 +57,9 @@ function updateDisplayedMode() {
 /**
  * 循环：time（北京时段自动）→ light → dark → time
  * 若下一档解析后外观与当前相同（白天 time≈light、夜里 time≈dark），跳过，保证每点一次必变色。
+ * 落地动作包进 View Transitions：新主题以按钮为圆心圆形扩散展开（移植自 pane/jazii.dev）。
  */
-function toggleScheme() {
+function toggleScheme(e: MouseEvent) {
 	const order: LIGHT_DARK_MODE[] = [TIME_MODE, LIGHT_MODE, DARK_MODE];
 	const from = mode === SYSTEM_MODE ? TIME_MODE : mode;
 	const start = Math.max(0, order.indexOf(from));
@@ -64,9 +72,73 @@ function toggleScheme() {
 			break;
 		}
 	}
-	mode = next;
-	setTheme(next);
-	updateDisplayedMode();
+
+	const land = () => {
+		mode = next;
+		// deferCleanup：保护类改由 vt.finished 收尾，撤类的全树重算不再砸在扩散动画帧上
+		setTheme(next, { deferCleanup: true });
+		updateDisplayedMode();
+	};
+
+	// 降级：不支持 VT 或用户偏好减少动态 → 现状硬切（is-theme-transitioning 保护照常生效）
+	if (
+		window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+		typeof document.startViewTransition !== "function"
+	) {
+		land();
+		return;
+	}
+
+	// 连点：中断上一个未完成的扩散，立即开始新的一次
+	activeTransition?.skipTransition();
+
+	// 同步取按钮圆心；进入异步后 e.currentTarget 已为 null
+	const btn = e.currentTarget as HTMLElement | null;
+	const rect = btn?.getBoundingClientRect();
+	// 按钮圆心；失败时降级到右上角（导航栏右区），避免从屏幕中心扩散
+	const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 60;
+	const y = rect ? rect.top + rect.height / 2 : 60;
+	const maxRadius = Math.hypot(
+		Math.max(x, window.innerWidth - x),
+		Math.max(y, window.innerHeight - y),
+	);
+	const startRadius = rect ? Math.max(rect.width, rect.height) * 0.55 : 22;
+
+	// is-theme-transitioning 全站禁过渡保证新快照为纯新主题；旧页是静态位图，
+	// 由合成器驱动 clip-path 扩散，千节点无插值开销
+	const vt = document.startViewTransition(land);
+	activeTransition = vt;
+	const seq = ++transitionSeq;
+	vt.finished.finally(() => {
+		// 只有最新一次过渡负责收尾；被 skipTransition 的旧过渡让位，避免中途撤掉新过渡的保护类
+		if (seq === transitionSeq) finishThemeTransition();
+	});
+	vt.ready
+		.then(() => {
+			const silk = {
+				duration: 720,
+				easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+			};
+			document.documentElement.animate(
+				[
+					{
+						clipPath: `circle(${startRadius}px at ${x}px ${y}px)`,
+						opacity: 0.86,
+					},
+					{
+						clipPath: `circle(${maxRadius}px at ${x}px ${y}px)`,
+						opacity: 1,
+					},
+				],
+				{
+					...silk,
+					pseudoElement: "::view-transition-new(root)",
+				},
+			);
+		})
+		.catch(() => {
+			// skipTransition / 快照失败时 ready 会 reject，DOM 已是目标态，无需补救
+		});
 }
 
 onMount(() => {
@@ -190,9 +262,9 @@ onMount(() => {
 	.day-slide {
 		--h: 2.75rem;
 		--ratio: 2.2; /* 原 2.51，略收以贴邻钮节奏 */
-		--dur: 0.42s;
-		--dur-color: 0.5s;
-		--ease: cubic-bezier(0.33, 0.1, 0.2, 1);
+		--dur: 0.62s;
+		--dur-color: 0.7s;
+		--ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 		position: relative;
 		z-index: 50;

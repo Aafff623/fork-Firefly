@@ -151,10 +151,13 @@ export function setHue(hue: number): void {
 	r.style.setProperty("--hue", String(hue));
 }
 
-export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
+export function applyThemeToDocument(
+	theme: LIGHT_DARK_MODE,
+	options?: { deferCleanup?: boolean },
+): boolean {
 	// 检查是否在浏览器环境中
 	if (typeof document === "undefined") {
-		return;
+		return false;
 	}
 
 	// 解析主题
@@ -190,7 +193,7 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
 
 	// 如果既不需要主题切换也不需要代码主题更新，直接返回
 	if (!needsThemeChange && !needsCodeThemeUpdate) {
-		return;
+		return false;
 	}
 
 	// 批量 DOM 操作：短窗关掉全站 color/bg 过渡，避免 .dark 翻转时千节点同时插值卡顿
@@ -210,13 +213,30 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
 	}
 
 	if (needsThemeChange) {
-		// 双 rAF：先按「无过渡」提交一帧样式，再撤掉保护类
-		requestAnimationFrame(() => {
+		if (options?.deferCleanup) {
+			// 调用方（View Transitions 路径）等动画结束后用 finishThemeTransition() 收尾：
+			// 撤保护类是一次全树重算，双 rAF 时机正好砸在扩散动画前几帧上，是切换卡顿源之一
+		} else {
+			// 双 rAF：先按「无过渡」提交一帧样式，再撤掉保护类
 			requestAnimationFrame(() => {
-				root.classList.remove("is-theme-transitioning");
+				requestAnimationFrame(() => {
+					root.classList.remove("is-theme-transitioning");
+				});
 			});
-		});
+		}
 	}
+	return true;
+}
+
+/**
+ * 撤销主题切换保护类。配合 applyThemeToDocument({ deferCleanup: true }) 使用：
+ * VT 扩散动画期间保持全站禁过渡（快照正确性前提），finished 后再撤，避免重算风暴与动画抢帧。
+ */
+export function finishThemeTransition(): void {
+	if (typeof document === "undefined") {
+		return;
+	}
+	document.documentElement.classList.remove("is-theme-transitioning");
 }
 
 // 系统主题监听器引用
@@ -226,7 +246,10 @@ let systemThemeListener:
 
 let timeThemeTimer: ReturnType<typeof setTimeout> | null = null;
 
-export function setTheme(theme: LIGHT_DARK_MODE): void {
+export function setTheme(
+	theme: LIGHT_DARK_MODE,
+	options?: { deferCleanup?: boolean },
+): void {
 	// 检查是否在浏览器环境中
 	if (
 		typeof localStorage === "undefined" ||
@@ -236,7 +259,7 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 	}
 
 	// 先应用主题
-	applyThemeToDocument(theme);
+	applyThemeToDocument(theme, options);
 
 	// 保存到localStorage
 	localStorage.setItem("theme", theme);
