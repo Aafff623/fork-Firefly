@@ -1,6 +1,6 @@
 /* Hallmark · component: Footer · archetype: Ft5 statement + genuine garden index
  * theme: custom · vibe: "月白竹影，松柏数字花园" · paper: oklch(97% 0.018 115) · accent: oklch(55% 0.12 145)
- * display: Segoe Script italic (navbar brand) · body: project sans · axes: light / script-italic / chromatic-green · generated: imagegen + WebP post-process
+ * display: Firefly Art Script / Great Vibes (footer wordmark) · body: project sans · axes: light / script-italic / chromatic-green · generated: imagegen + WebP post-process
  * pre-emit critique: P5 H4 E5 S5 R5 V5 · contrast: pass (min 6.74:1) · footer: Ft5 + hub index · mobile: pass
  */
 
@@ -24,9 +24,11 @@
 	--sf-sprout-grown: oklch(0.43 0.11 148);
 	--sf-fruit: oklch(0.68 0.155 52);
 	--sf-serif: Georgia, "Times New Roman", "Songti SC", serif;
-	/* 品牌艺术字：与顶栏 threetwoa 同一路手写体，斜体 */
+	/* 页脚独立品牌艺术字：用连笔体区别于导航栏字标 */
 	--sf-display:
-		var(--font-navbar-title, "Segoe Script"),
+		"Firefly Art Script",
+		"Great Vibes",
+		"Segoe Script",
 		"Apple Chancery",
 		"Snell Roundhand",
 		cursive;
@@ -349,7 +351,7 @@ html.dark body.wallpaper-transparent .site-footer__scape {
 	justify-items: start;
 	font-family: var(--sf-display);
 	font-weight: 400;
-	font-style: italic;
+	font-style: normal;
 	font-size: clamp(2rem, 1.45rem + 1.45vw, 3.15rem);
 	letter-spacing: 0.04em;
 	line-height: 1.2;

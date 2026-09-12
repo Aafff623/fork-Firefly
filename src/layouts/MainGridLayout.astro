@@ -25,6 +25,11 @@ import {
 	spritePetConfig,
 } from "@/config";
 import {
+	homeGlyphArt,
+	homeGlyphArtLines,
+	homeGlyphArtText,
+} from "@/config/homeGlyphArt";
+import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
@@ -585,9 +590,14 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             <div class="w-4/5 lg:w-3/4 text-center mb-0">
                 <div class="flex flex-col">
                     {backgroundWallpaper.common?.homeText?.title && (
-                        <div class="banner-title repel-text pointer-events-auto font-bold text-white mb-2 lg:mb-4 leading-tight" style={{ '--banner-title-size': backgroundWallpaper.common.homeText.titleSize || "3rem" }}>
+                        <h1
+                            class="banner-title home-oi-heading pointer-events-auto text-white mb-2 lg:mb-4 leading-tight"
+                            data-home-glyph-art={backgroundWallpaper.common.homeText.title === homeGlyphArtText ? JSON.stringify(homeGlyphArt) : undefined}
+                            data-home-glyph-lines={backgroundWallpaper.common.homeText.title === homeGlyphArtText ? JSON.stringify(homeGlyphArtLines) : undefined}
+                            style={{ '--banner-title-size': backgroundWallpaper.common.homeText.titleSize || "3rem" }}
+                        >
                             {backgroundWallpaper.common.homeText.title}
-                        </div>
+                        </h1>
                     )}
                     {backgroundWallpaper.common?.homeText?.subtitle && (
                         <div id="banner-subtitle" class="banner-subtitle text-white/90 leading-snug" style={{ fontSize: backgroundWallpaper.common.homeText.subtitleSize || "1.5rem" }} data-subtitles={JSON.stringify(backgroundWallpaper.common.homeText.subtitle)}>
@@ -655,7 +665,8 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
             <div class="w-4/5 lg:w-3/4 text-center mb-0">
                 <div class="flex flex-col items-center gap-3">
                     <div
-                        class="banner-post-title banner-title repel-text pointer-events-auto font-bold text-white leading-tight"
+                        class="banner-post-title banner-title post-glyph-title pointer-events-auto font-bold text-white leading-tight"
+                        data-post-glyph-render
                         style={{ "--banner-title-size": "3.25rem" }}
                     >
                         {bannerPostMeta.title}
@@ -797,7 +808,7 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 
 <!-- Main content -->
 <div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${!(isBannerMode && isBackgroundEnabled) ? 'no-banner-layout' : ''}`} style={isFullscreenMode ? 'top: 0;' : `top: ${finalMainPanelTop}`}>
-    <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给 .banner-title.repel-text；可点区域由 [&>*]:pointer-events-auto 收回 -->
+    <!-- 外层 / 内层均 pointer-events-none：重叠横幅区把事件留给横幅标题；可点区域由 [&>*]:pointer-events-auto 收回 -->
     <div class="relative w-full xl:w-[86vw] max-w-(--page-width) mx-auto pointer-events-none">
         <div id="main-grid"
           class={`transition duration-700 w-full left-0 right-0 grid ${effectiveGridCols} grid-rows-[auto_1fr_auto] mx-auto gap-4 px-2 md:px-4 [&>*]:pointer-events-auto ${!sidebarConfig.mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}

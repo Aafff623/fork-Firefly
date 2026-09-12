@@ -17,8 +17,8 @@ import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { url } from "@/utils/url-utils";
 
 const currentYear = new Date().getFullYear();
-const wordmark =
-	siteConfig.navbar?.title || profileConfig.name || siteConfig.title;
+// 页脚使用独立品牌名，不跟随导航栏标题变化。
+const wordmark = "Digital Garden";
 /* 园记压到一行钩子；英文次级短句 */
 const brandBlurbCn = "数字花园里，枝叶随写随长；余白留给路过的你。";
 const brandBlurbEn = "Grow slow, leave room for wanderers.";
@@ -115,7 +115,10 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
     <!-- 1 · 顶带：品牌左 / 状态 + 浇水右 -->
     <div class="site-footer__top">
       <div class="site-footer__brand">
-        <div class="site-footer__wordmark">{wordmark}</div>
+        <div class="site-footer__wordmark" data-wordmark={wordmark} aria-label={wordmark}>
+          <span class="site-footer__wordmark-sizer" aria-hidden="true">{wordmark}</span>
+          <span class="site-footer__wordmark-ink" aria-hidden="true"></span>
+        </div>
         <div class="site-footer__blurb-stack">
           <p class="site-footer__blurb site-footer__blurb--cn">{brandBlurbCn}</p>
           <p class="site-footer__blurb site-footer__blurb--en">{brandBlurbEn}</p>
@@ -672,7 +675,7 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
       <div class="site-footer__legal-left">
         <span class="site-footer__copy">
           &copy; <span id="copyright-year">{currentYear}</span>{" "}
-          {profileConfig.name}
+          {wordmark}
         </span>
       </div>
 
@@ -711,4 +714,5 @@ const waterTitle = `${gardenTip} · 以最新文章更新日计 · 点我浇一�
 
 <script>
   import "@/scripts/footer-water";
+  import "@/scripts/footer-wordmark";
 </script>

@@ -1,0 +1,664 @@
+---
+/**
+ * Banner title enhancements.
+ *
+ * The homepage keeps a stable text layout underneath a separate visual layer.
+ * Each visual glyph can grow beyond its slot without moving the rest of the
+ * sentence. Article titles use the lightweight local renderer below.
+ */
+---
+
+<style is:global>
+	@font-face {
+		font-family: "Firefly Art Script";
+		src: url("/assets/fonts/GreatVibes-Regular-2.otf") format("opentype");
+		font-style: normal;
+		font-weight: 400;
+		font-display: swap;
+	}
+
+	/* Homepage: keep the two-line handwritten title separate from the
+	 * reference-style image/visual layer. The hit layer remains transparent so
+	 * the title can switch one character at a time without changing layout. */
+	.home-oi-heading {
+		position: relative;
+		isolation: isolate;
+		display: inline-flex;
+		flex-direction: column;
+		align-items: flex-start;
+		margin: 0;
+		font-family: "Firefly Art Script", "Great Vibes", "Segoe Script", cursive !important;
+		font-size: clamp(54px, 7.2vw, 116px) !important;
+		font-weight: 400 !important;
+		line-height: 0.94 !important;
+		letter-spacing: 0.006em !important;
+		white-space: nowrap;
+		text-shadow: 0 3px 22px rgba(0, 0, 0, 0.42) !important;
+		animation: none !important;
+	overflow: visible !important;
+		word-break: normal !important;
+		overflow-wrap: normal !important;
+	}
+
+	.home-oi-line {
+		position: relative;
+		display: inline-block;
+		isolation: isolate;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.home-oi-line + .home-oi-line {
+		margin-top: 0.08em;
+	}
+
+	.home-oi-hit-layer,
+	.home-oi-visual-layer {
+		display: inline-flex;
+		align-items: baseline;
+		white-space: nowrap;
+	}
+
+	.home-oi-hit-layer {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		pointer-events: auto;
+	}
+
+	.home-oi-visual-layer {
+		position: relative;
+		z-index: 1;
+		pointer-events: none;
+	}
+
+	.home-oi-word {
+		display: inline-flex;
+		white-space: nowrap;
+	}
+
+	.home-oi-space {
+		display: inline-block;
+		width: 0.22em;
+		flex: 0 0 0.22em;
+	}
+
+	.home-oi-hit {
+		appearance: none;
+		position: relative;
+		display: inline-block;
+		flex: 0 0 auto;
+		margin: 0;
+		border: 0;
+		padding: 0;
+		background: transparent;
+		color: transparent;
+		font: inherit;
+		line-height: 1;
+		letter-spacing: inherit;
+		text-shadow: none;
+		cursor: default;
+		touch-action: manipulation;
+	}
+
+	.home-oi-hit:focus-visible {
+		z-index: 1;
+		outline: 2px solid rgba(255, 255, 255, 0.9);
+		outline-offset: 0.12em;
+		border-radius: 0.25em;
+	}
+
+	.home-oi-letter {
+		position: relative;
+		display: inline-block;
+		flex: 0 0 auto;
+		transform: translate3d(var(--home-oi-shift, 0px), 0, 0);
+		transition: transform 185ms cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: transform;
+	}
+
+	.home-oi-character {
+		display: inline-block;
+		opacity: 1;
+		color: inherit;
+		-webkit-text-fill-color: currentColor;
+		transition: opacity 72ms linear;
+	}
+
+	.home-oi-art {
+		position: absolute;
+		left: 50%;
+		bottom: calc(-1 * var(--home-oi-offset, 0) * 1em);
+		height: calc(var(--home-oi-height, 1.122) * 1em);
+		width: auto;
+		max-width: calc(var(--home-oi-max-width, 1.377) * 1em);
+		object-fit: contain;
+		pointer-events: none;
+		opacity: 0;
+		transform: translate3d(-50%, 4px, 0) scale(0.58)
+			rotate(var(--home-oi-rotation, 0deg));
+		transform-origin: 50% 88%;
+		will-change: transform, opacity;
+		user-select: none;
+	}
+
+	/* The transparent wallpaper mode dims every image under the wrapper. Glyph
+	 * art is a stateful overlay, so it must stay invisible until its own letter
+	 * is active. */
+	#wallpaper-wrapper .home-oi-art {
+		opacity: 0 !important;
+		filter: none !important;
+	}
+
+	/* Overlay/fullscreen wallpaper rules apply to every image; restore the
+	 * reference card geometry for the title art after those broad selectors. */
+	#wallpaper-wrapper.wallpaper-overlay .home-oi-art,
+	#wallpaper-wrapper.wallpaper-fullscreen .home-oi-art {
+		position: absolute !important;
+		inset: auto !important;
+		left: 50% !important;
+		bottom: calc(-1 * var(--home-oi-offset, 0) * 1em) !important;
+		width: auto !important;
+		height: calc(var(--home-oi-height, 1.122) * 1em) !important;
+		max-width: calc(var(--home-oi-max-width, 1.377) * 1em) !important;
+		object-fit: contain !important;
+	}
+
+	.home-oi-letter.is-active .home-oi-character {
+		opacity: 0;
+	}
+
+	#wallpaper-wrapper .home-oi-letter.is-active .home-oi-art {
+		opacity: 1 !important;
+	}
+
+	/* Article titles keep their own visual treatment and do not consume home assets. */
+	.post-glyph-title {
+		--post-glyph-enter: 260ms;
+		--post-glyph-exit: 180ms;
+		display: inline-flex;
+		align-items: baseline;
+		height: 1.35em;
+		line-height: 1;
+		overflow: visible;
+		white-space: nowrap;
+	}
+
+	.post-glyph {
+		position: relative;
+		display: inline-block;
+		transform: translateX(var(--post-glyph-dx, 0));
+		transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: transform;
+	}
+
+	.post-glyph-text {
+		display: inline-block;
+		opacity: 1;
+		transition: opacity var(--post-glyph-exit) cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.post-glyph-art {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		height: 1.72em;
+		width: auto;
+		max-width: none;
+		pointer-events: none;
+		opacity: 0;
+		transform: translate(-50%, calc(-50% + 4px))
+			scale(0.58) rotate(var(--post-glyph-rotation, 0deg));
+		transform-origin: center;
+		transition:
+			opacity var(--post-glyph-exit) cubic-bezier(0.4, 0, 0.2, 1),
+			transform var(--post-glyph-exit) cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.post-glyph.is-active .post-glyph-text {
+		opacity: 0;
+		transition-duration: 120ms;
+	}
+
+	.post-glyph.is-active .post-glyph-art {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1)
+			rotate(var(--post-glyph-rotation, 0deg));
+		transition:
+			opacity var(--post-glyph-enter) cubic-bezier(0.34, 1.56, 0.64, 1),
+			transform var(--post-glyph-enter) cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.post-glyph-space {
+		display: inline-block;
+		width: 0.32em;
+	}
+
+	@media (max-width: 480px) {
+		.home-oi-heading {
+			font-size: clamp(30px, 8.5vw, 64px) !important;
+			letter-spacing: 0.006em !important;
+		}
+
+		.home-oi-space {
+			width: 0.18em;
+			flex-basis: 0.18em;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.home-oi-letter,
+		.home-oi-character,
+		.home-oi-art,
+		.post-glyph,
+		.post-glyph-text,
+		.post-glyph-art {
+			transition-duration: 1ms !important;
+		}
+	}
+</style>
+
+<script>
+	type Variant = { src: string; rotation: number; scale: number };
+	type HomeGlyph = {
+		char: string;
+		assetHeight: number;
+		assetMaxWidth: number;
+		assetOffset: number;
+		variants: Variant[];
+	};
+	type HomeState = {
+		hit: HTMLButtonElement;
+		visual: HTMLElement;
+		text: HTMLElement;
+		art: HTMLImageElement;
+		config: HomeGlyph;
+		index: number;
+		lineIndex: number;
+		lineGlyphs: HTMLElement[];
+		variantIndex: number;
+		enterToken: number;
+		currentVariant?: Variant;
+		exitTimer?: number;
+	};
+
+	const imageCache = new Map<string, Promise<boolean>>();
+
+	function glyphLabel(char: string) {
+		return char === "'" ? "Reveal apostrophe" : `Reveal letter ${char}`;
+	}
+
+	function preloadImage(src: string) {
+		const cached = imageCache.get(src);
+		if (cached) return cached;
+
+		const promise = new Promise<boolean>((resolve) => {
+			const image = new Image();
+			image.decoding = "async";
+			image.onload = () => resolve(true);
+			image.onerror = () => resolve(false);
+			image.src = src;
+		});
+
+		imageCache.set(src, promise);
+		return promise;
+	}
+
+	function nextVariant(state: HomeState) {
+		const variants = state.config.variants;
+		const variant = variants[state.variantIndex % variants.length] ?? variants[0];
+		state.variantIndex = (state.variantIndex + 1) % variants.length;
+		return variant;
+	}
+
+	function buildHomeLayer(
+		text: string,
+		glyphs: HomeGlyph[],
+		startIndex: number,
+		lineIndex: number,
+		interactive: boolean,
+	) {
+		const root = document.createDocumentFragment();
+		const states: HomeState[] = [];
+		const glyphsInLine: HTMLElement[] = [];
+		let index = startIndex;
+
+		for (const char of Array.from(text)) {
+			if (/\s/u.test(char)) {
+				const space = document.createElement("span");
+				space.className = "home-oi-space";
+				space.textContent = "\u00a0";
+				root.append(space);
+				continue;
+			}
+
+			const config = glyphs[index];
+			if (!config || config.char !== char) {
+				return {
+					root: document.createDocumentFragment(),
+					states: [] as HomeState[],
+					glyphs: [] as HTMLElement[],
+				};
+			}
+
+			if (interactive) {
+				const hit = document.createElement("button");
+				hit.type = "button";
+				hit.className = "home-oi-hit";
+				hit.textContent = char;
+				hit.setAttribute("aria-label", glyphLabel(char));
+				hit.dataset.homeGlyphIndex = String(index);
+				root.append(hit);
+				glyphsInLine.push(hit);
+				states.push({
+					hit,
+					visual: document.createElement("span"),
+					text: document.createElement("span"),
+					art: document.createElement("img"),
+					config,
+					index,
+					lineIndex,
+					lineGlyphs: glyphsInLine,
+					variantIndex: 0,
+					enterToken: 0,
+				});
+			} else {
+				const glyph = document.createElement("span");
+				glyph.className = "home-oi-letter";
+				const textNode = document.createElement("span");
+				textNode.className = "home-oi-character";
+				textNode.textContent = char;
+				glyph.append(textNode);
+				root.append(glyph);
+				glyphsInLine.push(glyph);
+			}
+
+			index += 1;
+		}
+
+		return { root, states, glyphs: glyphsInLine };
+	}
+
+	function initHome(el: HTMLElement) {
+		if (el.dataset.glyphReady === "1") return;
+
+		const text = el.textContent?.trim() ?? "";
+		let configs: HomeGlyph[];
+		let lines: string[];
+		try {
+			configs = JSON.parse(el.dataset.homeGlyphArt ?? "[]") as HomeGlyph[];
+			lines = JSON.parse(el.dataset.homeGlyphLines ?? "[]") as string[];
+		} catch {
+			return;
+		}
+
+		const characters = Array.from(text).filter((char) => !/\s/u.test(char));
+		if (
+			!text ||
+			lines.length !== 2 ||
+			lines.join(" ") !== text ||
+			configs.length !== characters.length
+		) return;
+
+		const content = document.createDocumentFragment();
+		const states: HomeState[] = [];
+		let startIndex = 0;
+
+		for (const [lineIndex, lineText] of lines.entries()) {
+			const line = document.createElement("span");
+			line.className = "home-oi-line";
+			const hitLayer = document.createElement("span");
+			hitLayer.className = "home-oi-hit-layer";
+			const visualLayer = document.createElement("span");
+			visualLayer.className = "home-oi-visual-layer";
+			visualLayer.setAttribute("aria-hidden", "true");
+
+			const hit = buildHomeLayer(lineText, configs, startIndex, lineIndex, true);
+			const visual = buildHomeLayer(lineText, configs, startIndex, lineIndex, false);
+			const lineCharacters = Array.from(lineText).filter((char) => !/\s/u.test(char));
+			if (
+				hit.states.length !== lineCharacters.length ||
+				visual.glyphs.length !== lineCharacters.length
+			) return;
+
+			visualLayer.append(visual.root);
+			hitLayer.append(hit.root);
+			line.append(hitLayer, visualLayer);
+			content.append(line);
+
+			const lineStates = hit.states;
+			lineStates.forEach((state, localIndex) => {
+				state.lineGlyphs = visual.glyphs;
+				state.lineIndex = localIndex;
+				state.visual = visual.glyphs[localIndex];
+				state.text = state.visual.querySelector<HTMLElement>(".home-oi-character")!;
+				state.art = document.createElement("img");
+				state.art.className = "home-oi-art";
+				state.art.alt = "";
+				state.art.draggable = false;
+				state.art.src = state.config.variants[0]?.src ?? "";
+				state.visual.append(state.art);
+			});
+
+			states.push(...lineStates);
+			startIndex += lineCharacters.length;
+		}
+
+		el.setAttribute("aria-label", text);
+		el.replaceChildren(content);
+		el.dataset.glyphReady = "1";
+
+		let active: HomeState | undefined;
+
+		function applyNeighborShifts(state?: HomeState, variant?: Variant) {
+			states.forEach((candidate) => {
+				candidate.lineGlyphs.forEach((glyph) => {
+					glyph.style.setProperty("--home-oi-shift", "0px");
+				});
+			});
+			if (!state || !variant) return;
+
+			const activeFontSize = state
+				? Number.parseFloat(getComputedStyle(state.hit).fontSize)
+				: 0;
+			const artWidth = state && variant
+				? activeFontSize * state.config.assetMaxWidth * variant.scale
+				: 0;
+			const overflow = state
+				? Math.max(0, artWidth - state.hit.getBoundingClientRect().width)
+				: 0;
+
+			state.lineGlyphs.forEach((glyph, index) => {
+				if (index === state.lineIndex) return;
+
+				const distance = Math.abs(index - state.lineIndex);
+				const side = index < state.lineIndex ? -1 : 1;
+				const shift = distance <= 3
+					? side * Math.min(48, Math.max(8, overflow * 0.58)) * Math.pow(0.58, distance - 1)
+					: 0;
+				glyph.style.setProperty("--home-oi-shift", `${shift}px`);
+			});
+		}
+
+		function deactivate(state: HomeState) {
+			state.enterToken += 1;
+			window.clearTimeout(state.exitTimer);
+			state.art.getAnimations().forEach((animation) => animation.cancel());
+			state.text.getAnimations().forEach((animation) => animation.cancel());
+			const variant = state.currentVariant;
+			state.visual.classList.remove("is-active");
+			state.hit.removeAttribute("aria-pressed");
+			if (variant) {
+				state.art.animate(
+					[
+						{ opacity: 1, transform: `translate3d(-50%, 0, 0) scale(${variant.scale}) rotate(${variant.rotation}deg)` },
+						{ opacity: 0, transform: `translate3d(-50%, 4px, 0) scale(0.58) rotate(${variant.rotation}deg)` },
+					],
+					{ duration: 178, delay: 64, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" },
+				);
+				state.text.animate(
+					[{ opacity: 0 }, { opacity: 1 }],
+					{ duration: 72, delay: 64, easing: "linear", fill: "forwards" },
+				);
+			}
+			if (active === state) {
+				active = undefined;
+				applyNeighborShifts();
+			}
+		}
+
+		async function activate(state: HomeState) {
+			window.clearTimeout(state.exitTimer);
+			const token = state.enterToken + 1;
+			state.enterToken = token;
+			active = state;
+			const variant = nextVariant(state);
+			const ready = await preloadImage(variant.src);
+			if (token !== state.enterToken || active !== state || !ready) return;
+
+			state.art.getAnimations().forEach((animation) => animation.cancel());
+			state.text.getAnimations().forEach((animation) => animation.cancel());
+			state.art.src = variant.src;
+			state.currentVariant = variant;
+			state.art.style.setProperty("--home-oi-height", String(state.config.assetHeight));
+			state.art.style.setProperty("--home-oi-max-width", String(state.config.assetMaxWidth));
+			state.art.style.setProperty("--home-oi-offset", String(state.config.assetOffset));
+			state.art.style.setProperty("--home-oi-scale", String(variant.scale));
+			state.art.style.setProperty("--home-oi-rotation", `${variant.rotation}deg`);
+			state.hit.setAttribute("aria-pressed", "true");
+			state.visual.classList.add("is-active");
+			state.text.animate(
+				[{ opacity: 1 }, { opacity: 0 }],
+				{ duration: 72, easing: "linear", fill: "forwards" },
+			);
+			state.art.animate(
+				[
+					{ opacity: 0, transform: `translate3d(-50%, 5px, 0) scale(0.56) rotate(${variant.rotation}deg)` },
+					{ opacity: 1, transform: `translate3d(-50%, -2.5px, 0) scale(${variant.scale * 1.075}) rotate(${variant.rotation}deg)`, offset: 0.43 },
+					{ opacity: 1, transform: `translate3d(-50%, 0.7px, 0) scale(${variant.scale * 0.986}) rotate(${variant.rotation}deg)`, offset: 0.72 },
+					{ opacity: 1, transform: `translate3d(-50%, 0, 0) scale(${variant.scale}) rotate(${variant.rotation}deg)` },
+				],
+				{ duration: 286, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" },
+			);
+			applyNeighborShifts(state, variant);
+		}
+
+		states.forEach((state) => {
+			state.hit.addEventListener("pointerenter", () => void activate(state));
+			state.hit.addEventListener("pointerleave", () => deactivate(state));
+			state.hit.addEventListener("focus", () => void activate(state));
+			state.hit.addEventListener("blur", () => deactivate(state));
+		});
+
+		el.addEventListener("pointerleave", () => {
+			if (active) deactivate(active);
+		});
+
+		void Promise.allSettled(configs.flatMap((config) => config.variants.map((variant) => preloadImage(variant.src))));
+	}
+
+	function svgArt(char: string) {
+		const hue = (char.codePointAt(0) ?? 0) % 360;
+		const safeChar = char.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+		const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl(${hue} 96% 75%)"/><stop offset="1" stop-color="hsl(${(hue + 70) % 360} 90% 58%)"/></linearGradient><filter id="f"><feTurbulence baseFrequency=".012 .05" numOctaves="2"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter></defs><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-family="Arial Rounded MT Bold,Arial,sans-serif" font-weight="800" font-size="168" fill="url(#g)" filter="url(#f)">${safeChar}</text></svg>`;
+		return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+	}
+
+	function initPost(el: HTMLElement) {
+		if (el.dataset.postGlyphReady === "1") return;
+		const text = el.textContent?.trim() ?? "";
+		if (!text) return;
+
+		el.dataset.postGlyphReady = "1";
+		el.setAttribute("aria-label", text);
+		const states: Array<{ el: HTMLElement; art: HTMLImageElement; timer?: number }> = [];
+		const fragment = document.createDocumentFragment();
+
+		for (const char of Array.from(text)) {
+			if (/\s/u.test(char)) {
+				const space = document.createElement("span");
+				space.className = "post-glyph-space";
+				space.textContent = "\u00a0";
+				fragment.append(space);
+				continue;
+			}
+
+			const glyph = document.createElement("span");
+			glyph.className = "post-glyph";
+			const flat = document.createElement("span");
+			flat.className = "post-glyph-text";
+			flat.textContent = char;
+			const art = document.createElement("img");
+			art.className = "post-glyph-art";
+			art.alt = "";
+			art.src = svgArt(char);
+			glyph.append(flat, art);
+			fragment.append(glyph);
+			states.push({ el: glyph, art });
+		}
+
+		el.replaceChildren(fragment);
+		let active = -1;
+
+		function measure() {
+			requestAnimationFrame(() => {
+				states.forEach((state) => {
+					state.el.style.setProperty("--post-glyph-dx", "0px");
+				});
+			});
+		}
+
+		function setActive(next: number) {
+			if (next === active) return;
+			const previous = active;
+			active = next;
+
+			states.forEach((state, index) => {
+				const distance = next < 0 ? 0 : Math.abs(index - next);
+				const dx = distance > 0
+					? (index < next ? -1 : 1) * 12 * Math.pow(0.45, distance - 1)
+					: 0;
+				state.el.style.setProperty("--post-glyph-dx", `${dx}px`);
+			});
+
+			if (next >= 0) {
+				const state = states[next];
+				window.clearTimeout(state.timer);
+				state.el.style.setProperty("--post-glyph-rotation", `${next % 2 ? 2 : -2}deg`);
+				state.el.classList.add("is-active");
+			}
+
+			if (previous >= 0 && previous !== next) {
+				const state = states[previous];
+				window.clearTimeout(state.timer);
+				state.timer = window.setTimeout(() => state.el.classList.remove("is-active"), 65);
+			}
+		}
+
+		el.addEventListener("pointermove", (event) => {
+			const index = states.findIndex((state) => {
+				const rect = state.el.getBoundingClientRect();
+				return (
+					event.clientX >= rect.left &&
+					event.clientX <= rect.right &&
+					event.clientY >= rect.top &&
+					event.clientY <= rect.bottom
+				);
+			});
+			setActive(index);
+		});
+		el.addEventListener("pointerleave", () => setActive(-1));
+		window.addEventListener("resize", measure, { passive: true });
+		document.fonts?.ready.then(measure);
+		measure();
+	}
+
+	function boot() {
+		document.querySelectorAll<HTMLElement>("[data-home-glyph-art]").forEach(initHome);
+		document.querySelectorAll<HTMLElement>("[data-post-glyph-render]").forEach(initPost);
+	}
+
+	document.addEventListener("astro:page-load", boot);
+	document.addEventListener("swup:page:view", boot);
+	boot();
+</script>

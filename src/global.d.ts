@@ -97,6 +97,8 @@ declare global {
 		__navbarButtonsBound?: boolean;
 		/** Footer 浇水彩蛋 swup:page:view 监听幂等 guard */
 		__footerWaterSwupBound?: boolean;
+		/** Footer 品牌打字机 swup:page:view 监听幂等 guard */
+		__footerWordmarkBound?: boolean;
 	}
 
 	interface MediaQueryList {
