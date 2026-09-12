@@ -2,7 +2,13 @@
 	"name": "firefly",
 	"compatibility_date": "2025-01-01",
 	"compatibility_flags": ["nodejs_compat"],
+	// SSr 入口与静态资产目录 = @astrojs/cloudflare 适配器产物（CF_WORKERS=1 pnpm build 后生成）
+	"main": "dist/server/entry.mjs",
+	"rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
+	"no_bundle": true,
 	"assets": {
-		"directory": "./dist"
-	}
+		"directory": "dist/client",
+		"binding": "ASSETS"
+	},
+	"observability": { "enabled": true }
 }

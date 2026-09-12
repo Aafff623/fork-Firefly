@@ -12,6 +12,14 @@ type SyncTarget = {
 
 const targets: SyncTarget[] = [];
 
+if (process.env.CF_WORKERS) {
+	// Cloudflare：资产目录就是 dist/client，pagefind 原地即被服务，无需同步
+	console.log(
+		"[pagefind] CF_WORKERS build: pagefind already inside assets dir; skipping sync.",
+	);
+	process.exit(0);
+}
+
 if (process.env.EDGEONE) {
 	targets.push({
 		label: "EdgeOne",
