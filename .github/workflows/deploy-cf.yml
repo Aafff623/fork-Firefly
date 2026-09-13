@@ -31,10 +31,14 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build (Cloudflare Workers adapter)
-        run: pnpm exec astro build
+        run: pnpm run build
         env:
           CF_WORKERS: '1'
           NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Strip unused bindings from generated wrangler config
+        run: |
+          node -e "const fs=require('fs');const p='dist/server/wrangler.json';const c=JSON.parse(fs.readFileSync(p,'utf8'));delete c.kv_namespaces;delete c.images;delete c.previews;fs.writeFileSync(p,JSON.stringify(c,null,2));"
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
