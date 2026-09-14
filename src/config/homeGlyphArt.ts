@@ -82,12 +82,24 @@ const secondaryVariantByFirstFile: Record<string, SecondaryVariant> = {
 	"t-original-2.webp": { file: "t-teapot.webp", rotation: -1.8, scale: 1 },
 	"h-original.webp": { file: "h-lantern.webp", rotation: 1.4, scale: 0.98 },
 	"r-fox.webp": { file: "r-redpanda.webp", rotation: -1.9, scale: 1.02 },
-	"w-caterpillars.webp": { file: "w-hummingbirds.webp", rotation: -2.2, scale: 1.01 },
+	"w-caterpillars.webp": {
+		file: "w-hummingbirds.webp",
+		rotation: -2.2,
+		scale: 1.01,
+	},
 	"a-original.webp": { file: "a-strawberry.webp", rotation: -1.6, scale: 1.01 },
-	"apostrophe-feather.webp": { file: "apostrophe-leaf.webp", rotation: 3, scale: 0.9 },
+	"apostrophe-feather.webp": {
+		file: "apostrophe-leaf.webp",
+		rotation: 3,
+		scale: 0.9,
+	},
 	"s-original.webp": { file: "s-ribbon-shell.webp", rotation: 1.7, scale: 1 },
 	"b-bear-honey.webp": { file: "b-bunny-jam.webp", rotation: 1.8, scale: 1.01 },
-	"g-original.webp": { file: "g-dragon-ring.webp", rotation: -1.9, scale: 1.02 },
+	"g-original.webp": {
+		file: "g-dragon-ring.webp",
+		rotation: -1.9,
+		scale: 1.02,
+	},
 };
 
 export const homeGlyphArt: HomeGlyphArt[] = homeGlyphArtBase.map((entry) => {
@@ -113,7 +125,9 @@ export const homeGlyphArt: HomeGlyphArt[] = homeGlyphArtBase.map((entry) => {
  * 主页标题、分行规则和逐字素材必须同步。这里在模块加载时校验，避免标题被改动后
  * 页面静默退回普通花体字，直到线上截图才发现特效失效。
  */
-const homeGlyphCharacters = Array.from(homeGlyphArtText).filter((char) => !/\s/u.test(char));
+const homeGlyphCharacters = Array.from(homeGlyphArtText).filter(
+	(char) => !/\s/u.test(char),
+);
 const homeGlyphLineText = homeGlyphArtLines.join(" ");
 const configuredGlyphCharacters = homeGlyphArt.map((entry) => entry.char);
 
@@ -125,13 +139,23 @@ if (homeGlyphLineText !== homeGlyphArtText) {
 
 if (
 	configuredGlyphCharacters.length !== homeGlyphCharacters.length ||
-	configuredGlyphCharacters.some((char, index) => char !== homeGlyphCharacters[index])
+	configuredGlyphCharacters.some(
+		(char, index) => char !== homeGlyphCharacters[index],
+	)
 ) {
 	throw new Error(
 		`[homeGlyphArt] glyph entries must exactly match "${homeGlyphArtText}" character by character.`,
 	);
 }
 
-if (homeGlyphArt.some((entry) => entry.variants.length === 0 || entry.variants.some((variant) => !variant.src))) {
-	throw new Error("[homeGlyphArt] every glyph entry must provide at least one image source.");
+if (
+	homeGlyphArt.some(
+		(entry) =>
+			entry.variants.length === 0 ||
+			entry.variants.some((variant) => !variant.src),
+	)
+) {
+	throw new Error(
+		"[homeGlyphArt] every glyph entry must provide at least one image source.",
+	);
 }
