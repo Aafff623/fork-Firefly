@@ -292,7 +292,7 @@ function upstreamUnreachable(err: unknown): {
 		}
 		const limit = Math.min(Math.max(Number(body.limit) || 5, 1), 10);
 		// 每次现算；禁止中间层把检索结果当答案缓存
-		const data = await retrieveSiteHits(message, limit);
+		const data = await retrieveSiteHits(message, limit, url.origin);
 		return json({ code: 200, message: "成功", data }, 200, {
 			"Cache-Control": "no-store, no-cache, must-revalidate",
 		});

@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getSortedPosts } from "@/utils/content-utils";
+import { loadAskIndex, type AskIndexItem } from "@/utils/ask-retrieve";
 
 export const prerender = false;
 
@@ -85,22 +85,18 @@ function isRateLimited(address: string): boolean {
 	return false;
 }
 
-function toCandidate(
-	post: Awaited<ReturnType<typeof getSortedPosts>>[number],
-): Candidate {
+function toCandidate(post: AskIndexItem): Candidate {
 	return {
-		id: post.id,
-		title: post.data.title,
-		description: post.data.description || "",
-		published: post.data.published.getTime(),
-		updated: post.data.updated?.getTime() ?? null,
-		category: post.data.category || "",
-		tags: (post.data.tags || []).map((tag) => tag.trim()).filter(Boolean),
-		themeTags: (post.data.themeTags || [])
-			.map((tag) => tag.trim())
-			.filter(Boolean),
-		password: !!post.data.password,
-		pinned: !!post.data.pinned,
+		id: post.slug,
+		title: post.title,
+		description: post.desc || "",
+		published: post.published,
+		updated: post.updated,
+		category: post.category || "",
+		tags: post.tags || [],
+		themeTags: post.themeTags || [],
+		password: post.password,
+		pinned: post.pinned,
 		topicHeat: 0,
 	};
 }
@@ -128,7 +124,7 @@ function parseModelIds(content: string): string[] {
 	return [];
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, url }) => {
 	if (isRateLimited(getClientAddress(request))) {
 		return json(
 			{ code: "rate_limited", message: "AI 搜索请求过于频繁，请稍后再试" },
@@ -165,7 +161,7 @@ export const POST: APIRoute = async ({ request }) => {
 		);
 	}
 
-	const allCandidates = (await getSortedPosts()).map(toCandidate);
+	const allCandidates = (await loadAskIndex(url.origin)).map(toCandidate);
 	const candidates = allCandidates
 		.map((candidate, index) => ({
 			candidate,

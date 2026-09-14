@@ -25,8 +25,6 @@ import remarkGfm from "remark-gfm";
 type SessionData = {
 	authenticated?: boolean;
 	role?: "owner" | "user";
-	csrf?: string;
-	dev?: boolean;
 };
 
 type PostData = {
@@ -79,13 +77,12 @@ const tools: readonly Tool[] = [
 ] as const;
 
 export default function OwnerEditor({
-	slug,
-}: Readonly<{ slug: string }>): JSX.Element {
+	slug: slugProp = "",
+}: Readonly<{ slug?: string }>): JSX.Element {
 	const textarea = useRef<HTMLTextAreaElement>(null);
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [source, setSource] = useState("");
 	const [baseSha, setBaseSha] = useState("");
-	const [csrf, setCsrf] = useState("");
 	const [state, setState] = useState<"loading" | "ready" | "guest" | "error">(
 		"loading",
 	);
@@ -94,22 +91,22 @@ export default function OwnerEditor({
 	const [context, setContext] = useState<{ x: number; y: number } | null>(null);
 
 	useEffect(() => {
+		// slug 优先取 prop（兼容旧调用），否则从 URL ?post= 读取（静态页方案）
+		const slug =
+			(slugProp ?? "").trim() ||
+			new URLSearchParams(window.location.search).get("post")?.trim() ||
+			"";
 		void (async () => {
 			try {
 				const sessionResponse = await fetch("/api/auth/session/", {
 					credentials: "same-origin",
 				});
 				const session = (await sessionResponse.json()) as SessionData;
-				if (
-					!session.authenticated ||
-					session.role !== "owner" ||
-					!session.csrf
-				) {
+				if (!session.authenticated || session.role !== "owner") {
 					setState("guest");
-					setMessage("请先使用园主 GitHub 账号登录。");
+					setMessage("请先登录园主账号。");
 					return;
 				}
-				setCsrf(session.csrf);
 				if (!slug) {
 					setState("error");
 					setMessage("请从文章页点击“编辑”，或在地址中提供 post 参数。");
@@ -127,15 +124,13 @@ export default function OwnerEditor({
 				setSource(post.source);
 				setBaseSha(post.baseSha);
 				setState("ready");
-				setMessage(
-					session.dev ? "DEV 园主会话：保存只写本地工作区" : "已连接园主会话",
-				);
+				setMessage("已连接园主会话");
 			} catch (error) {
 				setState("error");
 				setMessage(error instanceof Error ? error.message : "编辑器初始化失败");
 			}
 		})();
-	}, [slug]);
+	}, [slugProp]);
 
 	useEffect(() => {
 		if (!context) return;
@@ -170,14 +165,14 @@ export default function OwnerEditor({
 	};
 
 	const save = async () => {
-		if (!csrf || !slug || busy) return;
+		if (!slug || busy) return;
 		setBusy(true);
 		setMessage("正在保存…");
 		try {
 			const response = await fetch("/api/owner/post/", {
 				method: "PUT",
 				credentials: "same-origin",
-				headers: { "Content-Type": "application/json", "x-firefly-csrf": csrf },
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ slug, source, baseSha }),
 			});
 			const data = (await response.json()) as PostData;
@@ -193,7 +188,7 @@ export default function OwnerEditor({
 	};
 
 	const archive = async () => {
-		if (!csrf || !slug || busy) return;
+		if (!slug || busy) return;
 		const phrase = window.prompt(
 			`软删除会移入可恢复归档。请输入：ARCHIVE ${slug}`,
 		);
@@ -203,7 +198,7 @@ export default function OwnerEditor({
 			const response = await fetch("/api/owner/post/", {
 				method: "DELETE",
 				credentials: "same-origin",
-				headers: { "Content-Type": "application/json", "x-firefly-csrf": csrf },
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ slug, baseSha, confirmation: phrase }),
 			});
 			const data = (await response.json()) as PostData;
@@ -218,7 +213,7 @@ export default function OwnerEditor({
 	};
 
 	const uploadImage = async (file: File) => {
-		if (!csrf || !file.type.startsWith("image/")) return;
+		if (!file.type.startsWith("image/")) return;
 		setBusy(true);
 		setMessage("正在校验并上传图片…");
 		try {
@@ -228,7 +223,6 @@ export default function OwnerEditor({
 			const response = await fetch("/api/owner/image/", {
 				method: "POST",
 				credentials: "same-origin",
-				headers: { "x-firefly-csrf": csrf },
 				body: form,
 			});
 			const data = (await response.json()) as {
@@ -299,9 +293,9 @@ export default function OwnerEditor({
 				<p>{message}</p>
 				{state === "guest" && (
 					<a
-						href={`/api/auth/github/start/?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
+						href={`/login/?next=${encodeURIComponent(location.pathname + location.search)}`}
 					>
-						使用 GitHub 登录
+						前往登录
 					</a>
 				)}
 			</section>

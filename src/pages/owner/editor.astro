@@ -3,10 +3,13 @@ import OwnerEditor from "@/components/owner/OwnerEditor";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import "@/styles/owner-editor.css";
 
-export const prerender = false;
-const slug = Astro.url.searchParams.get("post")?.trim() ?? "";
+// 静态页：编辑器壳 + 客户端鉴权/取稿。
+// 曾为 SSR 只为读 ?post= 参数，会把 MainGridLayout → 侧栏组件 → 全量内容层
+// （~42MB）与编辑器块（~11.5MB）拖进 Worker 服务端包，超出 CF 免费档
+// 64MiB 上限；slug 改由 OwnerEditor 在客户端从 URL 读取，交付行为不变。
+export const prerender = true;
 ---
 
 <MainGridLayout title="园主编辑器" description="园主专用 Markdown 编辑与安全预览">
-  <OwnerEditor slug={slug} client:load />
+  <OwnerEditor client:load />
 </MainGridLayout>

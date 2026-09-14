@@ -4,10 +4,82 @@
  * - 「怎么部署这个博客 / 技术栈」类 → site-meta：锚到本站文档 + 注入站点事实
  * - 其它 → 关键词打分；泛词（部署/上线…）禁止只靠正文偶然命中刷屏
  */
-import { type CollectionEntry, getCollection } from "astro:content";
-import { getEffectivePostTime } from "@utils/content-utils";
 import { getPostUrlBySlug } from "@utils/url-utils";
 import { type AskPersonaId, getAskPersona } from "@/utils/ask-personas";
+import { siteConfig } from "@/config";
+
+/**
+ * /ask 运行时文章数据源：构建期预渲染的轻量索引（/api/ask-index.json）。
+ * 不再在运行时 getCollection——那会把全站内容层（~42MB）打进 Worker
+ * 服务端包，超出 Cloudflare Workers 免费档 64MiB 上限。
+ */
+export type AskPost = {
+	slug: string;
+	title: string;
+	desc: string;
+	/** tags + themeTags 预拼接（供打分/站点文档判定） */
+	tags: string;
+	category: string;
+	/** getEffectivePostTime 预计算（epoch ms），按新到旧排序 */
+	time: number;
+	/** 去 Markdown 正文截断（800 字符） */
+	excerpt: string;
+};
+
+/** 索引原始条目（与 /api/ask-index.json 输出一致，两消费方共用类型） */
+export type AskIndexItem = {
+	slug: string;
+	title: string;
+	desc: string;
+	tags: string[];
+	themeTags: string[];
+	category: string;
+	published: number;
+	updated: number | null;
+	time: number;
+	password: boolean;
+	pinned: boolean;
+	excerpt: string;
+};
+
+let askIndexCache: { at: number; items: AskIndexItem[] } | null = null;
+const ASK_INDEX_TTL_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * 拉取构建期文章索引（/api/ask-index.json）。
+ * 供 /ask 检索与 AI 搜索共用；按 isolate/进程缓存 6 小时。
+ * 索引不可达时退化为空库（调用方自决降级），不让数据源问题放大成 500。
+ */
+export async function loadAskIndex(
+	origin?: string,
+): Promise<AskIndexItem[]> {
+	const base = origin || siteConfig.site_url;
+	if (askIndexCache && Date.now() - askIndexCache.at < ASK_INDEX_TTL_MS) {
+		return askIndexCache.items;
+	}
+	try {
+		const res = await fetch(new URL("/api/ask-index.json", base).toString());
+		if (!res.ok) throw new Error(`ask-index ${res.status}`);
+		const items = (await res.json()) as AskIndexItem[];
+		askIndexCache = { at: Date.now(), items };
+		return items;
+	} catch {
+		return askIndexCache ? askIndexCache.items : [];
+	}
+}
+
+async function loadAskPosts(origin?: string): Promise<AskPost[]> {
+	const items = await loadAskIndex(origin);
+	return items.map((it) => ({
+		slug: it.slug,
+		title: it.title,
+		desc: it.desc,
+		tags: [...(it.tags || []), ...(it.themeTags || [])].join(" "),
+		category: it.category || "",
+		time: it.time,
+		excerpt: it.excerpt,
+	}));
+}
 
 /** 站内来源缩略：不用外网 favicon 服务（国内常裂图） */
 export const ASK_SITE_ICON = "/favicon/firefly-32.png";
@@ -135,7 +207,7 @@ const SITE_FACTS_BLOCK = [
 	"- 产品：基于 CuteLeaf/Firefly 的个人博客二次开发（standalone）。",
 	"- 框架：Astro 静态输出；交互岛 Svelte；样式 Tailwind CSS；包管理 pnpm。",
 	"- 搜索 Pagefind；页面过渡 Swup。",
-	"- 部署：Vercel 源站 + EdgeOne CDN；线上主入口 https://www.threetwoa.live 。",
+	"- 部署：GitHub Actions 构建，Cloudflare 边缘托管（Workers/DNS/R2 图床）；线上主入口 https://www.threetwoa.live 。",
 	"- 本地：`pnpm install` → `pnpm dev`；生产构建 `pnpm build`。",
 	"- 配置优先改 `src/config/*`，勿把主题官方默认和本站现行配置混为一谈。",
 ].join("\n");
@@ -171,7 +243,8 @@ function formatDate(d: Date): string {
 	return `${y}-${m}-${day}`;
 }
 
-function stripMd(s: string): string {
+/** 去 Markdown 标记为纯文本（构建期生成索引与运行时快照共用） */
+export function stripMd(s: string): string {
 	return s
 		.replace(/```[\s\S]*?```/g, " ")
 		.replace(/`[^`]+`/g, " ")
@@ -183,23 +256,19 @@ function stripMd(s: string): string {
 		.trim();
 }
 
-function postSnippet(post: CollectionEntry<"posts">, max = 140): string {
-	const desc = (post.data.description || "").trim();
-	const body = stripMd(typeof post.body === "string" ? post.body : "");
-	const plain = desc || body || post.data.title;
+function postSnippet(post: AskPost, max = 140): string {
+	const plain = post.desc || post.excerpt || post.title;
 	return plain.length <= max ? plain : `${plain.slice(0, max)}…`;
 }
 
-function isSiteDoc(post: CollectionEntry<"posts">): boolean {
-	const id = post.id.toLowerCase();
-	const title = post.data.title || "";
-	const tags = [...(post.data.tags || []), ...(post.data.themeTags || [])].join(
-		" ",
-	);
-	const category = post.data.category || "";
-	if (SITE_DOC_RE.test(`${id}\n${title}\n${tags}`)) return true;
-	if (id.startsWith("guide/") || id.startsWith("about")) return true;
-	if (category === "功能" && /firefly|astro|主题/i.test(`${title}\n${tags}`)) {
+function isSiteDoc(post: AskPost): boolean {
+	const slug = post.slug.toLowerCase();
+	if (SITE_DOC_RE.test(`${slug}\n${post.title}\n${post.tags}`)) return true;
+	if (slug.startsWith("guide/") || slug.startsWith("about")) return true;
+	if (
+		post.category === "功能" &&
+		/firefly|astro|主题/i.test(`${post.title}\n${post.tags}`)
+	) {
 		return true;
 	}
 	return false;
@@ -276,18 +345,16 @@ function snippetAround(hay: string, terms: string[], max = 140): string {
 }
 
 function scorePost(
-	post: CollectionEntry<"posts">,
+	post: AskPost,
 	terms: string[],
 	opts?: { siteMeta?: boolean },
 ): { score: number; snippet: string } {
 	if (!terms.length) return { score: 0, snippet: postSnippet(post) };
-	const title = post.data.title || "";
-	const desc = post.data.description || "";
-	const tags = [...(post.data.tags || []), ...(post.data.themeTags || [])].join(
-		" ",
-	);
-	const category = post.data.category || "";
-	const body = stripMd(typeof post.body === "string" ? post.body : "");
+	const title = post.title;
+	const desc = post.desc;
+	const tags = post.tags;
+	const category = post.category;
+	const body = post.excerpt;
 	const siteDoc = isSiteDoc(post);
 	const bodyHasSiteAnchor = SITE_ANCHOR_RE.test(
 		`${title}\n${desc}\n${tags}\n${body}`,
@@ -344,8 +411,7 @@ function scorePost(
 		score += 4;
 	}
 
-	const ageDays =
-		(Date.now() - getEffectivePostTime(post.data)) / (1000 * 60 * 60 * 24);
+	const ageDays = (Date.now() - post.time) / (1000 * 60 * 60 * 24);
 	// site-meta 不给「新文红利」，避免最新无关帖压过主题文档
 	if (!opts?.siteMeta) {
 		if (ageDays <= 30) score += 2.5;
@@ -356,18 +422,13 @@ function scorePost(
 	return { score, snippet: snippetAround(plain, terms) };
 }
 
-function toHit(
-	post: CollectionEntry<"posts">,
-	score: number,
-	snippet: string,
-): AskHit {
-	const when = post.data.updated ?? post.data.published;
+function toHit(post: AskPost, score: number, snippet: string): AskHit {
 	return {
-		title: post.data.title,
-		url: getPostUrlBySlug(post.id),
+		title: post.title,
+		url: getPostUrlBySlug(post.slug),
 		snippet,
 		score,
-		date: when instanceof Date ? formatDate(when) : undefined,
+		date: post.time ? formatDate(new Date(post.time)) : undefined,
 		icon: ASK_SITE_ICON,
 	};
 }
@@ -388,19 +449,15 @@ function metaOf(
 export async function retrieveSiteHits(
 	query: string,
 	limit = 5,
+	origin?: string,
 ): Promise<AskRetrieveResult> {
 	const t0 = Date.now();
-	const posts = await getCollection("posts", ({ data }) =>
-		import.meta.env.PROD ? data.draft !== true : true,
-	);
+	const posts = await loadAskPosts(origin);
+	// 索引已按时间新→旧预排序
 	const scanned = posts.length;
 
 	if (isRecentIntent(query)) {
 		const hits = posts
-			.slice()
-			.sort(
-				(a, b) => getEffectivePostTime(b.data) - getEffectivePostTime(a.data),
-			)
 			.slice(0, limit)
 			.map((post, i) => toHit(post, 100 - i, postSnippet(post)));
 

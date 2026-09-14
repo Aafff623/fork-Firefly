@@ -118,3 +118,6 @@ public/vendor/grok-bot/**
 .vercel
 
 .vercel
+
+# Cloudflare Workers 本地密钥
+.dev.vars
