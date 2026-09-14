@@ -46,10 +46,28 @@ let askIndexCache: { at: number; items: AskIndexItem[] } | null = null;
 const ASK_INDEX_TTL_MS = 6 * 60 * 60 * 1000;
 
 /**
- * 拉取构建期文章索引（/api/ask-index.json）。
- * 供 /ask 检索与 AI 搜索共用；按 isolate/进程缓存 6 小时。
- * 索引不可达时退化为空库（调用方自决降级），不让数据源问题放大成 500。
+ * 读取预渲染索引。
+ * Cloudflare Workers 不允许子请求打到自身 zone（Error 1042），因此优先使用
+ * 平台 ASSETS 绑定直读静态资产（cloudflare:workers 的 env.ASSETS，且仅在
+ * Workers 运行时可用）；非 CF 环境（Vercel/Node/本地 dev）回退普通 fetch。
  */
+async function fetchIndexResponse(url: string): Promise<Response> {
+	try {
+		const mod = (await import(
+			/* @vite-ignore */ "cloudflare:workers"
+		)) as {
+			env?: { ASSETS?: { fetch: (input: Request | string) => Promise<Response> } };
+		};
+		const assets = mod?.env?.ASSETS;
+		if (assets && typeof assets.fetch === "function") {
+			return await assets.fetch(new Request(url));
+		}
+	} catch {
+		// cloudflare:workers 模块在非 Workers 环境不存在（Vite 打包期会被忽略）
+	}
+	return fetch(url);
+}
+
 export async function loadAskIndex(
 	origin?: string,
 ): Promise<AskIndexItem[]> {
@@ -58,7 +76,8 @@ export async function loadAskIndex(
 		return askIndexCache.items;
 	}
 	try {
-		const res = await fetch(new URL("/api/ask-index.json", base).toString());
+		const url = new URL("/api/ask-index.json", base).toString();
+		const res = await fetchIndexResponse(url);
 		if (!res.ok) throw new Error(`ask-index ${res.status}`);
 		const items = (await res.json()) as AskIndexItem[];
 		askIndexCache = { at: Date.now(), items };

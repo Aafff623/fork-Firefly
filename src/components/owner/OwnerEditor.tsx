@@ -79,6 +79,10 @@ const tools: readonly Tool[] = [
 export default function OwnerEditor({
 	slug: slugProp = "",
 }: Readonly<{ slug?: string }>): JSX.Element {
+	// 静态页方案：slug 优先取 prop（兼容旧调用），否则从 URL ?post= 读取（客户端）
+	const [slug, setSlug] = useState<string>(
+		(slugProp ?? "").trim() || "",
+	);
 	const textarea = useRef<HTMLTextAreaElement>(null);
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [source, setSource] = useState("");
@@ -91,11 +95,14 @@ export default function OwnerEditor({
 	const [context, setContext] = useState<{ x: number; y: number } | null>(null);
 
 	useEffect(() => {
-		// slug 优先取 prop（兼容旧调用），否则从 URL ?post= 读取（静态页方案）
-		const slug =
-			(slugProp ?? "").trim() ||
-			new URLSearchParams(window.location.search).get("post")?.trim() ||
-			"";
+		if (!slug) {
+			const fromUrl =
+				new URLSearchParams(window.location.search).get("post")?.trim() ?? "";
+			if (fromUrl) {
+				setSlug(fromUrl);
+				return;
+			}
+		}
 		void (async () => {
 			try {
 				const sessionResponse = await fetch("/api/auth/session/", {
@@ -130,7 +137,7 @@ export default function OwnerEditor({
 				setMessage(error instanceof Error ? error.message : "编辑器初始化失败");
 			}
 		})();
-	}, [slugProp]);
+	}, [slug]);
 
 	useEffect(() => {
 		if (!context) return;
