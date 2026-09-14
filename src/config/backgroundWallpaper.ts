@@ -1,4 +1,5 @@
 import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
+import { homeGlyphArtText } from "./homeGlyphArt";
 
 export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	// 壁纸模式："banner" 横幅壁纸，"fullscreen" 全屏壁纸，"overlay" 全屏透明，"none" 纯色背景无壁纸
@@ -81,8 +82,9 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		homeText: {
 			// 是否启用主页横幅文字
 			enable: true,
-			// 主页横幅主标题
-			title: "Welcome to My Digital Garden",
+			// 主页横幅主标题。逐字插画效果的文字清单以 homeGlyphArtText 为唯一来源，
+			// 需要换标题时必须连同 src/config/homeGlyphArt.ts 中的字形清单一起更新。
+			title: homeGlyphArtText,
 			// 主页横幅主标题字体大小
 			titleSize: "4.5rem",
 			// 主页横幅副标题（多套轮播；打字机打完后停留 pauseTime）

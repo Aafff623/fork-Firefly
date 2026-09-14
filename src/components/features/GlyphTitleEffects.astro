@@ -306,9 +306,17 @@
 
 	function nextVariant(state: HomeState) {
 		const variants = state.config.variants;
-		const variant = variants[state.variantIndex % variants.length] ?? variants[0];
-		state.variantIndex = (state.variantIndex + 1) % variants.length;
-		return variant;
+		if (variants.length <= 1) {
+			state.variantIndex = 0;
+			return variants[0];
+		}
+
+		let nextIndex = Math.floor(Math.random() * variants.length);
+		if (nextIndex === state.variantIndex) {
+			nextIndex = (nextIndex + 1) % variants.length;
+		}
+		state.variantIndex = nextIndex;
+		return variants[nextIndex] ?? variants[0];
 	}
 
 	function buildHomeLayer(
@@ -359,7 +367,7 @@
 					index,
 					lineIndex,
 					lineGlyphs: glyphsInLine,
-					variantIndex: 0,
+					variantIndex: -1,
 					enterToken: 0,
 				});
 			} else {
