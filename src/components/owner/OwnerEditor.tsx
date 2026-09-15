@@ -80,9 +80,7 @@ export default function OwnerEditor({
 	slug: slugProp = "",
 }: Readonly<{ slug?: string }>): JSX.Element {
 	// 静态页方案：slug 优先取 prop（兼容旧调用），否则从 URL ?post= 读取（客户端）
-	const [slug, setSlug] = useState<string>(
-		(slugProp ?? "").trim() || "",
-	);
+	const [slug, setSlug] = useState<string>((slugProp ?? "").trim() || "");
 	const textarea = useRef<HTMLTextAreaElement>(null);
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [source, setSource] = useState("");

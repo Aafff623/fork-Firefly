@@ -5,8 +5,8 @@
  * - 其它 → 关键词打分；泛词（部署/上线…）禁止只靠正文偶然命中刷屏
  */
 import { getPostUrlBySlug } from "@utils/url-utils";
-import { type AskPersonaId, getAskPersona } from "@/utils/ask-personas";
 import { siteConfig } from "@/config";
+import { type AskPersonaId, getAskPersona } from "@/utils/ask-personas";
 
 /**
  * /ask 运行时文章数据源：构建期预渲染的轻量索引（/api/ask-index.json）。
@@ -53,10 +53,10 @@ const ASK_INDEX_TTL_MS = 6 * 60 * 60 * 1000;
  */
 async function fetchIndexResponse(url: string): Promise<Response> {
 	try {
-		const mod = (await import(
-			/* @vite-ignore */ "cloudflare:workers"
-		)) as {
-			env?: { ASSETS?: { fetch: (input: Request | string) => Promise<Response> } };
+		const mod = (await import(/* @vite-ignore */ "cloudflare:workers")) as {
+			env?: {
+				ASSETS?: { fetch: (input: Request | string) => Promise<Response> };
+			};
 		};
 		const assets = mod?.env?.ASSETS;
 		if (assets && typeof assets.fetch === "function") {
@@ -68,9 +68,7 @@ async function fetchIndexResponse(url: string): Promise<Response> {
 	return fetch(url);
 }
 
-export async function loadAskIndex(
-	origin?: string,
-): Promise<AskIndexItem[]> {
+export async function loadAskIndex(origin?: string): Promise<AskIndexItem[]> {
 	const base = origin || siteConfig.site_url;
 	if (askIndexCache && Date.now() - askIndexCache.at < ASK_INDEX_TTL_MS) {
 		return askIndexCache.items;

@@ -187,18 +187,21 @@ function upstreamUnreachable(err: unknown): {
 	};
 }
 
-	/** POST /api/ask/?action=… */
-	export const POST: APIRoute = async ({ request, url }) => {
-		const closed = guardAsk();
-		if (closed) return closed;
+/** POST /api/ask/?action=… */
+export const POST: APIRoute = async ({ request, url }) => {
+	const closed = guardAsk();
+	if (closed) return closed;
 
-		const action = url.searchParams.get("action") || "session";
-		const addr = getClientAddress(request);
-		if (action === "session" || action === "retrieve" || action === "chat") {
-			if (isRateLimited(addr)) {
-				return json({ code: 429, message: "太频繁了，请稍后再试（每 10 分钟最多 20 次）" }, 429);
-			}
+	const action = url.searchParams.get("action") || "session";
+	const addr = getClientAddress(request);
+	if (action === "session" || action === "retrieve" || action === "chat") {
+		if (isRateLimited(addr)) {
+			return json(
+				{ code: 429, message: "太频繁了，请稍后再试（每 10 分钟最多 20 次）" },
+				429,
+			);
 		}
+	}
 
 	if (action === "session") {
 		if (STEPFUN_API_KEY) {
@@ -318,15 +321,18 @@ function upstreamUnreachable(err: unknown): {
 		} catch {
 			return json({ code: 400, message: "请求体不是合法 JSON" }, 400);
 		}
-			const token = body.token?.trim();
-			const chatId = body.chatId?.trim();
-			const message = body.message?.trim();
-			if (!token || !chatId || !message) {
-				return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
-			}
-			if (message.length > 4000) {
-				return json({ code: 400, message: "单次消息请控制在 4000 字符以内" }, 400);
-			}
+		const token = body.token?.trim();
+		const chatId = body.chatId?.trim();
+		const message = body.message?.trim();
+		if (!token || !chatId || !message) {
+			return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
+		}
+		if (message.length > 4000) {
+			return json(
+				{ code: 400, message: "单次消息请控制在 4000 字符以内" },
+				400,
+			);
+		}
 		// chatId 会拼进上游 URL 路径：严格字符白名单 + 长度上限，杜绝路径形态注入
 		if (!/^[A-Za-z0-9\-_]{1,64}$/.test(chatId)) {
 			return json({ code: 400, message: "chatId 格式非法" }, 400);

@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { loadAskIndex, type AskIndexItem } from "@/utils/ask-retrieve";
+import { type AskIndexItem, loadAskIndex } from "@/utils/ask-retrieve";
 
 export const prerender = false;
 
