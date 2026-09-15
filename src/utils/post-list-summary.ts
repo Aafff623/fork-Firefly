@@ -36,15 +36,17 @@ function getFirstParagraph(markdown: string): string {
 	return "";
 }
 
+// Astro 内容层对空正文（如全空白行）不落 body 键，运行时 entry.body 可能是 undefined
 export function getPostListSummary(
-	body: string,
+	body: string | undefined,
 	description: string,
 ): PostListSummary {
-	const plainText = toPlainText(body);
+	const markdown = body ?? "";
+	const plainText = toPlainText(markdown);
 	const readingTime = getReadingTime(plainText);
 
 	return {
-		description: description.trim() || getFirstParagraph(body),
+		description: description.trim() || getFirstParagraph(markdown),
 		words: readingTime.words,
 		minutes: Math.max(1, Math.round(readingTime.minutes)),
 	};
