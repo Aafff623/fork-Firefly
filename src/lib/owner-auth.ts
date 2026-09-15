@@ -6,7 +6,8 @@ const SESSION_TTL_MS = 6 * 60 * 60 * 1000;
 const OAUTH_TTL_MS = 10 * 60 * 1000;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-const devFallbackSecret = randomToken(48);
+// Workers 全局作用域禁用 crypto.getRandomValues，开发兜底密钥须惰性生成
+let devFallbackSecret: string | null = null;
 const mutationWindows = new Map<number, number[]>();
 
 export type OwnerSession = Readonly<{
@@ -40,6 +41,11 @@ type OAuthTransactionPayload = Readonly<{
 export type MutationValidation =
 	| Readonly<{ ok: true; session: OwnerSession }>
 	| Readonly<{ ok: false; status: number; error: string }>;
+
+function getDevFallbackSecret(): string {
+	devFallbackSecret ??= randomToken(48);
+	return devFallbackSecret;
+}
 
 function randomToken(byteLength: number): string {
 	const bytes = new Uint8Array(byteLength);
@@ -283,7 +289,7 @@ export function resolveOwnerSessionSecret(
 	const configured = process.env.OWNER_SESSION_SECRET?.trim();
 	if (configured && configured.length >= 32) return configured;
 	return canUseOwnerDevBypass(request, isDev, clientAddress)
-		? devFallbackSecret
+		? getDevFallbackSecret()
 		: null;
 }
 
