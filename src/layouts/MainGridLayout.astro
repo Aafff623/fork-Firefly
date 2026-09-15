@@ -363,7 +363,7 @@ type LazyWallpaperSlide = {
 	position: string;
 };
 const wallpaperGlob = import.meta.glob<ImageMetadata>(
-	"../**/*.{png,jpg,jpeg,webp,avif}",
+	"../assets/images/{DesktopWallpaper,MobileWallpaper}/*.{png,jpg,jpeg,webp,avif}",
 	{ import: "default" },
 );
 async function resolveWallpaperSrc(

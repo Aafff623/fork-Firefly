@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 import CoverImage from "@/components/common/CoverImage.astro";
 import PostMetadata from "@/components/layout/PostMeta.astro";
@@ -14,6 +13,7 @@ import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
 import { decorateListTitle } from "@/utils/title-mood";
 import { getFileDirFromPath, getTagUrl } from "@/utils/url-utils";
+import { getPostListSummary } from "@/utils/post-list-summary";
 
 interface Props {
 	class?: string;
@@ -35,6 +35,7 @@ interface Props {
 	loading?: "lazy" | "eager";
 	/** 首页首两篇优先预取正文 HTML；其余卡片仍只在 hover/focus/touch 时预取 */
 	priorityPreload?: boolean;
+	bootDefer?: "main" | "secondary";
 	/** list 模式变体：featured=首篇 · row=细线行；grid 下由 CSS 重置为普通卡 */
 	listVariant?: "featured" | "row";
 }
@@ -53,6 +54,7 @@ const {
 	style,
 	loading = "lazy",
 	priorityPreload = false,
+	bootDefer,
 	listVariant,
 } = Astro.props;
 
@@ -111,10 +113,10 @@ const metaMaxTags = showTagsInRowMeta
 const descriptionClampLines = String(descriptionLines);
 const shouldClampDescription = descriptionLines > 0;
 
-const { remarkPluginFrontmatter } = await render(entry);
-const descriptionText = description || remarkPluginFrontmatter.excerpt || "";
-const words = remarkPluginFrontmatter.words;
-const minutes = remarkPluginFrontmatter.minutes;
+const { description: descriptionText, words, minutes } = getPostListSummary(
+	entry.body,
+	description,
+);
 const railSection = (category || i18n(I18nKey.uncategorized)).trim() || "notes";
 const railTags = (tags || []).map((t) => t.trim()).filter(Boolean);
 const railWordsLabel =
@@ -300,6 +302,7 @@ const publishedLabel = formatDateToYYYYMMDD(published);
             class="letter-cover__media"
             preview={true}
             loading={loading}
+            bootDefer={bootDefer}
             apiUrls={apiUrls}
           />
         )}
@@ -319,6 +322,7 @@ const publishedLabel = formatDateToYYYYMMDD(published);
             class="post-card-cover-media w-full h-full"
             preview={true}
             loading={loading}
+            bootDefer={bootDefer}
             apiUrls={apiUrls}
           />
         </a>

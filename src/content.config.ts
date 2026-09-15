@@ -54,6 +54,8 @@ const postsCollection: ContentCollection<PostData> = defineCollection({
 			"!**/images/**/*.{md,mdx}",
 		],
 		base: "./src/content/posts",
+		// 文章量已很大；不要在 dev 启动时预渲染全部正文，按实际访问的文章再渲染。
+		deferRender: true,
 	}),
 	schema: z.object({
 		title: z.string(),
