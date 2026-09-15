@@ -13,6 +13,7 @@ import {
 	getPostUrlBySlug,
 	toPostSlug,
 } from "@utils/url-utils";
+import { LEGACY_REDIRECT_TARGETS } from "@utils/legacy-course-redirects";
 import { Icon } from "astro-icon/components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -29,7 +30,7 @@ import { url } from "@/utils/url-utils";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
-	return blogEntries.map((entry) => {
+	const postPaths = blogEntries.map((entry) => {
 		// id → slug；草稿箱 `_draftbox/<slug>` 剥前缀，本地预览 URL 与毕业后一致
 		const slug = toPostSlug(entry.id);
 		return {
@@ -37,28 +38,17 @@ export async function getStaticPaths() {
 			props: { entry },
 		};
 	});
+	// 课程合订后遗留的旧分节 URL：物理生成 meta-refresh 跳转页，兜底外链与搜索引擎旧收录
+	const legacyRedirectPaths = LEGACY_REDIRECT_TARGETS.flatMap(({ slugs, to }) =>
+		slugs.map((slug) => ({
+			params: { slug },
+			props: { legacyRedirectTo: to },
+		})),
+	);
+	return [...postPaths, ...legacyRedirectPaths];
 }
 
-const { entry } = Astro.props;
-const { Content, headings } = await render(entry);
-
-const { remarkPluginFrontmatter } = await render(entry);
-
-const bannerPostMeta = {
-	title: entry.data.title,
-	description: entry.data.description,
-	published: entry.data.published,
-	updated: entry.data.updated,
-	words: remarkPluginFrontmatter.words,
-	minutes: remarkPluginFrontmatter.minutes,
-};
-
-// 处理随机图：如果image为"api"，则从配置的API获取随机图
-const processedImage = processCoverImageSync(entry.data.image, entry.id);
-const apiUrls = getApiUrlList(entry.data.image, entry.id);
-const showPostCover = Boolean(processedImage && coverImageConfig.enableInPost);
-const usePostCoverOverlay =
-	showPostCover && (coverImageConfig.enableInPostOverlay ?? true);
+const { entry, legacyRedirectTo } = Astro.props;
 
 const getDirectImageUrl = (src: string | undefined): string | null => {
 	if (!src) return null;
@@ -73,38 +63,112 @@ const getDirectImageUrl = (src: string | undefined): string | null => {
 	return src.startsWith("/") ? url(src) : null;
 };
 
-// 海报优先复用页面上已经优化过的图片，本地源路径不再单独导入。
-const posterCoverUrl = showPostCover ? null : getDirectImageUrl(processedImage);
-const posterCoverSelector = showPostCover ? "#post-cover img" : null;
-const posterAvatarUrl = getDirectImageUrl(profileConfig.avatar);
-const posterAvatarSelector = profileConfig.avatar
-	? ".profile-avatar-image img"
-	: null;
-
 dayjs.extend(utc);
 
-const jsonLd = {
-	"@context": "https://schema.org",
-	"@type": "BlogPosting",
-	headline: entry.data.title,
-	description: entry.data.description || entry.data.title,
-	keywords: entry.data.tags,
-	author: {
-		"@type": "Person",
-		name: profileConfig.name,
-		url: Astro.site,
-	},
-	datePublished: formatDateToYYYYMMDD(entry.data.published),
-	inLanguage: entry.data.lang
-		? entry.data.lang.replace("_", "-")
-		: siteConfig.lang.replace("_", "-"),
-	// TODO include cover image here
-};
+// 文章数据计算整体收进函数：旧分节跳转请求没有 entry，模板走跳转分支，不触发渲染
+async function computePostData(postEntry: NonNullable<typeof entry>) {
+	const { Content, headings } = await render(postEntry);
 
-const relatedPosts = await getRelatedPosts(entry, 3);
-const relatedHighlight = relatedPosts[0] ?? null;
+	const { remarkPluginFrontmatter } = await render(postEntry);
+
+	const bannerPostMeta = {
+		title: postEntry.data.title,
+		description: postEntry.data.description,
+		published: postEntry.data.published,
+		updated: postEntry.data.updated,
+		words: remarkPluginFrontmatter.words,
+		minutes: remarkPluginFrontmatter.minutes,
+	};
+
+	// 处理随机图：如果image为"api"，则从配置的API获取随机图
+	const processedImage = processCoverImageSync(postEntry.data.image, postEntry.id);
+	const apiUrls = getApiUrlList(postEntry.data.image, postEntry.id);
+	const showPostCover = Boolean(processedImage && coverImageConfig.enableInPost);
+	const usePostCoverOverlay =
+		showPostCover && (coverImageConfig.enableInPostOverlay ?? true);
+
+	// 海报优先复用页面上已经优化过的图片，本地源路径不再单独导入。
+	const posterCoverUrl = showPostCover ? null : getDirectImageUrl(processedImage);
+	const posterCoverSelector = showPostCover ? "#post-cover img" : null;
+	const posterAvatarUrl = getDirectImageUrl(profileConfig.avatar);
+	const posterAvatarSelector = profileConfig.avatar
+		? ".profile-avatar-image img"
+		: null;
+
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		headline: postEntry.data.title,
+		description: postEntry.data.description || postEntry.data.title,
+		keywords: postEntry.data.tags,
+		author: {
+			"@type": "Person",
+			name: profileConfig.name,
+			url: Astro.site,
+		},
+		datePublished: formatDateToYYYYMMDD(postEntry.data.published),
+		inLanguage: postEntry.data.lang
+			? postEntry.data.lang.replace("_", "-")
+			: siteConfig.lang.replace("_", "-"),
+		// TODO include cover image here
+	};
+
+	const relatedPosts = await getRelatedPosts(postEntry, 3);
+	const relatedHighlight = relatedPosts[0] ?? null;
+
+	return {
+		Content,
+		headings,
+		remarkPluginFrontmatter,
+		bannerPostMeta,
+		processedImage,
+		apiUrls,
+		showPostCover,
+		usePostCoverOverlay,
+		posterCoverUrl,
+		posterCoverSelector,
+		posterAvatarUrl,
+		posterAvatarSelector,
+		jsonLd,
+		relatedPosts,
+		relatedHighlight,
+	};
+}
+
+const postData = entry ? await computePostData(entry) : null;
+const {
+	Content,
+	headings,
+	remarkPluginFrontmatter,
+	bannerPostMeta,
+	processedImage,
+	apiUrls,
+	showPostCover,
+	usePostCoverOverlay,
+	posterCoverUrl,
+	posterCoverSelector,
+	posterAvatarUrl,
+	posterAvatarSelector,
+	jsonLd,
+	relatedPosts,
+	relatedHighlight,
+} = (postData ?? {}) as ReturnType<typeof computePostData>;
 ---
 
+{
+  legacyRedirectTo ? (
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="refresh" content={`0; url=${legacyRedirectTo}`} />
+        <title>内容已合并</title>
+      </head>
+      <body>
+        <p>本页内容已并入课程合订本，正在跳转…</p>
+        <p><a href={legacyRedirectTo}>如未自动跳转，请点此继续</a></p>
+      </body>
+    </html>
+  ) : (
 <MainGridLayout
   banner={processedImage}
   title={entry.data.title}
@@ -477,3 +541,5 @@ const relatedHighlight = relatedPosts[0] ?? null;
   <!-- 评论 -->
   {entry.data.comment && !entry.data.password && <Comment post={entry} />}
 </MainGridLayout>
+  )}
+
