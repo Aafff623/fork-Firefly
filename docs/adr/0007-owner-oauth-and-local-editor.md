@@ -1,6 +1,6 @@
 # ADR-0007 · 园主身份使用服务端 GitHub OAuth，本地编辑器默认闭合
 
-- Status: accepted
+- Status: superseded by [ADR-0008](0008-supabase-auth.md)（2026-09-18 认证迁移 Supabase Auth，自研 OAuth/HMAC 链已退役）
 - Date: 2026-08-21
 
 ## Context

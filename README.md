@@ -230,7 +230,7 @@ pnpm dev
 
    frontmatter 由 [src/content.config.ts](src/content.config.ts) 校验；生产默认隐藏 `draft: true`。日常写作改内容文件，日常换皮改 `src/config`——不要为改站名、侧栏或壁纸去动布局内核。
 6. **集成**：需要密钥时复制 `.env.example` → `.env`（勿提交）。文章评论 Giscus、Dynamic 回复 Waline、桌宠 SpritePet、音乐 `local`、R2 / COS 存储见 Integrations。
-7. **本地验证**：`pnpm check` · `pnpm type-check` · `pnpm check:owner` · `pnpm build` · `pnpm preview` — 核对 `dist/`、Pagefind、RSS、Sitemap、主页面。园主 DEV 编辑器只接受 loopback 会话；生产写回默认关闭，见 [ADR-0007](docs/adr/0007-owner-oauth-and-local-editor.md)。
+7. **本地验证**：`pnpm check` · `pnpm type-check` · `pnpm check:owner` · `pnpm build` · `pnpm preview` — 核对 `dist/`、Pagefind、RSS、Sitemap、主页面。登录与园主身份走 Supabase Auth（GitHub / Google / 邮箱），见 [ADR-0008](docs/adr/0008-supabase-auth.md)。
 8. **交付链**
 
    | Setting | Value |
