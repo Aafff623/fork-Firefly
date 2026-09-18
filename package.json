@@ -53,6 +53,8 @@
 		"@lottiefiles/dotlottie-web": "^0.79.0",
 		"@mermanjs/web": "0.8.0-alpha.3",
 		"@napi-rs/wasm-runtime": "^1.1.6",
+		"@supabase/ssr": "^0.12.5",
+		"@supabase/supabase-js": "^2.115.0",
 		"@swup/astro": "^1.8.0",
 		"@tailwindcss/typography": "^0.5.20",
 		"@tsparticles/engine": "4.3.2",

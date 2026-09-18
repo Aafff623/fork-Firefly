@@ -1,10 +1,4 @@
-import type { APIRoute } from "astro";
-import {
-	checkOwnerMutationRate,
-	readSessionFromRequest,
-	resolveOwnerSessionSecret,
-	validateMutationRequest,
-} from "@/lib/owner-auth";
+import type { APIRoute, AstroCookies } from "astro";
 import {
 	archiveOwnerPost,
 	atomicWriteOwnerPost,
@@ -13,6 +7,7 @@ import {
 	normalizeOwnerSlug,
 	validateOwnerPostSource,
 } from "@/lib/owner-content";
+import { requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
@@ -27,56 +22,32 @@ function json(body: object, status = 200): Response {
 	});
 }
 
-async function ownerForRead(request: Request, clientAddress: string) {
-	const secret = resolveOwnerSessionSecret(
-		request,
-		isDevelopment(),
-		clientAddress,
-	);
-	if (!secret)
+async function ownerForRead(request: Request, cookies: AstroCookies) {
+	const auth = await requireOwnerUser(request, cookies, {
+		originCheck: false,
+	});
+	if (!auth.ok) {
 		return {
 			ok: false as const,
-			response: json({ ok: false, error: "owner_auth_unconfigured" }, 503),
-		};
-	const session = await readSessionFromRequest(request, secret);
-	if (session?.role !== "owner") {
-		return {
-			ok: false as const,
-			response: json({ ok: false, error: "owner_required" }, 401),
+			response: json({ ok: false, error: auth.error }, auth.status),
 		};
 	}
-	return { ok: true as const, secret, session };
+	return { ok: true as const };
 }
 
-async function ownerForMutation(request: Request, clientAddress: string) {
-	const secret = resolveOwnerSessionSecret(
-		request,
-		isDevelopment(),
-		clientAddress,
-	);
-	if (!secret)
+async function ownerForMutation(request: Request, cookies: AstroCookies) {
+	const auth = await requireOwnerUser(request, cookies, { originCheck: true });
+	if (!auth.ok) {
 		return {
 			ok: false as const,
-			response: json({ ok: false, error: "owner_auth_unconfigured" }, 503),
-		};
-	const validation = await validateMutationRequest(request, secret);
-	if (!validation.ok) {
-		return {
-			ok: false as const,
-			response: json({ ok: false, error: validation.error }, validation.status),
+			response: json({ ok: false, error: auth.error }, auth.status),
 		};
 	}
-	if (!checkOwnerMutationRate(validation.session)) {
-		return {
-			ok: false as const,
-			response: json({ ok: false, error: "rate_limited" }, 429),
-		};
-	}
-	return { ok: true as const, session: validation.session };
+	return { ok: true as const };
 }
 
-export const GET: APIRoute = async ({ request, clientAddress }) => {
-	const auth = await ownerForRead(request, clientAddress);
+export const GET: APIRoute = async ({ request, cookies }) => {
+	const auth = await ownerForRead(request, cookies);
 	if (!auth.ok) return auth.response;
 	if (!isDevelopment()) {
 		return json(
@@ -100,8 +71,8 @@ export const GET: APIRoute = async ({ request, clientAddress }) => {
 	});
 };
 
-export const PUT: APIRoute = async ({ request, clientAddress }) => {
-	const auth = await ownerForMutation(request, clientAddress);
+export const PUT: APIRoute = async ({ request, cookies }) => {
+	const auth = await ownerForMutation(request, cookies);
 	if (!auth.ok) return auth.response;
 	if (!isDevelopment()) {
 		return json(
@@ -142,8 +113,8 @@ export const PUT: APIRoute = async ({ request, clientAddress }) => {
 	}
 };
 
-export const DELETE: APIRoute = async ({ request, clientAddress }) => {
-	const auth = await ownerForMutation(request, clientAddress);
+export const DELETE: APIRoute = async ({ request, cookies }) => {
+	const auth = await ownerForMutation(request, cookies);
 	if (!auth.ok) return auth.response;
 	if (!isDevelopment()) {
 		return json(

@@ -1,0 +1,147 @@
+---
+import { Icon } from "astro-icon/components";
+import LoginCard from "./LoginCard.astro";
+---
+
+<dialog
+	class="login-dialog"
+	data-login-dialog
+	aria-labelledby="login-dialog-title"
+>
+	<div class="login-dialog__panel">
+		<LoginCard headingId="login-dialog-title" />
+		<button
+			type="button"
+			class="login-dialog__close"
+			data-login-close
+			aria-label="关闭"
+		>
+			<Icon is:inline name="lucide:x" class="login-dialog__close-icon" />
+		</button>
+	</div>
+</dialog>
+
+<script>
+	function isModifiedClick(event: MouseEvent): boolean {
+		return (
+			event.button !== 0 ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			event.altKey
+		);
+	}
+
+	function currentPath(): string {
+		return window.location.pathname.replace(/\/+$/, "") || "/";
+	}
+
+	function bootLoginModal(): void {
+		if (window.__loginModalBound) return;
+		const dialog = document.querySelector<HTMLDialogElement>("[data-login-dialog]");
+		if (!dialog) return;
+		window.__loginModalBound = true;
+
+		const card = dialog.querySelector<HTMLElement>("[data-login-card]");
+		const closeButton = dialog.querySelector<HTMLButtonElement>("[data-login-close]");
+
+		const closeDialog = () => {
+			if (dialog.open) dialog.close();
+		};
+
+		const openDialog = (next: string) => {
+			if (card) {
+				card.setAttribute("data-login-next", next);
+				card.dispatchEvent(new Event("firefly:login-sync"));
+			}
+			if (!dialog.open) dialog.showModal();
+		};
+
+		closeButton?.addEventListener("click", closeDialog);
+		dialog.addEventListener("click", (event) => {
+			if (event.target === dialog) closeDialog();
+		});
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") closeDialog();
+		});
+		document.addEventListener("swup:visit:start", closeDialog);
+
+		document.addEventListener("firefly:login-open", ((event: CustomEvent<{ next?: string }>) => {
+			const next = event.detail?.next || `${window.location.pathname}${window.location.search}` || "/";
+			openDialog(next);
+		}) as EventListener);
+
+		document.addEventListener(
+			"click",
+			(event) => {
+				if (isModifiedClick(event)) return;
+				const target = event.target;
+				if (!(target instanceof Element)) return;
+				const link = target.closest<HTMLAnchorElement>('a[href^="/login/"]');
+				if (!link || link.hasAttribute("data-login-fullpage")) return;
+				if (currentPath() === "/login") return;
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				const url = new URL(link.href, window.location.origin);
+				const next =
+					url.searchParams.get("next") ||
+					`${window.location.pathname}${window.location.search}` ||
+					"/";
+				openDialog(next);
+			},
+			true,
+		);
+	}
+
+	bootLoginModal();
+	document.addEventListener("swup:page:view", bootLoginModal);
+</script>
+
+<style>
+	.login-dialog {
+		padding: 0;
+		border: 0;
+		background: transparent;
+		max-width: calc(100vw - 1.5rem);
+	}
+
+	.login-dialog::backdrop {
+		background: rgb(8 10 18 / 0.58);
+		backdrop-filter: blur(10px);
+	}
+
+	.login-dialog__panel {
+		position: relative;
+	}
+
+	.login-dialog__close {
+		position: absolute;
+		top: 0.65rem;
+		right: 0.65rem;
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		border: 0;
+		border-radius: 999px;
+		background: color-mix(in oklch, var(--card-bg) 70%, transparent);
+		color: var(--content-meta);
+		cursor: pointer;
+	}
+
+	.login-dialog__close:hover {
+		color: var(--deep-text);
+		background: color-mix(in oklch, var(--card-bg) 92%, var(--deep-text));
+	}
+
+	.login-dialog__close:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+	}
+
+	.login-dialog__close-icon {
+		width: 1rem;
+		height: 1rem;
+	}
+</style>

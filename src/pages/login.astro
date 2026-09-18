@@ -1,0 +1,56 @@
+---
+import LoginCard from "@/components/auth/LoginCard.astro";
+import { profileConfig, siteConfig } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="登录" description={`使用 GitHub、Google 或邮箱登录 ${siteConfig.title}`} embed>
+	<main class="login-screen">
+		<a class="login-screen__brand" href="/" data-no-swup data-login-fullpage>
+			{profileConfig.name}
+		</a>
+		<LoginCard headingId="login-page-title" readUrlError />
+		<a class="login-screen__back" href="/" data-no-swup data-login-fullpage>
+			返回首页
+		</a>
+	</main>
+</Layout>
+
+<style>
+	.login-screen {
+		min-height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1.1rem;
+		padding: 2rem 1rem 3rem;
+		background:
+			radial-gradient(
+				ellipse 70% 50% at 50% 18%,
+				color-mix(in srgb, var(--primary) 18%, transparent),
+				transparent 70%
+			),
+			var(--page-bg);
+	}
+
+	.login-screen__brand {
+		font-size: 1.05rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		color: var(--deep-text);
+		text-decoration: none;
+	}
+
+	.login-screen__brand:hover,
+	.login-screen__back:hover {
+		color: var(--primary);
+	}
+
+	.login-screen__back {
+		font-size: 0.82rem;
+		font-weight: 650;
+		color: var(--content-meta);
+		text-decoration: none;
+	}
+</style>

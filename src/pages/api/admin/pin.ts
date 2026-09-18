@@ -1,11 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { APIRoute } from "astro";
-import {
-	checkOwnerMutationRate,
-	resolveOwnerSessionSecret,
-	validateMutationRequest,
-} from "@/lib/owner-auth";
+import { requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
@@ -97,27 +93,15 @@ async function resolvePostFile(
 	return null;
 }
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
-	const secret = resolveOwnerSessionSecret(
-		request,
-		import.meta.env.DEV,
-		clientAddress,
-	);
-	if (!secret) {
-		return Response.json(
-			{ ok: false, error: "owner_auth_unconfigured" },
-			{ status: 503 },
-		);
-	}
-	const validation = await validateMutationRequest(request, secret);
+export const POST: APIRoute = async ({ request, cookies }) => {
+	const validation = await requireOwnerUser(request, cookies, {
+		originCheck: true,
+	});
 	if (!validation.ok) {
 		return Response.json(
 			{ ok: false, error: validation.error },
 			{ status: validation.status },
 		);
-	}
-	if (!checkOwnerMutationRate(validation.session)) {
-		return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
 	}
 
 	let body: { postId?: string; pinned?: boolean; filePath?: string };

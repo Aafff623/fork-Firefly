@@ -2,16 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { APIRoute } from "astro";
 import {
-	checkOwnerMutationRate,
-	resolveOwnerSessionSecret,
-	validateMutationRequest,
-} from "@/lib/owner-auth";
-import {
 	contentSha256,
 	findOwnerPost,
 	normalizeOwnerSlug,
 	ownerPostImageTarget,
 } from "@/lib/owner-content";
+import { requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
@@ -49,16 +45,10 @@ function signatureMatches(bytes: Uint8Array, mime: string): boolean {
 	return false;
 }
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
 	const isDev = import.meta.env.DEV;
-	const secret = resolveOwnerSessionSecret(request, isDev, clientAddress);
-	if (!secret)
-		return json({ ok: false, error: "owner_auth_unconfigured" }, 503);
-	const auth = await validateMutationRequest(request, secret);
+	const auth = await requireOwnerUser(request, cookies, { originCheck: true });
 	if (!auth.ok) return json({ ok: false, error: auth.error }, auth.status);
-	if (!checkOwnerMutationRate(auth.session)) {
-		return json({ ok: false, error: "rate_limited" }, 429);
-	}
 	if (!isDev) {
 		return json(
 			{ ok: false, error: "production_git_provider_unconfigured" },

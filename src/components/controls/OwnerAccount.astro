@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
-const loginHref = `/api/auth/github/start/?returnTo=${encodeURIComponent(returnTo)}`;
+const loginHref = `/login/?next=${encodeURIComponent(returnTo)}`;
 const postMatch = Astro.url.pathname.match(/^\/posts\/([^/]+)\/?$/);
 const editorHref = postMatch
 	? `/owner/editor/?post=${encodeURIComponent(postMatch[1])}`
@@ -13,9 +13,10 @@ const editorHref = postMatch
   <a
     href={loginHref}
     class="owner-account__button btn-plain scale-animation"
-    aria-label="使用 GitHub 登录"
-    title="GitHub 登录"
+    aria-label="登录"
+    title="登录"
     data-owner-login
+    data-no-swup
   >
     <Icon is:inline name="lucide:log-in" class="owner-account__icon" />
     <span class="owner-account__label">登录</span>
@@ -33,20 +34,44 @@ const editorHref = postMatch
       <Icon is:inline name="lucide:pencil" class="owner-account__icon" />
       <span class="owner-account__label">编辑</span>
     </a>
-    <span class="owner-account__viewer" data-owner-viewer title="GitHub 已登录">
+    <span
+      class="owner-account__viewer text-black/75 dark:text-white/75"
+      data-owner-viewer
+      title="已登录"
+    >
       <img data-owner-avatar alt="" width="28" height="28" />
       <span class="owner-account__name" data-owner-name></span>
-      <span class="owner-account__dev" data-owner-dev hidden>DEV</span>
     </span>
     <button
       type="button"
       class="owner-account__button owner-account__logout btn-plain scale-animation"
-      aria-label="退出 GitHub 登录"
+      aria-label="退出登录"
       title="退出登录"
       data-owner-logout
     >
       <Icon is:inline name="lucide:log-out" class="owner-account__icon" />
     </button>
+  </div>
+  <div
+    class="owner-account__confirm"
+    data-owner-confirm
+    role="dialog"
+    aria-label="退出登录确认"
+    hidden
+  >
+    <p class="owner-account__confirm-text">确定退出当前登录？</p>
+    <div class="owner-account__confirm-actions">
+      <button type="button" class="owner-account__confirm-btn" data-owner-confirm-cancel>
+        取消
+      </button>
+      <button
+        type="button"
+        class="owner-account__confirm-btn owner-account__confirm-btn--danger"
+        data-owner-confirm-ok
+      >
+        退出登录
+      </button>
+    </div>
   </div>
   <span class="sr-only" data-owner-status aria-live="polite"></span>
 </div>
@@ -56,9 +81,10 @@ const editorHref = postMatch
     authenticated?: boolean;
     role?: "owner" | "user";
     viewer?: { login?: string; avatarUrl?: string };
-    csrf?: string;
-    dev?: boolean;
   };
+
+  const FALLBACK_AVATAR =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' rx='14' fill='%23a3a3a3'/%3E%3C/svg%3E";
 
   function mountOwnerAccount(root: HTMLElement): void {
     const login = root.querySelector<HTMLElement>("[data-owner-login]");
@@ -66,13 +92,12 @@ const editorHref = postMatch
     const editor = root.querySelector<HTMLElement>("[data-owner-editor]");
     const avatar = root.querySelector<HTMLImageElement>("[data-owner-avatar]");
     const name = root.querySelector<HTMLElement>("[data-owner-name]");
-    const dev = root.querySelector<HTMLElement>("[data-owner-dev]");
     const logout = root.querySelector<HTMLButtonElement>("[data-owner-logout]");
     const status = root.querySelector<HTMLElement>("[data-owner-status]");
 
     const currentReturnTo = `${window.location.pathname}${window.location.search}`;
     if (login instanceof HTMLAnchorElement) {
-      login.href = `/api/auth/github/start/?returnTo=${encodeURIComponent(currentReturnTo)}`;
+      login.href = `/login/?next=${encodeURIComponent(currentReturnTo)}`;
     }
     if (editor instanceof HTMLAnchorElement) {
       const match = window.location.pathname.match(/^\/posts\/([^/]+)\/?$/);
@@ -83,12 +108,10 @@ const editorHref = postMatch
 
     if (root.dataset.ownerBound === "true") return;
     root.dataset.ownerBound = "true";
-    let csrf = "";
 
     const showGuest = () => {
       login?.removeAttribute("hidden");
       if (signed) signed.hidden = true;
-      csrf = "";
     };
 
     const sync = async () => {
@@ -106,35 +129,68 @@ const editorHref = postMatch
         if (signed) signed.hidden = false;
         if (editor) editor.hidden = data.role !== "owner";
         if (avatar) {
-          avatar.src = data.viewer.avatarUrl || `https://github.com/${data.viewer.login}.png`;
-          avatar.alt = `${data.viewer.login} 的 GitHub 头像`;
+          avatar.src = data.viewer.avatarUrl || FALLBACK_AVATAR;
+          avatar.alt = `${data.viewer.login} 的头像`;
         }
         if (name) name.textContent = data.role === "owner" ? "园主" : data.viewer.login;
-        if (dev) dev.hidden = !data.dev;
-        csrf = data.csrf || "";
-        if (status) status.textContent = data.role === "owner" ? "已识别为园主" : "GitHub 已登录";
+        if (status) status.textContent = data.role === "owner" ? "已识别为园主" : "已登录";
       } catch {
         showGuest();
       }
     };
 
-    logout?.addEventListener("click", async () => {
-      if (!csrf || logout.disabled) return;
-      if (!window.confirm("确定退出当前 GitHub 登录？")) return;
-      logout.disabled = true;
+    const confirmBox = root.querySelector<HTMLElement>("[data-owner-confirm]");
+    const confirmOk = root.querySelector<HTMLButtonElement>("[data-owner-confirm-ok]");
+    const confirmCancel = root.querySelector<HTMLButtonElement>("[data-owner-confirm-cancel]");
+
+    const handleConfirmEsc = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setConfirmOpen(false);
+    };
+    const setConfirmOpen = (open: boolean) => {
+      if (!confirmBox) return;
+      confirmBox.hidden = !open;
+      if (open) {
+        document.addEventListener("keydown", handleConfirmEsc);
+        confirmCancel?.focus();
+      } else {
+        document.removeEventListener("keydown", handleConfirmEsc);
+      }
+    };
+
+    const doLogout = async () => {
+      if (logout?.disabled) return;
+      if (logout) logout.disabled = true;
       try {
         const response = await fetch("/api/auth/logout/", {
           method: "POST",
           credentials: "same-origin",
-          headers: { "x-firefly-csrf": csrf },
         });
         if (response.ok) {
           showGuest();
-          if (status) status.textContent = "已退出 GitHub 登录";
+          if (status) status.textContent = "已退出登录";
         }
       } finally {
-        logout.disabled = false;
+        if (logout) logout.disabled = false;
       }
+    };
+
+    logout?.addEventListener("click", () => {
+      if (logout.disabled) return;
+      if (!confirmBox) {
+        // 兜底：节点缺失时退回原生确认
+        if (window.confirm("确定退出当前登录？")) void doLogout();
+        return;
+      }
+      setConfirmOpen(true);
+    });
+    confirmCancel?.addEventListener("click", () => {
+      setConfirmOpen(false);
+      logout?.focus();
+    });
+    confirmOk?.addEventListener("click", () => {
+      setConfirmOpen(false);
+      void doLogout();
     });
     void sync();
   }
@@ -197,18 +253,81 @@ const editorHref = postMatch
     object-fit: cover;
   }
 
-  .owner-account__dev {
-    padding: 0.08rem 0.28rem;
-    border-radius: 0.25rem;
-    color: #7a3500;
-    background: #ffd69a;
-    font-size: 0.58rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-  }
-
   .owner-account__logout:disabled {
     opacity: 0.45;
+  }
+
+  .owner-account {
+    position: relative;
+  }
+
+  /* 退出确认弹层：导航栏下方右侧锚定，避免误触直接登出 */
+  .owner-account__confirm {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    z-index: 60;
+    display: grid;
+    gap: 0.7rem;
+    min-width: 12.5rem;
+    padding: 0.85rem 0.95rem 0.8rem;
+    border-radius: 0.9rem;
+    background: color-mix(in oklch, var(--card-bg) 94%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--primary) 24%, transparent),
+      0 12px 32px rgba(0, 0, 0, 0.2);
+    color: var(--deep-text);
+  }
+
+  .owner-account__confirm[hidden] {
+    display: none;
+  }
+
+  .owner-account__confirm-text {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .owner-account__confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .owner-account__confirm-btn {
+    min-height: 1.9rem;
+    padding-inline: 0.8rem;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--btn-content);
+    background: var(--btn-regular-bg);
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .owner-account__confirm-btn:hover {
+    background: var(--btn-regular-bg-hover);
+  }
+
+  .owner-account__confirm-btn:active {
+    transform: scale(0.96);
+  }
+
+  .owner-account__confirm-btn--danger {
+    color: oklch(0.55 0.19 25);
+    background: color-mix(in oklch, oklch(0.62 0.19 25) 14%, var(--btn-regular-bg));
+  }
+
+  :global(.dark) .owner-account__confirm-btn--danger {
+    color: oklch(0.8 0.13 25);
   }
 
   @media (max-width: 1023px) {

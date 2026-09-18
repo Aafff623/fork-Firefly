@@ -1,38 +1,29 @@
 import type { APIRoute } from "astro";
-import {
-	OWNER_SESSION_COOKIE,
-	ownerCookie,
-	resolveOwnerSessionSecret,
-	validateSessionMutationRequest,
-} from "@/lib/owner-auth";
+import { createAuthClient, sameOriginRequest } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
-	const secret = resolveOwnerSessionSecret(
-		request,
-		import.meta.env.DEV,
-		clientAddress,
-	);
-	if (!secret)
-		return Response.json(
-			{ ok: false, error: "owner_auth_unconfigured" },
-			{ status: 503 },
-		);
-	const validation = await validateSessionMutationRequest(request, secret);
-	if (!validation.ok) {
-		return Response.json(
-			{ ok: false, error: validation.error },
-			{ status: validation.status },
-		);
+const LEGACY_OWNER_COOKIE = "firefly_owner_session";
+
+function json(body: object, status = 200): Response {
+	return Response.json(body, {
+		status,
+		headers: { "Cache-Control": "no-store" },
+	});
+}
+
+export const POST: APIRoute = async ({ request, cookies }) => {
+	if (!sameOriginRequest(request)) {
+		return json({ ok: false, error: "origin_mismatch" }, 403);
 	}
-	const response = Response.json({ ok: true });
+	const client = createAuthClient(request, cookies);
+	if (!client) return json({ ok: false, error: "supabase_unconfigured" }, 503);
+	await client.auth.signOut().catch(() => undefined);
+	const response = json({ ok: true });
+	// 旧自研会话 cookie 的过期清理（旧链路删除后残留浏览器里的兜底）
 	response.headers.append(
 		"Set-Cookie",
-		ownerCookie(OWNER_SESSION_COOKIE, "", {
-			secure: new URL(request.url).protocol === "https:",
-			maxAgeSeconds: 0,
-		}),
+		`${LEGACY_OWNER_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
 	);
 	return response;
 };

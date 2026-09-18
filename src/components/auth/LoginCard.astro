@@ -1,0 +1,462 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	headingId?: string;
+	readUrlError?: boolean;
+}
+
+const { headingId, readUrlError = false } = Astro.props;
+---
+
+<section
+	class="login-card"
+	data-login-card
+	data-login-read-url-error={readUrlError ? "true" : undefined}
+>
+	<header class="login-head">
+		<p class="login-kicker">SIGN IN</p>
+		<h1 class="login-title" id={headingId}>登录</h1>
+		<p class="login-sub">园主与访客通用，权限按账号自动识别。</p>
+	</header>
+
+	<div class="login-providers">
+		<a
+			class="login-provider login-provider--github"
+			href="/api/auth/login/?provider=github&next=%2F"
+			data-login-github
+			data-no-swup
+		>
+			<Icon is:inline name="simple-icons:github" class="login-provider__icon" />
+			<span>使用 GitHub 登录</span>
+		</a>
+		<a
+			class="login-provider login-provider--google"
+			href="/api/auth/login/?provider=google&next=%2F"
+			data-login-google
+			data-no-swup
+		>
+			<svg class="login-provider__icon" viewBox="0 0 24 24" aria-hidden="true">
+				<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path>
+				<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"></path>
+				<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"></path>
+				<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"></path>
+			</svg>
+			<span>使用 Google 登录</span>
+		</a>
+	</div>
+
+	<div class="login-divider" aria-hidden="true"><span>或使用邮箱</span></div>
+
+	<form class="login-form" data-login-form>
+		<label class="login-field">
+			<span>邮箱</span>
+			<input
+				type="email"
+				name="email"
+				autocomplete="email"
+				required
+				placeholder="you@example.com"
+				data-login-email
+			/>
+		</label>
+		<label class="login-field">
+			<span>密码</span>
+			<input
+				type="password"
+				name="password"
+				autocomplete="current-password"
+				minlength="8"
+				required
+				placeholder="至少 8 位"
+				data-login-password
+			/>
+		</label>
+		<p class="login-message" role="status" data-login-message hidden></p>
+		<button type="submit" class="login-submit" data-login-submit>
+			登录
+		</button>
+		<button type="button" class="login-switch" data-login-switch>
+			没有账号？注册一个
+		</button>
+	</form>
+</section>
+
+<script>
+	const ERROR_TEXT: Record<string, string> = {
+		invalid_credentials: "邮箱或密码不正确。",
+		email_not_confirmed: "邮箱尚未确认，请先查收确认邮件。",
+		email_taken: "该邮箱已注册，请直接登录。",
+		rate_limited: "尝试过于频繁，请稍后再试。",
+		invalid_payload: "请检查邮箱格式与密码长度（至少 8 位）。",
+		origin_mismatch: "请求来源异常，请刷新页面后重试。",
+		supabase_unconfigured: "登录服务尚未配置，请联系园主。",
+		auth_failed: "登录回调失败，请重试。",
+		otp_failed: "验证链接已失效，请重新发起登录。",
+		unconfigured: "登录服务尚未配置，请联系园主。",
+		missing_parameters: "回调参数缺失，请从登录页重新发起。",
+		signup_failed: "注册失败，请稍后再试。",
+		oauth_start_failed: "第三方登录未能发起，请稍后再试。",
+		invalid_provider: "不支持的登录方式。",
+		provider_disabled:
+			"GitHub / Google 登录尚未在登录服务中启用。请到 Supabase 控制台 Authentication → Providers 打开对应开关，并加上本站回调地址。",
+	};
+
+	type PasswordResponse = {
+		ok?: boolean;
+		error?: string;
+		confirmationRequired?: boolean;
+	};
+
+	function isLoginPath(pathname: string): boolean {
+		return pathname.replace(/\/+$/, "") === "/login";
+	}
+
+	function resolveNext(root: HTMLElement): string {
+		const fromAttr = root.getAttribute("data-login-next");
+		const fromUrl = new URLSearchParams(window.location.search).get("next");
+		const raw =
+			fromAttr ||
+			fromUrl ||
+			`${window.location.pathname}${window.location.search}` ||
+			"/";
+		if (!raw.startsWith("/") || raw.startsWith("//")) return "/";
+		const path = raw.split(/[?#]/)[0] ?? "/";
+		if (isLoginPath(path)) return "/";
+		return raw;
+	}
+
+	function mountLoginCard(root: HTMLElement): void {
+		const github = root.querySelector<HTMLAnchorElement>("[data-login-github]");
+		const google = root.querySelector<HTMLAnchorElement>("[data-login-google]");
+		const form = root.querySelector<HTMLFormElement>("[data-login-form]");
+		const emailInput = root.querySelector<HTMLInputElement>(
+			"[data-login-email]",
+		);
+		const passwordInput = root.querySelector<HTMLInputElement>(
+			"[data-login-password]",
+		);
+		const message = root.querySelector<HTMLElement>("[data-login-message]");
+		const submit = root.querySelector<HTMLButtonElement>("[data-login-submit]");
+		const switchButton = root.querySelector<HTMLButtonElement>(
+			"[data-login-switch]",
+		);
+
+		let next = resolveNext(root);
+		let intent: "signin" | "signup" = "signin";
+		let busy = false;
+
+		const showMessage = (text: string) => {
+			if (!message) return;
+			message.textContent = text;
+			message.hidden = false;
+		};
+		const hideMessage = () => {
+			if (message) message.hidden = true;
+		};
+
+		const syncProviders = () => {
+			next = resolveNext(root);
+			if (github) {
+				github.href = `/api/auth/login/?provider=github&next=${encodeURIComponent(next)}`;
+			}
+			if (google) {
+				google.href = `/api/auth/login/?provider=google&next=${encodeURIComponent(next)}`;
+			}
+		};
+
+		const bindProvider = (link: HTMLAnchorElement | null) => {
+			if (!link) return;
+			link.addEventListener(
+				"click",
+				(event) => {
+					if (
+						event.button !== 0 ||
+						event.metaKey ||
+						event.ctrlKey ||
+						event.shiftKey ||
+						event.altKey
+					) {
+						return;
+					}
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					window.location.assign(link.href);
+				},
+				{ capture: true },
+			);
+		};
+
+		syncProviders();
+		bindProvider(github);
+		bindProvider(google);
+
+		if (root.dataset.loginReadUrlError === "true") {
+			const callbackError = new URLSearchParams(window.location.search).get(
+				"error",
+			);
+			if (callbackError) {
+				showMessage(ERROR_TEXT[callbackError] ?? "登录失败，请重试。");
+			}
+		}
+
+		const setIntent = (value: "signin" | "signup") => {
+			intent = value;
+			if (submit) submit.textContent = value === "signin" ? "登录" : "注册";
+			if (switchButton)
+				switchButton.textContent =
+					value === "signin" ? "没有账号？注册一个" : "已有账号？直接登录";
+			if (passwordInput)
+				passwordInput.autocomplete =
+					value === "signin" ? "current-password" : "new-password";
+			hideMessage();
+		};
+
+		switchButton?.addEventListener("click", () => {
+			setIntent(intent === "signin" ? "signup" : "signin");
+		});
+
+		root.addEventListener("firefly:login-sync", () => {
+			syncProviders();
+			if (!root.hasAttribute("data-login-read-url-error")) hideMessage();
+		});
+
+		form?.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			if (busy || !emailInput?.value || !passwordInput?.value) return;
+			busy = true;
+			if (submit) submit.disabled = true;
+			try {
+				const response = await fetch("/api/auth/password/", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						intent,
+						email: emailInput.value,
+						password: passwordInput.value,
+						next,
+					}),
+				});
+				const data = (await response.json()) as PasswordResponse;
+				if (!response.ok || !data.ok) {
+					showMessage(ERROR_TEXT[data.error ?? ""] ?? "登录失败，请重试。");
+					return;
+				}
+				if (data.confirmationRequired) {
+					showMessage("确认邮件已发送，请查收后点击邮件里的链接完成注册。");
+					return;
+				}
+				window.location.href = next;
+			} catch {
+				showMessage("网络异常，请稍后再试。");
+			} finally {
+				busy = false;
+				if (submit) submit.disabled = false;
+			}
+		});
+	}
+
+	function bootLoginCards(): void {
+		document.querySelectorAll<HTMLElement>("[data-login-card]").forEach((node) => {
+			if (node.dataset.loginBound === "true") return;
+			node.dataset.loginBound = "true";
+			mountLoginCard(node);
+		});
+	}
+
+	bootLoginCards();
+	document.addEventListener("swup:page:view", bootLoginCards);
+</script>
+
+<style>
+	.login-card {
+		width: min(24rem, 100%);
+		padding: 1.8rem 1.6rem 1.5rem;
+		border-radius: var(--radius-large);
+		border: 1px solid var(--line-divider);
+		background: var(--card-bg);
+		box-shadow: 0 18px 48px color-mix(in srgb, var(--deep-text) 14%, transparent);
+	}
+
+	.login-head {
+		margin-bottom: 1.3rem;
+	}
+
+	.login-kicker {
+		margin: 0 0 0.35rem;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		color: var(--primary);
+	}
+
+	.login-title {
+		margin: 0;
+		font-size: 1.45rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		color: var(--deep-text);
+	}
+
+	.login-sub {
+		margin: 0.45rem 0 0;
+		font-size: 0.82rem;
+		line-height: 1.6;
+		color: var(--content-meta);
+	}
+
+	.login-providers {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.login-provider {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: 2.7rem;
+		border-radius: 0.7rem;
+		border: 1px solid transparent;
+		font-size: 0.9rem;
+		font-weight: 700;
+		text-decoration: none;
+		transition:
+			opacity 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.login-provider--github {
+		background: var(--deep-text);
+		color: var(--card-bg);
+	}
+
+	.login-provider--google {
+		background: color-mix(in oklch, var(--card-bg) 88%, white);
+		color: var(--deep-text);
+		border-color: var(--line-color);
+	}
+
+	.login-provider__icon {
+		width: 1.1rem;
+		height: 1.1rem;
+	}
+
+	.login-provider:hover {
+		opacity: 0.88;
+	}
+
+	.login-provider:active {
+		transform: translateY(1px);
+	}
+
+	.login-provider:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+	}
+
+	.login-divider {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		margin: 1.15rem 0;
+		color: var(--content-meta);
+		font-size: 0.74rem;
+	}
+
+	.login-divider::before,
+	.login-divider::after {
+		content: "";
+		flex: 1;
+		height: 1px;
+		background: var(--line-divider);
+	}
+
+	.login-form {
+		display: grid;
+		gap: 0.85rem;
+	}
+
+	.login-field {
+		display: grid;
+		gap: 0.35rem;
+		font-size: 0.8rem;
+		font-weight: 650;
+		color: var(--deep-text);
+	}
+
+	.login-field input {
+		min-height: 2.5rem;
+		padding: 0 0.7rem;
+		border-radius: 0.6rem;
+		border: 1px solid var(--line-color);
+		background: var(--btn-plain-bg-hover, transparent);
+		color: var(--deep-text);
+		font-size: 0.88rem;
+	}
+
+	.login-field input:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 22%, transparent);
+	}
+
+	.login-message {
+		margin: 0;
+		padding: 0.55rem 0.7rem;
+		border-radius: 0.55rem;
+		font-size: 0.78rem;
+		line-height: 1.5;
+		background: color-mix(in srgb, #b42318 10%, var(--card-bg));
+		color: #8a1c14;
+	}
+
+	:global(html.dark) .login-message {
+		background: color-mix(in srgb, #f97066 16%, var(--card-bg));
+		color: #fecaca;
+	}
+
+	.login-submit {
+		min-height: 2.6rem;
+		border: 0;
+		border-radius: 0.7rem;
+		background: var(--primary);
+		color: #fff;
+		font-size: 0.88rem;
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 26%, transparent);
+		transition:
+			background 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.login-submit:hover:not(:disabled) {
+		background: var(--primary-hover);
+	}
+
+	.login-submit:active:not(:disabled) {
+		transform: translateY(1px);
+	}
+
+	.login-submit:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	.login-switch {
+		min-height: 2.2rem;
+		border: 0;
+		background: transparent;
+		color: var(--primary);
+		font-size: 0.8rem;
+		font-weight: 650;
+		cursor: pointer;
+	}
+
+	.login-switch:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+		border-radius: 0.4rem;
+	}
+</style>
