@@ -1,14 +1,15 @@
-/* 分类条 · 更精致的软胶囊（非廉价全圆 pill） */
+/* 分类条 · 分色印章（各分类自带 --cat-accent，缺省回落主题色） */
 .category-pill {
-	border: 1px solid color-mix(in oklch, var(--btn-content) 12%, transparent);
-	color: var(--btn-content);
+	--cat-accent: var(--primary);
+	border: 1px solid color-mix(in oklch, var(--cat-accent) 26%, transparent);
+	color: color-mix(in oklch, var(--cat-accent) 62%, var(--btn-content));
 	background:
-		linear-gradient(180deg, color-mix(in oklch, white 8%, transparent), transparent),
-		color-mix(in oklch, var(--btn-content) 5%, transparent);
+		linear-gradient(180deg, color-mix(in oklch, white 10%, transparent), transparent),
+		color-mix(in oklch, var(--cat-accent) 11%, transparent);
 	font-weight: 550;
 	letter-spacing: 0.01em;
-	gap: 0.4rem;
-	border-radius: 0.7rem !important;
+	gap: 0.22rem;
+	border-radius: 0.55rem !important;
 	box-shadow: 0 1px 0 color-mix(in oklch, white 35%, transparent) inset;
 	backdrop-filter: blur(6px);
 	transition:
@@ -19,66 +20,181 @@
 		box-shadow 0.18s ease;
 }
 
+.category-pill .category-icon {
+	flex: none;
+	color: var(--cat-accent);
+	opacity: 0.92;
+}
+
 .category-pill .pill-count {
 	font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
-	font-size: 0.68rem;
+	font-size: 0.62rem;
 	font-weight: 700;
 	opacity: 0.88;
-	padding: 0.08rem 0.38rem;
-	border-radius: 0.45rem;
-	background: color-mix(in oklch, var(--btn-content) 12%, transparent);
+	padding: 0.02rem 0.28rem;
+	border-radius: 0.35rem;
+	background: color-mix(in oklch, var(--cat-accent) 14%, transparent);
 	letter-spacing: 0.02em;
-	color: color-mix(in oklch, var(--btn-content) 92%, black);
+	color: color-mix(in oklch, var(--cat-accent) 86%, black);
 }
 
-.category-pill[data-category-name=""],
-.category-pill[data-category-name="__archive__"] {
-	color: var(--primary);
-	background:
-		linear-gradient(180deg, color-mix(in oklch, var(--primary) 10%, transparent), transparent),
-		color-mix(in oklch, var(--primary) 7%, transparent);
-	border-color: color-mix(in oklch, var(--primary) 18%, transparent);
-}
-
-/* 主页 / 时间轴：圆角方标，只露 icon */
+/* 时间轴：圆角方标，桌面只露 icon */
 .category-pill--home,
 .category-pill--icon {
-	width: 2.05rem;
-	height: 2.05rem;
+	width: 1.85rem;
+	height: 1.85rem;
 	padding: 0 !important;
-	border-radius: 0.65rem !important;
 }
 
-.category-home-glyph {
-	display: block;
-	opacity: 0.92;
-	transition: opacity 0.18s ease, transform 0.18s ease;
+.category-pill--icon {
+	border-radius: 0.5rem !important;
 }
 
-.category-pill--home:hover .category-home-glyph,
-.category-pill--home[data-active] .category-home-glyph {
-	opacity: 1;
+.category-pill--home .category-pill__label,
+.category-pill--icon .category-pill__label {
+	display: none;
+}
+
+/* —— 主页齿轮圆盘：圆钮 + 缓转齿轮环 + 喷射碎屑 + 呼吸光圈 —— */
+.category-pill--home {
+	border-radius: 999px !important;
+}
+
+.home-orb {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 999px;
+	color: inherit;
+}
+
+/* 齿轮环：8 齿 = 重复锥向渐变 + 径向遮罩挖心（纯 CSS，无资源） */
+.home-orb__gear {
+	position: absolute;
+	inset: 0;
+	border-radius: 999px;
+	background: repeating-conic-gradient(
+		from 0deg,
+		currentColor 0deg 13deg,
+		transparent 13deg 45deg
+	);
+	-webkit-mask: radial-gradient(closest-side, transparent 56%, #000 58%);
+	mask: radial-gradient(closest-side, transparent 56%, #000 58%);
+	opacity: 0.5;
+	animation: home-gear-spin 14s linear infinite;
+}
+
+.home-orb__core {
+	position: relative;
+	z-index: 2;
+	font-size: 0.82rem;
+	opacity: 0.95;
+}
+
+/* 呼吸光圈：低频 ping，呼应碎屑喷射节奏 */
+.home-orb__halo {
+	position: absolute;
+	inset: 0;
+	border-radius: 999px;
+	border: 1px solid currentColor;
+	opacity: 0;
+	animation: home-halo-ping 4.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* 碎屑：沿各自角度飞出并自转、淡出；--a 角度、--d 错相位 */
+.home-orb__spark {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0.2rem;
+	height: 0.2rem;
+	margin: -0.1rem 0 0 -0.1rem;
+	border-radius: 62% 38% 55% 45%;
+	background: color-mix(in oklch, currentColor 62%, white);
+	box-shadow: 0 0 0.26rem color-mix(in oklch, currentColor 70%, transparent);
+	opacity: 0;
+	pointer-events: none;
+	transform: rotate(var(--a)) translateX(0.5rem);
+	animation: home-spark-burst 4.8s ease-out infinite;
+	animation-delay: var(--d, 0s);
+}
+
+@keyframes home-gear-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes home-halo-ping {
+	0%,
+	55% {
+		transform: scale(1);
+		opacity: 0;
+	}
+	62% {
+		opacity: 0.45;
+	}
+	88%,
+	100% {
+		transform: scale(1.6);
+		opacity: 0;
+	}
+}
+
+@keyframes home-spark-burst {
+	0% {
+		opacity: 0;
+		transform: rotate(var(--a)) translateX(0.45rem) rotate(0deg) scale(0.6);
+	}
+	7% {
+		opacity: 0.95;
+	}
+	34% {
+		opacity: 0.85;
+		transform: rotate(var(--a)) translateX(1.55rem) rotate(100deg) scale(1);
+	}
+	50%,
+	100% {
+		opacity: 0;
+		transform: rotate(var(--a)) translateX(2.05rem) rotate(150deg) scale(0.5);
+	}
+}
+
+/* 悬停：齿轮提速、碎屑更频 */
+.category-pill--home:hover .home-orb__gear {
+	animation-duration: 3.5s;
+}
+.category-pill--home:hover .home-orb__spark {
+	animation-duration: 2.2s;
 }
 
 .category-pill:hover {
-	color: var(--primary);
+	color: var(--cat-accent);
 	background:
-		linear-gradient(180deg, color-mix(in oklch, var(--primary) 12%, transparent), transparent),
-		color-mix(in oklch, var(--primary) 10%, transparent);
-	border-color: color-mix(in oklch, var(--primary) 26%, transparent);
+		linear-gradient(180deg, color-mix(in oklch, var(--cat-accent) 8%, transparent), transparent),
+		color-mix(in oklch, var(--cat-accent) 16%, transparent);
+	border-color: color-mix(in oklch, var(--cat-accent) 40%, transparent);
 	transform: translateY(-1px);
 	box-shadow:
 		0 1px 0 color-mix(in oklch, white 40%, transparent) inset,
-		0 6px 14px color-mix(in oklch, var(--primary) 12%, transparent);
+		0 6px 14px color-mix(in oklch, var(--cat-accent) 14%, transparent);
 }
 
 .category-pill[data-active] {
-	background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 92%, white), var(--primary));
+	background: linear-gradient(160deg, color-mix(in oklch, var(--cat-accent) 88%, white), var(--cat-accent));
 	color: white;
 	border-color: transparent;
 	box-shadow:
 		0 1px 0 rgb(255 255 255 / 0.22) inset,
-		0 8px 18px color-mix(in oklch, var(--primary) 28%, transparent);
+		0 8px 18px color-mix(in oklch, var(--cat-accent) 28%, transparent);
+}
+
+.category-pill[data-active] .category-icon {
+	color: inherit;
+	opacity: 1;
 }
 
 .category-pill[data-active] .pill-count {
@@ -89,36 +205,33 @@
 
 .category-pill[data-soft-active] {
 	background:
-		linear-gradient(180deg, color-mix(in oklch, var(--primary) 14%, transparent), transparent),
-		color-mix(in oklch, var(--primary) 12%, transparent);
-	color: color-mix(in oklch, var(--primary) 88%, var(--btn-content));
+		linear-gradient(180deg, color-mix(in oklch, var(--cat-accent) 12%, transparent), transparent),
+		color-mix(in oklch, var(--cat-accent) 16%, transparent);
+	color: color-mix(in oklch, var(--cat-accent) 82%, var(--btn-content));
 	font-weight: 650;
-	border-color: color-mix(in oklch, var(--primary) 24%, transparent);
+	border-color: color-mix(in oklch, var(--cat-accent) 32%, transparent);
+}
+
+.category-pill[data-soft-active] .category-icon {
+	opacity: 1;
 }
 
 .category-pill[data-soft-active]:hover {
 	background:
-		linear-gradient(180deg, color-mix(in oklch, var(--primary) 18%, transparent), transparent),
-		color-mix(in oklch, var(--primary) 16%, transparent);
-	color: var(--primary);
+		linear-gradient(180deg, color-mix(in oklch, var(--cat-accent) 16%, transparent), transparent),
+		color-mix(in oklch, var(--cat-accent) 20%, transparent);
+	color: var(--cat-accent);
 }
 
 .category-pill[data-soft-active][data-active],
 .category-pill[data-soft-active][data-active]:hover {
-	background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 92%, white), var(--primary));
+	background: linear-gradient(160deg, color-mix(in oklch, var(--cat-accent) 88%, white), var(--cat-accent));
 	color: white;
 }
 
 .category-pill[data-active]:hover {
 	opacity: 0.96;
 	transform: translateY(-1px);
-}
-
-.category-pill[data-category-name=""][data-active],
-.category-pill[data-category-name=""][data-active]:hover,
-.category-pill[data-category-name="__archive__"][data-active],
-.category-pill[data-category-name="__archive__"][data-active]:hover {
-	color: white;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -129,5 +242,11 @@
 	.category-pill:hover,
 	.category-pill[data-active]:hover {
 		transform: none;
+	}
+
+	.home-orb__gear,
+	.home-orb__halo,
+	.home-orb__spark {
+		animation: none;
 	}
 }
