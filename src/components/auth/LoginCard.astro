@@ -4,14 +4,17 @@ import { Icon } from "astro-icon/components";
 interface Props {
 	headingId?: string;
 	readUrlError?: boolean;
+	/** 嵌入弹窗双栏时置 true：去掉卡片自身外壳（背景/边框/阴影/宽度） */
+	embedded?: boolean;
 }
 
-const { headingId, readUrlError = false } = Astro.props;
+const { headingId, readUrlError = false, embedded = false } = Astro.props;
 ---
 
 <section
 	class="login-card"
 	data-login-card
+	data-login-embedded={embedded ? "true" : undefined}
 	data-login-read-url-error={readUrlError ? "true" : undefined}
 >
 	<header class="login-head">
@@ -62,15 +65,27 @@ const { headingId, readUrlError = false } = Astro.props;
 		</label>
 		<label class="login-field">
 			<span>密码</span>
-			<input
-				type="password"
-				name="password"
-				autocomplete="current-password"
-				minlength="8"
-				required
-				placeholder="至少 8 位"
-				data-login-password
-			/>
+			<span class="login-field__wrap">
+				<input
+					type="password"
+					name="password"
+					autocomplete="current-password"
+					minlength="8"
+					required
+					placeholder="至少 8 位"
+					data-login-password
+				/>
+				<button
+					type="button"
+					class="login-eye"
+					data-login-password-toggle
+					aria-label="显示密码"
+					aria-pressed="false"
+				>
+					<Icon is:inline name="lucide:eye" class="login-eye__show" />
+					<Icon is:inline name="lucide:eye-off" class="login-eye__hide" />
+				</button>
+			</span>
 		</label>
 		<p class="login-message" role="status" data-login-message hidden></p>
 		<button type="submit" class="login-submit" data-login-submit>
@@ -140,6 +155,9 @@ const { headingId, readUrlError = false } = Astro.props;
 		const submit = root.querySelector<HTMLButtonElement>("[data-login-submit]");
 		const switchButton = root.querySelector<HTMLButtonElement>(
 			"[data-login-switch]",
+		);
+		const passwordToggle = root.querySelector<HTMLButtonElement>(
+			"[data-login-password-toggle]",
 		);
 
 		let next = resolveNext(root);
@@ -214,6 +232,19 @@ const { headingId, readUrlError = false } = Astro.props;
 
 		switchButton?.addEventListener("click", () => {
 			setIntent(intent === "signin" ? "signup" : "signin");
+		});
+
+		// 密码可见切换（同时驱动登录舞台「礼貌看开 / 偷瞄」状态机）
+		passwordToggle?.addEventListener("click", (event) => {
+			event.preventDefault();
+			if (!passwordInput) return;
+			const show = passwordInput.type === "password";
+			passwordInput.type = show ? "text" : "password";
+			passwordToggle.setAttribute("aria-pressed", String(show));
+			passwordToggle.setAttribute("aria-label", show ? "隐藏密码" : "显示密码");
+			if (show) passwordToggle.setAttribute("data-login-password-shown", "true");
+			else passwordToggle.removeAttribute("data-login-password-shown");
+			passwordInput.focus();
 		});
 
 		root.addEventListener("firefly:login-sync", () => {
@@ -393,6 +424,70 @@ const { headingId, readUrlError = false } = Astro.props;
 		background: var(--btn-plain-bg-hover, transparent);
 		color: var(--deep-text);
 		font-size: 0.88rem;
+	}
+
+	.login-field__wrap {
+		position: relative;
+		display: block;
+	}
+
+	.login-field__wrap input {
+		width: 100%;
+		padding-right: 2.4rem;
+	}
+
+	.login-eye {
+		position: absolute;
+		top: 50%;
+		right: 0.35rem;
+		transform: translateY(-50%);
+		display: grid;
+		place-items: center;
+		width: 1.8rem;
+		height: 1.8rem;
+		padding: 0;
+		border: 0;
+		border-radius: 0.45rem;
+		background: transparent;
+		color: var(--content-meta);
+		cursor: pointer;
+	}
+
+	.login-eye:hover {
+		color: var(--deep-text);
+	}
+
+	.login-eye:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 1px;
+	}
+
+	.login-eye__show,
+	.login-eye__hide {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.login-eye__hide {
+		display: none;
+	}
+
+	.login-eye[data-login-password-shown] .login-eye__show {
+		display: none;
+	}
+
+	.login-eye[data-login-password-shown] .login-eye__hide {
+		display: block;
+	}
+
+	/* 嵌入登录弹窗：去外壳，让位给弹窗面板 */
+	.login-card[data-login-embedded] {
+		width: 100%;
+		max-width: 21.5rem;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		box-shadow: none;
 	}
 
 	.login-field input:focus {

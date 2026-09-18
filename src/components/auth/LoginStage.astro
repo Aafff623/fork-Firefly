@@ -1,0 +1,703 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div class="login-stage" data-login-stage aria-hidden="true">
+  <div class="login-stage__grid"></div>
+  <div class="login-stage__blob login-stage__blob--a"></div>
+  <div class="login-stage__blob login-stage__blob--b"></div>
+
+  <div class="login-stage__content">
+    <div class="login-stage__brand">
+      <span class="login-stage__brand-mark">
+        <Icon is:inline name="lucide:sparkles" />
+      </span>
+      <span class="login-stage__brand-name">threetwoa</span>
+    </div>
+
+    <div class="stage-scene">
+      <div class="stage-chars" data-stage-chars>
+        <div class="ch ch--purple" data-char="purple">
+          <div class="ch__face ch__face--slow" data-face="purple">
+            <span class="eye eye--purple" data-eye="purple" data-rest="18">
+              <span class="pupil pupil--purple" data-max-dist="5"></span>
+            </span>
+            <span class="eye eye--purple" data-eye="purple" data-rest="18">
+              <span class="pupil pupil--purple" data-max-dist="5"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ch ch--black" data-char="black">
+          <div class="ch__face ch__face--slow" data-face="black">
+            <span class="eye eye--black" data-eye="black" data-rest="16">
+              <span class="pupil pupil--black" data-max-dist="4"></span>
+            </span>
+            <span class="eye eye--black" data-eye="black" data-rest="16">
+              <span class="pupil pupil--black" data-max-dist="4"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ch ch--orange" data-char="orange">
+          <div class="ch__face ch__face--fast" data-face="orange">
+            <span class="eye eye--dot">
+              <span class="pupil pupil--dot pupil--orange" data-max-dist="5"></span>
+            </span>
+            <span class="eye eye--dot">
+              <span class="pupil pupil--dot pupil--orange" data-max-dist="5"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ch ch--yellow" data-char="yellow">
+          <div class="ch__face ch__face--fast" data-face="yellow">
+            <span class="eye eye--dot">
+              <span class="pupil pupil--dot pupil--yellow" data-max-dist="5"></span>
+            </span>
+            <span class="eye eye--dot">
+              <span class="pupil pupil--dot pupil--yellow" data-max-dist="5"></span>
+            </span>
+          </div>
+          <div class="ch__mouth" data-mouth="yellow"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="login-stage__hint">移动鼠标，它们会看着你</p>
+  </div>
+</div>
+
+<script>
+  type CharKey = "purple" | "black" | "orange" | "yellow";
+
+  type StageEl = {
+    body: HTMLElement;
+    face: HTMLElement;
+    mouth?: HTMLElement;
+  };
+
+  type Rect4 = { left: number; top: number; width: number; height: number };
+
+  type StageWindow = Window & { __loginStageBooted?: boolean };
+
+  /**
+   * 创意登录舞台：四个几何角色眼神跟随鼠标。
+   * 移植自 agentic-workbench「趣味交互登录页」，按仓内习惯改造：
+   * - 去 Tailwind CDN / 去引流杂质，样式全部本地化
+   * - rect 缓存（开台 + resize 时量一次），rAF 仅在弹窗打开时运行，脏检查跳过空帧
+   * - prefers-reduced-motion 走静态姿态；触屏无 mousemove 时状态机照常可用
+   */
+  function bootLoginStage(): void {
+    const root = document.querySelector<HTMLElement>("[data-login-stage]");
+    const dialog = document.querySelector<HTMLDialogElement>("[data-login-dialog]");
+    const win = window as StageWindow;
+    if (!root || !dialog || win.__loginStageBooted) return;
+    win.__loginStageBooted = true;
+
+    const charKeys: CharKey[] = ["purple", "black", "orange", "yellow"];
+    const chars = {} as Record<CharKey, StageEl>;
+    for (const key of charKeys) {
+      const body = root.querySelector<HTMLElement>(`[data-char="${key}"]`);
+      const face = root.querySelector<HTMLElement>(`[data-face="${key}"]`);
+      const mouth = root.querySelector<HTMLElement>(`[data-mouth="${key}"]`) ?? undefined;
+      if (!body || !face) return;
+      chars[key] = { body, face, mouth };
+    }
+    const eyes = [...root.querySelectorAll<HTMLElement>("[data-eye]")];
+    const pupils = [...root.querySelectorAll<HTMLElement>(".pupil")];
+
+    const email = dialog.querySelector<HTMLInputElement>("[data-login-email]");
+    const password = dialog.querySelector<HTMLInputElement>("[data-login-password]");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // 状态
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let emailFocused = false;
+    let lookAtEachOther = false;
+    let lookToken = 0;
+    let purplePeeking = false;
+    let purpleBlinking = false;
+    let blackBlinking = false;
+
+    let running = false;
+    let rafId = 0;
+    let mouseMoved = false;
+    let lastSig = "";
+    let blinkTimer: number | undefined;
+    let blackBlinkTimer: number | undefined;
+    let peekTimer: number | undefined;
+
+    // rect 缓存：角色 4 + 眼睛容器；开台 / resize 时量一次
+    const charRects = new Map<CharKey, Rect4>();
+    const eyeRects = new Map<HTMLElement, Rect4>();
+
+    const measure = () => {
+      charRects.clear();
+      eyeRects.clear();
+      for (const key of charKeys) {
+        const r = chars[key].body.getBoundingClientRect();
+        charRects.set(key, { left: r.left, top: r.top, width: r.width, height: r.height });
+      }
+      for (const eye of eyes) {
+        const r = eye.getBoundingClientRect();
+        eyeRects.set(eye, { left: r.left, top: r.top, width: r.width, height: r.height });
+      }
+    };
+
+    const positionFor = (key: CharKey) => {
+      const rect = charRects.get(key);
+      if (!rect) return { faceX: 0, faceY: 0, bodySkew: 0 };
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 3;
+      const deltaX = mouseX - centerX;
+      const deltaY = mouseY - centerY;
+      return {
+        faceX: Math.max(-15, Math.min(15, deltaX / 20)),
+        faceY: Math.max(-10, Math.min(10, deltaY / 30)),
+        bodySkew: Math.max(-6, Math.min(6, -deltaX / 120)),
+      };
+    };
+
+    const pupilFor = (
+      eye: HTMLElement,
+      maxDist: number,
+      forceX?: number,
+      forceY?: number,
+    ) => {
+      if (forceX !== undefined && forceY !== undefined) return { x: forceX, y: forceY };
+      const rect = eyeRects.get(eye);
+      if (!rect) return { x: 0, y: 0 };
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const deltaX = mouseX - centerX;
+      const deltaY = mouseY - centerY;
+      const distance = Math.min(Math.hypot(deltaX, deltaY), maxDist);
+      const angle = Math.atan2(deltaY, deltaX);
+      return { x: Math.cos(angle) * distance, y: Math.sin(angle) * distance };
+    };
+
+    const setPupils = (
+      selector: string,
+      forceX?: number,
+      forceY?: number,
+    ) => {
+      for (const pupil of pupils) {
+        if (!pupil.matches(selector)) continue;
+        const eye = pupil.parentElement;
+        if (!eye) continue;
+        const maxDist = Number.parseFloat(pupil.dataset.maxDist || "5");
+        const pos = pupilFor(eye, maxDist, forceX, forceY);
+        pupil.style.transform = `translate(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px)`;
+      }
+    };
+
+    const applyFrame = () => {
+      const passwordLength = password?.value.length ?? 0;
+      const showPassword = password?.type === "text";
+      const passVisible = passwordLength > 0 && showPassword;
+      const passHidden = passwordLength > 0 && !showPassword;
+      const typingOrHidden = emailFocused || passHidden;
+
+      const p = positionFor("purple");
+      const b = positionFor("black");
+      const o = positionFor("orange");
+      const y = positionFor("yellow");
+
+      // 紫
+      chars.purple.body.style.height = typingOrHidden ? "440px" : "400px";
+      chars.purple.body.style.transform = passVisible
+        ? "skewX(0deg)"
+        : typingOrHidden
+          ? `skewX(${(p.bodySkew - 12).toFixed(1)}deg) translateX(40px)`
+          : `skewX(${p.bodySkew.toFixed(1)}deg)`;
+      chars.purple.face.style.left = passVisible
+        ? "20px"
+        : lookAtEachOther
+          ? "55px"
+          : `${(45 + p.faceX).toFixed(1)}px`;
+      chars.purple.face.style.top = passVisible
+        ? "35px"
+        : lookAtEachOther
+          ? "65px"
+          : `${(40 + p.faceY).toFixed(1)}px`;
+
+      // 黑
+      chars.black.body.style.transform = passVisible
+        ? "skewX(0deg)"
+        : lookAtEachOther
+          ? `skewX(${(b.bodySkew * 1.5 + 10).toFixed(1)}deg) translateX(20px)`
+          : typingOrHidden
+            ? `skewX(${(b.bodySkew * 1.5).toFixed(1)}deg)`
+            : `skewX(${b.bodySkew.toFixed(1)}deg)`;
+      chars.black.face.style.left = passVisible
+        ? "10px"
+        : lookAtEachOther
+          ? "32px"
+          : `${(26 + b.faceX).toFixed(1)}px`;
+      chars.black.face.style.top = passVisible
+        ? "28px"
+        : lookAtEachOther
+          ? "12px"
+          : `${(32 + b.faceY).toFixed(1)}px`;
+
+      // 橙
+      chars.orange.body.style.transform = passVisible
+        ? "skewX(0deg)"
+        : `skewX(${o.bodySkew.toFixed(1)}deg)`;
+      chars.orange.face.style.left = passVisible ? "50px" : `${(82 + o.faceX).toFixed(1)}px`;
+      chars.orange.face.style.top = passVisible ? "85px" : `${(90 + o.faceY).toFixed(1)}px`;
+
+      // 黄（含嘴）
+      chars.yellow.body.style.transform = passVisible
+        ? "skewX(0deg)"
+        : `skewX(${y.bodySkew.toFixed(1)}deg)`;
+      chars.yellow.face.style.left = passVisible ? "20px" : `${(52 + y.faceX).toFixed(1)}px`;
+      chars.yellow.face.style.top = passVisible ? "35px" : `${(40 + y.faceY).toFixed(1)}px`;
+      if (chars.yellow.mouth) {
+        chars.yellow.mouth.style.left = passVisible ? "10px" : `${(40 + y.faceX).toFixed(1)}px`;
+        chars.yellow.mouth.style.top = passVisible ? "88px" : `${(88 + y.faceY).toFixed(1)}px`;
+      }
+
+      // 眨眼（紫 / 黑）
+      for (const eye of eyes) {
+        const key = eye.dataset.eye;
+        if (key !== "purple" && key !== "black") continue;
+        const blinking = key === "purple" ? purpleBlinking : blackBlinking;
+        const rest = Number.parseFloat(eye.dataset.rest || "16");
+        eye.style.height = blinking ? "2px" : `${rest}px`;
+        const pupil = eye.querySelector<HTMLElement>(".pupil");
+        if (pupil) pupil.style.opacity = blinking ? "0" : "1";
+      }
+
+      // 瞳孔
+      setPupils(
+        ".pupil--purple",
+        passVisible ? (purplePeeking ? 4 : -4) : lookAtEachOther ? 3 : undefined,
+        passVisible ? (purplePeeking ? 5 : -4) : lookAtEachOther ? 4 : undefined,
+      );
+      setPupils(
+        ".pupil--black",
+        passVisible ? -4 : lookAtEachOther ? 0 : undefined,
+        passVisible ? -4 : lookAtEachOther ? -4 : undefined,
+      );
+      setPupils(".pupil--orange", passVisible ? -5 : undefined, passVisible ? -4 : undefined);
+      setPupils(".pupil--yellow", passVisible ? -5 : undefined, passVisible ? -4 : undefined);
+    };
+
+    const signature = () => {
+      const passwordLength = password?.value.length ?? 0;
+      const showPassword = password?.type === "text";
+      return [
+        emailFocused,
+        passwordLength > 0 && showPassword,
+        passwordLength > 0 && !showPassword,
+        lookAtEachOther,
+        purplePeeking,
+        purpleBlinking,
+        blackBlinking,
+      ].join("|");
+    };
+
+    const frame = () => {
+      if (!running) return;
+      const sig = signature();
+      if (sig !== lastSig || mouseMoved) {
+        lastSig = sig;
+        mouseMoved = false;
+        applyFrame();
+      }
+      rafId = window.requestAnimationFrame(frame);
+    };
+
+    const scheduleBlink = (
+      set: (value: boolean) => void,
+      minMs = 3000,
+      maxMs = 7000,
+    ) => {
+      const timer = window.setTimeout(() => {
+        if (!running) return;
+        set(true);
+        window.setTimeout(() => {
+          set(false);
+          if (running) scheduleBlink(set, minMs, maxMs);
+        }, 150);
+      }, Math.random() * (maxMs - minMs) + minMs);
+      return timer;
+    };
+
+    const start = () => {
+      if (running || reduceMotion.matches) return;
+      running = true;
+      lastSig = "";
+      mouseMoved = true;
+      measure();
+      // 打开动画后布局可能微移，延后补测一次
+      window.setTimeout(() => {
+        if (running) measure();
+      }, 320);
+      blinkTimer = scheduleBlink((v) => (purpleBlinking = v));
+      blackBlinkTimer = scheduleBlink((v) => (blackBlinking = v));
+      peekTimer = window.setInterval(() => {
+        const visible = password?.type === "text" && (password?.value.length ?? 0) > 0;
+        if (!visible) return;
+        purplePeeking = true;
+        window.setTimeout(() => (purplePeeking = false), 800);
+      }, 3500);
+      rafId = window.requestAnimationFrame(frame);
+    };
+
+    const stop = () => {
+      running = false;
+      window.cancelAnimationFrame(rafId);
+      if (blinkTimer !== undefined) window.clearTimeout(blinkTimer);
+      if (blackBlinkTimer !== undefined) window.clearTimeout(blackBlinkTimer);
+      if (peekTimer !== undefined) window.clearInterval(peekTimer);
+      blinkTimer = blackBlinkTimer = peekTimer = undefined;
+      purplePeeking = purpleBlinking = blackBlinking = false;
+    };
+
+    // —— 事件接线 ——
+    document.addEventListener("mousemove", (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+      mouseMoved = true;
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      if (running) measure();
+    }, { passive: true });
+
+    dialog.addEventListener("focusin", (event) => {
+      if (event.target === email) {
+        emailFocused = true;
+        lookAtEachOther = true;
+        const token = ++lookToken;
+        window.setTimeout(() => {
+          if (token === lookToken) lookAtEachOther = false;
+        }, 800);
+      }
+    });
+    dialog.addEventListener("focusout", (event) => {
+      if (event.target === email) emailFocused = false;
+    });
+    password?.addEventListener("input", () => {
+      lastSig = "";
+    });
+
+    document.addEventListener("firefly:login-opened", start);
+    document.addEventListener("firefly:login-closed", stop);
+    dialog.addEventListener("close", stop);
+    if (dialog.open) start();
+  }
+
+  bootLoginStage();
+  document.addEventListener("swup:page:view", bootLoginStage);
+</script>
+
+<style>
+  .login-stage {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--primary) 88%, black),
+      var(--primary) 52%,
+      color-mix(in oklch, var(--primary) 84%, black)
+    );
+    container-type: size;
+  }
+
+  .login-stage__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+
+  .login-stage__blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(48px);
+  }
+
+  .login-stage__blob--a {
+    top: 25%;
+    right: 25%;
+    width: 16rem;
+    height: 16rem;
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .login-stage__blob--b {
+    bottom: 25%;
+    left: 25%;
+    width: 24rem;
+    height: 24rem;
+    background: rgb(255 255 255 / 0.05);
+  }
+
+  .login-stage__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 1.6rem 1.6rem 1.1rem;
+    color: rgb(255 255 255 / 0.92);
+  }
+
+  .login-stage__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .login-stage__brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.55rem;
+    background: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(4px);
+  }
+
+  .login-stage__brand-mark :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .login-stage__brand-name {
+    font-family: var(--font-navbar-title, "Segoe Script", cursive);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .stage-scene {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .stage-chars {
+    position: relative;
+    width: 550px;
+    height: 400px;
+    flex: none;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: bottom center;
+  }
+
+  .ch {
+    position: absolute;
+    bottom: 0;
+    transform-origin: bottom;
+    transition:
+      transform 0.7s ease-in-out,
+      height 0.7s ease-in-out;
+  }
+
+  .ch--purple {
+    left: 70px;
+    z-index: 1;
+    width: 180px;
+    height: 400px;
+    background: #6c3ff5;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .ch--black {
+    left: 240px;
+    z-index: 2;
+    width: 120px;
+    height: 310px;
+    background: #2d2d2d;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .ch--orange {
+    left: 0;
+    z-index: 3;
+    width: 240px;
+    height: 200px;
+    background: #ff9b6b;
+    border-radius: 120px 120px 0 0;
+  }
+
+  .ch--yellow {
+    left: 310px;
+    z-index: 4;
+    width: 140px;
+    height: 230px;
+    background: #e8d754;
+    border-radius: 70px 70px 0 0;
+  }
+
+  .ch__face {
+    position: absolute;
+    display: flex;
+    transition:
+      left 0.7s ease-in-out,
+      top 0.7s ease-in-out;
+  }
+
+  .ch__face--slow {
+    gap: 0.5rem;
+  }
+
+  .ch__face--fast {
+    gap: 0.5rem;
+    transition:
+      left 0.2s ease-out,
+      top 0.2s ease-out;
+  }
+
+  .ch--purple .ch__face {
+    left: 45px;
+    top: 40px;
+  }
+
+  .ch--black .ch__face {
+    left: 26px;
+    top: 32px;
+    gap: 0.375rem;
+  }
+
+  .ch--orange .ch__face {
+    left: 82px;
+    top: 90px;
+  }
+
+  .ch--yellow .ch__face {
+    left: 52px;
+    top: 40px;
+    gap: 0.375rem;
+  }
+
+  .eye {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: height 0.15s ease;
+  }
+
+  .eye--purple {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .eye--black {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .eye--dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .pupil {
+    border-radius: 50%;
+    background: #2d2d2d;
+    transition: transform 0.1s ease-out;
+  }
+
+  .pupil--purple {
+    width: 7px;
+    height: 7px;
+  }
+
+  .pupil--black {
+    width: 6px;
+    height: 6px;
+  }
+
+  .pupil--dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .ch__mouth {
+    position: absolute;
+    left: 40px;
+    top: 88px;
+    width: 5rem;
+    height: 4px;
+    border-radius: 999px;
+    background: #2d2d2d;
+    transition:
+      left 0.2s ease-out,
+      top 0.2s ease-out;
+  }
+
+  .login-stage__hint {
+    margin: 0;
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: rgb(255 255 255 / 0.62);
+  }
+
+  /* 高度不足时缩放场景，保证角色完整 */
+  @container (max-height: 560px) {
+    .stage-chars {
+      --stage-scale: 0.82;
+    }
+  }
+
+  @container (max-height: 470px) {
+    .stage-chars {
+      --stage-scale: 0.66;
+    }
+  }
+
+  /* 宽度不足时同步缩放（550px 固定场景塞进更窄舞台时避免两侧裁切） */
+  @container (max-width: 620px) {
+    .stage-chars {
+      --stage-scale: 0.88;
+    }
+  }
+
+  @container (max-width: 540px) {
+    .stage-chars {
+      --stage-scale: 0.8;
+    }
+  }
+
+  /* 窄屏 / 矮屏：舞台隐藏（弹窗退化为单栏卡片） */
+  @media (max-width: 900px), (max-height: 620px) {
+    .login-stage {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ch,
+    .ch__face,
+    .eye,
+    .pupil,
+    .ch__mouth {
+      transition: none;
+    }
+  }
+</style>
