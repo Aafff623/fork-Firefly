@@ -57,9 +57,13 @@ export { announcementConfig } from "./announcementConfig"; // 公告配置
 // 样式配置
 export { backgroundWallpaper } from "./backgroundWallpaper"; // 背景壁纸配置
 export {
+	categoryAccent,
+	categoryAccentStyle,
 	categoryIconConfig,
 	categoryIconName,
-} from "./categoryIconConfig"; // 分类条 Lucide 图标
+	categoryNavAccentStyle,
+	categoryShortLabel,
+} from "./categoryIconConfig"; // 分类条分色印章
 export { collectionsConfig } from "./collectionsConfig"; // 人工策展合集配置
 // 功能配置
 export { commentConfig } from "./commentConfig"; // 评论系统配置
