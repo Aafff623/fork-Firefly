@@ -4,6 +4,16 @@
  * pre-emit critique: P5 H4 E5 S5 R5 V5 · contrast: pass (min 6.74:1) · footer: Ft5 + hub index · mobile: pass
  */
 
+/* 页脚行书体：志莽行书（Google Fonts · SIL OFL）页脚专用子集，按页脚文案裁字，
+ * 生成脚本见 temp/research/font-selection/make-footer-subset.mjs */
+@font-face {
+	font-family: "Zhi Mang Xing";
+	src: url("/assets/fonts/ZhiMangXing-Regular-subset.woff2") format("woff2");
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+}
+
 .site-footer {
 	/* Footer 是独立的数字花园，不跟随全站主题色相。 */
 	--sf-hue: 145;
@@ -33,7 +43,8 @@
 		"Snell Roundhand",
 		cursive;
 	--sf-blurb-cn: "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
-	--sf-blurb-art: "STXingkai", "华文行楷", "KaiTi", "Songti SC", serif;
+	/* 首选打包的志莽行书子集（全平台一致），其余为系统楷体兜底 */
+	--sf-blurb-art: "Zhi Mang Xing", "STXingkai", "华文行楷", "KaiTi", "Songti SC", serif;
 	--sf-blurb-en: Georgia, "Times New Roman", serif;
 	--sf-sans:
 		var(--font-inter),
