@@ -10,6 +10,7 @@ import MusicManager from "@components/features/MusicManager.astro";
 import NoteCardPreview from "@components/features/NoteCardPreview.astro";
 import GlyphTitleEffects from "@components/features/GlyphTitleEffects.astro";
 import SakuraEffect from "@components/features/SakuraEffect.astro";
+import LoginModal from "@/components/auth/LoginModal.astro";
 import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
 import {
 	analyticsConfig,
@@ -699,8 +700,7 @@ const siteLang = lang.replace("_", "-");
     <ConfigCarrier />
     {musicPlayerConfig.enable !== false && <MusicManager />}
     <slot />
-
-
+    {!embed && <LoginModal />}
 
     <!-- Sakura Effect：嵌入页不要 Intro，否则点开评论 iframe 就满屏飘花 -->
     {!embed && <SakuraEffect />}
