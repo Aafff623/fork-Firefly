@@ -1194,26 +1194,26 @@ $effect(() => {
 
 	<!-- Pets Tab: roam switch + visitor skin picker -->
 	{#if activeTab === "pets" && isPetRoamSwitchable}
-		<div class="mb-3">
-			<button type="button" class="flex items-center w-full justify-between"
-					onclick={togglePetRoamEnabled}>
-				<span class="text-sm flex-1 text-left">{i18n(I18nKey.petRoamTitle)}</span>
-				<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
-					 class:bg-(--primary)={petRoamEnabled}
-					 class:bg-(--btn-regular-bg-active)={!petRoamEnabled}>
-					<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
-						 class:left-0.5={!petRoamEnabled}
-						 class:left-5={petRoamEnabled}></div>
-				</div>
-			</button>
-			<p class="text-[0.65rem] leading-snug opacity-60 mt-1">
-				{i18n(I18nKey.petRoamHint)}
-			</p>
-		</div>
-	{/if}
-	{#if activeTab === "pets" && isPetPickerSwitchable}
-		<div class="">
-			<div class="section-title">
+	<div class="mb-3">
+		<button type="button" class="flex items-center w-full justify-between"
+				onclick={togglePetRoamEnabled}>
+			<span class="text-sm flex-1 text-left text-(--btn-content)">{i18n(I18nKey.petRoamTitle)}</span>
+			<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+				 class:bg-(--primary)={petRoamEnabled}
+				 class:bg-(--btn-regular-bg-active)={!petRoamEnabled}>
+				<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+					 class:left-0.5={!petRoamEnabled}
+					 class:left-5={petRoamEnabled}></div>
+			</div>
+		</button>
+		<p class="text-[0.65rem] leading-snug opacity-60 mt-1 text-(--btn-content)">
+			{i18n(I18nKey.petRoamHint)}
+		</p>
+	</div>
+{/if}
+{#if activeTab === "pets" && isPetPickerSwitchable}
+	<div class="">
+		<div class="section-title text-(--btn-content)">
 				{i18n(I18nKey.petPickerTitle)}
 				<button
 					aria-label="Reset to Default"

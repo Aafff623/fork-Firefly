@@ -1481,17 +1481,17 @@ export function getSakuraIntroDurationMs(): number {
 	return SAKURA_INTRO_MS;
 }
 
-// Pet roam functions（桌宠奔跑开关；默认关=钉日历右下角不游走）
+// Pet roam functions（桌宠奔跑开关；园主拍板 2026-09-19：默认奔跑模式，显式关过才固定）
 const PET_ROAM_ENABLED_KEY = "petRoamEnabled";
 
 export function getPetRoamEnabled(): boolean {
 	if (typeof window === "undefined") {
-		return false;
+		return true;
 	}
 	try {
-		return localStorage.getItem(PET_ROAM_ENABLED_KEY) === "true";
+		return localStorage.getItem(PET_ROAM_ENABLED_KEY) !== "false";
 	} catch {
-		return false;
+		return true;
 	}
 }
 
@@ -1675,7 +1675,8 @@ export function setCardBorderEnabled(enabled: boolean): void {
 
 // Note card (attachment reference box) functions
 export function getDefaultNoteCardEnabled(): boolean {
-	return false;
+	// 园主拍板（2026-09-19）：笔记引用框（附件下载卡片）样式默认开
+	return true;
 }
 
 export function getStoredNoteCardEnabled(): boolean {
