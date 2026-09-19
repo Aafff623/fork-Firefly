@@ -290,7 +290,8 @@ const logoVariants = await Promise.all(
             </div>
         )}
         <NavMenuPanel links={links}></NavMenuPanel>
-        <DisplaySettings client:idle></DisplaySettings>
+        <!-- client:load：idle 在高负载时长期不触发，面板会"点开了却点不动"（审计实测） -->
+        <DisplaySettings client:load></DisplaySettings>
     </div>
 </div>
 

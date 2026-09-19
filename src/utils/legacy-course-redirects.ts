@@ -51,4 +51,6 @@ export const LEGACY_REDIRECT_TARGETS: { slugs: string[]; to: string }[] = [
   { to: "/posts/efficiency-mindset/", slugs: ["cost-efficiency-four-tiers", "eight-future-capabilities", "ey-2026-navi-trends", "graduate-hire-subsidy-not-free", "lean-leadership-empowerment", "people-efficiency-four-layers", "university-life-knowledge-guide"]},
   { to: "/posts/frontend-design-trends/", slugs: ["creative-poster-gallery", "logolounge-2026-trends", "six-app-design-systems"]},
   { to: "/posts/frontend-motion-3d/", slugs: ["endless-tools-3d", "miniprogram-lottie-canvas", "motion-lib-pick-by-scene", "svg-animation-ten-ways", "the118-pure-matrix-3d", "travel-app-ui-cases-02"]},
+  { to: "/posts/ai-coding-cost-saving-tricks/", slugs: ["ai-coding-save-money"]},
+  { to: "/posts/zcode-ade-product/", slugs: ["zcode-ade-guomo"]},
 ];
