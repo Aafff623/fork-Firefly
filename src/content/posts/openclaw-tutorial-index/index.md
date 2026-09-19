@@ -1,4 +1,4 @@
-﻿---
+---
 title: 数字员工与权限边界：OpenClaw 索引
 published: 2026-08-04
 updated: 2026-08-04T21:30:00
