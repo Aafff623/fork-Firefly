@@ -159,6 +159,19 @@ export default defineConfig({
 			updateHead: true,
 			updateBodyClass: false,
 			globalInstance: true,
+			// OAuth / API 必须整页跳转；软导航会把 Supabase 的 /auth/v1/authorize 吃成本站 404
+			// /login/ 是独立页，没有 Swup 容器，不能软切
+			ignore: (url) => {
+				try {
+					const pathname = new URL(url, "https://firefly.invalid").pathname;
+					return (
+						pathname.startsWith("/api/") ||
+						pathname.replace(/\/+$/, "") === "/login"
+					);
+				} catch {
+					return url.includes("/api/") || url.includes("/login");
+				}
+			},
 			// 滚动相关配置优化
 			resolveUrl: (url) => url,
 			animateHistoryBrowsing: false,
