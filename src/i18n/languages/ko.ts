@@ -337,6 +337,7 @@ export const ko: Translation = {
 	[Key.wavesAnimation]: "파도 애니메이션",
 	[Key.gradientTransition]: "그라디언트 전환",
 	[Key.sakuraEffect]: "벚꽃 효과",
+	[Key.titleSound]: "타이틀 효과음",
 	[Key.effectsSettings]: "효과 설정",
 	[Key.overlaySettings]: "투명도 설정",
 	[Key.overlayOpacity]: "배경화면 불투명도",

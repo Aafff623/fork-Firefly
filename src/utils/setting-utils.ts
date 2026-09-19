@@ -1868,3 +1868,39 @@ export function initAvatarFrame(): void {
 	}
 	applyAvatarFrameToDocument(getStoredAvatarFrameId());
 }
+
+// 标题音效（首页标题逐字母钢琴音效）
+const TITLE_SOUND_ENABLED_KEY = "title-sfx";
+
+export function getDefaultTitleSoundEnabled(): boolean {
+	// 园主拍板（2026-09-18）：默认开；浏览器策略要求首次手势后才能出声
+	return true;
+}
+
+export function getStoredTitleSoundEnabled(): boolean {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultTitleSoundEnabled();
+	}
+	const stored = localStorage.getItem(TITLE_SOUND_ENABLED_KEY);
+	if (stored === null) {
+		return getDefaultTitleSoundEnabled();
+	}
+	return stored === "on";
+}
+
+export function setTitleSoundEnabled(enabled: boolean): void {
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem(TITLE_SOUND_ENABLED_KEY, enabled ? "on" : "off");
+	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("titleSoundToggle", { detail: { enabled } }),
+		);
+	}
+}

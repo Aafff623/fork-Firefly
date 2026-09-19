@@ -494,6 +494,9 @@ enum I18nKey {
 	videoPrev = "videoPrev",
 	videoNext = "videoNext",
 	videoLoadError = "videoLoadError",
+
+	// 标题音效
+	titleSound = "titleSound",
 }
 
 export default I18nKey;

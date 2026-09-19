@@ -17,21 +17,21 @@
 		font-display: swap;
 	}
 
-	/* Homepage: keep the two-line handwritten title separate from the
+	/* Homepage: keep the responsive handwritten title separate from the
 	 * reference-style image/visual layer. The hit layer remains transparent so
 	 * the title can switch one character at a time without changing layout. */
 	.home-oi-heading {
 		position: relative;
 		isolation: isolate;
 		display: inline-flex;
-		flex-direction: column;
-		align-items: flex-start;
+		flex-direction: row;
+		align-items: baseline;
 		margin: 0;
 		font-family: "Firefly Art Script", "Great Vibes", "Segoe Script", cursive !important;
-		font-size: clamp(54px, 7.2vw, 116px) !important;
+		font-size: clamp(54px, 8vw, 156px) !important;
 		font-weight: 400 !important;
 		line-height: 0.94 !important;
-		letter-spacing: 0.006em !important;
+		letter-spacing: 0.03em !important;
 		white-space: nowrap;
 		text-shadow: 0 3px 22px rgba(0, 0, 0, 0.42) !important;
 		animation: none !important;
@@ -49,7 +49,7 @@
 	}
 
 	.home-oi-line + .home-oi-line {
-		margin-top: 0.08em;
+		margin-left: 0.34em;
 	}
 
 	.home-oi-hit-layer,
@@ -79,8 +79,8 @@
 
 	.home-oi-space {
 		display: inline-block;
-		width: 0.22em;
-		flex: 0 0 0.22em;
+		width: 0.26em;
+		flex: 0 0 0.26em;
 	}
 
 	.home-oi-hit {
@@ -236,13 +236,27 @@
 
 	@media (max-width: 480px) {
 		.home-oi-heading {
-			font-size: clamp(30px, 8.5vw, 64px) !important;
-			letter-spacing: 0.006em !important;
+			flex-direction: column;
+			align-items: flex-start;
+		font-size: clamp(30px, 8.5vw, 64px) !important;
+		letter-spacing: 0.026em !important;
+		}
+
+		.home-oi-line + .home-oi-line {
+			margin-left: 0;
+			margin-top: 0.08em;
 		}
 
 		.home-oi-space {
-			width: 0.18em;
-			flex-basis: 0.18em;
+			width: 0.2em;
+			flex-basis: 0.2em;
+		}
+	}
+
+	/* 481~820px：单行 nowrap 叠 clamp 下限会横向溢出（实测 768px 溢出 31px），此档压低字号 */
+	@media (max-width: 820px) and (min-width: 621px) {
+		.home-oi-heading {
+			font-size: clamp(40px, 6.4vw, 54px) !important;
 		}
 	}
 
@@ -259,6 +273,8 @@
 </style>
 
 <script>
+	import { titleSfx } from "@utils/title-sfx";
+
 	type Variant = { src: string; rotation: number; scale: number };
 	type HomeGlyph = {
 		char: string;
@@ -456,6 +472,19 @@
 		el.replaceChildren(content);
 		el.dataset.glyphReady = "1";
 
+		titleSfx.init();
+
+		function playGlyphSound(state: HomeState) {
+			const hitRect = state.hit.getBoundingClientRect();
+			const rootRect = el.getBoundingClientRect();
+			if (rootRect.width <= 0) return;
+			const pan =
+				((hitRect.left + hitRect.width / 2 - rootRect.left - rootRect.width / 2) /
+					(rootRect.width / 2)) *
+				0.2;
+			titleSfx.play(state.config.char, pan);
+		}
+
 		let active: HomeState | undefined;
 
 		function applyNeighborShifts(state?: HomeState, variant?: Variant) {
@@ -481,9 +510,9 @@
 
 				const distance = Math.abs(index - state.lineIndex);
 				const side = index < state.lineIndex ? -1 : 1;
-				const shift = distance <= 3
-					? side * Math.min(48, Math.max(8, overflow * 0.58)) * Math.pow(0.58, distance - 1)
-					: 0;
+			const shift = distance <= 5
+				? side * Math.min(0.2 * activeFontSize, Math.max(6, overflow * 0.5)) * (1 - (distance - 1) / 5)
+				: 0;
 				glyph.style.setProperty("--home-oi-shift", `${shift}px`);
 			});
 		}
@@ -520,6 +549,7 @@
 			const token = state.enterToken + 1;
 			state.enterToken = token;
 			active = state;
+			playGlyphSound(state);
 			const variant = nextVariant(state);
 			const ready = await preloadImage(variant.src);
 			if (token !== state.enterToken || active !== state || !ready) return;

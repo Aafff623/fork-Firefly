@@ -33,6 +33,7 @@ import {
 	getPetRoamEnabled,
 	getStoredPetSelection,
 	getStoredSakuraEnabled,
+	getStoredTitleSoundEnabled,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
 	getStoredAvatarFrameId,
@@ -51,6 +52,7 @@ import {
 	setPetRoamEnabled,
 	setPetSelection,
 	setSakuraEnabled,
+	setTitleSoundEnabled,
 	setWallpaperMode,
 	setWavesEnabled,
 	setAvatarFrameId,
@@ -110,6 +112,7 @@ let bannerCarouselEnabled = $state(true);
 const defaultBannerCarouselEnabled = getDefaultBannerCarouselEnabled();
 let sakuraEnabled = $state(false);
 const defaultSakuraEnabled = getDefaultSakuraEnabled();
+let titleSoundEnabled = $state(true);
 let petRoamEnabled = $state(false);
 const defaultPetRoamEnabled = false;
 let overlayOpacity = $state(getDefaultOverlayOpacity());
@@ -492,6 +495,11 @@ function toggleSakuraEnabled() {
 	setSakuraEnabled(sakuraEnabled);
 }
 
+function toggleTitleSoundEnabled() {
+	titleSoundEnabled = !titleSoundEnabled;
+	setTitleSoundEnabled(titleSoundEnabled);
+}
+
 function togglePetRoamEnabled() {
 	petRoamEnabled = !petRoamEnabled;
 	setPetRoamEnabled(petRoamEnabled);
@@ -635,6 +643,9 @@ onMount(() => {
 	sakuraEnabled =
 		getStoredSakuraEnabled() ||
 		document.documentElement.getAttribute("data-sakura-enabled") === "true";
+
+	// 标题音效开关（默认开，与设置面板联动）
+	titleSoundEnabled = getStoredTitleSoundEnabled();
 
 	// 桌宠奔跑开关
 	petRoamEnabled = getPetRoamEnabled();
@@ -1161,6 +1172,24 @@ $effect(() => {
 			</button>
 		</div>
 		{/if}
+		<div class="mt-3">
+			<button
+				class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+				class:bg-(--btn-regular-bg-hover)={titleSoundEnabled}
+				onclick={toggleTitleSoundEnabled}
+				data-title-sound-toggle
+			>
+				<Icon icon="lucide:music-4" class="text-[1.25rem] shrink-0"></Icon>
+				<span class="text-sm flex-1">{i18n(I18nKey.titleSound)}</span>
+				<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+				 class:bg-(--primary)={titleSoundEnabled}
+				 class:bg-(--btn-regular-bg-active)={!titleSoundEnabled}>
+					<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+						 class:left-0.5={!titleSoundEnabled}
+						 class:left-5={titleSoundEnabled}></div>
+				</div>
+			</button>
+		</div>
 	{/if}
 
 	<!-- Pets Tab: roam switch + visitor skin picker -->

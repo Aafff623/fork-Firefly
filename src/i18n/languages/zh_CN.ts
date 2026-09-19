@@ -329,6 +329,7 @@ export const zh_CN: Translation = {
 	[Key.wavesAnimation]: "水波纹动画",
 	[Key.gradientTransition]: "渐变过渡",
 	[Key.sakuraEffect]: "樱花特效",
+	[Key.titleSound]: "标题音效",
 	[Key.effectsSettings]: "特效设置",
 	[Key.overlaySettings]: "透明设置",
 	[Key.overlayOpacity]: "壁纸透明度",
