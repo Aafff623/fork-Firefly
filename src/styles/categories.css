@@ -55,8 +55,14 @@
 	display: none;
 }
 
-/* —— 主页齿轮圆盘：圆钮 + 缓转齿轮环 + 喷射碎屑 + 呼吸光圈 —— */
-.category-pill--home {
+/* —— 主页齿轮徽标：透明底 + 六彩风叶环旋转 + 彩色碎屑 + 五彩光圈 —— */
+.category-pill--home,
+.category-pill--home:hover,
+.category-pill--home[data-active],
+.category-pill--home[data-active]:hover {
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
 	border-radius: 999px !important;
 }
 
@@ -67,23 +73,31 @@
 	justify-content: center;
 	width: 1.5rem;
 	height: 1.5rem;
-	border-radius: 999px;
-	color: inherit;
 }
 
-/* 齿轮环：8 齿 = 重复锥向渐变 + 径向遮罩挖心（纯 CSS，无资源） */
+/* 六彩风叶环：conic 六色扇叶 + 径向遮罩挖心，旋转像彩色风扇 */
 .home-orb__gear {
 	position: absolute;
 	inset: 0;
 	border-radius: 999px;
 	background: repeating-conic-gradient(
 		from 0deg,
-		currentColor 0deg 13deg,
-		transparent 13deg 45deg
+		#ff6b6b 0deg 50deg,
+		transparent 50deg 60deg,
+		#ffa94d 60deg 110deg,
+		transparent 110deg 120deg,
+		#69db7c 120deg 170deg,
+		transparent 170deg 180deg,
+		#4dabf7 180deg 230deg,
+		transparent 230deg 240deg,
+		#9775fa 240deg 290deg,
+		transparent 290deg 300deg,
+		#f783ac 300deg 350deg,
+		transparent 350deg 360deg
 	);
 	-webkit-mask: radial-gradient(closest-side, transparent 56%, #000 58%);
 	mask: radial-gradient(closest-side, transparent 56%, #000 58%);
-	opacity: 0.5;
+	opacity: 0.85;
 	animation: home-gear-spin 14s linear infinite;
 }
 
@@ -91,20 +105,33 @@
 	position: relative;
 	z-index: 2;
 	font-size: 0.82rem;
+	color: var(--btn-content);
 	opacity: 0.95;
 }
 
-/* 呼吸光圈：低频 ping，呼应碎屑喷射节奏 */
+/* 五彩光圈：彩虹细环低频 ping，呼应碎屑节奏 */
 .home-orb__halo {
 	position: absolute;
 	inset: 0;
 	border-radius: 999px;
-	border: 1px solid currentColor;
+	background: conic-gradient(
+		from 0deg,
+		#ff6b6b,
+		#ffa94d,
+		#ffe066,
+		#69db7c,
+		#4dabf7,
+		#9775fa,
+		#f783ac,
+		#ff6b6b
+	);
+	-webkit-mask: radial-gradient(closest-side, transparent 86%, #000 88%);
+	mask: radial-gradient(closest-side, transparent 86%, #000 88%);
 	opacity: 0;
 	animation: home-halo-ping 4.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
-/* 碎屑：沿各自角度飞出并自转、淡出；--a 角度、--d 错相位 */
+/* 碎屑：沿各自角度飞出并自转、淡出；--a 角度、--d 错相位、--c 各自颜色 */
 .home-orb__spark {
 	position: absolute;
 	top: 50%;
@@ -113,8 +140,8 @@
 	height: 0.2rem;
 	margin: -0.1rem 0 0 -0.1rem;
 	border-radius: 62% 38% 55% 45%;
-	background: color-mix(in oklch, currentColor 62%, white);
-	box-shadow: 0 0 0.26rem color-mix(in oklch, currentColor 70%, transparent);
+	background: var(--c, #ffa94d);
+	box-shadow: 0 0 0.26rem var(--c, #ffa94d);
 	opacity: 0;
 	pointer-events: none;
 	transform: rotate(var(--a)) translateX(0.5rem);
@@ -135,7 +162,7 @@
 		opacity: 0;
 	}
 	62% {
-		opacity: 0.45;
+		opacity: 0.55;
 	}
 	88%,
 	100% {
@@ -163,7 +190,7 @@
 	}
 }
 
-/* 悬停：齿轮提速、碎屑更频 */
+/* 悬停：风叶提速、碎屑更频 */
 .category-pill--home:hover .home-orb__gear {
 	animation-duration: 3.5s;
 }
