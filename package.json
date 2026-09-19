@@ -9,7 +9,6 @@
 		"check:community": "node scripts/check-community-comment-gates.mjs",
 		"check:owner": "tsx scripts/test-owner-content.mts",
 		"build": "npx tsx scripts/generate-lqips.ts && astro build && npx tsx scripts/subset-fonts.ts && npx tsx scripts/strip-legacy-fonts.ts && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
-		"build:edgeone": "astro build && pagefind --site dist/client && npx tsx scripts/sync-pagefind-output.ts",
 		"preview": "astro preview",
 		"astro": "astro",
 		"type-check": "tsc --noEmit --isolatedDeclarations",
@@ -31,15 +30,10 @@
 		"@astrojs/rss": "^4.0.19",
 		"@astrojs/sitemap": "^3.7.3",
 		"@astrojs/svelte": "9.0.1",
-		"@astrojs/vercel": "^11.0.4",
-		"@edgeone/astro": "^1.1.5",
 		"@expressive-code/plugin-collapsible-sections": "^0.44.1",
 		"@expressive-code/plugin-line-numbers": "^0.44.1",
 		"@fancyapps/ui": "^6.1.14",
 		"@gravity-ui/icons": "^2.18.0",
-		"@heroui-pro/react": "file:vendor/heroui-pro-react",
-		"@heroui/react": "3.0.5",
-		"@heroui/styles": "3.0.5",
 		"@iconify-json/fa7-brands": "^1.2.4",
 		"@iconify-json/fa7-regular": "^1.2.3",
 		"@iconify-json/fa7-solid": "^1.2.5",
@@ -146,9 +140,17 @@
 			"@zowe/secrets-for-zowe-sdk"
 		],
 		"supportedArchitectures": {
-			"os": ["current"],
-			"cpu": ["current"],
-			"libc": ["current", "glibc", "musl"]
+			"os": [
+				"current"
+			],
+			"cpu": [
+				"current"
+			],
+			"libc": [
+				"current",
+				"glibc",
+				"musl"
+			]
 		}
 	}
 }

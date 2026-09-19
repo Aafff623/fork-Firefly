@@ -40,7 +40,7 @@
 ---
 
 > [!TIP]
-> 本仓源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork network。保留上游主题的内容与页面能力，并叠加本仓品牌配置、组件、交互与多平台交付约定。主入口：<https://www.threetwoa.live>；Vercel 备用：<https://fork-firefly.vercel.app>。
+> 本仓源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork network。保留上游主题的内容与页面能力，并叠加本仓品牌配置、组件、交互与多平台交付约定。主入口：<https://www.threetwoa.live>（Cloudflare Workers）。
 
 ## Showcase
 
@@ -102,7 +102,7 @@
 | Content | `posts` / `dynamic` / `spec` Content Collections |
 | Interaction | Svelte islands · Swup · progressive enhancement |
 | Integrations | Giscus · Waline（Dynamic）· GitHub Discussions · Iconify · SpritePet · local music |
-| Delivery | `www.threetwoa.live` → EdgeOne CDN → Vercel origin；Cloudflare DNS + R2 图床 |
+| Delivery | `www.threetwoa.live`（Cloudflare Workers）；Cloudflare DNS + R2 图床 |
 
 ### Modules
 
@@ -130,7 +130,7 @@
 | Ask | `/ask` 自研聊天岛（mode: page/widget）、站内检索、SSE、桌宠 LiveChat；导航露出，PROD「正在开发中」，DEV 完整调试 | `src/components/ask/` · `src/pages/api/ask.ts` |
 | Personal | Dynamic 时间线、摘星录 / 藏经阁（PROD 占位）、GitHub Discussions、Gallery、About（GitHub profile 克隆）/ Friends / Guestbook | `src/pages/` · `src/content/spec/` |
 | Widgets | 热力图、日历、公告礼盒、园径便签、标签墙、站点统计、桌宠 | `src/components/widget/` |
-| Delivery | EdgeOne CDN 主入口、Vercel 源站与回滚、Cloudflare R2 外置大图 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
+| Delivery | Cloudflare Workers 主入口、R2 外置大图 | `wrangler.jsonc` · `astro.config.mjs` |
 
 <details>
 <summary>Features 详表（Area · Capability · entry）</summary>
@@ -156,7 +156,7 @@
 | Integration | Icons | `astro-icon` + Iconify（lucide 主，兼 fa7 / simple-icons / mdi / mingcute / material-symbols） | `astro.config.mjs` |
 | Integration | Pets & music | SpritePet 默认开；Live2D / Spine 备选互斥；音乐默认 local（ADR-0002） | `petConfig.ts` · `musicConfig.ts` · `pioConfig.ts` |
 | Integration | Media services | 评论大图优先 Cloudflare R2，保留 COS 兼容；Fancybox 灯箱 | `.env.example` · `src/pages/api/comment-image.ts` |
-| Integration | Delivery | EdgeOne CDN → Vercel origin；Cloudflare 管 DNS 与 R2 | `vercel.json` · `edgeone.json` · `wrangler.jsonc` |
+| Integration | Delivery | Cloudflare Workers（DNS / SSL / 托管一体） | `wrangler.jsonc` · `astro.config.mjs` |
 | Integration | Localization | `zh_CN`、`zh_TW`、`en`、`ja`、`ru`、`ko` | `src/config/siteConfig.ts` |
 
 </details>
@@ -235,13 +235,12 @@ pnpm dev
 
    | Setting | Value |
    | --- | --- |
-   | Vercel origin | Astro · `pnpm build` · `dist` |
-   | EdgeOne CDN | `www.threetwoa.live` CNAME 到 EdgeOne，回源 Vercel |
-   | Cloudflare | `threetwoa.live` DNS + `img.threetwoa.live` R2 图床 |
-   | 备用入口 | `https://fork-firefly.vercel.app` |
+   | Cloudflare Workers | Astro SSR/API · `pnpm build` · `dist`（CF_WORKERS 或默认适配器） |
+   | Cloudflare DNS | `threetwoa.live` / `www.threetwoa.live` 自定义域（Workers 自动签 SSL） |
+   | Cloudflare R2 | `img.threetwoa.live` 图床 |
 
-   评论 / R2 / COS / Ask 等变量在 Vercel Project Settings → Environment Variables 补齐后再部署。
-9. **上线复核**：主域首页 · 文章 · 搜索 · RSS · Sitemap · 评论 · R2 图片 · 移动端；再抽查 Vercel 备用入口。UI 大改后重跑 `scripts/capture-readme-showcase.py`。
+   评论 / R2 / COS / Ask 等变量在 Cloudflare Worker 的 Secrets（wrangler secret）与本地 `.env.local` 补齐。
+9. **上线复核**：主域首页 · 文章 · 搜索 · RSS · Sitemap · 评论 · R2 图片 · 移动端；push 后看 `deploy-cf.yml` CI 与 workers.dev/主域。UI 大改后重跑 `scripts/capture-readme-showcase.py`。
 
 <details>
 <summary>Configuration file map</summary>
@@ -277,7 +276,7 @@ pnpm dev
 | Authoring | 配置、文案、Markdown / MDX | `src/config` · `src/content` |
 | Composition | 页面、布局、组件、Markdown plugins | `src/pages` · `src/layouts` · `src/components` · `src/plugins` |
 | Build | SSG、LQIP、字体子集、Mermaid SVG、Pagefind | `pnpm build` 串起 |
-| Runtime | CDN + 轻量交互 + 少量 API | EdgeOne CDN · Vercel origin · Swup · Svelte / React islands · Waline · SpritePet |
+| Runtime | CDN + 轻量交互 + 少量 API | Cloudflare Workers · Swup · Svelte / React islands · Waline · SpritePet |
 
 ### Design principles
 
@@ -304,7 +303,7 @@ pnpm dev
 | Fonts | Inter（全局）· Zen Maru（横幅）· JetBrains Mono（代码）· GreatVibes（本地子集） | 见 fontConfig | 品牌与可读性 |
 | Interaction | Swup · Iconify（Lucide 主）· Fancybox · Three.js（Gallery）· Framer Motion（动态时间线） | 全开 | 过渡、图标、灯箱、画廊 |
 | Build enrichment | Sharp · LQIP · font subset · **merman** · Pagefind · Satori（OG） | `pnpm build` 串起 | 构建期把贵活做完 |
-| Delivery | Vercel origin（`@astrojs/vercel`）· EdgeOne CDN · Cloudflare DNS / R2 | 三者各司其职 | 静态出站 + 少量 API + 外置大图 |
+| Delivery | Cloudflare Workers（`@astrojs/cloudflare`）· Cloudflare DNS / R2 | 托管与 DNS 一家 | 静态出站 + 少量 API + 外置大图 |
 | Site integrations | Giscus · GitHub Discussions · Dynamic Waline + emoji/Giphy · SpritePet · local music · R2 / COS · analytics 槽位 | 评论双通道按路由门控；分析 ID 多为空 | 配置门控 |
 | Quality | Biome · `astro check` · tsc · only-allow pnpm | 全开 | 格式、类型与包管理纪律 |
 | Agent tooling | post-publish · dynamic-publish · 早报/热榜合集 skills · gsap-* | **开发期**，非站点运行时硬依赖 | 发文与动画工作流 |
@@ -313,17 +312,14 @@ pnpm dev
 
 ## Deploy
 
-当前生产链不是三家重复托管，而是分层协作：
+生产托管已收敛到一家（09-19 起 Vercel / EdgeOne 均退役）：
 
-| 平台 | 当前职责 | 入口 / 配置 | 验收信号 |
+| 平台 | 职责 | 入口 / 配置 | 验收信号 |
 | --- | --- | --- | --- |
-| Vercel | Git `master` 自动构建、SSR/API 源站、海外备用与回滚 | [vercel.json](vercel.json) · `fork-firefly.vercel.app` | Production `Ready`，commit 对齐 `master` |
-| EdgeOne | `www.threetwoa.live` 的 CDN 与基础防护，回源 Vercel | DNS CNAME → `*.eo.dnse2.com` | HTTPS 200、`eo-cache-status`、静态资源 HIT |
-| Cloudflare | `threetwoa.live` 权威 DNS；`img.threetwoa.live` R2 图床 | [wrangler.jsonc](wrangler.jsonc) · R2 环境变量 | NS 指向 Cloudflare、对象 200、`cf-cache-status` |
+| Cloudflare Workers | Git `master` 自动构建（`deploy-cf.yml`）、SSR/API、自定义域 | [wrangler.jsonc](wrangler.jsonc) · `threetwoa.live` / `www.threetwoa.live` | CI `success`、主域 200 |
+| Cloudflare R2 | `img.threetwoa.live` 评论图床 | R2 bucket `firefly-comment` | 对象 200、`cf-cache-status` |
 
-主入口是 <https://www.threetwoa.live>，Vercel 直链是 <https://fork-firefly.vercel.app>。当前未备案，不把 EdgeOne 的“全球不含中国大陆”链路写成大陆节点加速。
-
-[edgeone.json](edgeone.json) / `EDGEONE=1 pnpm run build:edgeone` 保留用于 EdgeOne Pages 适配与回归，不是当前生产主托管；`CF_WORKERS=1` 才会切 Cloudflare adapter，当前主链路不使用它。
+主入口是 <https://www.threetwoa.live>。push 后部署由 `.github/workflows/deploy-cf.yml` 自动完成，本地 `pnpm build` 与 CI 同走 Cloudflare adapter。
 
 ## Performance
 
@@ -390,7 +386,7 @@ pnpm dev
 | --- | --- | --- |
 | 发文 | `post-publish` 一条链（识别输入→沉淀 vault→成帖→校验→级联收尾）；短动态 `dynamic-publish` | 草稿先落 `_draftbox/`，出箱需园主确认 |
 | 功能 | idea → Issue → PRD(draft) → 园主批准 → handoff → 实施 | 未批准不写大规模功能代码 |
-| 交付 | 本地预览 → check/build → 园主确认 → push → Vercel Ready → 主域复核 | 未本地验收不得 push；未核主域不宣称完成 |
+| 交付 | 本地预览 → check/build → 园主确认 → push → deploy-cf CI 绿 → 主域复核 | 未本地验收不得 push；未核主域不宣称完成 |
 
 硬约束：只改任务相关行、不顺手重构；密钥不入库（不提交 `.env`、评论服务 token、私有 API key）；二次开发请保留 Firefly / Fuwari 的版权声明与 MIT 义务。
 

@@ -7,8 +7,6 @@ import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
-import vercel from "@astrojs/vercel";
-import edgeoneAdapter from "@edgeone/astro";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
@@ -65,15 +63,11 @@ if (process.env.NODE_ENV === "development") {
 	setMaxListeners(20);
 }
 
-// EDGEONE=1 → EdgeOne Pages；CF_WORKERS → Cloudflare；其余（本地 / Vercel）→ Vercel
+// 适配器固定 Cloudflare Workers（09-19 起 Vercel/EdgeOne 已退役；本地与 CI 同走此适配器）
 // 供 /api/comment-image、/api/admin/pin 等 prerender=false 路由使用
-const adapter = process.env.EDGEONE
-	? edgeoneAdapter({ outDir: ".edgeone" })
-	: process.env.CF_WORKERS
-		? cloudflare({
-				prerenderEnvironment: "node",
-			})
-		: vercel();
+const adapter = cloudflare({
+	prerenderEnvironment: "node",
+});
 
 // https://astro.build/config
 export default defineConfig({
@@ -130,8 +124,15 @@ export default defineConfig({
 
 	// 图像优化配置
 	image: {
-		// 组件可自行传入 layout/widths；这里只控制 Markdown 正文图片
-		layout: "none",
+		// Markdown 正文图片：constrained 让 Astro 自动补 srcset/sizes/width/height。
+		// 原先是 none（不生成 srcset），3000px 宽的正文插图会按原尺寸送到手机上。
+		// 组件（ImageWrapper 等）自行传 layout/widths 时以组件传入为准。
+		layout: "constrained",
+		// constrained 需要配套的全局样式（max-width/object-fit）才生效
+		responsiveStyles: true,
+		// 只出 3 档：正文栏最宽约 860px，1440 已是 1.7x。Astro 本地服务默认 8 档
+		// （最高 2560），对本仓 2400+ 张正文图会显著拉长构建、加重 EdgeOne 的内存压力。
+		breakpoints: [640, 1024, 1440],
 	},
 
 	integrations: [
@@ -181,15 +182,45 @@ export default defineConfig({
 			},
 		}),
 		icon({
+			// 本仓恒带 adapter（vercel / cloudflare / edgeone），astro-icon 会把
+			// include 里的集合整套打进服务端 bundle。原先 8 套全 "*"（约 3 万图标）
+			// 是构建内存与 function 体积的大头，实际只用到 187 个图标名。
+			// 新增图标：lucide 直接写；其它集合要在下面登记，否则构建期报错。
+			// 注：Svelte 侧走 src/constants/icons-data.json 自建子集，与此处无关。
 			include: {
+				// 站内主力集，且文章 frontmatter 也可能带 lucide:*，保留全量兜底
 				lucide: ["*"],
-				"material-symbols": ["*"],
-				"fa7-brands": ["*"],
-				"fa7-regular": ["*"],
-				"fa7-solid": ["*"],
-				"simple-icons": ["*"],
-				mdi: ["*"],
-				mingcute: ["*"],
+				"material-symbols": ["bookmark-rounded"],
+				"fa7-regular": ["copyright"],
+				"fa7-brands": [
+					"alipay",
+					"creative-commons",
+					"creative-commons-pd",
+					"creative-commons-zero",
+					"github",
+					"hugging-face",
+					"node-js",
+					"osi",
+					"react",
+					"stack-overflow",
+					"telegram",
+					"weixin",
+					"x-twitter",
+				],
+				"simple-icons": [
+					"astro",
+					"bilibili",
+					"excalidraw",
+					"github",
+					"leetcode",
+					"mdnwebdocs",
+					"pnpm",
+					"tailwindcss",
+					"telegram",
+					"x",
+					"youtube",
+				],
+				// fa7-solid / mdi / mingcute：全仓 <Icon> 零引用，整套移出打包
 			},
 		}),
 		expressiveCode({
@@ -355,42 +386,36 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 		server: {
+			// Vite 热重启会丢掉 Astro 的 server.host，这里再钉一次 IPv4
+			host: "127.0.0.1",
 			watch: {
 				ignored: ["**/package/**", "**/docs/official/**"],
 			},
 		},
 		optimizeDeps: {
-			// 勿 include @heroui-pro 子路径：EdgeOne CI 上 resolve 会失败并拖垮构建
 			include: [
 				"@lottiefiles/dotlottie-web",
 				"motion",
 				"react-aria-components",
 			],
+			// 该包 exports 只有 svelte 条件，Vite 8 扫描 import 条件会整段优化失败
+			exclude: ["@iconify/svelte", "@iconify/svelte/offline"],
 		},
 		ssr: {
 			noExternal: [
-				"@heroui-pro/react",
-				"@heroui/react",
-				"@heroui/styles",
 				"motion",
 				"react-aria-components",
 				"react-markdown",
 				"shiki",
-				"streamdown",
 			],
 		},
 		assetsInclude: ["**/*.wasm"],
 		resolve: {
 			alias: {
 				"@rehype-callouts-theme": `rehype-callouts/theme/${siteConfig.post.rehypeCallouts.theme}`,
-				// EdgeOne/rolldown 对 package exports 的 style 条件解析不稳，直指 dist 文件
-				"@heroui-pro/react/css": path.resolve(
+				"@iconify/svelte/offline": path.resolve(
 					__dirname,
-					"node_modules/@heroui-pro/react/dist/css/index.css",
-				),
-				"@heroui/styles/css": path.resolve(
-					__dirname,
-					"node_modules/@heroui/styles/dist/index.css",
+					"node_modules/@iconify/svelte/dist/OfflineIcon.svelte",
 				),
 			},
 		},

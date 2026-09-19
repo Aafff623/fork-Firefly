@@ -1,1 +1,0 @@
-import{SegmentRoot as t,SegmentSeparator as e,SegmentItem as s}from"./segment.js";export{segmentVariants}from"./segment.styles.js";const o=Object.assign(t,{Item:s,Root:t,Separator:e});export{o as Segment,s as SegmentItem,t as SegmentRoot,e as SegmentSeparator};

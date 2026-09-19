@@ -7,8 +7,7 @@
 - **产品名（对外）**：threetwoa's blog
 - **仓库**：[Aafff623/fork-Firefly](https://github.com/Aafff623/fork-Firefly)（源自 [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)，已脱离 fork 网络，standalone）
 - **定位**：基于 Firefly（Astro 静态博客主题）的个人博客二次开发
-- **线上主入口**：https://www.threetwoa.live  
-- **海外备用**：https://fork-firefly.vercel.app
+- **线上主入口**：https://www.threetwoa.live（Cloudflare Workers；09-19 起 Vercel 已退役）
 - **作者**：Aafff623 / threetwoa（中北大学软件工程；关注 Agent Engineering、Java/Python 业务系统）
 
 ## 一句话
@@ -27,7 +26,7 @@
 | 搜索 | Pagefind |
 | 过渡 | Swup |
 | 质量 | Biome（format/lint）、`astro check`、`tsc` |
-| 部署 | Vercel（`vercel.json`）；可选 Cloudflare Pages/Workers |
+| 部署 | Cloudflare Workers（`wrangler.jsonc` + `deploy-cf.yml` CI） |
 
 ## 仓库边界
 
@@ -157,27 +156,17 @@ Content Collections（`src/content.config.ts`）：
 
 细则见 `AGENTS.md` 与 `docs/agents/workflow.md`。旧入口 `ob2blog` / `knowledge-extract` / `knowledge-output` / `site-cascade` / `dynamic-post` 已并入 `post-publish` / `dynamic-publish` 一条链。
 
-## 部署事实
+## 部署事实（2026-09-19 更新：Vercel / EdgeOne 均退役，Cloudflare 一家承接）
 
-- 默认页面仍 **prerender/static**；adapter 三选一：
-  - 默认 / Vercel CI → `@astrojs/vercel`（**现行唯一源站构建**）
-  - `CF_WORKERS=1` → `@astrojs/cloudflare`（备选，主链路不用）
-  - `EDGEONE=1` → `@edgeone/astro`（已随 EO 退场废弃，仅历史适配保留；`edgeone.json` / `build:edgeone` 待清理）
-- **三层入口（2026-09-12 更新）**：
-  - **主入口**：`https://www.threetwoa.live` → Cloudflare DNS（灰云）→ 直连 Vercel；HTTPS 已部署（2026-09-12 EdgeOne 退场）
-  - **源站**：Vercel Hobby 项目 `fork-firefly`（唯一构建）
-  - **EdgeOne**：站点加速 / zones 个人版；**不做 Pages Git 构建**（OOM 路径已放弃）
-  - **部署完整 Plan**：`docs/agents/deploy-edge-cf-plan.md`（Phase 1 已通 / Phase CF 主能力已通 / Phase ICP 后续）
-  - **EdgeOne（2026-09-12 已退场）**：个人版到期未续费，主站 DNS 已切直连 Vercel；回滚窗口至停服后 60 天（≈2026-11-13，期内续费可恢复）。方案与实测：`temp/research/edgeone-offboarding/`
-  - **新图纪律**：封面与正文大图优先 `https://img.threetwoa.live`（R2 桶 `firefly-comment`），禁止再把大 jpg 推进 git；存量 pack 另开任务
-  - **成本优化架构**：尽量吃 CF 免费档（R2 图床）；主站 EO；现金刚需约 EO 个人版月费 → `docs/agents/architecture-cost-optimized.md`
-  - **Phase CF（已通主能力）**：Cloudflare zone `threetwoa.live` Active；`img.` → R2 桶 `firefly-comment`（`https://img.threetwoa.live`）。`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床。主站灰云已切直连 Vercel（2026-09-12）。见 runbook §Phase CF
-  - **Phase ICP（后续优化，前置已变）**：`.live` 可备案；EdgeOne 已退场，未来备案需重建 EO → `docs/agents/edgeone-mainland-icp-plan.md`
-  - **备用直链**：`https://fork-firefly.vercel.app`（国内常因 DNS 污染打不开）
-  - 旧域 `threetwoa.me` 不续
-  - `siteConfig.site_url` 本地已改为 `https://www.threetwoa.live`（待确认后 push）
-  - EdgeOne：`www` / apex 已于 2026-09-12 切离（直连 Vercel）
-- Vercel：自定义域 Valid，当前唯一源站与入口（2026-09-12 起 DNS 直连）
+- 默认页面仍 **prerender/static**；adapter **固定 `@astrojs/cloudflare`**（`astro.config.mjs`，本地与 CI 同走；`CF_WORKERS`/`EDGEONE` 环境变量分支已随退役删除）
+- **托管**：Cloudflare Workers 项目 `firefly`；自定义域 `threetwoa.live` + `www.threetwoa.live`（Workers 自动签 SSL）；部署由 `.github/workflows/deploy-cf.yml` 在 push 时自动完成
+- **预览域**：`https://firefly.ttafirefly.workers.dev`（真实构建，静态页有边缘缓存滞后属已知现象）
+- **图床**：`img.threetwoa.live` → R2 桶 `firefly-comment`（`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床）
+- **新图纪律**：封面与正文大图优先 `https://img.threetwoa.live`（R2），禁止再把大 jpg 推进 git
+- **历史存档**：Vercel（曾为源站，2026-09-19 退役删项目）/ EdgeOne（2026-09-12 退场，回滚窗口 ≈2026-11-13）/ 迁移方案：`temp/handoff/cf-workers-migration.md` 与 `temp/research/edgeone-offboarding/`（temp 丢失后部分存档待重建）
+- **Phase ICP（后续优化）**：`.live` 可备案；EdgeOne 已退场，未来备案需重建 EO → `docs/agents/edgeone-mainland-icp-plan.md`
+- 旧域 `threetwoa.me` 不续
+- `siteConfig.site_url` = `https://www.threetwoa.live`
 - 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind → sync）
 - 操作清单：`docs/agents/edgeone-domain-runbook.md`（历史参考，2026-09-12 起部分失效）
 - 交付验收：同学打开 `https://www.threetwoa.live`；未备案勿宣称大陆节点加速

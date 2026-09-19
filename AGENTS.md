@@ -38,7 +38,7 @@
 
 1. **KISS / YAGNI / 外科手术式修改**：只改任务所需行；不顺手重构。
 2. **PRD 门禁**：未批准的业务 theme 不写大规模功能代码。
-3. **交付闭环**：本地 `pnpm dev` 预览 → 本地校验 → 你确认后 `push` → 等 Vercel → **再核线上**。未本地验收不得 push；未看线上不得宣称部署完成。细则见 `docs/agents/workflow.md`。
+3. **交付闭环**：本地 `pnpm dev` 预览 → 本地校验 → 你确认后 `push` → 等 `deploy-cf.yml` CI 绿 → **再核线上**。未本地验收不得 push；未看线上不得宣称部署完成。细则见 `docs/agents/workflow.md`。
 4. **密钥**：不入库。
 5. **覆盖冲突**：本仓治理文件与上游主题说明冲突时，以本仓 `AGENTS.md` / `CONTEXT.md` 为准；上游原文已备份。
 6. **资产禁止空壳**：`CONTEXT` / `LANGUAGES` / `docs/agents/*` / `docs/glossary/*` / `docs/knowledge/official-docs.tree.json` 必须有可消费正文；缺内容时先调研再写盘，禁止只建空目录或一句话占位。弱关联产物（灵感 / 调研报告 / handoff / 知识文 / 临时脚本）归 `temp/` 对应分类，不在正式目录补建。
@@ -125,7 +125,7 @@ Windows：`cmd /c mklink /J <dest> <Firefly/.agents/skills/<name>>`（桥接整�
 | Git | `.gitignore` 忽略箱内正文（仅 `_draftbox/README.md` 入库） |
 | FM | 箱内帖必须 `draft: true` |
 | 本地 | DEV 可打开 `/posts/<slug>/`（路由剥 `_draftbox/` 前缀）；进列表，且可参与默认置顶大卡 |
-| 线上 | 箱内文件不在远端 → Vercel 构建无此文 |
+| 线上 | 箱内文件不在远端 → CI 构建无此文 |
 | 进箱 | 用户说「草稿 / 草稿箱 / 先本地调试」→ 落盘 `_draftbox/`，禁止 commit 正文 |
 | 出箱 | 用户说「从草稿箱出来 / 可以发了」→ 迁到 `posts/<slug>/`，按需 `draft: false`，再 cascade → 确认后 push |
 
