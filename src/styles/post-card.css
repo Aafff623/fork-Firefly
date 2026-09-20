@@ -338,6 +338,30 @@
 	display: none !important;
 }
 
+/* 行卡右侧小缩略图：md+ 且有封面才显示；移动端与无封面行保持纯文字细线。
+   letter 置顶卡自有 8.5rem 封面栏（post-card-letter.css），排除。 */
+@media (min-width: 768px) {
+	.list-mode
+		.post-card-wrapper--row.has-cover:not(.post-card-wrapper--letter)
+		.post-card-image {
+		display: block !important;
+		position: absolute !important;
+		top: 0.55rem !important;
+		bottom: 0.55rem !important;
+		right: 0.9rem !important;
+		width: 5.25rem !important;
+		aspect-ratio: auto !important;
+		border-radius: 0.5rem !important;
+		overflow: hidden !important;
+	}
+
+	.list-mode
+		.post-card-wrapper--row.has-cover:not(.post-card-wrapper--letter)
+		.post-card-content {
+		width: calc(100% - 5.25rem - 1.8rem) !important;
+	}
+}
+
 .list-mode .post-card-wrapper--row .post-card-content {
 	width: 100% !important;
 	/* 接近置顶卡呼吸感：上下约 0.9、左右约 1.1 */
