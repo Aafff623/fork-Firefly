@@ -2,7 +2,7 @@
 title: "数据库与数据访问框架选型（Java 课程 5 · 全 10 节合订）"
 published: 2026-09-18
 description: "后端必备数据库与主流框架深度对比、选型：Spring Data / JPA / MongoDB。"
-image: ''
+image: ./cover.webp
 tags: [Java, Spring Data, JPA]
 category: 指南
 collections: [java-fullstack, java-fullstack-spring]

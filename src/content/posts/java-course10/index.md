@@ -2,7 +2,7 @@
 title: "版本控制（Git）（Java 课程 10 · 全 9 节合订）"
 published: 2026-09-18
 description: "用 Git 管理代码：分支模型、协作流程与常见坑。"
-image: ''
+image: ./cover.webp
 tags: [Git, 版本控制]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

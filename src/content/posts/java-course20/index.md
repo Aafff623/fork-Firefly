@@ -2,7 +2,7 @@
 title: "微服务构建与服务治理（Nacos）（Java 课程 20 · 全 9 节合订）"
 published: 2026-09-18
 description: "从全栈角度构建微服务：Spring Cloud 与 Nacos 服务治理。"
-image: ''
+image: ./cover.webp
 tags: [Spring Cloud, 微服务, Nacos]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]

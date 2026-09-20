@@ -2,7 +2,7 @@
 title: "前端样式工程（Bootstrap）（Java 课程 7 · 全 7 节合订）"
 published: 2026-09-18
 description: "单体项目下的前端样式方案：Bootstrap 与 CSS 工程化。"
-image: ''
+image: ./cover.webp
 tags: [Bootstrap, CSS, 前端]
 category: 指南
 collections: [java-fullstack, java-fullstack-frontend-basic]

@@ -2,7 +2,7 @@
 title: "全栈课程系列导读（Java 课程 0 · 全 2 节合订）"
 published: 2026-09-18
 description: "Java 全栈课程的开篇导读：课程地图、学习路径与每门课的主题索引。"
-image: ''
+image: ./cover.webp
 tags: [Java, 全栈, 导学]
 category: 指南
 collections: [java-fullstack, java-fullstack-intro]

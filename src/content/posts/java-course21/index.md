@@ -2,7 +2,7 @@
 title: "微服务全栈架构改造实战（Java 课程 21 · 全 32 节合订）"
 published: 2026-09-18
 description: "仿小红书项目微服务全栈架构改造实战。"
-image: ''
+image: ./cover.webp
 tags: [微服务, 实战, 改造]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]

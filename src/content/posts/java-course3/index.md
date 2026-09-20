@@ -2,7 +2,7 @@
 title: "Web 开发工程化实践（Java 课程 3 · 全 17 节合订）"
 published: 2026-09-18
 description: "单体项目全栈进阶：Web 开发工程化实践与 Spring MVC。"
-image: ''
+image: ./cover.webp
 tags: [Java, Spring MVC, Web]
 category: 指南
 collections: [java-fullstack, java-fullstack-spring]

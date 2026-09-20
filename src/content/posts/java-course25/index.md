@@ -2,7 +2,7 @@
 title: "文件服务容器化改造（Java 课程 25 · 全 8 节合订）"
 published: 2026-09-18
 description: "全栈视角下的文件服务容器化改造。"
-image: ''
+image: ./cover.webp
 tags: [Docker, 容器化, 部署]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

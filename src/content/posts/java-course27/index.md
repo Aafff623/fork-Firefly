@@ -2,7 +2,7 @@
 title: "Kubernetes 部署实战（Java 课程 27 · 全 10 节合订）"
 published: 2026-09-18
 description: "用 Kubernetes 部署仿小红书项目：K8s 编排实战。"
-image: ''
+image: ./cover.webp
 tags: [Kubernetes, K8s, 部署]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

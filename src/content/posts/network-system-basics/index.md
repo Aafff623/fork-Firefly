@@ -2,7 +2,7 @@
 title: "网络与系统负基础合集（合订 · 全 6 篇）"
 published: 2026-09-18
 description: "网络安全、通信原理、操作系统、交换机 VLAN、Linux 目录与 K8s 架构：零基础系统课合订。"
-image: ''
+image: ./images/1-overview.webp
 tags: [网络, 操作系统, 负基础]
 category: 指南
 collections: []

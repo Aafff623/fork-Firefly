@@ -2,7 +2,7 @@
 title: "分布式监控体系（Prometheus）（Java 课程 15 · 全 9 节合订）"
 published: 2026-09-18
 description: "Prometheus + Grafana：分布式监控体系实战。"
-image: ''
+image: ./cover.webp
 tags: [Prometheus, 监控]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

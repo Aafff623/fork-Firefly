@@ -2,7 +2,7 @@
 title: "Docker Compose 编排（Java 课程 26 · 全 9 节合订）"
 published: 2026-09-18
 description: "Docker Compose 容器化部署的问题与解法。"
-image: ''
+image: ./cover.webp
 tags: [Docker, Compose, 编排]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

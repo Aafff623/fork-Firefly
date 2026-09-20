@@ -2,7 +2,7 @@
 title: "非结构化数据（MongoDB）（Java 课程 13 · 全 9 节合订）"
 published: 2026-09-18
 description: "用 MongoDB 构建非结构化数据管理体系。"
-image: ''
+image: ./cover.webp
 tags: [MongoDB, NoSQL]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

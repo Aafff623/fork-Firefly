@@ -2,7 +2,7 @@
 title: "Spring 全家桶技能树（Java 课程 2 · 全 22 节合订）"
 published: 2026-09-18
 description: "后端 Spring 全家桶技能树全解析：IoC、AOP 与核心生态。"
-image: ''
+image: ./cover.webp
 tags: [Java, Spring, IoC, AOP]
 category: 指南
 collections: [java-fullstack, java-fullstack-spring]

@@ -2,7 +2,7 @@
 title: "部署与运维（Docker）（Java 课程 24 · 全 10 节合订）"
 published: 2026-09-18
 description: "全栈终极技能：项目部署与运维，Docker 容器化基础。"
-image: ''
+image: ./cover.webp
 tags: [Docker, 容器化]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

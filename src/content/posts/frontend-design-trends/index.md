@@ -2,7 +2,7 @@
 title: "设计趋势与界面规范（合订 · 全 3 篇）"
 published: 2026-09-18
 description: "创意海报、LogoLounge 2026 趋势与六家设计系统：界面审美速查合订。"
-image: ''
+image: ./images/3-fig-00-cover-sites.jpg
 tags: [设计, 趋势, 设计系统]
 category: 前端开发
 collections: []

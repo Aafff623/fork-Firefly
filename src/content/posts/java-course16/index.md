@@ -2,7 +2,7 @@
 title: "单体到分布式重构实战（Java 课程 16 · 全 24 节合订）"
 published: 2026-09-18
 description: "把仿小红书单体项目重构为分布式系统：演进思路与实战。"
-image: ''
+image: ./cover.webp
 tags: [分布式, 实战, 演进]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

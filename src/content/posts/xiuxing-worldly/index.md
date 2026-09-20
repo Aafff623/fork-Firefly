@@ -2,7 +2,7 @@
 title: "修行与世相杂谈（修行合订 · 全 9 篇）"
 published: 2026-09-18
 description: "阳间修行、时代趋势、认知与信仰：修行视角下的世相观察杂谈。"
-image: ''
+image: ./images/9-fig-7.webp
 tags: [修行, 世相, 杂谈]
 category: 修行
 collections: []

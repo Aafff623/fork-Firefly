@@ -2,7 +2,7 @@
 title: "消息队列（Kafka）（Java 课程 12 · 全 10 节合订）"
 published: 2026-09-18
 description: "Kafka 指南：构建高并发消息处理体系。"
-image: ''
+image: ./cover.webp
 tags: [Kafka, 消息队列]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

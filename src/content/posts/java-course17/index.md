@@ -2,7 +2,7 @@
 title: "前后端分离架构（Java 课程 17 · 全 15 节合订）"
 published: 2026-09-18
 description: "前后端分离架构解决项目痛点：Vue 与 JavaScript 工程实践。"
-image: ''
+image: ./cover.webp
 tags: [Vue, 前端, JavaScript]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]

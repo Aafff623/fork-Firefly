@@ -2,7 +2,7 @@
 title: "前后端分离架构设计（实战）（Java 课程 18 · 全 42 节合订）"
 published: 2026-09-18
 description: "基于全栈视角的前后端分离架构设计与实战。"
-image: ''
+image: ./cover.webp
 tags: [Vue, 前后端分离, 实战]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]

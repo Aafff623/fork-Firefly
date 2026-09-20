@@ -2,7 +2,7 @@
 title: "修行入门与常识（修行合订 · 全 13 篇）"
 published: 2026-09-18
 description: "为什么修、谁能修、怎么修：条件、路径、阶段验证与常见骗局的入门常识合集。"
-image: ''
+image: ./images/3-fig-5.webp
 tags: [修行, 入门, 修仙]
 category: 修行
 collections: []

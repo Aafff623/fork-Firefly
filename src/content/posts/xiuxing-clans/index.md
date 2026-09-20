@@ -2,7 +2,7 @@
 title: "修真家族大解析（修行合订 · 全 4 篇）"
 published: 2026-09-18
 description: "龙族、狐族、凤族与黄仙：四个修真家族的由来、谱系与行事风格全解析。"
-image: ''
+image: ./images/4-fig-1.webp
 tags: [修行, 修真家族, 玄学]
 category: 修行
 collections: []

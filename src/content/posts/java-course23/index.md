@@ -2,7 +2,7 @@
 title: "项目融合 AI 技术实战（Java 课程 23 · 全 14 节合订）"
 published: 2026-09-18
 description: "在仿小红书微服务项目中融合 AI：文案生成与优化功能落地。"
-image: ''
+image: ./cover.webp
 tags: [AI, 实战, 融合]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

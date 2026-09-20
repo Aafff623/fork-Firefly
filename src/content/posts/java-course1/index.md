@@ -2,7 +2,7 @@
 title: "什么是全栈工程师（Java 课程 1 · 全 5 节合订）"
 published: 2026-09-18
 description: "为什么成为全栈工程师：能力模型、成长路径与课程总览。"
-image: ''
+image: ./cover.webp
 tags: [Java, 全栈, 导学]
 category: 指南
 collections: [java-fullstack, java-fullstack-intro]

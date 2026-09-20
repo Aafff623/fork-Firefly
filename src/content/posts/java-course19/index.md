@@ -2,7 +2,7 @@
 title: "微服务架构快速掌握（Java 课程 19 · 全 3 节合订）"
 published: 2026-09-18
 description: "如何快速掌握微服务架构：核心概念与设计取舍。"
-image: ''
+image: ./cover.webp
 tags: [微服务, 架构设计]
 category: 指南
 collections: [java-fullstack, java-fullstack-microservices]

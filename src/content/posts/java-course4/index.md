@@ -2,7 +2,7 @@
 title: "视图层快速构建（Thymeleaf）（Java 课程 4 · 全 13 节合订）"
 published: 2026-09-18
 description: "单体项目中如何快速构建视图：Thymeleaf 模板引擎实战。"
-image: ''
+image: ./cover.webp
 tags: [Java, Thymeleaf, 模板引擎]
 category: 指南
 collections: [java-fullstack, java-fullstack-frontend-basic]

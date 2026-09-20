@@ -2,7 +2,7 @@
 title: "缓存与存储（Redis）（Java 课程 11 · 全 10 节合订）"
 published: 2026-09-18
 description: "全栈必学的缓存与存储方案：Redis 实战。"
-image: ''
+image: ./cover.webp
 tags: [Redis, 缓存]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

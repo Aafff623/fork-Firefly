@@ -2,7 +2,7 @@
 title: "仿小红书单体全栈项目实战（Java 课程 8 · 全 135 节合订）"
 published: 2026-09-15
 description: "从零到一构建仿小红书单体全栈项目：需求分析、Spring Boot、Thymeleaf、注册登录、笔记与评论等完整实战，原 135 个分节合订为一篇。"
-image: ''
+image: ./cover.webp
 tags: [Java, Spring Boot, 实战, 小红书]
 category: 指南
 collections: [java-fullstack, java-fullstack-monolith]

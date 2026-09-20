@@ -2,7 +2,7 @@
 title: "权限控制体系（Spring Security）（Java 课程 6 · 全 11 节合订）"
 published: 2026-09-18
 description: "全栈权限控制方法论：从设计到落地的完整体系。"
-image: ''
+image: ./cover.webp
 tags: [Java, Spring Security, 安全]
 category: 指南
 collections: [java-fullstack, java-fullstack-spring]

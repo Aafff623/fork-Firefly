@@ -2,7 +2,7 @@
 title: "高并发流量调度（Nginx）（Java 课程 14 · 全 7 节合订）"
 published: 2026-09-18
 description: "Nginx 系统掌握：反向代理与流量调度核心。"
-image: ''
+image: ./cover.webp
 tags: [Nginx, 反向代理]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]

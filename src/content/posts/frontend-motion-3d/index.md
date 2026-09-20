@@ -2,7 +2,7 @@
 title: "动效、3D 与实现（合订 · 全 6 篇）"
 published: 2026-09-18
 description: "Lottie/动效库选型、SVG 十条路、纯 CSS 3D 矩阵、Endless Tools 与旅行 App 案例合订。"
-image: ''
+image: ./images/2-fig-05-gsap-now-free.jpg
 tags: [动效, 3D, 前端实现]
 category: 前端开发
 collections: []

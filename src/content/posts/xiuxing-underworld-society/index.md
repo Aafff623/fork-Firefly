@@ -2,7 +2,7 @@
 title: "阴间社会观察（修行合订 · 全 6 篇）"
 published: 2026-09-18
 description: "节庆、考编、就业、选秀、添乱与阳间旅游：另一个世界的运行规则观察合集。"
-image: ''
+image: ./images/3-fig-9.webp
 tags: [修行, 地府, 社会观察]
 category: 修行
 collections: []

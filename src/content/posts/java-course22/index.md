@@ -2,7 +2,7 @@
 title: "Spring AI 与人工智能市场（Java 课程 22 · 全 13 节合订）"
 published: 2026-09-18
 description: "全球 AI 市场分析与应对：Spring AI 核心介绍。"
-image: ''
+image: ./cover.webp
 tags: [Spring AI, AI, 人工智能]
 category: 指南
 collections: [java-fullstack, java-fullstack-ai-cloud]

@@ -2,7 +2,7 @@
 title: "分布式系统全栈开发知识体系（Java 课程 9 · 全 41 节合订）"
 published: 2026-09-18
 description: "在仿小红书单体项目基础上，建立分布式系统全栈开发的完整知识体系。"
-image: ''
+image: ./cover.webp
 tags: [分布式, CAP, 架构]
 category: 指南
 collections: [java-fullstack, java-fullstack-distributed]
