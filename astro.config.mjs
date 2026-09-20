@@ -67,6 +67,10 @@ if (process.env.NODE_ENV === "development") {
 // 供 /api/comment-image、/api/admin/pin 等 prerender=false 路由使用
 const adapter = cloudflare({
 	prerenderEnvironment: "node",
+	// dev 直出原图：默认的 cloudflare-binding 服务在本地走 image-transform-endpoint，
+	// 其 import "cloudflare:workers" 在 vite-node 上下文解析不了且无 IMAGES 绑定 → /_image/ 全 500。
+	// prod 构建不传该参数，走默认（构建期编译 + 运行期 IMAGES 绑定），行为不变。
+	...(process.env.NODE_ENV === "development" ? { imageService: "passthrough" } : {}),
 });
 
 // https://astro.build/config
