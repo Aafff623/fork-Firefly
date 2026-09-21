@@ -384,15 +384,18 @@ def validate(path: Path) -> list[str]:
     warnings.extend(w2)
 
     base = path.parent
-    for rel in re.findall(r"!\[[^\]]*\]\((\./images/[^)\s]+\.gif)\)", body, re.I):
+    # 图片类检查同样只在正文（剥离围栏/行内代码后）上进行：
+    # 代码样例里的 ![](./x) / <img src="./x"> 是文档示例，不是页面资源。
+    content_body = scrub_code(body)
+    for rel in re.findall(r"!\[[^\]]*\]\((\./images/[^)\s]+\.gif)\)", content_body, re.I):
         errors.append(f"GIF under ./images/ may lose animation — use public/posts/: {rel}")
 
-    for rel in re.findall(r"!\[[^\]]*\]\((\./[^)\s]+)\)", body):
+    for rel in re.findall(r"!\[[^\]]*\]\((\./[^)\s]+)\)", content_body):
         if not (base / rel).resolve().exists():
             errors.append(f"missing local image: {rel}")
 
     for rel in re.findall(
-        r"""<img\b[^>]*\bsrc\s*=\s*["'](\./[^"']+)["']""", body, re.I
+        r"""<img\b[^>]*\bsrc\s*=\s*["'](\./[^"']+)["']""", content_body, re.I
     ):
         errors.append(
             f"relative HTML <img src={rel!r}> 404s at runtime — use Markdown "
