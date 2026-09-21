@@ -34,7 +34,7 @@
 |---|---|
 | `src/` | 产品层（pages / layouts / components / config / content / plugins / utils） |
 | `public/` | 原样静态资源 |
-| `scripts/` | LQIP、字体子集、new-post / new-dynamic |
+| `scripts/` | LQIP、字体子集、new-post / new-dynamic、README 截图（`capture-readme-showcase.py`，默认截线上，`SHOWCASE_BASE` 可切本地 dev） |
 | `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/outputs/{prd,commit-history}`）；弱关联产物（灵感 / 调研 / handoff / 知识文 / 临时脚本）归本仓 `temp/` 对应分类 |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
