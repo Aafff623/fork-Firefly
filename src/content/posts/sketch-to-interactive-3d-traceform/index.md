@@ -137,7 +137,7 @@ exporter.parse(
 |---|---|---|
 | img2threejs 一张图变 Three.js 工厂（待发布） | 开源 img2threejs：图 → 规格 + TS 工厂 | 仓库 README 深挖 ≠ Codex 编排实践 / TRACEFORM 工作台 |
 | GPT Image2 七种高张力海报（待发布） | 同模型海报冲击 | 出图玩法 ≠ 形体消歧义再进几何 |
-| GPT Image2 案例 55–75（待发布） | 同模型提示词合集 | 配方库 ≠ 本篇编排流程 |
+| GPT Image2 案例 55-75（待发布） | 同模型提示词合集 | 配方库 ≠ 本篇编排流程 |
 | sen-3d-resume 3D 网页简历（待发布） | 可交互 3D 简历壳 | 简历产品形态 ≠ 草图参数化原型 |
 
 本篇归档 **TRACEFORM / `$build-sketch-to-3d`**：草图约束 → Image2 消歧义 → 确定性 Three.js → 参数旋钮 → 双端验证。

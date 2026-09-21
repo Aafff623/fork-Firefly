@@ -115,7 +115,7 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 | EdgeOne 个人版 | 保留续费（刚需） | ¥9.9 或 ¥29.9（以控制台为准） |
 | Vercel Hobby / 域名学生包 / CF Free / R2 额度内 | 保留 | $0 |
 | 腾讯云 COS | 新图改 R2，降量 | ↓ |
-| CF Pro / EO 升档 / 额外 CDN 包 | 默认不买 | — |
+| CF Pro / EO 升档 / 额外 CDN 包 | 默认不买 | —— |
 
 超额常见原因：大图误走 EO；结账页顺手勾了搭配包；自动续费涨到官价没注意。
 

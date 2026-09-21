@@ -205,7 +205,7 @@ and regenerate only the failing view.
 
 ## 同模型不同交付（旁链）
 
-- GPT-Image2 玩法盘点 55–75（待发布）
+- GPT-Image2 玩法盘点 55-75（待发布）
 - [UI 分层切图](/posts/gpt-image2-ui-layer-slice/)
 - 高张力海报七风格（待发布）
 - 竹林现代东方美术馆长 Prompt（待发布，建筑向单场景，非园区合同链）

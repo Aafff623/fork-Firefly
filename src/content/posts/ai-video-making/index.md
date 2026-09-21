@@ -97,7 +97,7 @@ python scripts/video_project.py render <project.json> `
 
 ## 中文故事进竖屏手绘轨：这仓库把 Skill 和 Remotion 焊在一起
 
-GitHub 上这仓库一句定位很清楚：中文故事文案，或一组有序图片 → 3:4 竖屏手绘日记漫画动画（静音 MP4）。核对日 2026-08-11，约 1190★（MIT）。公众号水印来自 CodeAI研习社。
+GitHub 上这仓库一句定位很清楚：中文故事文案，或一组有序图片 → 3：4 竖屏手绘日记漫画动画（静音 MP4）。核对日 2026-08-11，约 1190★（MIT）。公众号水印来自 CodeAI研习社。
 
 ::github{repo="gnipbao/story-to-handdrawn-video"}
 

@@ -53,7 +53,7 @@ flowchart TB
 | 子 agent | pi-subagents | agents/*.md |
 | 持久记忆 | pi-observational-memory（原 hermes，08-08 换） | 会话收尾自动记录 + recall 回溯 |
 | plan / todo | pi-code 或独立小包 | settings.json |
-| 后台 bash | extension / tmux | — |
+| 后台 bash | extension / tmux | —— |
 
 ### GLM-5.2 是纯文本，看图得自己搭梯子
 
@@ -145,7 +145,7 @@ pi 没有原生自动记忆，得自己搭。开荒时我两路并进：交接�
 
 **四个本地扩展（自建工具）**：除开荒时唯一的 `rtk.ts`（bash 输出压缩），后来又写了三个——`assess-change`（git 变更/风险盘点）、`blog-context`（Firefly 博客上下文）、`pi-env`（会话/provider/模型自检）。共同点：把"手搓四五条 bash 拼上下文"固化成一个工具调用。固化思路见 [命令是快捷键，工具是仪表盘](/posts/pi-coding-agent-handbook/)。
 
-> 一句话总结演进：**开荒补"能借到什么"，维护补"借来怎么编排、怎么固化"**。pi 的极简内核没变，变的是外挂的厚度。
+> **开荒补"能借到什么"，维护补"借来怎么编排、怎么固化"**。pi 的极简内核没变，变的是外挂的厚度。
 
 ---
 
@@ -193,7 +193,7 @@ pi 的 prompt template 机制有个妙处：文件名就是命令，`commit.md` 
 | `/status` | 配合 pi_env 工具 | 看环境全景 |
 | `/assess` | 配合 assess_change 工具 | 评估工作区变更 |
 
-命令本身只是"请使用 /skill:xxx"加参数传递，真正的流程在 skill 里——入口轻、逻辑不重复，是这套设计最顺的地方。参数替换支持 `$@`、`${1:-默认值}`，`/dynamic 好心情` 会把"好心情"原样传进去。
+命令本身只是"请使用 `/skill:xxx`"加参数传递，真正的流程在 skill 里——入口轻、逻辑不重复，是这套设计最顺的地方。参数替换支持 `$@`、`${1:-默认值}`，`/dynamic 好心情` 会把"好心情"原样传进去。
 
 ### 三个工具：上下文从"跑命令"变"拿 JSON"
 
@@ -505,9 +505,9 @@ Pi 内置了 `zai-coding-cn` provider，走 OpenAI 协议，端点 `open.bigmode
 ### 参考
 
 - [Z.AI Preserved Thinking 官方文档](https://docs.z.ai/guides/capabilities/thinking-mode)
-- [Pi Discussion #292 — GLM thinking tag leakage](https://github.com/badlogic/pi-mono/discussions/292)
-- [oh-my-pi #517 — GLM-5 thinking loops](https://github.com/can1357/oh-my-pi/issues/517)
-- [goose #7363 — GLM loses reasoning state](https://github.com/aaif-goose/goose/issues/7363)
+- [Pi Discussion #292 —— GLM thinking tag leakage](https://github.com/badlogic/pi-mono/discussions/292)
+- [oh-my-pi #517 —— GLM-5 thinking loops](https://github.com/can1357/oh-my-pi/issues/517)
+- [goose #7363 —— GLM loses reasoning state](https://github.com/aaif-goose/goose/issues/7363)
 
 ---
 

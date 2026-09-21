@@ -192,7 +192,7 @@ Docker的核心概念是理解容器化设计的关键，错误的认知会导�
   ❌ 陷阱1：镜像分层过多/过大（如在镜像中安装无关工具、未清理构建缓存）→ 导致镜像体积GB级，拉取/部署慢；
   ✅ 解决方案：使用多阶段构建（Multi-stage Build），仅保留运行时依赖；构建后清理yum/apk缓存；
   ❌ 陷阱2：使用最新版镜像（latest tag）→ 生产环境镜像版本不可控，易引发兼容性问题；
-  ✅ 解决方案：镜像指定具体版本（如redis:7.0-alpine，而非redis:latest）；
+  ✅ 解决方案：镜像指定具体版本（如`redis:7.0-alpine`，而非`redis:latest`）；
 
 ### 2. 容器（Container）：镜像的“运行实例”
 - 定义：容器是镜像的可运行实例，在镜像只读层之上添加一层“可写层”，实现应用运行；
@@ -334,7 +334,7 @@ docker build -t rn-nginx:1.0 -f ./docker/Dockerfile .
 | 优化手段       | 具体操作                                                                 |
 |----------------|--------------------------------------------------------------------------|
 | 多阶段构建     | 分离构建/运行阶段，仅保留运行时依赖                                     |
-| 选择轻量级镜像 | 使用alpine/slim版本镜像（如openjdk:17-jdk-slim vs openjdk:17）           |
+| 选择轻量级镜像 | 使用alpine/slim版本镜像（如`openjdk:17-jdk-slim` vs `openjdk:17`）           |
 | 清理构建缓存   | RUN指令后清理yum/apk/mvn缓存（如`RUN mvn package && rm -rf ~/.m2`）      |
 | 合并RUN指令    | 将多个RUN指令合并为一个，减少分层（如`RUN apt update && apt install -y xxx && apt clean`） |
 | 排除无关文件   | 编写.dockerignore文件（排除.git、target、logs等），避免复制无关文件       |

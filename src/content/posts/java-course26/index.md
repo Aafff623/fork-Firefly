@@ -1220,7 +1220,7 @@ Service通过标签选择器（selector）关联一组Pod，为这组Pod分配�
 |类型|核心作用|适用场景|
 |---|---|---|
 |ClusterIP|提供集群内部唯一的虚拟IP，仅集群内可访问|全栈项目内部服务通信（如前端→后端API、后端→数据库）|
-|NodePort|在每个Node节点开放一个静态端口，通过NodeIP:NodePort访问服务|测试环境、小规模外部访问（无需负载均衡器）|
+|NodePort|在每个Node节点开放一个静态端口，通过NodeIP：NodePort访问服务|测试环境、小规模外部访问（无需负载均衡器）|
 |LoadBalancer|集成云服务商负载均衡器（如阿里云SLB），自动分配公网IP|生产环境外部访问（需要高可用、高性能负载均衡）|
 |ExternalName|将Service映射为外部域名（如xxx.com），无需关联Pod|访问集群外部服务（如第三方API、云数据库）|
 ### 二、Service实战配置与操作

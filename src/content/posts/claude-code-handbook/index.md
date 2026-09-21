@@ -807,7 +807,7 @@ tweakcc 不是"皮肤包"，它是**直接改 Claude Code 的程序本体**。�
 
 **其它开关**：会话标题、隐藏启动横幅、`mcpConnectionNonBlocking`（MCP 连接不阻塞启动）、`enableSwarmMode`、`enableVoiceMode`、`enableSessionMemory`，还有 `claudeMdAltNames` 让它在项目里读 `AGENTS.md` / `GEMINI.md` / `QWEN.md` 这些别名当指令文件。
 
-### 主题字段：custom:dracula 是另一层皮
+### 主题字段：`custom:dracula` 是另一层皮
 
 `settings.json` 里还有一行 `"theme": "custom:dracula"`，这是**另一套主题机制**——Claude Code 原生的插件主题，来自 `claude-themes` 插件（本机同时启用了 dracula 和 tokyo-night 两个）。主题字段的取值有 `auto` / `dark` / `light` 这几个内建档，`custom:` 前缀指插件或自定义主题，主题文件是 JSON，放着 `base` + `overrides` 的颜色 token。
 
@@ -902,7 +902,7 @@ Windows 上 Claude Code 的 bash 工具、shell 形式的 hooks、statusLine，�
 几个取舍和坑：
 
 - **`desktopWallpaper` 是个彩蛋**：`backgroundImage` 填这个特殊值就直接垫桌面壁纸，换壁纸终端跟着变。壁纸 + 毛玻璃可以共存（背景图画在 acrylic 之上，`useAcrylic:false` 只有 Win11 支持纯透明无磨砂）。
-- **中文等宽必须用带 CJK 的字体**。Maple Mono NF CN 是开源的圆角编程字体（仓库 subframe7536/maple-font），「NF」= Nerd Font 图标补丁版，「CN」= 内嵌中文字形（思源圆体底子），中英文按 **2:1 对齐**（一个汉字正好两个西文字宽），多语言混排和 Markdown 表格不会错位。Caskaydia Cove Nerd Font（Cascadia Code 打的 NF 补丁）**不含中文字形**，中文只能走系统 fallback——fallback 字体的字宽行高和主字体不一致，混排必错位。
+- **中文等宽必须用带 CJK 的字体**。Maple Mono NF CN 是开源的圆角编程字体（仓库 subframe7536/maple-font），「NF」= Nerd Font 图标补丁版，「CN」= 内嵌中文字形（思源圆体底子），中英文按 **2：1 对齐**（一个汉字正好两个西文字宽），多语言混排和 Markdown 表格不会错位。Caskaydia Cove Nerd Font（Cascadia Code 打的 NF 补丁）**不含中文字形**，中文只能走系统 fallback——fallback 字体的字宽行高和主字体不一致，混排必错位。
 - **终端不支持自定义 fallback 字体列表**（这个功能在官方 backlog 里躺很久了），所以最省事的办法就是主字体直接用自带 CJK 的：Maple Mono NF CN、Sarasa Term SC 这类。
 
 ### 改了一处不生效？按层对号入座
@@ -1326,7 +1326,7 @@ mattpocock 的 plugin.json 显式声明了 24 个 skills 路径（形如 `./skil
 
 宣传口径是「省 ~10x token、20x 工具调用次数」——这是它火到 46k star 的原因。
 
-![claude-mem 界面预览（来自官方 README）](./images/claude-code-memory-auto-vs-claude-mem/claude-mem-preview.gif)
+![claude-mem 界面预览（来自官方 README）](/posts/claude-code-handbook/claude-mem-preview.gif)
 
 ### 社区真实反馈：两极，负面的不虚
 
@@ -1500,7 +1500,7 @@ user：`claude mcp add / list / remove`；`-e` 传环境变量，`-H` 传 HTTP �
 | filesystem | 白名单根目录，别给 `C:\` |
 | memory | 跨会话知识图谱；和 `CLAUDE.md` 分工：规则 vs 事实 |
 | git | `uvx mcp-server-git` 或 `python -m mcp_server_git` |
-| github | Token 进 `env`，权限收紧到 repo/read:org |
+| github | Token 进 `env`，权限收紧到 `repo/read:org` |
 | postgres | 连接串；只读 SELECT，别接生产写库 |
 | puppeteer | 首次拉 Chromium，国内可能慢 |
 | fetch | HTML→Markdown |
@@ -1910,7 +1910,7 @@ flowchart LR
 
 不是纸上设计。看 git log，这套是从 `feat(ob2blog)` 起步，逐步加 `feat(cascade 收尾)`、`Knowledge 引入 todo/Archive`，再一批批发文章发动态积累起来的。dynamic-publish 还经历过「并入 output」又「还原独立」的反复，最后定型为独立 skill。最近连着发的「会话命名」「记忆方案」两篇，就是这条乙路流水线现跑的。
 
-一句话收束：所谓「一键发布」，不是有个神奇按钮，是把「提炼 → 成帖 → 级联 → 归档」拆成可复用的积木，让 agent 按序拼装。积木越拆越稳，发帖就越接近一键。
+所谓「一键发布」，不是有个神奇按钮，是把「提炼 → 成帖 → 级联 → 归档」拆成可复用的积木，让 agent 按序拼装。积木越拆越稳，发帖就越接近一键。
 
 ---
 

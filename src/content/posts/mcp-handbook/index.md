@@ -242,7 +242,7 @@ user：`claude mcp add / list / remove`；`-e` 传环境变量，`-H` 传 HTTP �
 | filesystem | 白名单根目录，别给 `C:\` |
 | memory | 跨会话知识图谱；和 `CLAUDE.md` 分工：规则 vs 事实 |
 | git | `uvx mcp-server-git` 或 `python -m mcp_server_git` |
-| github | Token 进 `env`，权限收紧到 repo/read:org |
+| github | Token 进 `env`，权限收紧到 `repo/read:org` |
 | postgres | 连接串；只读 SELECT，别接生产写库 |
 | puppeteer | 首次拉 Chromium，国内可能慢 |
 | fetch | HTML→Markdown |

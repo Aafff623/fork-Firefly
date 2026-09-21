@@ -1148,7 +1148,7 @@ spring.kafka.producer.buffer-memory=33554432
 其中：
 
 * retries：重试次数
-* batch-size:：批次大小
+* batch-size：批次大小
 * buffer-memory：缓冲区大小
 
 

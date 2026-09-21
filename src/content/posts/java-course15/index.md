@@ -67,9 +67,9 @@ comment: true
 
     *   远程存储配置（对接 Thanos/Cortex，解决长期存储问题）
 
-*   基础配置验证：访问 Prometheus UI（:9090）、Grafana UI（:3000）
+*   基础配置验证：访问 Prometheus UI（`:9090`）、Grafana UI（`:3000`）
 
-### 二、Prometheus核心原理深度剖析与实战：数据采集、存储、PromQL、告警体系
+### 二、Prometheus核心原理与实战：数据采集、存储、PromQL、告警体系
 
 #### 1. 数据采集：Exporter 与数据暴露
 
@@ -333,7 +333,7 @@ Prometheus的每一条时序数据（称为一个“样本”）由4个核心部
 | Metric名称     | 标识指标的“类型”，需符合“字母开头+数字/下划线/冒号”规则，描述指标含义       | `node_cpu_seconds_total`（Node Exporter的CPU总占用时间指标）、`http_requests_total`（HTTP请求总数指标） |
 | 标签（Labels） | 键值对（Key-Value），用于“维度区分”，是PromQL查询和聚合的核心依据           | `cpu="0"`（CPU核心0）、`mode="idle"`（CPU空闲状态）、`instance="192.168.1.100:9100"`（被监控节点IP+端口）、`status="200"`（HTTP响应状态码） |
 | 样本值（Value） | 指标的具体数值，为64位浮点数                                               | `125.5`（如CPU空闲时间125.5秒）、`3890`（如HTTP请求总数3890次）       |
-| 时间戳（Timestamp） | 样本采集的时间，精确到毫秒（ms），由Prometheus Server在拉取时自动生成       | `1690000000000`（对应2023-07-22 12:26:40）                           |
+| 时间戳（Timestamp） | 样本采集的时间，精确到毫秒（ms），由Prometheus Server在拉取时自动生成       | `1690000000000`（对应2023-07-22 12：26：40）                           |
 
 #### 2. 数据模型的核心优势
 - 多维度灵活查询：通过标签（Labels）可快速筛选特定维度的数据，例如查询“192.168.1.100节点CPU核心0的空闲时间”，PromQL语句为：`node_cpu_seconds_total{instance="192.168.1.100:9100", cpu="0", mode="idle"}`；  
@@ -622,7 +622,7 @@ Thanos 是 Prometheus 生态的长期存储方案，支持将 Prometheus 数据�
 部署完成后，需通过 UI 确认 Prometheus 和 Grafana 服务正常运行，避免后续采集/可视化环节报错。
 
 
-#### 1. 验证 Prometheus Server（访问 :9090）
+#### 1. 验证 Prometheus Server（访问 `:9090`）
 通过浏览器访问 `http://[服务器IP]:9090`（如 `http://192.168.1.100:9090`），进入 Prometheus 原生 UI：
 
 ###### 核心验证点：
@@ -630,7 +630,7 @@ Thanos 是 Prometheus 生态的长期存储方案，支持将 Prometheus 数据�
 - 指标查询：在顶部查询框输入 `up`（`up` 是 Prometheus 内置指标，1 表示目标存活，0 表示离线），点击 `Execute`，若返回 `up{job="prometheus",instance="localhost:9090"} 1`，说明 Prometheus 自身监控正常。
 
 
-#### 2. 验证 Grafana（访问 :3000）
+#### 2. 验证 Grafana（访问 `:3000`）
 通过浏览器访问 `http://[服务器IP]:3000`（如 `http://192.168.1.100:3000`），进入 Grafana 登录页面：
 
 ###### 核心验证点：
@@ -819,7 +819,7 @@ scrape_configs:
 |----------------------|----------------------------------------------------------------------|
 | `job_name`           | 采集任务的名称，会作为标签 `job="<job_name>"` 附加到所有拉取的指标中，用于区分不同类型的采集目标。 |
 | `scrape_interval`    | 该 Job 的采集间隔，可覆盖 `global` 中的默认值（如系统指标需高频采集，设为 10s；业务指标可设为 30s）。 |
-| `static_configs.targets` | 静态指定采集目标列表（IP:端口），适合目标地址固定的场景（如物理机、固定云服务器）。 |
+| `static_configs.targets` | 静态指定采集目标列表（IP：端口），适合目标地址固定的场景（如物理机、固定云服务器）。 |
 | `relabel_configs`    | 标签重写规则，支持新增、修改、删除指标的标签（如提取 IP 作为 `server_ip` 标签，方便后续筛选）。 |
 | `honor_labels`       | 当采集目标的指标标签与 Prometheus 自动添加的标签（如 `instance`）冲突时，是否保留目标的标签（PushGateway 场景需设为 `true`）。 |
 
@@ -857,7 +857,7 @@ Prometheus 本地存储依赖内置的 TSDB 模块，采用“块存储（Block-
 - 存储目录：压缩后的块存储在 `data/blocks` 目录，每个块是一个独立文件夹，包含：  
   - `meta.json`：块的元数据（时间范围、块大小、校验和等）；  
   - `index`：时序索引文件（映射 Metric + Labels 到具体样本的位置）；  
-  - `chunks`：样本数据文件（采用自定义压缩算法，压缩率可达 10:1~20:1）。
+  - `chunks`：样本数据文件（采用自定义压缩算法，压缩率可达 10：1~20：1）。
 
 #### 4. 阶段4：Retention（数据保留）
 - 作用：清理过期数据，避免本地磁盘被占满。  
@@ -992,7 +992,7 @@ PromQL 支持按“相对时间”或“绝对时间”筛选数据，默认查�
 
 ###### （2）绝对时间点
 格式：`@时间戳`（毫秒级），表示“指定时间点的样本”，需结合相对时间范围使用（定位该时间点前后的样本）。  
-- 示例：查询1699996800000（2023-11-14 00:00:00）这个时间点前后10秒的CPU数据  
+- 示例：查询1699996800000（2023-11-14 00：00：00）这个时间点前后10秒的CPU数据  
   `node_cpu_seconds_total{mode="idle"}[10s]@1699996800000`
 
 

@@ -30,7 +30,7 @@ Firefly 里三种「站宠」互斥：**SpritePet（spritesheet）**、Spine、L
 | Maid-DeepSeek-Whale | `maid-deepseek-whale` | 浏览态（非 `/posts/`） | v2 · **8×11** | 1536×2288 |
 | OpenPet DeepSeek | `openpet-deepseek` | 文章页 `/posts/*` | classic · **8×9** | 1536×1872 |
 
-格都是 192×208，九态动作行能对齐；差别在 Maid 多了第 9–10 行视线帧，OpenPet **没有**。
+格都是 192×208，九态动作行能对齐；差别在 Maid 多了第 9-10 行视线帧，OpenPet **没有**。
 
 ![并排预览：左 Maid，右 OpenPet](./images/fig-preview.jpg)
 

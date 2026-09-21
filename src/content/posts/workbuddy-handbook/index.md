@@ -45,11 +45,11 @@ comment: true
 
 企业侧：有行业私有资料时，场景更密。个人侧：最直接的入口仍是**蒸馏一本书**。文中还提到入驻 WorkBuddy 那篇在 AI 社群里被传[^missing-spread]。
 
-#### 小红书投流：S01–S10（从图抄）
+#### 小红书投流：S01-S10（从图抄）
 
 图题「三重验证筛选后」：约 65 个原始单元筛成 **10 个 Skill 候选**。
 
-![小红书投流蒸馏 S01–S10](./images/cangjie-skill-workbuddy-distill/fig-02-02-xhs-traffic-skills-s01-s10.jpg)
+![小红书投流蒸馏 S01-S10](./images/cangjie-skill-workbuddy-distill/fig-02-02-xhs-traffic-skills-s01-s10.jpg)
 
 | # | Skill（图面） | 核心能力（图面） |
 |---|---|---|

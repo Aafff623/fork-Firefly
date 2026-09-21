@@ -11374,7 +11374,7 @@ function createNoteElement(note) {
 
 ## 11.10 最佳实践总结及扩展建议
 
-### 最佳实践
+### 推荐做法
 
 1. 优先使用DTO模式：通过专门的DTO类定义API响应格式，避免直接序列化实体对象
 2. 合理设计关联关系：根据业务需求选择合适的加载策略（EAGER/FETCH）
@@ -11428,7 +11428,7 @@ function createNoteElement(note) {
 * 从底部导航栏导航到其他页面
 
 
-## 12.2 掌握前端搜索功能的核心要点
+## 12.2 掌握前端搜索功能
 
 在网页中实现 `<input>` 搜索功能通常涉及以下几个核心步骤：用户输入监听、搜索逻辑处理、结果展示和交互反馈。以下从前端实现到后端交互的完整流程进行解析，并提供代码示例。
 
@@ -12717,7 +12717,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 ```
 
 
-## 13.6 掌握无刷新更新点赞前端设计的核心要点，精通data属性用法
+## 13.6 掌握无刷新更新点赞前端设计，精通data属性用法
 
 ### 前端实现
 
@@ -13151,7 +13151,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 ## 13.9 最佳实践及优化建议
 
-### 最佳实践
+### 推荐做法
 
 #### 1. 数据类型转换
 - `data-*` 属性存储的是字符串类型
@@ -13351,7 +13351,7 @@ public interface CommentRepository extends Repository<Comment, Long> {
 ```
 
 
-## 14.4 掌握点评论服务设计的核心要点
+## 14.4 掌握点评论服务设计
 
 #### 1. 评论服务接口
 ```java
@@ -14612,7 +14612,7 @@ function renderReplies(replies) {
 
 ## 14.14 最佳实践及优化建议
 
-### 最佳实践
+### 推荐做法
 
 1. 优先使用DTO：通过DTO控制序列化的数据，避免暴露敏感信息和循环引用
 2. 多级评论的实现：不管多少层，最终只呈现为两层

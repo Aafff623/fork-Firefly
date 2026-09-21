@@ -30,7 +30,7 @@ comment: true
   结合全栈效率与业务需求，选择Spring Cloud主流组件（以Spring Cloud Alibaba为例，适配国内生态）：
   | 功能场景         | 核心组件                | 全栈价值                                                                 |
   |------------------|-------------------------|--------------------------------------------------------------------------|
-  | 服务注册与发现   | Nacos                   | 后端服务自动注册，前端/BFF层可通过服务名动态调用，无需硬编码IP:端口       |
+  | 服务注册与发现   | Nacos                   | 后端服务自动注册，前端/BFF层可通过服务名动态调用，无需硬编码IP：端口       |
   | 配置中心         | Nacos Config            | 全栈配置统一管理（如前端接口前缀、后端限流阈值），支持动态刷新           |
   | 网关             | Spring Cloud Gateway    | 统一入口，处理路由、限流、跨域、认证，前端只需对接网关地址，无需关注后端服务分布 |
   | 服务调用         | OpenFeign               | 后端服务间声明式调用，简化代码；前端通过网关调用，无需感知底层调用逻辑     |
@@ -372,7 +372,7 @@ Spring Cloud的生态组件可按微服务架构的核心场景划分为以下�
 
 | 核心场景         | 典型组件                  | 核心功能                                                                 |
 |------------------|---------------------------|--------------------------------------------------------------------------|
-| 服务注册与发现 | Eureka、Consul、Zookeeper | 微服务实例自动注册到注册中心，其他服务可通过服务名获取实例地址，无需硬编码IP:端口 |
+| 服务注册与发现 | Eureka、Consul、Zookeeper | 微服务实例自动注册到注册中心，其他服务可通过服务名获取实例地址，无需硬编码IP：端口 |
 | 配置中心     | Spring Cloud Config       | 集中管理所有微服务的配置文件，支持配置动态刷新，避免修改配置后重启服务       |
 | 服务调用     | Spring Cloud OpenFeign    | 声明式HTTP客户端，简化服务间的远程调用（底层基于Ribbon实现负载均衡）       |
 | 负载均衡     | Spring Cloud LoadBalancer、Ribbon | 对服务调用进行负载均衡，将请求分发到多个服务实例，提升系统可用性           |
@@ -1104,7 +1104,7 @@ public class RestTemplateConfig {
 }
 ```
 
-在业务代码中使用RestTemplate调用服务（直接使用服务名，而非IP:端口）：
+在业务代码中使用RestTemplate调用服务（直接使用服务名，而非IP：端口）：
 ```java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

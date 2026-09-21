@@ -316,7 +316,7 @@ Standard 和 SpringStandard 方言在用法上几乎相同，不同之处在于 
 	* 布尔否定（一元运算符）：`!`、`not`
 * 比较和等价：
 	* 比较：`>`、`<`、`>=`、`<=`（`gt`、`lt`、`ge`、`le`）
-	* 等价:`==`、`!=`（`eq`、`ne`）
+	* 等价：`==`、`!=`（`eq`、`ne`）
 * 条件运算符：
 	* If-then：`(if) ? (then)`
 	* If-then-else：`(if) ? (then) : (else)`
@@ -433,10 +433,10 @@ ${person.createCompleteNameWithSeparator('-')}
 * `#ctx`：上下文对象。
 * `#vars`：上下文变量。
 * `#locale`：上下文区域设置。
-* `#request`:HttpServletRequest 对象(仅在 Web 上下文中）。
+* `#request`：HttpServletRequest 对象(仅在 Web 上下文中）。
 * `#response`：HttpServletResponse 对象(仅在 Web 上下文中）。
-* `#session`:HttpSession对象(仅在 Web 上下文中）。
-* `#servletContext`:ServletContext对象(仅在 Web 上下文中）。
+* `#session`：HttpSession对象(仅在 Web 上下文中）。
+* `#servletContext`：ServletContext对象(仅在 Web 上下文中）。
 
 所以我们可以这样做：
 
@@ -456,7 +456,7 @@ Established locale country: <span th:text="${#locale.country}">US</span>.
  * `#uris`: 用于转义 URL/URI 部分的方法
  * `#conversions`: 执行已配置的 *conversion service*
  * `#dates`: `java.util.Date`对象的方法，比如格式化，组件提取等
- * `#calendars`:类似于`＃dates`，但是对应于`java.util.Calendar`对象
+ * `#calendars`：类似于`＃dates`，但是对应于`java.util.Calendar`对象
  * `#numbers`: 格式化数字对象的方法。
  * `#strings`: `String`对象的方法，包括 contains、startsWith、prepending/appending等
     等等
@@ -466,7 +466,7 @@ Established locale country: <span th:text="${#locale.country}">US</span>.
  * `#lists`: list 方法
  * `#sets`: set 方法
  * `#maps`: map 方法
- * `#aggregates`:在数组或集合上创建聚合的方法
+ * `#aggregates`：在数组或集合上创建聚合的方法
  * `#ids`: 用于处理可能重复的id属性的方法（例如，作为迭代的结果）。
 
 下面是一个格式化日期的例子：
@@ -983,44 +983,44 @@ HTML具有布尔属性的概念，没有值的属性意味着该值为“true”
 <table>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><code>th:async</code></td>
-<td style="text-align: left;"><code>th:autofocus</code></td>
-<td style="text-align: left;"><code>th:autoplay</code></td>
+<td style="text-align: left;"><code>th&#58;async</code></td>
+<td style="text-align: left;"><code>th&#58;autofocus</code></td>
+<td style="text-align: left;"><code>th&#58;autoplay</code></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>th:checked</code></td>
-<td style="text-align: left;"><code>th:controls</code></td>
-<td style="text-align: left;"><code>th:declare</code></td>
+<td style="text-align: left;"><code>th&#58;checked</code></td>
+<td style="text-align: left;"><code>th&#58;controls</code></td>
+<td style="text-align: left;"><code>th&#58;declare</code></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>th:default</code></td>
-<td style="text-align: left;"><code>th:defer</code></td>
-<td style="text-align: left;"><code>th:disabled</code></td>
+<td style="text-align: left;"><code>th&#58;default</code></td>
+<td style="text-align: left;"><code>th&#58;defer</code></td>
+<td style="text-align: left;"><code>th&#58;disabled</code></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>th:formnovalidate</code></td>
-<td style="text-align: left;"><code>th:hidden</code></td>
-<td style="text-align: left;"><code>th:ismap</code></td>
+<td style="text-align: left;"><code>th&#58;formnovalidate</code></td>
+<td style="text-align: left;"><code>th&#58;hidden</code></td>
+<td style="text-align: left;"><code>th&#58;ismap</code></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>th:loop</code></td>
-<td style="text-align: left;"><code>th:multiple</code></td>
-<td style="text-align: left;"><code>th:novalidate</code></td>
+<td style="text-align: left;"><code>th&#58;loop</code></td>
+<td style="text-align: left;"><code>th&#58;multiple</code></td>
+<td style="text-align: left;"><code>th&#58;novalidate</code></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>th:nowrap</code></td>
-<td style="text-align: left;"><code>th:open</code></td>
-<td style="text-align: left;"><code>th:pubdate</code></td>
+<td style="text-align: left;"><code>th&#58;nowrap</code></td>
+<td style="text-align: left;"><code>th&#58;open</code></td>
+<td style="text-align: left;"><code>th&#58;pubdate</code></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>th:readonly</code></td>
-<td style="text-align: left;"><code>th:required</code></td>
-<td style="text-align: left;"><code>th:reversed</code></td>
+<td style="text-align: left;"><code>th&#58;readonly</code></td>
+<td style="text-align: left;"><code>th&#58;required</code></td>
+<td style="text-align: left;"><code>th&#58;reversed</code></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>th:scoped</code></td>
-<td style="text-align: left;"><code>th:seamless</code></td>
-<td style="text-align: left;"><code>th:selected</code></td>
+<td style="text-align: left;"><code>th&#58;scoped</code></td>
+<td style="text-align: left;"><code>th&#58;seamless</code></td>
+<td style="text-align: left;"><code>th&#58;selected</code></td>
 </tr>
 </tbody>
 </table>

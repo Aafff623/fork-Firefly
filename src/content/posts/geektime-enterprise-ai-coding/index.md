@@ -47,7 +47,7 @@ comment: true
 
 ![四个实战项目](./images/s33-projects.jpg)
 
-### 项目一 OryxOS：用 SDD 做 AI 智能体操作系统（第 2–5 周）
+### 项目一 OryxOS：用 SDD 做 AI 智能体操作系统（第 2-5 周）
 
 从零造一个系统底座，是 SDD + Harness 最完整的一次实战。
 
@@ -56,15 +56,15 @@ comment: true
 - **第 4 周 记忆与工具体系**：MCP 集成（Client / Server / Tool / Resource / Prompt 五个核心抽象），既给 OryxOS 接入 MCP Server，也把 OryxOS 自己包装成 MCP Server 让别的工具调用；多渠道接入做统一适配层（REST API 走 OpenAPI 规格驱动，IM 渠道 Telegram/Slack 任选，Webhook vs 长连接的权衡），目标是新渠道 30 行代码接入；工作流编排支持并行搜索和多步推理。同时配系统级 Permission + Hooks 安全网，跑沙盒安全测试套件（边界 / 注入 / 资源限制测试）。
 - **第 5 周 端到端集成与发布**：补齐可观测性（Agent 行为追踪、模型调用的成本/延迟/错误率监控、渠道流量监控），处理"最后 10%"（边界情况、错误恢复、graceful shutdown）；跑通真实业务场景的端到端测试（客服 Agent / 代码 review Agent 任选），用 Docker / K8s 部署上云。
 
-### 项目二 When：用 SDD 从 0 到 1 做分布式延时投递服务（第 6–8 周）
+### 项目二 When：用 SDD 从 0 到 1 做分布式延时投递服务（第 6-8 周）
 
 这是 0→1 写自己代码的项目，Subagents 并行实现的主场。需求场景很具体：支撑订单超时、优惠券过期这类延时任务。
 
 - **第 6 周 需求与方案**：体验"从模糊想法到清晰规格"的完整 SDD 起手。技术选型讲得很实在——etcd vs Consul vs ZooKeeper（选 etcd 的真实理由）、Redis vs RocksDB（为什么用 Redis）、gRPC vs HTTP（选 gRPC 的工程权衡）、多层时间轮算法的实现选择，外加企业级需求文档怎么定 SLA。
 - **第 7 周 单节点版本**：时间轮算法原理（单层 vs 多层的精度/内存/CPU 权衡）、单机版架构（gRPC server + 时间轮调度器 + Redis 持久化）。这周重点演示 **4 个 Subagent 并行实现 4 个核心模块**：多层时间轮、gRPC service 定义 + handler、Redis 索引与数据分离存储层、为前三个模块生成单元测试。引入 Worktrees 做并行写代码的隔离，主对话做架构决策 + 集成 review。同时把时间轮实现封装成可复用 Skill，把常用 prompt 做成 Slash Command，并讲清 Skills（能力）vs Slash Commands（模板）的边界、咨询模式 vs 执行模式的切换。
-- **第 8 周 集群化上线**：基于 etcd 的节点注册、Controller 选主、watch 机制；时间轮在节点间的动态分配、扩缩容、主从故障切换；用 Spec-Kit 做"集群化"这次大改造的增量 SDD。分布式最常见的 4 类故障（脑裂、心跳风暴、时钟漂移、级联失败）。配 Permission + 5–7 个关键 Hooks 的完整安全网；用 AI 快速搭内置管理页面（任务可视化 + 集群状态 + 节点负载）；可观测用 Prometheus 指标 + 日志规范 + 链路追踪；**Headless / Print Mode**（`claude -p "..."`）把"代码改动 → 跑混沌测试 → 报告"做成脚本接进 CI。
+- **第 8 周 集群化上线**：基于 etcd 的节点注册、Controller 选主、watch 机制；时间轮在节点间的动态分配、扩缩容、主从故障切换；用 Spec-Kit 做"集群化"这次大改造的增量 SDD。分布式最常见的 4 类故障（脑裂、心跳风暴、时钟漂移、级联失败）。配 Permission + 5-7 个关键 Hooks 的完整安全网；用 AI 快速搭内置管理页面（任务可视化 + 集群状态 + 节点负载）；可观测用 Prometheus 指标 + 日志规范 + 链路追踪；**Headless / Print Mode**（`claude -p "..."`）把"代码改动 → 跑混沌测试 → 报告"做成脚本接进 CI。
 
-### 项目三 DifyPro：用 AI 反推整体逻辑给 Dify 做企业级二开（第 9–10 周）
+### 项目三 DifyPro：用 AI 反推整体逻辑给 Dify 做企业级二开（第 9-10 周）
 
 这是改别人代码的项目，AI 反推整体逻辑的主场。Dify 是 2026 年企业搭内部 AI 平台的事实标准，但社区版有真实能力缺口：SSO、多租户、LLM 治理、可观测、审计。
 
@@ -79,7 +79,7 @@ comment: true
 
 ![学完你将带走](./images/s33-takeaway.jpg)
 
-课程收尾会把四种工程姿态沉淀下来：0→1 / Fork 改造 / 混合姿态 / 真实开源贡献；复盘个人 CLAUDE.md / Skills / Slash Commands / Subagents 库，分清哪些是项目专属、哪些能变成"个人沉淀库"；并指向 Context Engineering 这个接下来 1–2 年最值得深入的方向。
+课程收尾会把四种工程姿态沉淀下来：0→1 / Fork 改造 / 混合姿态 / 真实开源贡献；复盘个人 CLAUDE.md / Skills / Slash Commands / Subagents 库，分清哪些是项目专属、哪些能变成"个人沉淀库"；并指向 Context Engineering 这个接下来 1-2 年最值得深入的方向。
 
 ## 技术栈清单（这门课涉及的）
 

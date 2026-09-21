@@ -199,7 +199,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 
 ## MCP 服务开发
 
-鱼皮这篇是 40* 的 MCP 主菜：讲清 Model Context Protocol（Anthropic 开放标准）、客户端—服务器架构，并以 **面试鸭搜题 MCP** 走通服务端 + 客户端。
+鱼皮这篇是 40* 的 MCP 主菜：讲清 Model Context Protocol（Anthropic 开放标准）、客户端-服务器架构，并以 **面试鸭搜题 MCP** 走通服务端 + 客户端。
 
 **STDIO（本地）**：Spring AI `spring-ai-mcp-server-spring-boot-starter`，禁用 Web、`stdio: true`，`@Tool` 暴露业务能力，`ToolCallbackProvider` 注册；客户端用 `mcp-servers-config.json` 拉起 JAR，ChatClient 挂 `defaultTools`。
 
@@ -281,7 +281,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 | 没灵感 | 10 项目灵感大全（约 100 个点子） |
 | 企业级 / 简历项目 | 进阶两篇 + 智能体目录里带「进阶」的 |
 
-## 主线目录（00–10）
+## 主线目录（00-10）
 
 | 章 | 带走什么 | 原文 |
 |---|---|---|
