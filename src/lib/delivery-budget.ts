@@ -96,6 +96,33 @@ export const DELIVERY_BUDGETS: Readonly<Record<PageClass, DeliveryBudget>> = {
 	},
 };
 
+/**
+ * 首页装饰资产分类预算（04 票口径，2026-10-19）。
+ *
+ * 按 dist 相对路径模式分四类。这些上限的实际作用是**防回归**：桌宠
+ * spritesheet、横幅轮播、氛围图切换当前都由 JS 运行时按需加载（boot
+ * secondary / preloadNextSlide / LCP 后注入），不进 HTML 静态引用；
+ * 将来谁把它们改成首屏静态引用（eager / preload / 直接 src），这里会抓住。
+ * 阈值 = 2026-10-19 实测（静态引用 atmosphere 252KB / video 1510KB /
+ * pets 0 / banner 0）+ 余量。
+ */
+export const HOME_DECORATIVE_BUDGETS: Readonly<Record<string, number>> = {
+	pets: 1300 * 1024,
+	banner: 600 * 1024,
+	atmosphere: 600 * 1024,
+	video: 1600 * 1024,
+};
+
+/** 装饰资产分类：命中返回类名，未命中返回 null（非装饰资产不参与本预算）。 */
+export function classifyDecorative(ref: string): string | null {
+	if (ref.includes("/pets/")) return "pets";
+	if (ref.includes("/assets/banner") || ref.includes("wallpaper"))
+		return "banner";
+	if (ref.includes("/assets/atmosphere/")) return "atmosphere";
+	if (/\.(mp4|webm)(\?|$)/.test(ref)) return "video";
+	return null;
+}
+
 export type AssetAllowlistEntry = Readonly<{
 	/** 匹配 dist 相对路径（正斜杠）。`re:` 前缀视为正则，否则按子串包含匹配。 */
 	match: string;

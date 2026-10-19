@@ -40,8 +40,8 @@
 ## Decisions so far
 
 - **01 参考站方向 = 选 (A)**：只抄资产纪律/同意门控/可读回退，渲染模式保持 Astro SSG。依据：参考站作者本人主张 prerender；02/03 实测证实差距在资产不在框架；换 SPA 壳的代价（island/Swup/发文流水线）不可补偿。重开 (B) 的条件：Firefly 要长应用平台能力，作为新 effort。
-- **05 内容分仓 = 做存量图迁 R2，public 不动**：仓 tracked 950MB（posts 650 + public 275）、pack 1.64GB，参考站 300MB 理由成立且更严重；但增量已治理（post-publish 红线「大图走 R2」），问题全在历史存量。第一步存量 posts 图批量上 R2 + 改写引用（实施另开 task 票，先解决 validate/lqips/cascade 三个适配点）；不引入 submodule（多 agent 协同成本）。
-- **04 装饰资产预算 = 首屏窗口 ≤ 2.5MB 推荐口径**：分类上限 视频 1.3MB / 宠物 1.2MB 且 idle 加载 / 横幅预载当前+下一张 ≤0.5MB / 氛围图首屏 3 张 ≤0.45MB；门禁化进 check-delivery-budget。**待园主确认：宠物延后到 idle 是否可接受（唯一拍板点）**。
+- **04 装饰资产预算 = 门禁已落地，处置项核查后均为现状**：代码核查确认四项加载纪律（视频 preload=none+LCP 后注入 / 氛围图当前+下一张 / 横幅 preloadNextSlide / 宠物 boot secondary 延后）均已实现，无需改造；新增 `HOME_DECORATIVE_BUDGETS` 四类路径断言防回归（pets 1.3M / banner 600K / atmosphere 600K / video 1.6M，当前实测 0/0/252K/1510K）。剩余项待园主：氛围图转 avif、spritesheet 降规格。
+- **05 内容分仓 = 做存量图迁 R2，public 不动**：仓 tracked 950MB（posts 650 + public 275）、pack 1.64GB，参考站 300MB 理由成立且更严重；但 post-publish 红线确立后增量图已全走 R2，问题全在历史存量。实施票 `08-task-migrate-post-images-r2`（先解决 validate/lqips/cascade 三个适配点；删除边界默认只出 index 不做历史重写）；不引入 submodule（多 agent 协同成本）。
 
 ## Research so far
 

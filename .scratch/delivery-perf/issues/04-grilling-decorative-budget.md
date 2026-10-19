@@ -1,7 +1,7 @@
 # 首页装饰资产预算：首屏允许加载多少
 
 Type: grilling
-Status: resolved（推荐口径已定，宠物取舍待园主点头；依据见下）
+Status: resolved（2026-10-19；门禁已落地，实施项核查后大多为现状）
 
 ## Question
 
@@ -20,29 +20,35 @@ Status: resolved（推荐口径已定，宠物取舍待园主点头；依据见�
 
 对 dist 首页 html 的实测：`<link rel=preload>` 只有 3 个字体；`loading="eager"` 图片 0 张（列表卡已全 lazy）；html 直接引用的只有背景视频（gn-01.mp4 1.5MB）。横幅 10 张、氛围图 11 张、宠物 spritesheet 全部由 `banner-carousel.js` / `AtmosphereLayer` / `SpritePet` 在运行时拉取。**这意味着预算门禁必须按「首屏时间窗内实际发出的请求」统计（delivery-budget 已有产物级框架），不能只查 html 引用。**
 
-### 预算决议（推荐口径，传输字节为验收值）
+### 代码核查结论（2026-10-19，逐项读过实现）：四项加载纪律均已是现状
 
-**首屏窗口（页面加载后 0–3s）装饰资产传输总量 ≤ 2.5 MB**（当前约 8.4MB 解压 / 传输口径约 5MB+，砍 40–70%），分类上限：
+| 项 | 票面建议 | 代码现状 |
+|---|---|---|
+| 视频 preload=none | 改 preload + poster | **已实现**：`GardenNote.astro` 两个 video 均 `preload="none"`，mp4 走 `data-src` + LCP 落定（PerformanceObserver，兜底 8s）后才 `v.src` 注入播放；`BackgroundPlayer` 同样 preload=none |
+| 氛围图只加载当前+下一张 | 首屏 3 张 | **已实现且更严**：`AtmosphereLayer.astro` `preloadTarget = currentActive + 1`，非当前+下一张跳过；初始只 preload(1)，随切换再预载下一张 |
+| 横幅只预载当前+下一张 | 同左 | **已实现**：`banner-carousel.js` `preloadNextSlide(currentIndex)`，只在切换时预载下一张 |
+| 宠物延后到 idle | 首屏窗口外 | **已实现（机制不同但达成）**：`SpritePet` 挂 `boot-schedule` 的 secondary phase（banner ready + 顶部保持期后才触发），spritesheet 2.5MB 不进首屏关键路径；35KB chunk 为 `client:only` 静态下载（island 固有行为，改 client:idle 有 SSR 风险，不动） |
 
-| 资产 | 当前 | 处置 | 预算 |
-|---|---|---|---|
-| 宠物 spritesheet | 2,538 KB | **保留功能、延后加载 + 评估降规格**：`client:load` 改 `client:idle`（03 票可延后项）；分辨率从当前降到「桌面 1.5x 逻辑像素」所需（约 1,200 KB 级），或拆「常用帧 + 冷门帧」两个文件按需拉 | ≤ 1,200 KB，且 idle 后加载 |
-| 横幅 avif ×10 | ~2,479 KB | **只预载当前 + 下一张**，其余轮播切换时才拉（carousel 已有 next 概念，预取窗口从 10 张收到 2 张） | ≤ 500 KB |
-| 横幅逐字艺术图 ×31 webp | 未计入上表 | hover 弹图按需（只对 hover 的那张发请求），当前行为若已是按需则保持 | 首屏 0（仅交互时） |
-| 氛围图 jpg ×11 | ~1,602 KB | **首屏只加载前 3 张**（视口上方），其余随滚动 lazy；jpg 可评估转 avif（11 张省 ~40%） | ≤ 450 KB |
-| gn-*.mp4 背景视频 | 1,278–1,510 KB | `preload="none"` + 首帧 poster 占位，可见或交互后再播；若「花园note」是核心氛围则保留自动播但只留 1 个视频 | ≤ 1,300 KB 且 preload=none |
+即：**10-18 基线里「首屏 8.4MB 装饰资产」的加载纪律问题，代码已在后续迭代中逐项修掉**；本票不需要再做资产处置改造。
 
-合计约 3.4MB 上限（视频 1.3 + 宠物 1.2 + 横幅 0.5 + 氛围 0.45），**超出部分一律移出首屏窗口**。
+### 门禁化（本轮已落地）
 
-### 门禁化（可验收）
+`src/lib/delivery-budget.ts` 新增 `HOME_DECORATIVE_BUDGETS` + `classifyDecorative()`；`scripts/check-delivery-budget.ts` 对 home 页面按四类路径模式断言：
 
-`scripts/check-delivery-budget.ts` 已按「页面分类 × 资产归类」做产物断言（07 票的框架）。加一条：**首页的 pets/banner/atmosphere/video 四类资产合计字节 ≤ 阈值**，白名单沿用 `ASSET_ALLOWLIST` 登记例外。阈值先按上述分类上限取整落地，后续按实测收紧。
+| 类 | 上限 | 当前实测 |
+|---|---|---|
+| pets | 1.3 MB | 0（运行时加载） |
+| banner | 600 KB | 0（运行时加载） |
+| atmosphere | 600 KB | 252 KB |
+| video | 1.6 MB | 1510 KB（gn-01.mp4 data-src，LCP 后加载） |
 
-### 待园主确认（唯一需要拍板的点）
+上限的实际作用是**防回归**：谁把运行时按需加载的装饰资产改成首屏静态引用（eager/preload/直接 src），门禁即红。当前 865 页 0 违规。
 
-1. **宠物延后到 idle**：桌宠是站点招牌，加载时机从「首屏同步」改「空闲后约 1–2s」是否可接受？功能不变，只是晚一点出现。若园主要求「打开就见」，则宠物预算不能砍，总预算上调到 4MB——但这会让「≤2.5MB」目标名存实亡，需明确取舍。
-2. **氛围图 jpg → avif**：涉及 11 个文件重编码（质量参数要园主过目一张对比图）。
-3. **视频自动播保留与否**：花园 note 视频是内容还是氛围。
+### 剩余项（都需要园主点头，不在本轮范围）
+
+1. **氛围图 jpg → avif**：11 张重编码预计省 ~40%，需园主先过目一张对比图再批量。
+2. **横幅 avif 是否再降一档**：当前 10 张合计 ~2.5MB 但按需加载，暂不动。
+3. spritesheet 降规格（2538KB → ~1200KB）：需园主确认画质可接受度；当前已不在首屏窗口，优先级低。
 
 ### 不做清单（边界）
 

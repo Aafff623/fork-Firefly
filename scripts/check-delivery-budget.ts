@@ -16,12 +16,13 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import {
-	ASSET_ALLOWLIST,
 	type AssetKind,
 	classifyAsset,
+	classifyDecorative,
 	classifyPage,
 	DELIVERY_BUDGETS,
 	extractAssetRefs,
+	HOME_DECORATIVE_BUDGETS,
 	MAX_ASSET_BYTES,
 	matchAllowlist,
 	type PageClass,
@@ -126,6 +127,30 @@ function main(): void {
 			byKind[kind] = (byKind[kind] ?? 0) + bytes;
 			counted += 1;
 			heaviest.push({ ref, bytes });
+		}
+
+		// 首页装饰资产分类预算（04 票）：防回归——运行时按需加载的装饰资产
+		// 一旦被改成首屏静态引用，这里抓住。阈值见 HOME_DECORATIVE_BUDGETS。
+		if (pageClass === "home") {
+			const byDecorative: Record<string, number> = {};
+			for (const ref of refs) {
+				const decorative = classifyDecorative(ref);
+				if (!decorative) continue;
+				const absolute = resolveRef(ref);
+				if (!absolute) continue;
+				byDecorative[decorative] =
+					(byDecorative[decorative] ?? 0) + statSync(absolute).size;
+			}
+			for (const [cat, limit] of Object.entries(HOME_DECORATIVE_BUDGETS)) {
+				const actual = byDecorative[cat] ?? 0;
+				if (actual > limit) {
+					violations.push({
+						page: url,
+						kind: `装饰资产 ${cat}`,
+						detail: `${formatBytes(actual)} > ${formatBytes(limit)}（运行时按需加载的资产不应进首屏静态引用）`,
+					});
+				}
+			}
 		}
 
 		const inlineTotal = inlineBytes.script + inlineBytes.style;
