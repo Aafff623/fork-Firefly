@@ -1,7 +1,7 @@
 # 存量正文图迁 R2：650MB → tracked ~300MB
 
 Type: task
-Status: resolved（2026-10-19 实施完成，commit `64dc41f5` 待园主授权推送）
+Status: resolved（2026-10-19；复核修复见 `d6b6cd86..51f3dbe6`，待园主授权推送）
 
 ## Question
 
