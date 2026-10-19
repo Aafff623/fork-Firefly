@@ -6,8 +6,9 @@
 @import './transition.css';
 @import './curtain-focus.css';
 @import './custom-scrollbar.css';
-@import './gallery.css';
-@import './anime-bangumi.css';
+/* gallery.css / anime-bangumi.css / hero-bg.css 不再经 main.css 全站携带：
+   分别仅相册 / 追番·番剧 / 动态·友邻·留言页需要，改由各自页面级引入。
+   categories.css 保留在此：CategoryBar 是全站顶栏组件。 */
 @import './tags.css';
 @import './display-settings.css';
 @import './categories.css';
@@ -18,8 +19,8 @@
 @import './text-voice.css';
 @import './announcement-press.css';
 @import './gift-surprise.css';
-@import './hero-bg.css';
-@import './ask.css';
+/* ask.css 不再经 main.css 全站携带：仅 /ask 页面需要，由 src/pages/ask.astro 页面级引入 */
+/* hero-bg.css 不再经 main.css 全站携带：仅 dynamic / friends / guestbook 页面需要 */
 
 @plugin '@tailwindcss/typography';
 
