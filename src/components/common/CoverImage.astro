@@ -22,6 +22,8 @@ interface Props {
 	formats?: ImageFormat[];
 	loading?: "lazy" | "eager";
 	apiUrls?: string[];
+	/** 首访按启动节奏再插入真实 <img>；由 ImageWrapper 的 data-boot-defer 消费 */
+	bootDefer?: "main" | "secondary";
 }
 
 const {

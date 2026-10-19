@@ -67,10 +67,12 @@ if (process.env.NODE_ENV === "development") {
 // 供 /api/comment-image、/api/admin/pin 等 prerender=false 路由使用
 const adapter = cloudflare({
 	prerenderEnvironment: "node",
-	// dev 直出原图：默认的 cloudflare-binding 服务在本地走 image-transform-endpoint，
-	// 其 import "cloudflare:workers" 在 vite-node 上下文解析不了且无 IMAGES 绑定 → /_image/ 全 500。
-	// prod 构建不传该参数，走默认（构建期编译 + 运行期 IMAGES 绑定），行为不变。
-	...(process.env.NODE_ENV === "development" ? { imageService: "passthrough" } : {}),
+	// 图像：必须显式给 "compile"，否则适配器走 cloudflare-binding 分支**无条件覆写**
+	// config.image.service（见其 setImageConfig 的 switch），用户自定义的 service 会被丢掉。
+	// 只有 "compile" 分支才会看 hasUserImageService 并尊重用户提供的入口。
+	// 配合下面 image.service 指向 sharp 薄壳，构建期才真正做转换。
+	// dev 仍走 passthrough：本地无 IMAGES 绑定，走 transform-endpoint 会 import "cloudflare:workers" 失败。
+	imageService: process.env.NODE_ENV === "development" ? "passthrough" : "compile",
 });
 
 // https://astro.build/config
@@ -118,9 +120,6 @@ export default defineConfig({
 
 	adapter,
 
-	// EdgeOne CI 内存紧：限制并行预渲染，避免 exit 137（OOM/SIGKILL）
-	...(process.env.EDGEONE ? { build: { concurrency: 1 } } : {}),
-
 	// 本地 dev 绑定 IPv4：Node 默认仅监听 [::1]，浏览器 localhost(IPv4) 会拒连
 	server: {
 		host: "127.0.0.1",
@@ -128,6 +127,11 @@ export default defineConfig({
 
 	// 图像优化配置
 	image: {
+		// 构建期真正做转换。适配器默认走 workerd 图像服务，而那个服务的 transform
+		// 是原字节返回（故意的 no-op）；预渲染页面的图片在构建期就落成静态文件，
+		// 运行时的 IMAGES 绑定接不到，于是全站图片从不被处理。详见
+		// src/lib/image-service-sharp.mjs 顶部的完整证据链。
+		service: { entrypoint: "./src/lib/image-service-sharp.mjs" },
 		// Markdown 正文图片：constrained 让 Astro 自动补 srcset/sizes/width/height。
 		// 原先是 none（不生成 srcset），3000px 宽的正文插图会按原尺寸送到手机上。
 		// 组件（ImageWrapper 等）自行传 layout/widths 时以组件传入为准。

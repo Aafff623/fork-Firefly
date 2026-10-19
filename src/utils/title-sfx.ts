@@ -105,7 +105,7 @@ function arm() {
 	document.addEventListener("keydown", unlock, { capture: true });
 }
 
-function play(char: string, pan: number) {
+function play(char: string, pan: number): void {
 	if (!isEnabled()) return;
 	if (!ctx || !buffer || !master || ctx.state !== "running") {
 		/* 未就绪（首次手势尚未完成/曾瞬时失败）：悬停时补一次加载 */
@@ -144,9 +144,17 @@ function play(char: string, pan: number) {
 	active.push(source);
 }
 
-export const titleSfx = {
+type TitleSfxApi = {
+	init: () => void;
+	play: (char: string, pan: number) => void;
+	setEnabled: (value: boolean) => void;
+	isEnabled: () => boolean;
+	readonly ready: boolean;
+};
+
+export const titleSfx: TitleSfxApi = {
 	/** 幂等初始化：读取开关状态、挂首次手势解锁监听、跟随设置面板切换 */
-	init() {
+	init(): void {
 		if (typeof window === "undefined" || inited) return;
 		inited = true;
 		enabled = getStoredTitleSoundEnabled();
@@ -161,12 +169,12 @@ export const titleSfx = {
 		});
 	},
 	play,
-	setEnabled(value: boolean) {
+	setEnabled(value: boolean): void {
 		setTitleSoundEnabled(value);
 	},
 	isEnabled,
 	/** 供调试/验收：音频是否已解码且处于可播状态 */
-	get ready() {
+	get ready(): boolean {
 		return Boolean(buffer) && ctx?.state === "running";
 	},
 };
