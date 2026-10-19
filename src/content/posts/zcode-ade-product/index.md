@@ -35,7 +35,7 @@ comment: true
 初次打开 ZCode，是比较纯粹的集成工作台 ADE，像 Codex、Cursor 一样：  
 任务、权限、终端、浏览器、Review，全部围着同一个 Agent 转。
 
-![ZCode：对标国外御三家的国模 ADE 落地产品-2](./images/zcode-ade-2.webp)
+![ZCode：对标国外御三家的国模 ADE 落地产品-2](https://img.threetwoa.live/posts/zcode-ade-product/zcode-ade-2.webp)
 
 也就是说，它是一款对标目前主流 ADE 的国内落地化产品。  
 对智谱 GLM 系列做了深度的缓存优化和适配，还提供了 150% 的额度供应。
@@ -55,7 +55,7 @@ comment: true
 | **Hooks** | 在关键节点自动执行的脚本 | 用户级 hooks（项目级目前不执行） |
 | **Subagents** | 减少主会话开销的子智能体 | `~/.zcode/agents/<name>.md` |
 | **Plugin** | 把上面几样打包分发 | 插件市场 |
-![ZCode：对标国外御三家的国模 ADE 落地产品](./images/zcode-ade.webp)
+![ZCode：对标国外御三家的国模 ADE 落地产品](https://img.threetwoa.live/posts/zcode-ade-product/zcode-ade.webp)
 
 以下是老生常谈的几个模块，我们简单过一下。
 
@@ -89,7 +89,7 @@ description 有长度预算。超了之后，模型眼里就只剩一长串名�
 
 MCP（Model Context Protocol）把文件系统、浏览器、记忆、搜索、视觉等能力接到 Agent 上。
 
-![ZCode：对标国外御三家的国模 ADE 落地产品-2](./images/zcode-ade-2.webp)
+![ZCode：对标国外御三家的国模 ADE 落地产品-2](https://img.threetwoa.live/posts/zcode-ade-product/zcode-ade-2.webp)
 
 列表分两组：
 
@@ -273,7 +273,7 @@ flowchart TD
 
 ZCode 能扛长任务，窗口也够大，插件生态让它看起来和 Claude Code 很像表亲。  
 
-![ZCode：对标国外御三家的国模 ADE 落地产品-3](./images/zcode-ade-3.webp)
+![ZCode：对标国外御三家的国模 ADE 落地产品-3](https://img.threetwoa.live/posts/zcode-ade-product/zcode-ade-3.webp)
 
 真正影响一次排查能不能一次做对的，往往是路径有没有指对、技能名册有没有收干净、子代理有没有吃到足够的上下文和规则。
 

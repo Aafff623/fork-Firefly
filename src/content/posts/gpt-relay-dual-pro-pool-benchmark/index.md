@@ -57,7 +57,7 @@ OpenAI 兼容协议，Anthropic 的 `/v1/messages` 也通。模型白名单 7 �
 
 延迟随并发线性恶化，稳定吞吐只有 QPS 0.4 到 0.7。两个账号的配额就那么多，并发再高只是排队。判定口诀：单请求快、并发就垮，基本就是账号拼池。
 
-![并发的代价：左边顺畅，右边排队](./images/fig-concurrency.jpg)
+![并发的代价：左边顺畅，右边排队](https://img.threetwoa.live/posts/gpt-relay-dual-pro-pool-benchmark/fig-concurrency.jpg)
 
 ## 上下文倒是出奇地大
 
@@ -71,7 +71,7 @@ OpenAI 兼容协议，Anthropic 的 `/v1/messages` 也通。模型白名单 7 �
 
 **额度查不到。** 常见余额接口全是 502，像是把请求原样转给 chatgpt.com。买的 120 到 130 刀是号商服务费，不是 API 余额，只能问卖家或用到报错。
 
-![额度是个谜：秤盘空着，仪表没刻度](./images/fig-quota.jpg)
+![额度是个谜：秤盘空着，仪表没刻度](https://img.threetwoa.live/posts/gpt-relay-dual-pro-pool-benchmark/fig-quota.jpg)
 
 **明文 HTTP + key 已暴露。** 传输是明文，key 又在多个会话里出现过。当已泄露处理，用完轮换。
 

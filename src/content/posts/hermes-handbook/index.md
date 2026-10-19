@@ -24,7 +24,7 @@ comment: true
 
 很多人装完 Hermes，还是在对话框里当聊天机器人用。David André 那套讲法更狠：Agent 是一台要 7×24 跑的独立电脑，要从 VPS、入口、打扫、备份、看板、记忆一路装到暴露成 MCP。他自己靠 Agent 把 Vectl 做到约 **$155k ARR**，月 API 账单约 **$6k-10k**；钱砸得出去，是因为 harness 配全了，不是因为会多问两句 prompt。
 
-![7 Levels of Hermes Agent](./images/hermes-agent-seven-levels/fig-01-seven-levels.jpg)
+![7 Levels of Hermes Agent](https://img.threetwoa.live/posts/hermes-handbook/hermes-agent-seven-levels/fig-01-seven-levels.jpg)
 
 ### 梯子先看全貌
 
@@ -105,7 +105,7 @@ Hermes 当 MCP 服务器，给 Claude Code / Codex / Pi 调用：壳在外面，
 
 Hermes 同时吃 CLI 和消息端，斜杠却不全一样。需要时翻表，别凭记忆猜「这条消息端有没有」。
 
-![Hermes Agent 斜杠命令速查](./images/hermes-agent-seven-levels/fig-02-slash-commands.jpg)
+![Hermes Agent 斜杠命令速查](https://img.threetwoa.live/posts/hermes-handbook/hermes-agent-seven-levels/fig-02-slash-commands.jpg)
 
 | 标签 | 含义 |
 |---|---|

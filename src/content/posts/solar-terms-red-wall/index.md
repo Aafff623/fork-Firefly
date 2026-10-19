@@ -17,7 +17,7 @@ comment: true
 
 同日视觉品味旁链：[LogoLounge 2026 十五刀](/posts/logolounge-2026-trends/) · [六张海报刀法](/posts/creative-poster-gallery/)（均仍在草稿箱，本地可开）。
 
-![合集网格 A](./images/fig-grid-a.jpg)
+![合集网格 A](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-grid-a.jpg)
 
 ## 这套图到底好看在哪
 
@@ -41,7 +41,7 @@ comment: true
 
 做 PPT / 信息图时，记「有色窗 + 无色延展」这一刀就够。别去描人家的紫禁城细节——描了就是踩红线。
 
-![春分](./images/fig-chunfen.jpg)
+![春分](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-chunfen.jpg)
 
 ## 本批实际收了哪些
 
@@ -55,7 +55,7 @@ comment: true
 
 立春 · 立夏 · 立秋 · 立冬 · 雨水 · 芒种 · 处暑 · 大暑 · 惊蛰 · 夏至 · 白露 · 大雪
 
-![合集网格 B](./images/fig-grid-b.jpg)
+![合集网格 B](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-grid-b.jpg)
 
 ### 单幅代表
 
@@ -66,11 +66,11 @@ comment: true
 | 立春 | 有 |
 | 白露 | 有 |
 
-![霜降](./images/fig-shuangjiang.jpg)
+![霜降](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-shuangjiang.jpg)
 
-![立春](./images/fig-lichun.jpg)
+![立春](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-lichun.jpg)
 
-![白露](./images/fig-bailu.jpg)
+![白露](https://img.threetwoa.live/posts/solar-terms-red-wall/fig-bailu.jpg)
 
 ## 版权红线（别装没看见）
 

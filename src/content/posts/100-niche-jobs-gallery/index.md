@@ -21,7 +21,7 @@ comment: true
 
 ## 生活服务职业
 
-![生活服务职业](./images/fig-01-01.jpg)
+![生活服务职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-01-01.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -40,7 +40,7 @@ comment: true
 
 ## 特殊辅助职业
 
-![特殊辅助职业](./images/fig-02-02.jpg)
+![特殊辅助职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-02-02.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -59,7 +59,7 @@ comment: true
 
 ## 极端环境职业
 
-![极端环境职业](./images/fig-03-03.jpg)
+![极端环境职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-03-03.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -78,7 +78,7 @@ comment: true
 
 ## 动物相关职业
 
-![动物相关职业](./images/fig-04-04.jpg)
+![动物相关职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-04-04.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -97,7 +97,7 @@ comment: true
 
 ## 气味与味觉职业
 
-![气味与味觉职业](./images/fig-05-05.jpg)
+![气味与味觉职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-05-05.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -116,7 +116,7 @@ comment: true
 
 ## 交通与航运职业
 
-![交通与航运职业](./images/fig-06-06.jpg)
+![交通与航运职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-06-06.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -135,7 +135,7 @@ comment: true
 
 ## 影视与舞台职业
 
-![影视与舞台职业](./images/fig-07-07.jpg)
+![影视与舞台职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-07-07.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -154,7 +154,7 @@ comment: true
 
 ## 工业与检测职业
 
-![工业与检测职业](./images/fig-08-08.jpg)
+![工业与检测职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-08-08.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -173,7 +173,7 @@ comment: true
 
 ## 修复与传承职业
 
-![修复与传承职业](./images/fig-09-09.jpg)
+![修复与传承职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-09-09.jpg)
 
 | 职业 | 一句话 |
 |---|---|
@@ -192,7 +192,7 @@ comment: true
 
 ## 海洋与水下职业
 
-![海洋与水下职业](./images/fig-10-10.jpg)
+![海洋与水下职业](https://img.threetwoa.live/posts/100-niche-jobs-gallery/fig-10-10.jpg)
 
 | 职业 | 一句话 |
 |---|---|

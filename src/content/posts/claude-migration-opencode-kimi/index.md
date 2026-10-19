@@ -96,7 +96,7 @@ disabled = [
 
 MCP 启用只留 tavily / MiniMax / minimax-coding。「看图片」只留内置 ReadMediaFile。**338 个 skill 灌进系统提示，跟让一个程序员同时盯 338 个屏幕没区别**，注意力全被稀释。砍完反而好用。过载治理这事，Kimi 靠黑名单打出来了 (￣▽￣)
 
-![过载 vs 精简：工具面该砍则砍](./images/fig-overload.jpg)
+![过载 vs 精简：工具面该砍则砍](https://img.threetwoa.live/posts/claude-migration-opencode-kimi/fig-overload.jpg)
 
 ## 两家同题不同答卷
 
@@ -110,11 +110,11 @@ MCP 启用只留 tavily / MiniMax / minimax-coding。「看图片」只留内置
 
 同一套 Claude 源，两个宿主裁成两套最小可用集。这说明迁移没有标准答案，只有「按你的使用习惯裁剪」这一条。
 
-![两种答法：一张图纸，一页手记](./images/fig-compare.jpg)
+![两种答法：一张图纸，一页手记](https://img.threetwoa.live/posts/claude-migration-opencode-kimi/fig-compare.jpg)
 
 ## 跨宿主迁移清单（可直接抄）
 
-![导入、裁剪、重启，一气呵成](./images/fig-migrate.jpg)
+![导入、裁剪、重启，一气呵成](https://img.threetwoa.live/posts/claude-migration-opencode-kimi/fig-migrate.jpg)
 
 1. 复用行为宪法（§I-III 那类约束）
 2. **重写能力路由**，写宿主真实工具名

@@ -17,7 +17,7 @@ comment: true
 
 ## 负基础篇：网络安全入门基本认知
 
-![负基础篇-网络安全入门基本认知·概览](images/1-overview.webp)
+![负基础篇-网络安全入门基本认知·概览](https://img.threetwoa.live/posts/network-system-basics/1-overview.webp)
 
 # 负基础篇：网络安全入门基本认知
 
@@ -692,7 +692,7 @@ SRC 并不是一张可以测试所有互联网系统的通用授权书。
 
 ## 负基础篇：网络通信核心认识终端、IP、端口、域名、DNS，内外网
 
-![负基础篇-网络通信核心认识终端、IP、端口、域名、DNS，内外网·概览](images/2-overview.webp)
+![负基础篇-网络通信核心认识终端、IP、端口、域名、DNS，内外网·概览](https://img.threetwoa.live/posts/network-system-basics/2-overview.webp)
 
 # 网络通信：网络安全学习的地基
 
@@ -1329,7 +1329,7 @@ NAT 的全称是 **Network Address Translation**，中文叫**网络地址转换
 
 ## 负基础篇——认识操作系统：主流操作系统介绍
 
-![负基础篇——认识操作系统：主流操作系统介绍·概览](images/3-overview.webp)
+![负基础篇——认识操作系统：主流操作系统介绍·概览](https://img.threetwoa.live/posts/network-system-basics/3-overview.webp)
 
 # 课程说明与学习目标
 
@@ -1736,13 +1736,13 @@ Android、iOS、HarmonyOS 等移动系统并非完全不会遇到，但通常会
 
 材料合了两份笔记：端口详解（面板物理口）+ VLAN 在干嘛（广播域 / Trunk / 三层）。厂商私有堆叠口另说，这里只覆盖常见面板。
 
-![总览：转发 vs 分组](images/4-fig-vlan-01-overview.jpg)
+![总览：转发 vs 分组](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-01-overview.jpg)
 
 ## 面板先认一遍
 
 常见机型大致是：一排 RJ45 业务口 → 右侧 SFP+ 上联 → CONSOLE / MGMT → 指示灯（PWR / SYS / STAT / PoE）。
 
-![交换机端口总览](images/4-fig-port-01-overview.jpg)
+![交换机端口总览](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-01-overview.jpg)
 
 记这句就够：**业务走电口或光口，运维走 Console / MGMT，供电看 PoE。**
 
@@ -1757,7 +1757,7 @@ Android、iOS、HarmonyOS 等移动系统并非完全不会遇到，但通常会
 | MGMT | 独立管理通道，不跑业务流量 | 远程运维、权限隔离 |
 | PoE | 网线同时传数据 + 供电 | AP、话机、摄像头、门禁 |
 
-![常见交换机端口一览](images/4-fig-port-02-types.jpg)
+![常见交换机端口一览](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-02-types.jpg)
 
 ### RJ45：近距离接入首选
 
@@ -1765,7 +1765,7 @@ Android、iOS、HarmonyOS 等移动系统并非完全不会遇到，但通常会
 
 两点别踩：双绞线有效距离大致 ≤100 米；线规（Cat5e / Cat6）、协商速率、指示灯要一起看。设备就在附近、用网线就能到 → 默认先想 RJ45。
 
-![RJ45 电口](images/4-fig-port-03-rj45.jpg)
+![RJ45 电口](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-03-rj45.jpg)
 
 ### SFP 和 SFP+：槽长得像，速率差一截
 
@@ -1777,7 +1777,7 @@ Android、iOS、HarmonyOS 等移动系统并非完全不会遇到，但通常会
 
 插槽本身不能直接插裸纤。模块速率、接口类型、传输距离要对齐；单模 / 多模、双纤 / 单纤也要和现场光缆匹配。
 
-![SFP vs SFP+](images/4-fig-port-04-sfp.jpg)
+![SFP vs SFP+](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-04-sfp.jpg)
 
 ### Console：本地救场口
 
@@ -1785,19 +1785,19 @@ Console **不跑业务流量**。干的是：本地登录，做初始配置、�
 
 IP 还没配上、SSH 进不去、远程全挂时，它往往是唯一还能说话的口。
 
-![Console 口](images/4-fig-port-06-console.jpg)
+![Console 口](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-06-console.jpg)
 
 ### MGMT ≠ 业务口
 
 管理口和普通业务口外观可能都是 RJ45，职责完全分开：MGMT 接独立管理网、不转发一般用户业务；业务口才承载 VLAN、速率、链路状态这些日常关注点。别把管理口当成「多一个普通网口」乱用。
 
-![管理口 vs 业务口](images/4-fig-port-05-mgmt.jpg)
+![管理口 vs 业务口](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-05-mgmt.jpg)
 
 ### PoE：一根线解决数据和电
 
 常见落点：无线 AP、IP 电话、监控摄像头、门禁。标准常见 802.3af / at / bt，功率逐级抬高。上手前确认三件事：交换机是否支持 PoE、标准是否对得上终端、**整机功率预算**够不够（不是单口标了 PoE 就能全插满）。
 
-![PoE](images/4-fig-port-07-poe.jpg)
+![PoE](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-07-poe.jpg)
 
 ## 看端口时盯住这四件事
 
@@ -1806,7 +1806,7 @@ IP 还没配上、SSH 进不去、远程全挂时，它往往是唯一还能说�
 3. **介质**：网线、光纤、模块类型，两端必须匹配
 4. **场景**：终端接入、上联、远程运维、还是 PoE 供电
 
-![选型四看](images/4-fig-port-08-checklist.jpg)
+![选型四看](https://img.threetwoa.live/posts/network-system-basics/4-fig-port-08-checklist.jpg)
 
 常见误区：光口不是插上光纤就通（模块与光纤要对）；管理口不是普通业务口；PoE 要看整机功率预算。端口认清了，后面配 VLAN、查链路、选型号都会顺手很多。
 
@@ -1824,7 +1824,7 @@ IP 还没配上、SSH 进不去、远程全挂时，它往往是唯一还能说�
 
 交换机的本职是二层转发；VLAN 不是换一台机器，是在同一台物理交换机上把流量切成逻辑组。
 
-![二层转发与 MAC 表](images/4-fig-vlan-02-mac.jpg)
+![二层转发与 MAC 表](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-02-mac.jpg)
 
 ## VLAN 切的是广播域，不是「安全银弹」
 
@@ -1834,9 +1834,9 @@ IP 还没配上、SSH 进不去、远程全挂时，它往往是唯一还能说�
 
 VLAN ≠ IP 子网。前者二层广播域，后者三层地址段；实务常一对一映射，别当成同义词。同一 VLAN 也能跨多台交换机延伸，前提是中间链路（多半是 Trunk）真的在扛这个 VLAN。
 
-![为什么需要 VLAN](images/4-fig-vlan-03-broadcast.jpg)
+![为什么需要 VLAN](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-03-broadcast.jpg)
 
-![VLAN 本质与跨交换机](images/4-fig-vlan-04-cross.jpg)
+![VLAN 本质与跨交换机](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-04-cross.jpg)
 
 ## Access / Trunk，加上 802.1Q 那张「行李牌」
 
@@ -1850,9 +1850,9 @@ Access = 单 VLAN 接入口；Trunk = 多 VLAN 运输通道。终端走 Access�
 
 Trunk 上多出来的那截是 802.1Q：插在源 MAC 和 Type 之间。TPID 多半是 `0x8100`，真正要命的是 12 bit 的 VLAN ID。标签服务交换机之间的链路，不是让你在终端上手搓解析。
 
-![Access vs Trunk](images/4-fig-vlan-05-access-trunk.jpg)
+![Access vs Trunk](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-05-access-trunk.jpg)
 
-![802.1Q 标签](images/4-fig-vlan-06-8021q.jpg)
+![802.1Q 标签](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-06-8021q.jpg)
 
 ## 跨 VLAN：必须撞上三层
 
@@ -1871,7 +1871,7 @@ flowchart LR
 
 不同 VLAN 互通 = 三层转发。没网关，Access/Trunk 配得再漂亮也白搭。
 
-![跨 VLAN 要三层](images/4-fig-vlan-07-l3.jpg)
+![跨 VLAN 要三层](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-07-l3.jpg)
 
 ## 企业落地就这几句
 
@@ -1883,7 +1883,7 @@ flowchart LR
 
 VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完就安全」。网安往下学，这只是地板，不是天花板。
 
-![企业拓扑示意](images/4-fig-vlan-08-enterprise.jpg)
+![企业拓扑示意](https://img.threetwoa.live/posts/network-system-basics/4-fig-vlan-08-enterprise.jpg)
 
 ## 适合谁，我怎么记
 
@@ -1902,13 +1902,13 @@ VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完�
 
 ## 先看这张总览
 
-![径向总览：含 tmp / boot](images/5-fig-01-radial-overview.jpg)
+![径向总览：含 tmp / boot](https://img.threetwoa.live/posts/network-system-basics/5-fig-01-radial-overview.jpg)
 
 整棵树从 `/` 长出来。图卡把常见枝丫摊开（含 `/tmp`、`/boot`），目的不是让你背完，是给你一张**心理地图**：以后听到路径，知道它大概挂在哪一支。
 
 ## 六个核心位置就够起步
 
-![核心位置：/ home root etc var usr](images/5-fig-02-core-locations.jpg)
+![核心位置：/ home root etc var usr](https://img.threetwoa.live/posts/network-system-basics/5-fig-02-core-locations.jpg)
 
 | 路径 | 干什么 | 新手记法 |
 |---|---|---|
@@ -1921,7 +1921,7 @@ VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完�
 
 ## `/`、`/home`、`/root` 别混
 
-![/、/home、/root 区分](images/5-fig-03-slash-home-root.jpg)
+![/、/home、/root 区分](https://img.threetwoa.live/posts/network-system-basics/5-fig-03-slash-home-root.jpg)
 
 三件事最容易搞拧：
 
@@ -1933,7 +1933,7 @@ VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完�
 
 ## 干活三件套：`/etc` · `/var` · `/usr`
 
-![配置 / 日志 / 程序](images/5-fig-04-etc-var-usr.jpg)
+![配置 / 日志 / 程序](https://img.threetwoa.live/posts/network-system-basics/5-fig-04-etc-var-usr.jpg)
 
 日常排障几乎绕不开这三个：
 
@@ -1949,7 +1949,7 @@ VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完�
 
 ## 再补八个高频目录
 
-![新手八目录：bin/dev/sbin/proc/tmp/boot/opt/mnt](images/5-fig-05-eight-dirs.jpg)
+![新手八目录：bin/dev/sbin/proc/tmp/boot/opt/mnt](https://img.threetwoa.live/posts/network-system-basics/5-fig-05-eight-dirs.jpg)
 
 核心位置认熟后，这八个出现频率也很高：
 
@@ -1968,7 +1968,7 @@ VLAN 让广播域和管理边界清楚，别当成 ACL、零信任或「划完�
 
 ## 按用途记，配三板斧命令
 
-![按用途记 + cd / ls / pwd](images/5-fig-06-learn-by-purpose.jpg)
+![按用途记 + cd / ls / pwd](https://img.threetwoa.live/posts/network-system-basics/5-fig-06-learn-by-purpose.jpg)
 
 别按字母表背路径，按**你要干什么**记：
 
@@ -1995,7 +1995,7 @@ Linux 目录标准（FHS）很长，生产发行版还有合并、只读根、�
 
 上面是「先认常去位置」。需要把整棵树摊开核对时，用这张全景——左树右卡，按颜色分系统核心、设备挂载、用户数据、虚拟文件系统等。发行版细节会有差，大格通常稳。
 
-![Linux 目录结构详解全景（小林coding）](images/5-fig-07-fhs-panorama.jpg)
+![Linux 目录结构详解全景（小林coding）](https://img.threetwoa.live/posts/network-system-basics/5-fig-07-fhs-panorama.jpg)
 
 ### 快速记忆（图卡底部）
 
@@ -2033,7 +2033,7 @@ K8s 组件名一堆，记不住很正常。这两张图一个讲「请求怎么�
 
 ## 图 1：架构全景，控制面怎么把期望状态推下去
 
-![Kubernetes 架构全景图](images/6-fig-01-01-k8s-architecture-panorama.jpg)
+![Kubernetes 架构全景图](https://img.threetwoa.live/posts/network-system-basics/6-fig-01-01-k8s-architecture-panorama.jpg)
 
 图题：**Kubernetes 架构全景图**  
 副标：**Kubernetes = API 驱动的分布式资源控制系统**
@@ -2149,7 +2149,7 @@ PVC → PV → StorageClass
 
 ## 图 2：七大主题速查，出事按哪条线查
 
-![Kubernetes 核心知识全景图（7大核心主题）](images/6-fig-02-02-k8s-core-knowledge-7themes.jpg)
+![Kubernetes 核心知识全景图（7大核心主题）](https://img.threetwoa.live/posts/network-system-basics/6-fig-02-02-k8s-core-knowledge-7themes.jpg)
 
 图题：**Kubernetes 核心知识全景图（7 大核心主题）**
 

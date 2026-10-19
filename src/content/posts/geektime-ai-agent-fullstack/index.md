@@ -21,7 +21,7 @@ comment: true
 
 课程开宗明义：企业应用正从 ChatBot 到 Workflow 再到 Agent 快速升级，真正有价值的是能自主规划、多步执行、持续完成复杂任务的 Agent。招聘需求也跟着变了——越来越多企业要求候选人具备 LangGraph、RAG、MCP、Agent Runtime、Context Engineering、Agent Eval、Tool Calling 这些能力。
 
-![学了很多 AI 却依然不会落地](./images/pain.jpg)
+![学了很多 AI 却依然不会落地](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/pain.jpg)
 
 它要解决的痛点是"学了很多 AI，却依然不会开发能实际落地的 Agent"。目标岗位是 AI Agent 开发工程师 / 大模型应用工程师，学完达到初、中级 Agent 开发工程师水平。
 
@@ -29,7 +29,7 @@ comment: true
 
 课程把 Agent 开发工程师的能力拆成八块：后端工程基础、Python 工程能力、LLM API 与 Prompt、RAG 与知识库、Agent Loop 与 Tool Use、Context / Memory、Agent Eval、工程化部署与可观测性。
 
-![能力模型](./images/s35-ability.jpg)
+![能力模型](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/s35-ability.jpg)
 
 对传统后端工程师，它算了一笔账：你已有的优势是 API 服务开发、数据库与缓存、异步任务、权限认证、日志监控、限流重试熔断、Docker 部署；需要重点补齐的是模型调用、Prompt 与结构化输出、工具协议、上下文管理、 Agent 状态机、Eval 与质量治理。入学门槛是掌握 Java / Go / Python / Node.js 任意一门，熟悉 Git 和 GitHub 协作。
 
@@ -115,17 +115,17 @@ comment: true
 
 ## 持续更新与岗位转型
 
-![持续更新](./images/updates.jpg)
+![持续更新](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/updates.jpg)
 
 完课后一年内持续更新 40+ 小时免费热点内容，方向包括 LangGraph 等 Agent Framework、Claude / OpenAI 的新推理能力与 Function Calling / API 能力、MCP 私有化部署、LLM-Wiki 知识库结构化等。
 
-![从学会开发到岗位转型](./images/career.jpg)
+![从学会开发到岗位转型](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/career.jpg)
 
 配套服务含就业专家 1V1（简历优化、项目包装、面试辅导）、大模型求职指南课、刷题平台 + 企业真题库（覆盖大模型理论、Agents 开发、RAG、微调、工程化）、岗位内推（完成 80% 课程且作业达标者）。
 
 ## 讲师
 
-![讲师介绍](./images/s35-instructors.jpg)
+![讲师介绍](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/s35-instructors.jpg)
 
 - **尹会生**：生成式 AI 与智能硬件融合创新者，大模型连续创业者，ADPS 核心专家 / 腾讯云架构师技术同盟名人堂专家。曾服务金山、新浪；国内首批大模型工业化应用实践者，将 RAG 应用于智能制造（效能提升 30%+）；工业自动驾驶系统架构师，2 项技术发明专利；当前聚焦企业级 Agent 平台，自研 RAG 引擎，服务金融、制造、法律、审计。
 - **姜宁**：前字节开源办公室首席布道师，ADPS 核心专家。15 年+ 企业级开发与管理经验；**主导字节 DeerFlow 的研发、开源与运营**；曾任华为开源管理中心技术专家、红帽首席软件开发工程师；连任 Apache 软件基金会董事会董事（2022-2024）。
@@ -143,7 +143,7 @@ comment: true
 
 ## 适合谁 & 我的判断
 
-![适配人群](./images/audience.jpg)
+![适配人群](https://img.threetwoa.live/posts/geektime-ai-agent-fullstack/audience.jpg)
 
 官方适配人群：想升级为 AI 应用工程师的后端/全栈、做过 RAG 或大模型 Demo 但想补工程化的人、在做企业 AI 平台/Agent 应用/AI 基础设施的工程师、想通过开源项目沉淀公开作品的开发者、有后端经验想从事 Agent 开发的学生。
 

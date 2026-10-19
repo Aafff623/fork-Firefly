@@ -45,7 +45,7 @@ flowchart LR
   C -.-> I
 ```
 
-![方法论结构：齿轮、终端与图纸](./images/fig-structure.jpg)
+![方法论结构：齿轮、终端与图纸](https://img.threetwoa.live/posts/matt-pocock-engineering-method/fig-structure.jpg)
 
 主流程是「想法→交付」，三条 on-ramp（入口）从不同起点汇入，两个词汇技能在所有流程下面提供公共语言，剩下的是独立件。
 

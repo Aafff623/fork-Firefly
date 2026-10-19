@@ -17,7 +17,7 @@ comment: true
 
 同学侧实测已经能打开；含中国大陆节点、卡片封面整批迁 R2，都刻意后置，不挡这一刀收官。
 
-![等轴微缩：主站走边缘加速，图床走对象存储](./images/fig-arch-overview.jpg)
+![等轴微缩：主站走边缘加速，图床走对象存储](https://img.threetwoa.live/posts/edgeone-cf-vercel-blog-cdn/fig-arch-overview.jpg)
 
 ## 一开始想解决什么
 
@@ -49,7 +49,7 @@ comment: true
 
 「Cloudflare 大善人」在本站语境里 = **R2 免出站 + 免费防护工具箱**，不是大陆 CDN。国内打开靠的是 EdgeOne。
 
-![灰云只解析，橙云会拦流量：主站必须走左边](./images/fig-gray-vs-orange.jpg)
+![灰云只解析，橙云会拦流量：主站必须走左边](https://img.threetwoa.live/posts/edgeone-cf-vercel-blog-cdn/fig-gray-vs-orange.jpg)
 
 ## Phase 1：主站先通
 
@@ -85,7 +85,7 @@ comment: true
 
 **最危险的一脚**：迁 NS 之后若把 `www` 点成橙云，流量会被 CF 代理吃掉，已付费的 EdgeOne 主链等于白买。控制台那句「代理 DNS 记录」对主站就是坑。
 
-![控制台实拍：NS 校验阶段先别乱动橙云开关](./images/fig-ns-waiting.jpg)
+![控制台实拍：NS 校验阶段先别乱动橙云开关](https://img.threetwoa.live/posts/edgeone-cf-vercel-blog-cdn/fig-ns-waiting.jpg)
 
 环境变量（Vercel + 本地）长这样，密钥只进环境变量、不入库：
 
@@ -104,7 +104,7 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 - [x] `/api/comment-image/` → `{"enabled":true,"backend":"r2"}`
 - [ ] 评论区实传一张小图（建议换令牌后再验）
 
-![评论图进金属盒：R2 管存取，密钥不进前端仓](./images/fig-r2-storage.jpg)
+![评论图进金属盒：R2 管存取，密钥不进前端仓](https://img.threetwoa.live/posts/edgeone-cf-vercel-blog-cdn/fig-r2-storage.jpg)
 
 站内另有旧桶 `threetwoa-blog-assets`，留给以后「卡片封面 / 站级资产」；和评论桶分开，别混。
 
@@ -119,7 +119,7 @@ R2_PUBLIC_BASE_URL=https://img.threetwoa.live
 
 超额常见原因：大图误走 EO；结账页顺手勾了搭配包；自动续费涨到官价没注意。
 
-![现金刚需只留那枚 EO 月费，其余额度内白嫖](./images/fig-monthly-cost.jpg)
+![现金刚需只留那枚 EO 月费，其余额度内白嫖](https://img.threetwoa.live/posts/edgeone-cf-vercel-blog-cdn/fig-monthly-cost.jpg)
 
 ## 含大陆节点：先挂着
 

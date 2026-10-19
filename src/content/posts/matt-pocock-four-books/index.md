@@ -37,26 +37,26 @@ Matt Pocock 在 AI Engineer Europe 那档 *Software Fundamentals Matter More Tha
 
 四本封面墙：
 
-![四本必读书](./images/fig-four-books.jpg)
+![四本必读书](https://img.threetwoa.live/posts/matt-pocock-four-books/fig-four-books.jpg)
 
 Kent Beck 不在墙上，但卡在「油门限制器」那一格——红绿重构不是仪式，是不让模型一次铺三层错。
 
 ## 五步，别当鸡汤清单
 
-![五步法](./images/fig-five-steps.jpg)
+![五步法](https://img.threetwoa.live/posts/matt-pocock-four-books/fig-five-steps.jpg)
 
 1. **Grill Me**：先逼问 40～100 个问题，决策树走完再动手。技能在 `mattpocock/skills` 的 `grill-me`（有库用 `grill-with-docs`）。2026-08-11 核对：仓库约 21.2 万 star；公众号写的「13k+」口径不清，别拿去当唯一数字。
 2. **统一语言**：一个概念一个词，术语表进上下文；同义漂移会同时脏 prompt 和代码。
 3. **TDD**：把生成速度卡在反馈环上，而不是写完再祈祷绿。
 4. **Deep Module**：大量行为藏进小接口；浅模块堆多了，模型比你先迷路。
 
-![Deep vs Shallow](./images/fig-deep-vs-shallow.jpg)
+![Deep vs Shallow](https://img.threetwoa.live/posts/matt-pocock-four-books/fig-deep-vs-shallow.jpg)
 
 5. **委托实现**：接口你定（战略），内部灰盒给模型（战术）。军事比喻就这句：别让战术天才上指挥席，也别自己去抠每一枪。
 
 ## 两种范式，选边很简单
 
-![两种范式](./images/fig-two-paradigms.jpg)
+![两种范式](https://img.threetwoa.live/posts/matt-pocock-four-books/fig-two-paradigms.jpg)
 
 | Spec-to-Code | 软件基础驱动 |
 |---|---|

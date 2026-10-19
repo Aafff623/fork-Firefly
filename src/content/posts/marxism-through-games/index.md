@@ -11,7 +11,7 @@ slug: marxism-through-games
 pinned: false
 comment: true
 ---
-![在游戏中学习：一口气学完马克思主义哲学·概览](./images/overview.webp)
+![在游戏中学习：一口气学完马克思主义哲学·概览](https://img.threetwoa.live/posts/marxism-through-games/overview.webp)
 
 # 一、哲学基本问题与物质意识
 

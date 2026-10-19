@@ -196,7 +196,7 @@ Jakarta EE：Jakarta EE 是 Java EE 的新名称，代表了其在 Eclipse 基�
 目前，Jakarta EE最新版本是Jakarta EE 11。下图是Jakarta EE 11平台架构图。
 
 
-![图1-1 Jakarta EE 11平台架构图](images/1-2-1-1.png)
+![图1-1 Jakarta EE 11平台架构图](https://img.threetwoa.live/posts/java-course2/1-2-1-1.png)
 
 
 ## 1.3 前沿解码：Spring 6有哪些革新升级？
@@ -264,7 +264,7 @@ mvn archetype:generate -DgroupId=com.example.spring.hello -DartifactId=spring-he
 此时会创建一个名为“spring-hello-world”的项目，目录结构如下。
 
 
-![图1-2 spring-hello-world项目目录结构](images/1-4-1-2.png)
+![图1-2 spring-hello-world项目目录结构](https://img.threetwoa.live/posts/java-course2/1-4-1-2.png)
 
 将项目用IDEA打开，可以看到默认的pom.xml文件如下：
 
@@ -378,7 +378,7 @@ mvn archetype:generate -DgroupId=com.example.spring.hello -DartifactId=spring-he
 
 添加了`spring-context`模块之后，能够在工程里面看到如下图1-3所示的依赖包：
 
-![图1-3 spring-context 的依赖包](images/1-4-1-3.png)
+![图1-3 spring-context 的依赖包](https://img.threetwoa.live/posts/java-course2/1-4-1-3.png)
 
 图1-3 spring-context 的依赖包
 
@@ -388,7 +388,7 @@ mvn archetype:generate -DgroupId=com.example.spring.hello -DartifactId=spring-he
 
 图1-4 展示了在 IDEA 工具下所分析出的`spring-context`包的依赖树。
 
-![图1-4 spring-context 的依赖树](images/1-4-1-4.png)
+![图1-4 spring-context 的依赖树](https://img.threetwoa.live/posts/java-course2/1-4-1-4.png)
 
 
 ### 1.4.3 创建服务类
@@ -1456,7 +1456,7 @@ Fighter fight with tiger...
 
 下图展示的是一个通用性的测试金字塔。
 
-![图3-1 测试金字塔](images/3-1-3-1.jpg)
+![图3-1 测试金字塔](https://img.threetwoa.live/posts/java-course2/3-1-3-1.jpg)
 
 
 在这个测试金字塔中，从底向上，形象地将测试分为了不同的类型。
@@ -1780,7 +1780,7 @@ public class MessageServiceTest {
 
 显示如下面图片所示的绿色标识，则证明测试通过。
 
-![图3-2 测试通过](images/3-4-3-2.png)
+![图3-2 测试通过](https://img.threetwoa.live/posts/java-course2/3-4-3-2.png)
 
 
 ## 4.1 全栈后端之数据之道：DAO设计模式
@@ -1908,7 +1908,7 @@ Spring 将特定于技术的异常（如 SQLException），统一转换为其自
 下图4-1展示了 Spring DAO 提供的异常层:
 
 
-![图4-1 Spring DAO 的异常层](images/4-2-4-1-hierarchy-exception.jpg)
+![图4-1 Spring DAO 的异常层](https://img.threetwoa.live/posts/java-course2/4-2-4-1-hierarchy-exception.jpg)
 
 
 ### 不同的 JDBC 访问方式
@@ -2534,7 +2534,7 @@ Spring 框架的声明式事务管理是通过 Spring AOP 实现的。Spring 框
 从概念上讲，调用事务代理的流程如下图5-1所示:
 
 
-![图5-1 调用事务代理的流程](images/5-3-5-1-tx.jpg)
+![图5-1 调用事务代理的流程](https://img.threetwoa.live/posts/java-course2/5-3-5-1-tx.jpg)
 
 
 ### 声明式事务管理的例子
@@ -2752,7 +2752,7 @@ PROPAGATION_REQUIRED 表示，加入当前正要执行的事务不在另外一�
 图5-2 展示了 PROPAGATION_REQUIRED 类型的事务处理流程。
 
 
-![图5-2 PROPAGATION_REQUIRED事务](images/5-4-5-2-transaction-propagation-1.jpg)
+![图5-2 PROPAGATION_REQUIRED事务](https://img.threetwoa.live/posts/java-course2/5-4-5-2-transaction-propagation-1.jpg)
 
 
 #### PROPAGATION_REQUIRES_NEW
@@ -2763,7 +2763,7 @@ PROPAGATION_REQUIRED 表示，加入当前正要执行的事务不在另外一�
 图5-3 展示了 PROPAGATION_REQUIRES_NEW 类型的事务处理流程。
 
 
-![图5-3 PROPAGATION_REQUIRES_NEW事务](images/5-4-5-3-transaction-propagation-2.jpg)
+![图5-3 PROPAGATION_REQUIRES_NEW事务](https://img.threetwoa.live/posts/java-course2/5-4-5-3-transaction-propagation-2.jpg)
 
 
 #### PROPAGATION_NESTED
@@ -2775,7 +2775,7 @@ PROPAGATION_NESTED 使用具有可回滚到的多个保存点的单个物理事�
 图5-4 展示了 PROPAGATION_NESTED 类型的事务处理流程。
 
 
-![图5-4 PROPAGATION_NESTED事务](images/5-4-5-4-transaction-propagation-3.jpg)
+![图5-4 PROPAGATION_NESTED事务](https://img.threetwoa.live/posts/java-course2/5-4-5-4-transaction-propagation-3.jpg)
 
 
 ## 5.5 实战：掌握三种常见的事务传播机制

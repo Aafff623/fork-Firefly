@@ -70,7 +70,7 @@ flowchart TB
 
 所以之前会话里那句「生图语音音乐没有固定次数」仍然成立：不是没额度，是**不按次拆包**。
 
-![五种能力共用一条进度池](./images/fig-pool.jpg)
+![五种能力共用一条进度池](https://img.threetwoa.live/posts/minimax-token-plan-max-quota/fig-pool.jpg)
 
 ### 2. 双窗口：5 小时 + 周
 
@@ -108,7 +108,7 @@ flowchart TB
 
 拼车场景务必约定：所有工具只塞**同一把订阅 Key**；有人换成按量 Key，账单会突然走余额。
 
-![两把钥匙：订阅 Key 和按量 Key 不是一路货](./images/fig-keys.jpg)
+![两把钥匙：订阅 Key 和按量 Key 不是一路货](https://img.threetwoa.live/posts/minimax-token-plan-max-quota/fig-keys.jpg)
 
 额度用尽时的官方路径：
 

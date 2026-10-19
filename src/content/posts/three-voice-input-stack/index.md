@@ -35,7 +35,7 @@ comment: true
 
 ## Typeless：额度宽、整理狠，专治长 prompt
 
-![Typeless 个人词典界面（官网素材）](./images/fig-typeless.jpg)
+![Typeless 个人词典界面（官网素材）](https://img.threetwoa.live/posts/three-voice-input-stack/fig-typeless.jpg)
 
 [Typeless](https://www.typeless.com/) 把自己定位成「真的会整理的听写」：去语气词、去重复、中途改口只留最终意图、自动排列表格和步骤。公开文案还强调个性化文风、个人词典、按 App 调语气、100+ 语言混说。
 
@@ -55,7 +55,7 @@ comment: true
 
 ## 闪电说：快 + 词典 + 沟通 Agent 生态
 
-![闪电说技能页截图（文档站素材）](./images/fig-shandianshuo-eco.jpg)
+![闪电说技能页截图（文档站素材）](https://img.threetwoa.live/posts/three-voice-input-stack/fig-shandianshuo-eco.jpg)
 
 [闪电说](https://shandianshuo.cn/)（前身代体）现在官宣自己是「沟通 Agent」：短按直接说，长按帮我说。本地优先的语音识别可以很快；资料库存风格、词典、关于我、常见问题；技能用 `SKILL.md` 描述场景（正式任务 / 轻松聊 / 文学润色 / 熟人帮回……）。Windows 上技能真源大致在：
 
@@ -74,7 +74,7 @@ comment: true
 
 ## 微信电脑端语音：Ctrl+Win，离线顺手，专业词容易翻车
 
-![微信 Ctrl+Win 离线语音示意](./images/fig-wechat-voice.jpg)
+![微信 Ctrl+Win 离线语音示意](https://img.threetwoa.live/posts/three-voice-input-stack/fig-wechat-voice.jpg)
 
 2026 年初起，微信电脑端（约 4.1.7+）内置语音输入：Windows 默认 **Ctrl + Win**（也可点输入框麦克风）；Mac 常见 Fn。不止微信聊天框，装了微信客户端后，其它输入框也能调。另有不必按住的组合（如 Ctrl+Win+Shift）。官方还带「整理文字」去嗯啊、理顺逻辑。
 

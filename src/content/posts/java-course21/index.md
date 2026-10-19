@@ -335,7 +335,7 @@ rednote-microservices/
 1. 修改项目名“rednote”为“rednote-microservices”
 2. 将原有项目的下创建按照DDD分层架构要求的包名。以文件领域微服务为例，包名结构如下图2-1所示。
 
-![图2-1 创建按照DDD分层架构要求的包名](images/2-2-2-1.png)
+![图2-1 创建按照DDD分层架构要求的包名](https://img.threetwoa.live/posts/java-course21/2-2-2-1.png)
 
 
 ### 按照DDD分层架构对代码进行重构
@@ -343,12 +343,12 @@ rednote-microservices/
 
 通过重构的方式，将原有项目的下移动到DDD分层架构的对应包名下。IntelliJ IDEA的重构功能如下图2-2所示。
 
-![图2-2 IntelliJ IDEA的重构功能](images/2-2-2-2.png)
+![图2-2 IntelliJ IDEA的重构功能](https://img.threetwoa.live/posts/java-course21/2-2-2-2.png)
 
 选中目标路径，点击“Refactor”按钮将代码进行移动。
 
 
-![图2-3 点击“Refactor”按钮将代码进行移动](images/2-2-2-3.png)
+![图2-3 点击“Refactor”按钮将代码进行移动](https://img.threetwoa.live/posts/java-course21/2-2-2-3.png)
 
 ### 清理冗余代码和包
 
@@ -377,7 +377,7 @@ spring.session.redis.namespace=spring:session:rednote
 
 最终，代码结构如下图2-4所示。
 
-![图2-4 代码结构](images/2-2-2-4.png)
+![图2-4 代码结构](https://img.threetwoa.live/posts/java-course21/2-2-2-4.png)
 
 
 ### 运行调测
@@ -564,12 +564,12 @@ rednote-microservices/
 
 通过IntelliJ IDEA，在父POM中点击模块列表中的模块，可以自动创建子模块，如下图2-5所示。
 
-![图2-5 自动创建子模块](images/2-3-2-5.png)
+![图2-5 自动创建子模块](https://img.threetwoa.live/posts/java-course21/2-3-2-5.png)
 
 
 最终，项目结构如下图2-6所示。
 
-![图2-6 项目结构](images/2-3-2-6.png)
+![图2-6 项目结构](https://img.threetwoa.live/posts/java-course21/2-3-2-6.png)
 
 
 ### 子模块rednote-common/pom.xml
@@ -1000,7 +1000,7 @@ app.jwtExpirationMs=86400000
 
 最终，代码结构如下图2-7所示。
 
-![图2-7 代码结构](images/2-4-2-7.png)
+![图2-7 代码结构](https://img.threetwoa.live/posts/java-course21/2-4-2-7.png)
 
 
 ## 3.1 引入Spring Cloud微服务框架

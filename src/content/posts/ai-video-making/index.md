@@ -23,7 +23,7 @@ comment: true
 
 作者自称测速烧约 3 亿 Token；样例 8 幕约 100 秒普通话女声 + 烧录字幕。数字当故事背景，选型看工作流。
 
-![仓库能力摘要](images/1-fig-01-github-readme.jpg)
+![仓库能力摘要](https://img.threetwoa.live/posts/ai-video-making/1-fig-01-github-readme.jpg)
 
 ## 先对上这些疼点
 
@@ -36,7 +36,7 @@ comment: true
 | 画面干等旁白 | **先锁定旁白**，再按真实时长重算各幕 |
 | 「画了两遍轨迹」 | 默认对角扫描：轮廓与铺色**同路径** |
 
-![分镜确认：8 幕 + 旁白约 100s + 烧录确认](images/1-fig-03-storyboard-confirm.jpg)
+![分镜确认：8 幕 + 旁白约 100s + 烧录确认](https://img.threetwoa.live/posts/ai-video-making/1-fig-03-storyboard-confirm.jpg)
 
 ## 默认画法：整图斜着扫过去
 
@@ -52,9 +52,9 @@ python scripts/video_project.py render <project.json> `
   --ink-path diagonal --color-fill diagonal --pointer hand --pause auto
 ```
 
-![对角铺色过程帧](images/1-fig-02-render-diagonal.jpg)
+![对角铺色过程帧](https://img.threetwoa.live/posts/ai-video-making/1-fig-02-render-diagonal.jpg)
 
-![轮廓阶段手部跟笔](images/1-fig-04-ink-hand.jpg)
+![轮廓阶段手部跟笔](https://img.threetwoa.live/posts/ai-video-making/1-fig-04-ink-hand.jpg)
 
 有人吐槽「不是按笔画先后的真手绘」——作者也认：当前是扫描揭示 + 手部跟笔，不是书法笔顺模拟。叫白板流水线更贴切。
 
@@ -128,9 +128,9 @@ GitHub 上这仓库一句定位很清楚：中文故事文案，或一组有序�
 文字 → 黑白画稿 → 彩色插画
 ```
 
-![黑白画稿层](images/2-fig-04-bw-plate.jpg)
+![黑白画稿层](https://img.threetwoa.live/posts/ai-video-making/2-fig-04-bw-plate.jpg)
 
-![彩色插画层（无字幕）](images/2-fig-05-color-layer.jpg)
+![彩色插画层（无字幕）](https://img.threetwoa.live/posts/ai-video-making/2-fig-05-color-layer.jpg)
 
 翻书另一套规矩：上传页原样静置，再从右下角卷页；不要再叠字幕/黑白/上色。纸背留淡化原页。翻书素材必须是完整页，别塞半截裁图。
 
@@ -138,13 +138,13 @@ GitHub 上这仓库一句定位很清楚：中文故事文案，或一组有序�
 
 彩铅日记四格（字幕+插画）长这样：
 
-![四格彩铅+字幕示例](images/2-fig-02-colored-pencil.jpg)
+![四格彩铅+字幕示例](https://img.threetwoa.live/posts/ai-video-making/2-fig-02-colored-pencil.jpg)
 
 ## 20 种风格，默认彩铅日记
 
 风格库二十档，编号 / 英文 id / 中文名 / 别名都能查；默认 `colored-pencil-diary`（彩铅日记漫画）。同场景对照网格一眼能选风：
 
-![20 风格同场景网格](images/2-fig-01-styles-grid.jpg)
+![20 风格同场景网格](https://img.threetwoa.live/posts/ai-video-making/2-fig-01-styles-grid.jpg)
 
 完整表与 prompt 块在仓库 `references/handdrawn-style-library.json`，笔记里不复读二十段形容词。
 
@@ -185,7 +185,7 @@ Agent 里：
 
 下面只留能带走的：档位、文件落点、关键参数、提示词骨架、坑，以及和官方 API 的分界。文中数字均标作者实测/转述，本机未复跑。
 
-![模板里三张 MiniMax H3 卡：图生 / 参考生 / 文生](images/3-fig-04-three-templates.jpg)
+![模板里三张 MiniMax H3 卡：图生 / 参考生 / 文生](https://img.threetwoa.live/posts/ai-video-making/3-fig-04-three-templates.jpg)
 
 ## H3 本地到底开了什么
 
@@ -224,7 +224,7 @@ Agent 里：
 2. 侧栏模板 → 加载 MiniMax H3（文生 / 图生 / 参考生）
 3. 按 Model Links 把权重丢进对应目录
 
-![四文件与 ComfyUI/models 目录树](images/3-fig-06-model-links.jpg)
+![四文件与 ComfyUI/models 目录树](https://img.threetwoa.live/posts/ai-video-making/3-fig-06-model-links.jpg)
 
 | 文件 | 放哪 |
 |---|---|
@@ -237,7 +237,7 @@ Agent 里：
 
 ## 参数先钉这几个
 
-![分辨率 0.4MP×32 与 duration 红框](images/3-fig-08-duration-params.jpg)
+![分辨率 0.4MP×32 与 duration 红框](https://img.threetwoa.live/posts/ai-video-making/3-fig-08-duration-params.jpg)
 
 配图分辨率表（Multiple=32）：
 
@@ -264,7 +264,7 @@ Agent 里：
 声音：…
 ```
 
-![工作流里动作片提示词分段例](images/3-fig-05-action-prompt.jpg)
+![工作流里动作片提示词分段例](https://img.threetwoa.live/posts/ai-video-making/3-fig-05-action-prompt.jpg)
 
 和站内「把 MiniMax 当制片」那条（API 侧三字段/五模式）是同一家模型、两条轨：那边管云端提示词结构，这篇管本机权重与显存档。旁链即可，别硬并。
 

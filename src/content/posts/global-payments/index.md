@@ -125,7 +125,7 @@ comment: true
 
 ### Creem：数字产品个人国际收款的适用边界
 
-![global-payments-page-018](images/1-global-payments-page-018.webp)
+![global-payments-page-018](https://img.threetwoa.live/posts/global-payments/1-global-payments-page-018.webp)
 
 *国际数字产品平台费率页面*
 
@@ -147,7 +147,7 @@ comment: true
 
 ### 从创建产品到提现：一条完整的数字产品链路
 
-![global-payments-page-020](images/1-global-payments-page-020.webp)
+![global-payments-page-020](https://img.threetwoa.live/posts/global-payments/1-global-payments-page-020.webp)
 
 *数字产品价格与支付页面*
 
@@ -189,7 +189,7 @@ comment: true
 
 ### Ultra Mobile、Tello 与 WiFi Calling 的实际使用
 
-![global-payments-page-065](images/1-global-payments-page-065.webp)
+![global-payments-page-065](https://img.threetwoa.live/posts/global-payments/1-global-payments-page-065.webp)
 
 *WiFi Calling 设置页面*
 
@@ -300,7 +300,7 @@ Mercury 的作用不是替代公司注册或支付平台，而是承接公司资
 
 ### Mercury 开户：公司资料、地址证明与申请表
 
-![global-payments-page-048](images/2-global-payments-page-048.webp)
+![global-payments-page-048](https://img.threetwoa.live/posts/global-payments/2-global-payments-page-048.webp)
 
 *Mercury 公司地址填写页面*
 
@@ -378,7 +378,7 @@ Stripe 需要公司授权签字代表的法定姓名、出生日期、家庭住�
 
 ### Stripe 激活收尾：客服信息、银行绑定与自动收税
 
-![global-payments-page-077](images/2-global-payments-page-077.webp)
+![global-payments-page-077](https://img.threetwoa.live/posts/global-payments/2-global-payments-page-077.webp)
 
 *Stripe 绑定收款银行页面*
 
@@ -404,7 +404,7 @@ Stripe 的公开详情页面会让你填写客服地址、客服电话、对账�
 
 ### Stripe 账户维护：避免把正常业务做成异常画像
 
-![global-payments-page-082](images/2-global-payments-page-082.webp)
+![global-payments-page-082](https://img.threetwoa.live/posts/global-payments/2-global-payments-page-082.webp)
 
 *Stripe 账户业务信息补充页面*
 
@@ -463,7 +463,7 @@ Stripe 的公开详情页面会让你填写客服地址、客服电话、对账�
 
 ### BOIR 在线申报：公司、申请人和受益所有人字段
 
-![global-payments-page-102](images/3-global-payments-page-102.webp)
+![global-payments-page-102](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-102.webp)
 
 *BOIR 提交成功页面*
 
@@ -551,7 +551,7 @@ Stripe 的公开详情页面会让你填写客服地址、客服电话、对账�
 
 ### 州级年度要求：特拉华州与怀俄明州示例
 
-![global-payments-page-118](images/3-global-payments-page-118.webp)
+![global-payments-page-118](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-118.webp)
 
 *特拉华州 LLC 税费页面*
 
@@ -579,7 +579,7 @@ Stripe 的公开详情页面会让你填写客服地址、客服电话、对账�
 
 ### 公司账户提款：先把分配与个人消费分开
 
-![global-payments-page-124](images/3-global-payments-page-124.webp)
+![global-payments-page-124](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-124.webp)
 
 *Wise USD 账户转账页面*
 
@@ -603,7 +603,7 @@ ACH 是美国境内自动清算转账；Wire 是电汇，通常适合金额较�
 
 ### Wise 到香港与中国内地：两条路径的成本和限制
 
-![global-payments-page-129](images/3-global-payments-page-129.webp)
+![global-payments-page-129](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-129.webp)
 
 *香港 FPS 账户信息页面*
 
@@ -677,7 +677,7 @@ Stripe 适合需要深度集成和支付生态的业务，PayPal 适合客户已
 
 ### Supabase：通过 Mercury 合作渠道兑换额度
 
-![global-payments-page-139](images/3-global-payments-page-139.webp)
+![global-payments-page-139](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-139.webp)
 
 *Mercury 合作福利申请页面*
 
@@ -697,7 +697,7 @@ Stripe 适合需要深度集成和支付生态的业务，PayPal 适合客户已
 
 ### Notion、Namecheap 与工具福利的持续管理
 
-![global-payments-page-144](images/3-global-payments-page-144.webp)
+![global-payments-page-144](https://img.threetwoa.live/posts/global-payments/3-global-payments-page-144.webp)
 
 *域名福利说明页面*
 

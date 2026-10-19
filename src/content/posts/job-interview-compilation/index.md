@@ -352,7 +352,7 @@ SSP 听起来玄，路径其实朴素：八股压到秒级反应，再用实习�
 
 ## 双非本科、211 硕士，零基础进入大模型公司
 
-![双非本科、211 硕士，零基础进入大模型公司·概览](images/7-overview.webp)
+![双非本科、211 硕士，零基础进入大模型公司·概览](https://img.threetwoa.live/posts/job-interview-compilation/7-overview.webp)
 
 # 普通学历小白如何从零拿到互联网实习
 

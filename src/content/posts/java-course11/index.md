@@ -405,7 +405,7 @@ Windows官方未提供原生支持，推荐使用 Docker 在 Windows 上运行 R
 
 安装完成之后，在安装目录下可看到如下目录文件：
 
-![图2-1 Memurai目录文件](images/2-1-2-1.png)
+![图2-1 Memurai目录文件](https://img.threetwoa.live/posts/java-course11/2-1-2-1.png)
 
 
 #### 2. 配置Memurai
@@ -421,7 +421,7 @@ Windows官方未提供原生支持，推荐使用 Docker 在 Windows 上运行 R
 
 默认情况下，Memurai是已以Windows服务的方式自动启动了，可以请按下`Win + R`组合键打开运行窗口，输入services.msc并点击确定。在服务管理窗口中，找到Memurai服务，对其进行管理，比如启动方式改为手动，将服务关闭、启动等。
 
-![图2-2 Memurai服务](images/2-1-2-2.png)
+![图2-2 Memurai服务](https://img.threetwoa.live/posts/java-course11/2-1-2-2.png)
 
 
 启动完成后，打开命令行工具（如Windows PowerShell或cmd），输入memurai-cli命令即可进入Memurai的命令行界面。

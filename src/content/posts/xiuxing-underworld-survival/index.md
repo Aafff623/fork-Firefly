@@ -24,7 +24,7 @@ comment: true
 
 ## 一、死后魂魄去向与审判流程
 
-![地府（一）__01-死后魂魄与审判流程](images/1-fig-1.webp)
+![地府（一）__01-死后魂魄与审判流程](https://img.threetwoa.live/posts/xiuxing-underworld-survival/1-fig-1.webp)
 
 ### 1. 魂魄分离与勾魂流程
 
@@ -61,7 +61,7 @@ comment: true
 
 ## 二、亡魂的形态、疾病与家庭
 
-![地府（一）__02-亡魂形态疾病与家庭](images/1-fig-2.webp)
+![地府（一）__02-亡魂形态疾病与家庭](https://img.threetwoa.live/posts/xiuxing-underworld-survival/1-fig-2.webp)
 
 ### 1. 外貌变化
 
@@ -90,7 +90,7 @@ comment: true
 
 ## 三、九幽阴间的世界设定
 
-![地府（一）__03-九幽阴间世界设定](images/1-fig-3.webp)
+![地府（一）__03-九幽阴间世界设定](https://img.threetwoa.live/posts/xiuxing-underworld-survival/1-fig-3.webp)
 
 ### 1. 环境与时间
 
@@ -120,7 +120,7 @@ comment: true
 
 ## 一、衣着：鬼魂穿什么，衣服有什么功能
 
-![地府（二）__01-衣着与法器衣物](images/2-fig-1.webp)
+![地府（二）__01-衣着与法器衣物](https://img.threetwoa.live/posts/xiuxing-underworld-survival/2-fig-1.webp)
 
 下面的人穿的衣服，首先有天然材质的，你给它烧的话，可以烧天然材质的，比如像纸、棉、棉花纸这种，是能够正常烧下去的。如果说衣服就是那种纸衣服，不是特别精致，比如没有扣子、没有口袋，是画出来的那种，没关系，它烧下去自然而然就会变成衣服。一般棉的比较多，像寒衣节的时候，你可以给祖先烧纸衣，也可以。但如果是棉的，细节肯定更好一点，下去的话质量也会更好一点。
 
@@ -132,7 +132,7 @@ comment: true
 
 ## 二、饮食：鬼魂如何进食与供奉要点
 
-![地府（二）__02-饮食与食气供奉](images/2-fig-2.webp)
+![地府（二）__02-饮食与食气供奉](https://img.threetwoa.live/posts/xiuxing-underworld-survival/2-fig-2.webp)
 
 ### 1. 鬼魂吃气不吃实物
 
@@ -160,7 +160,7 @@ comment: true
 
 ## 三、居住：九幽的房屋与区域安全
 
-![地府（二）__03-居住区域与安全](images/2-fig-3.webp)
+![地府（二）__03-居住区域与安全](https://img.threetwoa.live/posts/xiuxing-underworld-survival/2-fig-3.webp)
 
 ### 1. 城中：最安全且利于修行
 
@@ -188,7 +188,7 @@ comment: true
 
 ## 四、冥界通货：元宝、香烛与纸钱
 
-![地府（二）__04-冥界通货元宝香烛纸钱](images/2-fig-4.webp)
+![地府（二）__04-冥界通货元宝香烛纸钱](https://img.threetwoa.live/posts/xiuxing-underworld-survival/2-fig-4.webp)
 
 再讲一下大家很关心的米的问题，这个真的是重点，一定要记下来。上一个视频私信少说有十几个人问我，全部都是问怎么样化宝，怎么样下面的人能收到这个问题，我今天着重讲一下。
 
@@ -216,7 +216,7 @@ comment: true
 
 ## 五、祭祀指南：如何确保祖先收到财物
 
-![地府（二）__05-祭祀与运送供物](images/2-fig-5.webp)
+![地府（二）__05-祭祀与运送供物](https://img.threetwoa.live/posts/xiuxing-underworld-survival/2-fig-5.webp)
 
 最后再讲一下，怎么样把我们这些东西给祖先，能够确保他们最大限额能够拿到。
 
@@ -241,11 +241,11 @@ comment: true
 
 ### 九幽的居民与城市
 
-![地府（三）__01-九幽居民与城市](images/3-fig-1.webp)
+![地府（三）__01-九幽居民与城市](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-1.webp)
 
 ## 九幽有哪些居民
 
-![地府（三）__06-九幽居民的种族](images/3-fig-2.webp)
+![地府（三）__06-九幽居民的种族](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-2.webp)
 
 九幽居民的种族很多，大致可以分为以下几类：
 
@@ -257,7 +257,7 @@ comment: true
 
 ## 从古代土屋到现代高楼
 
-![地府（三）__07-古代土屋到现代高楼](images/3-fig-3.webp)
+![地府（三）__07-古代土屋到现代高楼](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-3.webp)
 
 很多人都做过与阴间有关的梦，梦见阴间的天气、建筑，或者收到过世家人的托梦。有人问我：“玄灵，为什么有时会梦见矮矮的土墙、灰蒙蒙的环境，以及非常老旧的木屋；有时又会梦见过世的爷爷奶奶住在灯火通明的高楼大厦里？”
 
@@ -269,7 +269,7 @@ comment: true
 
 ## 房子是怎么建成的
 
-![地府（三）__08-九幽房屋如何建成](images/3-fig-4.webp)
+![地府（三）__08-九幽房屋如何建成](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-4.webp)
 
 九幽的房子并不是由建筑工人一砖一瓦垒起来的。这里可以类比一部电影中的设定：一位建筑师在梦中可以按照脑海里的蓝图，直接创造出建筑物。
 
@@ -277,11 +277,11 @@ comment: true
 
 ### 鬼市与九幽的热门行业
 
-![地府（三）__02-鬼市与九幽热门行业](images/3-fig-5.webp)
+![地府（三）__02-鬼市与九幽热门行业](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-5.webp)
 
 ## 鬼市是什么
 
-![地府（三）__14-鬼市是什么](images/3-fig-6.webp)
+![地府（三）__14-鬼市是什么](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-6.webp)
 
 除了上班，九幽居民也有自己的娱乐和日常活动。至于工作的具体情况，内容比较多，可以留到下一期再讲。
 
@@ -291,7 +291,7 @@ comment: true
 
 ## 阴德交易市场
 
-![地府（三）__09-阴德交易市场](images/3-fig-7.webp)
+![地府（三）__09-阴德交易市场](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-7.webp)
 
 鬼市里存在**阴德交易市场**，其中有些交易合法，也有些是非法的。
 
@@ -305,7 +305,7 @@ comment: true
 
 ## 修炼资源与法器秘籍
 
-![地府（三）__10-修炼资源与法器秘籍](images/3-fig-8.webp)
+![地府（三）__10-修炼资源与法器秘籍](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-8.webp)
 
 鬼市也会出售修炼资源，例如小说里经常出现的丹药。鬼修同样需要修行，所以也会购买丹药；九幽的一些道士则会购买法器。
 
@@ -313,7 +313,7 @@ comment: true
 
 ## 吃香的阵法师
 
-![地府（三）__11-九幽阵法师](images/3-fig-9.webp)
+![地府（三）__11-九幽阵法师](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-9.webp)
 
 **阵法师**在九幽是非常吃香的行业。九幽地域广阔，整体上虽然由地府管辖，但各地又存在类似于诸侯割据的状态。不同界域都需要官方阵法师布置阵法，防止其他人未经许可直接越界。
 
@@ -329,11 +329,11 @@ comment: true
 
 ### 跨界服务与托梦业务
 
-![地府（三）__03-跨界服务与托梦业务](images/3-fig-10.webp)
+![地府（三）__03-跨界服务与托梦业务](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-10.webp)
 
 ## 托梦也可以定制
 
-![地府（三）__12-托梦定制梦境](images/3-fig-11.webp)
+![地府（三）__12-托梦定制梦境](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-11.webp)
 
 大家接触得比较多的跨界服务之一，就是**托梦业务**。很多人应该都被自家老祖宗托过梦。这项业务在九幽非常普遍，可能就像我们去营业厅办理套餐一样。
 
@@ -351,7 +351,7 @@ comment: true
 
 ## 墓碑和坟墓的作用
 
-![地府（三）__13-墓碑与坟墓定位传送](images/3-fig-12.webp)
+![地府（三）__13-墓碑与坟墓定位传送](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-12.webp)
 
 有一位粉丝问我：“墓碑和坟墓到底有什么作用？”
 
@@ -367,7 +367,7 @@ comment: true
 
 ## 阴间替身与伤害转移
 
-![地府（三）__15-阴间替身与伤害转移](images/3-fig-13.webp)
+![地府（三）__15-阴间替身与伤害转移](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-13.webp)
 
 另一种跨界服务叫作**替身**。阳间也有类似的说法，而阴间替身比较特殊的一点，是它可以替使用者承受来自阳间的伤害。
 
@@ -379,11 +379,11 @@ comment: true
 
 ### 九幽居民的日常娱乐
 
-![地府（三）__04-九幽居民的日常娱乐](images/3-fig-14.webp)
+![地府（三）__04-九幽居民的日常娱乐](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-14.webp)
 
 ## 通过意识连接的虚拟网络
 
-![地府（三）__16-意识连接的虚拟网络](images/3-fig-15.webp)
+![地府（三）__16-意识连接的虚拟网络](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-15.webp)
 
 九幽居民的日常娱乐，其实和阳间没有太大区别。九幽也有网络，只不过是一种**虚拟网络**。
 
@@ -393,7 +393,7 @@ comment: true
 
 ## 追星、影视与神仙吐槽
 
-![地府（三）__17-追星影视与神仙吐槽](images/3-fig-16.webp)
+![地府（三）__17-追星影视与神仙吐槽](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-16.webp)
 
 九幽居民也会追星。有些明星去世后尚未投胎，就可以继续运用生前掌握的技能，例如吹拉弹唱、表演和演戏。
 
@@ -403,7 +403,7 @@ comment: true
 
 ## 节日、宴会与婚姻
 
-![地府（三）__18-节日宴会与婚姻](images/3-fig-17.webp)
+![地府（三）__18-节日宴会与婚姻](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-17.webp)
 
 九幽居民也会举办宴会。清明节、中元节等重要日子到来时，他们会集中购物、应酬和办酒席。
 
@@ -413,11 +413,11 @@ comment: true
 
 ### 九幽的特色食物
 
-![地府（三）__05-九幽特色食物冰晶果](images/3-fig-18.webp)
+![地府（三）__05-九幽特色食物冰晶果](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-18.webp)
 
 ## 晶莹剔透的冰晶果
 
-![地府（三）__19-冰晶果](images/3-fig-19.webp)
+![地府（三）__19-冰晶果](https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-19.webp)
 
 九幽大部分食物与人间差不多，但也有一些当地特有的东西。
 
@@ -434,7 +434,7 @@ comment: true
 
 ## 一、阴间的工作体系与公务员
 
-![地府（四）__01-阴间工作体系与公务员](images/4-fig-1.webp)
+![地府（四）__01-阴间工作体系与公务员](https://img.threetwoa.live/posts/xiuxing-underworld-survival/4-fig-1.webp)
 
 ### 1. 功德分类与公务员录用
 
@@ -462,7 +462,7 @@ comment: true
 
 ## 二、阴间的职业选择与生活状态
 
-![地府（四）__02-阴间职业选择与生活状态](images/4-fig-2.webp)
+![地府（四）__02-阴间职业选择与生活状态](https://img.threetwoa.live/posts/xiuxing-underworld-survival/4-fig-2.webp)
 
 ### 1. 根据阳间技能选择职业
 
@@ -477,7 +477,7 @@ comment: true
 
 ## 三、常见疑问解答
 
-![地府（四）__03-阴间常见疑问解答](images/4-fig-3.webp)
+![地府（四）__03-阴间常见疑问解答](https://img.threetwoa.live/posts/xiuxing-underworld-survival/4-fig-3.webp)
 
 ### 1. 死后记忆是否保留？朋友还能一起玩吗？
 
@@ -514,7 +514,7 @@ comment: true
 
 ## 一、投胎时间与九幽世界
 
-![地府（五）__01-投胎时间与九幽世界](images/5-fig-1.webp)
+![地府（五）__01-投胎时间与九幽世界](https://img.threetwoa.live/posts/xiuxing-underworld-survival/5-fig-1.webp)
 
 ### 1. 投胎时间与排队机制
 
@@ -532,7 +532,7 @@ comment: true
 
 ## 二、麻醉、做梦与死亡的区别
 
-![地府（五）__02-麻醉做梦与死亡的区别](images/5-fig-2.webp)
+![地府（五）__02-麻醉做梦与死亡的区别](https://img.threetwoa.live/posts/xiuxing-underworld-survival/5-fig-2.webp)
 
 ### 1. 麻醉的玄学机制
 
@@ -548,13 +548,13 @@ comment: true
 
 ## 三、七情六欲与托梦表情
 
-![地府（五）__03-七情六欲与托梦表情](images/5-fig-3.webp)
+![地府（五）__03-七情六欲与托梦表情](https://img.threetwoa.live/posts/xiuxing-underworld-survival/5-fig-3.webp)
 
 再讲讲七情六欲。为什么有些人说亲人或别人托梦时，面目呆呆的，没有太多表情，有点空洞？首先我之前讲过，人噶了之后，你的**魄**是从谷道出的，就是从肠道出去，然后会去到地下，也就是幽冥界九幽。这个魄和魂会融合一部分，缺失掉一部分，会回到**地气**里面。所以魄主管七情六欲，感情上面可能会淡一点，但它是有记忆的，只是不像以前在阳间时那么容易动情。
 
 ## 四、焚烧物品的阴阳转化与注意事项
 
-![地府（五）__04-焚烧物品的阴阳转化](images/5-fig-4.webp)
+![地府（五）__04-焚烧物品的阴阳转化](https://img.threetwoa.live/posts/xiuxing-underworld-survival/5-fig-4.webp)
 
 ### 1. 无意识焚烧的转化
 
@@ -576,7 +576,7 @@ comment: true
 
 ## 五、轮回心态、魂飞魄散与灵魂多元性
 
-![地府（五）__05-轮回心态魂飞魄散与灵魂多元性](images/5-fig-5.webp)
+![地府（五）__05-轮回心态魂飞魄散与灵魂多元性](https://img.threetwoa.live/posts/xiuxing-underworld-survival/5-fig-5.webp)
 
 ### 1. 不想轮回的心态
 

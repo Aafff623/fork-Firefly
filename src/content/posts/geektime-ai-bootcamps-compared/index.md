@@ -41,7 +41,7 @@ Harness 四支柱是 System Prompt（CLAUDE.md/AGENTS.md）、Tools（Skills/Sla
 
 四个项目按难度递进，设计得很讲究：
 
-![编程实战营四个实战项目](./images/s33-projects.jpg)
+![编程实战营四个实战项目](https://img.threetwoa.live/posts/geektime-ai-bootcamps-compared/s33-projects.jpg)
 
 1. **OryxOS（AgentOS 操作系统）**：从零造系统底座。Agent 进程模型、工作空间隔离（Linux namespaces/cgroups/seccomp）、多模型路由（planning/synthesis/failover）、MCP 集成、多渠道接入（REST + IM）、Docker/K8s 上云。
 2. **When（分布式延时投递服务）**：0→1 写自己的代码。多层时间轮、gRPC、Redis 持久化、etcd 选主与 watch、故障切换、混沌测试、Headless Mode 接 CI。技术选型讲得很实：为什么 etcd 不选 Consul/ZooKeeper，为什么 gRPC 不选 HTTP。
@@ -54,7 +54,7 @@ Harness 四支柱是 System Prompt（CLAUDE.md/AGENTS.md）、Tools（Skills/Sla
 
 这门课是三门里技术密度最高的，主线是**用 14 周、6 个项目，从零搭出一个生产级 Agent 工程平台**。七章结构就是平台的七层：
 
-![Agent 全栈营六大项目](./images/s35-projects.jpg)
+![Agent 全栈营六大项目](https://img.threetwoa.live/posts/geektime-ai-bootcamps-compared/s35-projects.jpg)
 
 - **第一章 LLM API 层**：Chat Completions/Responses API、SSE 流式（FastAPI StreamingResponse + EventSource）、JSON Schema + Pydantic 双侧校验的结构化输出，实战是自建 LLM Gateway——OpenAI Compatible 协议封装、多模型路由、限流 fallback、Token/Cost/Latency 日志。
 - **第二章 工具层**：Function Calling 只是"模型怎么选工具"，配套还要 Tool Registry（注册/发现/版本/启停）、参数校验、RBAC 权限分级（只读/写/高风险/需确认）、审计与 Trace；MCP 负责"工具怎么标准化接入"。
@@ -66,7 +66,7 @@ Harness 四支柱是 System Prompt（CLAUDE.md/AGENTS.md）、Tools（Skills/Sla
 
 两个细节值得注意：一是课程明确教"何时不用 Agent"——极强确定性、不允许容错、脚本就能干的活不要过度 Agent 化；二是收官有简历/面试表达专项，教你怎么把 Tool Runtime、Eval 平台这些项目经验讲成业务价值。
 
-![Agent 全栈营两位讲师](./images/s35-instructors.jpg)
+![Agent 全栈营两位讲师](https://img.threetwoa.live/posts/geektime-ai-bootcamps-compared/s35-instructors.jpg)
 
 ## 产品训练营：零代码，但 Eval 和数据飞轮不含糊
 

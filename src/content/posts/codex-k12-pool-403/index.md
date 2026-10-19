@@ -99,4 +99,4 @@ comment: true
 
 下面这张终端长图是排查全程的复盘，从「以为服务挂了」到「service_tier 才是真凶」，每一步的判断和被事实打脸的地方都留着，算这趟折腾的纪念：
 
-![排查全程复盘记录](./images/fig-struggle-log.jpg)
+![排查全程复盘记录](https://img.threetwoa.live/posts/codex-k12-pool-403/fig-struggle-log.jpg)

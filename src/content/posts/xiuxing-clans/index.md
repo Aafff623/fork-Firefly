@@ -19,7 +19,7 @@ comment: true
 
 ## 从祖龙到原初龙族
 
-![龙族__06-从祖龙到原初龙族](images/1-fig-1.webp)
+![龙族__06-从祖龙到原初龙族](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-1.webp)
 
 今天聊一聊法界的大家族——**龙族**。
 
@@ -35,7 +35,7 @@ comment: true
 
 ## 巫妖大战与三界分化
 
-![龙族__07-巫妖大战与三界分化](images/1-fig-2.webp)
+![龙族__07-巫妖大战与三界分化](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-2.webp)
 
 龙凤初劫之后，便来到了上古巫妖大战时期。喜欢洪荒题材的人，应该对这场久远的大战有所了解。
 
@@ -60,11 +60,11 @@ comment: true
 
 ### 西安、成都疑似“龙影”事件
 
-![龙族__01-西安成都疑似龙影事件](images/1-fig-3.webp)
+![龙族__01-西安成都疑似龙影事件](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-3.webp)
 
 ## 普通人能否拍到龙族
 
-![龙族__08-普通人能否拍到龙族](images/1-fig-4.webp)
+![龙族__08-普通人能否拍到龙族](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-4.webp)
 
 前段时间，有人在西安、成都等地拍摄了一些视频，声称空中可能出现了龙。也有人认为，视频里的东西只是塑料袋之类的物体。
 
@@ -82,7 +82,7 @@ comment: true
 
 ## 泰山上空与磁场变化
 
-![龙族__09-泰山上空与磁场变化](images/1-fig-5.webp)
+![龙族__09-泰山上空与磁场变化](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-5.webp)
 
 有天眼的人可以经常观察泰山上空。泰山本身有诸多神明，泰山上空也经常会有龙出现。
 
@@ -92,11 +92,11 @@ comment: true
 
 ### 龙族的主要分类
 
-![龙族__02-龙族主要分类](images/1-fig-6.webp)
+![龙族__02-龙族主要分类](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-6.webp)
 
 ## 天龙
 
-![龙族__10-天龙](images/1-fig-7.webp)
+![龙族__10-天龙](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-7.webp)
 
 天龙之中包括**金龙族**和**银龙族**。顾名思义，金龙的原形呈金色，银龙的原形则呈银色。
 
@@ -106,7 +106,7 @@ comment: true
 
 ## 四海龙族
 
-![龙族__11-四海龙族](images/1-fig-8.webp)
+![龙族__11-四海龙族](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-8.webp)
 
 四海龙族分别对应东海、西海、南海和北海：
 
@@ -127,7 +127,7 @@ comment: true
 
 ## 地龙
 
-![龙族__12-地龙](images/1-fig-9.webp)
+![龙族__12-地龙](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-9.webp)
 
 地龙的范围比较广泛，包括：
 
@@ -143,11 +143,11 @@ comment: true
 
 ### 龙族的姓氏、性格与职责
 
-![龙族__03-龙族姓氏性格与职责](images/1-fig-10.webp)
+![龙族__03-龙族姓氏性格与职责](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-10.webp)
 
 ## 龙族常见姓氏
 
-![龙族__13-龙族常见姓氏](images/1-fig-11.webp)
+![龙族__13-龙族常见姓氏](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-11.webp)
 
 大家听得比较多的是**敖姓**，例如敖丙。除此之外，龙族还有其他姓氏：
 
@@ -158,7 +158,7 @@ comment: true
 
 ## 龙族的性格特点
 
-![龙族__14-龙族的性格特点](images/1-fig-12.webp)
+![龙族__14-龙族的性格特点](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-12.webp)
 
 龙族通常比较高傲、霸气，也非常孤傲，但并不是所有龙都如此。有些龙性格温柔，也有一些非常可爱。
 
@@ -166,7 +166,7 @@ comment: true
 
 ## 龙族承担的职位
 
-![龙族__15-龙族承担的职位](images/1-fig-13.webp)
+![龙族__15-龙族承担的职位](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-13.webp)
 
 新天庭成立后，龙族签下契约，为天庭服务。佛家、道家体系中都有龙族任职。
 
@@ -188,11 +188,11 @@ comment: true
 
 ### 蛇、蟒、蛟与龙的进化
 
-![龙族__04-蛇蟒蛟龙的进化](images/1-fig-14.webp)
+![龙族__04-蛇蟒蛟龙的进化](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-14.webp)
 
 ## 龙族与上古灵蛇族的区别
 
-![龙族__16-龙族与上古灵蛇族的区别](images/1-fig-15.webp)
+![龙族__16-龙族与上古灵蛇族的区别](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-15.webp)
 
 蛇与蟒的本源，大部分来自龙族，也有少部分来自**上古灵蛇族**。
 
@@ -202,7 +202,7 @@ comment: true
 
 ## 从蛇到龙的修炼阶段
 
-![龙族__17-从蛇到龙的修炼阶段](images/1-fig-16.webp)
+![龙族__17-从蛇到龙的修炼阶段](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-16.webp)
 
 蛇、蟒、蛟化龙，大致要经历以下阶段：
 
@@ -224,7 +224,7 @@ comment: true
 
 ## 化龙时的雷劫
 
-![龙族__18-化龙时的雷劫](images/1-fig-17.webp)
+![龙族__18-化龙时的雷劫](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-17.webp)
 
 到了蛟化龙的阶段，劫难会变得非常困难。化龙时肯定要渡雷劫，而且往往不只渡一次。
 
@@ -232,7 +232,7 @@ comment: true
 
 ### 为什么我们被称为“龙的传人”
 
-![龙族__05-为什么是龙的传人](images/1-fig-18.webp)
+![龙族__05-为什么是龙的传人](https://img.threetwoa.live/posts/xiuxing-clans/1-fig-18.webp)
 
 很多人一直疑惑，为什么中国人会被称为“龙的传人”。
 
@@ -245,7 +245,7 @@ comment: true
 
 ### 狐族：五大家族中的庞大体系
 
-![狐族__01-狐族五大家族庞大体系](images/2-fig-1.webp)
+![狐族__01-狐族五大家族庞大体系](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-1.webp)
 
 大家好，我是玄灵。今天开启一个新的系列，讲讲修真或日常生活中经常会遇到的一些大家族，也给大家做一点简单的科普。
 
@@ -255,11 +255,11 @@ comment: true
 
 ### 狐族的主要族群与界域
 
-![狐族__02-狐族主要族群与界域](images/2-fig-2.webp)
+![狐族__02-狐族主要族群与界域](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-2.webp)
 
 ## 不同地区的狐族分支
 
-![狐族__07-不同地区狐族分支](images/2-fig-3.webp)
+![狐族__07-不同地区狐族分支](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-3.webp)
 
 狐族内部有许多种群，也可以叫作族群。比较广为人知的包括：
 
@@ -275,7 +275,7 @@ comment: true
 
 ## 高维空间与法界投射
 
-![狐族__08-高维空间与法界投射](images/2-fig-4.webp)
+![狐族__08-高维空间与法界投射](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-4.webp)
 
 像青丘、昆仑这类地界，其实可以理解为其他维度的空间。有些界域投射到地球上，对应长白山等地；青丘在地球上也有一些投射点，但它本身属于一个高维空间。
 
@@ -285,11 +285,11 @@ comment: true
 
 ### 天狐、地狐与狐族的修行
 
-![狐族__03-天狐地狐与狐族修行](images/2-fig-5.webp)
+![狐族__03-天狐地狐与狐族修行](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-5.webp)
 
 ## 天狐与地狐的区别
 
-![狐族__09-天狐与地狐的区别](images/2-fig-6.webp)
+![狐族__09-天狐与地狐的区别](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-6.webp)
 
 从类别上来说，狐族可以分为天狐、地狐等。
 
@@ -301,7 +301,7 @@ comment: true
 
 ## 吸收日月精华
 
-![狐族__10-吸收日月精华](images/2-fig-7.webp)
+![狐族__10-吸收日月精华](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-7.webp)
 
 狐族最常见的修行方式之一，就是吸收日月精华。这是一种修丹的方式，通过长期吸收日月之力，慢慢积累修为。
 
@@ -311,7 +311,7 @@ comment: true
 
 ## 接受族内传承
 
-![狐族__11-接受族内传承](images/2-fig-8.webp)
+![狐族__11-接受族内传承](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-8.webp)
 
 狐族内部也有已经得道飞升的老祖。老祖下界后，会向族内传授功法。族内长老也会挑选一些体质特别好、灵性特别高的小狐狸，把相应的功法传给它们。
 
@@ -319,7 +319,7 @@ comment: true
 
 ## 拜斗与星辰之力
 
-![狐族__12-拜斗与星辰之力](images/2-fig-9.webp)
+![狐族__12-拜斗与星辰之力](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-9.webp)
 
 狐族还可以通过**拜斗**修行。这里的拜斗，一般指北斗、南斗以及诸天星斗。通过拜斗，可以吸收诸天星斗之力，用来增强自身修为。
 
@@ -327,11 +327,11 @@ comment: true
 
 ### 狐族的考试与“编制”
 
-![狐族__04-狐族考试与编制](images/2-fig-10.webp)
+![狐族__04-狐族考试与编制](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-10.webp)
 
 ## 狐族为什么要参加考试
 
-![狐族__13-狐族为什么要参加考试](images/2-fig-11.webp)
+![狐族__13-狐族为什么要参加考试](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-11.webp)
 
 狐族同样需要参加考试，有点类似于人间的“考编”。狐族拥有自己的法界，考试成功后，就可以进入相应的法界任职，获得一官半职。
 
@@ -341,7 +341,7 @@ comment: true
 
 ## 通过考试后的去向
 
-![狐族__14-通过考试后的去向](images/2-fig-12.webp)
+![狐族__14-通过考试后的去向](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-12.webp)
 
 狐族通过考试后，就相当于有了一定的“编制”，可以称得上是神仙，而不再只是妖。通过考试的狐仙，通常有以下几种去向：
 
@@ -359,11 +359,11 @@ comment: true
 
 ### 狐仙与野狐的区别
 
-![狐族__05-狐仙与野狐的区别](images/2-fig-13.webp)
+![狐族__05-狐仙与野狐的区别](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-13.webp)
 
 ## 没有手续的“私自修炼”
 
-![狐族__15-没有手续的私自修炼](images/2-fig-14.webp)
+![狐族__15-没有手续的私自修炼](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-14.webp)
 
 如果狐族不愿意参加考试，等待它的出路可能就只有成为**野狐**。野狐也就是大家平时所说的山精野怪。野狐同样可以修炼，但这种修炼属于私自修炼，没有正式传承，也没有任何地方记录它的身份。
 
@@ -375,7 +375,7 @@ comment: true
 
 ### 人身为何难得
 
-![狐族__06-人身为何难得](images/2-fig-15.webp)
+![狐族__06-人身为何难得](https://img.threetwoa.live/posts/xiuxing-clans/2-fig-15.webp)
 
 狐族虽然在五大家族中算是比较容易修行的，而且狐族肉身的灵性与慧根也比较强，在五大家族中甚至可以说是最大的，但与人类相比，它们的修炼仍然非常困难。
 
@@ -394,7 +394,7 @@ comment: true
 
 ## 一、凤族分类与主要成员
 
-![凤族__01-凤族分类与主要成员](images/3-fig-1.webp)
+![凤族__01-凤族分类与主要成员](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-1.webp)
 
 凤族旁系和旁支特别多，分类也很多。
 
@@ -412,7 +412,7 @@ comment: true
 
 ## 二、凤族姓氏与血脉传承
 
-![凤族__02-凤族姓氏与血脉传承](images/3-fig-2.webp)
+![凤族__02-凤族姓氏与血脉传承](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-2.webp)
 
 凤族的姓氏主要有：**凤、风、孔、鹏、青、雷**。其中凤是最大的大姓。这里提一个**畲族**，畲族是中国的一个少数民族，人数很少，整个畲族都有太昊血脉，也有凤族血脉。他们的祖先三公主是人类，但其实是凤族转世，出生时百鸟朝凤，非常华丽，所以畲族整体带这个血脉。畲族中也有姓雷、孔等。
 
@@ -420,13 +420,13 @@ comment: true
 
 ## 三、凤族在人间与法界的居所
 
-![凤族__03-凤族人间与法界居所](images/3-fig-3.webp)
+![凤族__03-凤族人间与法界居所](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-3.webp)
 
 凤族在人间比较大的一个主庭，在昆仑东域，这里是整个凤凰的主庭，有很多凤凰栖息的树。在人间对应的是青海的扎麻隆凤凰山，这基本是最大的一个凤凰主庭。如果对凤凰凤族元素有兴趣的人可以去看一下。此外，四川、云南、河南的一些区域也有凤凰存在。
 
 ## 四、凤族外观与修行特点
 
-![凤族__04-凤族外观与修行特点](images/3-fig-4.webp)
+![凤族__04-凤族外观与修行特点](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-4.webp)
 
 凤凰的颜色，有赤、青、金、七彩等颜色。瞳色（眼睛颜色）有金色、赤色、紫色、黑色、青色等。
 
@@ -436,7 +436,7 @@ comment: true
 
 ## 五、凤族个性与天赋能力
 
-![凤族__05-凤族个性与天赋能力](images/3-fig-5.webp)
+![凤族__05-凤族个性与天赋能力](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-5.webp)
 
 凤族的个性：据我所知接触的凤族，都不是很爱金银珠宝，不是很物质，但都很爱美，每天喜欢打扮自己、照镜子。对感情都不是恋爱脑，对感情看得很淡，允许接触感情但不执着。但非常专一，一旦认定一个人之后就不会再更改，无论那个人对他怎么样，都不会更改。无论男凤还是女凤都很专一，大多数一夫一妻，认定后不改变。
 
@@ -448,7 +448,7 @@ comment: true
 
 ## 六、凤族在天界的职位与功能
 
-![凤族__06-凤族天界职位与功能](images/3-fig-6.webp)
+![凤族__06-凤族天界职位与功能](https://img.threetwoa.live/posts/xiuxing-clans/3-fig-6.webp)
 
 凤凰在天上担任很多职位。首先星宿这里有朱雀神君，南明离火，朱雀也属于凤族一类。九天玄女的坐骑以及身边护法、士兵、官员，很多都是凤族派来的，因为凤族与九天玄女签订了友好协议。
 
@@ -465,7 +465,7 @@ comment: true
 
 ## 黄仙的原型与地位
 
-![黄仙__03-黄仙原型与地位](images/4-fig-1.webp)
+![黄仙__03-黄仙原型与地位](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-1.webp)
 
 在“胡黄白柳灰”五大家族中，**黄仙排行第二**，地位很高。黄仙的原型就是大家熟悉的黄鼠狼，属于**鼬科动物**，民间通常称其为“黄大仙”。
 
@@ -475,7 +475,7 @@ comment: true
 
 ## 肉身寿限与“电量”比喻
 
-![黄仙__04-肉身寿限与电量比喻](images/4-fig-2.webp)
+![黄仙__04-肉身寿限与电量比喻](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-2.webp)
 
 每个种族都有自身的寿限，人类也不例外。人类的寿限大概是一百二十多岁，可以把它理解成手机的电量：
 
@@ -487,7 +487,7 @@ comment: true
 
 ## 百年修行与毛色变化
 
-![黄仙__05-百年修行与毛色变化](images/4-fig-3.webp)
+![黄仙__05-百年修行与毛色变化](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-3.webp)
 
 如果黄仙已经通灵，本身先天资源很好，又出生在大家族中，有家族长老传授功法，同时所在的山林、洞天灵气充足，它就可能持续修行到一百年。
 
@@ -502,11 +502,11 @@ comment: true
 
 ### 三灾九难与雷劫化形
 
-![黄仙__01-三灾九难与雷劫化形](images/4-fig-4.webp)
+![黄仙__01-三灾九难与雷劫化形](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-4.webp)
 
 ## 五百年雷劫
 
-![黄仙__06-五百年雷劫](images/4-fig-5.webp)
+![黄仙__06-五百年雷劫](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-5.webp)
 
 无论动物修行还是人类修行，都会经历所谓的**三灾九难**。一般来说，动物修行到五百年左右，会经历一次与化形有关的雷劫。化形之劫比普通劫难更难度过，通常要面对雷劫。
 
@@ -514,7 +514,7 @@ comment: true
 
 ## 雷击木的形成
 
-![黄仙__07-雷击木的形成](images/4-fig-6.webp)
+![黄仙__07-雷击木的形成](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-6.webp)
 
 雷部降雷时，并不知道外面有树木替仙家挡灾。树木本身没有这场劫，却因帮助仙家承受雷击而变成**雷击木**。
 
@@ -522,11 +522,11 @@ comment: true
 
 ### 黄仙的性格与行事方式
 
-![黄仙__02-黄仙性格与行事方式](images/4-fig-7.webp)
+![黄仙__02-黄仙性格与行事方式](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-7.webp)
 
 ## 讲义气、守信用，也非常记仇
 
-![黄仙__08-讲义气守信用也记仇](images/4-fig-8.webp)
+![黄仙__08-讲义气守信用也记仇](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-8.webp)
 
 黄仙非常讲义气，同时也很记仇。只要答应了别人一件事，就一定会尽力办成；但如果别人答应它的事情没有做到，它也可能找上门来，严重时甚至会反目成仇，具体取决于事情的大小。
 
@@ -536,7 +536,7 @@ comment: true
 
 ## 对恩情极为看重
 
-![黄仙__09-黄仙看重恩情](images/4-fig-9.webp)
+![黄仙__09-黄仙看重恩情](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-9.webp)
 
 五大家族之中，黄家对“报恩”尤其看重。平时大家听得较多的可能是胡家报恩，但实际上，黄家同样极其重视恩情，这与它们讲义气、守承诺的性格有关。
 
@@ -547,11 +547,11 @@ comment: true
 
 ### 黄家的家族分支与地域分布
 
-![黄仙__10-黄家族群与地域分布](images/4-fig-10.webp)
+![黄仙__10-黄家族群与地域分布](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-10.webp)
 
 ## 家族庞大而团结
 
-![黄仙__11-黄家族群庞大而团结](images/4-fig-11.webp)
+![黄仙__11-黄家族群庞大而团结](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-11.webp)
 
 黄仙的原型繁殖能力较强，因此黄家整体规模很大，内部也有许多分支。不过，它们基本上都以“黄”为姓，一些上方仙家同样姓黄。
 
@@ -567,11 +567,11 @@ comment: true
 
 ### 黄仙擅长的术法与能力
 
-![黄仙__12-黄仙擅长的术法与能力](images/4-fig-12.webp)
+![黄仙__12-黄仙擅长的术法与能力](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-12.webp)
 
 ## 阵法、幻术与变化之术
 
-![黄仙__13-阵法幻术与变化之术](images/4-fig-13.webp)
+![黄仙__13-阵法幻术与变化之术](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-13.webp)
 
 黄仙首先很擅长阵法，其中包括：
 
@@ -588,7 +588,7 @@ comment: true
 
 ## 招财与经商
 
-![黄仙__14-招财与经商](images/4-fig-14.webp)
+![黄仙__14-招财与经商](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-14.webp)
 
 黄仙非常擅长**招财**。它们在法界乃至六道之中都有经商活动，而且黄家的经商模式往往是整个家族共同参与。黄家内部十分团结，基本不会出现明显的内斗，遇事讲究“一方有难，八方支援”，因此很适合经商。
 
@@ -596,7 +596,7 @@ comment: true
 
 ## 占卜与人情世故
 
-![黄仙__15-占卜与人情世故](images/4-fig-15.webp)
+![黄仙__15-占卜与人情世故](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-15.webp)
 
 黄仙的占卜、看卦能力也比较强，往往比较灵。由于它们家族庞大、内部团结，人脉也非常广，很懂人情世故。
 
@@ -604,11 +604,11 @@ comment: true
 
 ### 黄仙的修行瓶颈
 
-![黄仙__16-黄仙的修行瓶颈](images/4-fig-16.webp)
+![黄仙__16-黄仙的修行瓶颈](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-16.webp)
 
 ## 易通灵，却难以继续精进
 
-![黄仙__17-易通灵却难以继续精进](images/4-fig-17.webp)
+![黄仙__17-易通灵却难以继续精进](https://img.threetwoa.live/posts/xiuxing-clans/4-fig-17.webp)
 
 黄仙有一点常被忽略：它们虽然很容易通灵、化形，肉身也天生适合修行，但到了后期，想继续提升却非常困难。
 

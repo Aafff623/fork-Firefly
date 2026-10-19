@@ -33,7 +33,7 @@ comment: true
 
 ## 网络
 
-![网络与存储海报](./images/fig-01-network-storage.jpg)
+![网络与存储海报](https://img.threetwoa.live/posts/ops-glossary-illustrated/fig-01-network-storage.jpg)
 
 | 术语 | 在说什么 |
 |------|--------|
@@ -56,7 +56,7 @@ comment: true
 
 ## 安全
 
-![虚拟化·安全·监控](./images/fig-02-virt-security.jpg)
+![虚拟化·安全·监控](https://img.threetwoa.live/posts/ops-glossary-illustrated/fig-02-virt-security.jpg)
 
 | 术语 | 在说什么 |
 |------|--------|
@@ -77,15 +77,15 @@ IDS 看、IPS 拦——面试爱问这对，海报也是这么切的。
 | Prometheus | 开源监控告警工具包，出身 SoundCloud。 | 05 |
 | Grafana | 度量分析与可视化面板，常接各类时序源。 | 05 |
 
-![库·日志·K8s](./images/fig-04-db-elk-k8s.jpg)
+![库·日志·K8s](https://img.threetwoa.live/posts/ops-glossary-illustrated/fig-04-db-elk-k8s.jpg)
 
-![Prom·配置管理·云厂商](./images/fig-05-prom-cloud.jpg)
+![Prom·配置管理·云厂商](https://img.threetwoa.live/posts/ops-glossary-illustrated/fig-05-prom-cloud.jpg)
 
 Zabbix/Nagios 是「传统主机监控」那一挂；Prom+Grafana 是云原生指标栈常见组合；ELK 主攻日志。别混成一个「监控」糊过去。
 
 ## 自动化与配置管理
 
-![Ansible 与云模型](./images/fig-03-ansible-cloud.jpg)
+![Ansible 与云模型](https://img.threetwoa.live/posts/ops-glossary-illustrated/fig-03-ansible-cloud.jpg)
 
 | 术语 | 在说什么 |
 |------|--------|

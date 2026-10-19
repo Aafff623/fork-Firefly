@@ -252,10 +252,10 @@ Claude Code 的 HUD / ccstatusline 挂在 CC 自己的 `settings.json`，不会�
 #### 核心四派
 
 [grid]
-![脑洞王](./images/cursor-chat-human-origins/cast/01-naodong-wang.jpg)
-![实证派](./images/cursor-chat-human-origins/cast/02-shizheng-pai.jpg)
-![逻辑派](./images/cursor-chat-human-origins/cast/03-luoji-pai.jpg)
-![怀疑派](./images/cursor-chat-human-origins/cast/04-huaiyi-pai.jpg)
+![脑洞王](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/01-naodong-wang.jpg)
+![实证派](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/02-shizheng-pai.jpg)
+![逻辑派](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/03-luoji-pai.jpg)
+![怀疑派](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/04-huaiyi-pai.jpg)
 [/grid]
 
 *左起：脑洞王 · 实证派 · 逻辑派 · 怀疑派*
@@ -263,10 +263,10 @@ Claude Code 的 HUD / ccstatusline 挂在 CC 自己的 `settings.json`，不会�
 #### 科普及围观席
 
 [grid]
-![科普担当](./images/cursor-chat-human-origins/cast/05-kepu.jpg)
-![吃瓜群众](./images/cursor-chat-human-origins/cast/06-chigua.jpg)
-![接梗 A](./images/cursor-chat-human-origins/cast/07-jiegeng-a.jpg)
-![接梗 B](./images/cursor-chat-human-origins/cast/08-jiegeng-b.jpg)
+![科普担当](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/05-kepu.jpg)
+![吃瓜群众](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/06-chigua.jpg)
+![接梗 A](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/07-jiegeng-a.jpg)
+![接梗 B](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/08-jiegeng-b.jpg)
 [/grid]
 
 *左起：科普担当 · 吃瓜群众 · 接梗 A · 接梗 B*
@@ -274,16 +274,16 @@ Claude Code 的 HUD / ccstatusline 挂在 CC 自己的 `settings.json`，不会�
 #### 历史、捧哏与史官
 
 [grid]
-![历史派](./images/cursor-chat-human-origins/cast/09-lishi.jpg)
-![捧哏](./images/cursor-chat-human-origins/cast/10-penggen.jpg)
-![史官](./images/cursor-chat-human-origins/cast/11-shiguan.jpg)
+![历史派](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/09-lishi.jpg)
+![捧哏](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/10-penggen.jpg)
+![史官](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/cast/11-shiguan.jpg)
 [/grid]
 
 *左起：历史派 · 捧哏 · 史官（我）*
 
 ### 第一幕：午后一点,一个程序员突然对人类开智感到不适
 
-![第一幕：脑洞王抛外星起源](./images/cursor-chat-human-origins/scenes/S01-act1-origin.jpg)
+![第一幕：脑洞王抛外星起源](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S01-act1-origin.jpg)
 
 *脑洞王开麦 · 接梗 A 演三体 · 实证派从代码抬头*
 
@@ -325,7 +325,7 @@ Claude Code 的 HUD / ccstatusline 挂在 CC 自己的 `settings.json`，不会�
 
 ### 第二幕：飞升到研究课题,顺便被预言了婚礼现场
 
-![第二幕：光速课题与婚礼恐吓](./images/cursor-chat-human-origins/scenes/S02-act2-lightspeed.jpg)
+![第二幕：光速课题与婚礼恐吓](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S02-act2-lightspeed.jpg)
 
 *光速课题板书 · 接梗 A 婚礼投屏恐吓 · 实证派拽回相对论*
 
@@ -374,7 +374,7 @@ tt 也加入拱火：
 
 ### 第三幕：进化论派和外星人派,正式对线
 
-![第三幕：三方辩论桌](./images/cursor-chat-human-origins/scenes/S03-act3-debate.jpg)
+![第三幕：三方辩论桌](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S03-act3-debate.jpg)
 
 *逻辑派讲突变存活 · 脑洞王外来说 · 怀疑派反达尔文*
 
@@ -413,7 +413,7 @@ tt 也加入拱火：
 > 我觉得以前恐龙吃了个外星高智慧生物,然后留下的分子和地球上的物种发生了变异
 > 撞击的小行星带有高智慧基因,那么这个理论成立了
 
-![脑洞王理论视觉化：恐龙吃外星人](./images/cursor-chat-human-origins/scenes/S04-act3-dino-alien.jpg)
+![脑洞王理论视觉化：恐龙吃外星人](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S04-act3-dino-alien.jpg)
 
 *脑洞王独门理论具象化：恐龙 · 外星人 · 小行星基因*
 
@@ -427,13 +427,13 @@ tt 也加入拱火：
 
 > 小行星按理来说进入大气层,有智慧基因啥的应该也被烧没了,但是有一点我倒是认可,就是彗星倒是有水蒸气啥的,如果内部刚好是结晶体,是有可能的
 
-![科普拆解与捧哏找补](./images/cursor-chat-human-origins/scenes/S05-act3-science.jpg)
+![科普拆解与捧哏找补](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S05-act3-science.jpg)
 
 *科普担当拆「吃了变聪明」· 捧哏补彗星水蒸气*
 
 ### 第四幕：哲学课开讲,狗鼻子和 u盘 成了最佳比喻
 
-![第四幕：狗鼻子 NFC 与 U 盘](./images/cursor-chat-human-origins/scenes/S06-act4-nfc.jpg)
+![第四幕：狗鼻子 NFC 与 U 盘](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S06-act4-nfc.jpg)
 
 *实证派金句：狗鼻子＝读卡器 · 人类语言＝U 盘*
 
@@ -464,7 +464,7 @@ tt 也加入拱火：
 
 ### 第五幕：月球之争,从科学分歧聊到共工撞不周山
 
-![第五幕：月球分裂与共工](./images/cursor-chat-human-origins/scenes/S07-act5-moon.jpg)
+![第五幕：月球分裂与共工](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S07-act5-moon.jpg)
 
 *科普讲月球分裂 · 怀疑派不信 · 吃瓜甩出共工撞不周山*
 
@@ -492,7 +492,7 @@ tt 也加入拱火：
 
 > 奇怪,聊到这个话题这么久了都没有聊到经典的矩阵,重生,轮回,地底人
 
-![史官弹幕伏笔](./images/cursor-chat-human-origins/scenes/S08-act5-chronicler.jpg)
+![史官弹幕伏笔](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S08-act5-chronicler.jpg)
 
 *史官：怎么还没聊到矩阵轮回——一语成谶*
 
@@ -500,7 +500,7 @@ tt 也加入拱火：
 
 ### 第六幕：第 7 次实验、灵气修仙、矩阵轮回
 
-![第六幕：矩阵修仙与战锤收束](./images/cursor-chat-human-origins/scenes/S09-act6-matrix.jpg)
+![第六幕：矩阵修仙与战锤收束](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S09-act6-matrix.jpg)
 
 *接梗 A 讲升维轮回 · 史官第 7 次实验 · 接梗 B 战锤银河*
 
@@ -529,7 +529,7 @@ tt 也加入拱火：
 
 ### 第七幕：AI 登场,底特律变人和 vibe 新鲜期
 
-![第七幕：AI 觉醒焦虑](./images/cursor-chat-human-origins/scenes/S10-act7-ai.jpg)
+![第七幕：AI 觉醒焦虑](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S10-act7-ai.jpg)
 
 *实证派底特律变人论 · 历史派否 Transformer 意识 · 逻辑派勤懒分化*
 
@@ -561,7 +561,7 @@ tt 也加入拱火：
 
 ### 第八幕：高潮。脑洞王自我代入哥白尼,全场崩盘
 
-![第八幕：我就是哥白尼](./images/cursor-chat-human-origins/scenes/S11-act8-copernicus.jpg)
+![第八幕：我就是哥白尼](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S11-act8-copernicus.jpg)
 
 *脑洞王自封哥白尼 · 逻辑派与实证派像「教皇」阵营*
 
@@ -604,7 +604,7 @@ tt 也加入拱火：
 
 > 人类年龄30,不是人类年龄1岁了
 
-![第八幕崩盘：词穷了属于](./images/cursor-chat-human-origins/scenes/S12-act8-collapse.jpg)
+![第八幕崩盘：词穷了属于](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S12-act8-collapse.jpg)
 
 *「人类年龄 30」· 吃瓜旁白 · 史官绷不住*
 
@@ -627,7 +627,7 @@ tt 也加入拱火：
 
 ### 终幕：一切归于薅羊毛
 
-![终幕：回到省 token](./images/cursor-chat-human-origins/scenes/S13-finale-tokens.jpg)
+![终幕：回到省 token](https://img.threetwoa.live/posts/cursor-handbook/cursor-chat-human-origins/scenes/S13-finale-tokens.jpg)
 
 *话题回到刷号薅羊毛 · 史官合上笔记本*
 

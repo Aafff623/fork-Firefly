@@ -20,7 +20,7 @@ comment: true
 
 API 价默认按 **每百万 tokens** 写。人民币写 ¥，美元写 $，不互相换算当账单。Coding Plan 是包月积分 / 次数，不是把 API 单价乘个折扣那么简单。
 
-![火山引擎豆包大模型产品页主视觉](./images/doubao-product-hero.jpg)
+![火山引擎豆包大模型产品页主视觉](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/doubao-product-hero.jpg)
 
 *图：火山引擎豆包产品页主视觉。来源：[volcengine.com/product/doubao](https://www.volcengine.com/product/doubao)（2026-08-13 抓取）。版权归字节跳动 / 火山引擎。*
 
@@ -63,7 +63,7 @@ Cursor 文档把池子拆成两块：[Models & Pricing](https://cursor.com/docs/
 
 ## 阿里：旗舰按量不便宜，便宜的是套餐和已经结束的 1 折
 
-![通义千问 GitHub 组织头像](./images/qwenlm-github.jpg)
+![通义千问 GitHub 组织头像](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/qwenlm-github.jpg)
 
 *图：QwenLM GitHub 组织头像。来源：[github.com/QwenLM](https://github.com/QwenLM)。版权归阿里云 / Qwen 团队。*
 
@@ -85,7 +85,7 @@ Cursor / GitHub Copilot 官方托管列表里没有千问。Cline、Claude Code�
 
 ## 字节：方舟按量中等偏贵，学生折扣别写进 Trae 账单
 
-![豆包产品 logo](./images/doubao-volcengine-logo.jpg)
+![豆包产品 logo](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/doubao-volcengine-logo.jpg)
 
 *图：豆包产品 logo。来源：[火山引擎豆包产品页](https://www.volcengine.com/product/doubao)。版权归字节跳动。*
 
@@ -109,7 +109,7 @@ Trae 中国站套餐这次从文档抽出了：[ide_plans-and-billing](https://d
 
 ## MiniMax：PayGo 页把「永久 5 折」印在现价上
 
-![MiniMax GitHub 组织头像](./images/minimax-ai-github.jpg)
+![MiniMax GitHub 组织头像](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/minimax-ai-github.jpg)
 
 *图：MiniMax-AI GitHub 组织头像。来源：[github.com/MiniMax-AI](https://github.com/MiniMax-AI)。版权归 MiniMax。*
 
@@ -126,7 +126,7 @@ M3 这档按量，已经比国内多数旗舰 API 便宜一截，还带 1M 上�
 
 ## Kimi：K3 按量很贵，写代码应对准 K2.7 Code
 
-![MoonshotAI GitHub 组织头像](./images/kimi-platform-logo.jpg)
+![MoonshotAI GitHub 组织头像](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/kimi-platform-logo.jpg)
 
 *图：MoonshotAI GitHub 组织头像。来源：[github.com/MoonshotAI](https://github.com/MoonshotAI)。版权归月之暗面。*
 
@@ -143,7 +143,7 @@ K3 输出按量很贵，写代码默认 K2.7 Code。新用户中国站 ¥15 代�
 
 ## 智谱：API 中档，订阅页折扣还在，截止日别只信新闻
 
-![THUDM GitHub 组织头像](./images/glm-logo-official.jpg)
+![THUDM GitHub 组织头像](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/glm-logo-official.jpg)
 
 *图：THUDM GitHub 组织头像（智谱开源组织）。来源：[github.com/THUDM](https://github.com/THUDM)。版权归智谱华章 / 清华 KEG。*
 
@@ -172,7 +172,7 @@ ZCode（2026-08-11）：全员额度重置；至 **2026-08-31** 在 ZCode 内用
 
 ## DeepSeek：按量仍然最便宜，官方已经在说要涨
 
-![DeepSeek GitHub 组织头像](./images/deepseek-ai-github.jpg)
+![DeepSeek GitHub 组织头像](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/deepseek-ai-github.jpg)
 
 *图：deepseek-ai GitHub 组织头像。来源：[github.com/deepseek-ai](https://github.com/deepseek-ai)。版权归深度求索。*
 
@@ -195,7 +195,7 @@ Tool Calls、Anthropic API、FIM（非思考）两边都有。页脚原文：**W
 
 ## 编程工具对照：哪里更便宜，取决于你能不能进池
 
-![Cursor 图标](./images/cursor-apple-touch.jpg)
+![Cursor 图标](https://img.threetwoa.live/posts/aug-coding-model-discounts-2026-08/cursor-apple-touch.jpg)
 
 *图：Cursor 站点图标。来源：[cursor.com](https://cursor.com/apple-touch-icon.png)。版权归 Anysphere / Cursor。*
 

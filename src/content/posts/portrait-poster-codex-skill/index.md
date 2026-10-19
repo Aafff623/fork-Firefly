@@ -70,13 +70,13 @@ comment: true
 
 左稻田「艰难起步」，右未来城「造福人类」，中间稻穗前伸发光——叙事向更强。
 
-![袁隆平人物海报：过去与未来分屏版](./images/fig-01-01-yuan-longping-past-future-split.jpg)
+![袁隆平人物海报：过去与未来分屏版](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-01-01-yuan-longping-past-future-split.jpg)
 
 ### 稻田写实最终版
 
 金黄稻田、草帽、八块信息切片 + 底栏时间轴——更接近「系列可复用」的最终语法。
 
-![袁隆平人物海报：稻田写实最终版](./images/fig-04-04-yuan-longping-rice-field-final.jpg)
+![袁隆平人物海报：稻田写实最终版](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-04-04-yuan-longping-rice-field-final.jpg)
 
 交付物约定是三件套：**海报 PNG + `research.md` + 提示词文件**（后两件样例截图未给）。
 
@@ -90,35 +90,35 @@ comment: true
 
 荒漠试验场，手持「理论计算稿本（机密）」卷宗，信息切片围着两弹节点。
 
-![邓稼先人物海报：绝密稿本道具前伸](./images/fig-05-05-deng-jiaxian-classified-manuscript.jpg)
+![邓稼先人物海报：绝密稿本道具前伸](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-05-05-deng-jiaxian-classified-manuscript.jpg)
 
 ### 钱学森：火箭模型前伸
 
 长征运载火箭模型 + 蓝图，身后发射与测控场景。
 
-![钱学森人物海报：火箭模型道具前伸](./images/fig-06-06-qian-xuesen-rocket-model.jpg)
+![钱学森人物海报：火箭模型道具前伸](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-06-06-qian-xuesen-rocket-model.jpg)
 
 ### 屠呦呦：两张构图都留
 
 实验室青蓝 HUD + 试管版：
 
-![屠呦呦人物海报：实验室试管版](./images/fig-03-03-tu-youyou-lab-test-tube.jpg)
+![屠呦呦人物海报：实验室试管版](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-03-03-tu-youyou-lab-test-tube.jpg)
 
 青蒿素瓶为主道具版（古籍 + 青蒿枝）：
 
-![屠呦呦人物海报：青蒿素瓶版](./images/fig-07-07-tu-youyou-artemisinin-bottle.jpg)
+![屠呦呦人物海报：青蒿素瓶版](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-07-07-tu-youyou-artemisinin-bottle.jpg)
 
 ### 爱迪生：白炽灯前伸
 
 暖金实验室，灯泡怼向镜头，切片覆盖门洛帕克到珍珠街发电站。
 
-![爱迪生人物海报：白炽灯泡道具前伸](./images/fig-08-08-edison-incandescent-bulb.jpg)
+![爱迪生人物海报：白炽灯泡道具前伸](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-08-08-edison-incandescent-bulb.jpg)
 
 ### 附件多出来的杨振宁（正文未展开）
 
 晶体/分子结构道具前伸，黑金宇宙底。正文案例列表没写他，样张仍归档备查。[^yang]
 
-![杨振宁人物海报样张（正文未展开）](./images/fig-02-02-yang-zhenning-crystal-lattice.jpg)
+![杨振宁人物海报样张（正文未展开）](https://img.threetwoa.live/posts/portrait-poster-codex-skill/fig-02-02-yang-zhenning-crystal-lattice.jpg)
 
 评论回复确认生图模型是 **GPT Image 2**。同模型其他玩法见旁链玩法盘点 / 高张力海报——主题相关，交付形态不同。
 

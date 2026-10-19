@@ -215,7 +215,7 @@ JMeter 是一款强大的性能测试工具，可以帮助你量化 Redis 对登
 添加菜单`File` → `New`以创建一个新的测试计划。并将该测试计划“Test Plan”重命名为“RedisTest”。
 
 
-![图2-1 创建一个新的测试计划](images/2-2-2-1.png)
+![图2-1 创建一个新的测试计划](https://img.threetwoa.live/posts/java-course16/2-2-2-1.png)
 
 #### 1. 添加线程组
 
@@ -227,7 +227,7 @@ JMeter 是一款强大的性能测试工具，可以帮助你量化 Redis 对登
   - 循环次数：100（每个用户执行的登录次数）
 
 
-![图2-2 添加线程组](images/2-2-2-2.png)
+![图2-2 添加线程组](https://img.threetwoa.live/posts/java-course16/2-2-2-2.png)
 
 
 #### 2. 处理CSRF令牌
@@ -254,7 +254,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
   - Template：`$1$`
   - Match No.：`1`
 
-![图2-3 处理CSRF令牌](images/2-2-2-3.png)
+![图2-3 处理CSRF令牌](https://img.threetwoa.live/posts/java-course16/2-2-2-3.png)
 
 
 #### 3. 添加登录请求
@@ -269,7 +269,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
   - 添加参数：`username` 和 `password`
 
 
-![图2-4 添加登录处理请求](images/2-2-2-4.png)
+![图2-4 添加登录处理请求](https://img.threetwoa.live/posts/java-course16/2-2-2-4.png)
 
 
 #### 4. 添加结果监听器
@@ -279,7 +279,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
 - 右键点击线程组 → `Add` → `Listener` → `Aggregate Report`（聚合报告）
 
 
-![图2-5 添加结果监听器](images/2-2-2-5.png)
+![图2-5 添加结果监听器](https://img.threetwoa.live/posts/java-course16/2-2-2-5.png)
 
 
 #### 5. 保存会话信息
@@ -287,7 +287,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
 - 右键点击线程组 → `Add` → `Config Element` → `HTTP Cookie Manager`
 - 勾选 `Clear cookies each iteration?`（每次迭代清除 Cookie）
 
-![图2-6 保存会话信息](images/2-2-2-6.png)
+![图2-6 保存会话信息](https://img.threetwoa.live/posts/java-course16/2-2-2-6.png)
 
 
 ### 执行测试并收集数据
@@ -299,7 +299,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
   - 吞吐量（Throughput）
   - 错误率（Error %）
 
-![图2-7 测试 Redis 优化前](images/2-2-2-7.png)
+![图2-7 测试 Redis 优化前](https://img.threetwoa.live/posts/java-course16/2-2-2-7.png)
 
 #### 2. 测试 Redis 优化后
 
@@ -308,7 +308,7 @@ Spring Security默认启用CSRF保护，登录请求需携带CSRF令牌：
 - 重新运行相同的 JMeter 测试，记录相同指标
 
 
-![图2-8 测试 Redis 优化后](images/2-2-2-8.png)
+![图2-8 测试 Redis 优化后](https://img.threetwoa.live/posts/java-course16/2-2-2-8.png)
 
 
 ### 分析测试结果
@@ -1885,12 +1885,12 @@ public String dashboard(Model model) {
 运行MySQL、Redis、Kafka服务，再启动应用。在数据看板查看访问量排行效果，如下图3-1所示。
 
 
-![图3-1 访问量排行效果](images/3-5-3-1.png)
+![图3-1 访问量排行效果](https://img.threetwoa.live/posts/java-course16/3-5-3-1.png)
 
 在首页查看访问时长排行效果，如下图3-2所示。
 
 
-![图3-2 访问时长排行效果](images/3-5-3-2.png)
+![图3-2 访问时长排行效果](https://img.threetwoa.live/posts/java-course16/3-5-3-2.png)
 
 
 ## 4.1 利用GridFS存储用户上传的图片，解决项目大文件存储痛点
@@ -2782,12 +2782,12 @@ java -jar target/rednote-0.0.1-SNAPSHOT.jar --server.port=8083
 
 启动结果如图5-1 所示：
 
-![图5-1 指定端口方式运行应用](images/5-2-5-1.png)
+![图5-1 指定端口方式运行应用](https://img.threetwoa.live/posts/java-course16/5-2-5-1.png)
 
 后台服务启动之后，再启动NGINX服务器，而后在浏览器<http://localhost:8080/>地址访问前台应用，同时观察后台控制台输出的内容，如下图所示。
 
 
-![图5-2 观察应用集群运行](images/5-2-5-2.png)
+![图5-2 观察应用集群运行](https://img.threetwoa.live/posts/java-course16/5-2-5-2.png)
 
 
 可以看到，三台后台服务都会轮流的接收到前台的请求。为了模拟故障，也可以将其他的任意一个后台服务停掉，可以发现前台仍然能够正常响应，这就实现了应用的高可用。
@@ -2821,12 +2821,12 @@ http {
 
 下图是未启用Gzip压缩的HTML页面，网络传输大小是33.88kb。
 
-![图5-3 未启用Gzip压缩](images/5-3-5-3.png)
+![图5-3 未启用Gzip压缩](https://img.threetwoa.live/posts/java-course16/5-3-5-3.png)
 
 
 下图是启用了Gzip压缩的HTML页面，网络传输大小是8.15kb。
 
-![图5-4 启用Gzip压缩](images/5-3-5-4.png)
+![图5-4 启用Gzip压缩](https://img.threetwoa.live/posts/java-course16/5-3-5-4.png)
 
 
 ## 6.1 实战Prometheus监控MySQL
@@ -2883,7 +2883,7 @@ scrape_configs:
 此时，重启Prometheus后，访问`http://localhost:9090/targets`，确认MySQL状态为`UP`，如下图6-1所示。
 
 
-![图6-1 确认MySQL状态为UP](images/6-1-6-1.png)
+![图6-1 确认MySQL状态为UP](https://img.threetwoa.live/posts/java-course16/6-1-6-1.png)
 
 
 ### 关键指标
@@ -2936,7 +2936,7 @@ scrape_configs:
 此时，重启Prometheus后，访问`http://localhost:9090/targets`，确认Redis状态为`UP`，如下图6-2所示。
 
 
-![图6-2 确认Redis状态为UP](images/6-2-6-2.png)
+![图6-2 确认Redis状态为UP](https://img.threetwoa.live/posts/java-course16/6-2-6-2.png)
 
 
 ### 关键指标
@@ -2969,7 +2969,7 @@ cd D:\dev\monitor\grafana-v12.0.2\bin
 启动之后，会占用3000端口。浏览器访问<http://localhost:3000>，默认账号`admin/admin`。若能正常登录系统，则安装成功。
 
 
-![图6-3 Grafana界面](images/6-3-6-3.png)
+![图6-3 Grafana界面](https://img.threetwoa.live/posts/java-course16/6-3-6-3.png)
 
 
 ### 配置数据源
@@ -2986,13 +2986,13 @@ cd D:\dev\monitor\grafana-v12.0.2\bin
 
 导入仪表盘模板URL为<https://grafana.com/grafana/dashboards/7362-mysql-overview/>，选中Prometheus数据源，如下图所示：
 
-![图6-4 导入MySQL仪表盘](images/6-3-6-4.png)
+![图6-4 导入MySQL仪表盘](https://img.threetwoa.live/posts/java-course16/6-3-6-4.png)
 
 
 导入完成之后，MySQL仪表盘效果如下图所示。
 
 
-![图6-5 MySQL仪表盘](images/6-3-6-5.png)
+![图6-5 MySQL仪表盘](https://img.threetwoa.live/posts/java-course16/6-3-6-5.png)
 
 
 #### 2. 导入Redis仪表盘
@@ -3004,7 +3004,7 @@ cd D:\dev\monitor\grafana-v12.0.2\bin
 导入完成之后，Redis仪表盘效果如下图所示。
 
 
-![图6-6 Redis仪表盘](images/6-3-6-6.png)
+![图6-6 Redis仪表盘](https://img.threetwoa.live/posts/java-course16/6-3-6-6.png)
 
 
 ## 7.1 课程总结

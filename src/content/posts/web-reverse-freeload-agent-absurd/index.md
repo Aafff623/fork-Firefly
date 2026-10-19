@@ -16,7 +16,7 @@ comment: true
 
 群里有人抛了个「妙计」：DeepSeek、智谱网页版免费，模拟网页请求，本地接 MCP，不就能白嫖出一套自动编程 Agent？还想着项目级长记忆能不能硬塞进网页会话。有人回了一句：「网页端反代？」
 
-![群友原话截图](./images/fig-chat-idea.jpg)
+![群友原话截图](https://img.threetwoa.live/posts/web-reverse-freeload-agent-absurd/fig-chat-idea.jpg)
 
 Grok 搜完一堆源，结论其实分两层。我对照公开仓库和官方文档又核了一遍：**「能不能发请求」不荒谬；「能不能当成靠谱 Agent 底座」很荒谬。**
 
@@ -46,7 +46,7 @@ Grok 把「技术可行」和「工程可行」拆开了，这点值钱；经济
 
 第 1 点半真半假：网页档位和市场话术常常好看，但不等于你能稳定、合规、可编排地用上。第 2～4 点才是真正荒唐的地方。
 
-![有人已经听出味了：网页端反代？](./images/fig-chat-reply.jpg)
+![有人已经听出味了：网页端反代？](https://img.threetwoa.live/posts/web-reverse-freeload-agent-absurd/fig-chat-reply.jpg)
 
 ## 「能做」不等于「能当 Agent 底座」
 

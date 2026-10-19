@@ -31,7 +31,7 @@ comment: true
 | 写 MCP | 本站已有 [MCP 薄笔记](/posts/vibe-mcp-index/)，本章只挂入口 |
 | 搞清新岗位 FDE | 「前线部署工程师」专文 |
 
-![FDE 完整工作闭环六步](images/1-fig-fde-loop.jpg)
+![FDE 完整工作闭环六步](https://img.threetwoa.live/posts/vibe-navigation/1-fig-fde-loop.jpg)
 
 ## 板块速查表
 
@@ -54,7 +54,7 @@ comment: true
 | MCP 服务开发 | → [本站 MCP 薄笔记](/posts/vibe-mcp-index/) | [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/40%20%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/MCP%20%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91.md) |
 | 团队研发规范 | 协作与规范底线 | [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/40%20%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E5%9B%A2%E9%98%9F%E7%A0%94%E5%8F%91%E8%A7%84%E8%8C%83.md) |
 
-![技术栈卡片示例](images/1-fig-stack-js.jpg)
+![技术栈卡片示例](https://img.threetwoa.live/posts/vibe-navigation/1-fig-stack-js.jpg)
 
 ## 出处与边界
 
@@ -81,7 +81,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 | 同题谁完成度高 | 三模型 / 四模型横评 |
 | 日常该订哪个 | 回 [工具索引 · 01 模型选择](/posts/vibe-coding-tools-index/) |
 
-![Opus 4.8 与 GPT-5.5 等跑分横评摘录](images/2-fig-model-compare.jpg)
+![Opus 4.8 与 GPT-5.5 等跑分横评摘录](https://img.threetwoa.live/posts/vibe-navigation/2-fig-model-compare.jpg)
 
 ## 这篇收了哪些测评
 
@@ -146,7 +146,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 
 下列优先鱼皮本人 + 高讨论向；社区帖当对照样本，不逐篇摘要。
 
-![热文配图摘录：Claude Code 终端](images/3-fig-hot-claude.jpg)
+![热文配图摘录：Claude Code 终端](https://img.threetwoa.live/posts/vibe-navigation/3-fig-hot-claude.jpg)
 
 ### 必看风向
 
@@ -207,7 +207,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 
 **用起来**：Cherry Studio / Cursor 等填 MCP JSON 即可；成品可提交 [MCP.so](https://mcp.so) 类市场。开源参考：[mcp-mianshiya-server](https://github.com/yuyuanweb/mcp-mianshiya-server)。
 
-[![MCP 服务端](images/4-cite-mcp-server.jpg)](https://ai.codefather.cn/library/2010991320544776194)
+[![MCP 服务端](https://img.threetwoa.live/posts/vibe-navigation/4-cite-mcp-server.jpg)](https://ai.codefather.cn/library/2010991320544776194)
 
 [原文 · AI 导航](https://ai.codefather.cn/library/2010991320544776194) · [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/40%20%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/MCP%20%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91.md)
 
@@ -221,7 +221,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 
 这里是概念地图，**不含 Spring 配置细节**——写代码仍回上一节《MCP 服务开发》。
 
-[![MCP 业务位](images/4-cite-mcp-biz.jpg)](https://ai.codefather.cn/library/2010991312495906818)
+[![MCP 业务位](https://img.threetwoa.live/posts/vibe-navigation/4-cite-mcp-biz.jpg)](https://ai.codefather.cn/library/2010991312495906818)
 
 [原文 · AI 导航](https://ai.codefather.cn/library/2010991312495906818) · [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/40%20%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/04%20AI%20%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF.md)
 
@@ -298,7 +298,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 
 零代码平台往往一键 Publish；想要自定义域名、全栈或服务器控制权，再读这一章。路径从「AI 帮你发」到「自己控机」。
 
-![EdgeOne Pages 示意](images/5-fig-edgeone-pages.jpg)
+![EdgeOne Pages 示意](https://img.threetwoa.live/posts/vibe-navigation/5-fig-edgeone-pages.jpg)
 
 | 路径 | 适合谁 | 要点 |
 |---|---|---|
@@ -311,7 +311,7 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 | AI Agent 应用部署 | 带长时 Agent / 工具链的产品 | 和普通 Web 部署坑不同，单独一节 |
 | CDN / 域名 / SSL | 有正式流量后再上 | 可选加速 + 证书 |
 
-![MCP 部署工具位](images/5-fig-deploy-mcp.jpg)
+![MCP 部署工具位](https://img.threetwoa.live/posts/vibe-navigation/5-fig-deploy-mcp.jpg)
 
 [原文 · 06 项目部署上线教程](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/20%20%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/06%20%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E4%B8%8A%E7%BA%BF%E6%95%99%E7%A8%8B.md)
 
@@ -370,9 +370,9 @@ AI 模型几周换一拨，鱼皮单独开了「15 模型动态」：不是教�
 | 09 SEO 实战 | 传统搜索获客 | [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/50%20%E4%BA%A7%E5%93%81%E5%8F%98%E7%8E%B0/09%20SEO%20%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.md) |
 | 10 GEO 实战 | 生成式引擎里被引用 / 被推荐 | [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/50%20%E4%BA%A7%E5%93%81%E5%8F%98%E7%8E%B0/10%20GEO%20%E7%94%9F%E6%88%90%E5%BC%8F%E5%BC%95%E6%93%8E%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.md) |
 
-![AI 导航站：会员入口与推广位示意](images/6-fig-profit-modes.jpg)
+![AI 导航站：会员入口与推广位示意](https://img.threetwoa.live/posts/vibe-navigation/6-fig-profit-modes.jpg)
 
-![百度搜索「面试鸭」结果页（获客示例）](images/6-fig-seo.jpg)
+![百度搜索「面试鸭」结果页（获客示例）](https://img.threetwoa.live/posts/vibe-navigation/6-fig-seo.jpg)
 
 ## 支线（按需跳读）
 

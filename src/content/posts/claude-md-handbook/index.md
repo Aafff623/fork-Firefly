@@ -30,7 +30,7 @@ CLAUDE.md 就是把这些**高频、高价值、猜不到**的约定钉死：会
 
 ### CLAUDE.md 是项目记忆，不是说明书
 
-![CLAUDE.md = 项目记忆](./images/claude-md-template-principles/fig-01-01-claude-md-project-memory.jpg)
+![CLAUDE.md = 项目记忆](https://img.threetwoa.live/posts/claude-md-handbook/claude-md-template-principles/fig-01-01-claude-md-project-memory.jpg)
 
 它不是 README，也不是知识库。README 给人扫项目；CLAUDE.md 给 Agent 当**默认前提**——每次会话自动加载，在你开口前就生效。
 
@@ -63,7 +63,7 @@ Claude Code 会沿目录树向上找；monorepo 里子目录还可再放一份�
 
 ### 一份可复用模板（六节，按需删改）
 
-![一份可复用的 CLAUDE.md 模板](./images/claude-md-template-principles/fig-02-02-reusable-claude-md-template.jpg)
+![一份可复用的 CLAUDE.md 模板](https://img.threetwoa.live/posts/claude-md-handbook/claude-md-template-principles/fig-02-02-reusable-claude-md-template.jpg)
 
 图脚那句钉死：**CLAUDE.md 只放高频高价值信息**；侧栏便签：**按需删改，不要全塞。**
 
@@ -111,7 +111,7 @@ Claude Code 会沿目录树向上找；monorepo 里子目录还可再放一份�
 
 ### 写好它的 5 条原则
 
-![写好 CLAUDE.md 的 5 条原则](./images/claude-md-template-principles/fig-03-03-five-principles.jpg)
+![写好 CLAUDE.md 的 5 条原则](https://img.threetwoa.live/posts/claude-md-handbook/claude-md-template-principles/fig-03-03-five-principles.jpg)
 
 中心句：**让 Claude Code 默认做对事。** 收口不是「写得多」，是**写得准**。
 
@@ -127,7 +127,7 @@ Claude Code 会沿目录树向上找；monorepo 里子目录还可再放一份�
 
 ### 五个坑：错一次，就写进文件
 
-![踩坑 → 写进 CLAUDE.md](./images/claude-md-template-principles/fig-04-04-pitfalls-to-claude-md.jpg)
+![踩坑 → 写进 CLAUDE.md](https://img.threetwoa.live/posts/claude-md-handbook/claude-md-template-principles/fig-04-04-pitfalls-to-claude-md.jpg)
 
 图脚：**一条明确禁令，胜过十次口头纠正。**
 

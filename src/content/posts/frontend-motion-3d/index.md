@@ -74,7 +74,7 @@ Web 营销站滚动叙事、时间线编排，回 GSAP / anime 那张选型表�
 
 同系列旁链：[SVG 能动起来的十条路](/posts/svg-animation-ten-ways/)（手法文）· [小程序 Lottie](/posts/miniprogram-lottie-canvas/)（AE→JSON→canvas，不是 tween 库）。
 
-![anime.js spring playground](images/2-fig-01-anime-spring.jpg)
+![anime.js spring playground](https://img.threetwoa.live/posts/frontend-motion-3d/2-fig-01-anime-spring.jpg)
 
 ## 十库选型表
 
@@ -91,7 +91,7 @@ Web 营销站滚动叙事、时间线编排，回 GSAP / anime 那张选型表�
 | 9 | **CreateJS** | Canvas、广告、Animate 导出 | Canvas 族 | DOM 动效不找它 |
 | 10 | **Three.js** | Web 3D / WebGPU | 场景引擎 | 2D UI 别硬塞 |
 
-![GSAP homepage](images/2-fig-02-gsap-homepage.jpg)
+![GSAP homepage](https://img.threetwoa.live/posts/frontend-motion-3d/2-fig-02-gsap-homepage.jpg)
 
 ## 先问场景，再点库名
 
@@ -129,14 +129,14 @@ flowchart TD
 
 经验法则：营销长页、钉住、scrub、跨组件导演 → GSAP；卡片/SVG/弹簧玩具感、不想背插件心智 → anime。
 
-![WOW.js](images/2-fig-03-wowjs.jpg)
+![WOW.js](https://img.threetwoa.live/posts/frontend-motion-3d/2-fig-03-wowjs.jpg)
 
 ## 别踩的两处坑
 
 1. **WOW.js 商用许可**——个人演示和商用站不是一回事；能只用 Animate.css / ScrollReveal 就少背一层风险。
 2. **粘贴错乱别当真**——原文末段曾把 mo.js 列表夹进「上一代库 / 原生 API」；正确归位：mo.js = 微交互；WAAPI / View Transitions = 与库**组合**的原生层，不是第 11 个同级「炫库」。
 
-![Three.js showcase](images/2-fig-04-threejs.jpg)
+![Three.js showcase](https://img.threetwoa.live/posts/frontend-motion-3d/2-fig-04-threejs.jpg)
 
 ## 趋势其实就两头
 
@@ -148,7 +148,7 @@ flowchart TD
 
 同日另一篇公众号专讲许可拐点，差分钉在这里，不复读上面的十库对照。
 
-![GSAP is now free, thanks to Webflow](images/2-fig-05-gsap-now-free.jpg)
+![GSAP is now free, thanks to Webflow](https://img.threetwoa.live/posts/frontend-motion-3d/2-fig-05-gsap-now-free.jpg)
 
 官网顶栏写得很直白：`GSAP is now free for everyone, thanks to Webflow's support!`
 文称 **2024** 全面免费（含原 Club 插件）；商业能不能用、有没有例外，仍以官网许可页为准，别拿转载当合同。
@@ -253,7 +253,7 @@ B 站刷到 UP 主「忽见狸」的视频六周年开源回馈：一个 3D 交�
 
 扒下来跑起来，发现这项目比想象中干净：运行时依赖只有 `react` 和 `react-dom`，一个图形库都没有，118 个元素的 3D 位置全靠自己算矩阵，写进 CSS `transform: matrix3d(...)`。这篇文章是源码拆解，重点讲三条能带走的东西：五种布局的数学套路、点击聚焦的「反相机变换」、装饰器自注册工厂。
 
-![球体布局：双环带 3D 透视、前后景遮挡](images/4-fig-sphere-view.jpg)
+![球体布局：双环带 3D 透视、前后景遮挡](https://img.threetwoa.live/posts/frontend-motion-3d/4-fig-sphere-view.jpg)
 
 ## 先记住三句话
 
@@ -287,7 +287,7 @@ MathTools (几何公式)       (抽象工厂+注册表)         useCardsWrapMatr
 
 注意一个细节：Sph 和 Hel 的「每张卡」都是 `旋转 → 平移 → 缩放` 三步矩阵相乘；Tab 和 Ran 只有平移+缩放。变换顺序从右向左应用，这是矩阵列向量约定的结果，写错了布局就会整个扭曲。
 
-![表格布局：标准周期表 2D 视图](images/4-fig-table-view.jpg)
+![表格布局：标准周期表 2D 视图](https://img.threetwoa.live/posts/frontend-motion-3d/4-fig-table-view.jpg)
 
 ## 点击聚焦：反相机变换
 
@@ -359,7 +359,7 @@ class SphViewModel extends ViewModelFactory {
 
 这篇只带走：它大概是什么、官网侧能核对到什么、公众号里哪些段落要当噪声。
 
-![Art direction is now software](images/5-fig-01.jpg)
+![Art direction is now software](https://img.threetwoa.live/posts/frontend-motion-3d/5-fig-01.jpg)
 
 ## 产品本身：偏 art direction，不是又一个「文生海报」
 
@@ -371,7 +371,7 @@ class SphViewModel extends ViewModelFactory {
 
 它跟 Midjourney 那种「出一张图就走」不是一路。更接近：品牌 / 平面同学想快速摸 3D 意向、做提案视觉、往站点塞可交互片段，又不想先开 C4D。
 
-![八项能力墙：挤出、AI 建模、特效、3D 字、AI 材质、Embed、8K、后期](images/5-fig-06.jpg)
+![八项能力墙：挤出、AI 建模、特效、3D 字、AI 材质、Embed、8K、后期](https://img.threetwoa.live/posts/frontend-motion-3d/5-fig-06.jpg)
 
 官网功能墙（与配图一致）可记这张表：
 
@@ -388,7 +388,7 @@ class SphViewModel extends ViewModelFactory {
 
 材质侧配图很能说明「控制感」：左侧扎染佛头，右侧 AI Material Creator（类目 STONE / WOOD / METAL… + prompt + Generate / Upscale）。
 
-![AI Material Creator 与佛头材质示例](images/5-fig-03.jpg)
+![AI Material Creator 与佛头材质示例](https://img.threetwoa.live/posts/frontend-motion-3d/5-fig-03.jpg)
 
 ## 公众号正文：哪些能信，哪些当串稿
 
@@ -408,7 +408,7 @@ class SphViewModel extends ViewModelFactory {
 
 粘贴正文还甩出全能 ¥79（绘本 / 故事 / 视频）、教育定制两档。这已经不是「写错一个数字」，是整段像别的产品价目混进来了。
 
-![原文价卡：权益条目明显偏 PPT](images/5-fig-05.jpg)
+![原文价卡：权益条目明显偏 PPT](https://img.threetwoa.live/posts/frontend-motion-3d/5-fig-05.jpg)
 
 官网公开页（同日核对）写的是另一套口径：
 
@@ -444,7 +444,7 @@ class SphViewModel extends ViewModelFactory {
 
 旅行产品的坑通常不是「不够美」，是选项叠太多：机票、酒店、攻略、约车、地图同时抢注意力，用户还没出发就累了。紫草设计日记这组「旅行类 02」拼图，钩子写得很直——怎么把决策焦虑压下去。下面只留能带走的几条，案例当对照表，不当审美鸡汤。
 
-![六屏总览：场景首页与卡片整合](images/6-fig-01-overview.jpg)
+![六屏总览：场景首页与卡片整合](https://img.threetwoa.live/posts/frontend-motion-3d/6-fig-01-overview.jpg)
 
 ## 决策焦虑从哪来
 
@@ -477,11 +477,11 @@ class SphViewModel extends ViewModelFactory {
 
 总览拼图把上述几类压成六格对照，适合先扫一眼再钻单案。
 
-![机票选座流（Paperpillar）](images/6-fig-02-flight-seat.jpg)
+![机票选座流（Paperpillar）](https://img.threetwoa.live/posts/frontend-motion-3d/6-fig-02-flight-seat.jpg)
 
-![Fearless Travel 深色发现（Harunur Rashid）](images/6-fig-05-fearless.jpg)
+![Fearless Travel 深色发现（Harunur Rashid）](https://img.threetwoa.live/posts/frontend-motion-3d/6-fig-05-fearless.jpg)
 
-![Odyssey / Bavarian Alps（Mohammad Ali）](images/6-fig-08-odyssey.jpg)
+![Odyssey / Bavarian Alps（Mohammad Ali）](https://img.threetwoa.live/posts/frontend-motion-3d/6-fig-08-odyssey.jpg)
 
 ## 拿来用时的边界
 

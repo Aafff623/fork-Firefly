@@ -1817,7 +1817,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
 最终应用目录结构如图5-1 所示：
 
-![图5-1 应用目录结构](images/5-1-5-1.png)
+![图5-1 应用目录结构](https://img.threetwoa.live/posts/java-course4/5-1-5-1.png)
 
 ### Web应用初始化
 
@@ -2154,18 +2154,18 @@ java -jar spring-mvc-thymeleaf.jar
 如下图5-2所示，是账号admin访问`/admin`页面路径的效果，重定向到了`/admin/dashboard`页面。
 
 
-![图5-2 访问`/admin`页面路径的效果](images/5-2-5-2.png)
+![图5-2 访问`/admin`页面路径的效果](https://img.threetwoa.live/posts/java-course4/5-2-5-2.png)
 
 
 admin.html模版采用了响应式的布局，即便在移动设备上，也能能有很好的适配。如下图5-3所示，是在移动设备上访问`/admin`页面的效果。
 
 
-![图5-3 移动设备上访问`/admin`页面路径的效果](images/5-2-5-3.png)
+![图5-3 移动设备上访问`/admin`页面路径的效果](https://img.threetwoa.live/posts/java-course4/5-2-5-3.png)
 
 
 点击右上角的按钮，也可以展示完整菜单，如下图5-4所示
 
-![图5-4 点击右上角的按钮展示完整菜单](images/5-2-5-4.png)
+![图5-4 点击右上角的按钮展示完整菜单](https://img.threetwoa.live/posts/java-course4/5-2-5-4.png)
 
 
 ## 5.3 -3 实现用户管理控制器，掌握多种视图解析方式
@@ -2400,18 +2400,18 @@ java -jar spring-mvc-thymeleaf.jar
 如下图5-5所示，是账号admin访问`/admin/user`页面路径的效果。
 
 
-![图5-5 访问`/admin/user`页面路径的效果](images/5-4-5-5.png)
+![图5-5 访问`/admin/user`页面路径的效果](https://img.threetwoa.live/posts/java-course4/5-4-5-5.png)
 
 
 如下图5-6所示的是用户编辑页面。
 
-![图5-6 用户编辑页面](images/5-4-5-6.png)
+![图5-6 用户编辑页面](https://img.threetwoa.live/posts/java-course4/5-4-5-6.png)
 
 
 用户管理页面采用了响应式的布局，即便在移动设备上，也能能有很好的适配。如下图5-7所示，是在移动设备上访问`/admin`页面的效果。
 
 
-![图5-7 移动设备上访问`/admin/user`页面路径的效果](images/5-4-5-7.png)
+![图5-7 移动设备上访问`/admin/user`页面路径的效果](https://img.threetwoa.live/posts/java-course4/5-4-5-7.png)
 
 
 ## 6.1 课程总结

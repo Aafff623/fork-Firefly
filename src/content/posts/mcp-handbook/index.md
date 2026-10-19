@@ -93,7 +93,7 @@ my-plugin/
 
 「都是给 AI 加能力，所以二选一」——这句把人带沟里了。加能力没错，**层位**才是坑：一个管接进来，一个管怎么做。
 
-![MCP 和 Skills 不是一层](./images/mcp-vs-skills-layers/fig-01-overview.jpg)
+![MCP 和 Skills 不是一层](https://img.threetwoa.live/posts/mcp-handbook/mcp-vs-skills-layers/fig-01-overview.jpg)
 
 ### MCP：统一怎么接外面
 
@@ -101,7 +101,7 @@ MCP（Model Context Protocol）是**开放连接标准**：AI 应用用同一套
 
 官方说法（2026-08-11 核对）：开源标准，用来把 AI 应用接到外部系统；类比就是 AI 侧的 USB-C——值钱的是统一插头，不是某一个外设。见 [modelcontextprotocol.io/introduction](https://modelcontextprotocol.io/introduction)。
 
-![MCP 负责把能力接进来](./images/mcp-vs-skills-layers/fig-02-plug-in.jpg)
+![MCP 负责把能力接进来](https://img.threetwoa.live/posts/mcp-handbook/mcp-vs-skills-layers/fig-02-plug-in.jpg)
 
 记住这句就够：**重点不是某个工具，而是统一连接方式。**
 
@@ -120,7 +120,7 @@ Skills 是**可复用能力包**：说明、知识、脚本、模板……把领
 
 别空谈互补，看一张销售周报怎么叠。
 
-![周报任务里它们怎么配合](./images/mcp-vs-skills-layers/fig-03-weekly-report.jpg)
+![周报任务里它们怎么配合](https://img.threetwoa.live/posts/mcp-handbook/mcp-vs-skills-layers/fig-03-weekly-report.jpg)
 
 1. **MCP**：数据库 / 文件系统 / 搜索——原料接得上
 2. **Skills**：先查哪些表、周报结构、风险检查、脚本模板——方法复用
@@ -132,7 +132,7 @@ Skills 是**可复用能力包**：说明、知识、脚本、模板……把领
 
 把 MCP / Skills 塞进成熟 AI 的分层里，误会基本消掉。
 
-![成熟 AI 系统的三层结构](./images/mcp-vs-skills-layers/fig-04-three-layers.jpg)
+![成熟 AI 系统的三层结构](https://img.threetwoa.live/posts/mcp-handbook/mcp-vs-skills-layers/fig-04-three-layers.jpg)
 
 | 层 | 干什么 | 落点 |
 |---|---|---|
@@ -157,7 +157,7 @@ MCP、Skills、CLI，分别解决「连接、方法、执行」三类问题。MC
 
 它们分别是什么？彼此什么关系？怎么选？下面按图四段展开，文案尽量跟图面走，不当完整教程。
 
-![MCP、Skills、CLI 分工图](./images/mcp-skills-cli-relationship/fig-01-01-mcp-skills-cli-one-image.jpg)
+![MCP、Skills、CLI 分工图](https://img.threetwoa.live/posts/mcp-handbook/mcp-skills-cli-relationship/fig-01-01-mcp-skills-cli-one-image.jpg)
 
 ### 三件东西，各管一块
 

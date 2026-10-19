@@ -73,7 +73,7 @@ comment: true
 
 三层架构。
 
-![图2-1 三层架构](images/2-1-2-1.drawio.png)
+![图2-1 三层架构](https://img.threetwoa.live/posts/java-course8/2-1-2-1.drawio.png)
 
 
 ## 2.2 如何让AI成为你的贴身编程导师？
@@ -87,7 +87,7 @@ comment: true
 如下图2-2所示，全球AI产业在技术、产品与应用多轮驱动推动市场不断发展，其中，中美是产业引领者。
 
 
-![图2-2 全球AI市场](images/2-2-2-2.png)
+![图2-2 全球AI市场](https://img.threetwoa.live/posts/java-course8/2-2-2-2.png)
 
 
 * 全球人工智能市场规模正在持续扩大，预计到2027年将迎来普适AI的时代，届时AI软件市场规模将达到1569亿美元，2028年将超2154亿美元。
@@ -99,7 +99,7 @@ comment: true
 
 如下图2-3所示，国内AI产业应用正在从百模大战向应用驱动转型，推动AI应用生态的发展。
 
-![图2-3 中国AI产业](images/2-2-2-3.png)
+![图2-3 中国AI产业](https://img.threetwoa.live/posts/java-course8/2-2-2-3.png)
 
 
 * 中国AI产业正处于快速发展的阶段，国内AI应用场景日益丰富，尤其是面向消费者（To C）的市场迅速崛起。目前国内形成了传统互联网企业、传统AI企业和初创企业为代表的三个不同背景企业组成的产业生态。
@@ -164,7 +164,7 @@ CodeGeeX是一款北京智谱华章科技股份有限公司出品的基于大模
 4. 首次使用需在IDE右侧的CodeGeeX面板中完成账号注册或登录（支持GitHub、微信等方式）
 
 
-![图2-4 CodeGeeX等待安装完成后重启IDE](images/2-3-2-4.png)
+![图2-4 CodeGeeX等待安装完成后重启IDE](https://img.threetwoa.live/posts/java-course8/2-3-2-4.png)
 
 
 ### 三、基本使用方法
@@ -221,7 +221,7 @@ CodeGeeX是一款北京智谱华章科技股份有限公司出品的基于大模
 3. 点击“Install”安装，等待安装完成后就可以直接使用，无需重启IDE，如下图2-5所示
 4. 首次使用需登录：在IDE右侧的“通义灵码”面板中，选择“登录”，支持阿里云账号、淘宝账号或钉钉扫码登录（需完成实名认证）。
 
-![图2-5 通义灵码安装完成](images/2-4-2-5.png)
+![图2-5 通义灵码安装完成](https://img.threetwoa.live/posts/java-course8/2-4-2-5.png)
 
 
 ### 三、基本使用方法
@@ -377,7 +377,7 @@ Spring Boot 通过“约定大于配置”的理念，大幅降低了 Spring 开
 通过 Spring Initializr（<https://start.spring.io/>）在线生成项目（选择 Java 版本、Starter 等）， 如下图3-1所示。  
 
 
-![图3-1 创建项目](images/3-2-3-1.png)
+![图3-1 创建项目](https://img.threetwoa.live/posts/java-course8/3-2-3-1.png)
 
 
 添加如下Starter：
@@ -394,7 +394,7 @@ Spring Boot 通过“约定大于配置”的理念，大幅降低了 Spring 开
 
 最终自动生成如下图3-2所示的目录结构。  
 
-![图3-2 项目目录结构](images/3-2-3-2.png)
+![图3-2 项目目录结构](https://img.threetwoa.live/posts/java-course8/3-2-3-2.png)
 
 
 注：除了src目录下的文件及pom.xml文件，其他文件可以删除。
@@ -572,12 +572,12 @@ Query OK, 1 row affected (0.19 sec)
 当我们试图在应用配置文件application.properties里面写下“# 数据库配置”注释的时候，AI辅助编程工具（以通义灵码为例）会自动提醒，生成推荐的配置信息，界面如下。
 
 
-![图3-3 AI辅助编程自动创建数据库连接配置](images/3-3-3-3.png)
+![图3-3 AI辅助编程自动创建数据库连接配置](https://img.threetwoa.live/posts/java-course8/3-3-3-3.png)
 
 此时，只需要点击“Tab”按键，即可接收建议，形成正式的配置文件，界面如下。
 
 
-![图3-4 确认接受AI辅助编程提供的数据库连接配置建议](images/3-3-3-4.png)
+![图3-4 确认接受AI辅助编程提供的数据库连接配置建议](https://img.threetwoa.live/posts/java-course8/3-3-3-4.png)
 
 
 其他配置也如法炮制。当然，也要注意甄别AI辅助编程提供的数据库信息是否准确，如果不准确则需要修正。比如数据库的密码，AI辅助编程工具是没法“猜对”的。
@@ -606,7 +606,7 @@ java -jar target/rednote-0.0.1-SNAPSHOT.jar
 应用启动之后，访问浏览器地址：<http://localhost:8080>，如果能看到如下图3-5所示的界面，则证明应用启动正常。
 
 
-![图3-5 应用启动界面](images/3-3-3-5.png)
+![图3-5 应用启动界面](https://img.threetwoa.live/posts/java-course8/3-3-3-5.png)
 
 
 ## 4.1 模块功能概述
@@ -933,7 +933,7 @@ java -jar target/rednote-0.0.1-SNAPSHOT.jar
 ```
 
 
-![图4-1 注册表单页面](images/4-2-4-1.png)
+![图4-1 注册表单页面](https://img.threetwoa.live/posts/java-course8/4-2-4-1.png)
 
 
 ### 使用 Thymeleaf 模拟引擎
@@ -1037,7 +1037,7 @@ java -jar target/rednote-0.0.1-SNAPSHOT.jar
 2. 引入了 Thymeleaf 模拟引擎，与后台模型做绑定。
 
 
-![图4-3 注册表单校验效果](images/4-2-4-3.png)
+![图4-3 注册表单校验效果](https://img.threetwoa.live/posts/java-course8/4-2-4-3.png)
 
 
 ## 4.3 AI加持下快速实现表单输入校验及验证码的获取
@@ -1105,7 +1105,7 @@ document.getElementById('registrationForm').addEventListener('submit', function 
 
 注册表单校验效果如下图4-2所示。
 
-![图4-2 注册表单校验效果](images/4-3-4-2.png)
+![图4-2 注册表单校验效果](https://img.threetwoa.live/posts/java-course8/4-3-4-2.png)
 
 
 你可以根据实际需求进一步调整样式或添加更多功能，如密码强度指示器、图形验证码等。
@@ -1723,7 +1723,7 @@ document.getElementById('registrationForm').addEventListener('submit', function 
 访问浏览器地址：<http://localhost:8080/auth/register>，开源看到如下注册界面。
 
 
-![图4-4 应用运行界面](images/4-8-4-4.png)
+![图4-4 应用运行界面](https://img.threetwoa.live/posts/java-course8/4-8-4-4.png)
 
 
 点击“立即注册”按钮，可以在应用控制台日志里面看到如下SQL语句的执行：
@@ -1757,7 +1757,7 @@ mysql> SELECT * FROM t_user;
 我们可以将相同的数据再注册一遍，以验证数据校验功能是否生效。
 
 
-![图4-5 数据校验生效](images/4-8-4-5.png)
+![图4-5 数据校验生效](https://img.threetwoa.live/posts/java-course8/4-8-4-5.png)
 
 如上图4-5所示，相同数据不允许再此注册，从而证明数据校验功能是生效的。
 
@@ -2217,7 +2217,7 @@ mysql> SELECT * FROM t_user;
 ```
 
 
-![图5-1 登录表单页面](images/5-2-5-1.png)
+![图5-1 登录表单页面](https://img.threetwoa.live/posts/java-course8/5-2-5-1.png)
 
 
 ### 实现表单验证逻辑
@@ -2260,7 +2260,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
 登录表单校验效果如下图5-2所示。
 
-![图5-2 登录表单校验效果](images/5-2-5-2.png)
+![图5-2 登录表单校验效果](https://img.threetwoa.live/posts/java-course8/5-2-5-2.png)
 
 
 ### 实现密码显示/隐藏切换
@@ -2293,7 +2293,7 @@ document.getElementById('togglePassword').addEventListener('click', function () 
 
 密码显示/隐藏切换效果如下图5-2所示。
 
-![图5-3 密码显示/隐藏切换](images/5-2-5-3.png)
+![图5-3 密码显示/隐藏切换](https://img.threetwoa.live/posts/java-course8/5-2-5-3.png)
 
 
 ## 5.3 创建控制器方法来处理登录请求
@@ -2894,25 +2894,25 @@ public String showLoginForm(Model model,
 首先，访问首页地址：<http://localhost:8080>。此时，权限系统发挥作用，页面被重定向到了登录界面，如下5-4图所示。
 
 
-![图5-4 登录表单页面](images/5-6-5-4.png)
+![图5-4 登录表单页面](https://img.threetwoa.live/posts/java-course8/5-6-5-4.png)
 
 
 先输入一个未注册的用户名进行登录，如下5-5图所示，界面给出了错误提示“该用户名未注册”。
 
 
-![图5-5 界面给出了错误提示“该用户名未注册”](images/5-6-5-5.png)
+![图5-5 界面给出了错误提示“该用户名未注册”](https://img.threetwoa.live/posts/java-course8/5-6-5-5.png)
 
 
 接着，输入一个已注册的用户名进行登录，但是输入错误的密码，如下5-6图所示，界面给出了错误提示“密码错误”。
 
 
-![图5-6 界面给出了错误提示“密码错误”](images/5-6-5-6.png)
+![图5-6 界面给出了错误提示“密码错误”](https://img.threetwoa.live/posts/java-course8/5-6-5-6.png)
 
 
 最终，输入正确的用户名和密码进行登录，如下5-7图所示，界面重定向到了首页。
 
 
-![图5-7 界面重定向到了首页](images/5-6-5-7.png)
+![图5-7 界面重定向到了首页](https://img.threetwoa.live/posts/java-course8/5-6-5-7.png)
 
 
 ## 5.7 掌握按照角色权限控制的实现技巧
@@ -2951,7 +2951,7 @@ admin.html：
 当访问地址：<http://localhost:8080/admin>，会跳转到登录界面执行登录，登录成功后会重定向到后台管理界面，如下图5-8所示。
 
 
-![图5-8 登录成功后会重定向到后台管理界面](images/5-7-5-8.png)
+![图5-8 登录成功后会重定向到后台管理界面](https://img.threetwoa.live/posts/java-course8/5-7-5-8.png)
 
 
 我们希望后台管理界面只允许管理员登录，而如果是普通用户登录的，则不允许访问。如何实现?
@@ -2994,7 +2994,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 当访问地址：<http://localhost:8080/admin>，会跳转到登录界面执行登录，使用普通用户登录成功后会看到如下错误界面，如下图5-9所示。
 
 
-![图5-9 普通用户访问后台管理界面报错信息](images/5-7-5-9.png)
+![图5-9 普通用户访问后台管理界面报错信息](https://img.threetwoa.live/posts/java-course8/5-7-5-9.png)
 
 
 从上述报错信息“status=403”可以获知，是没有权限。
@@ -3238,7 +3238,7 @@ public class ErrorController {
 这样，当用户访问受保护资源而权限不足时，就会显示这个精心设计的 403 错误页面，如下图5-10所示。
 
 
-![图5-10 403错误页面](images/5-7-5-10.png)
+![图5-10 403错误页面](https://img.threetwoa.live/posts/java-course8/5-7-5-10.png)
 
 
 ## 5.8 掌握Spring Security的会话管理机制
@@ -3533,19 +3533,19 @@ Thymeleaf 提供了 `sec` 命名空间来方便地访问 Spring Security 上下�
 登录之后访问首页，效果如下图5-11所示。
 
 
-![图5-11 登录之后访问首页](images/5-8-5-11.png)
+![图5-11 登录之后访问首页](https://img.threetwoa.live/posts/java-course8/5-8-5-11.png)
 
 
 等到会话失效之后，再次登录首页，效果如下图5-12所示，被重定向了到登录界面。
 
 
-![图5-12 会话失效之后被重定向了到登录界面](images/5-8-5-12.png)
+![图5-12 会话失效之后被重定向了到登录界面](https://img.threetwoa.live/posts/java-course8/5-8-5-12.png)
 
 
 如下图5-13所示是会话过期的被重定向了到登录界面的效果。
 
 
-![图5-13 会话过期之后被重定向了到登录界面](images/5-8-5-13.png)
+![图5-13 会话过期之后被重定向了到登录界面](https://img.threetwoa.live/posts/java-course8/5-8-5-13.png)
 
 
 注：`invalidSessionUrl` 和 `expiredUrl` 同时配置时，会话过期的场景也可能被会话失效所覆盖。调测`expiredUrl`时，可以先去除掉`invalidSessionUrl` 配置。
@@ -3674,13 +3674,13 @@ public class LoginErrorType {
 登录之后访问首页，效果如下图5-14所示。
 
 
-![图5-14 登录之后访问首页](images/5-9-5-14.png)
+![图5-14 登录之后访问首页](https://img.threetwoa.live/posts/java-course8/5-9-5-14.png)
 
 
 如下图5-15所示是退出登录后被重定向了到登录界面的效果。
 
 
-![图5-15 退出登录后被重定向了到登录界面的效果](images/5-9-5-15.png)
+![图5-15 退出登录后被重定向了到登录界面的效果](https://img.threetwoa.live/posts/java-course8/5-9-5-15.png)
 
 
 ## 5.10 实现“记住我”浏览器重启后无需再次登录
@@ -3688,7 +3688,7 @@ public class LoginErrorType {
 在Spring Security中，“记住我”（Remember-Me）功能允许用户在关闭浏览器后重新访问网站时自动登录，而无需重新输入用户名和密码。这是通过在客户端存储一个持久化的令牌（通常是一个Cookie）来实现的，如下图。
 
 
-![图5-16 Cookie来实现持久化的令牌](images/5-10-5-16.png)
+![图5-16 Cookie来实现持久化的令牌](https://img.threetwoa.live/posts/java-course8/5-10-5-16.png)
 
 
 以下是一个基于Spring Security 6.5的“记住我”功能示例：
@@ -4059,7 +4059,7 @@ User getCurrentUser();
 访问地址：<http://localhost:8080/user/profile>，可以看到如下图6-1所示的界面。
 
 
-![图6-1 用户信息页面](images/6-3-6-1.png)
+![图6-1 用户信息页面](https://img.threetwoa.live/posts/java-course8/6-3-6-1.png)
 
 
 ## 6.4 从Spring Security中获取当前认证信息
@@ -4484,13 +4484,13 @@ public User updateUser(User user) {
 用户信息编辑页面如下：
 
 
-![图6-2 用户信息编辑页面](images/6-7-6-2.png)
+![图6-2 用户信息编辑页面](https://img.threetwoa.live/posts/java-course8/6-7-6-2.png)
 
 
 用户信息更新完成之后的页面如下：
 
 
-![图6-3 用户信息更新完成之后的页面](images/6-7-6-3.png)
+![图6-3 用户信息更新完成之后的页面](https://img.threetwoa.live/posts/java-course8/6-7-6-3.png)
 
 
 ## 6.8 RedirectAttributes深入解析，Spring MVC重定向数据传递的核心工具
@@ -5037,19 +5037,19 @@ public void changePassword(String username, String newPassword) {
 用户修改密码页面如下：
 
 
-![图6-4 用户修改密码页面](images/6-10-6-4.png)
+![图6-4 用户修改密码页面](https://img.threetwoa.live/posts/java-course8/6-10-6-4.png)
 
 
 用户修改密码完成之后的页面如下：
 
 
-![图6-5 用户修改密码完成之后的页面](images/6-10-6-5.png)
+![图6-5 用户修改密码完成之后的页面](https://img.threetwoa.live/posts/java-course8/6-10-6-5.png)
 
 
 用户修改密码失败之后的页面如下：
 
 
-![图6-6 用户修改密码失败之后的页面](images/6-10-6-6.png)
+![图6-6 用户修改密码失败之后的页面](https://img.threetwoa.live/posts/java-course8/6-10-6-6.png)
 
 
 ## 6.11 Spring MVC实现头像图片上传
@@ -5388,17 +5388,17 @@ spring.servlet.multipart.max-request-size=10MB
 点击“更换头像”按钮，会弹出文件上传选取框如下：
 
 
-![图6-7 文件上传选取框](images/6-12-6-7.png)
+![图6-7 文件上传选取框](https://img.threetwoa.live/posts/java-course8/6-12-6-7.png)
 
 
 头像更新之后，会重定向到用户信息展示页面，可以看到头像更新后的图片，如下：
 
 
-![图6-8 头像更新后的图片](images/6-12-6-8.png)
+![图6-8 头像更新后的图片](https://img.threetwoa.live/posts/java-course8/6-12-6-8.png)
 
 头像图片会存储在指定目录下，如下：
 
-![图6-9 文件存储路径](images/6-12-6-9.png)
+![图6-9 文件存储路径](https://img.threetwoa.live/posts/java-course8/6-12-6-9.png)
 
 
 ### 总结
@@ -5876,7 +5876,7 @@ spring.servlet.multipart.max-request-size=10MB
 笔记发布界面效果如下图7-1所示:
 
 
-![图7-1 笔记发布界面效果](images/7-3-7-1.png)
+![图7-1 笔记发布界面效果](https://img.threetwoa.live/posts/java-course8/7-3-7-1.png)
 
 
 ### 笔记发布表单的校验
@@ -6749,25 +6749,25 @@ spring.jpa.properties.hibernate.hbm2ddl.auto=update
 访问笔记发布界面地址：<http://localhost:8080/note/publish>，效果如下图7-2所示:
 
 
-![图7-2 笔记发布界面效果](images/7-7-7-2.png)
+![图7-2 笔记发布界面效果](https://img.threetwoa.live/posts/java-course8/7-7-7-2.png)
 
 
 下图7-3展示的是校验提示信息:
 
 
-![图7-3 校验提示信息](images/7-7-7-3.png)
+![图7-3 校验提示信息](https://img.threetwoa.live/posts/java-course8/7-7-7-3.png)
 
 
 下图7-4展示填写笔记内容的效果展示:
 
 
-![图7-4 填写笔记内容](images/7-7-7-4.png)
+![图7-4 填写笔记内容](https://img.threetwoa.live/posts/java-course8/7-7-7-4.png)
 
 
 下图7-5展示的是笔记发布成功的效果展示:
 
 
-![图7-5 笔记发布成功界面效果](images/7-7-7-5.png)
+![图7-5 笔记发布成功界面效果](https://img.threetwoa.live/posts/java-course8/7-7-7-5.png)
 
 
 ## 7.8 定义全局异常处理器，处理笔记发布过程中可能出现的异常
@@ -6981,7 +6981,7 @@ public class GlobalExceptionHandler {
 虽然配置了全局异常处理，但也可能未跳转到未跳转到指定的错误页面400-error.html，具体界面显示如下：
 
 
-![图7-6 笔记发布成功界面效果](images/7-8-7-6.png)
+![图7-6 笔记发布成功界面效果](https://img.threetwoa.live/posts/java-course8/7-8-7-6.png)
 
 
 观察控制台日志，可以看到报错信息：
@@ -7013,7 +7013,7 @@ server.tomcat.max-swallow-size = 100MB
 这样当上传文件超大小限制后就可以被全局异常处理类捕获了，具体界面显示如下：
 
 
-![图7-7 全局异常处理效果界面](images/7-8-7-7.png)
+![图7-7 全局异常处理效果界面](https://img.threetwoa.live/posts/java-course8/7-8-7-7.png)
 
 
 ## 7.9 安全特性、异常处理、事务管理经验总结及扩展
@@ -7514,7 +7514,7 @@ public class NoteServiceImpl implements NoteService {
 上述页面考虑了两种场景。如果该用户发布过笔记，则界面效果如下图8-1所示。
 
 
-![图8-1 该用户发布过笔记](images/8-4-8-1.png)
+![图8-1 该用户发布过笔记](https://img.threetwoa.live/posts/java-course8/8-4-8-1.png)
 
 
 点击上述笔记封面，可以跳转到该笔记的详情页面（后续实现）。
@@ -7523,7 +7523,7 @@ public class NoteServiceImpl implements NoteService {
 如果该用户没有发布过笔记，则界面效果如下图8-2所示。
 
 
-![图8-2 该用户没有发布过笔记](images/8-4-8-2.png)
+![图8-2 该用户没有发布过笔记](https://img.threetwoa.live/posts/java-course8/8-4-8-2.png)
 
 
 点击上述“发布第一篇笔记”按钮，可以跳转到笔记的发布页面。
@@ -7579,7 +7579,7 @@ public class NoteServiceImpl implements NoteService {
 界面效果如下图8-3所示。
 
 
-![图8-3 分页组件界面效果](images/8-4-8-3.png)
+![图8-3 分页组件界面效果](https://img.threetwoa.live/posts/java-course8/8-4-8-3.png)
 
 
 ## 8.5 区用户信息展示分自己视角和访客视角的技巧
@@ -7651,13 +7651,13 @@ public class NoteServiceImpl implements NoteService {
 如果是自己的视角，界面效果如下图8-4所示。
 
 
-![图8-4 自己的视角的用户个人信息展示界面效果](images/8-5-8-4.png)
+![图8-4 自己的视角的用户个人信息展示界面效果](https://img.threetwoa.live/posts/java-course8/8-5-8-4.png)
 
 
 如果是访客的视角，界面效果如下图8-5所示。
 
 
-![图8-5 访客的视角的用户个人信息展示界面效果](images/8-5-8-5.png)
+![图8-5 访客的视角的用户个人信息展示界面效果](https://img.threetwoa.live/posts/java-course8/8-5-8-5.png)
 
 
 ## 8.6 笔记列表展示区分自己视角和访客视角的技巧
@@ -7688,13 +7688,13 @@ public class NoteServiceImpl implements NoteService {
 如果是自己的视角，界面效果如下图8-6所示。
 
 
-![图8-6 自己的视角的笔记列表展示界面效果](images/8-6-8-6.png)
+![图8-6 自己的视角的笔记列表展示界面效果](https://img.threetwoa.live/posts/java-course8/8-6-8-6.png)
 
 
 如果是访客的视角，界面效果如下图8-7所示。
 
 
-![图8-7 访客的视角的笔记列表展示界面效果](images/8-6-8-7.png)
+![图8-7 访客的视角的笔记列表展示界面效果](https://img.threetwoa.live/posts/java-course8/8-6-8-7.png)
 
 
 ## 8.7 扩展统一异常处理UserNotFoundException
@@ -7725,7 +7725,7 @@ public class GlobalExceptionHandler {
 当我们试图访问一个不存在的用户时，比如：<http://localhost:8080/user/profile/100000>。用户ID为100000的用户不存在，则会跳转到如下界面：
 
 
-![图8-8 对UserNotFoundException异常的处理界面](images/8-7-8-8.png)
+![图8-8 对UserNotFoundException异常的处理界面](https://img.threetwoa.live/posts/java-course8/8-7-8-8.png)
 
 
 ## 8.8 性能优化及扩展建议
@@ -8230,7 +8230,7 @@ public class NoteServiceImpl implements NoteService {
 如果是访客的视角，界面效果如下图9-1所示。
 
 
-![图9-1 访客的视角的笔记详情界面效果](images/9-5-9-1.png)
+![图9-1 访客的视角的笔记详情界面效果](https://img.threetwoa.live/posts/java-course8/9-5-9-1.png)
 
 在该视角下，访客可以对他人笔记进行点赞、评论、收藏和分享，对笔记作者进行关注。
 
@@ -8238,7 +8238,7 @@ public class NoteServiceImpl implements NoteService {
 如果是自己的视角，界面效果如下图9-2所示。
 
 
-![图9-2 自己的视角的笔记详情界面效果](images/9-5-9-2.png)
+![图9-2 自己的视角的笔记详情界面效果](https://img.threetwoa.live/posts/java-course8/9-5-9-2.png)
 
 
 在该视角下，笔记作者可以对该笔记进行编辑、删除、点赞、评论、收藏和分享。
@@ -8272,7 +8272,7 @@ public class GlobalExceptionHandler {
 当我们试图访问一个不存在的笔记时，比如：<http://localhost:8080/note/12345>。笔记ID为12345的笔记不存在，则会跳转到如下界面：
 
 
-![图9-3 对NoteNotFoundException异常的处理界面](images/9-6-9-3.png)
+![图9-3 对NoteNotFoundException异常的处理界面](https://img.threetwoa.live/posts/java-course8/9-6-9-3.png)
 
 
 ## 9.7 完善笔记发布后的查看笔记功能
@@ -8480,10 +8480,10 @@ public String publishNote(@Valid @ModelAttribute("note") NotePublishDto notePubl
 
 下图9-4、9-5展示的是轮播切换图片的效果。
 
-![图9-4 轮播切换图片1](images/9-8-9-4.png)
+![图9-4 轮播切换图片1](https://img.threetwoa.live/posts/java-course8/9-8-9-4.png)
 
 
-![图9-5 轮播切换图片2](images/9-8-9-5.png)
+![图9-5 轮播切换图片2](https://img.threetwoa.live/posts/java-course8/9-8-9-5.png)
 
 
 ## 9.9 笔记详情页图放大预览功能实现
@@ -8677,10 +8677,10 @@ public String publishNote(@Valid @ModelAttribute("note") NotePublishDto notePubl
 
 下图9-6、9-7展示的是图片放大预览的效果。
 
-![图9-6 放大预览图片1](images/9-9-9-6.png)
+![图9-6 放大预览图片1](https://img.threetwoa.live/posts/java-course8/9-9-9-6.png)
 
 
-![图9-7 放大预览图片2](images/9-9-9-7.png)
+![图9-7 放大预览图片2](https://img.threetwoa.live/posts/java-course8/9-9-9-7.png)
 
 
 ## 9.10 提升用户体验经验总结及扩展建议
@@ -9306,7 +9306,7 @@ public class NoteServiceImpl implements NoteService {
 运行应用，试图保存笔记修改后的数据时，报错如下图10-1所示。
 
 
-![图10-1 访客的视角的笔记详情界面效果](images/10-5-10-1.png)
+![图10-1 访客的视角的笔记详情界面效果](https://img.threetwoa.live/posts/java-course8/10-5-10-1.png)
 
 
 ### 问题背景
@@ -9433,13 +9433,13 @@ public void updateNote(Note note, NoteEditDto noteEditDto) {
 下图10-2所示的是笔记编辑页面。
 
 
-![图10-2 笔记编辑页面](images/10-5-10-2.png)
+![图10-2 笔记编辑页面](https://img.threetwoa.live/posts/java-course8/10-5-10-2.png)
 
 
 下图10-3所示的是笔记编辑成功后的页面。
 
 
-![图10-3 笔记编辑成功后的页面](images/10-5-10-3.png)
+![图10-3 笔记编辑成功后的页面](https://img.threetwoa.live/posts/java-course8/10-5-10-3.png)
 
 
 ### 总结
@@ -9452,7 +9452,7 @@ public void updateNote(Note note, NoteEditDto noteEditDto) {
 在笔记详情页面操作栏上已经预留了编辑、删除笔记的按钮。如下图10-4所示。
 
 
-![图10-4 笔记编辑成功后的页面](images/10-6-10-4.png)
+![图10-4 笔记编辑成功后的页面](https://img.threetwoa.live/posts/java-course8/10-6-10-4.png)
 
 
 接下来实现从编辑、删除笔记的按钮执行触发编辑、删除笔记的请求。
@@ -9660,7 +9660,7 @@ public void deleteNote(Note note) {
 运行应用，试图删除笔记时，报错如下图10-5所示。
 
 
-![图10-5 访客的视角的笔记详情界面效果](images/10-8-10-5.png)
+![图10-5 访客的视角的笔记详情界面效果](https://img.threetwoa.live/posts/java-course8/10-8-10-5.png)
 
 
 同时在控制台日志里面看大如下信息：
@@ -9721,12 +9721,12 @@ function deleteNote(noteId) {
 运行应用，删除笔记时，可以看到如下图10-6所示的提示框，说明笔记已经能够成功删除了。
 
 
-![图10-6 成功删除笔记时的提示框](images/10-8-10-6.png)
+![图10-6 成功删除笔记时的提示框](https://img.threetwoa.live/posts/java-course8/10-8-10-6.png)
 
 点击提示框“确认”按钮，可以重定向到了用户信息管理界面，如下图10-7所示。
 
 
-![图10-7 重定向到了用户信息管理界面](images/10-8-10-7.png)
+![图10-7 重定向到了用户信息管理界面](https://img.threetwoa.live/posts/java-course8/10-8-10-7.png)
 
 
 ## 10.9 细粒度的访问控制确保只能作者修改、删除自己的笔记
@@ -11030,7 +11030,7 @@ com.fasterxml.jackson.databind.exc.InvalidDefinitionException: No serializer fou
 从代码断点调试可以看到auther对象属性是空的，如下图11-1所示。
 
 
-![图11-1 auther对象属性是空的](images/11-7-11-1.png)
+![图11-1 auther对象属性是空的](https://img.threetwoa.live/posts/java-course8/11-7-11-1.png)
 
 
 ### 解决方案
@@ -11169,19 +11169,19 @@ public class NoteResponseDto {
 从代码断点调试可以看到DTO对象属性都是有值的，如下图11-2所示。
 
 
-![图11-2 DTO对象属性都是有值的](images/11-7-11-2.png)
+![图11-2 DTO对象属性都是有值的](https://img.threetwoa.live/posts/java-course8/11-7-11-2.png)
 
 
 如下图11-3所示的是首次访问首页的效果。
 
 
-![图11-3 首次访问首页的效果](images/11-7-11-3.png)
+![图11-3 首次访问首页的效果](https://img.threetwoa.live/posts/java-course8/11-7-11-3.png)
 
 
 如下图11-4所示的是加载了笔记数据之后的效果。
 
 
-![图11-4 加载了笔记数据之后的效果](images/11-7-11-4.png)
+![图11-4 加载了笔记数据之后的效果](https://img.threetwoa.live/posts/java-course8/11-7-11-4.png)
 
 
 ## 11.8 掌握笔记无限滚动刷新的技巧
@@ -11223,7 +11223,7 @@ public class NoteResponseDto {
 如下图11-5所示的是无限滚动刷新，查询完笔记数据之后的效果。
 
 
-![图11-5 查询完笔记数据之后的效果](images/11-8-11-5.png)
+![图11-5 查询完笔记数据之后的效果](https://img.threetwoa.live/posts/java-course8/11-8-11-5.png)
 
 
 ## 11.9 格式化数字展示优化信息传达的效率和用户体验
@@ -11360,7 +11360,7 @@ function createNoteElement(note) {
 如下图11-6所示的是无限滚动刷新，查询完笔记数据之后的效果。
 
 
-![图11-6 查询完笔记数据之后的效果](images/11-9-11-6.png)
+![图11-6 查询完笔记数据之后的效果](https://img.threetwoa.live/posts/java-course8/11-9-11-6.png)
 
 
 ### 总结
@@ -11388,7 +11388,7 @@ function createNoteElement(note) {
 如下图11-7所示的是适配移动设备之后的效果。
 
 
-![图11-7 适配移动设备之后的效果](images/11-10-11-7.png)
+![图11-7 适配移动设备之后的效果](https://img.threetwoa.live/posts/java-course8/11-10-11-7.png)
 
 
 ### 扩展建议
@@ -11687,13 +11687,13 @@ Page<Note> findByTopicsContaining(String query, Pageable pageable);
 在首页“推荐”分类执行搜素“Java”关键字，效果如下图12-1所示。
 
 
-![图12-1 “推荐”分类执行搜素“Java”关键字](images/12-3-12-1.png)
+![图12-1 “推荐”分类执行搜素“Java”关键字](https://img.threetwoa.live/posts/java-course8/12-3-12-1.png)
 
 
 在首页“职场”分类执行搜素“Java”关键字，效果下图12-2所示。
 
 
-![图12-2 “职场”分类执行搜素“Java”关键字](images/12-3-12-2.png)
+![图12-2 “职场”分类执行搜素“Java”关键字](https://img.threetwoa.live/posts/java-course8/12-3-12-2.png)
 
 
 两个搜素结果不一致，说明有些包含“Java”主题的笔记，并不在“职场”分类中。
@@ -11817,7 +11817,7 @@ public static NoteExploreDto toExploreDto(Note note) {
 运行应用，效果如下图12-3所示，跳转逻辑没有问题，只是用户名下面有条下划线不是太美观。
 
 
-![图12-3 用户名下面有条下划线](images/12-5-12-3.png)
+![图12-3 用户名下面有条下划线](https://img.threetwoa.live/posts/java-course8/12-5-12-3.png)
 
 
 去除`<a>`标签的下划线，只需要加个CSS样式：
@@ -11835,7 +11835,7 @@ a {
 去除用户名下面下划线的效果如下图12-4所示。
 
 
-![图12-4 去除用户名下面下划线的效果](images/12-5-12-4.png)
+![图12-4 去除用户名下面下划线的效果](https://img.threetwoa.live/posts/java-course8/12-5-12-4.png)
 
 
 ## 12.6 实现从笔记详情页跳转到作者详情页
@@ -11897,13 +11897,13 @@ a {
 运行应用，作者头像效果如下图12-6所示。
 
 
-![图12-6 作者头像效果](images/12-6-12-6.png)
+![图12-6 作者头像效果](https://img.threetwoa.live/posts/java-course8/12-6-12-6.png)
 
 
 点击作者头像就可以跳转到作者的详情页了，效果如下图12-7所示。
 
 
-![图12-7 作者详情页](images/12-6-12-7.png)
+![图12-7 作者详情页](https://img.threetwoa.live/posts/java-course8/12-6-12-7.png)
 
 
 ## 12.7 设计瀑布流布局实现方案
@@ -12021,19 +12021,19 @@ function createNoteElement(note) {
 大尺寸设备效果如下图12-8所示。
 
 
-![图12-8 大尺寸设备效果](images/12-7-12-8.png)
+![图12-8 大尺寸设备效果](https://img.threetwoa.live/posts/java-course8/12-7-12-8.png)
 
 
 中等尺寸设备效果如下图12-9所示。
 
 
-![图12-9 中等尺寸设备效果](images/12-7-12-9.png)
+![图12-9 中等尺寸设备效果](https://img.threetwoa.live/posts/java-course8/12-7-12-9.png)
 
 
 小尺寸设备效果如下图12-10所示。
 
 
-![图12-10 小尺寸设备效果](images/12-7-12-10.png)
+![图12-10 小尺寸设备效果](https://img.threetwoa.live/posts/java-course8/12-7-12-10.png)
 
 
 通过以上实现，你可以将小红书首页的笔记卡片从传统网格布局改为瀑布流布局，提升用户体验和内容展示效果。
@@ -12099,7 +12099,7 @@ function navigateTo(page) {
 当点击暂未开放的功能时，比如“消息”，提示框效果如下图12-11所示。
 
 
-![图12-11 当点击暂未开放的功能时的提示框效果](images/12-8-12-11.png)
+![图12-11 当点击暂未开放的功能时的提示框效果](https://img.threetwoa.live/posts/java-course8/12-8-12-11.png)
 
 
 ## 12.9 搜索功能的扩展与进阶及笔记卡片展示的优化建议
@@ -12899,12 +12899,12 @@ const allData = element.dataset; // 返回 DOMStringMap 对象
 在首页查看笔记未点赞时效果，如下图13-1所示。
 
 
-![图13-1 笔记未点赞时效果](images/13-6-13-1.png)
+![图13-1 笔记未点赞时效果](https://img.threetwoa.live/posts/java-course8/13-6-13-1.png)
 
 在首页查看笔记未点赞时效果，如下图13-2所示。
 
 
-![图13-2 笔记点赞时效果](images/13-6-13-2.png)
+![图13-2 笔记点赞时效果](https://img.threetwoa.live/posts/java-course8/13-6-13-2.png)
 
 
 ## 13.7 笔记详情页的点赞处理
@@ -14035,7 +14035,7 @@ function createNoCommentElement() {
 通过以上实现，可以在项目中完整实现评论区功能，包括评论发布、评论列表展示和用户交互反馈等，演示效果如下图14-1所示。
 
 
-![图14-1 评论区效果](images/14-8-14-1.png)
+![图14-1 评论区效果](https://img.threetwoa.live/posts/java-course8/14-8-14-1.png)
 
 
 ## 14.9 删除评论的功能实现
@@ -14150,13 +14150,13 @@ function deleteComment(commentId) {
 如下图14-2所示的是评论删除提前的提示。
 
 
-![图14-2 评论删除提前的提示](images/14-9-14-2.png)
+![图14-2 评论删除提前的提示](https://img.threetwoa.live/posts/java-course8/14-9-14-2.png)
 
 
 如下图14-3所示的是评论删除后的列表刷新。
 
 
-![图14-3 评论删除后的列表刷新](images/14-9-14-3.png)
+![图14-3 评论删除后的列表刷新](https://img.threetwoa.live/posts/java-course8/14-9-14-3.png)
 
 
 ## 14.10 掌握评论回复及多级评论的实现技巧
@@ -14533,13 +14533,13 @@ function handleSubmitReply() {
 如下图14-4所示的是回复弹窗。
 
 
-![图14-4 回复弹窗](images/14-12-14-4.png)
+![图14-4 回复弹窗](https://img.threetwoa.live/posts/java-course8/14-12-14-4.png)
 
 
 如下图14-5所示的是回复列表，能够显示完整的回复路径。
 
 
-![图14-5 回复列表能够显示完整的回复路径](images/14-12-14-5.png)
+![图14-5 回复列表能够显示完整的回复路径](https://img.threetwoa.live/posts/java-course8/14-12-14-5.png)
 
 
 通过以上实现，你可以支持无限层级的嵌套评论，同时保持良好的性能和用户体验。实际项目中，建议根据具体需求限制最大层级深度（如不超过5层），以避免界面过于复杂。
@@ -14607,7 +14607,7 @@ function renderReplies(replies) {
 如下图14-6所示的是回复列表，显示是能够可以跳转了。
 
 
-![图14-6 可以跳转的回复列表](images/14-13-14-6.png)
+![图14-6 可以跳转的回复列表](https://img.threetwoa.live/posts/java-course8/14-13-14-6.png)
 
 
 ## 14.14 最佳实践及优化建议
@@ -14896,13 +14896,13 @@ public class AdminController {
 如下图15-1所示，是admin登录应用之后，访问`/explore`页面路径的效果，提示没有权限。
 
 
-![图15-1 访问`/explore`页面路径的效果](images/15-3-15-1.png)
+![图15-1 访问`/explore`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-3-15-1.png)
 
 
 如下图15-2所示，是admin访问`/admin`页面路径的效果，显示有权限。
 
 
-![图15-2 访问`/admin`页面路径的效果](images/15-3-15-2.png)
+![图15-2 访问`/admin`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-3-15-2.png)
 
 说明基于角色的访问控制已经生效了。
 
@@ -15412,18 +15412,18 @@ public String dashboard(Model model) {
 如下图15-3所示，是账号admin访问`/admin`页面路径的效果，重定向到了`/admin/dashboard`页面。
 
 
-![图15-3 访问`/admin`页面路径的效果](images/15-7-15-3.png)
+![图15-3 访问`/admin`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-7-15-3.png)
 
 
 admin.html模版采用了响应式的布局，即便在移动设备上，也能能有很好的适配。如下图15-4所示，是在移动设备上访问`/admin`页面的效果。
 
 
-![图15-4 移动设备上访问`/admin`页面路径的效果](images/15-7-15-4.png)
+![图15-4 移动设备上访问`/admin`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-7-15-4.png)
 
 
 点击右上角的按钮，也可以展示完整菜单，如下图15-5所示
 
-![图15-5 点击右上角的按钮展示完整菜单](images/15-7-15-5.png)
+![图15-5 点击右上角的按钮展示完整菜单](https://img.threetwoa.live/posts/java-course8/15-7-15-5.png)
 
 
 ## 15.8 设计用户管理功能的用户分页查询
@@ -15572,13 +15572,13 @@ public String user(Model model, @RequestParam(defaultValue = "1") int page) {
 如下图15-6所示，是账号admin访问`/admin/user`页面路径的效果。
 
 
-![图15-6 访问`/admin/user`页面路径的效果](images/15-8-15-6.png)
+![图15-6 访问`/admin/user`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-8-15-6.png)
 
 
 如下图15-7所示，是在移动设备上访问`/admin/user`页面的效果。
 
 
-![图15-7 移动设备上访问`/admin/user`页面路径的效果](images/15-8-15-7.png)
+![图15-7 移动设备上访问`/admin/user`页面路径的效果](https://img.threetwoa.live/posts/java-course8/15-8-15-7.png)
 
 
 ## 15.9 设计用户管理功能的编辑用户操作
@@ -15687,13 +15687,13 @@ public String editUser(@PathVariable Long userId, Model model) {
 如下图15-8所示，访问编辑用户页面的效果。
 
 
-![图15-8 访问编辑用户页面](images/15-9-15-8.png)
+![图15-8 访问编辑用户页面](https://img.threetwoa.live/posts/java-course8/15-9-15-8.png)
 
 
 如下图15-9所示，是在移动设备上访问编辑用户页面。
 
 
-![图15-9 移动设备上访问编辑用户页面](images/15-9-15-9.png)
+![图15-9 移动设备上访问编辑用户页面](https://img.threetwoa.live/posts/java-course8/15-9-15-9.png)
 
 
 ### 保存编辑后的数据
@@ -15889,7 +15889,7 @@ public void deleteUser(Long userId) {
 如下图15-10所示，是在移动设备上访问删除用户成功后的效果。
 
 
-![图15-10 移动设备上访问删除用户成功后的效果](images/15-10-15-10.png)
+![图15-10 移动设备上访问删除用户成功后的效果](https://img.threetwoa.live/posts/java-course8/15-10-15-10.png)
 
 
 ## 15.11 其他功能的处理及安全总结、优化建议
@@ -15957,9 +15957,9 @@ public void deleteUser(Long userId) {
 最终两个界面的效果如下图15-11、图15-12所示。
 
 
-![图15-11 笔记管理的界面效果](images/15-11-15-11.png)
+![图15-11 笔记管理的界面效果](https://img.threetwoa.live/posts/java-course8/15-11-15-11.png)
 
-![图15-12 评论管理的界面效果](images/15-11-15-12.png)
+![图15-12 评论管理的界面效果](https://img.threetwoa.live/posts/java-course8/15-11-15-12.png)
 
 
 ### 安全总结

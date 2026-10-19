@@ -51,13 +51,13 @@ Codex 在陌生仓库里最容易遇到的，不是不会写代码，而是不�
 
 Codex 会从项目根目录一路读取到当前工作目录，越靠近当前目录的规则优先级越高。换句话说，根目录负责「共同宪法」，子目录负责「地方条例」。
 
-![Codex 如何按层级加载 AGENTS.md](./images/agents-md-template-six-scenes/fig-01-01-codex-agents-layer-loading.jpg)
+![Codex 如何按层级加载 AGENTS.md](https://img.threetwoa.live/posts/agents-md-handbook/agents-md-template-six-scenes/fig-01-01-codex-agents-layer-loading.jpg)
 
 这也是写好 `AGENTS.md` 的第一个关键：不要试图用一份巨型文件解释整个世界，要让规则跟着代码的边界走。
 
 ### 二、六条原则
 
-![高质量 AGENTS.md 的六大原则](./images/agents-md-template-six-scenes/fig-02-02-agents-six-principles.jpg)
+![高质量 AGENTS.md 的六大原则](https://img.threetwoa.live/posts/agents-md-handbook/agents-md-template-six-scenes/fig-02-02-agents-six-principles.jpg)
 
 #### 1. 写可执行事实，不写正确的废话
 
@@ -165,7 +165,7 @@ repo/
 
 ### 三、可直接改的通用模板
 
-![AGENTS.md 模板七段](./images/agents-md-template-six-scenes/fig-03-03-agents-template-seven-sections.jpg)
+![AGENTS.md 模板七段](https://img.threetwoa.live/posts/agents-md-handbook/agents-md-template-six-scenes/fig-03-03-agents-template-seven-sections.jpg)
 
 下面这份模板适合大多数中小型项目。复制之后，请删除不适用的内容，并把占位命令替换为仓库中真实可运行的命令。
 
@@ -244,7 +244,7 @@ repo/
 
 ### 四、六个场景的局部规则
 
-![六场景局部规则](./images/agents-md-template-six-scenes/fig-04-04-agents-six-scenario-local-rules.jpg)
+![六场景局部规则](https://img.threetwoa.live/posts/agents-md-handbook/agents-md-template-six-scenes/fig-04-04-agents-six-scenario-local-rules.jpg)
 
 通用模板解决的是底座，真正让 Codex 变得稳定的，往往是与业务场景贴合的局部规则。
 

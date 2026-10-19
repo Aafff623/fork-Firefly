@@ -26,7 +26,7 @@ comment: true
 
 课程的概括是：**扣子是工具，RAG 是知识库，Agentic AI 是协作伙伴**。对标的是 OpenClaw 那样有记忆、能自主决策和行动的产品。
 
-![为什么现在是好机会](./images/why.jpg)
+![为什么现在是好机会](https://img.threetwoa.live/posts/geektime-agentic-ai-product/why.jpg)
 
 ## 课程骨架：4D Method + 能力雷达图
 
@@ -34,7 +34,7 @@ comment: true
 
 AI 产品经理的能力雷达图有四个维度：**Agent 设计 / Eval / 数据飞轮 / 工具调用**。整门课就是围绕这四项能力 + PM 角色转变（从产品经理到产品 Builder）展开的。
 
-![能力矩阵](./images/s32-ability.jpg)
+![能力矩阵](https://img.threetwoa.live/posts/geektime-agentic-ai-product/s32-ability.jpg)
 
 ## 8 周大纲：从认知到路演
 
@@ -91,7 +91,7 @@ AI 产品经理的能力雷达图有四个维度：**Agent 设计 / Eval / 数�
 
 ## 5 个实战项目：覆盖四大高频场景
 
-![5 个实战项目](./images/s32-projects.jpg)
+![5 个实战项目](https://img.threetwoa.live/posts/geektime-agentic-ai-product/s32-projects.jpg)
 
 1. **项目一 ToC 陪伴场景——情感陪伴 Agent**：调教 AI 记忆体系（初始引导 → 对话中记忆动态管理）与主动触达策略（定时任务频率与内容模板），产出"具备长久记忆、懂用户情绪、能主动关怀的 AI 伴侣 Demo"。
 2. **项目二 ToB 效率场景——企业级项目管理助手（PMO）**。
@@ -103,7 +103,7 @@ AI 产品经理的能力雷达图有四个维度：**Agent 设计 / Eval / 数�
 
 ## 报名即享的 AI 资源：零代码开发平台
 
-![高价值 AI 资源](./images/resources.jpg)
+![高价值 AI 资源](https://img.threetwoa.live/posts/geektime-agentic-ai-product/resources.jpg)
 
 课程主打零代码，靠的是两个赠品平台：
 
@@ -114,7 +114,7 @@ AI 产品经理的能力雷达图有四个维度：**Agent 设计 / Eval / 数�
 
 ## 讲师
 
-![讲师介绍](./images/s32-instructor.jpg)
+![讲师介绍](https://img.threetwoa.live/posts/geektime-agentic-ai-product/s32-instructor.jpg)
 
 **晓寒（肖汉）**：13 年+ 一线大厂经验，历任百度"度小满金融"质量架构师、工程效率负责人及 AI 产品负责人。深度参与风控决策、ChatUI、AI 坐席、ChatBI 等金融核心业务的 AI 化落地，推动集团研发流程 AI 化改造；主导度小满 AI 中台 4 大平台从 0 到 1 建设（模型平台 / 知识库 / Agent 平台 / 技能平台）。产品 × 技术双重角色，教学风格"PM 友好"——把 MCP、Memory、多 Agent 协作这些术语翻译成产品决策语言。
 
@@ -130,7 +130,7 @@ AI 产品经理的能力雷达图有四个维度：**Agent 设计 / Eval / 数�
 
 ## 适合谁 & 我的判断
 
-![适合谁学习](./images/audience.jpg)
+![适合谁学习](https://img.threetwoa.live/posts/geektime-agentic-ai-product/audience.jpg)
 
 官方适配人群：传统产品经理（想用 AI 升级 PRD、原型、数据分析技能）、AI 产品经理（缺系统化知识体系）、程序员（补产品思维与 Agentic 技术产品化方法论）、创业者 & AI 爱好者（无技术背景想做 Demo Day 路演产品）、管理者（对接 AI 团队想了解技术边界）。FAQ 明确零技术门槛。
 

@@ -21,7 +21,7 @@ comment: true
 
 课程开篇就点破了很多人用 AI 编程踩的坑：把需求直接扔给 AI，来回改，最后不确定能不能用。它管这叫"普通姿势"，对应的是"驾驭姿势"——先 spec、再 plan、再 implement，每一步可控、结果可预期。
 
-![很多人用 AI 编程踩的坑](./images/pain.jpg)
+![很多人用 AI 编程踩的坑](https://img.threetwoa.live/posts/geektime-enterprise-ai-coding/pain.jpg)
 
 所谓"驾驭"，定义很明确：**主动权在你手里，AI 在你的框架下执行**。整门课就是围绕这个定义搭的方法论和项目。
 
@@ -45,7 +45,7 @@ comment: true
 
 课程最实在的设计是四个项目按工程姿态递进，每个都有明确的训练主场。
 
-![四个实战项目](./images/s33-projects.jpg)
+![四个实战项目](https://img.threetwoa.live/posts/geektime-enterprise-ai-coding/s33-projects.jpg)
 
 ### 项目一 OryxOS：用 SDD 做 AI 智能体操作系统（第 2-5 周）
 
@@ -77,7 +77,7 @@ comment: true
 
 ## 学完能带走什么
 
-![学完你将带走](./images/s33-takeaway.jpg)
+![学完你将带走](https://img.threetwoa.live/posts/geektime-enterprise-ai-coding/s33-takeaway.jpg)
 
 课程收尾会把四种工程姿态沉淀下来：0→1 / Fork 改造 / 混合姿态 / 真实开源贡献；复盘个人 CLAUDE.md / Skills / Slash Commands / Subagents 库，分清哪些是项目专属、哪些能变成"个人沉淀库"；并指向 Context Engineering 这个接下来 1-2 年最值得深入的方向。
 
@@ -92,7 +92,7 @@ comment: true
 
 ## 适合谁 & 我的判断
 
-![适合人群](./images/audience.jpg)
+![适合人群](https://img.threetwoa.live/posts/geektime-enterprise-ai-coding/audience.jpg)
 
 官方定位是"想把 AI 编程真正用到企业项目中的工程师"。我的判断：这是三门课里**方法论迁移性最强**的一门——SDD 和 Harness 不绑定任何单一平台，学完这套"想清楚 + 做对"的框架，换什么 AI 工具都能套用。四个项目从造底座到改开源的递进设计也很贴近真实工程成长路径。适合已经有 AI 编程基础、想从"会用"进阶到"驾驭"的在职工程师。
 

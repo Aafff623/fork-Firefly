@@ -26,7 +26,7 @@ comment: true
 
 模式决定工作方式；模型决定能力、速度与成本；推理档位决定思考深度。下面按图面完整转录，不当完整产品手册。
 
-![Chat、Work、Codex，怎么选？](./images/chatgpt-chat-work-codex/fig-01-01-chatgpt-chat-work-codex-how-to-choose.jpg)
+![Chat、Work、Codex，怎么选？](https://img.threetwoa.live/posts/codex-handbook/chatgpt-chat-work-codex/fig-01-01-chatgpt-chat-work-codex-how-to-choose.jpg)
 
 ---
 
@@ -91,13 +91,13 @@ Instant 管「说得快」；Sol + 推理档管「想得深」；Terra / Luna �
 
 相关阅读：官方十条边界气质、[Claude Code 四类循环](/posts/claude-code-handbook/)、Prompt→Harness→Loop 四站、Vibe Coding 流程纪律——见文末。
 
-![AI 落地流程总览](./images/codex-practice-50-tips/fig-01-01-linghufeng-ai-landing-flow.jpg)
+![AI 落地流程总览](https://img.threetwoa.live/posts/codex-handbook/codex-practice-50-tips/fig-01-01-linghufeng-ai-landing-flow.jpg)
 
 ---
 
 ### AI Native 的工作方式
 
-![AI 协作：1个月→3天](./images/codex-practice-50-tips/fig-02-02-ai-collab-1month-to-3days.jpg)
+![AI 协作：1个月→3天](https://img.threetwoa.live/posts/codex-handbook/codex-practice-50-tips/fig-02-02-ai-collab-1month-to-3days.jpg)
 
 1. 相信未来是一个**普通人靠想法也能暴富的时代**，前提是你学会无限烧 Token 的方式。
 
@@ -123,7 +123,7 @@ Instant 管「说得快」；Sol + 推理档管「想得深」；Terra / Luna �
 
 ### 从陌生行业开始做新项目
 
-![不懂行业反而是优势](./images/codex-practice-50-tips/fig-03-03-outsider-advantage-tip11.jpg)
+![不懂行业反而是优势](https://img.threetwoa.live/posts/codex-handbook/codex-practice-50-tips/fig-03-03-outsider-advantage-tip11.jpg)
 
 11. **不懂一个行业有时反而是优势。** 你没有被旧规则限制，更容易让 AI 带着你从第一性原理重新拆解行业。
 
@@ -135,7 +135,7 @@ Instant 管「说得快」；Sol + 推理档管「想得深」；Terra / Luna �
 
 15. 简单任务可以交给便宜模型，关键判断、复杂编码和长期任务交给顶级模型。不要为了省小钱，浪费更多返工时间。
 
-![模型路由：Haiku / Sonnet / Opus](./images/codex-practice-50-tips/fig-04-04-model-routing-haiku-sonnet-opus.jpg)
+![模型路由：Haiku / Sonnet / Opus](https://img.threetwoa.live/posts/codex-handbook/codex-practice-50-tips/fig-04-04-model-routing-haiku-sonnet-opus.jpg)
 
 16. 学会观察 Codex 的额度和重置时间。临近重置还有大量额度，就安排代码审计、竞品调研、批量测试等重任务。
 
@@ -155,7 +155,7 @@ Instant 管「说得快」；Sol + 推理档管「想得深」；Terra / Luna �
 
 22. 给 Codex 明确的完成标准。例如「页面能打开」不够，要写清楚响应速度、移动端效果、异常状态和测试要求。
 
-![完成标准：模糊 vs 细化验收](./images/codex-practice-50-tips/fig-05-05-acceptance-vague-vs-detailed.jpg)
+![完成标准：模糊 vs 细化验收](https://img.threetwoa.live/posts/codex-handbook/codex-practice-50-tips/fig-05-05-acceptance-vague-vs-detailed.jpg)
 
 23. 不要只告诉 AI「做什么」，还要告诉它**「做到什么程度」。** 没有验收标准，AI 很容易交付一个看起来完成的半成品。
 
@@ -307,7 +307,7 @@ Codex 常见路径：`~/.codex/config.toml`（IDE 与 CLI 共用）。每个服�
 
 OpenAI 的 [Codex for Open Source](https://openai.com/zh-Hans-CN/form/codex-for-oss/) 面向**关键开源软件维护者**。入选不是「随便找个空仓库」，而是用维护工作流换工具与额度。作者 LeviDing 称自己过审并激活了 6 个月 Pro（约合文中说的 200 美金/月档；结账页样例为日区限时 0 日元）。
 
-![邮件 You’re in + Pro 升级页（作者样例）](./images/codex-for-oss-pro-six-months/01-pro-activated.jpg)
+![邮件 You’re in + Pro 升级页（作者样例）](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/01-pro-activated.jpg)
 
 权益、门槛以官方表单页为准；下面是 2026-08-11 对照官方页 + 作者经验的浓缩版。**别滥用，也别走代申代充。**
 
@@ -319,7 +319,7 @@ OpenAI 的 [Codex for Open Source](https://openai.com/zh-Hans-CN/form/codex-for-
 | API 额度 | 写代码、维护自动化、发布工作流、核心 OSS 工作 |
 | Codex Security | **有条件**，看仓库安全需求是否达标 |
 
-![入选支持说明截图](./images/codex-for-oss-pro-six-months/05-benefits.jpg)
+![入选支持说明截图](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/05-benefits.jpg)
 
 ### 谁可以申，官方看重什么
 
@@ -331,15 +331,15 @@ OpenAI 的 [Codex for Open Source](https://openai.com/zh-Hans-CN/form/codex-for-
 - 找有实质用量、广泛采用、或对生态明确重要的项目
 - 审核看：仓库使用、生态重要性、**活跃维护证明**（PR 评审、issue 分类、发版等持续性职责）
 
-![资格](./images/codex-for-oss-pro-six-months/03-eligibility.jpg)
+![资格](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/03-eligibility.jpg)
 
-![看重什么](./images/codex-for-oss-pro-six-months/04-what-they-value.jpg)
+![看重什么](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/04-what-they-value.jpg)
 
 作者参考画像：某公开仓库 admin、约 10.8k star（[zh.javascript.info](https://github.com/javascript-tutorial/zh.javascript.info)）；印象中曾要求近三月积极维护（commit 等），后来表单未必仍写明——按**当前表单**填，旧记忆只当加分信号。
 
 ### 表单要填啥
 
-![申请页局部](./images/codex-for-oss-pro-six-months/02-apply-form.jpg)
+![申请页局部](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/02-apply-form.jpg)
 
 - 姓名、**与 ChatGPT 账户关联的邮箱**
 - GitHub 用户名（资料公开）、仓库 URL（仓库公开）
@@ -352,7 +352,7 @@ OpenAI 的 [Codex for Open Source](https://openai.com/zh-Hans-CN/form/codex-for-
 
 提交即同意项目条款。滚动审核，**邮件通知**入选者。可申自己的项目，也可提名其他维护者；不完全符合但生态重要时，仍可申并写理由。
 
-![审核怎么运作](./images/codex-for-oss-pro-six-months/06-review-process.jpg)
+![审核怎么运作](https://img.threetwoa.live/posts/codex-handbook/codex-for-oss-pro-six-months/06-review-process.jpg)
 
 ### 节奏与坑（经验，非 SLA）
 

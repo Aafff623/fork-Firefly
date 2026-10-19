@@ -273,7 +273,7 @@ pi 官方把美化拆成两块，机制完全不同，装法、共存性也截�
 
 装完跑起来长这样，底部一行信息密度恰到好处，又不挤：
 
-![实拍：Catppuccin Mocha + pi-inline-statusline 跑起来的样子](./images/pi-theme-statusline-setup/statusline-real.png)
+![实拍：Catppuccin Mocha + pi-inline-statusline 跑起来的样子](https://img.threetwoa.live/posts/pi-coding-agent-handbook/pi-theme-statusline-setup/statusline-real.png)
 
 ### 真正值得记的，是这两个坑
 
@@ -359,7 +359,7 @@ zhipu 全家桶（glm-4-flash / glm-5-turbo / glm-5.2）在 `pi --list-models` �
 
 但这层有个硬伤：只存原始会话，不帮你跨会话检索，也不提取事实。你想问「上次聊 auth 那次说了啥」，原生 pi 答不上来。
 
-![pi 记忆架构](./images/pi-agent-memory-mechanism/memory-architecture.svg)
+![pi 记忆架构](https://img.threetwoa.live/posts/pi-coding-agent-handbook/pi-agent-memory-mechanism/memory-architecture.svg)
 
 ### 真正让 pi 记住事的那个扩展
 
@@ -397,7 +397,7 @@ policy-only 有个绕不开的毛病。一条「禁止做 X」的规则，只有
 
 扒存储目录的时候，能看到证据。
 
-![安全扫描流程](./images/pi-agent-memory-mechanism/security-flow.svg)
+![安全扫描流程](https://img.threetwoa.live/posts/pi-coding-agent-handbook/pi-agent-memory-mechanism/security-flow.svg)
 
 写记忆不是直接覆盖。每次写之前先存一份 `.MEMORY.md.recovery-` 快照，带时间戳。我数了一下，这种 recovery 文件几十个。崩了能回滚。
 
@@ -413,7 +413,7 @@ policy-only 有个绕不开的毛病。一条「禁止做 X」的规则，只有
 
 翻扩展的 ROADMAP，它明说从 Hermes Agent port 过来，还做了竞品对照。
 
-![会话生命周期](./images/pi-agent-memory-mechanism/session-lifecycle.svg)
+![会话生命周期](https://img.threetwoa.live/posts/pi-coding-agent-handbook/pi-agent-memory-mechanism/session-lifecycle.svg)
 
 Hermes 的记忆是三层：L1 持久记忆（`MEMORY.md` + `USER.md`），L2 技能（`SKILL.md`），L3 会话全文搜索（FTS5）。pi 这个扩展基本对上了。Hermes 还有个 L4，接 Honcho、Mem0 这些外部 provider 做更深的用户建模，pi 这边还没做。
 

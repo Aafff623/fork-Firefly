@@ -347,7 +347,7 @@ OpenCode 的 Skill 不等于斜杠命令。它由 Agent 的 `skill` 工具按需
 
 官方落地页（[opencode.ai/go](https://opencode.ai/go)）那张「每 5 小时请求数」条形图，一眼就能看懂 Flash 站哪：
 
-![OpenCode Go 每 5 小时请求数使用限制：DeepSeek V4 Flash 现约 63300（含 2x usage）](./images/opencode-go-deepseek-v4-flash/go-limits-5h.jpg)
+![OpenCode Go 每 5 小时请求数使用限制：DeepSeek V4 Flash 现约 63300（含 2x usage）](https://img.threetwoa.live/posts/opencode-handbook/opencode-go-deepseek-v4-flash/go-limits-5h.jpg)
 
 | 项 | 数字 |
 |---|---|

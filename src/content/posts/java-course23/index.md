@@ -329,7 +329,7 @@ seata.registry.nacos.cluster=default
 前往百炼控制台<https://bailian.console.aliyun.com/console?tab=model#/model-market>，选择要使用的模型。如果页面顶部显示以下消息，需要开通百炼的模型服务，以获得免费额度。如果未显示该消息，则表示已经开通。
 
 
-![图2-1 开通百炼](images/2-2-2-1.png)
+![图2-1 开通百炼](https://img.threetwoa.live/posts/java-course23/2-2-2-1.png)
 
 
  
@@ -339,7 +339,7 @@ seata.registry.nacos.cluster=default
  
 
 
-![图2-2 创建API Key](images/2-2-2-2.png)
+![图2-2 创建API Key](https://img.threetwoa.live/posts/java-course23/2-2-2-2.png)
 
 
  
@@ -347,7 +347,7 @@ seata.registry.nacos.cluster=default
 可以查看并复制该API Key。
 
 
-![图2-3 可以查看并复制该API](images/2-2-2-3.png)
+![图2-3 可以查看并复制该API](https://img.threetwoa.live/posts/java-course23/2-2-2-3.png)
 
  
 有了该API Key之后，就能调用阿里云通义千问所提供的模型了。
@@ -361,12 +361,12 @@ seata.registry.nacos.cluster=default
 在Nacos配置中心针对rednote-ai-microservice模块，新增一个Data Id为rednote-ai-microservice.properties的配置，如下图所示。
 
 
-![图2-4 把API Key配置配置中心](images/2-2-2-4.png)
+![图2-4 把API Key配置配置中心](https://img.threetwoa.live/posts/java-course23/2-2-2-4.png)
 
 
 在上述配置的配置内容里面，新增SPRING_AI_DASHSCOPE_API_KEY配置，其值为阿里云通义千问API Key，如下图所示。
 
-![图2-5 把API Key配置配置中心](images/2-2-2-5.png)
+![图2-5 把API Key配置配置中心](https://img.threetwoa.live/posts/java-course23/2-2-2-5.png)
 
 
 ### 应用配置
@@ -836,12 +836,12 @@ export interface CopywritingResponseDto {
 
 “AI生成文案”按钮界面效果如下图2-6所示。
 
-![图2-6 “AI生成文案”按钮界面效果](images/2-6-2-6.png)
+![图2-6 “AI生成文案”按钮界面效果](https://img.threetwoa.live/posts/java-course23/2-6-2-6.png)
 
 
 点击“AI生成文案”按钮之后，自动生成的文案效果如下图2-7所示。
 
-![图2-7 点击“AI生成文案”按钮界面效果](images/2-6-2-7.png)
+![图2-7 点击“AI生成文案”按钮界面效果](https://img.threetwoa.live/posts/java-course23/2-6-2-7.png)
 
 
 ## 3.1 AI实现评论助手功能方案介绍
@@ -1270,24 +1270,24 @@ export interface CommentSuggestionResponseDto {
 
 “AI帮我写”按钮界面效果如下图3-1所示。
 
-![图3-1 “AI帮我写”按钮界面效果](images/3-4-3-1.png)
+![图3-1 “AI帮我写”按钮界面效果](https://img.threetwoa.live/posts/java-course23/3-4-3-1.png)
 
 
 点击“AI帮我写”按钮之后，自动生成的评论建议列表效果如下图3-2所示。
 
-![图3-2 点击“AI帮我写”按钮界面效果](images/3-4-3-2.png)
+![图3-2 点击“AI帮我写”按钮界面效果](https://img.threetwoa.live/posts/java-course23/3-4-3-2.png)
 
 
 点击评论建议列表中的条目的效果如下图3-3所示。
 
-![图3-3 点击评论建议列表中的条目的效果](images/3-4-3-3.png)
+![图3-3 点击评论建议列表中的条目的效果](https://img.threetwoa.live/posts/java-course23/3-4-3-3.png)
 
 
 ## 3.5 AI辅助编程解决笔记发布时图片重复的问题
 
 笔记发布时，发现插入一张图片，但最后查询笔记详情时是两张重复图片，如下图3-4所示。
 
-![图3-4 查询笔记详情时是两张重复图片](images/3-5-3-4.png)
+![图3-4 查询笔记详情时是两张重复图片](https://img.threetwoa.live/posts/java-course23/3-5-3-4.png)
 
 
 ### 问题排查
@@ -1440,7 +1440,7 @@ try {
 
 验证问题已经解决，图片不会重复了，如下图3-5所示。
 
-![图3-5 验证问题已经解决](images/3-5-3-5.png)
+![图3-5 验证问题已经解决](https://img.threetwoa.live/posts/java-course23/3-5-3-5.png)
 
 
 ## 3.6 解决首页跳转到笔记详情页不显示图片的问题

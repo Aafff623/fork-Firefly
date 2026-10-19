@@ -48,7 +48,7 @@ Prompt 就是你丢给模型的「指令文本」。最原始的形态只是一�
 
 Prompt 是模型「看到」的全部输入。它是决定了模型当下的思考方向的，但**本身不负责执行**。
 
-![Engineering Type](./images/engineering-type.png)
+![Engineering Type](https://img.threetwoa.live/posts/engineering-type/engineering-type.png)
 
 ---
 
@@ -66,7 +66,7 @@ Context 是模型「当前能看到的信息窗口」。
 Context 是有限的（有 token 上限），所以如何管理它（压缩、选择性加载、长期记忆外部化）直接决定 Agent 能不能跑长任务而不「失忆」。
 简单说：Prompt 是「说了什么」，Context 是「它现在能记住什么」。
 
-![Engineering Type-1](./images/engineering-type-1.png)
+![Engineering Type-1](https://img.threetwoa.live/posts/engineering-type/engineering-type-1.png)
 
 ---
 
@@ -86,7 +86,7 @@ Harness 是把模型包起来的整套运行机制 + 生态。现在社区（包
 **Agent = Model + Harness**  
 没有 Harness，模型只是会说话的文本预测器。
 
-![Engineering Type-2](./images/engineering-type-2.png)
+![Engineering Type-2](https://img.threetwoa.live/posts/engineering-type/engineering-type-2.png)
 
 ---
 
@@ -109,7 +109,7 @@ Loop 就是 Agent 的核心工作循环：
 
 Loop 是 Harness 最核心的运行时部分。没有稳定的 Loop，再强的模型也只能做一次性回答。
 
-![Engineering Type](./images/engineering-type.jpg)
+![Engineering Type](https://img.threetwoa.live/posts/engineering-type/engineering-type.jpg)
 
 ---
 
@@ -127,6 +127,6 @@ Graph（通常指 Agent Graph / 工作流图）是把多个 Agent 或步骤组�
 Graph 解决的是「复杂任务如何被拆解、调度、协作」的问题。  
 当单 Agent 的 Loop 不够用时，就需要 Graph 来编排多个 Loop。
 
-![Engineering Type-3](./images/engineering-type-3.png)
+![Engineering Type-3](https://img.threetwoa.live/posts/engineering-type/engineering-type-3.png)
 
 ---

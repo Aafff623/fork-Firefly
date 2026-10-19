@@ -119,7 +119,7 @@ Java+AI全栈工程师需要具备涵盖Java开发、AI技术、数据处理等�
 
 三层架构。
 
-![图1-1 三层架构](images/1-4-1-1.drawio.png)
+![图1-1 三层架构](https://img.threetwoa.live/posts/java-course1/1-4-1-1.drawio.png)
 
 - 架构组成：
     - 表现层（Web层）：使用如Spring MVC、Thymeleaf等框架，负责接收用户请求，如前端页面的访问请求、发布笔记请求、点赞评论请求等，并将处理结果返回给前端。前端可以使用HTML、CSS、JavaScripts来展示页面。
@@ -132,7 +132,7 @@ Java+AI全栈工程师需要具备涵盖Java开发、AI技术、数据处理等�
 ### 分布式架构
 
 
-![图1-2 分布式架构](images/1-4-1-2.drawio.png)
+![图1-2 分布式架构](https://img.threetwoa.live/posts/java-course1/1-4-1-2.drawio.png)
 
 
 - 架构组成：
@@ -152,7 +152,7 @@ Java+AI全栈工程师需要具备涵盖Java开发、AI技术、数据处理等�
 是上述分布式架构的演进版本，主要是将应用分为了前端应用和后端应用。
 
 
-![图1-3 前后端分离架构](images/1-4-1-3.drawio.png)
+![图1-3 前后端分离架构](https://img.threetwoa.live/posts/java-course1/1-4-1-3.drawio.png)
 
 
 - 架构组成：
@@ -170,7 +170,7 @@ Java+AI全栈工程师需要具备涵盖Java开发、AI技术、数据处理等�
 
 ### 微服务架构
 
-![图1-4 微服务架构](images/1-4-1-4.drawio.png)
+![图1-4 微服务架构](https://img.threetwoa.live/posts/java-course1/1-4-1-4.drawio.png)
 
 
 - 架构组成：
@@ -191,7 +191,7 @@ Java+AI全栈工程师需要具备涵盖Java开发、AI技术、数据处理等�
 是上述微服务架构的演进版本，主要是将应用通过云原生容器方式部署，引入了AI等技术。
 
 
-![图1-5 云原生+AI架构](images/1-4-1-5.drawio.png)
+![图1-5 云原生+AI架构](https://img.threetwoa.live/posts/java-course1/1-4-1-5.drawio.png)
 
 
 - 架构组成：

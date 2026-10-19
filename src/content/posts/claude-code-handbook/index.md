@@ -86,7 +86,7 @@ Claude Code 这个工具，这两年的迭代速度是肉眼可见的疯。今�
 
 #### 2. Subagents：独立上下文的专业助手
 
-![Claude 自动执行 Read / Search 等工具调用（官方演示）](./images/claude-code-full-features/fig-1-tooluse.jpg)
+![Claude 自动执行 Read / Search 等工具调用（官方演示）](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-full-features/fig-1-tooluse.jpg)
 
 子代理有自己独立的上下文窗口、独立的系统提示和工具权限，干完只把摘要带回主会话。这是省上下文最重要的工具之一，官方原话"上下文是根本约束时，subagents 是最强大的工具之一"。
 
@@ -145,7 +145,7 @@ Plan 子代理负责调研，研究过程在独立上下文进行，不占主会
 
 #### 8. Background agents：关掉终端任务照跑
 
-![agent view：一个终端管理所有后台会话（官方截图）](./images/claude-code-full-features/fig-2-agentview.jpg)
+![agent view：一个终端管理所有后台会话（官方截图）](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-full-features/fig-2-agentview.jpg)
 
 后台代理是没有终端附着的完整会话，由 per-user 的 supervisor 进程托管。启动方式 `claude --bg "提示词"`，会话内 /bg 转后台、/fork 复制成后台新会话。
 
@@ -191,7 +191,7 @@ SDK 让开发者把 Claude Code 的整套能力（工具、agent loop、上下�
 
 #### 15. IDE 集成：VS Code / JetBrains / Desktop
 
-![Claude Code 在 VS Code 中的内联编辑（官方截图）](./images/claude-code-full-features/fig-3-vscode.jpg)
+![Claude Code 在 VS Code 中的内联编辑（官方截图）](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-full-features/fig-3-vscode.jpg)
 
 同一套引擎嵌进编辑器。**VS Code 扩展**功能最全：内联 diff 对比 + 直接改提案、@-mention 带行号选区（`@auth.ts#5-10` 直接引用文件某几行）、plan 以 Markdown 打开可加批注、会话历史恢复、checkpoint rewind、图形化插件管理器、`@browser` 浏览器自动化。**JetBrains 插件**支持 IntelliJ/PyCharm/WebStorm/GoLand/Android Studio，有 IDE diff viewer、选区 + 诊断自动共享、Cmd+Esc 快速唤起。**Desktop 独立应用**提供并行会话窗格、可视化 diff、定时任务、内置浏览器、iOS Simulator 面板。
 
@@ -401,7 +401,7 @@ Claude Code 要是只停在「你问一句，它改一次」，那还是聊天�
 
 顺带覆盖 `/goal`、`/loop`、`/schedule`、SKILL.md、代码审查和 Token 边界。
 
-![Claude Code 四类 Loop 速查卡](./images/claude-code-four-loops/fig-01-01-claude-code-loops-guide.jpg)
+![Claude Code 四类 Loop 速查卡](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-four-loops/fig-01-01-claude-code-loops-guide.jpg)
 
 ### Loop 到底在转什么
 
@@ -482,7 +482,7 @@ Agent 持续重复：**获取上下文 → 行动 → 验证 → 迭代**，直�
 
 下面这张「CLAUDE CODE 项目结构」信息图把左树右说明一次摊开；文案尽量跟图面走。
 
-![Claude Code 项目结构信息图](./images/claude-code-project-structure/fig-01-01-claude-code-project-structure.jpg)
+![Claude Code 项目结构信息图](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-project-structure/fig-01-01-claude-code-project-structure.jpg)
 
 ### 总览：一张树看完落点
 
@@ -639,9 +639,9 @@ CLAUDE.local.md
 
 这篇文章只做一件事：**对照**。一张是作者自用 17 件套（设计 / 效率 / 数据），另外两张是团队协作 Top10 和自动化 Top10。名单几乎不重叠；硬并成「27 个必装」只是给上下文添堵。
 
-![团队协作 Top10 图卡](./images/claude-code-plugin-picks/fig-team-top10.jpg)
+![团队协作 Top10 图卡](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-plugin-picks/fig-team-top10.jpg)
 
-![自动化 Top10 图卡](./images/claude-code-plugin-picks/fig-automation-top10.jpg)
+![自动化 Top10 图卡](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-plugin-picks/fig-automation-top10.jpg)
 
 ### 三张榜各自吃哪口痛
 
@@ -750,7 +750,7 @@ Playwright 选型口诀：Agent 长会话里偶发点网页，MCP 可能更省�
 | ④ 终端外观 | 毛玻璃、壁纸、字体 | Windows Terminal 的 `settings.json` |
 | ⑤ 素材层 | 桌面壁纸 + 已装字体 | 系统层 |
 
-![五层叠皮：改哪层失效就查哪层](./images/claude-code-windows-beautify/fig-layers.jpg)
+![五层叠皮：改哪层失效就查哪层](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-windows-beautify/fig-layers.jpg)
 
 为什么要分层想？因为**每一层都有自己的配置文件和失效方式**。最常见的问题就是"改了一处不生效"，然后人懵了。先按层定位：是 provider 断了（401）、Claude 本体配置被冲了（功能消失）、tweakcc 补丁被升级覆盖了（美化没了）、还是终端外观没跟上（背景/字体不对）——大概率不是配置写错，是找错了层。
 
@@ -828,7 +828,7 @@ exec "/c/nvm4w/nodejs/node" "${plugin_dir}dist/index.js"
 
 claude-hud 的具体显示在 `~/.claude/plugins/claude-hud/config.json` 里配：`customLine` 是那句格言 `code less, architect more --threetwoa ⌐■_■ノ♪`，`showContextBar` 开 Context 进度条，`modelFormat: "compact"` 让模型名缩成 `[Sonnet 4.6]`，还能显示 `1 CLAUDE.md | 22 MCPs | 2 hooks` 这类配置计数。
 
-![实际使用中的 HUD：模型 / 格言 / Context 40% / 工具计数 / bypass 权限红字](./images/claude-code-windows-beautify/fig-hud-real.jpg)
+![实际使用中的 HUD：模型 / 格言 / Context 40% / 工具计数 / bypass 权限红字](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-windows-beautify/fig-hud-real.jpg)
 
 这套东西我恢复过不止一次，坑浓缩成三句：
 
@@ -1318,7 +1318,7 @@ mattpocock 的 plugin.json 显式声明了 24 个 skills 路径（形如 `./skil
 
 这套的聪明处在「让 agent 自己筛」，代价是它永远只记「agent 觉得重要的」，记不了那些「当时没意识到、后来才想找」的东西。
 
-![Auto Memory 工作机制：MEMORY.md 索引 + 主题文件按需读](./images/claude-code-memory-auto-vs-claude-mem/auto-memory.png)
+![Auto Memory 工作机制：MEMORY.md 索引 + 主题文件按需读](https://img.threetwoa.live/posts/claude-code-handbook/claude-code-memory-auto-vs-claude-mem/auto-memory.png)
 
 ### claude-mem：自动堆积的档案柜
 
@@ -1766,7 +1766,7 @@ flowchart LR
 
 **Claude Code**：就是「本轮做了什么 | 刚又完成」那个两列表。第一列动词开头、给结果，第二列补一句最新进展。多窗口横向一摆，谁在哪、刚干了啥、有没有卡壳，扫一眼全懂，不用点进任何窗口。
 
-![收尾总结表真实样例](./images/ai-reply-human-touch/fig-summary-table.jpg)
+![收尾总结表真实样例](https://img.threetwoa.live/posts/claude-code-handbook/ai-reply-human-touch/fig-summary-table.jpg)
 
 上面这张就是我某轮收尾的真实输出，表格管进度，下面那句「感想小心思」管人味。截图直接摆这儿，比空口讲有说服力。
 
@@ -1794,7 +1794,7 @@ flowchart LR
 
 Voice Layer 定义人格，就是那个 Personal Hermes Engineer，直接、有判断、不装。颜文字和 emoji 有组合池，还分时段，深夜用 🌙(´-ω-)，清晨用 🌅(｀・ω・´)ゞ，同一个组合用三次强制冷却。
 
-![终端开场问候真实样子](./images/ai-reply-human-touch/fig-terminal-persona.jpg)
+![终端开场问候真实样子](https://img.threetwoa.live/posts/claude-code-handbook/ai-reply-human-touch/fig-terminal-persona.jpg)
 
 上面这张是真实的终端开场，一句问候就自带颜文字组合，连状态栏都挂着表情——这就是人味执行的现场。
 
@@ -1808,9 +1808,9 @@ Depointify Mode 是成稿后能打分，50 分制，低于 45 就继续改。直
 
 **Claude Code**：是。第一，跨工具同步。规范不只写在 CLAUDE.md，而是镜像到 opencode、cursor、codex、pi 各自的 AGENTS.md，还有 cursor 的 answer-format.mdc。改一处，全工具生效。不然每个 AI 一套说法，你管不过来。
 
-![pi 里的收尾格式（一）](./images/ai-reply-human-touch/fig-pi-summary-1.jpg)
+![pi 里的收尾格式（一）](https://img.threetwoa.live/posts/claude-code-handbook/ai-reply-human-touch/fig-pi-summary-1.jpg)
 
-![pi 里的收尾格式（二）](./images/ai-reply-human-touch/fig-pi-summary-2.jpg)
+![pi 里的收尾格式（二）](https://img.threetwoa.live/posts/claude-code-handbook/ai-reply-human-touch/fig-pi-summary-2.jpg)
 
 上面这两张是 pi 里的真实输出。同一套「本轮做了什么 | 刚又完成」加「感想」的格式，换了个工具照样长一样，连那句感想都带着人味。这就是同源规范的好处，一份规矩，处处生效。
 

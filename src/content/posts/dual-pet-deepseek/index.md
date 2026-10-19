@@ -32,13 +32,13 @@ Firefly 里三种「站宠」互斥：**SpritePet（spritesheet）**、Spine、L
 
 格都是 192×208，九态动作行能对齐；差别在 Maid 多了第 9-10 行视线帧，OpenPet **没有**。
 
-![并排预览：左 Maid，右 OpenPet](./images/fig-preview.jpg)
+![并排预览：左 Maid，右 OpenPet](https://img.threetwoa.live/posts/dual-pet-deepseek/fig-preview.jpg)
 
 左边那只蓝发鲸女仆，apron 上还有小鲸鱼；右边是蓝白裙 OpenPet。预览页只是对照沙盒，真正上站的资源在 `public/pets/`。
 
-![Maid idle 单帧](./images/fig-maid-idle.jpg)
+![Maid idle 单帧](https://img.threetwoa.live/posts/dual-pet-deepseek/fig-maid-idle.jpg)
 
-![OpenPet idle 单帧](./images/fig-openpet-idle.jpg)
+![OpenPet idle 单帧](https://img.threetwoa.live/posts/dual-pet-deepseek/fig-openpet-idle.jpg)
 
 ## 最容易踩的坑：行数搞错会整表错帧
 
@@ -60,9 +60,9 @@ Firefly 里三种「站宠」互斥：**SpritePet（spritesheet）**、Spine、L
 
 手机也按场景拆：浏览态可见默认宠；文章页窄屏隐藏，免得挡正文和回顶。
 
-![首页浏览态：Maid 贴在侧栏附近](./images/fig-site-browse.jpg)
+![首页浏览态：Maid 贴在侧栏附近](https://img.threetwoa.live/posts/dual-pet-deepseek/fig-site-browse.jpg)
 
-![文章页：换成 OpenPet](./images/fig-site-post.jpg)
+![文章页：换成 OpenPet](https://img.threetwoa.live/posts/dual-pet-deepseek/fig-site-post.jpg)
 
 ## Maid 还会在「看得见的」侧栏卡之间逛
 

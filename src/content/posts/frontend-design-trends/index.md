@@ -23,7 +23,7 @@ comment: true
 
 版权先钉死：只当案例欣赏归档。禁止商用临摹、二创当己有。权属归原设计师与品牌方。
 
-![Focus 取景框](images/1-fig-01-focus.jpg)
+![Focus 取景框](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-01-focus.jpg)
 
 ## 按手法归类（每张一行）
 
@@ -35,15 +35,15 @@ comment: true
 | 字母窗 + 破框 | 04 哈尔滨冰雪节 · 北欧滑雪 | 巨型 N 当雪景窗，人冲出字廓——字是容器不是贴纸 |
 | 像素网格 | 05 POKO COX 红花；06 DE ETENDE MENS 黄底橙字 | 像素是造型网格，不是滤镜；06 再叠纯双色场 |
 
-![Nike 破框](images/1-fig-02-nike.jpg)
+![Nike 破框](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-02-nike.jpg)
 
-![JOIE DE VIE 跨缝](images/1-fig-03-tremblant.jpg)
+![JOIE DE VIE 跨缝](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-03-tremblant.jpg)
 
-![字母 N 窗](images/1-fig-04-harbin-n.jpg)
+![字母 N 窗](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-04-harbin-n.jpg)
 
-![像素红花](images/1-fig-05-poko.jpg)
+![像素红花](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-05-poko.jpg)
 
-![双色像素场](images/1-fig-06-etende.jpg)
+![双色像素场](https://img.threetwoa.live/posts/frontend-design-trends/1-fig-06-etende.jpg)
 
 ## 做 PPT / 信息图时怎么用（别描人家成稿）
 
@@ -79,15 +79,15 @@ comment: true
 | 13 | 通道 Passages | 连续形透视隧道，讲「穿越」叙事 |
 | 14 | 雷达扫描 Radar Sweep | 锥形/径向渐变模拟扫描运动与时间 |
 
-![平面盒子](images/2-fig-01-flat-box.jpg)
+![平面盒子](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-01-flat-box.jpg)
 
-![角切](images/2-fig-02-corner-chop.jpg)
+![角切](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-02-corner-chop.jpg)
 
-![椭圆](images/2-fig-03-elliptic.jpg)
+![椭圆](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-03-elliptic.jpg)
 
-![通道](images/2-fig-13-passages.jpg)
+![通道](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-13-passages.jpg)
 
-![雷达扫描](images/2-fig-14-radar-sweep.jpg)
+![雷达扫描](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-14-radar-sweep.jpg)
 
 ### 字体 / 像素 / 材质感
 
@@ -99,15 +99,15 @@ comment: true
 | 07 | 错乱线条 Mix Stix | 乱线筑巢，乱里藏秩序 |
 | 09 | 贴纸 Stickers | 阴影+模切边，倾斜松散更活 |
 
-![像素堆叠](images/2-fig-04-pixel-drop.jpg)
+![像素堆叠](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-04-pixel-drop.jpg)
 
-![喇叭裤字脚](images/2-fig-05-bell-bottoms.jpg)
+![喇叭裤字脚](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-05-bell-bottoms.jpg)
 
-![液态连接](images/2-fig-06-liquid-bridge.jpg)
+![液态连接](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-06-liquid-bridge.jpg)
 
-![错乱线条](images/2-fig-07-mix-stix.jpg)
+![错乱线条](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-07-mix-stix.jpg)
 
-![贴纸](images/2-fig-09-stickers.jpg)
+![贴纸](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-09-stickers.jpg)
 
 ### 情感 / 亲和
 
@@ -116,9 +116,9 @@ comment: true
 | 08 | 笑脸 Smiley | 简笔笑脸嵌字标，拟人化 / IP |
 | 12 | 平衡艺术 Balance Act | 不规则块当积木叠平衡，曲直混搭 |
 
-![笑脸](images/2-fig-08-smiley.jpg)
+![笑脸](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-08-smiley.jpg)
 
-![平衡艺术](images/2-fig-12-balance-act.jpg)
+![平衡艺术](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-12-balance-act.jpg)
 
 ### 符号 / 指向
 
@@ -128,11 +128,11 @@ comment: true
 | 11 | 指针 Pointers | 箭头并入字母，方向=号召力 |
 | 15 | 新星 Nova Star | 四角星当 AI/高科技符号：神秘、信任、未来感 |
 
-![中心点](images/2-fig-10-center-point.jpg)
+![中心点](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-10-center-point.jpg)
 
-![指针](images/2-fig-11-pointers.jpg)
+![指针](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-11-pointers.jpg)
 
-![新星四角星](images/2-fig-15-nova-star.jpg)
+![新星四角星](https://img.threetwoa.live/posts/frontend-design-trends/2-fig-15-nova-star.jpg)
 
 ## 自己用时记这几条就够
 
@@ -148,7 +148,7 @@ comment: true
 
 别一上来从零画按钮、从零定色板。苹果系、Android 系、微软桌面、国内三大 B 端——各有一套官网把 HIG / 组件 / 开发文档捆在一起。余枫这组资源卡把六站压成一张表，够收藏、不够当教程。
 
-![封面：6 个 UI 规范网站](images/3-fig-00-cover-sites.jpg)
+![封面：6 个 UI 规范网站](https://img.threetwoa.live/posts/frontend-design-trends/3-fig-00-cover-sites.jpg)
 
 ## 六站速查
 
@@ -161,9 +161,9 @@ comment: true
 | 05 | TDesign | https://tdesign.tencent.com/ | 腾讯开源；Vue/React/小程序；PC+移动；图提 Uniapp / MCP online |
 | 06 | Semi Design | https://semi.design/zh-CN | 字节抖音团队；Figma+React；设计转代码；主题/多语言/无障碍 |
 
-![Apple Design 卡](images/3-fig-01-apple.jpg)
+![Apple Design 卡](https://img.threetwoa.live/posts/frontend-design-trends/3-fig-01-apple.jpg)
 
-![Ant Design 6.0 卡](images/3-fig-04-ant.jpg)
+![Ant Design 6.0 卡](https://img.threetwoa.live/posts/frontend-design-trends/3-fig-04-ant.jpg)
 
 ## 怎么选，别全开六标签
 

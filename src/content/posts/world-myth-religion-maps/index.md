@@ -19,7 +19,7 @@ updated: 2026-08-11T01:39:19
 
 ## 世界神话树（图 1）
 
-![世界神话体系](./images/01-world-myth-systems.jpg)
+![世界神话体系](https://img.threetwoa.live/posts/world-myth-religion-maps/01-world-myth-systems.jpg)
 
 | 大区 | 支系 | 抓手（图称） |
 |---|---|---|
@@ -32,7 +32,7 @@ updated: 2026-08-11T01:39:19
 
 ## 十二母题 + 对照（图 2）
 
-![世界神话母题](./images/02-myth-motifs-12.jpg)
+![世界神话母题](https://img.threetwoa.live/posts/world-myth-religion-maps/02-myth-motifs-12.jpg)
 
 | # | 母题 | 跨文化举例（图称，摘） |
 |---|---|---|
@@ -55,9 +55,9 @@ updated: 2026-08-11T01:39:19
 
 浅色格与深蓝版同一主题，布局不同；道教在图里有太极。信徒数、百分比、起源年：**图称 · 源注 Pew 2023 · 未核**。
 
-![世界宗教体系·浅色](./images/03-world-religion-light.jpg)
+![世界宗教体系·浅色](https://img.threetwoa.live/posts/world-myth-religion-maps/03-world-religion-light.jpg)
 
-![世界宗教体系·深蓝](./images/04-world-religion-dark.jpg)
+![世界宗教体系·深蓝](https://img.threetwoa.live/posts/world-myth-religion-maps/04-world-religion-dark.jpg)
 
 | 宗教 | 起源（图称） | 信徒规模（图称） | 经典（图称） |
 |---|---|---|---|

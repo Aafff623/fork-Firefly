@@ -28,7 +28,7 @@ Skill 别写成说明书前言，写成新员工 SOP。另一边还有一句更�
 
 口径先说死：目录结构、词数建议、以及 100 / 1% / 5000 / 25000 等数字，均为作者教程转述，本轮未逐条核对 Anthropic / Cursor 官方原文。成帖当作业笔记用，落地前对照你宿主文档。
 
-![写法入门：目录、YAML、七要素](./images/skill-md-and-context-budget/fig-write-thin.jpg)
+![写法入门：目录、YAML、七要素](https://img.threetwoa.live/posts/agent-skills-handbook/skill-md-and-context-budget/fig-write-thin.jpg)
 
 ### 文件放哪，门牌怎么写
 
@@ -88,7 +88,7 @@ description: Use when the user asks to review code or identify bugs
 
 ### 装得起，正文拿不出
 
-![总览：分级加载与压力线](./images/skill-md-and-context-budget/fig-budget-overview.jpg)
+![总览：分级加载与压力线](https://img.threetwoa.live/posts/agent-skills-handbook/skill-md-and-context-budget/fig-budget-overview.jpg)
 
 和 CLAUDE.md / MCP / 提示词怎么分：
 
@@ -104,7 +104,7 @@ description: Use when the user asks to review code or identify bugs
 
 ### 三级披露：什么时候进窗口
 
-![L1 门牌 → L2 正文 → L3 按需](./images/skill-md-and-context-budget/fig-three-levels.jpg)
+![L1 门牌 → L2 正文 → L3 按需](https://img.threetwoa.live/posts/agent-skills-handbook/skill-md-and-context-budget/fig-three-levels.jpg)
 
 | 级 | 进什么 | 时机 | 约束 |
 |---|---|---|---|
@@ -126,7 +126,7 @@ description: Use when the user asks to review code or identify bugs
 
 **会被丢**——会话压缩后重挂：每技能最近调用前 **5000** token，全体技能共享 **25000**。老的整条丢；再调可回流恢复。
 
-![压缩后重挂：5000 / 25000](./images/skill-md-and-context-budget/fig-compress-rehang.jpg)
+![压缩后重挂：5000 / 25000](https://img.threetwoa.live/posts/agent-skills-handbook/skill-md-and-context-budget/fig-compress-rehang.jpg)
 
 ### 两边都爱踩的坑
 
@@ -159,7 +159,7 @@ Token 在业务里已经是运营成本。优秀 Skill 不是写得最长，而�
 
 站内相关阅读：[Skill 怎么写，上下文怎么省](/posts/agent-skills-handbook/)（门牌、七根柱子、分级加载）。
 
-![信息图：核心原则 + 五条优化对照](./images/skill-design-cut-tokens/fig-skill-token.jpg)
+![信息图：核心原则 + 五条优化对照](https://img.threetwoa.live/posts/agent-skills-handbook/skill-design-cut-tokens/fig-skill-token.jpg)
 
 ### 先钉四条规矩
 
@@ -273,7 +273,7 @@ Skill 是「结构化提示词 + 可选脚本/参考」；Plugin 是一包能力
 
 虚虚老师这篇把企业护城河从「拼模型」拧到「拼 Skill」：模型谁都能接，**隐性经验**才难抄。框架挂 AI-OIT（Observe-Implant-Train）。原文链接没给，下面按要点压薄；案例数字一律**作者转述、本地未核**。
 
-![老师傅脑子→Skill罐 vs 落灰 SOP](./images/sop-to-skill/fig-01-master-brain-to-skill-jar.jpg)
+![老师傅脑子→Skill罐 vs 落灰 SOP](https://img.threetwoa.live/posts/agent-skills-handbook/sop-to-skill/fig-01-master-brain-to-skill-jar.jpg)
 
 ### 人墙比文档墙更贵
 
@@ -286,7 +286,7 @@ Skill 干的事，不是再写一本更厚的手册，而是把「老李会、�
 
 通用模型是插座里的电；公司偏好（编码习惯、排查口令、工单结构）是变压器；Skill 才是能稳定出活的电器。
 
-![模型像电→公司偏好→Skill](./images/sop-to-skill/fig-02-model-as-electricity.jpg)
+![模型像电→公司偏好→Skill](https://img.threetwoa.live/posts/agent-skills-handbook/sop-to-skill/fig-02-model-as-electricity.jpg)
 
 没有偏好层，电再强也只是乱闪。护城河不在电表读数，在你家电器柜里有没有**别人抄不走的偏好**。
 
@@ -307,7 +307,7 @@ Skill 干的事，不是再写一本更厚的手册，而是把「老李会、�
 - **动作**：观察 → 预警 → **停机**
 - **升级**：一周内同类三次 → 拉高一级处理
 
-![异响/金属味/E07 冲压成 Skill](./images/sop-to-skill/fig-03-anomaly-stamped-into-skill.jpg)
+![异响/金属味/E07 冲压成 Skill](https://img.threetwoa.live/posts/agent-skills-handbook/sop-to-skill/fig-03-anomaly-stamped-into-skill.jpg)
 
 骨架够短，老师傅才愿意改；改完才能进罐。
 
@@ -330,7 +330,7 @@ Skill 干的事，不是再写一本更厚的手册，而是把「老李会、�
 4. **一把手保底**：对外口径固定：**augment ≠ replace**  
 5. **只要 80% 可重复**：剩下 20% 判断留在人手里
 
-![80% 重复交 Skill，20% 判断留下](./images/sop-to-skill/fig-05-80-repeat-20-judgment.jpg)
+![80% 重复交 Skill，20% 判断留下](https://img.threetwoa.live/posts/agent-skills-handbook/sop-to-skill/fig-05-80-repeat-20-judgment.jpg)
 
 ### 本周三件实事
 
@@ -338,7 +338,7 @@ Skill 干的事，不是再写一本更厚的手册，而是把「老李会、�
 2. **先捞 → 草拟 → 他来改**（真实过程进网，再出草稿）  
 3. 每条 Skill 配 **1-3 组真实 I/O**（输入信号 / 输出动作），空口令不要
 
-![先捞→草拟→他来改](./images/sop-to-skill/fig-04-scoop-draft-expert-edit.jpg)
+![先捞→草拟→他来改](https://img.threetwoa.live/posts/agent-skills-handbook/sop-to-skill/fig-04-scoop-draft-expert-edit.jpg)
 
 ### 跟旁边几篇怎么并排
 
@@ -358,9 +358,9 @@ Skill 干的事，不是再写一本更厚的手册，而是把「老李会、�
 
 这篇文章只做一件事：**对照**。一张是作者自用 17 件套（设计 / 效率 / 数据），另外两张是团队协作 Top10 和自动化 Top10。名单几乎不重叠；硬并成「27 个必装」只是给上下文添堵。
 
-![团队协作 Top10 图卡](./images/claude-code-plugin-picks/fig-team-top10.jpg)
+![团队协作 Top10 图卡](https://img.threetwoa.live/posts/agent-skills-handbook/claude-code-plugin-picks/fig-team-top10.jpg)
 
-![自动化 Top10 图卡](./images/claude-code-plugin-picks/fig-automation-top10.jpg)
+![自动化 Top10 图卡](https://img.threetwoa.live/posts/agent-skills-handbook/claude-code-plugin-picks/fig-automation-top10.jpg)
 
 ### 三张榜各自吃哪口痛
 
@@ -455,7 +455,7 @@ Playwright 选型口诀：Agent 长会话里偶发点网页，MCP 可能更省�
 
 生成、粗剪、代码排版、多模态生媒、中文口播剪辑、Seedance 提示词——别指望一个 Skill 包打天下。Megadotnet 这张清单把链路拆开；信息图里 seedance 卡片曾误贴 videocut 仓库，以正文链接为准（作者已认）。
 
-![6 个视频类 Skills 一览](./images/six-video-agent-skills/fig-01-six-video-skills.jpg)
+![6 个视频类 Skills 一览](https://img.threetwoa.live/posts/agent-skills-handbook/six-video-agent-skills/fig-01-six-video-skills.jpg)
 
 用法通识：装进 Agent Skills 目录后，由工具显式或隐式调用（作者留言口径）。下面对照 GitHub 现状（2026-08-11 抽查）做一张选型表。
 
@@ -515,7 +515,7 @@ Cursor / Claude Code / Codex 写前端，功能往往能跑，脸却总像同一
 
 别四个 skill 一锅扔进同一轮对话，也别把「风格名」和「品味旋钮」当成同一把刀。
 
-![四技总览图卡](./images/design-skills-anti-ai-look/fig-four-overview.jpg)
+![四技总览图卡](https://img.threetwoa.live/posts/agent-skills-handbook/design-skills-anti-ai-look/fig-four-overview.jpg)
 
 ### Taste：把「别出那张脸」写成可执行规则
 
@@ -543,7 +543,7 @@ Baseline `8 / 6 / 4`。覆盖靠对话，不靠让用户去改 skill 文件。
 
 落地页 / 作品集 / 营销站是主场。仪表盘、数据表、多步产品后台，官方自己划了「不是它的菜」。
 
-![Floria 落地页气质样张](./images/design-skills-anti-ai-look/fig-floria.jpg)
+![Floria 落地页气质样张](https://img.threetwoa.live/posts/agent-skills-handbook/design-skills-anti-ai-look/fig-floria.jpg)
 
 ### 四技网页线：先锚点，再旋钮，再审查
 
@@ -575,7 +575,7 @@ npx skills add jimliu/baoyu-skills --skill baoyu-comic
 
 Ant Design 看腻了，跟 Agent 又只会喊「好看一点」——等于没给审美词条。[ui-styles-skill](https://github.com/chrzamz/ui-styles-skill) 干的事很窄：把开源 UI 风格 Prompt 装进 Claude Code Skill，写前端时能**点名风格**（离线读本地 catalog）。
 
-![ui-styles 封面：79 风格 · 离线 · 中英](./images/design-skills-anti-ai-look/fig-ui-styles.jpg)
+![ui-styles 封面：79 风格 · 离线 · 中英](https://img.threetwoa.live/posts/agent-skills-handbook/design-skills-anti-ai-look/fig-ui-styles.jpg)
 
 2026-08-11 核对：README 写 **79** design styles × bilingual prompts；GitHub 显示 ★10；上游 Prompt 致谢 [TonnyWong1052/UI-Prompt](https://github.com/TonnyWong1052/UI-Prompt)。封面图写 79、公众号正文常见 70+——以仓库 79 family 为准；其中 9 个只有 `style.md`（理解用），没有可直接生成代码的 `custom.md`。
 
@@ -609,7 +609,7 @@ Ant Design 看腻了，跟 Agent 又只会喊「好看一点」——等于没�
 
 逐个读完 SKILL.md 之后，最深的感受是：这不是一堆零散提示词的堆叠，而是一套有明确设计哲学的**生产系统**。这篇先把它们本来的规范和流程长什么样记下来——V0 版，算是这套系列自己博客集的开篇。之后每一次较大的迭代或更新，都会对应发 V1、V2，逐步把它磨成完全自己的形状。
 
-![tta 系列插画风代表：feedback-loop 示例](./images/tta-skills-family-v0/fig-feedback-loop.jpg)
+![tta 系列插画风代表：feedback-loop 示例](https://img.threetwoa.live/posts/agent-skills-handbook/tta-skills-family-v0/fig-feedback-loop.jpg)
 
 ### 八个技能，各管一摊
 
@@ -640,7 +640,7 @@ Ant Design 看腻了，跟 Agent 又只会喊「好看一点」——等于没�
 - **剪裁而非降级**：ppt 拆页压缩只删冗余，不删事实、原因、影响、步骤。
 - **透明素材分级**：draw-ui 把小 logo 白底转 alpha，大插画走绿幕，不混装一张素材板。
 
-![tta-cover 封面成品示例](./images/tta-skills-family-v0/fig-cover-gallery.jpg)
+![tta-cover 封面成品示例](https://img.threetwoa.live/posts/agent-skills-handbook/tta-skills-family-v0/fig-cover-gallery.jpg)
 
 ### 这套体系的共同基因
 

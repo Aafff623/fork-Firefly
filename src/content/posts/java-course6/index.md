@@ -402,7 +402,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 Spring Security对Servlet的支持基于Servlet过滤器，因此，首先了解过滤器的一般作用会很有帮助。下图展示了单个HTTP请求的处理器的典型分层结构。
 
 
-![图4-1 过滤器链](images/4-1-4-1.png)
+![图4-1 过滤器链](https://img.threetwoa.live/posts/java-course6/4-1-4-1.png)
 
 
 客户端向应用程序发送请求，容器基于请求URI的路径创建一个`FilterChain`，其中包含应该处理`HttpServletRequest`的`Filter`实例和`Servlet`。在Spring MVC应用程序中，该`Servlet`是`DispatcherServlet`的实例。最多只能有一个`Servlet`处理单个`HttpServletRequest`和`HttpServletResponse`。但是，可以使用多个`Filter`来实现以下功能：
@@ -432,7 +432,7 @@ Spring提供了一个名为`DelegatingFilterProxy`的`Filter`实现，它允许�
 
 下图展示了`DelegatingFilterProxy`在`Filter`实例和`FilterChain`中的位置。
 
-![图4-2 DelegatingFilterProxy](images/4-1-4-2.png)
+![图4-2 DelegatingFilterProxy](https://img.threetwoa.live/posts/java-course6/4-1-4-2.png)
 
 
 `DelegatingFilterProxy`从`ApplicationContext`中查找Bean Filter0，然后调用Bean Filter0。下面的代码展示了`DelegatingFilterProxy`的伪代码：
@@ -458,7 +458,7 @@ Spring Security对Servlet的支持包含在`FilterChainProxy`中。`FilterChainP
 
 下图展示了`FilterChainProxy`的作用。
 
-![图4-3 FilterChainProxy](images/4-1-4-3.png)
+![图4-3 FilterChainProxy](https://img.threetwoa.live/posts/java-course6/4-1-4-3.png)
 
 
 ### SecurityFilterChain
@@ -467,7 +467,7 @@ Spring Security对Servlet的支持包含在`FilterChainProxy`中。`FilterChainP
 
 下图展示了`SecurityFilterChain`的作用。
 
-![图4-4 SecurityFilterChain](images/4-1-4-4.png)
+![图4-4 SecurityFilterChain](https://img.threetwoa.live/posts/java-course6/4-1-4-4.png)
 
 
 `SecurityFilterChain`中的安全过滤器通常是Bean，但它们是注册到`FilterChainProxy`而不是DelegatingFilterProxy。与直接注册到Servlet容器或DelegatingFilterProxy相比，`FilterChainProxy`提供了许多优势。首先，它为Spring Security的所有Servlet支持提供了一个起点。因此，如果你尝试排查Spring Security的Servlet支持问题，在`FilterChainProxy`中添加一个调试点会是一个很好的开始。
@@ -479,7 +479,7 @@ Spring Security对Servlet的支持包含在`FilterChainProxy`中。`FilterChainP
 下图展示了多个`SecurityFilterChain`实例：
 
 
-![图4-5 多个SecurityFilterChain](images/4-1-4-5.png)
+![图4-5 多个SecurityFilterChain](https://img.threetwoa.live/posts/java-course6/4-1-4-5.png)
 
 
 在“多个SecurityFilterChain”图中，`FilterChainProxy`决定应该使用哪个`SecurityFilterChain`。只有第一个匹配的`SecurityFilterChain`会被调用。如果请求的URL是`/api/messages/`，它首先会与`SecurityFilterChain0`的`/api/`模式匹配，因此只有`SecurityFilterChain0`会被调用，即使它也与`SecurityFilterChainn`匹配。如果请求的URL是`/messages/`，它与`SecurityFilterChain0`的`/api/`模式不匹配，因此`FilterChainProxy`会继续尝试每个`SecurityFilterChain`。假设没有其他`SecurityFilterChain`实例匹配，则会调用`SecurityFilterChainn`。
@@ -724,7 +724,7 @@ Spring Security 在 Servlet 认证中使用的主要架构组件。
 Spring Security 认证模型的核心是 `SecurityContextHolder`，它包含了 SecurityContext。下图展示了`SecurityContextHolder`、`SecurityContext`、`Authentication`、`Principal`、`Credentials`、`Authorities` 之间的关联关系。
 
 
-![图4-6 SecurityContextHolder与其他组件的关系](images/4-2-4-6.png)
+![图4-6 SecurityContextHolder与其他组件的关系](https://img.threetwoa.live/posts/java-course6/4-2-4-6.png)
 
 
 `SecurityContextHolder` 是 Spring Security 存储已认证用户详细信息的地方。Spring Security 并不关心 `SecurityContextHolder` 是如何被填充的。如果它包含值，就会将其用作当前已认证的用户。
@@ -794,19 +794,19 @@ Collection<? extends GrantedAuthority> authorities = authentication.getAuthoriti
 ### ProviderManager
 `ProviderManager` 是 `AuthenticationManager` 最常用的实现。`ProviderManager` 委托给 `AuthenticationProvider` 实例的列表。每个 `AuthenticationProvider` 都有机会表明认证应该成功、失败，或者表明它无法做出决定并允许下游的 `AuthenticationProvider` 来决定。如果配置的 `AuthenticationProvider` 实例都不能进行认证，则认证失败，并抛出 `ProviderNotFoundException`，这是一种特殊的 `AuthenticationException`，表明 `ProviderManager` 未配置为支持传入的 `Authentication` 类型。
 
-![图4-7 `ProviderManager`委托给`AuthenticationProvider`实例的列表](images/4-2-4-7.png)
+![图4-7 `ProviderManager`委托给`AuthenticationProvider`实例的列表](https://img.threetwoa.live/posts/java-course6/4-2-4-7.png)
 
 
 在实际应用中，每个 `AuthenticationProvider` 都知道如何执行特定类型的认证。例如，一个 `AuthenticationProvider` 可能能够验证用户名/密码，而另一个可能能够认证 SAML 断言。这使得每个 `AuthenticationProvider` 可以执行非常特定类型的认证，同时支持多种认证类型，并且只暴露一个 `AuthenticationManager` bean。
 
 `ProviderManager` 还允许配置一个可选的父 `AuthenticationManager`，如果没有 `AuthenticationProvider` 能够进行认证，就会咨询该父 `AuthenticationManager`。父级可以是任何类型的 `AuthenticationManager`，但它通常是 `ProviderManager` 的实例。
 
-![图4-8 `ProviderManager`还允许配置一个可选的父`AuthenticationManager`](images/4-2-4-8.png)
+![图4-8 `ProviderManager`还允许配置一个可选的父`AuthenticationManager`](https://img.threetwoa.live/posts/java-course6/4-2-4-8.png)
 
 
 实际上，多个 `ProviderManager` 实例可能共享同一个父 `AuthenticationManager`。这在存在多个 `SecurityFilterChain` 实例的场景中比较常见，这些实例有一些共同的认证（共享的父 `AuthenticationManager`），但也有不同的认证机制（不同的 `ProviderManager` 实例）。
 
-![图4-9 多个`ProviderManager`实例可能共享同一个父`AuthenticationManager`](images/4-2-4-9.png)
+![图4-9 多个`ProviderManager`实例可能共享同一个父`AuthenticationManager`](https://img.threetwoa.live/posts/java-course6/4-2-4-9.png)
 
 
 默认情况下，`ProviderManager` 会尝试从成功认证请求返回的 `Authentication` 对象中清除任何敏感的凭据信息。这可以防止密码等信息在 `HttpSession` 中保留的时间超过必要。
@@ -833,7 +833,7 @@ Collection<? extends GrantedAuthority> authorities = authentication.getAuthoriti
 
 接下来，`AbstractAuthenticationProcessingFilter` 可以认证提交给它的任何认证请求。
 
-![图4-10 安全过滤器链](images/4-2-4-10.png)
+![图4-10 安全过滤器链](https://img.threetwoa.live/posts/java-course6/4-2-4-10.png)
 
 
 1. 当用户提交其凭据时，`AbstractAuthenticationProcessingFilter` 从 `HttpServletRequest` 创建一个要认证的 `Authentication`。创建的 `Authentication` 类型取决于 `AbstractAuthenticationProcessingFilter` 的子类。例如，`UsernamePasswordAuthenticationFilter` 从 `HttpServletRequest` 中提交的用户名和密码创建一个 `UsernamePasswordAuthenticationToken`。
@@ -1551,24 +1551,24 @@ public class WebInitializer implements WebApplicationInitializer {
 启动项目，浏览器访问  <http://localhost:8080/admin> 可以看到项目会重定向到登录界面，界面效果如下图5-1所示。
 
 
-![图5-1 重定向到登录界面](images/5-1-5-1.png)
+![图5-1 重定向到登录界面](https://img.threetwoa.live/posts/java-course6/5-1-5-1.png)
 
 
 先尝试使用角色为USER的账号user进行登录，可以看到能否正常访问数据看板功能页面，界面效果如下图5-2所示。
 
 
-![图5-2 正常访问数据看板功能页面](images/5-1-5-2.png)
+![图5-2 正常访问数据看板功能页面](https://img.threetwoa.live/posts/java-course6/5-1-5-2.png)
 
 但如果试图访问用户管理功能页面，则会提示“Forbidden”。意味着没有权限，界面效果如下图5-3所示。
 
 
-![图5-3 访问用户管理功能页面提示没有权限](images/5-1-5-3.png)
+![图5-3 访问用户管理功能页面提示没有权限](https://img.threetwoa.live/posts/java-course6/5-1-5-3.png)
 
 
 关闭浏览器，尝试使用角色为ADMIN的账号admin进行登录，可以看到能否正常访问用户管理功能页面，界面效果如下图5-4所示。
 
 
-![图5-4 能正常访问用户管理功能页面](images/5-1-5-4.png)
+![图5-4 能正常访问用户管理功能页面](https://img.threetwoa.live/posts/java-course6/5-1-5-4.png)
 
 证明安全认证和授权功能已经起效了。
 
@@ -1695,7 +1695,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 自定义登录界面效果如下图所示。
 
 
-![图5-5 自定义登录界面效果](images/5-2-5-5.png)
+![图5-5 自定义登录界面效果](https://img.threetwoa.live/posts/java-course6/5-2-5-5.png)
 
 登录成功之后，会重定向到`/admin`路径。
 
@@ -1806,7 +1806,7 @@ public class ErrorController {
 这样，当用户访问受保护资源而权限不足时，就会显示这个精心设计的403错误页面，如下图5-6所示。
 
 
-![图5-6 403错误页面](images/5-2-5-6.png)
+![图5-6 403错误页面](https://img.threetwoa.live/posts/java-course6/5-2-5-6.png)
 
 
 ### 为了方便切换用户，提供注销的功能
@@ -1873,12 +1873,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
 退出登录的按钮效果如下图5-7所示。
 
-![图5-7 退出登录的按钮](images/5-2-5-7.png)
+![图5-7 退出登录的按钮](https://img.threetwoa.live/posts/java-course6/5-2-5-7.png)
 
 
 成功注销之后，会重定向到登录界面，效果如下图5-8所示。
 
-![图5-8 注销重定向到登录界面](images/5-2-5-8.png)
+![图5-8 注销重定向到登录界面](https://img.threetwoa.live/posts/java-course6/5-2-5-8.png)
 
 
 ## 6.1 课程总结

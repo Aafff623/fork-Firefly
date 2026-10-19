@@ -64,7 +64,7 @@ Kiro（IDE / CLI）接 Claude 时，会注入自己的 System Prompt + Agent Har
 
 官网首页也把卖点钉在 Spec-driven、property-based tests、parallel agents，而不是「最原汁原味的 Claude」。
 
-![Kiro Spec：Requirements → Design → Tasks 任务树](./images/kiro-claude-harness-feel/fig-specs.jpg)
+![Kiro Spec：Requirements → Design → Tasks 任务树](https://img.threetwoa.live/posts/kiro-handbook/kiro-claude-harness-feel/fig-specs.jpg)
 
 ### 这层套子里到底塞了什么
 
@@ -80,7 +80,7 @@ Kiro（IDE / CLI）接 Claude 时，会注入自己的 System Prompt + Agent Har
 | default_to_action | 低风险直接动手 | 和「先计划再改」类自定义约束打架 |
 | 模型路由 | Auto / 各档 Claude / 开源模型 | UI 选了 A，实际路由/模板偶尔让人怀疑（社区有 cutoff 自报异常的 issue） |
 
-![模型选择器：同一壳子可挂多款模型](./images/kiro-claude-harness-feel/fig-models.jpg)
+![模型选择器：同一壳子可挂多款模型](https://img.threetwoa.live/posts/kiro-handbook/kiro-claude-harness-feel/fig-models.jpg)
 
 ### 算不算「篡改 / 削弱」？
 

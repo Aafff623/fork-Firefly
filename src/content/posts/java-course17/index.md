@@ -170,7 +170,7 @@ npm install -g npm@11.4.2
 	* 如果出现了`gitbook-cli`或者`npm`文件夹，说明全局模块安装成功，且全局模块路径配置正确。
 
 
-![图2-1 验证模块是否安装成功](images/2-1-2-1.png)
+![图2-1 验证模块是否安装成功](https://img.threetwoa.live/posts/java-course17/2-1-2-1.png)
 
 
 ## 2.2 加速Node.js模块下载的妙诀
@@ -417,7 +417,7 @@ VITE v7.1.4  ready in 20203 ms
 项目默认运行在 `http://localhost:5173`，可以在浏览器中打开。
 
 
-![图2-2 Vue.js项目首页](images/2-4-2-2.png)
+![图2-2 Vue.js项目首页](https://img.threetwoa.live/posts/java-course17/2-4-2-2.png)
 
 
 ### 使用 VS Code 开发 Vue 项目
@@ -637,7 +637,7 @@ header {
 组件是Vue中的一个重要概念：它是一种抽象，可以将小型、自包含且通常可重用的组件组成一个大规模的应用。组件允许我们将 UI 划分为独立的、可重用的部分，并且可以对每个部分进行单独的思考。在实际应用中，组件常常被组织成一个层层嵌套的树状结构，如下图3-1所示。
 
 
-![图3-1 组件树](images/3-1-3-1.png)
+![图3-1 组件树](https://img.threetwoa.live/posts/java-course17/3-1-3-1.png)
 
 
 这和我们嵌套 HTML 元素的方式类似，Vue 实现了自己的组件模型，使我们可以在每个组件内封装自定义内容与逻辑。Vue 同样也能很好地配合原生 Web Component。
@@ -715,7 +715,7 @@ import BasicComponent from './components/BasicComponent.vue'
 ### 运行调测
 
 
-![图3-1 Vue.js项目首页](images/3-1-3-1.png)
+![图3-1 Vue.js项目首页](https://img.threetwoa.live/posts/java-course17/3-1-3-1.png)
 
 
 ## 3.2 组件通信，快速建立标准化组件交互规范
@@ -793,7 +793,7 @@ import ChildComponent from './components/ChildComponent.vue'
 最终，界面效果如下。
 
 
-![图3-2 相同的组件显示出不同的效果](images/3-3-3-2.png)
+![图3-2 相同的组件显示出不同的效果](https://img.threetwoa.live/posts/java-course17/3-3-3-2.png)
 
 根据子组件 msg 赋值不同，相同的组件显示出不同的效果。
 
@@ -803,7 +803,7 @@ import ChildComponent from './components/ChildComponent.vue'
 从上一节了解到，父组件如果要和子组件通信，通常是采用Prop的方式。而子组件如果要想和父组件通信，则往往是使用事件。图3-3展示了父子组件通信的示意图。
 
 
-![图3-3 父子组件通信的示意图](images/3-4-3-3.png)
+![图3-3 父子组件通信的示意图](https://img.threetwoa.live/posts/java-course17/3-4-3-3.png)
 
 可以使用v-on指令（通常缩写为`@`符号）来监听DOM事件，并在触发事件时执行一些JavaScript操作。从一个简单的示例“listen-for-child-component-event”入手。
 
@@ -862,12 +862,12 @@ function handleEvent() {
 最终，在事件发送前的界面效果如下图3-4所示。
 
 
-![图3-4 事件发送前的界面效果](images/3-4-3-4.png)
+![图3-4 事件发送前的界面效果](https://img.threetwoa.live/posts/java-course17/3-4-3-4.png)
 
 在事件发送前的界面效果如下图3-5所示。
 
 
-![图3-5 事件发送前的界面效果](images/3-4-3-5.png)
+![图3-5 事件发送前的界面效果](https://img.threetwoa.live/posts/java-course17/3-4-3-5.png)
 
 
 ## 3.5 Provide/Inject跨层级传递
@@ -875,7 +875,7 @@ function handleEvent() {
 通常情况下，当我们需要从父组件向子组件传递数据时，会使用 props。想象一下这样的结构：有一些多层级嵌套的组件，形成了一棵巨大的组件树，而某个深层的子组件需要一个较远的祖先组件中的部分数据。在这种情况下，如果仅使用 props 则必须将其沿着组件链逐级传递下去，这会非常麻烦：
 
 
-![图3-6 Prop逐级透传的过程图示](images/3-5-3-6.png)
+![图3-6 Prop逐级透传的过程图示](https://img.threetwoa.live/posts/java-course17/3-5-3-6.png)
 
 
 注意，虽然这里的 `<Footer>` 组件可能根本不关心这些 props，但为了使 `<DeepChild>` 能访问到它们，仍然需要定义并向下传递。如果组件链路非常长，可能会影响到更多这条路上的组件。这一问题被称为“prop 逐级透传”，显然是我们希望尽量避免的情况。
@@ -883,7 +883,7 @@ function handleEvent() {
 provide 和 inject 可以帮助我们解决这一问题。一个父组件相对于其所有的后代组件，会作为依赖提供者。任何后代的组件树，无论层级有多深，都可以注入由父组件提供给整条链路的依赖。
 
 
-![图3-7 Provide/Inject模式](images/3-5-3-7.png)
+![图3-7 Provide/Inject模式](https://img.threetwoa.live/posts/java-course17/3-5-3-7.png)
 
 
 从一个简单的示例“provide-inject”入手。
@@ -957,13 +957,13 @@ function callForDescendant() {
 点击按钮前的界面效果如下图3-8所示。
 
 
-![图3-8 点击按钮前的界面效果](images/3-5-3-8.png)
+![图3-8 点击按钮前的界面效果](https://img.threetwoa.live/posts/java-course17/3-5-3-8.png)
 
 
 点击按钮前的界面效果如下图3-9所示。
 
 
-![图3-9 点击按钮后的界面效果](images/3-5-3-9.png)
+![图3-9 点击按钮后的界面效果](https://img.threetwoa.live/posts/java-course17/3-5-3-9.png)
 
 
 ## 4.1 Vue Router深度实践：构建高体验单页应用（SPA）的核心
@@ -1217,14 +1217,14 @@ import { RouterLink, RouterView } from 'vue-router'
 初次运行应用，可以看到界面效果如下图4-1所示。
 
 
-![图4-1 初次运行应用界面效果](images/4-1-4-1.png)
+![图4-1 初次运行应用界面效果](https://img.threetwoa.live/posts/java-course17/4-1-4-1.png)
 
 
 可以看到，路径`/`是处于激活状态，所以路由响应的页面是Home组件的页面。
 
 当点击About超链接时，界面效果如下图4-2所示。
 
-![图4-2 当点击About超链接时界面效果](images/4-1-4-2.png)
+![图4-2 当点击About超链接时界面效果](https://img.threetwoa.live/posts/java-course17/4-1-4-2.png)
 
 
 此时，路由路径`/about`处于激活状态，此时响应的是About组件的页面。
@@ -1267,7 +1267,7 @@ function increment() {
 下面是“单向数据流”这一概念的简单图示：
 
 
-![图4-3 单向数据流](images/4-2-4-3.png)
+![图4-3 单向数据流](https://img.threetwoa.live/posts/java-course17/4-2-4-3.png)
 
 
 然而，当我们有多个组件共享一个共同的状态时，就没有这么简单了：
@@ -1378,16 +1378,16 @@ import ComponentB from './components/ComponentB.vue'
 初次运行应用，可以看到界面效果如下图4-3所示。
 
 
-![图4-4 初次运行应用界面效果](images/4-2-4-4.png)
+![图4-4 初次运行应用界面效果](https://img.threetwoa.live/posts/java-course17/4-2-4-4.png)
 
 
 当点击“晁盖号令”按钮时，界面效果如下图4-4所示。
 
-![图4-5 点击“晁盖号令”按钮](images/4-2-4-5.png)
+![图4-5 点击“晁盖号令”按钮](https://img.threetwoa.live/posts/java-course17/4-2-4-5.png)
 
 当点击“宋江号令”按钮时，界面效果如下图4-6所示。
 
-![图4-6 点击“宋江号令”按钮](images/4-2-4-6.png)
+![图4-6 点击“宋江号令”按钮](https://img.threetwoa.live/posts/java-course17/4-2-4-6.png)
 
 
 由此证实，无论哪个组件修改了 store 状态对象，其他任意导入了 store 的组件都可以会随之修改它的状态。
@@ -1623,7 +1623,7 @@ vite preview 命令会在本地启动一个静态 Web 服务器，将 dist 文�
 
 部署完成之后，启动Nginx服务器，可以看到界面效果如下图4-7所示。
 
-![图4-7 部署到Ngin效果](images/4-4-4-7.png)
+![图4-7 部署到Ngin效果](https://img.threetwoa.live/posts/java-course17/4-4-4-7.png)
 
 
 ## 5.1 课程总结

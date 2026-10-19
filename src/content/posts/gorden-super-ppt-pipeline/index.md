@@ -17,7 +17,7 @@ comment: true
 
 它不是又一套模板。核心是把「好看」和「能改」拆成两条流水线：内容先变成**真生图**的图片 PPT，再按层拆开重拼成**可编辑 PPTX**。公众号里「AI PPT 赛道终结者」「史上最强」当宣传听就行，别写进选型结论。
 
-![内容 → 图片 PPT → 可编辑 PPTX](./images/fig-01-pipeline.jpg)
+![内容 → 图片 PPT → 可编辑 PPTX](https://img.threetwoa.live/posts/gorden-super-ppt-pipeline/fig-01-pipeline.jpg)
 
 ## 三技能怎么拆
 
@@ -31,7 +31,7 @@ comment: true
 
 ## 四层：防「假可编辑」
 
-![背景 / 框架 / 图标装饰 / 文字](./images/fig-02-four-layers.jpg)
+![背景 / 框架 / 图标装饰 / 文字](https://img.threetwoa.live/posts/gorden-super-ppt-pipeline/fig-02-four-layers.jpg)
 
 拆开再按坐标拼回去：
 
@@ -55,7 +55,7 @@ Codex 里粘贴安装 → `pip install python-pptx`（还要 pillow / numpy）�
 
 都是作者/README 转述，**没实测**。选型时认清你在比的是哪一套账。先 **1-3 页**摸成本与质量，再放大。
 
-![强但不轻：小样试跑 + 风险边界](./images/fig-03-risks.jpg)
+![强但不轻：小样试跑 + 风险边界](https://img.threetwoa.live/posts/gorden-super-ppt-pipeline/fig-03-risks.jpg)
 
 ## 市场数字当气氛，别当结论
 

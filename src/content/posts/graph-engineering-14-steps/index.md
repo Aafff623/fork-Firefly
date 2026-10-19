@@ -17,13 +17,13 @@ comment: true
 
 7 月初 OpenClaw 创始人 Peter Steinberger 在 X 上问：还在聊 loop，还是已经切到 graph 了？没多久就有人跟帖喊「Loop Engineering is dead. Long live Graph Engineering!」。
 
-![Loop dead / Graph live 推文截图](./images/fig-01-01-loop-dead-graph-live-tweet.jpg)
+![Loop dead / Graph live 推文截图](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-01-01-loop-dead-graph-live-tweet.jpg)
 
 所以 Graph Engineering 到底是什么？
 
 Datawhale 把 Codez（@0xCodez）总结的 **14 步**整理出来，课程横幅互动量到了全网约 **570w** 量级————讲的就是怎么从一个人的 loop，走到一张能自己路由的 graph。
 
-![Codez Graph Engineering 14-step 课程横幅](./images/fig-02-02-codez-14-step-banner.jpg)
+![Codez Graph Engineering 14-step 课程横幅](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-02-02-codez-14-step-banner.jpg)
 
 Graph 不是 loop 的升级版，是 **loop 的组织方式**。它烧的 token 比单个 loop 更多，协调开销也更高；出了问题你要 debug 的是一整张你没亲眼看着跑的路由图。所以先问自己四个问题，都想清楚再动手。
 
@@ -31,7 +31,7 @@ Graph 不是 loop 的升级版，是 **loop 的组织方式**。它烧的 token 
 
 ## 动手前四问（外加一道更狠的）
 
-![So do you actually need a graph? 四问决策图](./images/fig-03-03-four-questions-decision.jpg)
+![So do you actually need a graph? 四问决策图](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-03-03-four-questions-decision.jpg)
 
 1. **任务真的能拆成不同角色吗？** 拆不出清晰的「谁负责什么」，那就还是一个 loop————加节点只是加成本。
 2. **有没有真正能并行的子任务？** 没有独立并行的活，图比循环贵，却不比循环快。
@@ -42,7 +42,7 @@ Graph 不是 loop 的升级版，是 **loop 的组织方式**。它烧的 token 
 
 单体 loop 长什么样，可以先把「被观察的 agent」拆开看一眼————Thought → Action → Execution → Reflection → Alignment，再反馈回 Thought。这一圈都跑不稳，连图只是把噪声放大。
 
-![Anatomy of an Observed Agent](./images/fig-13-13-observed-agent-anatomy.jpg)
+![Anatomy of an Observed Agent](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-13-13-observed-agent-anatomy.jpg)
 
 **谁适合上手**
 
@@ -68,13 +68,13 @@ graph engineering 真有用，但大部分人现在还用不上————因�
 
 Subagents 和 Agent Teams 的差别，很大一块就落在「有没有共享任务态」上：左边是主控 spawn、结果汇报回来；右边是 Shared Task List + teammate 互认任务。
 
-![Subagents vs Agent Teams](./images/fig-08-08-subagents-vs-agent-teams.jpg)
+![Subagents vs Agent Teams](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-08-08-subagents-vs-agent-teams.jpg)
 
 **Failure Routing：失败之后的退路。** 一个节点的重试耗尽了，控制权去哪————退回上一步、转给备用节点，还是转人工。没有失败边的图，只是一张流程图，不是一个能跑的系统。
 
 图还可以按层次看：数据流 → 任务调度 → 架构部署（下图是嵌入式 AADL 语境的三层类比，用来建立「同一张图可以有多层投影」的直觉，不是 Claude Code API 本身）。
 
-![Data-flow / Task Schedule / AADL 三层](./images/fig-07-07-dataflow-task-aadl-layers.jpg)
+![Data-flow / Task Schedule / AADL 三层](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-07-07-dataflow-task-aadl-layers.jpg)
 
 ---
 
@@ -84,7 +84,7 @@ Subagents 和 Agent Teams 的差别，很大一块就落在「有没有共享任
 
 一张图其实只有两样东西。**节点**是一个工作单元：一个 agent，一份边界明确的活，一个输入，一个输出。**边**是依赖关系：这个节点的输出会喂给那个节点做输入，仅此而已。
 
-![Upstream / Anchor / Downstream 依赖 DAG](./images/fig-04-04-dependency-anchor-dag.jpg)
+![Upstream / Anchor / Downstream 依赖 DAG](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-04-04-dependency-anchor-dag.jpg)
 
 最容易犯的错，是把「然后」当成边。「总结这个文件，然后告诉我天气」————这两步之间没有边，天气根本用不到那份总结。这其实是两个互不相干的节点，被一段线性脚本硬凑成了先后顺序。没真用上数据，就没有边。
 
@@ -96,7 +96,7 @@ Subagents 和 Agent Teams 的差别，很大一块就落在「有没有共享任
 
 图工程的第一项真本事，是**重画这条链**。对每一根箭头问上一步的那个问题。大多数链里都有两三根箭头根本没有携带数据————它们只是当初写的时候顺手打的顺序。把这些箭头剪掉，链就会塌缩成更宽的东西：几个可以同时跑的独立节点，喂给一个需要它们全部到齐的节点。
 
-![LINEAR vs GRAPH](./images/fig-05-05-linear-vs-graph.jpg)
+![LINEAR vs GRAPH](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-05-05-linear-vs-graph.jpg)
 
 ---
 
@@ -108,7 +108,7 @@ Subagents 和 Agent Teams 的差别，很大一块就落在「有没有共享任
 
 在 workflow 里，这份契约靠 **schema** 强制执行。给 Claude 的 `agent()` 调用配一份 JSON schema，派出去的 subagent 就只能返回校验过的结构化数据————校验发生在工具调用这一层，格式不对 Claude 会自己重试，不会甩给你一堆自由文本。这就是「能接进图里的节点」和「只有人读得懂才行的节点」的差别。
 
-![Schema / 契约测试：golden schema](./images/fig-06-06-schema-contract-test.jpg)
+![Schema / 契约测试：golden schema](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-06-06-schema-contract-test.jpg)
 
 ```js
 // 一个有真契约的节点：输入有边界，输出经过校验，只干一件事
@@ -198,7 +198,7 @@ const curated = await agent(
 
 标准写法值得记住：**派发 → 归约 → 合成**。先派出去收集广度，用普通代码归约压缩，再用最后一个 agent 合成写出答案。看懂这颗菱形之后，就不会再问「怎么让 agent 多做几步」，而是会问「拆分点在哪，合并点在哪」————这才是真正能扩展的问题。
 
-![The Diamond: FAN OUT → Reduce & Synthesize](./images/fig-09-09-diamond-topology.jpg)
+![The Diamond: FAN OUT → Reduce & Synthesize](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-09-09-diamond-topology.jpg)
 
 ---
 
@@ -210,7 +210,7 @@ const curated = await agent(
 
 在 workflow 里这就是一个普通的 `if` 或 `switch`，判断依据是某个节点校验过的输出————因为控制流本来就活在代码里。
 
-![Conditional edge：模型分类，代码选路](./images/fig-10-10-conditional-edge.jpg)
+![Conditional edge：模型分类，代码选路](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-10-10-conditional-edge.jpg)
 
 这正好是确定性变成优点而不是限制的地方。路由的**判断**可以由 Claude 完成（一个 subagent 负责分类），但**路由本身**是 Claude 写的代码————同样的分类结果每次都走同一条路。节点上拿到 Claude 的判断力，边上拿到脚本的可靠性；不会出现「Claude 自己决定跳过审计」这种意外————因为跳过这件事必须写进图里才会发生。
 
@@ -245,7 +245,7 @@ if (severity === 'high') {
 
 真实团队在移植 Bun 运行时的时候，就是靠这套对抗式代码评审焊进循环，才做成的。
 
-![Diverse-lens verify：finding 过三 skeptic 再进 Answer](./images/fig-11-11-diverse-lens-verify.jpg)
+![Diverse-lens verify：finding 过三 skeptic 再进 Answer](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-11-11-diverse-lens-verify.jpg)
 
 ### 10 · 把节点隔离开，别让一个失败污染整张图
 
@@ -255,7 +255,7 @@ if (severity === 'high') {
 
 更隐蔽的失败，是节点之间互相踩到对方。多个 agent 并行写文件时可能会撞车。解法是隔离：用 **git worktree**，让每个 agent 在自己的一份工作区里干活，在沙盒里完成，再干净地合并回去。只在节点真的会并行写入的时候才用它————它是那种拓扑真正需要的安全带，不是每次运行都要交的税。
 
-![Git worktree 隔离](./images/fig-12-12-git-worktree-isolation.jpg)
+![Git worktree 隔离](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-12-12-git-worktree-isolation.jpg)
 
 ---
 
@@ -302,7 +302,7 @@ while (dry < 2) {           // 连续两轮空手而归就停下
 
 大规模运行前先看一眼 `/model`：让 Claude 把派出去的那些重复性节点降到便宜模型，合并节点留在高档位————这个办法能把一张烧 token 的图从贵变便宜，还完全不用动它的形状。
 
-![Claude Code /model 选择](./images/fig-14-14-model-slash-select.jpg)
+![Claude Code /model 选择](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-14-14-model-slash-select.jpg)
 
 ### 13 · 拓扑结构，就是你的成本和延迟
 
@@ -311,7 +311,7 @@ while (dry < 2) {           // 连续两轮空手而归就停下
 - `parallel()` 这道屏障会让所有东西都等最慢的那个节点，才进入下一阶段。
 - `pipeline()` 让每条数据各自独立地依次经过所有阶段，没有屏障————条目 A 可能已经在第三阶段了，条目 B 还在第一阶段；跑得快的提前结束，不用在慢的后面干等。
 
-![parallel 屏障 vs pipeline 无屏障](./images/fig-15-15-parallel-vs-pipeline.jpg)
+![parallel 屏障 vs pipeline 无屏障](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-15-15-parallel-vs-pipeline.jpg)
 
 **默认用 `pipeline()`。** 只有一个阶段真的需要全部前置结果同时到齐时才用屏障————比如跨集合去重、按总数提前退出、需要对照「其他发现」来写的 prompt。「代码更干净」和「这些阶段感觉是分开的」都不是理由；屏障带来的延迟是真实的、可测量的、被浪费掉的时间。分开不代表必须同步。
 
@@ -323,7 +323,7 @@ while (dry < 2) {           // 连续两轮空手而归就停下
 
 最后一步，是对那些没法提前规划的活儿，不再自己动手画图。用 **dynamic workflows**，只要描述目标，Claude 会自己写编排脚本：拆解任务、决定怎么把活儿派出去、派出一队 subagent、再合成结果。拿到的是一张为这次运行量身定做的图，而不是一张你希望它恰好合适的固定图。
 
-![Dynamic workflow requested · ultracode](./images/fig-16-16-dynamic-workflow-ultracode.jpg)
+![Dynamic workflow requested · ultracode](https://img.threetwoa.live/posts/graph-engineering-14-steps/fig-16-16-dynamic-workflow-ultracode.jpg)
 
 三种用法：
 

@@ -41,7 +41,7 @@ Claude 和 Cursor 有三处习惯不一样：结论形态（Claude 爱列表、C
 
 能力路由按这四块写就够交接：Skills 何时读盘、同名 skill 谁赢、MCP 场景表（文档用 context7、广搜用 tavily、生图用 MiniMax、图标用 icons）、Memory / Hooks 约定。
 
-![一套规则，三个出口](./images/fig-routing.jpg)
+![一套规则，三个出口](https://img.threetwoa.live/posts/cursor-claude-harness-migration/fig-routing.jpg)
 
 ## 别抄文件，抄思路：OpenCode / Kimi 也是这么干的
 
@@ -86,7 +86,7 @@ flowchart TB
 - Wave 2 Skills 优先级：写明加载顺序，`review` 这类撞名 skill 规定谁赢
 - Wave 3 hooks + memory：最小 shell / MCP gate 脚本先防呆；Memory 别去 symlink Claude 的，各放各的
 
-![四波迁移，顺序别乱](./images/fig-waves.jpg)
+![四波迁移，顺序别乱](https://img.threetwoa.live/posts/cursor-claude-harness-migration/fig-waves.jpg)
 
 ## 最坑的一处：MiniMax 绿了又红，根因不在 mcp.json
 
@@ -96,7 +96,7 @@ flowchart TB
 
 排查了半天，根因是：**Cursor 进程环境里还趴着一把无效旧 key**。宿主启动 MCP 子进程时吃的是进程 env，不是你以为的「最新用户环境一定会被读到」。你以为改对了配置文件，其实进程里继承的还是旧值。☕(￣▽￣)ノ
 
-![钥匙对不上锁：进程环境继承的是旧 key](./images/fig-keylock.jpg)
+![钥匙对不上锁：进程环境继承的是旧 key](https://img.threetwoa.live/posts/cursor-claude-harness-migration/fig-keylock.jpg)
 
 解决办法，能省半天：
 

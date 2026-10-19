@@ -53,9 +53,9 @@ skill 设计用字节 Seedream 生图，Seedream 的强项是中文文字渲染�
 
 全程 MiniMax + Pillow，零外部依赖，文字零乱码。黑白、彩色两版各 6 页 PDF 均实测出片。下面是《纸上的夏天》实际产出的对比页：
 
-![黑白版内页](./images/fig-bw-page.jpg)
+![黑白版内页](https://img.threetwoa.live/posts/lianhuanhua-skill-review/fig-bw-page.jpg)
 
-![彩色版内页](./images/fig-color-page.jpg)
+![彩色版内页](https://img.threetwoa.live/posts/lianhuanhua-skill-review/fig-color-page.jpg)
 
 ## 适用范围与边界
 
@@ -65,7 +65,7 @@ skill 设计用字节 Seedream 生图，Seedream 的强项是中文文字渲染�
 
 封底的效果长这样，版权信息这块是后期叠字加上的：
 
-![封底](./images/fig-back.jpg)
+![封底](https://img.threetwoa.live/posts/lianhuanhua-skill-review/fig-back.jpg)
 
 ## 结论
 

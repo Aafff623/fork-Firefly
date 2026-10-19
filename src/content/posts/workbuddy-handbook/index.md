@@ -26,7 +26,7 @@ comment: true
 
 仓库：[github.com/kangarooking/cangjie-skill](https://github.com/kangarooking/cangjie-skill)（文中时点约 **6.7K Star**）。仓库自述：「蒸馏所有值得蒸馏的高价值内容」。
 
-![GitHub cangjie-skill 约 6.7k Star](./images/cangjie-skill-workbuddy-distill/fig-01-01-github-cangjie-skill-6k7.jpg)
+![GitHub cangjie-skill 约 6.7k Star](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-01-01-github-cangjie-skill-6k7.jpg)
 
 > **投资免责（原文保留）**：后文演示问答里 AI 的回答「不构成任何投资建议」。
 
@@ -49,7 +49,7 @@ comment: true
 
 图题「三重验证筛选后」：约 65 个原始单元筛成 **10 个 Skill 候选**。
 
-![小红书投流蒸馏 S01-S10](./images/cangjie-skill-workbuddy-distill/fig-02-02-xhs-traffic-skills-s01-s10.jpg)
+![小红书投流蒸馏 S01-S10](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-02-02-xhs-traffic-skills-s01-s10.jpg)
 
 | # | Skill（图面） | 核心能力（图面） |
 |---|---|---|
@@ -73,7 +73,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 官网：[cangjie-skill.com](https://cangjie-skill.com)  
 标语大意：把看过的知识，变成 Agent 真正能调用的能力；书 / 视频 / 播客 / 课程 → 可安装 Skill Pack。
 
-![cangjie-skill.com 官网](./images/cangjie-skill-workbuddy-distill/fig-03-03-cangjie-skill-website.jpg)
+![cangjie-skill.com 官网](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-03-03-cangjie-skill-website.jpg)
 
 ---
 
@@ -87,13 +87,13 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 - 图里有关键信息 → OCR；也可试豆包 **Seed-Evolving**，或收费但效果不错的 **Doc2X**
 - **一次只蒸馏一本书，或一类资料**（反复强调）
 
-![工作文件夹里的 王川宝典.md](./images/cangjie-skill-workbuddy-distill/fig-04-04-wangchuan-baodian-folder.jpg)
+![工作文件夹里的 王川宝典.md](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-04-04-wangchuan-baodian-folder.jpg)
 
 #### 2. 安装 WorkBuddy
 
 下载：[workbuddy.ai](https://workbuddy.ai)（文中写 workbuddy.ai / WorkBuddy；腾讯出品全场景 AI 办公工作台）。傻瓜式安装，微信扫码登录。
 
-![WorkBuddy 官网](./images/cangjie-skill-workbuddy-distill/fig-05-05-workbuddy-website.jpg)
+![WorkBuddy 官网](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-05-05-workbuddy-website.jpg)
 
 #### 3. 找到仓颉 Skill →「去试试」；模型怎么选
 
@@ -110,7 +110,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 | 自定义接官方 DeepSeek API | **不能识图**；内置版可以 |
 | **Kimi K3** 反例 | 跑到约 2/3 已耗 **~2000 积分**[^missing-credits] |
 
-![Hy3 限时免费 / GLM-5.2 夜间折扣](./images/cangjie-skill-workbuddy-distill/fig-06-06-hy3-glm-model-select.jpg)
+![Hy3 限时免费 / GLM-5.2 夜间折扣](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-06-06-hy3-glm-model-select.jpg)
 
 #### 4. 开蒸：约 30 分钟 · 12 Skill · 65 积分
 
@@ -135,7 +135,7 @@ S04 / S10 有像素糊块，上表已标「图面不清」，不脑补。
 - 通用问题已能拉开差距；**私有资料 / 模型未训练过的新料**，差距会更大
 - 换**本地小模型**时，差异通常更醒目 → 适合有私有化部署需求的企业
 
-![蒸馏结果演示截图](./images/cangjie-skill-workbuddy-distill/fig-07-07-distill-result-demo.jpg)
+![蒸馏结果演示截图](https://img.threetwoa.live/posts/workbuddy-handbook/cangjie-skill-workbuddy-distill/fig-07-07-distill-result-demo.jpg)
 
 用法一句话就够：**把问题丢给挂了该项目 Skill 的 Agent**，别指望自己背完整本书。
 

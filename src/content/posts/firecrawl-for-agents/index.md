@@ -16,7 +16,7 @@ comment: true
 Agent 要上网，脏活往往不在模型，而在：**搜得到、抓得干净、JS 页别炸、输出别全是导航栏**。  
 Firecrawl 把自己摆成 Web context API——官方原话是 search / scrape / interact the web at scale。人话版：少自己养爬虫农场。
 
-![firecrawl/firecrawl GitHub 卡](./images/fig-01-github-card.jpg)
+![firecrawl/firecrawl GitHub 卡](https://img.threetwoa.live/posts/firecrawl-for-agents/fig-01-github-card.jpg)
 
 正确仓库（原文链接曾打错，别抄错）：<https://github.com/firecrawl/firecrawl>  
 许可证 **AGPL-3.0**；云端免费档原文称 1000 credits/月——2026-08-11 看定价页，Free Plan 确实是每月 1,000 credits。

@@ -11,7 +11,7 @@ slug: pi-vs-deepseek-harness
 pinned: false
 comment: true
 ---
-![Pi 与 DeepSeek Harness：两种不同的核心思路·概览](./images/overview.webp)
+![Pi 与 DeepSeek Harness：两种不同的核心思路·概览](https://img.threetwoa.live/posts/pi-vs-deepseek-harness/overview.webp)
 
 eepSeek Harness 发布以来，一个被频繁问到的问题是：**它和 Pi 到底有什么区别？**
 

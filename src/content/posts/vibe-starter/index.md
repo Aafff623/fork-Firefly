@@ -36,7 +36,7 @@ comment: true
 
 Vibe Coding = 用人话和 AI 聊天写代码：你负责「要做什么」，AI 负责「怎么做」，多轮迭代。和传统编程比，核心从背语法变成讲需求；几天能上手，但大项目仍有 UI 同质化、代码不可控等坑。三个常见误解：不是作弊、不会不学、不只玩具。
 
-[![00 原文](images/1-cite-00-concept.jpg)](https://ai.codefather.cn/library/2010974735415316482)
+[![00 原文](https://img.threetwoa.live/posts/vibe-starter/1-cite-00-concept.jpg)](https://ai.codefather.cn/library/2010974735415316482)
 
 [原文 · 00 Vibe Coding 简介](https://ai.codefather.cn/library/2010974735415316482) · [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/00%20Vibe%20Coding%20%E7%AE%80%E4%BB%8B.md)
 
@@ -44,7 +44,7 @@ Vibe Coding = 用人话和 AI 聊天写代码：你负责「要做什么」，AI
 
 10 分钟做出待办类网页并 Publish 上线。准备浏览器 + Bolt.new（国内可换 NoCode / 秒哒）+ GitHub；写清功能/界面需求 → 多轮微调 → 测功能 → 一键发布。对话要点：需求具体、一次别改太多、bug 描述现象。跑通后再进工具/实战板块。
 
-[![01 原文](images/1-cite-01-ship.jpg)](https://ai.codefather.cn/library/2010974736249982977)
+[![01 原文](https://img.threetwoa.live/posts/vibe-starter/1-cite-01-ship.jpg)](https://ai.codefather.cn/library/2010974736249982977)
 
 [原文 · 01 快速上手](https://ai.codefather.cn/library/2010974736249982977) · [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/01%20%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%20Vibe%20Coding.md)
 
@@ -52,7 +52,7 @@ Vibe Coding = 用人话和 AI 聊天写代码：你负责「要做什么」，AI
 
 六阶段地图：入门（概念 + 零代码出作品）→ 工具（Cursor / Codex / Claude Code）→ 核心技能（需求、提示词、上下文、Git、部署）→ 实战（小工具 → 全栈 → AI 应用）→ 进阶（失败模式、成本、变现）→ 持续学习。小工具够用前两段；系统掌握约 2～3 个月。
 
-[![02 原文](images/1-cite-02-roadmap.jpg)](https://ai.codefather.cn/library/2062514924696948738)
+[![02 原文](https://img.threetwoa.live/posts/vibe-starter/1-cite-02-roadmap.jpg)](https://ai.codefather.cn/library/2062514924696948738)
 
 [原文 · 02 学习路线](https://ai.codefather.cn/library/2062514924696948738) · [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/02%20AI%20%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF.md)
 
@@ -60,7 +60,7 @@ Vibe Coding = 用人话和 AI 聊天写代码：你负责「要做什么」，AI
 
 鱼皮 AI 导航（ai.codefather.cn）导读：上千 AI 工具、Vibe/OpenClaw 教程库、提示词模板、MCP+Skills、热点资讯、交流社区。找资源的一站式入口；资源再多也要动手做。
 
-[![60 原文](images/1-cite-60-resources.jpg)](https://ai.codefather.cn/library/2010974737051095041)
+[![60 原文](https://img.threetwoa.live/posts/vibe-starter/1-cite-60-resources.jpg)](https://ai.codefather.cn/library/2010974737051095041)
 
 [原文 · 60 资源大全](https://ai.codefather.cn/library/2010974737051095041) · [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/60%20Vibe%20Coding%20%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8.md)
 
@@ -68,7 +68,7 @@ Vibe Coding = 用人话和 AI 聊天写代码：你负责「要做什么」，AI
 
 FAQ 速查：概念（和传统编程区别、幻觉、MVP）→ 工具选型（Cursor、模型、Bolt vs v0、免费够不够）→ 使用技巧（报错、技术栈跑偏、死循环）→ 部署/成本/安全。卡住先搜本章。
 
-[![90 原文](images/1-cite-90-faq.jpg)](https://ai.codefather.cn/library/2010974738795925506)
+[![90 原文](https://img.threetwoa.live/posts/vibe-starter/1-cite-90-faq.jpg)](https://ai.codefather.cn/library/2010974738795925506)
 
 [原文 · 90 常见问题](https://ai.codefather.cn/library/2010974738795925506) · [GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/90%20Vibe%20Coding%20%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%92%8C%E8%A7%A3%E5%86%B3.md)
 
@@ -100,7 +100,7 @@ FAQ 速查：概念（和传统编程区别、幻觉、MVP）→ 工具选型（
 
 鱼皮把工具分成三大类：**零代码平台**（浏览器开箱）、**AI 代码编辑器**（本地精控）、**命令行工具**（CLI 是 AI 的母语）。选对类型，比纠结「哪个最好」重要。
 
-[![三岔选型](images/2-cite-map-three.jpg)](https://github.com/liyupi/ai-guide/tree/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7)
+[![三岔选型](https://img.threetwoa.live/posts/vibe-starter/2-cite-map-three.jpg)](https://github.com/liyupi/ai-guide/tree/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7)
 
 ## 00 AI 编程工具大全
 
@@ -112,7 +112,7 @@ FAQ 速查：概念（和传统编程区别、幻觉、MVP）→ 工具选型（
 
 所有工具共用「大脑」：Claude 偏代码质量，GPT 偏速度和生态，Gemini 偏超长上下文和 UI，国产（DeepSeek / GLM / 通义 / Kimi）偏性价比。按预算 + 场景选，没有绝对最强。
 
-[![模型选型](images/2-cite-models.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/01%20AI%20%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97.md)
+[![模型选型](https://img.threetwoa.live/posts/vibe-starter/2-cite-models.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/01%20AI%20%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97.md)
 
 [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/01%20AI%20%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97.md)
 
@@ -120,7 +120,7 @@ FAQ 速查：概念（和传统编程区别、幻觉、MVP）→ 工具选型（
 
 Bolt.new / Lovable / 百度秒哒为主：打开浏览器、说人话、所见即所得。Bolt 快原型，Lovable 全栈+数据库，秒哒中文+商业化（支付）。新手最佳起点。
 
-[![零代码](images/2-cite-nocode.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/02%20AI%20%E9%9B%B6%E4%BB%A3%E7%A0%81%E5%B9%B3%E5%8F%B0.md)
+[![零代码](https://img.threetwoa.live/posts/vibe-starter/2-cite-nocode.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/02%20AI%20%E9%9B%B6%E4%BB%A3%E7%A0%81%E5%B9%B3%E5%8F%B0.md)
 
 [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/02%20AI%20%E9%9B%B6%E4%BB%A3%E7%A0%81%E5%B9%B3%E5%8F%B0.md)
 
@@ -134,7 +134,7 @@ Flowith / Manus / OpenManus：AI 当项目经理，自主规划、长时运行�
 
 Cursor 深度讲解 + Windsurf / Antigravity / Kiro / TRAE / Zed 横评。Tab 补全、Agent 多文件、Chat / 内联编辑；`.cursorrules`、分步需求、Git 回滚是实战要点。预算够优先 Cursor，省钱看 Windsurf。
 
-[![代码编辑器](images/2-cite-editors.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/04%20AI%20%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8.md)
+[![代码编辑器](https://img.threetwoa.live/posts/vibe-starter/2-cite-editors.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/04%20AI%20%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8.md)
 
 [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/04%20AI%20%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8.md)
 
@@ -142,7 +142,7 @@ Cursor 深度讲解 + Windsurf / Antigravity / Kiro / TRAE / Zed 横评。Tab �
 
 Claude Code 为主，Gemini CLI / Codex CLI / Aider 等补充。CLI 面向 AI 执行成功率更高、Token 更省；Skills 把规范打包给 Agent。国内常配国产模型 API。
 
-[![命令行](images/2-cite-cli.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/05%20AI%20%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7.md)
+[![命令行](https://img.threetwoa.live/posts/vibe-starter/2-cite-cli.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/05%20AI%20%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7.md)
 
 [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/05%20AI%20%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7.md)
 
@@ -168,7 +168,7 @@ Git / 部署 / MCP / Agent Skills / 规范驱动开发等周边：让主工具�
 
 鱼皮 2025 Top 20 实盘：大项目 Cursor+Opus，小项目 Claude Code+GLM，备胎 Cline+DeepSeek；多媒体、大模型、框架、浏览器插件分场景组合。不知道咋搭，先看这篇。
 
-[![工具箱](images/2-cite-toolbox.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/09%20%E6%88%91%E7%9A%84%20AI%20%E5%B7%A5%E5%85%B7%E7%AE%B1%E6%8E%A8%E8%8D%90.md)
+[![工具箱](https://img.threetwoa.live/posts/vibe-starter/2-cite-toolbox.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/09%20%E6%88%91%E7%9A%84%20AI%20%E5%B7%A5%E5%85%B7%E7%AE%B1%E6%8E%A8%E8%8D%90.md)
 
 [原文 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/10%20%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/09%20%E6%88%91%E7%9A%84%20AI%20%E5%B7%A5%E5%85%B7%E7%AE%B1%E6%8E%A8%E8%8D%90.md)
 
@@ -260,7 +260,7 @@ Git / 部署 / MCP / Agent Skills / 规范驱动开发等周边：让主工具�
 
 Planning is Everything、MVP、迭代优于完美、上下文是王道、产品经理思维。规划五分钟常能省返工半小时；Plan Mode 值得养成习惯。
 
-[![心法](images/3-cite-mindset.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/01%20Vibe%20Coding%20%E4%BA%94%E5%A4%A7%E6%A0%B8%E5%BF%83%E5%BF%83%E6%B3%95.md)
+[![心法](https://img.threetwoa.live/posts/vibe-starter/3-cite-mindset.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/01%20Vibe%20Coding%20%E4%BA%94%E5%A4%A7%E6%A0%B8%E5%BF%83%E5%BF%83%E6%B3%95.md)
 
 [原文 · 01 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/01%20Vibe%20Coding%20%E4%BA%94%E5%A4%A7%E6%A0%B8%E5%BF%83%E5%BF%83%E6%B3%95.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 
@@ -268,7 +268,7 @@ Planning is Everything、MVP、迭代优于完美、上下文是王道、产品�
 
 从「一次性完美提示词」转向迭代式对话：逐步澄清、让 AI 提问补洞，双向探索比单向咒语靠谱。
 
-[![对话工程](images/3-cite-dialog.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/02%20Vibe%20Coding%20%E5%AF%B9%E8%AF%9D%E5%B7%A5%E7%A8%8B%E6%8A%80%E5%B7%A7.md)
+[![对话工程](https://img.threetwoa.live/posts/vibe-starter/3-cite-dialog.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/02%20Vibe%20Coding%20%E5%AF%B9%E8%AF%9D%E5%B7%A5%E7%A8%8B%E6%8A%80%E5%B7%A7.md)
 
 [原文 · 02 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/02%20Vibe%20Coding%20%E5%AF%B9%E8%AF%9D%E5%B7%A5%E7%A8%8B%E6%8A%80%E5%B7%A7.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 
@@ -276,7 +276,7 @@ Planning is Everything、MVP、迭代优于完美、上下文是王道、产品�
 
 项目 / 功能 / 对话三层上下文；README、TODO、Rules 文件当长期记忆；一对话一任务，失忆就 summarize 或开新窗。
 
-[![上下文](images/3-cite-context.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/03%20Vibe%20Coding%20%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86%E6%8A%80%E5%B7%A7.md)
+[![上下文](https://img.threetwoa.live/posts/vibe-starter/3-cite-context.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/03%20Vibe%20Coding%20%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86%E6%8A%80%E5%B7%A7.md)
 
 [原文 · 03 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/03%20Vibe%20Coding%20%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86%E6%8A%80%E5%B7%A7.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 
@@ -320,7 +320,7 @@ API Key 别进仓库和前端；环境变量；SQL / XSS / CSRF；发布前安�
 
 Token 四类计费、输出比输入贵、长对话隐性翻倍；模型分级；Plan 先审再写；`@` 精确引用、`/summarize`、分阶段新对话；团队预算上限。和 OpenClaw 13 记忆成本可对照读。
 
-[![成本控制](images/3-cite-cost.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/10%20Vibe%20Coding%20%E6%88%90%E6%9C%AC%E6%8E%A7%E5%88%B6%E6%8A%80%E5%B7%A7.md)
+[![成本控制](https://img.threetwoa.live/posts/vibe-starter/3-cite-cost.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/10%20Vibe%20Coding%20%E6%88%90%E6%9C%AC%E6%8E%A7%E5%88%B6%E6%8A%80%E5%B7%A7.md)
 
 [原文 · 10 · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/10%20Vibe%20Coding%20%E6%88%90%E6%9C%AC%E6%8E%A7%E5%88%B6%E6%8A%80%E5%B7%A7.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 
@@ -340,7 +340,7 @@ Token 四类计费、输出比输入贵、长对话隐性翻倍；模型分级�
 
 **Agent = 模型 + Harness。** 五模块：上下文架构、执行能力、任务编排、反馈机制、架构护栏。瓶颈常在环境不在模型；OpenAI 小团队靠 Harness 上百万行代码的案例在这篇里讲透了。
 
-[![Harness](images/3-cite-harness.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Harness%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md)
+[![Harness](https://img.threetwoa.live/posts/vibe-starter/3-cite-harness.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Harness%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md)
 
 [原文 · Harness · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Harness%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 
@@ -348,7 +348,7 @@ Token 四类计费、输出比输入贵、长对话隐性翻倍；模型分级�
 
 Prompt → Context → Harness → **Loop**：设计可验证停止条件 + 反馈闭环 + 状态文件，让系统代替你逐步提示 Agent。Boris / Peter 都在推这个范式；Harness 没搭好就上 Loop 容易空转烧钱。
 
-[![Loop](images/3-cite-loop.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Loop%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md)
+[![Loop](https://img.threetwoa.live/posts/vibe-starter/3-cite-loop.jpg)](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Loop%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md)
 
 [原文 · Loop · GitHub](https://github.com/liyupi/ai-guide/blob/main/Vibe%20Coding%20%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/30%20%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/Loop%20Engineering%20%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E7%A8%8B.md) · [Vibe 系列入口](https://ai.codefather.cn/vibe)
 

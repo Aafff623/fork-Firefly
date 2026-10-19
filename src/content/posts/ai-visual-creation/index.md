@@ -21,7 +21,7 @@ comment: true
 
 同模型案例合集（玩法盘点 55-75）和「七种高张力海报」是另一类货——配方库 / 海报张力 ≠ 本篇四风格骨架；旁链一眼，别整包并进来。站内已发的 [UI 分层切图](/posts/gpt-image2-ui-layer-slice/) 也是同模型、另一条交付线。
 
-![吉他少女 · Lo-fi×吉卜力×新海诚](images/1-fig-01-guitar-girl.jpg)
+![吉他少女 · Lo-fi×吉卜力×新海诚](https://img.threetwoa.live/posts/ai-visual-creation/1-fig-01-guitar-girl.jpg)
 
 ## 四风格对照
 
@@ -32,7 +32,7 @@ comment: true
 | 3 | 水墨水彩肖像 | 狂墨线 + 暖棕赭水彩 + 红橙蝴蝶 | `--ar 9:16`；可上传人像 | 「主体身份」用参考图；蝴蝶色 / 负空间白底当对比旋钮 |
 | 4 | 博物馆展览肖像 | 对角聚光、日式壁画、Portra | 中近景；身份一致性参考图 | 服装色块 + 光束方向 + 负面提示；脸/发型锁参考 |
 
-![另类角色 · BAD SIGNAL](images/1-fig-03-alt-character.jpg)
+![另类角色 · BAD SIGNAL](https://img.threetwoa.live/posts/ai-visual-creation/1-fig-03-alt-character.jpg)
 
 ## 槽位怎么写（别整段重写）
 
@@ -48,7 +48,7 @@ comment: true
 
 水墨组把主体写成「男人（已上传图片）」——口令默认走图生/参考；没参考就先换成具体外貌描述，别空喊「男人」。
 
-![水墨水彩 · 蝴蝶](images/1-fig-06-ink-watercolor.jpg)
+![水墨水彩 · 蝴蝶](https://img.threetwoa.live/posts/ai-visual-creation/1-fig-06-ink-watercolor.jpg)
 
 ## 身份一致性：博物馆组在教什么
 
@@ -61,7 +61,7 @@ comment: true
 
 商用前：参考人脸与示例图都要过授权；本帖示例只供学习，不授权二创出货。
 
-![博物馆展览肖像](images/1-fig-07-museum-portrait.jpg)
+![博物馆展览肖像](https://img.threetwoa.live/posts/ai-visual-creation/1-fig-07-museum-portrait.jpg)
 
 ## 什么时候抄哪一套
 
@@ -83,7 +83,7 @@ comment: true
 
 图面原话写得很直：**不只是画图，是生产素材**。左边便签三条：更懂中文、更像设计师、直接出素材。中间那条箭头才是重点——从灵感图到可交付 UI 资产（分层资源）。
 
-![GPT Image 2 为什么不一样](images/2-fig-01-01-why-gpt-image2-different.jpg)
+![GPT Image 2 为什么不一样](https://img.threetwoa.live/posts/ai-visual-creation/2-fig-01-01-why-gpt-image2-different.jpg)
 
 三刀能力，对照着用：
 
@@ -101,7 +101,7 @@ comment: true
 
 口诀跟图底虚线框一致：**整体先对 → 再抠细节 → 最后交付切图**。
 
-![3 分钟跑通一轮 UI 设计四步](images/2-fig-02-02-three-min-ui-four-steps.jpg)
+![3 分钟跑通一轮 UI 设计四步](https://img.threetwoa.live/posts/ai-visual-creation/2-fig-02-02-three-min-ui-four-steps.jpg)
 
 | 步 | 耗时（图面） | 你该干什么 |
 |---|---|---|
@@ -182,7 +182,7 @@ comment: true
 
 先看整张工具箱，再按下表取词。
 
-![UI 出图提示词工具箱](images/2-fig-03-03-ui-prompt-toolbox.jpg)
+![UI 出图提示词工具箱](https://img.threetwoa.live/posts/ai-visual-creation/2-fig-03-03-ui-prompt-toolbox.jpg)
 
 ### 风格关键词
 
@@ -264,19 +264,19 @@ GPT Image 2 在 UI 这条线上，值钱的不是「又一张好看的手机框�
 
 孩童 + 瓦猫，梯田、石桥、灰瓦屋顶；标题区「云南红河」。
 
-![云南红河瓦猫文旅海报](images/3-fig-01-01.jpg)
+![云南红河瓦猫文旅海报](https://img.threetwoa.live/posts/ai-visual-creation/3-fig-01-01.jpg)
 
 ### 云南 · 大理 / 丽江路牌
 
 女孩 + 花猫，大理门楼、雪山、路牌指向大理 / 丽江 / 香格里拉。
 
-![云南大理丽江路牌卡通海报](images/3-fig-02-02.jpg)
+![云南大理丽江路牌卡通海报](https://img.threetwoa.live/posts/ai-visual-creation/3-fig-02-02.jpg)
 
 ### 草地合影 · 多孩多动物
 
 四人与北极熊、长颈鹿、棕熊、企鹅、狐狸、兔子、花猫等排成竖版合影；色块更偏黄绿橙。
 
-![多孩多动物草地合影扁平矢量](images/3-fig-03-03.jpg)
+![多孩多动物草地合影扁平矢量](https://img.threetwoa.live/posts/ai-visual-creation/3-fig-03-03.jpg)
 
 评论区有人要科普图 / 流程图，有人吐槽国内 GPT 贵——那是另一条需求；本篇只锁这套文旅卡通海报槽。
 
@@ -350,7 +350,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 01-06
 
-![短剧男主脸型风格 01-06](images/4-fig-01-01-06.jpg)
+![短剧男主脸型风格 01-06](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-01-01-06.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -365,7 +365,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 07-12
 
-![短剧男主脸型风格 07-12](images/4-fig-02-07-12.jpg)
+![短剧男主脸型风格 07-12](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-02-07-12.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -380,7 +380,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 13-18
 
-![短剧男主脸型风格 13-18](images/4-fig-03-13-18.jpg)
+![短剧男主脸型风格 13-18](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-03-13-18.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -395,7 +395,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 19-24
 
-![短剧男主脸型风格 19-24](images/4-fig-04-19-24.jpg)
+![短剧男主脸型风格 19-24](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-04-19-24.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -410,7 +410,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 25-30
 
-![短剧男主脸型风格 25-30](images/4-fig-05-25-30.jpg)
+![短剧男主脸型风格 25-30](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-05-25-30.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -425,7 +425,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 31-36
 
-![短剧男主脸型风格 31-36](images/4-fig-06-31-36.jpg)
+![短剧男主脸型风格 31-36](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-06-31-36.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -440,7 +440,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 37-42
 
-![短剧男主脸型风格 37-42](images/4-fig-07-37-42.jpg)
+![短剧男主脸型风格 37-42](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-07-37-42.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -455,7 +455,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 43-48
 
-![短剧男主脸型风格 43-48](images/4-fig-08-43-48.jpg)
+![短剧男主脸型风格 43-48](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-08-43-48.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -470,7 +470,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 49-54
 
-![短剧男主脸型风格 49-54](images/4-fig-09-49-54.jpg)
+![短剧男主脸型风格 49-54](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-09-49-54.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -485,7 +485,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 55-60
 
-![短剧男主脸型风格 55-60](images/4-fig-10-55-60.jpg)
+![短剧男主脸型风格 55-60](https://img.threetwoa.live/posts/ai-visual-creation/4-fig-10-55-60.jpg)
 
 | # | 风格名 | 提示词 | 适合造型 | 适合角色 |
 |---|---|---|---|---|
@@ -524,17 +524,17 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 六张风格页（原图）
 
-![仙侠风｜六套仙侠女子造型提示词](images/5-fig-01-01-xianxia.jpg)
+![仙侠风｜六套仙侠女子造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-01-01-xianxia.jpg)
 
-![异域风｜六套丝路/异国女子造型提示词](images/5-fig-02-02-yiyu.jpg)
+![异域风｜六套丝路/异国女子造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-02-02-yiyu.jpg)
 
-![妖族风｜六套妖族/灵族女子造型提示词](images/5-fig-03-03-yaozu.jpg)
+![妖族风｜六套妖族/灵族女子造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-03-03-yaozu.jpg)
 
-![江湖风｜六套武侠江湖女子造型提示词](images/5-fig-04-04-jianghu.jpg)
+![江湖风｜六套武侠江湖女子造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-04-04-jianghu.jpg)
 
-![宫廷风｜六套宫廷女子造型提示词](images/5-fig-05-05-gongting.jpg)
+![宫廷风｜六套宫廷女子造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-05-05-gongting.jpg)
 
-![敦煌风｜六套壁画/丝路神女造型提示词](images/5-fig-06-06-dunhuang.jpg)
+![敦煌风｜六套壁画/丝路神女造型提示词](https://img.threetwoa.live/posts/ai-visual-creation/5-fig-06-06-dunhuang.jpg)
 
 ---
 
@@ -766,7 +766,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 把观众的注意力慢慢推向重点。核心：**控制距离，放大情绪，聚焦重点。**
 
-![推镜头：七种提示词思路](images/6-fig-01-01-push.jpg)
+![推镜头：七种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-01-01-push.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -784,7 +784,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 把人物拉回环境，让情绪和空间一起出现。
 
-![拉镜头：六种提示词思路](images/6-fig-02-02-pull.jpg)
+![拉镜头：六种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-02-02-pull.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -806,7 +806,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 摇镜头的核心是「流动」——让观众像被带着看，情绪也随之起伏。
 
-![摇镜头：六种提示词思路](images/6-fig-03-03-pan.jpg)
+![摇镜头：六种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-03-03-pan.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -823,7 +823,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 让镜头在空间中移动，画面会更有现场感。
 
-![移镜头：六种提示词思路](images/6-fig-04-04-truck.jpg)
+![移镜头：六种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-04-04-truck.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -840,7 +840,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 让观众紧跟角色，代入行动和情绪变化。
 
-![跟镜头：七种提示词思路](images/6-fig-05-05-follow.jpg)
+![跟镜头：七种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-05-05-follow.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -858,7 +858,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 用更强烈的镜头语言制造记忆点和戏剧性。特殊运镜是情绪的放大器——用得好，故事会立刻记住你；天天上，观众只会觉得你在炫技。
 
-![特殊运镜：七种提示词思路](images/6-fig-06-06-special.jpg)
+![特殊运镜：七种提示词思路](https://img.threetwoa.live/posts/ai-visual-creation/6-fig-06-06-special.jpg)
 
 | # | 名称 | 提示词思路（图面原文） |
 |---|---|---|
@@ -911,7 +911,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 群像封面
 
-![西游人物谱｜黑金浮雕群像封面](images/7-fig-01-00.jpg)
+![西游人物谱｜黑金浮雕群像封面](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-01-00.jpg)
 
 图面大题：**西游人物谱**。同框可见如来、唐僧、悟空、白龙马、观音、玉帝、太上老君、二郎神、哪吒、菩提、牛魔王、沙悟净、铁扇、八戒、红孩儿、六耳、白骨精等标签——**17** 人，无女儿国王。
 
@@ -919,7 +919,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 大唐高僧 唐三藏
 
-![大唐高僧唐三藏｜六节点环形叙事](images/7-fig-03-02.jpg)
+![大唐高僧唐三藏｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-03-02.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -934,7 +934,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 齐天大圣 孙悟空
 
-![齐天大圣孙悟空｜六节点环形叙事](images/7-fig-02-01.jpg)
+![齐天大圣孙悟空｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-02-01.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -949,7 +949,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 天蓬元帅 猪八戒
 
-![天蓬元帅猪八戒｜六节点环形叙事](images/7-fig-04-03.jpg)
+![天蓬元帅猪八戒｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-04-03.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -964,7 +964,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 卷帘大将 沙悟净
 
-![卷帘大将沙悟净｜六节点环形叙事](images/7-fig-05-04.jpg)
+![卷帘大将沙悟净｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-05-04.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -979,7 +979,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 西海龙子 白龙马
 
-![西海龙子白龙马｜六节点环形叙事](images/7-fig-06-05.jpg)
+![西海龙子白龙马｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-06-05.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -994,7 +994,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 大慈大悲 观音菩萨
 
-![大慈大悲观音菩萨｜六节点环形叙事](images/7-fig-07-06.jpg)
+![大慈大悲观音菩萨｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-07-06.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1009,7 +1009,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 灵山世尊 如来佛祖
 
-![灵山世尊如来佛祖｜六节点环形叙事](images/7-fig-08-07.jpg)
+![灵山世尊如来佛祖｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-08-07.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1024,7 +1024,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 三界至尊 玉皇大帝
 
-![三界至尊玉皇大帝｜六节点环形叙事](images/7-fig-09-08.jpg)
+![三界至尊玉皇大帝｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-09-08.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1039,7 +1039,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 三清道祖 太上老君
 
-![三清道祖太上老君｜六节点环形叙事](images/7-fig-10-09.jpg)
+![三清道祖太上老君｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-10-09.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1054,7 +1054,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 方寸山祖师 菩提祖师
 
-![方寸山祖师菩提祖师｜六节点环形叙事](images/7-fig-11-10.jpg)
+![方寸山祖师菩提祖师｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-11-10.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1069,7 +1069,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 灌江显圣 二郎神
 
-![灌江显圣二郎神｜六节点环形叙事](images/7-fig-12-11.jpg)
+![灌江显圣二郎神｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-12-11.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1084,7 +1084,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 中坛元帅 哪吒三太子
 
-![中坛元帅哪吒三太子｜六节点环形叙事](images/7-fig-13-12.jpg)
+![中坛元帅哪吒三太子｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-13-12.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1099,7 +1099,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 平天大圣 牛魔王
 
-![平天大圣牛魔王｜六节点环形叙事](images/7-fig-14-13.jpg)
+![平天大圣牛魔王｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-14-13.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1114,7 +1114,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 罗刹仙 铁扇公主
 
-![罗刹仙铁扇公主｜六节点环形叙事](images/7-fig-15-14.jpg)
+![罗刹仙铁扇公主｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-15-14.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1129,7 +1129,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 圣婴大王 红孩儿
 
-![圣婴大王红孩儿｜六节点环形叙事](images/7-fig-16-15.jpg)
+![圣婴大王红孩儿｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-16-15.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1144,7 +1144,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 白虎岭尸魔 白骨精
 
-![白虎岭尸魔白骨精｜六节点环形叙事](images/7-fig-17-16.jpg)
+![白虎岭尸魔白骨精｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-17-16.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1159,7 +1159,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 真假猴王 六耳猕猴
 
-![真假猴王六耳猕猴｜六节点环形叙事](images/7-fig-18-17.jpg)
+![真假猴王六耳猕猴｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-18-17.jpg)
 
 | # | 节点 | 标签 | 地点 | 主句 | 副句 |
 |---|---|---|---|---|---|
@@ -1174,7 +1174,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 ## 西梁国主 女儿国王
 
-![西梁国主女儿国王｜六节点环形叙事](images/7-fig-19-18.jpg)
+![西梁国主女儿国王｜六节点环形叙事](https://img.threetwoa.live/posts/ai-visual-creation/7-fig-19-18.jpg)
 
 文称 17 人名单里**没有**她；附件单独给了六节点页，叙事落在唐僧的「情关」。
 
@@ -1200,7 +1200,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 下面按图鉴拆九种版式思路。首图是九宫格总览；后文一张一张对着单海报看。图上可见的展名 / 机构名照录，未见署名的不硬补作者。
 
-![九种展览海报版式｜九宫格总览](images/8-fig-01-00.jpg)
+![九种展览海报版式｜九宫格总览](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-01-00.jpg)
 
 九格并排放，差异一眼就出来：有的靠赛博标注拆主体，有的靠书法叠层，有的干脆把场地画成地图。招数不同，但每张都在回答同一件事——**这张脸，配不配得上这场展**。
 
@@ -1212,7 +1212,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 适合数字艺术、科技向个展：信息密度高，但不靠堆特效，靠**解构标注**把「未来感」落到版式上。
 
-![光影数字艺术展｜赛博拼贴解构](images/8-fig-02-01.jpg)
+![光影数字艺术展｜赛博拼贴解构](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-02-01.jpg)
 
 ---
 
@@ -1222,7 +1222,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 毕业展常见两难：要学院信息完整，又要有作品气质。书法叠层把「写」本身做成展品语言，信息栏退到上下边缘，不抢笔势。
 
-![万木正春｜书法叠层](images/8-fig-03-02.jpg)
+![万木正春｜书法叠层](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-03-02.jpg)
 
 ---
 
@@ -1232,7 +1232,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 户外艺术节、市集、驻地项目吃这套：海报同时是**导览缩略图**，读者扫一眼就知道「去了能玩什么」。
 
-![山谷 art 艺术节｜扁平手绘地图](images/8-fig-04-03--art.jpg)
+![山谷 art 艺术节｜扁平手绘地图](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-04-03--art.jpg)
 
 ---
 
@@ -1242,7 +1242,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 当代绘画个展常用这招：**让画面材质当版式底**，字只做层叠阅读路径，少画框感、多作品感。
 
-![如来如去｜肌理油画底 + 竖向错落](images/8-fig-05-04.jpg)
+![如来如去｜肌理油画底 + 竖向错落](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-05-04.jpg)
 
 ---
 
@@ -1252,7 +1252,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 新中式活动海报的稳妥配方：传统窗棂当取景器，插画保持扁平，信息用气泡/色带点缀——文化符号在，但不堕成仿古描红。
 
-![东方美学｜国风扁平 + 八角窗](images/8-fig-06-05.jpg)
+![东方美学｜国风扁平 + 八角窗](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-06-05.jpg)
 
 ---
 
@@ -1262,7 +1262,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 最「博物馆官网」的一种：信息区干净、作品区完整。适合作品本身够强、不必再用花活抢戏的当代展。
 
-![无象之境｜图文上下分割](images/8-fig-07-06.jpg)
+![无象之境｜图文上下分割](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-07-06.jpg)
 
 ---
 
@@ -1272,7 +1272,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 文物展、书画文献展的经典站位：竖排扛文化重量，横窗当「展柜切片」，现代信息落在底栏，古今分层清楚。
 
-![古代美术文物展｜传统东方竖排](images/8-fig-08-07.jpg)
+![古代美术文物展｜传统东方竖排](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-08-07.jpg)
 
 ---
 
@@ -1282,7 +1282,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 严格黑白 + 横向材质节奏，气质接近网格系统那一路——偏理性、偏「国际印刷品」。和瑞士国际主义同场时可对照看，**主题仍是展览名片，不是网格教科书**，勿硬并。
 
-![黑白艺术展｜横向材质拼贴](images/8-fig-09-08.jpg)
+![黑白艺术展｜横向材质拼贴](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-09-08.jpg)
 
 ---
 
@@ -1292,7 +1292,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 设计类毕业联展常见选择：用字体构成宣告「我们在做设计」，比再贴一张作品拼贴更干净。
 
-![创意毕设展｜几何字体构成](images/8-fig-10-09.jpg)
+![创意毕设展｜几何字体构成](https://img.threetwoa.live/posts/ai-visual-creation/8-fig-10-09.jpg)
 
 ---
 
@@ -1313,7 +1313,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 下面按报题过一遍案例，再留六条共同手法与读者常吵的几句。
 
-![河南日报｜奔腾吧幸福河 · 黄河五周年特刊](images/9-fig-01-00.jpg)
+![河南日报｜奔腾吧幸福河 · 黄河五周年特刊](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-01-00.jpg)
 
 开篇这张不是拼贴导览，是河南日报《奔腾吧 幸福河》：卷轴铺底，黄河以金黄丝带从卷面蜿蜒而出，把九省地标串成叙事线——卷轴当「柔性容器」的典型。
 
@@ -1337,97 +1337,97 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 竖向长卷落下「此中有诗意」，城市诗签贴在卷缘，论坛报道与人物访谈绕卷排布——文化符号与正文真正咬合，不是贴一张 PNG。
 
-![河南日报｜2024 中华经典诗词论坛](images/9-fig-02-01.jpg)
+![河南日报｜2024 中华经典诗词论坛](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-02-01.jpg)
 
 ### 中国气象报 · 立春
 
 节气专版用卷轴托住「立春」意象，把气象新闻从冷数据拉回物候与时令。
 
-![中国气象报｜立春](images/9-fig-03-02.jpg)
+![中国气象报｜立春](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-03-02.jpg)
 
 ### 人民日报 · 开封菊花节
 
 斜置卷轴框住菊田人物大图，祥云与花瓣软化栏线；严肃报道里忽然有了节庆温度。
 
-![人民日报｜开封菊花文化节](images/9-fig-04-03.jpg)
+![人民日报｜开封菊花文化节](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-04-03.jpg)
 
 ### 四川日报 · 安逸四川夏旅
 
 夏旅主题用卷轴展「安逸」气质，文旅信息跟着卷势走，少了说明书感。
 
-![四川日报｜安逸四川夏旅](images/9-fig-05-04.jpg)
+![四川日报｜安逸四川夏旅](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-05-04.jpg)
 
 ### 大同日报 · 一万平方公里看中国
 
 大主题、大信息量时，卷轴负责收束视线，避免整版散成展板墙。
 
-![大同日报｜一万平方公里看中国](images/9-fig-06-05.jpg)
+![大同日报｜一万平方公里看中国](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-06-05.jpg)
 
 ### 烟台日报 · 万亿之城碳路先锋
 
 产业与「碳」叙事偏硬，卷轴把发展线画成可跟读的路径，而不是表格堆砌。
 
-![烟台日报｜万亿之城碳路先锋](images/9-fig-07-06.jpg)
+![烟台日报｜万亿之城碳路先锋](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-07-06.jpg)
 
 ### 四川日报 · 中国旅游日
 
 旅游日整版再度用卷：节日气氛 + 线路/活动信息，卷面当导览层。
 
-![四川日报｜中国旅游日](images/9-fig-08-07.jpg)
+![四川日报｜中国旅游日](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-08-07.jpg)
 
 ### 浙江日报 · 「十四五」四件大事
 
 省两会语境下，白色长卷在山水与城市场景间蜿蜒，四件大事写在卷上，成就块落在卷侧——史册感与蓝图感叠在一起。[^masthead-zj]
 
-![浙江日报｜十四五干好四件大事](images/9-fig-09-08.jpg)
+![浙江日报｜十四五干好四件大事](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-09-08.jpg)
 
 ### 新华日报 · 震泽
 
 地方专版用卷轴托「震泽」文脉与风貌，小切口也能做整版气势。
 
-![新华日报｜震泽](images/9-fig-10-09.jpg)
+![新华日报｜震泽](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-10-09.jpg)
 
 ### 深圳特区报 · 两会蓝图
 
 横展卷轴里画出城市场景，「蓝图已经绘就」直接落到器物上；两侧回顾 / 奋进数据夹着卷芯。[^masthead-sz]
 
-![深圳特区报｜两会蓝图](images/9-fig-11-10.jpg)
+![深圳特区报｜两会蓝图](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-11-10.jpg)
 
 ### 深圳特区报 · 中行「十四五 / 十五五」
 
 金融答卷本该很硬。上方长卷山水城景，下方三枚红色短卷分栏「识 / 智 / 力」，严肃选题被中式容器接住。
 
-![深圳特区报｜中国银行深圳分行十四五](images/9-fig-12-11.jpg)
+![深圳特区报｜中国银行深圳分行十四五](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-12-11.jpg)
 
 ### 钱江晚报 · 少年诗词大会
 
 少年与诗词，卷轴回到「文脉」本义：活动报道带着书卷气，而不是赛场海报腔。
 
-![钱江晚报｜少年诗词大会](images/9-fig-13-12.jpg)
+![钱江晚报｜少年诗词大会](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-13-12.jpg)
 
 ### 湖南日报 · 乡村振兴画卷
 
 「画卷」二字写进主题，卷轴几乎是标题的视觉同义词——符号与文案对齐时，读者零成本读懂隐喻。
 
-![湖南日报｜乡村振兴画卷](images/9-fig-14-13.jpg)
+![湖南日报｜乡村振兴画卷](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-14-13.jpg)
 
 ### 浙江日报 · 平阳
 
 县域专题用卷展地方肌理，信息密度高时仍靠卷势分主次。
 
-![浙江日报｜平阳](images/9-fig-15-14.jpg)
+![浙江日报｜平阳](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-15-14.jpg)
 
 ### 深圳特区报 · 阅读周刊民俗画卷
 
 阅读周刊把民俗收进画卷形态，纸媒版式同时适合拆条发新媒体。
 
-![深圳特区报｜阅读周刊民俗画卷](images/9-fig-16-15.jpg)
+![深圳特区报｜阅读周刊民俗画卷](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-16-15.jpg)
 
 ### 襄阳日报 · 「两资三能」
 
 工业与招商报道里，卷轴分别框住江城风景与工地实景——柔性容器把硬新闻和软视觉缝在同一页。
 
-![襄阳日报｜两资三能特别报道](images/9-fig-17-16.jpg)
+![襄阳日报｜两资三能特别报道](https://img.threetwoa.live/posts/ai-visual-creation/9-fig-17-16.jpg)
 
 ---
 
@@ -1484,7 +1484,7 @@ AI 出男主，最烦的不是「不够帅」，是**怎么生成都像同一个
 
 授权照片 / 主页截图 / 简介 → 极简手绘 IP 角色资产；再把长文、课程、观点或脚本拆成长文配图、知识卡、方法拆解图、手机海报或整页 PPT。
 
-![七步工作流](images/10-01-workflow.jpg)
+![七步工作流](https://img.threetwoa.live/posts/ai-visual-creation/10-01-workflow.jpg)
 
 ::github{repo="haloshin/ip-diagram-creator"}
 
@@ -1516,7 +1516,7 @@ npx skills add https://github.com/haloshin/ip-diagram-creator -g
 | 02 角色规范说明图 | 不能跑偏：禁区、道具、配色、纠偏依据 |
 | 03 动作/表情/小比例扩展 | 缩成米粒大也能认；复杂姿态与 Agent 协作区 |
 
-![角色资产产出示例](images/10-02-character-assets.jpg)
+![角色资产产出示例](https://img.threetwoa.live/posts/ai-visual-creation/10-02-character-assets.jpg)
 
 三张定下来，后面配图从资产里长，而不是每次重抽签。分水岭在这里：问「这张能不能用」还是「这张是不是我」。
 
@@ -1533,9 +1533,9 @@ npx skills add https://github.com/haloshin/ip-diagram-creator -g
 | 长文 shot list | 控配图节奏与视觉权重 |
 | PPT 演讲模式 | 先导演规划卡 → 样张 → 分批出页 → 整套 QA |
 
-![手绘密度阶梯到知识卡](images/10-03-diagram-modes.jpg)
+![手绘密度阶梯到知识卡](https://img.threetwoa.live/posts/ai-visual-creation/10-03-diagram-modes.jpg)
 
-![PPT 模式：封面到收尾的整套节奏](images/10-04-ppt-mode.jpg)
+![PPT 模式：封面到收尾的整套节奏](https://img.threetwoa.live/posts/ai-visual-creation/10-04-ppt-mode.jpg)
 
 PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间线、方法、收尾。流程是「先控节奏，再定风格，最后保一致」，不是每页硬套知识卡。
 
@@ -1597,43 +1597,43 @@ PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间
 
 印刷级静物，博物馆图录感；几乎任意博文的稳妥底盘。
 
-![编辑静物摄影样张](images/11-03-editorial.jpg)
+![编辑静物摄影样张](https://img.threetwoa.live/posts/ai-visual-creation/11-03-editorial.jpg)
 
 ### 09 35mm 胶片
 
 纪实亲密感与颗粒；适合随笔、旅行、情绪向与视频教程封面。
 
-![35mm 胶片样张](images/11-09-film.jpg)
+![35mm 胶片样张](https://img.threetwoa.live/posts/ai-visual-creation/11-09-film.jpg)
 
 ### 16 水粉插画
 
 杂志风手绘插画；适合教程、科普、产品介绍。
 
-![不透明水粉插画样张](images/11-16-gouache.jpg)
+![不透明水粉插画样张](https://img.threetwoa.live/posts/ai-visual-creation/11-16-gouache.jpg)
 
 ### 06 Risograph 孔版
 
 独立杂志油墨叠印质感；适合创作谈、科技人文。
 
-![Risograph 孔版样张](images/11-06-risograph.jpg)
+![Risograph 孔版样张](https://img.threetwoa.live/posts/ai-visual-creation/11-06-risograph.jpg)
 
 ### 10 剪纸拼贴
 
 手撕纸层与多物件拼合；适合综述、多概念杂谈。
 
-![剪纸拼贴样张](images/11-10-collage.jpg)
+![剪纸拼贴样张](https://img.threetwoa.live/posts/ai-visual-creation/11-10-collage.jpg)
 
 ### 05 包豪斯几何
 
 圆 / 矩 / 三角重构物件；适合系统设计与高度抽象贴题。
 
-![包豪斯几何样张](images/11-05-bauhaus.jpg)
+![包豪斯几何样张](https://img.threetwoa.live/posts/ai-visual-creation/11-05-bauhaus.jpg)
 
 ### 08 等轴微缩
 
 干净 isometric 微缩场景；适合流程、架构、工具链。
 
-![等轴微缩样张](images/11-08-isometric.jpg)
+![等轴微缩样张](https://img.threetwoa.live/posts/ai-visual-creation/11-08-isometric.jpg)
 
 ## 特定场景
 
@@ -1649,23 +1649,23 @@ PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间
 
 ### 01 像素风
 
-![像素风样张](images/11-01-pixel.jpg)
+![像素风样张](https://img.threetwoa.live/posts/ai-visual-creation/11-01-pixel.jpg)
 
 ### 02 我的世界 / 体素
 
-![体素样张](images/11-02-minecraft.jpg)
+![体素样张](https://img.threetwoa.live/posts/ai-visual-creation/11-02-minecraft.jpg)
 
 ### 13 Low-poly 3D
 
-![Low-poly 样张](images/11-13-lowpoly.jpg)
+![Low-poly 样张](https://img.threetwoa.live/posts/ai-visual-creation/11-13-lowpoly.jpg)
 
 ### 07 当代浮世绘
 
-![当代浮世绘样张](images/11-07-ukiyo-e.jpg)
+![当代浮世绘样张](https://img.threetwoa.live/posts/ai-visual-creation/11-07-ukiyo-e.jpg)
 
 ### 11 当代水墨
 
-![当代水墨样张](images/11-11-ink-wash.jpg)
+![当代水墨样张](https://img.threetwoa.live/posts/ai-visual-creation/11-11-ink-wash.jpg)
 
 ## 怎么分流
 
@@ -1690,13 +1690,13 @@ PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间
 
 国际主义风格（International Typographic Style），也就是常说的瑞士风格。网格、无衬线、形式服从功能、黑白灰加几何色块——这套语言一旦上手，信息会排得极清楚；代价是谁都会用，海报看起来也容易撞车。
 
-![081 国际主义风格｜系列封面](images/12-fig-01-01-cover---081.jpg)
+![081 国际主义风格｜系列封面](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-01-01-cover---081.jpg)
 
 封面直接戏仿了瑞士杂志 *werk* 1960 年 10 月刊的版式语言：红底、建筑网格照片、大号无衬线刊名。系列期号钉在 **vol.081**。
 
 网格不是装饰线。Josef Müller-Brockmann 那句被反复引用的话——*same size margins never make an interesting page*——说的是：等宽页边不等于好版面，真正有趣的页来自严格又敢用的网格。
 
-![网格示意｜same size margins never make an interesting page](images/12-fig-02-02-grid-same-size-margins.jpg)
+![网格示意｜same size margins never make an interesting page](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-02-02-grid-same-size-margins.jpg)
 
 ---
 
@@ -1704,13 +1704,13 @@ PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间
 
 把画面切成可计算的栏与行，字、图、色块都贴着轴线落位。信息不靠「感觉摆」，靠对齐关系自己长出秩序。
 
-![五栏网格｜Stockholm School of Entrepreneurship](images/12-fig-03-03-sses-five-columns.jpg)
+![五栏网格｜Stockholm School of Entrepreneurship](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-03-03-sses-five-columns.jpg)
 
-![苏黎世歌剧院开季海报｜Opernhaus Zürich 1965/66](images/12-fig-05-05-opernhaus-zurich-1965.jpg)
+![苏黎世歌剧院开季海报｜Opernhaus Zürich 1965/66](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-05-05-opernhaus-zurich-1965.jpg)
 
-![NYA SLAKTHUSOMRÅDET｜2022 纯文字网格海报](images/12-fig-13-13-nya-slakthusomradet-2022.jpg)
+![NYA SLAKTHUSOMRÅDET｜2022 纯文字网格海报](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-13-13-nya-slakthusomradet-2022.jpg)
 
-![BERLIN｜Gewerbemuseum Basel 1963](images/12-fig-14-14-berlin-gewerbemuseum-basel-1963.jpg)
+![BERLIN｜Gewerbemuseum Basel 1963](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-14-14-berlin-gewerbemuseum-basel-1963.jpg)
 
 ---
 
@@ -1718,15 +1718,15 @@ PPT 常见页型：封面、大纲/大判断、模块、标准、场景、时间
 
 Akzidenz-Grotesk、Helvetica、Univers 这一路：笔画均匀、字腔开放、少装饰。字本身尽量不抢戏，让层级靠字号、字重、位置说话。
 
-![CINE FRAMED｜无衬线大标题压灰阶底](images/12-fig-07-07-cine-framed.jpg)
+![CINE FRAMED｜无衬线大标题压灰阶底](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-07-07-cine-framed.jpg)
 
-![TEXTBAU / S AM № 13｜黑底白字双语块](images/12-fig-08-08-textbau-sam-no13.jpg)
+![TEXTBAU / S AM № 13｜黑底白字双语块](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-08-08-textbau-sam-no13.jpg)
 
-![m. i.a.｜Melody Dance Center 1986](images/12-fig-12-12-mia-melody-dance-1986.jpg)
+![m. i.a.｜Melody Dance Center 1986](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-12-12-mia-melody-dance-1986.jpg)
 
-![The School of Life｜2015 活动日程海报](images/12-fig-24-24-the-school-of-life.jpg)
+![The School of Life｜2015 活动日程海报](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-24-24-the-school-of-life.jpg)
 
-![de dood is blind / gilgamesj｜2005](images/12-fig-25-25-de-dood-is-blind-gilgamesj.jpg)
+![de dood is blind / gilgamesj｜2005](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-25-25-de-dood-is-blind-gilgamesj.jpg)
 
 ---
 
@@ -1734,11 +1734,11 @@ Akzidenz-Grotesk、Helvetica、Univers 这一路：笔画均匀、字腔开放�
 
 能删的装饰先删。版面存在的理由是把事说清楚：日期、人名、价格、换算表——功能在前，样子跟在后面。
 
-![Metric Conversion Poster｜信息即图形](images/12-fig-06-06-metric-conversion-poster.jpg)
+![Metric Conversion Poster｜信息即图形](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-06-06-metric-conversion-poster.jpg)
 
-![032c 1st issue｜Berlin Winter 2000/2001](images/12-fig-16-16-032c-1st-issue.jpg)
+![032c 1st issue｜Berlin Winter 2000/2001](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-16-16-032c-1st-issue.jpg)
 
-![LA FRANCE UNIE EST EN MARCHE｜Mitterrand 1988](images/12-fig-04-04-mitterrand-la-france-unie-1988.jpg)
+![LA FRANCE UNIE EST EN MARCHE｜Mitterrand 1988](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-04-04-mitterrand-la-france-unie-1988.jpg)
 
 ---
 
@@ -1746,15 +1746,15 @@ Akzidenz-Grotesk、Helvetica、Univers 这一路：笔画均匀、字腔开放�
 
 照片倾向客观、少修饰；层级靠大小、黑白、疏密、对齐，而不是花边和渐变。字和图被当成同一套几何零件来拼。
 
-![Museum Kranenburgh · Jaap Mooy｜2018](images/12-fig-09-09-museum-kranenburgh-jaap-mooy.jpg)
+![Museum Kranenburgh · Jaap Mooy｜2018](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-09-09-museum-kranenburgh-jaap-mooy.jpg)
 
-![Cosmin Bumbut / Laura Armeanu｜Bucharest](images/12-fig-10-10-bumbut-armanu-bucharest.jpg)
+![Cosmin Bumbut / Laura Armeanu｜Bucharest](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-10-10-bumbut-armanu-bucharest.jpg)
 
-![Galeria Azur Berlin · SESSION 05｜2024](images/12-fig-11-11-galeria-azur-berlin-session05.jpg)
+![Galeria Azur Berlin · SESSION 05｜2024](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-11-11-galeria-azur-berlin-session05.jpg)
 
-![SPEND THE NIGHT / Secondnature Showcase](images/12-fig-15-15-spend-the-night-secondnature.jpg)
+![SPEND THE NIGHT / Secondnature Showcase](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-15-15-spend-the-night-secondnature.jpg)
 
-![Giselle｜Armin Hofmann 1959](images/12-fig-27-27-giselle-armin-hofmann-1959.jpg)
+![Giselle｜Armin Hofmann 1959](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-27-27-giselle-armin-hofmann-1959.jpg)
 
 Hofmann 这张 *Giselle*：竖排大字 + 运动模糊的舞者照片，几乎把「客观摄影当色块」写进教科书。
 
@@ -1764,17 +1764,17 @@ Hofmann 这张 *Giselle*：竖排大字 + 运动模糊的舞者照片，几乎�
 
 博物馆征集、奥运会申办、杂志创刊号、剧场季、独立活动——同一套语法都能套。这是它厉害的地方，也是它闷的地方：人人网格 + Helvetica，辨识度会被冲淡。
 
-![Achiziții MNAC 2022](images/12-fig-17-17-mnac-achizitii-2022.jpg)
+![Achiziții MNAC 2022](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-17-17-mnac-achizitii-2022.jpg)
 
-![Tabya n1](images/12-fig-18-18-tabya-n1.jpg)
+![Tabya n1](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-18-18-tabya-n1.jpg)
 
-![MC Maria Canals 53](images/12-fig-19-19-mc-maria-canals-53.jpg)
+![MC Maria Canals 53](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-19-19-mc-maria-canals-53.jpg)
 
-![Denver 76｜冬奥申办海报](images/12-fig-20-20-denver-76-olympics.jpg)
+![Denver 76｜冬奥申办海报](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-20-20-denver-76-olympics.jpg)
 
-![Steal / steel](images/12-fig-21-21-steal-steel.jpg)
+![Steal / steel](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-21-21-steal-steel.jpg)
 
-![SIT BACK AND ENJOY THE CRISIS｜当代延用](images/12-fig-28-28-sit-back-and-enjoy-the-crisis.jpg)
+![SIT BACK AND ENJOY THE CRISIS｜当代延用](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-28-28-sit-back-and-enjoy-the-crisis.jpg)
 
 学这套时，先把「清楚」练稳；真要做出辨识度，得在网格内部找非常规切口（字阶跳跃、摄影裁切、单一强调色），而不是再堆装饰。
 
@@ -1789,10 +1789,10 @@ Hofmann 这张 *Giselle*：竖排大字 + 运动模糊的舞者照片，几乎�
 | 鼎盛 | 1960-70s | 机构、杂志、公共信息大规模采用；国际传播把「瑞士」做成通用语 |
 | 革新 | 1980s 起 | 后现代冲击对称与冷感，风格不再「唯一正解」；网格/层级原则却渗进日常 UI 与品牌系统 |
 
-![Neues Bauen 1928｜Kunstgewerbemuseum Zürich（萌芽侧样本）](images/12-fig-23-23-neues-bauen-1928.jpg)
+![Neues Bauen 1928｜Kunstgewerbemuseum Zürich（萌芽侧样本）](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-23-23-neues-bauen-1928.jpg)
 
-![Die Neue Grafik Design｜黄底运动谱系卡](images/12-fig-26-26-die-neue-grafik-design.jpg)
+![Die Neue Grafik Design｜黄底运动谱系卡](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-26-26-die-neue-grafik-design.jpg)
 
-![werk 10 · Oktober 1960｜鼎盛期杂志封面](images/12-fig-22-22-werk-10-oktober-1960.jpg)
+![werk 10 · Oktober 1960｜鼎盛期杂志封面](https://img.threetwoa.live/posts/ai-visual-creation/12-fig-22-22-werk-10-oktober-1960.jpg)
 
 黄底那张把 Bauhaus、Swiss Modernism、International Typographic Style、Constructivism 串在同一信息架构里——本身就是用瑞士语法讲瑞士史。

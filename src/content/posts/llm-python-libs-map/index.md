@@ -17,7 +17,7 @@ comment: true
 
 不必一次全啃。下面这张八分脑图把常见库按职能摊开——先认路，再按自己要走的路径挑子集。
 
-![AI大语言模型 Python库八区脑图](./images/fig-01-01-llm-python-libs-mindmap.jpg)
+![AI大语言模型 Python库八区脑图](https://img.threetwoa.live/posts/llm-python-libs-map/fig-01-01-llm-python-libs-mindmap.jpg)
 
 图心：**AI大语言模型 Python库**。页脚：「收藏关注 | AI大语言模型 Python库大全」。各库一句说明跟图面走。
 

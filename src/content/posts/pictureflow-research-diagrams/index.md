@@ -30,27 +30,27 @@ comment: true
 
 作者称下列为站内直出、无后期。电化学同一模板切换时，**电极名、外电路、离子方向、产物要一起变**，不能只改标题。
 
-![PEM 燃料电池](./images/01-pem-fuel-cell.jpg)
+![PEM 燃料电池](https://img.threetwoa.live/posts/pictureflow-research-diagrams/01-pem-fuel-cell.jpg)
 
-![碱性电解水](./images/02-alkaline-electrolysis.jpg)
+![碱性电解水](https://img.threetwoa.live/posts/pictureflow-research-diagrams/02-alkaline-electrolysis.jpg)
 
 反应路径更吃标注：ORR 共同路径再分 4e⁻（水）与 2e⁻（过氧化氢）。星号与上下标当受控字段，目标是按输入落图，不是模型自由润色——**仍须你校对**。
 
-![ORR 路径网络](./images/03-orr-pathway.jpg)
+![ORR 路径网络](https://img.threetwoa.live/posts/pictureflow-research-diagrams/03-orr-pathway.jpg)
 
 制备链要保序：混合 → 水热 → 离心洗涤 → 干燥 → 退火 → 产物。装置图标是阅读锚点，不是装饰。
 
-![花状 Co₃O₄ 制备](./images/04-co3o4-synthesis.jpg)
+![花状 Co₃O₄ 制备](https://img.threetwoa.live/posts/pictureflow-research-diagrams/04-co3o4-synthesis.jpg)
 
 TOC 一眼对照问题与改进（如多硫化物穿梭 vs 改性隔膜阻隔），不是把全文缩成海报。
 
-![隔膜 TOC 对照](./images/05-separator-toc.jpg)
+![隔膜 TOC 对照](https://img.threetwoa.live/posts/pictureflow-research-diagrams/05-separator-toc.jpg)
 
 生物医学模板仍标 beta：细胞结构、心脏剖面等可做教学/初稿；临床与病理结论别省复核。文内 EGFR-MAPK 通路样例本次未附。
 
-![动物细胞](./images/06-animal-cell.jpg)
+![动物细胞](https://img.threetwoa.live/posts/pictureflow-research-diagrams/06-animal-cell.jpg)
 
-![心脏剖面](./images/07-heart-anatomy.jpg)
+![心脏剖面](https://img.threetwoa.live/posts/pictureflow-research-diagrams/07-heart-anatomy.jpg)
 
 ## 三个入口怎么选
 

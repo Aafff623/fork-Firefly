@@ -26,7 +26,7 @@ comment: true
 
 这篇不拆 Matt 那四十个技能怎么转（那件事我写过：[40 个技能围着一个 grilling 转](/posts/matt-pocock-engineering-method/)）。这篇只回答三件事：根目录到底放什么、不同阶段养什么、Agent 怎么把这套 harness 读进上下文并干活。
 
-![AI Skills for Real Engineers 官方视觉](./images/agent-governance-harness-mental-model/fig-aihero-skills.jpg)
+![AI Skills for Real Engineers 官方视觉](https://img.threetwoa.live/posts/harness-memory-handbook/agent-governance-harness-mental-model/fig-aihero-skills.jpg)
 
 ### 先认清：IDE 建专属目录，不等于第二套技能源
 
@@ -54,7 +54,7 @@ Claude Code 不原生读它，读 `CLAUDE.md`。务实做法是：`AGENTS.md` �
 
 Matt 自己也提醒过：别把 `AGENTS.md` 养成泥球。每条指令都占「instruction budget」，路径级细节又最容易过期。短、可执行、偏能力描述，细节丢给 skills 渐进加载。
 
-![agents.md 开放标准](./images/agent-governance-harness-mental-model/fig-agents-md.jpg)
+![agents.md 开放标准](https://img.threetwoa.live/posts/harness-memory-handbook/agent-governance-harness-mental-model/fig-agents-md.jpg)
 
 #### Agent Skills：`SKILL.md` 文件夹协议
 
@@ -137,7 +137,7 @@ project/
 
 [mattpocock/skills](https://github.com/mattpocock/skills) 标语写得很直：Skills for Real Engineers，从他自己的 `.agents` 目录抽出来。调研日量级大约二十万星，release 已到 v1.2.x。主站目录在 [AIHero Skills](https://www.aihero.dev/skills)。
 
-![mattpocock/skills 仓库](./images/agent-governance-harness-mental-model/fig-matt-repo.jpg)
+![mattpocock/skills 仓库](https://img.threetwoa.live/posts/harness-memory-handbook/agent-governance-harness-mental-model/fig-matt-repo.jpg)
 
 它不是「全流程接管框架」。哲学是：小、可组合、模型无关，**人始终握着过程**。针对的是对齐失败、术语漂移、代码质量、架构泥球，而不是再发明一套必须服从的瀑布。
 
@@ -217,9 +217,9 @@ Harness 不是「装得越多越强」。是 Agent 每次醒来都能摸到同�
 
 ### 和 Superpowers、ECC 怎么处
 
-![obra/superpowers](./images/agent-governance-harness-mental-model/fig-superpowers.jpg)
+![obra/superpowers](https://img.threetwoa.live/posts/harness-memory-handbook/agent-governance-harness-mental-model/fig-superpowers.jpg)
 
-![Everything Claude Code / ECC](./images/agent-governance-harness-mental-model/fig-ecc.jpg)
+![Everything Claude Code / ECC](https://img.threetwoa.live/posts/harness-memory-handbook/agent-governance-harness-mental-model/fig-ecc.jpg)
 
 | 维度 | Matt Skills | Superpowers | ECC |
 |---|---|---|---|
@@ -566,7 +566,7 @@ Kiro（IDE / CLI）接 Claude 时，会注入自己的 System Prompt + Agent Har
 
 官网首页也把卖点钉在 Spec-driven、property-based tests、parallel agents，而不是「最原汁原味的 Claude」。
 
-![Kiro Spec：Requirements → Design → Tasks 任务树](./images/kiro-claude-harness-feel/fig-specs.jpg)
+![Kiro Spec：Requirements → Design → Tasks 任务树](https://img.threetwoa.live/posts/harness-memory-handbook/kiro-claude-harness-feel/fig-specs.jpg)
 
 ### 这层套子里到底塞了什么
 
@@ -582,7 +582,7 @@ Kiro（IDE / CLI）接 Claude 时，会注入自己的 System Prompt + Agent Har
 | default_to_action | 低风险直接动手 | 和「先计划再改」类自定义约束打架 |
 | 模型路由 | Auto / 各档 Claude / 开源模型 | UI 选了 A，实际路由/模板偶尔让人怀疑（社区有 cutoff 自报异常的 issue） |
 
-![模型选择器：同一壳子可挂多款模型](./images/kiro-claude-harness-feel/fig-models.jpg)
+![模型选择器：同一壳子可挂多款模型](https://img.threetwoa.live/posts/harness-memory-handbook/kiro-claude-harness-feel/fig-models.jpg)
 
 ### 算不算「篡改 / 削弱」？
 

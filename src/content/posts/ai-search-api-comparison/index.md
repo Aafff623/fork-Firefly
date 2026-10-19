@@ -17,7 +17,7 @@ comment: true
 
 给本地 Agent 配联网搜索，绕不开这五家：**Bocha（博查）、Brave、Tavily、Exa、阿里云 IQS**。市面上的对比表方向没错，但价格和档位普遍过时，照着抄容易踩坑。这篇按官方资料重新核实了一遍，又拿真实 key 对能接的四家跑了同一查询的实测，结论放最前面。
 
-![五家搜索工具 logo（Bocha / Brave / Tavily / Exa / 阿里云IQS）](images/logos-strip.png)
+![五家搜索工具 logo（Bocha / Brave / Tavily / Exa / 阿里云IQS）](https://img.threetwoa.live/posts/ai-search-api-comparison/logos-strip.png)
 
 ## 五家定位
 

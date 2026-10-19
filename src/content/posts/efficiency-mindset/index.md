@@ -25,7 +25,7 @@ comment: true
 
 旁链提醒：同日队列里还有「人效差，答案多半不在人身上」——相关，但**不硬并**。那边讲人效公式怎么拆（个人 / 流程 / 组织 / 经营）；这边讲**降本增效路径从砍成本一路爬到重构生意**。
 
-![01｜降本增效四段位阶梯：暴力→管控→流程→经营；低段位省钱→高段位赚钱](images/1-fig-01-01-four-tiers-staircase.jpg)
+![01｜降本增效四段位阶梯：暴力→管控→流程→经营；低段位省钱→高段位赚钱](https://img.threetwoa.live/posts/efficiency-mindset/1-fig-01-01-four-tiers-staircase.jpg)
 
 ---
 
@@ -48,7 +48,7 @@ comment: true
 
 哪里花钱多，就砍哪里。
 
-![02｜暴力型降本：裁员降薪 / 砍预算福利 / 压供应商](images/1-fig-02-02-tier1-violent-cost-cut.jpg)
+![02｜暴力型降本：裁员降薪 / 砍预算福利 / 压供应商](https://img.threetwoa.live/posts/efficiency-mindset/1-fig-02-02-tier1-violent-cost-cut.jpg)
 
 | # | 方法 | 干什么 | 难度 | 见效 | 副作用 / 条件 |
 |---|---|---|---|---|---|
@@ -66,7 +66,7 @@ comment: true
 
 少花冤枉钱，把漏出去的钱堵回来。
 
-![03｜管控型降本：集中采购 / 库存 SKU / 外包账期](images/1-fig-03-03-tier2-control-cost-cut.jpg)
+![03｜管控型降本：集中采购 / 库存 SKU / 外包账期](https://img.threetwoa.live/posts/efficiency-mindset/1-fig-03-03-tier2-control-cost-cut.jpg)
 
 | # | 方法 | 干什么 | 难度 | 见效 | 副作用 |
 |---|---|---|---|---|---|
@@ -84,7 +84,7 @@ comment: true
 
 不是让人更辛苦，而是把做事方式理顺。
 
-![04｜流程型提效：标准化 / 精益化 / 自动化数据化](images/1-fig-04-04-tier3-process-efficiency.jpg)
+![04｜流程型提效：标准化 / 精益化 / 自动化数据化](https://img.threetwoa.live/posts/efficiency-mindset/1-fig-04-04-tier3-process-efficiency.jpg)
 
 | # | 方法 | 干什么 | 难度 | 见效 | 价值属性 |
 |---|---|---|---|---|---|
@@ -102,7 +102,7 @@ comment: true
 
 不是省钱，而是换一种活法赚钱。
 
-![05｜经营型增效：产品工艺 / 收入结构 / 商业模式](images/1-fig-05-05-tier4-business-efficiency.jpg)
+![05｜经营型增效：产品工艺 / 收入结构 / 商业模式](https://img.threetwoa.live/posts/efficiency-mindset/1-fig-05-05-tier4-business-efficiency.jpg)
 
 | # | 方法 | 干什么 | 难度 | 见效 | 价值 |
 |---|---|---|---|---|---|
@@ -163,7 +163,7 @@ comment: true
 
 旁链提醒：同日队列里还有「缺人才还是缺阵型」「AI 员工五件脏活」「AI 落地七层」「局部最优与全局观」，以及「很多公司只会砍成本，高手从省钱走到赚钱」——相关，但**不硬并**。阵型 / AI 落地 / 认知全局那边各管各的；降本增效那篇讲**暴力→管控→流程→经营**路径段位；这边讲**人效公式怎么拆、四层怎么对症**。
 
-![01｜提人效要看四层：个人→流程→组织→经营，越往上越根本](images/2-fig-01-01-four-layers-staircase.jpg)
+![01｜提人效要看四层：个人→流程→组织→经营，越往上越根本](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-01-01-four-layers-staircase.jpg)
 
 ---
 
@@ -180,7 +180,7 @@ comment: true
 
 裁人加班主要动分母；若分子本身是低毛利、碎片化业务，分母再压也抬不起真正的人效。
 
-![02｜提升效率的四个段位：各层解什么题、对分子分母怎么动](images/2-fig-02-02-four-levels-numerator-denominator.jpg)
+![02｜提升效率的四个段位：各层解什么题、对分子分母怎么动](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-02-02-four-levels-numerator-denominator.jpg)
 
 ### 四段位总表
 
@@ -199,7 +199,7 @@ comment: true
 
 定义：升级一个人的能力、工具、方法——同样时间做更多，或同样工作更短时间做完。
 
-![03｜个人提效：补能力、用模板、借工具；经营分析师案例](images/2-fig-03-03-individual-efficiency.jpg)
+![03｜个人提效：补能力、用模板、借工具；经营分析师案例](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-03-03-individual-efficiency.jpg)
 
 ### 三种方法
 
@@ -225,7 +225,7 @@ comment: true
 
 定义：把一件事从发起到完成的路径理清；少等人、少重复、少返工、少交接、少审批——业务产出上去，人力消耗下来。
 
-![04｜流程提效：删并并行；报价从 5 天串行到 1 天并行](images/2-fig-04-04-process-efficiency.jpg)
+![04｜流程提效：删并并行；报价从 5 天串行到 1 天并行](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-04-04-process-efficiency.jpg)
 
 ### 三种方法
 
@@ -255,7 +255,7 @@ comment: true
 
 定义：调职责、层级、协作关系、资源配置——对的人做对的事，少管理摩擦、少重复岗位；权责清、决策快、产出增。
 
-![05｜组织提效：划职责、减层级、配岗位；运营总部/区域/城市三级](images/2-fig-05-05-org-efficiency.jpg)
+![05｜组织提效：划职责、减层级、配岗位；运营总部/区域/城市三级](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-05-05-org-efficiency.jpg)
 
 ### 三种方法
 
@@ -282,7 +282,7 @@ comment: true
 
 定义：选更好的客户、产品、渠道、生意模式——同样的人，做更值钱的事。
 
-![06｜经营提效：优化结构、调模式、聚焦资源；软件定制转产品](images/2-fig-06-06-business-efficiency.jpg)
+![06｜经营提效：优化结构、调模式、聚焦资源；软件定制转产品](https://img.threetwoa.live/posts/efficiency-mindset/2-fig-06-06-business-efficiency.jpg)
 
 ### 为什么这一层往往最关键
 
@@ -359,7 +359,7 @@ comment: true
 
 旁链提醒：同日队列里还有「人效差，答案多半不在人身上」「很多公司只会砍成本，高手从省钱走到赚钱」——相关，但**不硬并**。人效篇拆分子分母与四层对症；降本篇讲暴力→管控→流程→经营路径；这边讲**领导角色怎么转身**（Gemba / 教练 / A3 / Kotter）。
 
-![01｜精益领导力转型：传统管理者 vs 精益领导者；认知→行为→文化](images/3-fig-01-01-lean-leadership-transform.jpg)
+![01｜精益领导力转型：传统管理者 vs 精益领导者；认知→行为→文化](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-01-01-lean-leadership-transform.jpg)
 
 ---
 
@@ -413,7 +413,7 @@ comment: true
 
 ## 02 现场走动管理 Gemba Walk
 
-![02｜Gemba Walk：三原则 + 五步法；答案/改善/成长都在现场](images/3-fig-02-02-gemba-walk.jpg)
+![02｜Gemba Walk：三原则 + 五步法；答案/改善/成长都在现场](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-02-02-gemba-walk.jpg)
 
 精益领导者的核心实践之一，就是 Gemba Walk——现场走动管理。Gemba 是日语「现场」的意思，指真实发生工作的地方。
 
@@ -471,7 +471,7 @@ comment: true
 
 ## 03 教练式领导
 
-![03｜教练式领导：核心理念、提问技巧、GROW、关键行为](images/3-fig-03-03-coaching-leadership.jpg)
+![03｜教练式领导：核心理念、提问技巧、GROW、关键行为](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-03-03-coaching-leadership.jpg)
 
 精益领导者的核心技能之一，是教练式领导。不是告诉员工怎么做，而是引导员工自己找到方法。
 
@@ -531,7 +531,7 @@ comment: true
 
 ## 04 问题解决引导
 
-![04｜问题解决引导：角色不是/而是；A3 六阶段引导提问](images/3-fig-04-04-problem-solving-facilitation.jpg)
+![04｜问题解决引导：角色不是/而是；A3 六阶段引导提问](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-04-04-problem-solving-facilitation.jpg)
 
 精益领导者在问题解决中，不是「解题者」，是「引导者」。
 
@@ -590,7 +590,7 @@ A3 报告是丰田发明的问题解决方法，因为报告写在 A3 纸上而�
 
 ## 05 团队赋能与激励
 
-![05｜团队赋能与激励：四维度 + 内/外激励 + 心理安全/全员参与](images/3-fig-05-05-team-empowerment.jpg)
+![05｜团队赋能与激励：四维度 + 内/外激励 + 心理安全/全员参与](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-05-05-team-empowerment.jpg)
 
 精益领导力的核心目标，是赋能团队。团队有能力、有动力、有环境，精益才能持续。
 
@@ -666,7 +666,7 @@ A3 报告是丰田发明的问题解决方法，因为报告写在 A3 纸上而�
 
 ## 06 变革领导力
 
-![06｜变革领导力：五类阻力 + Kotter 八步 + 关键行为](images/3-fig-06-06-change-leadership.jpg)
+![06｜变革领导力：五类阻力 + Kotter 八步 + 关键行为](https://img.threetwoa.live/posts/efficiency-mindset/3-fig-06-06-change-leadership.jpg)
 
 精益推行，本质上是一场变革。变革需要领导力，而且是特殊的领导力——变革领导力。
 
@@ -783,7 +783,7 @@ A3 报告是丰田发明的问题解决方法，因为报告写在 A3 纸上而�
 
 公众号扔来一版安永 *Megatrends 2026* 导读。我没把整本 PDF 搬进来——本地也没收齐原文图——只把能带走的骨架压在这里。官方页核对日：2026-08-11 → [ey.com/en_gl/megatrends](https://www.ey.com/en_gl/megatrends)。
 
-![Foreword · NAVI](images/5-fig-01-foreword-navi.jpg)
+![Foreword · NAVI](https://img.threetwoa.live/posts/efficiency-mindset/5-fig-01-foreword-navi.jpg)
 
 ## 线性预测，先退休
 
@@ -796,7 +796,7 @@ NAVI = **N**onlinear · **A**ccelerated · **V**olatile · **I**nterconnected。
 
 四根力（技术 / 人口 / 可持续 / 地缘）搅在 NAVI 环境里，长出八条 megatrend；两端是两条主轴——**超流体企业** 和 **资本主义再平衡**。
 
-![EY Futures Reimagined framework](images/5-fig-02-futures-reimagined-framework.jpg)
+![EY Futures Reimagined framework](https://img.threetwoa.live/posts/efficiency-mindset/5-fig-02-futures-reimagined-framework.jpg)
 
 | # | Megatrend | 人话 |
 |---|---|---|
@@ -818,7 +818,7 @@ NAVI = **N**onlinear · **A**ccelerated · **V**olatile · **I**nterconnected。
 
 ## 人机杂交：尺子也得换
 
-![Preparing for human-machine hybrid era](images/5-fig-03-human-machine-hybrid.jpg)
+![Preparing for human-machine hybrid era](https://img.threetwoa.live/posts/efficiency-mindset/5-fig-03-human-machine-hybrid.jpg)
 
 不是多买几个 Copilot 席位就完事。报告把「超流体」当成基础设施，上面才谈人机杂交和生产力重置——质量、原创、判断力权重上升，纯吞吐指标会骗人。治理跟不上时，杂交只会放大事故面。
 
@@ -852,7 +852,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 1. 新生报到的完整流程
 
-![01-新生报到流程](images/6-01.webp)
+![01-新生报到流程](https://img.threetwoa.live/posts/efficiency-mindset/6-01.webp)
 
 准大一新生马上开学，第一次上大学，既紧张又兴奋，不知道报到流程是什么、该做什么、不该做什么。到学校后的第一件事就是**报到**。通常校门两侧会设有各学院的帐篷，先找到自己学院的报到处，依次完成以下事项：
 
@@ -901,7 +901,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 2. 大学第一台电脑怎么选
 
-![05-大学第一台电脑怎么选](images/6-05.webp)
+![05-大学第一台电脑怎么选](https://img.threetwoa.live/posts/efficiency-mindset/6-05.webp)
 
 轻薄本、游戏本、全能本让人看得眼花缭乱，选电脑时应先判断自己的真实需求。
 
@@ -937,7 +937,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 3. 新生军训需要注意什么
 
-![06-新生军训注意事项](images/6-06.webp)
+![06-新生军训注意事项](https://img.threetwoa.live/posts/efficiency-mindset/6-06.webp)
 
 军训并不只是晒太阳、走方阵。有人站半小时军姿就晕倒，有人脚上磨满水泡，连路都走不了，还有人直接晒到脱皮。军训时方法用对，确实能少受一半罪。
 
@@ -961,7 +961,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 4. 大学班干部应该怎么选
 
-![07-大学班干部选择指南](images/6-07.webp)
+![07-大学班干部选择指南](https://img.threetwoa.live/posts/efficiency-mindset/6-07.webp)
 
 大学班干部选对了，对评优评先、入党、考研、考公等都有帮助；选错了，可能会变成四年的免费劳动力，还容易得罪人。
 
@@ -1087,7 +1087,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 7. 大学生每个月需要多少生活费
 
-![08-大学生每月生活费预算](images/6-08.webp)
+![08-大学生每月生活费预算](https://img.threetwoa.live/posts/efficiency-mindset/6-08.webp)
 
 以一日三餐都在学校吃为例：早餐一个包子加一盒牛奶，大约5元；午餐两荤一素或加一份汤，按15元计算；晚餐也按15元计算。三餐一天至少35元，一个月就是1050元。
 
@@ -1220,7 +1220,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 12. 如何处理宿舍关系
 
-![02-宿舍关系相处原则](images/6-02.webp)
+![02-宿舍关系相处原则](https://img.threetwoa.live/posts/efficiency-mindset/6-02.webp)
 
 大学四年过得好不好，很大程度上取决于宿舍关系。和观点、习惯、背景都不同的人相处四年，发生冲突很正常，聊不到一起才是常态。
 
@@ -1257,7 +1257,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 13. 实习期、试用期和试岗期的区别
 
-![04-实习期试用期试岗期对比](images/6-04.webp)
+![04-实习期试用期试岗期对比](https://img.threetwoa.live/posts/efficiency-mindset/6-04.webp)
 
 ### 实习期
 
@@ -1334,7 +1334,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 16. 医保到底怎么使用
 
-![03-医保三大目录](images/6-03.webp)
+![03-医保三大目录](https://img.threetwoa.live/posts/efficiency-mindset/6-03.webp)
 
 医保主要包括**职工基本医疗保险**和**城乡居民基本医疗保险**。
 
@@ -1369,7 +1369,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 17. 五险一金分别有什么用
 
-![09-五险一金图解](images/6-09.webp)
+![09-五险一金图解](https://img.threetwoa.live/posts/efficiency-mindset/6-09.webp)
 
 “五险”通常包括：
 
@@ -1413,7 +1413,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 18. 应届生如何准备秋招
 
-![10-应届生秋招时间线](images/6-10.webp)
+![10-应届生秋招时间线](https://img.threetwoa.live/posts/efficiency-mindset/6-10.webp)
 
 秋招不是学校随便划一块场地、邀请企业摆桌子收简历。真正的秋招，是企业专门面向应届生开放的线上招聘渠道，岗位会发布在官网、公众号和各类招聘平台上，需要学生主动投递。
 
@@ -1592,9 +1592,9 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 政策那半边看着挺真。段子那半边太像黑心 HR 的做梦文学。我把几条官方口径对了一遍，结论很干脆：**补贴是真的，力度也不小；「几乎免费、用完换一批」属于明显夸张。**
 
-![政策摘要截图：现金补贴、社保减负、税收与贷款](images/7-fig-policy-summary.jpg)
+![政策摘要截图：现金补贴、社保减负、税收与贷款](https://img.threetwoa.live/posts/efficiency-mindset/7-fig-policy-summary.jpg)
 
-![表情包段子：三千加补贴等于免费、用完换一批](images/7-fig-meme.jpg)
+![表情包段子：三千加补贴等于免费、用完换一批](https://img.threetwoa.live/posts/efficiency-mindset/7-fig-meme.jpg)
 
 ## 先把段子拆开
 
@@ -1609,7 +1609,7 @@ url:  https://www.bilibili.com/video/BV1kftw62EMk/?
 
 ## 四条政策，哪条真、条件卡在哪
 
-![劳动合同文件夹与社保本静物](images/7-fig-contract.jpg)
+![劳动合同文件夹与社保本静物](https://img.threetwoa.live/posts/efficiency-mindset/7-fig-contract.jpg)
 
 | 政策 | 判定 | 你真正该记住的条件 |
 |---|---|---|

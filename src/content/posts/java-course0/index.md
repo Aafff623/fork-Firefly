@@ -98,24 +98,24 @@ AI 时代的开发赛道，拼的是"全栈+AI"的综合能力。这个系列从
 注册功能。
 
 
-![图1-1 注册界面效果](images/1-2-1-1.png)
+![图1-1 注册界面效果](https://img.threetwoa.live/posts/java-course0/1-2-1-1.png)
 
 登录功能。
 
-![图1-2 登录界面效果](images/1-2-1-2.png)
+![图1-2 登录界面效果](https://img.threetwoa.live/posts/java-course0/1-2-1-2.png)
 
 用户信息展示页面。
 
-![图1-3 用户信息展示页面](images/1-2-1-3.png)
+![图1-3 用户信息展示页面](https://img.threetwoa.live/posts/java-course0/1-2-1-3.png)
 
 用户基本信息的编辑功能。
 
-![图1-4 用户基本信息的编辑功能](images/1-2-1-4.png)
+![图1-4 用户基本信息的编辑功能](https://img.threetwoa.live/posts/java-course0/1-2-1-4.png)
 
 
 用户基本信息的修改密码功能。
 
-![图1-5 用户基本信息的修改密码功能](images/1-2-1-5.png)
+![图1-5 用户基本信息的修改密码功能](https://img.threetwoa.live/posts/java-course0/1-2-1-5.png)
 
 
 #### 笔记模块
@@ -123,17 +123,17 @@ AI 时代的开发赛道，拼的是"全栈+AI"的综合能力。这个系列从
 
 笔记瀑布流展示功能。
 
-![图1-6 笔记瀑布流展示功能](images/1-2-1-6.png)
+![图1-6 笔记瀑布流展示功能](https://img.threetwoa.live/posts/java-course0/1-2-1-6.png)
 
 
 笔记发布功能，可以使用AI生成文案。
 
-![图1-7 笔记发布功能](images/1-2-1-7.png)
+![图1-7 笔记发布功能](https://img.threetwoa.live/posts/java-course0/1-2-1-7.png)
 
 
 笔记搜索功能。
 
-![图1-8 笔记搜索功能](images/1-2-1-8.png)
+![图1-8 笔记搜索功能](https://img.threetwoa.live/posts/java-course0/1-2-1-8.png)
 
 
 #### 点赞模块
@@ -141,54 +141,54 @@ AI 时代的开发赛道，拼的是"全栈+AI"的综合能力。这个系列从
 点赞功能。
 
 
-![图1-9 点赞功能](images/1-2-1-9.png)
+![图1-9 点赞功能](https://img.threetwoa.live/posts/java-course0/1-2-1-9.png)
 
 
 取消功能。
 
 
-![图1-10 取消功能](images/1-2-1-10.png)
+![图1-10 取消功能](https://img.threetwoa.live/posts/java-course0/1-2-1-10.png)
 
 #### 评论模块
 
 
 发表评论，可以使用AI帮写评论。
 
-![图1-11 发表评论](images/1-2-1-11.png)
+![图1-11 发表评论](https://img.threetwoa.live/posts/java-course0/1-2-1-11.png)
 
 删除评论。
 
-![图1-12 删除评论](images/1-2-1-12.png)
+![图1-12 删除评论](https://img.threetwoa.live/posts/java-course0/1-2-1-12.png)
 
 回复评论。
 
-![图1-13 回复评论](images/1-2-1-13.png)
+![图1-13 回复评论](https://img.threetwoa.live/posts/java-course0/1-2-1-13.png)
 
 删除回复。
 
 
-![图1-14 删除回复](images/1-2-1-14.png)
+![图1-14 删除回复](https://img.threetwoa.live/posts/java-course0/1-2-1-14.png)
 
 #### 后台管理模块
 
 
 数据看板功能。
 
-![图1-15 数据看板功能](images/1-2-1-15.png)
+![图1-15 数据看板功能](https://img.threetwoa.live/posts/java-course0/1-2-1-15.png)
 
 用户管理功能。
 
-![图1-16 用户管理功能](images/1-2-1-16.png)
+![图1-16 用户管理功能](https://img.threetwoa.live/posts/java-course0/1-2-1-16.png)
 
 
 用户管理功能的编辑用户操作。
 
-![图1-17 用户管理功能的编辑用户操作](images/1-2-1-17.png)
+![图1-17 用户管理功能的编辑用户操作](https://img.threetwoa.live/posts/java-course0/1-2-1-17.png)
 
 
 用户管理功能的删除用户操作。
 
-![图1-18 用户管理功能的删除用户操作](images/1-2-1-18.png)
+![图1-18 用户管理功能的删除用户操作](https://img.threetwoa.live/posts/java-course0/1-2-1-18.png)
 
 
 ### 移动端适配
@@ -202,39 +202,39 @@ AI 时代的开发赛道，拼的是"全栈+AI"的综合能力。这个系列从
 注册功能。
 
 
-![图1-19 注册界面效果](images/1-2-1-19.png)
+![图1-19 注册界面效果](https://img.threetwoa.live/posts/java-course0/1-2-1-19.png)
 
 登录功能。
 
-![图1-20 登录界面效果](images/1-2-1-20.png)
+![图1-20 登录界面效果](https://img.threetwoa.live/posts/java-course0/1-2-1-20.png)
 
 
 笔记列表展示功能。
 
-![图1-21 笔记列表展示功能](images/1-2-1-21.png)
+![图1-21 笔记列表展示功能](https://img.threetwoa.live/posts/java-course0/1-2-1-21.png)
 
 笔记详情展示功能。
 
-![图1-22 笔记详情展示功能](images/1-2-1-22.png)
+![图1-22 笔记详情展示功能](https://img.threetwoa.live/posts/java-course0/1-2-1-22.png)
 
 
 笔记发布功能。
 
-![图1-23 笔记发布功能](images/1-2-1-23.png)
+![图1-23 笔记发布功能](https://img.threetwoa.live/posts/java-course0/1-2-1-23.png)
 
 
 用户信息展示页面。
 
-![图1-24 用户信息展示页面](images/1-2-1-24.png)
+![图1-24 用户信息展示页面](https://img.threetwoa.live/posts/java-course0/1-2-1-24.png)
 
 
 数据看板功能。
 
-![图1-25 数据看板功能](images/1-2-1-25.png)
+![图1-25 数据看板功能](https://img.threetwoa.live/posts/java-course0/1-2-1-25.png)
 
 用户管理功能。
 
-![图1-26 用户管理功能](images/1-2-1-26.png)
+![图1-26 用户管理功能](https://img.threetwoa.live/posts/java-course0/1-2-1-26.png)
 
 
 ### 应用架构展示
@@ -242,23 +242,23 @@ AI 时代的开发赛道，拼的是"全栈+AI"的综合能力。这个系列从
 
 #### 单体架构
 
-![图1-27 单体架构](images/1-2-1-27.drawio.png)
+![图1-27 单体架构](https://img.threetwoa.live/posts/java-course0/1-2-1-27.drawio.png)
 
 #### 分布式架构
 
-![图1-28 分布式架构](images/1-2-1-28.drawio.png)
+![图1-28 分布式架构](https://img.threetwoa.live/posts/java-course0/1-2-1-28.drawio.png)
 
 
 #### 前后端分离架构
 
 
-![图1-29 前后端分离架构](images/1-2-1-29.drawio.png)
+![图1-29 前后端分离架构](https://img.threetwoa.live/posts/java-course0/1-2-1-29.drawio.png)
 
 #### 微服务架构
 
 
-![图1-30 微服务架构](images/1-2-1-30.drawio.png)
+![图1-30 微服务架构](https://img.threetwoa.live/posts/java-course0/1-2-1-30.drawio.png)
 
 #### 云原生+AI架构
 
-![图1-31 云原生+AI架构](images/1-2-1-31.drawio.png)
+![图1-31 云原生+AI架构](https://img.threetwoa.live/posts/java-course0/1-2-1-31.drawio.png)

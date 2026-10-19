@@ -17,7 +17,7 @@ comment: true
 
 华叔这张全景图（另文参见「价值链」版，本次未附）适合当**分层地图**，不当最新厂商黄页。图里的型号会过时，层职责相对稳。
 
-![AI 产业链全景图](./images/ai-industry-chain-panorama.jpg)
+![AI 产业链全景图](https://img.threetwoa.live/posts/ai-industry-chain-panorama/ai-industry-chain-panorama.jpg)
 
 ## 五层怎么读（上近用户，下远底座）
 

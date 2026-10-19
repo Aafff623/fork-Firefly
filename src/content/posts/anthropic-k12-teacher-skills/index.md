@@ -17,7 +17,7 @@ comment: true
 
 Anthropic 悄悄开了个仓库，叫 [k12-teacher-skills](https://github.com/anthropics/k12-teacher-skills)，把 Claude for Teachers 里两个官方 Agent Skill 的源码整个丢了出来。
 
-![GitHub：anthropics/k12-teacher-skills](./images/fig-01-01-github-k12-teacher-skills.jpg)
+![GitHub：anthropics/k12-teacher-skills](https://img.threetwoa.live/posts/anthropic-k12-teacher-skills/fig-01-01-github-k12-teacher-skills.jpg)
 
 一开始以为就是两个「AI 帮老师备课」的普通 skill，扒完源码之后有点绷不住——Anthropic 这次是亲自下场，把一份生产级 skill 该长成什么样，从心法到工程细节，明明白白摆在你面前了。
 
@@ -52,7 +52,7 @@ Anthropic 联合 Learning Commons 给中小学老师做了两个 Agent Skill，�
 
 先用一张图看清两个 skill 的分工——左边从零生成一节课，右边把现有课改成三层版本：
 
-![两个 Skill 分工一览](./images/fig-02-02-two-skills-division.jpg)
+![两个 Skill 分工一览](https://img.threetwoa.live/posts/anthropic-k12-teacher-skills/fig-02-02-two-skills-division.jpg)
 
 ### k12-lesson-planning：一句话给我一节课
 
@@ -210,7 +210,7 @@ Anthropic 的做法是把可读性直接写成硬约束：
 
 先给一张完整的架构图——这个仓库到底把哪些东西连起来了，看这一张就够：
 
-![K-12 教师 AI 助手完整架构](./images/fig-03-03-k12-architecture.jpg)
+![K-12 教师 AI 助手完整架构](https://img.threetwoa.live/posts/anthropic-k12-teacher-skills/fig-03-03-k12-architecture.jpg)
 
 这个仓库最容易被忽略的部分，是 `.mcp.json`。
 

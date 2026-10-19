@@ -15,7 +15,7 @@ updated: 2026-08-11T01:39:19
 
 课本立体模型、手帐拼贴玩腻了，有人把「走进诗里」收成一个 Codex Skill：`$immersive-poetry-page`。给一首古典诗，吐出能滚动、能听、能细读的沉浸页——不是 HTML 草图，是整条生产线。
 
-![Skill 调用 chip](./images/fig-skill-chip.jpg)
+![Skill 调用 chip](https://img.threetwoa.live/posts/immersive-poetry-skill/fig-skill-chip.jpg)
 
 仓库：[zlbigger/immersive-poetry-page](https://github.com/zlbigger/immersive-poetry-page)（2026-08-11 核对仍在；README 自称 Codex 创作型 Skill，MIT，★约 32）。同思路的金刚经演示：[praybuddha.com/diamond-sutra-immersive](https://www.praybuddha.com/diamond-sutra-immersive/)。
 
@@ -44,15 +44,15 @@ updated: 2026-08-11T01:39:19
 
 分镜卡是固定配方：**段号 · 原文 · 白话 · 微型图示 · 一句细读**。下面这张「悲至极处，转身尽欢」就是典型一卡。
 
-![分镜卡·尽欢](./images/fig-storyboard.jpg)
+![分镜卡·尽欢](https://img.threetwoa.live/posts/immersive-poetry-skill/fig-storyboard.jpg)
 
 分析页把全诗压成四栏——体式 / 结构（悲→欢→愤→狂）/ 语言 / 核心——底下再串一根意象线。文学课要的骨架在这里，前面那些图是入口。
 
-![《将进酒》收束分析](./images/fig-analysis.jpg)
+![《将进酒》收束分析](https://img.threetwoa.live/posts/immersive-poetry-skill/fig-analysis.jpg)
 
 同一套壳换《念奴娇·赤壁怀古》：江→垒→浪→瑜→战→月，人物与色温跟着换，导航和卡片结构不变。
 
-![《念奴娇》Hero](./images/fig-chibi-hero.jpg)
+![《念奴娇》Hero](https://img.threetwoa.live/posts/immersive-poetry-skill/fig-chibi-hero.jpg)
 
 ## 适用边界，留言里那几枪
 

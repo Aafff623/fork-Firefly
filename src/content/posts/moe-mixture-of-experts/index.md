@@ -15,7 +15,7 @@ comment: true
 
 卡型号时老撞上 `122B-A10B`、`671B` 旁边又冒个 `37B`——不是印错了，是 MoE（Mixture of Experts）在说话：库里养一堆专家，推理只点几名上场。
 
-![什么是 MoE：全能一人 vs 专家团](./images/fig-01-what-is-moe.jpg)
+![什么是 MoE：全能一人 vs 专家团](https://img.threetwoa.live/posts/moe-mixture-of-experts/fig-01-what-is-moe.jpg)
 
 ## 稠密一人队 vs 专家轮班
 
@@ -27,7 +27,7 @@ MoE（图例 DeepSeek-V3）像专家团：总参可以很大，路由只激活�
 
 ## `A` = Active：总参大、激活小
 
-![总参数 vs 激活参数](./images/fig-02-total-vs-active.jpg)
+![总参数 vs 激活参数](https://img.threetwoa.live/posts/moe-mixture-of-experts/fig-02-total-vs-active.jpg)
 
 读名习惯（图例 Qwen3.5-122B-A10B）：
 
@@ -48,7 +48,7 @@ MoE（图例 DeepSeek-V3）像专家团：总参可以很大，路由只激活�
 
 ## 跟 Base / Instruct / 蒸馏 / 量化不是互斥菜单
 
-![大模型版本一图](./images/fig-03-model-variants.jpg)
+![大模型版本一图](https://img.threetwoa.live/posts/moe-mixture-of-experts/fig-03-model-variants.jpg)
 
 同一张「版本图」里其实叠了几条正交轴：
 
