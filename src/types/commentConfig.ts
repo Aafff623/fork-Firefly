@@ -26,7 +26,7 @@ export type CommentConfig = {
 		emoji: string[];
 		login?: "enable" | "force" | "disable";
 		visitorCount?: boolean; // 是否统计访问量，true 启用访问量，false 关闭
-		/** 边打字边推梗图（旁挂 type-ahead）；见 docs/outputs/prd/comment-sticker-suggest */
+		/** 边打字边推梗图（旁挂 type-ahead） */
 		stickerSuggest?: {
 			/** 总开关；默认 false */
 			enabled: boolean;

@@ -48,7 +48,6 @@ export const navCollectionsModule: {
 
 // 模块化骨架（按 weight 降序；enabled: false 可临时下架整个模块/子类/单站）
 // 治理红线：每子类 5–15 条，<3 提议合并、>15 提议细分
-// 设计文档：docs/outputs/prd/nav-sites-directory/structure-scheme2.md
 export const navModulesConfig: NavModule[] = [
 	{
 		slug: "learning",
