@@ -51,4 +51,4 @@
 - 官方表情 CDN：`@waline/emojis@1.4.0`（不必整仓克隆进博客）。
 - Giphy：Waline 客户端默认集成；生产高流量时再替换自有 API Key（见 Waline Cookbook · search）。
 - 评论大图：优先 Cloudflare R2（`R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` / `R2_PUBLIC_BASE_URL`）；回退腾讯云 COS（`COS_*`）。密钥仅服务端；R2 公网域建议 `img.threetwoa.live`。
-- 关联：`docs/outputs/commit-history/master/2026-08-02-ui-giscus-widgets.md` 记录的是切换前合入摘要，不作为现行架构依据。
+- 关联：当时的合入摘要记在 `docs/outputs/commit-history/`（该目录已于 2026-10-19 随自有任务流体系一并删除），不作为现行架构依据。

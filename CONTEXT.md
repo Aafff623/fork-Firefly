@@ -35,7 +35,7 @@
 | `src/` | 产品层（pages / layouts / components / config / content / plugins / utils） |
 | `public/` | 原样静态资源 |
 | `scripts/` | LQIP、字体子集、new-post / new-dynamic、README 截图（`capture-readme-showcase.py`，默认截线上，`SHOWCASE_BASE` 可切本地 dev） |
-| `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/outputs/{prd,commit-history}`）；弱关联产物（灵感 / 调研 / handoff / 知识文 / 临时脚本）归本仓 `temp/` 对应分类 |
+| `docs/` | 上游主题多语言 README 图 + **本仓强关联 Agent 资产**（`docs/agents` 流程件 · `docs/adr` · `docs/glossary` · `docs/knowledge`）；弱关联产物（灵感 / 调研 / handoff / 知识文 / 临时脚本）归本仓 `temp/` 对应分类 |
 | `assets/` | project-init 媒体约定（README 配图等）；**不等于** `src/assets` |
 | `docs/official/` | 官方中文配置文档（本地知识源，gitignore） |
 | `docs/knowledge/official-docs.tree.json` | 官方文档 file-tree 路由模型（入库） |
@@ -164,11 +164,10 @@ Content Collections（`src/content.config.ts`）：
 - **图床**：`img.threetwoa.live` → R2 桶 `firefly-comment`（`threetwoa-blog-assets` 是另一只桶，不要当 img. 图床）
 - **新图纪律**：封面与正文大图优先 `https://img.threetwoa.live`（R2），禁止再把大 jpg 推进 git
 - **历史存档**：Vercel（曾为源站，2026-09-19 退役删项目）/ EdgeOne（2026-09-12 退场，回滚窗口 ≈2026-11-13）/ 迁移方案：`temp/handoff/cf-workers-migration.md` 与 `temp/research/edgeone-offboarding/`（temp 丢失后部分存档待重建）
-- **Phase ICP（后续优化）**：`.live` 可备案；EdgeOne 已退场，未来备案需重建 EO → `docs/agents/edgeone-mainland-icp-plan.md`
+- **Phase ICP（后续优化）**：`.live` 可备案；EdgeOne 已退场，未来备案需重建 EO。原先的细化方案文档已随 EdgeOne 时代的部署文档一并删除（2026-10-19），需要时重开 effort
 - 旧域 `threetwoa.me` 不续
 - `siteConfig.site_url` = `https://www.threetwoa.live`
-- 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind → sync）
-- 操作清单：`docs/agents/edgeone-domain-runbook.md`（历史参考，2026-09-12 起部分失效）
+- 构建：`pnpm build`（LQIP → Astro → font subset → Pagefind）
 - 交付验收：同学打开 `https://www.threetwoa.live`；未备案勿宣称大陆节点加速
 
 ## 本地双端口预览（运维记忆 · 2026-08）

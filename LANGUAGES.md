@@ -25,7 +25,7 @@
 | wontfix | 不做 |
 | theme | 一个业务主题目录名（kebab-case） |
 | handoff | `temp/handoff/` 交接快照（覆盖式） |
-| PRD | `docs/outputs/prd/{theme}/prd.md` |
+| effort | tracker 里的一个工作单元目录名：`.scratch/<effort>/`（地图 + issues/） |
 
 ## 领域用词（博客）
 

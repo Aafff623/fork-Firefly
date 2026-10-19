@@ -4,9 +4,11 @@
 > **全局 Cursor rules**: `%USERPROFILE%\.cursor\rules\`（宪法与 companions 以该目录实际内容为准）<br>
 > **仓内 `.cursor/rules/`**: 仅站点专有规则（`seasonal-gift-box` · `site-cascade-after-content`）；禁止再复制全局宪法文件
 
-跨工具 Agent 硬约束与任务流摘要。人读运行说明见 `README.md`；领域事实见 `CONTEXT.md`；用词见 `LANGUAGES.md`。
+跨工具 Agent 硬约束与工程流程入口。人读运行说明见 `README.md`；领域事实见 `CONTEXT.md`；用词见 `LANGUAGES.md`。
 
 本仓采用**单 Project 治理模式**（无外部工作区层）：项目内自带统一临时区 `temp/`，承接原工作区的调研 / 交接 / 临时脚本职能。
+
+**工程流程的唯一权威是 Matt Pocock Skills**（园主决定 2026-10-19）。需求澄清、领域建模、Spec、决策票 / 实现票、TDD、实现、评审、交接全部走它；本仓不再维护自有的任务流、PRD 体系或第二套任务账本。
 
 ## 单一事实源
 
@@ -14,9 +16,12 @@
 |---|---|
 | 领域 / 硬约束 | `CONTEXT.md` |
 | 共享用词 | `LANGUAGES.md` |
-| 任务流细节 | `docs/agents/workflow.md` |
+| 工程流程（澄清 → 决策 → spec → 票 → 实现 → 评审 → 交接） | **Matt Pocock Skills**（唯一权威）；tracker 适配见 `docs/agents/issue-tracker.md`，词表见 `docs/agents/domain.md` |
+| 内容流水线（发文 / 草稿箱 / 级联收尾） | `docs/agents/workflow.md` |
+| 输出语气 | `docs/agents/voice.md` |
 
 禁止再维护 `docs/agents/language.md` / `docs/agents/context.md`。
+禁止另开任务账本：决策票 / spec / 实现票一律进 `.scratch/`（见 `docs/agents/issue-tracker.md`），不写 `TODO.md`。
 
 ## 路径表
 
@@ -28,16 +33,14 @@
 | 成帖红线 / 图片 / 脚本共享 | `.agents/skills/_shared/`（被 post-publish / 早报 / 热榜引用，不是独立 skill） |
 | 官方配置文档（本地，gitignore） | `docs/official/` |
 | 官方文档路由模型 | `docs/knowledge/official-docs.tree.json` |
-| 临时产物（唯一临时区） | `temp/`（分类见 `temp/README.md`；密钥备份 `temp/secrets/`） |
-| Issue / 任务调研（本地） | `temp/research/<task-slug>/` |
-| 灵感库 | `temp/research/idea/{theme}/`（有构想再建；只存构想不写代码） |
-| PRD / commit-history | `docs/outputs/{prd,commit-history}/`（有产物再建） |
-| 调研报告 / handoff | `temp/{reports,handoff}/` |
+| 决策票 / spec / 实现票（tracker） | `.scratch/<effort>/`（**入库**，不受 `temp/` 规则约束） |
+| 临时产物（唯一临时区） | `temp/`（**整个目录本地专属、不入库**；分类见 `temp/README.md`；密钥备份 `temp/secrets/`） |
+| 调研报告 / 灵感 / handoff | `temp/{reports,research,handoff}/`；灵感库 `temp/research/idea/{theme}/` |
 
 ## 硬约束
 
 1. **KISS / YAGNI / 外科手术式修改**：只改任务所需行；不顺手重构。
-2. **PRD 门禁**：未批准的业务 theme 不写大规模功能代码。
+2. **流程门禁**：走 Matt 的流程（澄清 → spec → 票 → 实现 → 评审）；spec 未定稿不写大规模功能代码。
 3. **交付闭环**：本地 `pnpm dev` 预览 → 本地校验 → 你确认后 `push` → 等 `deploy-cf.yml` CI 绿 → **再核线上**。未本地验收不得 push；未看线上不得宣称部署完成。细则见 `docs/agents/workflow.md`。
 4. **密钥**：不入库。
 5. **覆盖冲突**：本仓治理文件与上游主题说明冲突时，以本仓 `AGENTS.md` / `CONTEXT.md` 为准；上游原文已备份。
@@ -133,12 +136,27 @@ Windows：`cmd /c mklink /J <dest> <Firefly/.agents/skills/<name>>`（桥接整�
 
 ## 临时工作区（temp/ · 单一临时区）
 
-临时脚本、任务调研、原始素材、交接快照、验证预览、日志、缓存、密钥备份**一律进 `temp/` 对应分类**，按 `<task-slug>/` 分目录；禁止散落到项目正式目录或项目外路径（C 盘、D 盘根等）。规则与分类见 `temp/README.md` / `temp/AGENTS.md`（均入库）；temp 其余内容 gitignore、永不提交。旧 `.scratch/`、`tmp/` 已并入 temp，不再使用。`handoff/` 覆盖式更新，不堆历史。
+临时脚本、任务调研、原始素材、交接快照、验证预览、日志、缓存、密钥备份**一律进 `temp/` 对应分类**，按 `<task-slug>/` 分目录；禁止散落到项目正式目录或项目外路径（C 盘、D 盘根等）。规则与分类见 `temp/README.md` / `temp/AGENTS.md`（**边界文档也只留本地，不入库**）。
 
-## 任务流摘要
+**整个 `temp/` 是本地专属**（园主决定 2026-10-19）：`.gitignore` 里就是 `temp/` 一行，fresh clone 里没有这个目录。这不是加密也不是备份 —— 里面放过的密钥丢了就是丢了，要重新签。
+
+**`.scratch/` 是唯一例外**：它是 Matt local-markdown tracker 的正式位置（决策票 / spec / 实现票 / 阻塞关系，见 `docs/agents/issue-tracker.md`），由 tracker 独占、**不受 `temp/` 规则约束，也不要 gitignore**。`tmp/` 已并入 `temp/`，不再使用。
+
+## 工程流程（Matt 唯一权威）
+
+**本仓不自建任务流。** 需求澄清、领域建模、Spec、决策票 / 实现票、TDD、实现、评审、交接，全部走当前安装的 Matt Pocock Skills；具体用哪个阶段由当次任务的性质决定。
 
 ```text
-Issue → (可选 report) → PRD(draft) → 你批准 → handoff → 实施 → Review → commit-history → archive
+模糊需求 → /grill-with-docs → /to-spec → /to-tickets → /implement → /code-review
+跨会话大未知 → /wayfinder（决策地图 + 决策票）→ 回到上面那条链
+会话切换 → /handoff        事后复盘 → /retro
 ```
 
-细则：`docs/agents/workflow.md` · 交付：`deliver.md` · 归档：`archive.md`
+- **任务状态只有一个家**：`.scratch/`（本地 markdown tracker）。决策票、spec、实现票、阻塞关系都在那里；不写 `TODO.md`，不另开账本。
+- **Wayfinder 地图是索引不是仓库**：地图只放一行指针，答案留在各自的票里。
+- **领域词汇**：`GLOSSARY.md`（由 `/domain-modeling` 惰性创建）+ `docs/adr/`。本仓另有 `CONTEXT.md` 记领域事实与约束，两者不混用。
+- 各 skill 的调用名以当前安装版本为准，不在本文件硬编码名单。
+
+## 本机 MCP 配置
+
+**唯一入口是 `.zcode/config.json` 的 `mcp.servers`**（本机专属，gitignore）。其他工具的原生文件（`.cursor/mcp.json` 等）是它的适配产物。旧的 `.agents/mcp.json` 已删（2026-10-19）—— 它用的是自定义 schema，ZCode 不识别，等于第二份需要手工同步的副本。

@@ -1,51 +1,31 @@
-# 任务流（workflow）
+# 内容流水线（workflow）
+
+> **工程流程不在本文。** 需求澄清、领域建模、Spec、决策票 / 实现票、TDD、实现、评审、交接，
+> 一律走当前安装的 Matt Pocock Skills，tracker 是 `.scratch/`（见 `docs/agents/issue-tracker.md`）。
+> 本文件自 2026-10-19 起**只保留内容流水线**——发文、草稿箱、配图、级联收尾这些站点专有工序。
+
+## 交付闭环（强制，只针对可部署改动）
 
 ```text
-temp/research/idea/{theme}/          # 可选：灵感库沉淀
-  → 新 session 提取
-Issue(temp/research/<task-slug>/)
-  → temp/reports/{theme}/  # 可选调研
-  → docs/outputs/prd/{theme}/prd.md  # draft → 你批准
-  → temp/handoff/{theme}/YYYY-MM-DD-{branch}-{task}.md
-  → 实施 → awaiting-review【停】
-  → 通过 → commit + docs/outputs/commit-history/{branch}/YYYY-MM-DD.md
-  → archive
-```
-
-灵感只进 `temp/research/idea/` 时不算开题；从 idea 开调研 / PRD 起才走门禁。
-
-## Phase / 交付闭环（强制）
-
-每个 project-init phase 或可部署改动完成后，按固定顺序验收，禁止跳步：
-
-```text
-1. 本地启动预览     → pnpm dev（或 pnpm build && pnpm preview）→ http://127.0.0.1:4321/
-   （若验 README 壳）→ 仓库根另起 python -m http.server 8090 → http://127.0.0.1:8090/preview-readme.html
-2. 本地校验验收     → 目视关键页 + pnpm check（按改动范围）
-3. 你确认无误后     → git commit（若需要）+ git push origin
-4. 触发 CI/Vercel 部署 → 等 Ready；若改动含 EdgeOne 适配，同时核腾讯云 EdgeOne 构建
-5. 打开线上公网     → https://www.threetwoa.live ；备用 https://fork-firefly.vercel.app
-   （绑域清单见 docs/agents/edgeone-domain-runbook.md）
+1. 本地启动预览     → pnpm dev → http://127.0.0.1:4321/
+2. 本地校验         → 目视关键页 + pnpm check（按改动范围）
+3. 你确认无误后     → git commit + git push origin
+4. 触发 CI          → 等 deploy-cf.yml 绿
+5. 打开线上         → https://www.threetwoa.live
 ```
 
 - **未完成本地预览与校验，不得 push。**
-- **未看过线上结果，不得宣称 phase / 部署完成。**
+- **未看过线上结果，不得宣称部署完成。**
 - 仅改治理文档、不影响站点产物时：可省略浏览器预览，但仍需说明「无前端产物变更」。
 - **`ERR_CONNECTION_REFUSED`**：该端口无进程（常见于重开 Cursor / 会话 aborted / 只起了其中一个）。双端口说明见 `CONTEXT.md` →「本地双端口预览」。
 
-## 门禁
+## 改站点时的判断
 
-- PRD 未批准：不写大规模功能代码（配置微调 / 文案 / 部署除外，需在对话声明）。
-- Review 先于 commit（除非你明确要求提交）。
-- handoff **覆盖式**更新：同一 task 旧文件直接删除后写新文件。
-
-## 与 Firefly 主题开发的关系
-
-- 改 `src/config` / 内容 / 样式：走 Issue → 小 handoff 即可。
-- 改布局内核 / 插件管线：建议先 report 再 PRD。
+- 改 `src/config` / 内容 / 样式：直接改，不必开 spec。
+- 改布局内核 / 插件管线：先在 tracker 里开票说清范围。
 - 配置含义查阅 `docs/official/`（路由：`docs/knowledge/official-docs.tree.json`），勿臆造开关语义。
 
-## 内容流水线（轻量，可不建 PRD）
+## 内容流水线
 
 与功能 PRD 流并行。**唯一进料口**是 `post-publish`（一条链：识别输入 → 沉淀 vault → 成帖 → 校验 → 级联收尾；用户不必点名渠道）。短动态 → `dynamic-publish`；早报/热榜 → `ai-morning-brief` / `github-weekly-hot`（合集，不经 vault）。skills 真源在 `.agents/skills/`，`.cursor/skills` 为 junction 桥接（见 `AGENTS.md`「Skill 联接」）。成帖红线：`.agents/skills/_shared/post-redlines.md`（`validate_post.py` 执行）。
 
@@ -169,7 +149,7 @@ Issue(temp/research/<task-slug>/)
 
 ### 大图落盘（R2，不进 git）
 
-封面与正文大图优先走 Cloudflare R2（`img.` 子域，见 `CONTEXT.md` 部署事实 / `docs/agents/architecture-cost-optimized.md`）。**禁止**再把大 jpg/png/webp commit 进 `src/content/posts/**` 或 `public/` 撑 git pack。本地对照用的小图、LQIP、图标仍可入库。存量大图不在本条里搬迁，另开任务。
+封面与正文大图优先走 Cloudflare R2（`img.` 子域，见 `CONTEXT.md` 部署事实）。**禁止**再把大 jpg/png/webp commit 进 `src/content/posts/**` 或 `public/` 撑 git pack。本地对照用的小图、LQIP、图标仍可入库。存量大图不在本条里搬迁，另开任务。
 
 ### 正文配图 / 索引帖信息图
 

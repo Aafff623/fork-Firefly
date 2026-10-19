@@ -162,11 +162,11 @@
 
 | 入口 | 用途 |
 | --- | --- |
-| [AGENTS.md](AGENTS.md) | 任务流、修改边界、验证与交付规则（协作者宪法） |
+| [AGENTS.md](AGENTS.md) | 工程流程入口、修改边界、验证与交付规则（协作者宪法） |
 | [CONTEXT.md](CONTEXT.md) | 产品定位、技术事实、术语和仓库边界 |
-| [docs/agents/workflow.md](docs/agents/workflow.md) | 发文 / 功能 PRD / 交付与验收细则 |
+| [docs/agents/](docs/agents/) | Matt tracker 适配（`issue-tracker.md` · `domain.md` · `triage-labels.md`）+ 内容流水线（`workflow.md`）· 语气（`voice.md`） |
 | [docs/adr/](docs/adr/) | 10 份架构决策记录（评论双通道、本地音乐、Supabase 认证、Cloudflare 单平台……） |
-| [docs/outputs/commit-history/](docs/outputs/commit-history/) | 已完成改动摘要 |
+| [.scratch/](.scratch/) | 任务状态唯一归属：决策地图 / 决策票 / spec / 实现票 |
 
 硬约束：只改任务相关行、不顺手重构；密钥不入库（不提交 `.env`、评论服务 token、私有 API key）；二次开发请保留 Firefly / Fuwari 的版权声明与 MIT 义务。
 

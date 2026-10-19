@@ -68,7 +68,7 @@ profile · announcement · music · categories · tags · stats · siteInfo · c
 | 外侧留白游走 | Maid 挂侧栏卡片**外侧**（左卡左缘 / 右卡右缘），不压正文；卡间固定约 **5s**（无 jitter） |
 | 拖放回游 | 仅拖拽改自由坐标；松手约 **2s** 后钻洞回卡片游走 |
 
-详解：`docs/knowledge/dual-pet-deepseek.md` · handoff：`docs/outputs/handoff/dual-pet-deepseek/`。
+详解：`docs/knowledge/dual-pet-deepseek.md`。
 
 ## 7. 修订
 
