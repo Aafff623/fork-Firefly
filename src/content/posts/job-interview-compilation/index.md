@@ -2,7 +2,7 @@
 title: "求职面经合集（合订 · 全 9 篇）"
 published: 2026-09-18
 description: "字节/美团/大厂 SSP/社招 28 轮/大模型公司/被裁转 FDE：技术面试与求职路径合订。"
-image: ./images/7-overview.webp
+image: https://img.threetwoa.live/posts/job-interview-compilation/7-overview.webp
 tags: [求职, 面经, 校招]
 category: 指南
 collections: []

@@ -3,7 +3,7 @@ title: FDE 工程师的工作流程及工具分享
 published: 2026-08-31
 updated: 2026-09-01T00:00:00
 description: 首先，非常感谢大家来到现场。能和 Cursor、Factory、Brobank 这些行业巨头一起交流，是一次非常棒的经历。我知道大家多半是冲着他们来的，但还是感谢各位留下来听这场分享。
-image: ./images/overview.webp
+image: https://img.threetwoa.live/posts/fde-engineering-workflow-tools/overview.webp
 tags: [Obsidian]
 category: 指南
 draft: false

@@ -2,7 +2,7 @@
 title: "AI 视觉创作合集（合订 · 全 12 篇）"
 published: 2026-09-18
 description: "GPT Image 提示词、文旅海报、角色脸型、古风造型、漫画分镜、报纸排版与封面规范合订。"
-image: ./images/2-fig-01-01-why-gpt-image2-different.jpg
+image: https://img.threetwoa.live/posts/ai-visual-creation/2-fig-01-01-why-gpt-image2-different.jpg
 tags: [AI 出图, 提示词, 视觉设计]
 category: 指南
 collections: []

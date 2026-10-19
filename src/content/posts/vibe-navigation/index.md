@@ -2,7 +2,7 @@
 title: "Vibe 学习与实战导航（合订 · 全 6 篇）"
 published: 2026-09-18
 description: "自学路线、模型横评、概念查阅、MCP 笔记、项目地图与变现导读的导航合订。"
-image: ./images/1-fig-fde-loop.jpg
+image: https://img.threetwoa.live/posts/vibe-navigation/1-fig-fde-loop.jpg
 tags: [Vibe Coding, 导航, 学习路径]
 category: Agentic Coding
 collections: []

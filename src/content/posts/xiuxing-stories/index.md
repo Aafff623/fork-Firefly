@@ -2,7 +2,7 @@
 title: "修行者与故事（修行合订 · 全 11 篇）"
 published: 2026-09-18
 description: "天涯神帖、真实修炼日常、知乎问答与得法故事：修行者的见闻与叙事合辑。"
-image: ./images/4-fig-7.webp
+image: https://img.threetwoa.live/posts/xiuxing-stories/4-fig-7.webp
 tags: [修行, 故事, 见闻]
 category: 修行
 collections: []

@@ -2,7 +2,7 @@
 title: "Vibe 入门坐标与工具栈（合订 · 全 3 篇）"
 published: 2026-09-18
 description: "对话即代码：入门坐标、工具栈三岔（浏览器/编辑器/终端）与 Harness/Loop 笔记合订。"
-image: ./images/3-cite-loop.jpg
+image: https://img.threetwoa.live/posts/vibe-starter/3-cite-loop.jpg
 tags: [Vibe Coding, 入门, 工具栈]
 category: Agentic Coding
 collections: []

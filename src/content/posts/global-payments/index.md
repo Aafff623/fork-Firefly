@@ -2,7 +2,7 @@
 title: "全球收款与出海合规合集（合订 · 全 3 篇）"
 published: 2026-09-18
 description: "个人收款与国际数字产品、美国公司 Mercury/Stripe、BOI/税务/提款与福利合订。"
-image: ./images/3-global-payments-page-124.webp
+image: https://img.threetwoa.live/posts/global-payments/3-global-payments-page-124.webp
 tags: [出海, 收款, 合规]
 category: 指南
 collections: []

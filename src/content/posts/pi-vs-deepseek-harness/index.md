@@ -3,7 +3,7 @@ title: Pi 与 DeepSeek Harness：两种不同的核心思路
 published: 2026-08-31
 updated: 2026-09-01T00:00:00
 description: DeepSeek Harness 发布以来，一个被频繁问到的问题是：它和 Pi 到底有什么区别？
-image: ./images/overview.webp
+image: https://img.threetwoa.live/posts/pi-vs-deepseek-harness/overview.webp
 tags: [Obsidian]
 category: Agentic Coding
 draft: false

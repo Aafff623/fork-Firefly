@@ -2,7 +2,7 @@
 title: "效率、管理与认知合集（合订 · 全 7 篇）"
 published: 2026-09-18
 description: "成本四级、人效四层、精益领导力、八种软技能、NAVI 趋势与大学常识合订。"
-image: ./images/7-fig-contract.jpg
+image: https://img.threetwoa.live/posts/efficiency-mindset/7-fig-contract.jpg
 tags: [效率, 管理, 认知]
 category: 指南
 collections: []

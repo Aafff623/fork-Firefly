@@ -2,7 +2,7 @@
 title: "地府·阴间生存指南（修行合订 · 全 5 篇）"
 published: 2026-09-18
 description: "死后世界全解析：从勾魂到九幽、衣食住行、日常生活、投胎与托梦——原 5 篇合订为一篇。"
-image: ./images/3-fig-14.webp
+image: https://img.threetwoa.live/posts/xiuxing-underworld-survival/3-fig-14.webp
 tags: [修行, 地府, 阴间]
 category: 修行
 collections: []

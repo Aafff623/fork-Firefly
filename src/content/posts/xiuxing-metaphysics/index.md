@@ -2,7 +2,7 @@
 title: "玄学与世界观（修行合订 · 全 14 篇）"
 published: 2026-09-18
 description: "世界观的底层拼图：玄学、因果、轮回、创世、元神、风水与超自然现象的系统梳理。"
-image: ./images/2-fig-8.webp
+image: https://img.threetwoa.live/posts/xiuxing-metaphysics/2-fig-8.webp
 tags: [修行, 玄学, 世界观]
 category: 修行
 collections: []

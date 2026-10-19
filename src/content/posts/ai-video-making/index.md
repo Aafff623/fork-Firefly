@@ -2,7 +2,7 @@
 title: "AI 视频制作合集（合订 · 全 3 篇）"
 published: 2026-09-18
 description: "白板手绘视频、中文故事竖屏手绘与 MiniMax H3 本地部署：视频生成流水线合订。"
-image: ./images/1-fig-04-ink-hand.jpg
+image: https://img.threetwoa.live/posts/ai-video-making/1-fig-04-ink-hand.jpg
 tags: [AI 视频, 手绘, MiniMax]
 category: 指南
 collections: []

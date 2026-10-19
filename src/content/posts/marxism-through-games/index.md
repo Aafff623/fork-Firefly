@@ -3,7 +3,7 @@ title: 在游戏中学习：一口气学完马克思主义哲学
 published: 2026-08-31
 updated: 2026-09-01T00:00:00
 description: 这是一株豌豆射手，他通过射出豌豆打败僵尸。他认为先有了要打败僵尸的想法，才会想要射出豌豆，因此意识才是世界的本源，这就是唯心主义。
-image: ./images/overview.webp
+image: https://img.threetwoa.live/posts/marxism-through-games/overview.webp
 tags: [Obsidian]
 category: 写作
 draft: false
