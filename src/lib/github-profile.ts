@@ -3,7 +3,24 @@
 export const GITHUB_LOGIN = "Aafff623";
 export const GITHUB_PROFILE_URL = "https://github.com/Aafff623";
 
-export const githubProfile = {
+export type GithubProfile = {
+	login: string;
+	name: string;
+	avatar: string;
+	statusEmoji: string;
+	statusText: string;
+	bio: string;
+	followers: number;
+	following: number;
+	company: string;
+	website: string;
+	twitter: string;
+	twitterUrl: string;
+	zhihu: string;
+	highlights: readonly string[];
+};
+
+export const githubProfile: GithubProfile = {
 	login: GITHUB_LOGIN,
 	name: "threetwoa",
 	avatar: "https://avatars.githubusercontent.com/u/182515127?s=460&v=4",
@@ -17,8 +34,8 @@ export const githubProfile = {
 	twitter: "FanLaiyi26341",
 	twitterUrl: "https://x.com/FanLaiyi26341",
 	zhihu: "https://www.zhihu.com/people/hai-kuo-ping-yu-yue-51-70",
-	highlights: ["Pro"] as const,
-} as const;
+	highlights: ["Pro"],
+};
 
 export const githubAchievements = [
 	{
@@ -48,7 +65,8 @@ export const githubPinnedRepos = [
 	{
 		nameWithOwner: "Aafff623/fork-Firefly",
 		url: "https://github.com/Aafff623/fork-Firefly",
-		description: "Astro 静态博客 · Firefly 二次开发 · 配置驱动与 Agent 发文流水线",
+		description:
+			"Astro 静态博客 · Firefly 二次开发 · 配置驱动与 Agent 发文流水线",
 		language: "Astro",
 		languageColor: "#ff5a03",
 		stars: 1,
@@ -85,8 +103,20 @@ export const githubPinnedRepos = [
 	},
 ] as const;
 
-export const githubProfileTabs = [
-	{ id: "overview", label: "Overview", href: GITHUB_PROFILE_URL, current: true },
+export type GithubProfileTab = {
+	id: string;
+	label: string;
+	href: string;
+	current: boolean;
+};
+
+export const githubProfileTabs: readonly GithubProfileTab[] = [
+	{
+		id: "overview",
+		label: "Overview",
+		href: GITHUB_PROFILE_URL,
+		current: true,
+	},
 	{
 		id: "repositories",
 		label: "Repositories",
@@ -111,7 +141,7 @@ export const githubProfileTabs = [
 		href: `${GITHUB_PROFILE_URL}?tab=stars`,
 		current: false,
 	},
-] as const;
+];
 
 const README_RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_LOGIN}/${GITHUB_LOGIN}/main/`;
 

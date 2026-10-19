@@ -67,7 +67,9 @@ function bannerReady(): Promise<void> {
 }
 
 function atPageTop(): boolean {
-	return (document.documentElement.scrollTop || window.scrollY || 0) < SCROLL_TOP_PX;
+	return (
+		(document.documentElement.scrollTop || window.scrollY || 0) < SCROLL_TOP_PX
+	);
 }
 
 function waitWhileAtTop(ms: number): Promise<void> {
@@ -105,25 +107,33 @@ function waitUntilScrolled(signal: AbortSignal): Promise<void> {
 	});
 }
 
-export function materialize(target: "main" | "secondary") {
-	document.querySelectorAll<HTMLTemplateElement>(`template[data-boot-defer="${target}"]`).forEach((tpl) => {
-		const host = tpl.parentElement;
-		if (!host) return;
-		host.appendChild(tpl.content.cloneNode(true));
-		tpl.remove();
-	});
-	document.querySelectorAll<HTMLImageElement>(`img[data-boot-defer="${target}"]`).forEach((img) => {
-		if (img.dataset.bootSrcset) img.srcset = img.dataset.bootSrcset;
-		if (img.dataset.bootSizes) img.sizes = img.dataset.bootSizes;
-		if (img.dataset.bootSrc) img.src = img.dataset.bootSrc;
-		img.removeAttribute("data-boot-defer");
-	});
-	document.querySelectorAll<HTMLElement>(`[data-boot-bg="${target}"]`).forEach((el) => {
-		const src = el.dataset.bootBgSrc;
-		if (!src) return;
-		el.style.backgroundImage = `url('${src}')`;
-		el.removeAttribute("data-boot-bg");
-	});
+export function materialize(target: "main" | "secondary"): void {
+	document
+		.querySelectorAll<HTMLTemplateElement>(
+			`template[data-boot-defer="${target}"]`,
+		)
+		.forEach((tpl) => {
+			const host = tpl.parentElement;
+			if (!host) return;
+			host.appendChild(tpl.content.cloneNode(true));
+			tpl.remove();
+		});
+	document
+		.querySelectorAll<HTMLImageElement>(`img[data-boot-defer="${target}"]`)
+		.forEach((img) => {
+			if (img.dataset.bootSrcset) img.srcset = img.dataset.bootSrcset;
+			if (img.dataset.bootSizes) img.sizes = img.dataset.bootSizes;
+			if (img.dataset.bootSrc) img.src = img.dataset.bootSrc;
+			img.removeAttribute("data-boot-defer");
+		});
+	document
+		.querySelectorAll<HTMLElement>(`[data-boot-bg="${target}"]`)
+		.forEach((el) => {
+			const src = el.dataset.bootBgSrc;
+			if (!src) return;
+			el.style.backgroundImage = `url('${src}')`;
+			el.removeAttribute("data-boot-bg");
+		});
 }
 
 export function whenBootPhase(min: BootPhase): Promise<void> {
@@ -150,7 +160,7 @@ function isBannerHome(): boolean {
 	);
 }
 
-export function startBootSchedule() {
+export function startBootSchedule(): void {
 	if (started) return;
 	started = true;
 

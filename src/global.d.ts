@@ -99,6 +99,8 @@ declare global {
 		__footerWaterSwupBound?: boolean;
 		/** Footer 品牌打字机 swup:page:view 监听幂等 guard */
 		__footerWordmarkBound?: boolean;
+		/** 登录弹层 document 监听幂等 guard */
+		__loginModalBound?: boolean;
 	}
 
 	interface MediaQueryList {

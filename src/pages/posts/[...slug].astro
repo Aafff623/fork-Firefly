@@ -48,7 +48,12 @@ export async function getStaticPaths() {
 	return [...postPaths, ...legacyRedirectPaths];
 }
 
-const { entry, legacyRedirectTo } = Astro.props;
+const { entry: rawEntry, legacyRedirectTo } = Astro.props;
+
+// 旧分节跳转请求只带 legacyRedirectTo、不带 entry；其余请求 entry 必存在
+// （getStaticPaths 只为有 entry 的文章产出 postPaths）。
+// 显式收窄一次，模板的非跳转分支就不必重复几十处非空断言。
+const entry = rawEntry as NonNullable<typeof rawEntry>;
 
 const getDirectImageUrl = (src: string | undefined): string | null => {
 	if (!src) return null;
@@ -135,7 +140,7 @@ async function computePostData(postEntry: NonNullable<typeof entry>) {
 	};
 }
 
-const postData = entry ? await computePostData(entry) : null;
+const postData = rawEntry ? await computePostData(rawEntry) : null;
 const {
 	Content,
 	headings,
@@ -152,7 +157,7 @@ const {
 	jsonLd,
 	relatedPosts,
 	relatedHighlight,
-} = (postData ?? {}) as ReturnType<typeof computePostData>;
+} = (postData ?? {}) as Awaited<ReturnType<typeof computePostData>>;
 ---
 
 {
