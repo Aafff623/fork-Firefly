@@ -32,6 +32,13 @@ Status: resolved（2026-10-19 实施完成，commit `64dc41f5` 待园主授权�
 - **删除边界**：按默认只出 index、不做历史重写；pack 1.64GB 的稀释留待园主授权后单独动作。
 - CI 影响：fresh clone 不再拉 650MB 图；构建期图片全外链（本地构建已等价验证）。
 
+## 复核补记（2026-10-19 review 后）
+
+- **封面漏改（已修，`40c80e85`）**：`migrate.mjs` 只匹配 `![...](...)`，票面 §3 要求的 frontmatter `image:` 未被改写；21 篇的 `image: ./images/...` 指向已移出索引的文件，线上列表卡封面不渲染。已全部改为 `https://img.threetwoa.live/posts/<slug>/<file>`（R2 副本本就存在，21/21 可访问）。
+- **校验脚本盲区（已修，本地脚本）**：`temp/scripts/migrate-post-images/verify-migrated.mjs` 原来只认 markdown 图片语法；现识别 frontmatter / `<img>` / `srcset`，并以 git HEAD 判断目标是否存在，代码块内示例不计。原「0 残留」只覆盖正文图片语法，不代表全部引用形态。
+- **Content-Type（已修）**：`upload_r2.py` 默认 `image/jpeg`，导致 1338 个 webp / 377 个 png / 14 个 avif 以错误 MIME 入库。已按扩展名重传：2254 个图片对象成功、0 失败，2 个 md 文档（非图片）跳过；破缓存抽样 90/90 的 Content-Type 已正确。边缘缓存仍可能短期返回旧头，需按 URL 失效或等 `max-age=14400` 自然过期（当前 token 无 Cache Purge 权限）。
+- **未纳入迁移**：`src/content/posts/images/`（共享目录，guide 系列用）与 `_draftbox` 不在本票范围，前者仍由构建期输出为 `/_astro/*`，不受影响。
+
 ## 方案
 
 ### 1. 盘点与分批
