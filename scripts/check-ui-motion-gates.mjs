@@ -20,7 +20,7 @@ function assert(name, condition) {
 
 assert(
 	"clock side digits stay visually subordinate",
-	/\.surprise-clock__num\)\s*\{[\s\S]*?opacity:\s*0\.52;[\s\S]*?font-size:\s*0\.82rem;[\s\S]*?filter:\s*blur\(0\.25px\) saturate\(0\.75\)/.test(
+	/\.surprise-clock__num\)\s*\{[\s\S]*?opacity:\s*0\.52;[\s\S]*?font-size:\s*0\.92rem;[\s\S]*?filter:\s*blur\(0\.25px\) saturate\(0\.75\)/.test(
 		clock,
 	),
 );
@@ -43,7 +43,7 @@ assert(
 	/\.site-footer__list a\s*\{[\s\S]*?color:\s*color-mix\(in oklch, var\(--deep-text\) 72%, transparent\)/.test(
 		footer,
 	) &&
-		/html\.dark \.site-footer__list a\s*\{[\s\S]*?color:\s*color-mix\(in oklch, var\(--sf-ink\) 68%, transparent\)/.test(
+		/html\.dark \.site-footer__list a\s*\{[\s\S]*?color:\s*oklch\(0\.93 0\.012 95\)/.test(
 			footer,
 		),
 );
@@ -52,8 +52,9 @@ assert(
 	/\.site-footer__link-icon\s*\{[\s\S]*?opacity:\s*0\.52;/.test(footer),
 );
 assert(
-	"tag sphere idle motion is slightly faster",
-	/var IDLE_MAX_SPEED = 0\.48;/.test(tagSphere),
+	"tag sphere idle motion is frame-normalized fixed speed",
+	/var IDLE_TICK_DEG = 0\.3;/.test(tagSphere) &&
+		/ffRotate\(s, IDLE_TICK_DEG \* k/.test(tagSphere),
 );
 assert(
 	"pet frame playback is synchronized to animation frames",

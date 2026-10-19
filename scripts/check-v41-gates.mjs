@@ -238,9 +238,13 @@ if (fs.existsSync(distClient)) {
 	const orphans = jsNames.filter(
 		(f) => !htmlBlob.includes(f) && !jsBlob.includes(f),
 	);
-	const orphanHeavy = orphans.filter(
-		(f) => fs.statSync(path.join(astroDir, f)).size > 50 * 1024,
-	);
+	// DEV-only island 的 intentional orphan：/ask 在 PROD 渲染 WorkInProgress 占位，
+	// AskChat 顶层静态 import 仍会产出 chunk，但无任何 html/js 引用它（浏览器不会下载，
+	// 不影响任何页面加载）。等 /ask 转 PROD 正式开放、chunk 被真实引用后本条自然失效。
+	const DEV_ONLY_ORPHAN_JS = /^AskChat\./;
+	const orphanHeavy = orphans
+		.filter((f) => !DEV_ONLY_ORPHAN_JS.test(f))
+		.filter((f) => fs.statSync(path.join(astroDir, f)).size > 50 * 1024);
 	assert(
 		"dist no orphan JS chunks >50KB",
 		orphanHeavy.length === 0,
