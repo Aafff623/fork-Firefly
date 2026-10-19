@@ -61,14 +61,10 @@ package/
 src/content/posts/_draftbox/**
 !src/content/posts/_draftbox/README.md
 
-# temp/ 项目统一临时工作区：除入口文件外全部忽略（细则见 temp/README.md）
-temp/**
-!temp/README.md
-!temp/AGENTS.md
-!temp/.gitignore
-!temp/secrets/
-temp/secrets/*
-!temp/secrets/README.md
+# temp/ 项目统一临时工作区：整个目录本地专属，永不入库（园主决定 2026-10-19）
+# 边界文档（README.md / AGENTS.md）也只留本地，fresh clone 里没有；
+# 需要时按 AGENTS.md 的「临时工作区」一节重建。细则见 temp/README.md。
+temp/
 tmp/
 __tmp__/
 
@@ -96,7 +92,7 @@ public/assets/images/widgets/calendar/_orig-backup/
 .agents/skills/wrangler/
 .cursor/skills
 
-# MCP 本机配置：.agents/mcp.json 是唯一主配置；各工具原生配置是本机适配产物，均不入库
+# MCP 本机配置：唯一入口是 .zcode/config.json 的 mcp.servers；各工具原生配置是本机适配产物，均不入库
 .agents/mcp.json
 .mcp.json
 .cursor/mcp.json
@@ -118,6 +114,10 @@ public/vendor/grok-bot/**
 .vercel
 
 .vercel
+
+# CodeGraph 本地索引与 ZCode 会话产物
+.codegraph/
+.zcode/
 
 # Cloudflare Workers 本地密钥
 .dev.vars
