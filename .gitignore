@@ -56,10 +56,14 @@ package/
 
 # local agent tool state
 .mimosa/
+.playwright-mcp/
 
 # 博文草稿箱：本地可预览，正文不入库不 push（仅保留 README 约定）
 src/content/posts/_draftbox/**
 !src/content/posts/_draftbox/README.md
+
+# 正文图片已迁 R2：本地保留副本作备份/重传源，不入库（新发文图片同样走 R2）
+src/content/posts/*/images/
 
 # temp/ 项目统一临时工作区：整个目录本地专属，永不入库（园主决定 2026-10-19）
 # 边界文档（README.md / AGENTS.md）也只留本地，fresh clone 里没有；
