@@ -65,3 +65,32 @@ jobs:
 
       - name: Run Astro Build
         run: pnpm astro build
+
+  gates:
+    runs-on: ubuntu-latest
+    name: Repo gates (source-level)
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: 22
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          run_install: false # Disable auto-install
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 这四个门禁（29+22+10+9 条断言）此前只写在 package.json，从未接进任何 workflow。
+      # 它们断言的是源码形态，不需要构建产物；产物级的交付预算门禁在 deploy-cf.yml 里跑。
+      #
+      # 预期会红：master 上现有 4 条历史失败 —— v41「dist 无 >50KB 孤儿 chunk」命中
+      # AskChat（/ask 转 PROD「正在开发中」后该 chunk 不再被引用）；ui-motion 的
+      # 时钟侧位数字 / 页脚链接 / tag sphere 空闲速度三条。先亮红灯，修完再进部署门。
+      - name: Run repo gates
+        run: pnpm run check:gates
