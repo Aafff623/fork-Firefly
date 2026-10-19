@@ -204,6 +204,41 @@ function main(): void {
 	if (rows.length > 25)
 		console.log(`… 其余 ${rows.length - 25} 个页面省略（按体积倒序）`);
 
+	// 按页面类别的极值：校准阈值时看这一块，比看单个页面有用
+	const byClass = new Map<
+		PageClass,
+		{ n: number; maxBytes: number; maxRequests: number; at: string }
+	>();
+	for (const row of rows) {
+		const cur = byClass.get(row.pageClass);
+		if (!cur) {
+			byClass.set(row.pageClass, {
+				n: 1,
+				maxBytes: row.totalBytes,
+				maxRequests: row.requests,
+				at: row.url,
+			});
+			continue;
+		}
+		cur.n += 1;
+		if (row.totalBytes > cur.maxBytes) {
+			cur.maxBytes = row.totalBytes;
+			cur.at = row.url;
+		}
+		cur.maxRequests = Math.max(cur.maxRequests, row.requests);
+	}
+	console.log("\n按类别极值：");
+	for (const [pageClass, v] of byClass) {
+		const budget = DELIVERY_BUDGETS[pageClass];
+		const totalCap =
+			budget.maxTotalBytes === undefined
+				? "不设"
+				: formatBytes(budget.maxTotalBytes);
+		console.log(
+			`  ${pageClass.padEnd(5)} ${String(v.n).padStart(4)} 页 | 最重 ${formatBytes(v.maxBytes).padStart(9)} (上限 ${totalCap}) | 最多请求 ${String(v.maxRequests).padStart(4)} (上限 ${budget.maxRequests}) | ${v.at}`,
+		);
+	}
+
 	if (TOP_N > 0 && rows[0]) {
 		console.log(`\n最重页面 ${rows[0].url} 的前 ${TOP_N} 个资产：`);
 		for (const item of rows[0].heaviest.slice(0, TOP_N)) {

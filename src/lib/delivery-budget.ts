@@ -53,10 +53,11 @@ export const ASSET_WARN_BYTES: number = 1024 * 1024;
 /**
  * 每类页面的预算。
  *
- * 当前值 = 2026-10-18 本地全量 build 实测 + 约 10~20% 余量（登记现状，不假装已经达标）。
+ * 当前值 = 2026-10-19 修好图像管线后的全量 build 实测 + 约 30~40% 余量。
+ * （修前：post 最重 46.40 MB；修后 15.64 MB。见下面 image 相关的提交。）
  * 壳层（script/style/font）四类页面共用同一组上限，因为它才是可被人为控制的部分；
- * 正文图随文章而异，post 只卡壳层、不卡总量，避免「文章图多」把门禁顶成常红。
- * 收紧方向见 .scratch/delivery-perf/issues/04-grilling-decorative-budget.md。
+ * 正文图随文章而异，post 的总量上限给得宽，主要靠 maxBytesByKind 卡壳层。
+ * 继续收紧的方向见 .scratch/delivery-perf/issues/04-grilling-decorative-budget.md。
  */
 const SHELL_LIMITS = {
 	script: 1100 * 1024,
@@ -67,29 +68,29 @@ const SHELL_LIMITS = {
 export const DELIVERY_BUDGETS: Readonly<Record<PageClass, DeliveryBudget>> = {
 	/** 首页：横幅、逐字艺术层、氛围图、桌宠都在这一页，所以卡总量 */
 	home: {
-		maxRequests: 200,
-		maxTotalBytes: 12 * 1024 * 1024,
+		maxRequests: 120,
+		maxTotalBytes: 5 * 1024 * 1024,
 		maxInlineBytes: 160 * 1024,
 		maxBytesByKind: SHELL_LIMITS,
 	},
-	/** 文章页：正文图随文章而异，只卡壳层与请求数 */
+	/** 文章页：正文图随文章而异，总量给宽，靠 maxBytesByKind 卡壳层 */
 	post: {
-		maxRequests: 400,
-		maxTotalBytes: 60 * 1024 * 1024,
+		maxRequests: 360,
+		maxTotalBytes: 22 * 1024 * 1024,
 		maxInlineBytes: 160 * 1024,
 		maxBytesByKind: SHELL_LIMITS,
 	},
-	/** 列表页（归档 / 标签 / 分类 / 合集 / 时间线 / 相册） */
+	/** 列表页（归档 / 标签 / 分类 / 合集 / 时间线 / 相册）—— 相册页是这一类的天花板 */
 	list: {
-		maxRequests: 240,
-		maxTotalBytes: 26 * 1024 * 1024,
+		maxRequests: 200,
+		maxTotalBytes: 24 * 1024 * 1024,
 		maxInlineBytes: 160 * 1024,
 		maxBytesByKind: SHELL_LIMITS,
 	},
 	/** 其余独立页面 */
 	app: {
-		maxRequests: 240,
-		maxTotalBytes: 14 * 1024 * 1024,
+		maxRequests: 160,
+		maxTotalBytes: 9 * 1024 * 1024,
 		maxInlineBytes: 160 * 1024,
 		maxBytesByKind: SHELL_LIMITS,
 	},
