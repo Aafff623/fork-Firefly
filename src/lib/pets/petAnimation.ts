@@ -26,9 +26,7 @@ export const PET_ATLAS_CLASSIC_8X9 = {
 	height: 1872,
 } as const;
 
-export type PetAtlas =
-	| typeof PET_ATLAS_V2
-	| typeof PET_ATLAS_CLASSIC_8X9;
+export type PetAtlas = typeof PET_ATLAS_V2 | typeof PET_ATLAS_CLASSIC_8X9;
 
 export function getAtlas(variant: PetAtlasVariant): PetAtlas {
 	return variant === "classic-8x9" ? PET_ATLAS_CLASSIC_8X9 : PET_ATLAS_V2;
@@ -123,14 +121,8 @@ export function getPetAtlasFrame(
 	columnIndex: number,
 	atlas: PetAtlas = PET_ATLAS_V2,
 ): PetAtlasFrame {
-	if (
-		!Number.isInteger(rowIndex) ||
-		rowIndex < 0 ||
-		rowIndex >= atlas.rows
-	) {
-		throw new RangeError(
-			`rowIndex must be between 0 and ${atlas.rows - 1}`,
-		);
+	if (!Number.isInteger(rowIndex) || rowIndex < 0 || rowIndex >= atlas.rows) {
+		throw new RangeError(`rowIndex must be between 0 and ${atlas.rows - 1}`);
 	}
 	if (
 		!Number.isInteger(columnIndex) ||

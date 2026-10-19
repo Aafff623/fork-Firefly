@@ -74,7 +74,10 @@ function isRuntimeActive(): boolean {
 	return walineRuntime !== null && !walineRuntime.disposed;
 }
 
-function createRuntime(shellEl: HTMLElement, rootEl: HTMLElement): WalineRuntime {
+function createRuntime(
+	shellEl: HTMLElement,
+	rootEl: HTMLElement,
+): WalineRuntime {
 	// 防御：若上一个 runtime 未收尾（如异常/重 boot 路径），先统一销毁再重建
 	disposeWaline();
 	const rt: WalineRuntime = {
@@ -276,7 +279,10 @@ function clearDraftAfterSubmit(root: HTMLElement) {
 	const clearField = (selector: string) => {
 		const field = root.querySelector(selector);
 		if (
-			!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)
+			!(
+				field instanceof HTMLInputElement ||
+				field instanceof HTMLTextAreaElement
+			)
 		)
 			return;
 		field.value = "";
@@ -327,7 +333,10 @@ function clearDraftAfterSubmit(root: HTMLElement) {
 	mo.observe(root, { childList: true, subtree: true });
 }
 
-function attachCollapsibleEditor(root: HTMLElement, editor: HTMLTextAreaElement) {
+function attachCollapsibleEditor(
+	root: HTMLElement,
+	editor: HTMLTextAreaElement,
+) {
 	const panel = editor.closest(".wl-panel");
 	if (!(panel instanceof HTMLElement)) return;
 	if (panel.dataset.collapsibleBound === "true") return;
@@ -474,8 +483,7 @@ function attachPostInitHooks(
 				for (const item of info.items) {
 					const file = `${info.prefix}${item}`;
 					const filename =
-						extension &&
-						!file.toLowerCase().endsWith(extension.toLowerCase())
+						extension && !file.toLowerCase().endsWith(extension.toLowerCase())
 							? `${file}${extension}`
 							: file;
 					emojiMap.set(
@@ -533,7 +541,9 @@ function attachPostInitHooks(
 		attachCollapsibleEditor(root, editor);
 		host.classList.add("waline-editor-visual-host");
 		const existingMirrors = [...host.querySelectorAll(".waline-editor-visual")];
-		existingMirrors.slice(1).forEach((node) => node.remove());
+		existingMirrors.slice(1).forEach((node) => {
+			node.remove();
+		});
 		const mirror: HTMLElement = (() => {
 			const existing = host.querySelector(".waline-editor-visual");
 			if (existing instanceof HTMLElement) return existing;
@@ -576,7 +586,10 @@ function attachPostInitHooks(
 			const contentHeight = mirror.scrollHeight;
 			mirror.style.height = currentMirrorHeight;
 			const targetHeight = Math.max(baseHeight, contentHeight + 4);
-			if (targetHeight > 0 && Math.abs(editor.offsetHeight - targetHeight) > 1) {
+			if (
+				targetHeight > 0 &&
+				Math.abs(editor.offsetHeight - targetHeight) > 1
+			) {
 				editor.style.height = `${targetHeight}px`;
 			}
 		};
@@ -672,11 +685,7 @@ function attachPostInitHooks(
 				appendSelectionText(text, start);
 			};
 
-			const appendVisualNode = (
-				node: Node,
-				start: number,
-				end: number,
-			) => {
+			const appendVisualNode = (node: Node, start: number, end: number) => {
 				if (hasSelection && selectionStart < end && selectionEnd > start) {
 					const selectedNode = document.createElement("span");
 					selectedNode.className = "waline-editor-visual-selection";
@@ -843,7 +852,10 @@ function attachPostInitHooks(
 				"click",
 				(event) => {
 					const target = event.target;
-					if (!(target instanceof Element) || !target.closest(".wl-emoji-popup"))
+					if (
+						!(target instanceof Element) ||
+						!target.closest(".wl-emoji-popup")
+					)
 						return;
 					requestAnimationFrame(() => {
 						syncContent();
@@ -869,10 +881,7 @@ function attachPostInitHooks(
 	loadEmojiMap().then(attachEditorVisual);
 }
 
-async function imageUploader(
-	uploadApi: string,
-	file: File,
-): Promise<string> {
+async function imageUploader(uploadApi: string, file: File): Promise<string> {
 	if (!(file instanceof File)) {
 		throw new Error("无效的图片文件");
 	}
@@ -921,9 +930,8 @@ async function imageUploader(
 }
 
 export function bootWalineFromShell(shell?: Element | null): void {
-	const shellEl = (shell ?? document.querySelector(".waline-shell")) as
-		| HTMLElement
-		| null;
+	const shellEl = (shell ??
+		document.querySelector(".waline-shell")) as HTMLElement | null;
 	if (!shellEl) return;
 
 	const root = shellEl.querySelector("#waline");
@@ -962,7 +970,9 @@ export function bootWalineFromShell(shell?: Element | null): void {
 
 	try {
 		const rt = createRuntime(shellEl, root);
-		rt.instance = init(effectiveConfig as unknown as Parameters<typeof init>[0]);
+		rt.instance = init(
+			effectiveConfig as unknown as Parameters<typeof init>[0],
+		);
 		shellEl.dataset.walineBooted = "1";
 		markWalineReady(shellEl, root);
 		attachPostInitHooks(root, effectiveConfig, uploadApi);

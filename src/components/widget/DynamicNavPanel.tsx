@@ -142,8 +142,12 @@ export default function DynamicNavPanel({
 	const [items, setItems] = useState<DynamicNavItem[]>(initialItems ?? []);
 	const [loading, setLoading] = useState(!seeded);
 	const [activeAnchor, setActiveAnchor] = useState("");
-	const [expandedYears, setExpandedYears] = useState<Set<string>>(() => new Set());
-	const [expandedMonths, setExpandedMonths] = useState<Set<string>>(() => new Set());
+	const [expandedYears, setExpandedYears] = useState<Set<string>>(
+		() => new Set(),
+	);
+	const [expandedMonths, setExpandedMonths] = useState<Set<string>>(
+		() => new Set(),
+	);
 	const listRef = useRef<HTMLDivElement>(null);
 	const didInitExpand = useRef(false);
 
@@ -159,9 +163,7 @@ export default function DynamicNavPanel({
 		const yearExists = years.some((y) => y.id === yId);
 		const fallbackYear = years[0];
 		const openYearId = yearExists ? yId : fallbackYear.id;
-		const openMonthId = yearExists
-			? mId
-			: (fallbackYear.months[0]?.id ?? "");
+		const openMonthId = yearExists ? mId : (fallbackYear.months[0]?.id ?? "");
 		setExpandedYears(new Set([openYearId]));
 		setExpandedMonths(openMonthId ? new Set([openMonthId]) : new Set());
 	}, [years]);
@@ -256,6 +258,7 @@ export default function DynamicNavPanel({
 		}
 	}, [activeAnchor, years]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: 展开年/月后 DOM 高度变化，需重算锚点滚动位置
 	useEffect(() => {
 		if (!activeAnchor || !listRef.current) return;
 		const list = listRef.current;
@@ -368,9 +371,7 @@ export default function DynamicNavPanel({
 																		href={`#${tick.anchor}`}
 																		data-nav-anchor={tick.anchor}
 																		className={`dynamic-axis__tick${active ? " is-active" : ""}${tick.pinned ? " is-pinned" : ""}`}
-																		aria-current={
-																			active ? "true" : undefined
-																		}
+																		aria-current={active ? "true" : undefined}
 																		onClick={onJump(tick.anchor)}
 																		title={tick.title}
 																	>

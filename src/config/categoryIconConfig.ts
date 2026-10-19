@@ -59,9 +59,7 @@ export function categoryAccentStyle(category: string): string {
 	return `--cat-accent: ${color}; --tag-accent: ${color}`;
 }
 
-export function categoryNavAccentStyle(
-	kind: keyof typeof NAV_ACCENT,
-): string {
+export function categoryNavAccentStyle(kind: keyof typeof NAV_ACCENT): string {
 	return `--cat-accent: ${NAV_ACCENT[kind]}`;
 }
 

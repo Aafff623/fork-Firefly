@@ -55,7 +55,7 @@ function loadYzhanScript(): Promise<void> {
 
 	yzhanScriptPromise = new Promise((resolve, reject) => {
 		const existing = document.querySelector<HTMLScriptElement>(
-			`script[data-firefly-yzhan]`,
+			"script[data-firefly-yzhan]",
 		);
 		if (existing) {
 			existing.addEventListener("load", () => resolve(), { once: true });
@@ -176,7 +176,10 @@ export function preloadConfetti(): void {
 	void loadConfetti();
 }
 
-function originFromElement(el: Element | null | undefined): { x: number; y: number } {
+function originFromElement(el: Element | null | undefined): {
+	x: number;
+	y: number;
+} {
 	if (!(el instanceof Element) || typeof window === "undefined") {
 		return { x: 0.5, y: 0.42 };
 	}
@@ -199,11 +202,16 @@ export async function triggerConfettiBurst(
 	const confetti = await loadConfetti();
 	if (!confetti) return;
 
-	const colors = ["#ffb7c5", "#ff9ec4", "#ffe4ec", "#fdfaf3", "#a63d52", "#ecd9ae"];
+	const colors = [
+		"#ffb7c5",
+		"#ff9ec4",
+		"#ffe4ec",
+		"#fdfaf3",
+		"#a63d52",
+		"#ecd9ae",
+	];
 	// 无锚点 → 正中（信封落地）；有锚点则跟元素中心
-	const o = originEl
-		? originFromElement(originEl)
-		: { x: 0.5, y: 0.42 };
+	const o = originEl ? originFromElement(originEl) : { x: 0.5, y: 0.42 };
 
 	try {
 		confetti({

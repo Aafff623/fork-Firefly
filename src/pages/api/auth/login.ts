@@ -1,5 +1,5 @@
-import type { APIContext, APIRoute } from "astro";
 import type { Provider } from "@supabase/supabase-js";
+import type { APIContext, APIRoute } from "astro";
 import { createAuthClient, safeReturnTo } from "@/lib/supabase-auth";
 
 export const prerender = false;

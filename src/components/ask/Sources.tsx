@@ -68,7 +68,10 @@ export function SourceHoverCard({
 				) : null}
 				<span className="ask-cite-card-open">
 					打开原文
-					<ExternalLink className="ask-cite-card-open-icon" aria-hidden="true" />
+					<ExternalLink
+						className="ask-cite-card-open-icon"
+						aria-hidden="true"
+					/>
 				</span>
 			</span>
 		</span>

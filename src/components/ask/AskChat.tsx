@@ -20,9 +20,6 @@ import {
 import { readAskSse } from "@/utils/ask-sse";
 import AskMarkdown from "./AskMarkdown";
 import { AskThinking } from "./AskThinking";
-import { AskComposer } from "./Composer";
-import { AskFollowUps, buildFollowUps, fmtBytes } from "./FollowUps";
-import { AskSourcesPill } from "./Sources";
 import {
 	ASK_IMAGE_MAX_BYTES,
 	ASK_TEXT_MAX_BYTES,
@@ -32,6 +29,9 @@ import {
 	type AskSource,
 	type TraceStep,
 } from "./ask-types";
+import { AskComposer } from "./Composer";
+import { AskFollowUps, buildFollowUps, fmtBytes } from "./FollowUps";
+import { AskSourcesPill } from "./Sources";
 
 /** trailingSlash: always → 末尾斜杠 */
 const ASK_API = "/api/ask/";
@@ -222,7 +222,6 @@ async function retrieveHits(message: string): Promise<RetrieveResult> {
 	};
 }
 
-
 export default function AskChat({
 	mode = "page",
 }: {
@@ -262,6 +261,7 @@ export default function AskChat({
 	}, []);
 
 	/** 流式时若用户没往上翻，保持吸底 */
+	// biome-ignore lint/correctness/useExhaustiveDependencies: messages 是滚动触发信号，effect 体内只读 ref，删依赖会丢流式吸底
 	useEffect(() => {
 		const el = convRef.current;
 		if (!el || !stickRef.current) return;
@@ -271,8 +271,7 @@ export default function AskChat({
 	const handleConvScroll = useCallback(() => {
 		const el = convRef.current;
 		if (!el) return;
-		stickRef.current =
-			el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+		stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
 	}, []);
 
 	/** 流式节流：累积增量 → 每 80ms 落一次 setState */
@@ -390,92 +389,91 @@ export default function AskChat({
 				...prev,
 				{ id: assistantId, role: "assistant", text: "", streaming: true },
 			]);
-				try {
-					// 边收边流式展示（与 page 路径同款 80ms 节流）
-					streamBuf.current = { text: "", reasoning: "" };
-					const { text: full, sources } = await (async () => {
-						const acStream = ac;
-						await ensureSession(tokenRef, chatIdRef);
-						const res = await fetch(`${ASK_API}?action=chat`, {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({
-								token: tokenRef.current,
-								chatId: chatIdRef.current,
-								message: text,
-								hits: [],
-								persona: personaId,
-							}),
-							signal: acStream.signal,
-						});
-						const ctype = res.headers.get("content-type") || "";
-						if (!res.ok || !ctype.includes("text/event-stream")) {
-							let errMsg = `HTTP ${res.status}`;
-							try {
-								const errBody = (await res.json()) as { message?: string };
-								errMsg = errBody.message || errMsg;
-							} catch {
-								/* keep */
-							}
-							throw new Error(errMsg);
+			try {
+				// 边收边流式展示（与 page 路径同款 80ms 节流）
+				streamBuf.current = { text: "", reasoning: "" };
+				const { text: full, sources } = await (async () => {
+					const acStream = ac;
+					await ensureSession(tokenRef, chatIdRef);
+					const res = await fetch(`${ASK_API}?action=chat`, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							token: tokenRef.current,
+							chatId: chatIdRef.current,
+							message: text,
+							hits: [],
+							persona: personaId,
+						}),
+						signal: acStream.signal,
+					});
+					const ctype = res.headers.get("content-type") || "";
+					if (!res.ok || !ctype.includes("text/event-stream")) {
+						let errMsg = `HTTP ${res.status}`;
+						try {
+							const errBody = (await res.json()) as { message?: string };
+							errMsg = errBody.message || errMsg;
+						} catch {
+							/* keep */
 						}
-						const { text: fullText, last } = await readAskSse(res, {
-							signal: acStream.signal,
-							onDelta: (_d, full) => {
-								streamBuf.current.text = full;
-								queueStream(assistantId);
-							},
-						});
-						const srcs: AskSource[] = (last?.paragraph_list || []).map(
-							(p) => ({
-								title: p.title || p.document_name || "文章",
-								url: p.source_url || "#",
-							}),
-						);
-						return { text: fullText, sources: srcs };
-					})();
-					if (streamTimer.current !== null) {
-						window.clearTimeout(streamTimer.current);
-						streamTimer.current = null;
+						throw new Error(errMsg);
 					}
-					flushStream(assistantId);
-					setMessages((prev) =>
-						prev.map((m) =>
-							m.id === assistantId
-								? {
-										...m,
-										streaming: false,
-										text: full || "（没拿到回答）",
-										sources: sources.length ? sources : undefined,
-									}
-								: m,
-						),
-					);
-				} catch (err) {
-					const isAbort = err instanceof DOMException && err.name === "AbortError";
-					setMessages((prev) =>
-						prev.map((m) =>
-							m.id === assistantId
-								? {
-										...m,
-										streaming: false,
-										text: isAbort
-											? m.text || "（已中断）"
-											: `出了点问题：${err instanceof Error ? err.message : "未知错误"}`,
-									}
-								: m,
-						),
-					);
-				} finally {
-					if (streamTimer.current !== null) {
-						window.clearTimeout(streamTimer.current);
-						streamTimer.current = null;
-					}
-					setStatus("idle");
+					const { text: fullText, last } = await readAskSse(res, {
+						signal: acStream.signal,
+						onDelta: (_d, full) => {
+							streamBuf.current.text = full;
+							queueStream(assistantId);
+						},
+					});
+					const srcs: AskSource[] = (last?.paragraph_list || []).map((p) => ({
+						title: p.title || p.document_name || "文章",
+						url: p.source_url || "#",
+					}));
+					return { text: fullText, sources: srcs };
+				})();
+				if (streamTimer.current !== null) {
+					window.clearTimeout(streamTimer.current);
+					streamTimer.current = null;
 				}
-			},
-			[personaId, patchAssistant, flushStream, queueStream],
-		);
+				flushStream(assistantId);
+				setMessages((prev) =>
+					prev.map((m) =>
+						m.id === assistantId
+							? {
+									...m,
+									streaming: false,
+									text: full || "（没拿到回答）",
+									sources: sources.length ? sources : undefined,
+								}
+							: m,
+					),
+				);
+			} catch (err) {
+				const isAbort =
+					err instanceof DOMException && err.name === "AbortError";
+				setMessages((prev) =>
+					prev.map((m) =>
+						m.id === assistantId
+							? {
+									...m,
+									streaming: false,
+									text: isAbort
+										? m.text || "（已中断）"
+										: `出了点问题：${err instanceof Error ? err.message : "未知错误"}`,
+								}
+							: m,
+					),
+				);
+			} finally {
+				if (streamTimer.current !== null) {
+					window.clearTimeout(streamTimer.current);
+					streamTimer.current = null;
+				}
+				setStatus("idle");
+			}
+		},
+		[personaId, flushStream, queueStream],
+	);
 
 	const sendText = useCallback(
 		async (
@@ -605,12 +603,13 @@ export default function AskChat({
 				});
 				setStatus("streaming");
 
-				const payloadAttachments: AskAttachmentPayload[] =
-					turnAttachments.map((a) => ({
+				const payloadAttachments: AskAttachmentPayload[] = turnAttachments.map(
+					(a) => ({
 						name: a.name,
 						kind: a.kind,
 						text: a.text,
-					}));
+					}),
+				);
 
 				const res = await fetch(`${ASK_API}?action=chat`, {
 					method: "POST",
@@ -696,12 +695,10 @@ export default function AskChat({
 				}
 				flushStream(assistantId);
 
-				const fromKb: AskSource[] = (last?.paragraph_list || []).map(
-					(p) => ({
-						title: p.title || p.document_name || "文章",
-						url: p.source_url || "#",
-					}),
-				);
+				const fromKb: AskSource[] = (last?.paragraph_list || []).map((p) => ({
+					title: p.title || p.document_name || "文章",
+					url: p.source_url || "#",
+				}));
 				const seen = new Set<string>();
 				const sources: AskSource[] = [];
 				for (const s of [...fromSite, ...fromKb]) {
@@ -935,9 +932,7 @@ export default function AskChat({
 									<div className="ask-bubble">
 										{message.text}
 										{message.attachments?.length ? (
-											<AskAttachmentChipsReadonly
-												items={message.attachments}
-											/>
+											<AskAttachmentChipsReadonly items={message.attachments} />
 										) : null}
 									</div>
 								</div>
@@ -1000,9 +995,7 @@ export default function AskChat({
 													}))
 												}
 											>
-												{debugOpen[message.id]
-													? "收起原文"
-													: "调试：查看原文"}
+												{debugOpen[message.id] ? "收起原文" : "调试：查看原文"}
 											</button>
 											{debugOpen[message.id] ? (
 												<pre className="ask-debug-pre">{message.text}</pre>
@@ -1049,9 +1042,7 @@ export default function AskChat({
 												type="button"
 												className={[
 													"ask-action",
-													votes[message.id] === "up"
-														? "ask-action-active"
-														: "",
+													votes[message.id] === "up" ? "ask-action-active" : "",
 													voteAnim[message.id] === "pop" ? "is-pop" : "",
 												]
 													.filter(Boolean)
@@ -1120,9 +1111,7 @@ export default function AskChat({
 						allowAttachments={!isWidget}
 					/>
 					{isWidget ? null : (
-						<p className="ask-disclaimer">
-							AI 回答仅供参考，重要信息请核实
-						</p>
+						<p className="ask-disclaimer">AI 回答仅供参考，重要信息请核实</p>
 					)}
 				</div>
 			</div>

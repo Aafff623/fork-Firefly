@@ -344,8 +344,7 @@ export const zh_CN: Translation = {
 
 	// 桌宠
 	[Key.petRoamTitle]: "桌宠奔跑",
-	[Key.petRoamHint]:
-		"关闭时固定站在日历右下角，不随页面滚动；开启后自由游走。",
+	[Key.petRoamHint]: "关闭时固定站在日历右下角，不随页面滚动；开启后自由游走。",
 	// 桌宠换皮
 	[Key.petPickerTitle]: "选择桌宠",
 	[Key.petPickerDefault]: "默认 · DeepSeek",

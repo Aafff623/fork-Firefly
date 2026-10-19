@@ -8,12 +8,12 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getRelatedPosts, getSortedPosts } from "@utils/content-utils";
+import { LEGACY_REDIRECT_TARGETS } from "@utils/legacy-course-redirects";
 import {
 	getFileDirFromPath,
 	getPostUrlBySlug,
 	toPostSlug,
 } from "@utils/url-utils";
-import { LEGACY_REDIRECT_TARGETS } from "@utils/legacy-course-redirects";
 import { Icon } from "astro-icon/components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -86,14 +86,21 @@ async function computePostData(postEntry: NonNullable<typeof entry>) {
 	};
 
 	// 处理随机图：如果image为"api"，则从配置的API获取随机图
-	const processedImage = processCoverImageSync(postEntry.data.image, postEntry.id);
+	const processedImage = processCoverImageSync(
+		postEntry.data.image,
+		postEntry.id,
+	);
 	const apiUrls = getApiUrlList(postEntry.data.image, postEntry.id);
-	const showPostCover = Boolean(processedImage && coverImageConfig.enableInPost);
+	const showPostCover = Boolean(
+		processedImage && coverImageConfig.enableInPost,
+	);
 	const usePostCoverOverlay =
 		showPostCover && (coverImageConfig.enableInPostOverlay ?? true);
 
 	// 海报优先复用页面上已经优化过的图片，本地源路径不再单独导入。
-	const posterCoverUrl = showPostCover ? null : getDirectImageUrl(processedImage);
+	const posterCoverUrl = showPostCover
+		? null
+		: getDirectImageUrl(processedImage);
 	const posterCoverSelector = showPostCover ? "#post-cover img" : null;
 	const posterAvatarUrl = getDirectImageUrl(profileConfig.avatar);
 	const posterAvatarSelector = profileConfig.avatar

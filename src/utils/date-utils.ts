@@ -135,7 +135,10 @@ export function getSiteDayKey(date: Date = new Date()): string {
  * 按站点日历日对 length 取模（北京时间日切，而非 UTC epoch 日）。
  * 用于园径便签等「每天换一条」。
  */
-export function getSiteDayIndex(length: number, date: Date = new Date()): number {
+export function getSiteDayIndex(
+	length: number,
+	date: Date = new Date(),
+): number {
 	if (length <= 0) return 0;
 	const [y, m, d] = getSiteDayKey(date).split("-").map(Number);
 	const epochDay = Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);

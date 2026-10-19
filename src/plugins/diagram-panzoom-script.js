@@ -343,16 +343,16 @@
 		if (!lightSrc || !darkSrc) return Promise.resolve();
 		wrap.dataset.mermaidHydrated = "1";
 		return Promise.all([
-			fetch(lightSrc).then(function (r) {
+			fetch(lightSrc).then((r) => {
 				if (!r.ok) throw new Error("mermaid light " + r.status);
 				return r.text();
 			}),
-			fetch(darkSrc).then(function (r) {
+			fetch(darkSrc).then((r) => {
 				if (!r.ok) throw new Error("mermaid dark " + r.status);
 				return r.text();
 			}),
 		])
-			.then(function (pair) {
+			.then((pair) => {
 				var lightBox = wrap.querySelector(".mermaid-svg-light");
 				var darkBox = wrap.querySelector(".mermaid-svg-dark");
 				if (lightBox) lightBox.innerHTML = pair[0];
@@ -361,7 +361,7 @@
 				if (sk) sk.remove();
 				window._diagramPanZoomReinit(container);
 			})
-			.catch(function () {
+			.catch(() => {
 				wrap.dataset.mermaidHydrated = "0";
 			});
 	}
@@ -372,15 +372,15 @@
 		);
 		if (!nodes.length) return;
 		if (!("IntersectionObserver" in window)) {
-			nodes.forEach(function (wrap) {
+			nodes.forEach((wrap) => {
 				var c = wrap.closest(".diagram-container");
 				if (c) hydrateMermaid(c);
 			});
 			return;
 		}
 		var io = new IntersectionObserver(
-			function (entries) {
-				entries.forEach(function (entry) {
+			(entries) => {
+				entries.forEach((entry) => {
 					if (!entry.isIntersecting) return;
 					io.unobserve(entry.target);
 					var c = entry.target.closest(".diagram-container");
@@ -389,7 +389,7 @@
 			},
 			{ rootMargin: "240px 0px" },
 		);
-		nodes.forEach(function (wrap) {
+		nodes.forEach((wrap) => {
 			io.observe(wrap);
 		});
 	}

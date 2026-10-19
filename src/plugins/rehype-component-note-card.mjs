@@ -1,7 +1,8 @@
 /// <reference types="mdast" />
-import { h } from "hastscript";
+
 import { readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
+import { h } from "hastscript";
 
 /**
  * Creates a Note Card component.
@@ -51,11 +52,10 @@ export function NoteCardComponent(properties, children) {
 	const sizeStr = formatBytes(statSync(target).size);
 	const fileUrl = "/" + file.replace(/\\/g, "/");
 
-	const titlebar = h(
-		"div",
-		{ class: "nc-titlebar" },
-		[h("span", { class: "nc-badge" }, ["笔记"]), h("span", { class: "nc-title" }, [title])],
-	);
+	const titlebar = h("div", { class: "nc-titlebar" }, [
+		h("span", { class: "nc-badge" }, ["笔记"]),
+		h("span", { class: "nc-title" }, [title]),
+	]);
 
 	const children_ = [titlebar];
 	if (description) {
@@ -105,7 +105,8 @@ function extractTitle(raw) {
 function extractDescription(raw) {
 	for (const line of raw.split(/\r?\n/)) {
 		const t = line.trim();
-		if (!t || t.startsWith("#") || t.startsWith("```") || t.startsWith("---")) continue;
+		if (!t || t.startsWith("#") || t.startsWith("```") || t.startsWith("---"))
+			continue;
 		return t.length > 100 ? t.slice(0, 100) + "…" : t;
 	}
 	return "";

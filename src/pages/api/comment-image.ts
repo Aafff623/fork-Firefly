@@ -14,12 +14,7 @@ import type { APIRoute } from "astro";
 export const prerender = false;
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const ALLOWED = new Set([
-	"image/jpeg",
-	"image/png",
-	"image/gif",
-	"image/webp",
-]);
+const ALLOWED = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
 const EXT: Record<string, string> = {
 	"image/jpeg": "jpg",
 	"image/png": "png",
@@ -93,7 +88,13 @@ function getR2Config(): R2Config | null {
 	const secretAccessKey = env("R2_SECRET_ACCESS_KEY", file);
 	const bucket = env("R2_BUCKET", file);
 	const publicBaseUrl = env("R2_PUBLIC_BASE_URL", file).replace(/\/$/, "");
-	if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicBaseUrl) {
+	if (
+		!accountId ||
+		!accessKeyId ||
+		!secretAccessKey ||
+		!bucket ||
+		!publicBaseUrl
+	) {
 		return null;
 	}
 	return {
@@ -154,11 +155,7 @@ async function hmacSha1Hex(key: string, message: string): Promise<string> {
 		false,
 		["sign"],
 	);
-	const sig = await crypto.subtle.sign(
-		"HMAC",
-		cryptoKey,
-		enc.encode(message),
-	);
+	const sig = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
 	return toHex(sig);
 }
 
@@ -605,10 +602,10 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	if (file.size <= 0 || file.size > MAX_BYTES) {
-		return new Response(
-			JSON.stringify({ error: "Image must be under 5MB" }),
-			{ status: 413, headers: { "Content-Type": "application/json" } },
-		);
+		return new Response(JSON.stringify({ error: "Image must be under 5MB" }), {
+			status: 413,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 
 	const key = objectKeyFor(file);

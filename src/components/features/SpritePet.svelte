@@ -1952,10 +1952,12 @@ onMount(() => {
 	};
 
 	const rendererGate = createPetRendererGate(() => {
-		void import("@/lib/boot-schedule").then(({ startBootSchedule, whenBootPhase }) => {
-			startBootSchedule();
-			void whenBootPhase("secondary").then(bootRenderer);
-		});
+		void import("@/lib/boot-schedule").then(
+			({ startBootSchedule, whenBootPhase }) => {
+				startBootSchedule();
+				void whenBootPhase("secondary").then(bootRenderer);
+			},
+		);
 	});
 	const applyRendererGate = () =>
 		rendererGate.evaluate(livePetRendererContext());
@@ -2083,7 +2085,10 @@ onMount(() => {
 		}, READ_SCROLL_TRIGGER_MS);
 	};
 	window.addEventListener("scroll", onScroll, { passive: true });
-	document.addEventListener("scroll", onScroll, { capture: true, passive: true });
+	document.addEventListener("scroll", onScroll, {
+		capture: true,
+		passive: true,
+	});
 
 	type SwupLike = {
 		hooks?: {

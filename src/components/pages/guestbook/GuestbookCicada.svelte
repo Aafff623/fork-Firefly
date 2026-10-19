@@ -13,15 +13,15 @@ import {
 	updateCicadaAudio,
 } from "./cicada-audio";
 import {
-	TAU,
 	clamp,
 	createDriveState,
 	followStick,
 	integrate,
 	sizeForCard,
 	softClampTube,
-	updateDrive,
+	TAU,
 	type Tube,
+	updateDrive,
 	type Vec2,
 } from "./cicada-physics";
 
@@ -249,12 +249,7 @@ function tick(nowMs: number) {
 			theta: drive.theta,
 		});
 
-		if (
-			drive.active < 0.02 &&
-			drive.rps < 0.15 &&
-			!pointer.down &&
-			!auto.on
-		) {
+		if (drive.active < 0.02 && drive.rps < 0.15 && !pointer.down && !auto.on) {
 			idleTime += dt;
 			if (idleTime > 8) suspendAudio(audio);
 		} else {
@@ -322,9 +317,7 @@ function setAuto(on: boolean) {
 }
 
 onMount(() => {
-	reducedMotion = window.matchMedia(
-		"(prefers-reduced-motion: reduce)",
-	).matches;
+	reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 	ctx = canvasEl?.getContext("2d") ?? null;
 	resize();
 	last = performance.now();

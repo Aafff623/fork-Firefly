@@ -129,7 +129,7 @@ export function updateDrive(
 	st.ropeDist = Math.hypot(tube.x - stick.x, tube.y - stick.y);
 	st.taut = clamp((st.ropeDist / ropeLen - 0.88) / 0.12, 0, 1);
 	st.drive = clamp((st.rps - 1.1) / 2.6, 0, 1);
-	const tgt = Math.pow(st.drive, 1.25) * st.taut;
+	const tgt = st.drive ** 1.25 * st.taut;
 	st.active +=
 		(tgt - st.active) * Math.min(1, dt * (tgt > st.active ? 10 : 3.2));
 }

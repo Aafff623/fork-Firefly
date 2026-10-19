@@ -44,11 +44,11 @@ const maxVisible = Math.max(
 const showTitle = widgetConfig?.showTitle !== false;
 
 /** 一级或二级任一数组传入即聚焦（文章页） */
-const isFocusMode =
-	Array.isArray(focusTags) || Array.isArray(focusThemeTags);
+const isFocusMode = Array.isArray(focusTags) || Array.isArray(focusThemeTags);
 
-const normalize = (list?: string[]) =>
-	[...new Set((list ?? []).map((t) => t.trim()).filter(Boolean))];
+const normalize = (list?: string[]) => [
+	...new Set((list ?? []).map((t) => t.trim()).filter(Boolean)),
+];
 
 const primaryNames = normalize(focusTags);
 const themeNames = normalize(focusThemeTags).filter(

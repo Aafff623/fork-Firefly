@@ -1,6 +1,6 @@
 /** P1 运行时写回：进程内别名 → 词条 id */ // 中文注释：不写 Git；冷启动会丢
 
-import { getEntryById, entriesToItems } from "./l1-lexicon";
+import { entriesToItems, getEntryById } from "./l1-lexicon";
 import { normalizeQuery } from "./normalize";
 import type { SuggestItem } from "./types";
 

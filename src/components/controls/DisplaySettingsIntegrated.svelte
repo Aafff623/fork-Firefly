@@ -8,44 +8,45 @@ import {
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import {
+	getDefaultAvatarFrameId,
 	getDefaultBannerCarouselEnabled,
 	getDefaultBannerTitleEnabled,
 	getDefaultCardBorderEnabled,
 	getDefaultCardFollowThemeEnabled,
 	getDefaultGradientEnabled,
 	getDefaultHue,
+	getDefaultNoteCardEnabled,
 	getDefaultOverlayBlur,
 	getDefaultOverlayCardOpacity,
 	getDefaultOverlayOpacity,
 	getDefaultPetSelection,
 	getDefaultSakuraEnabled,
 	getDefaultWavesEnabled,
-	getDefaultAvatarFrameId,
 	getHue,
+	getPetRoamEnabled,
+	getStoredAvatarFrameId,
 	getStoredBannerCarouselEnabled,
 	getStoredBannerTitleEnabled,
 	getStoredCardBorderEnabled,
 	getStoredCardFollowThemeEnabled,
 	getStoredGradientEnabled,
+	getStoredNoteCardEnabled,
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
-	getPetRoamEnabled,
 	getStoredPetSelection,
 	getStoredSakuraEnabled,
 	getStoredTitleSoundEnabled,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
-	getStoredAvatarFrameId,
+	setAvatarFrameId,
 	setBannerCarouselEnabled,
 	setBannerTitleEnabled,
 	setCardBorderEnabled,
 	setCardFollowThemeEnabled,
 	setGradientEnabled,
-	getDefaultNoteCardEnabled,
-	getStoredNoteCardEnabled,
-	setNoteCardEnabled,
 	setHue,
+	setNoteCardEnabled,
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
@@ -55,7 +56,6 @@ import {
 	setTitleSoundEnabled,
 	setWallpaperMode,
 	setWavesEnabled,
-	setAvatarFrameId,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
@@ -320,7 +320,11 @@ let visibleTabs = $derived.by(() => {
 let showTabBar = $derived(visibleTabs.length > 1);
 // 外观关闭后默认打开壁纸页（导航栏入口已改为壁纸按钮）
 let activeTab = $state<TabKey>(
-	showThemeColor || allowLayoutSwitch || isCardBorderSwitchable || isCardFollowThemeSwitchable || isNoteCardSwitchable
+	showThemeColor ||
+		allowLayoutSwitch ||
+		isCardBorderSwitchable ||
+		isCardFollowThemeSwitchable ||
+		isNoteCardSwitchable
 		? "appearance"
 		: "wallpaper",
 );

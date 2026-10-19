@@ -13,14 +13,18 @@ export const DEFAULT_BALANCE_PARK_MIN_GAP_PX = 160;
 const BOOT_KEY = "__fireflySidebarBalanceBooted";
 
 export function isBrowsePostPath(
-	pathname: string = typeof window !== "undefined" ? window.location.pathname : "",
+	pathname: string = typeof window !== "undefined"
+		? window.location.pathname
+		: "",
 ): boolean {
 	return /\/posts\//.test(pathname);
 }
 
 /** 动态页（含 /dynamic/comments）：左溢出即失衡，不依赖日历下空隙 */
 export function isDynamicPath(
-	pathname: string = typeof window !== "undefined" ? window.location.pathname : "",
+	pathname: string = typeof window !== "undefined"
+		? window.location.pathname
+		: "",
 ): boolean {
 	return /\/dynamic(\/|$)/.test(pathname);
 }
@@ -68,11 +72,13 @@ export function isSidebarImbalanced(
 		return false;
 	}
 	const leftRect = left.getBoundingClientRect();
-	if (leftRect.height < 40 && !left.querySelector(".categories-widget--folded")) {
+	if (
+		leftRect.height < 40 &&
+		!left.querySelector(".categories-widget--folded")
+	) {
 		return false;
 	}
-	const leftOverflows =
-		estimateLeftStickyBottom(left) > window.innerHeight + 4;
+	const leftOverflows = estimateLeftStickyBottom(left) > window.innerHeight + 4;
 	if (!leftOverflows) return false;
 
 	// 动态页右侧有「动态目录」抬高日历，底边空隙常不足 minGap；
@@ -133,10 +139,7 @@ export function bootSidebarBalance(options?: {
 	let raf = 0;
 
 	const publish = (imbalanced: boolean) => {
-		document.documentElement.classList.toggle(
-			"sidebar-imbalanced",
-			imbalanced,
-		);
+		document.documentElement.classList.toggle("sidebar-imbalanced", imbalanced);
 		document.dispatchEvent(
 			new CustomEvent(
 				imbalanced ? SIDEBAR_IMBALANCE_EVENT : SIDEBAR_BALANCE_EVENT,

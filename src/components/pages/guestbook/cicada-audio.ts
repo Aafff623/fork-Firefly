@@ -142,7 +142,7 @@ export function updateCicadaAudio(
 	const { au, ctx } = audio;
 	const t = ctx.currentTime;
 	const { active, rps, drive, theta } = opts;
-	au.master.gain.setTargetAtTime(0.72 * Math.pow(active, 1.3), t, 0.07);
+	au.master.gain.setTargetAtTime(0.72 * active ** 1.3, t, 0.07);
 	const f0 = clamp(55 + rps * 17, 50, 195);
 	au.osc.frequency.setTargetAtTime(f0, t, 0.06);
 	au.osc.detune.setTargetAtTime(

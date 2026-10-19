@@ -1,4 +1,5 @@
 ---
+import { pinyin } from "pinyin-pro";
 /**
  * 合集总览页：只展示一级合集；二级挂在一级详情页内。
  * 默认按显示名拼音/英文 A→Z，不跟 collectionsConfig 数组顺序。
@@ -8,7 +9,6 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getTopLevelCollections } from "@/utils/collection-utils";
-import { pinyin } from "pinyin-pro";
 
 const CJK = /[\u4e00-\u9fff]/;
 

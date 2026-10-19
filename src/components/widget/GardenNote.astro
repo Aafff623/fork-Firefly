@@ -6,9 +6,9 @@
 import { Icon } from "astro-icon/components";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import { gardenNotes } from "@/data/garden-notes";
+import type { WidgetComponentConfig } from "@/types/config";
 import { getSiteDayIndex } from "@/utils/date-utils";
 import { url } from "@/utils/url-utils";
-import type { WidgetComponentConfig } from "@/types/config";
 
 interface Props {
 	class?: string;

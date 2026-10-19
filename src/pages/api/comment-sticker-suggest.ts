@@ -7,7 +7,10 @@
 import type { APIRoute } from "astro";
 import { commentConfig } from "@/config";
 import { lookupLexicon } from "@/lib/sticker-suggest/l1-lexicon";
-import { getDeepSeekEnv, suggestByDeepSeek } from "@/lib/sticker-suggest/l3-agent";
+import {
+	getDeepSeekEnv,
+	suggestByDeepSeek,
+} from "@/lib/sticker-suggest/l3-agent";
 import { normalizeQuery } from "@/lib/sticker-suggest/normalize";
 import type { SuggestResponse } from "@/lib/sticker-suggest/types";
 import { filterAllowedItems } from "@/lib/sticker-suggest/url-allowlist";

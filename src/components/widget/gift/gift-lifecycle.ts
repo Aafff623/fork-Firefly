@@ -74,14 +74,20 @@ function markCardGone(giftId: string): void {
 	lsSet(storageKeys(giftId).GONE, "1");
 }
 
-function removeAnnouncementCard(card: HTMLElement | null, giftId: string): void {
+function removeAnnouncementCard(
+	card: HTMLElement | null,
+	giftId: string,
+): void {
 	if (!card) return;
 	markCardGone(giftId);
 	card.remove();
 	notifySidebarLayout();
 }
 
-function fadeOutAnnouncementCard(card: HTMLElement | null, giftId: string): void {
+function fadeOutAnnouncementCard(
+	card: HTMLElement | null,
+	giftId: string,
+): void {
 	if (!card || card.dataset.giftFading === "1") return;
 	card.dataset.giftFading = "1";
 	markCardGone(giftId);
@@ -150,7 +156,10 @@ function setOverlayOriginFromStage(overlay: HTMLElement, stage: Element): void {
 	const stageCy = stageRect.top + stageRect.height / 2;
 	const ox = stageCx - vw / 2;
 	const oy = stageCy - vh / 2;
-	const startScale = Math.max(0.12, Math.min(stageRect.width / Math.min(448, vw - 32), 0.28));
+	const startScale = Math.max(
+		0.12,
+		Math.min(stageRect.width / Math.min(448, vw - 32), 0.28),
+	);
 
 	overlay.style.setProperty("--gift-ox", `${ox}px`);
 	overlay.style.setProperty("--gift-oy", `${oy}px`);
@@ -178,7 +187,11 @@ function openFullscreenEnvelope(
 	overlay: HTMLElement,
 	giftId: string,
 ): void {
-	if (overlay.dataset.giftOpening === "1" || overlay.classList.contains("is-open")) return;
+	if (
+		overlay.dataset.giftOpening === "1" ||
+		overlay.classList.contains("is-open")
+	)
+		return;
 	overlay.dataset.giftOpening = "1";
 
 	const stage = root.querySelector(".gift-surprise__stage") || root;
@@ -246,7 +259,10 @@ function confirmAndDismiss(
 
 function playGiftToastChime(): void {
 	try {
-		const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+		const Ctx =
+			window.AudioContext ||
+			(window as unknown as { webkitAudioContext?: typeof AudioContext })
+				.webkitAudioContext;
 		if (!Ctx) return;
 		const ctx = new Ctx();
 
@@ -285,7 +301,10 @@ function playGiftToastChime(): void {
 				setTimeout(() => ctx.close().catch(() => {}), 700);
 			};
 			if (ctx.state === "suspended") {
-				ctx.resume().then(go).catch(() => {});
+				ctx
+					.resume()
+					.then(go)
+					.catch(() => {});
 			} else {
 				go();
 			}
@@ -353,20 +372,26 @@ function initGiftToast(giftId: string): void {
 
 	const autoHide = setTimeout(dismiss, 2000);
 
-	toast.querySelector(".gift-surprise-toast__close")?.addEventListener("click", dismiss);
-	toast.querySelector(".gift-surprise-toast__go")?.addEventListener("click", () => {
-		lsSet(keys.SEEN, "1");
-		const card = getAnnouncementCard(document.querySelector("[data-gift-card-id]"));
-		const gift = document.querySelector(".gift-surprise");
-		card?.scrollIntoView({ behavior: "smooth", block: "center" });
-		card?.classList.add("announcement-widget--pulse");
-		gift?.classList.add("gift-surprise--invite");
-		setTimeout(() => {
-			card?.classList.remove("announcement-widget--pulse");
-			gift?.classList.remove("gift-surprise--invite");
-		}, 1800);
-		dismiss();
-	});
+	toast
+		.querySelector(".gift-surprise-toast__close")
+		?.addEventListener("click", dismiss);
+	toast
+		.querySelector(".gift-surprise-toast__go")
+		?.addEventListener("click", () => {
+			lsSet(keys.SEEN, "1");
+			const card = getAnnouncementCard(
+				document.querySelector("[data-gift-card-id]"),
+			);
+			const gift = document.querySelector(".gift-surprise");
+			card?.scrollIntoView({ behavior: "smooth", block: "center" });
+			card?.classList.add("announcement-widget--pulse");
+			gift?.classList.add("gift-surprise--invite");
+			setTimeout(() => {
+				card?.classList.remove("announcement-widget--pulse");
+				gift?.classList.remove("gift-surprise--invite");
+			}, 1800);
+			dismiss();
+		});
 }
 
 function bindEscOnce(): void {
@@ -375,10 +400,16 @@ function bindEscOnce(): void {
 	document.addEventListener("keydown", (e) => {
 		if (e.key !== "Escape") return;
 		const overlay = document.getElementById("gift-envelope-overlay");
-		if (!(overlay instanceof HTMLElement) || !overlay.classList.contains("is-open")) return;
+		if (
+			!(overlay instanceof HTMLElement) ||
+			!overlay.classList.contains("is-open")
+		)
+			return;
 		if (overlay.classList.contains("is-leaving")) return;
 		const giftId = overlay.dataset.giftId;
-		const root = document.querySelector(`.gift-surprise[data-gift-id="${giftId}"]`);
+		const root = document.querySelector(
+			`.gift-surprise[data-gift-id="${giftId}"]`,
+		);
 		if (!giftId || !(root instanceof HTMLElement)) return;
 		e.preventDefault();
 		confirmAndDismiss(overlay, root, giftId);
@@ -387,7 +418,8 @@ function bindEscOnce(): void {
 
 function initGiftCardLifecycle(): void {
 	const cardEl = document.querySelector("[data-gift-card-id]");
-	const giftId = cardEl instanceof HTMLElement ? cardEl.dataset.giftCardId : null;
+	const giftId =
+		cardEl instanceof HTMLElement ? cardEl.dataset.giftCardId : null;
 	if (!giftId) return;
 
 	const keys = storageKeys(giftId);
@@ -398,13 +430,19 @@ function initGiftCardLifecycle(): void {
 			card.remove();
 			notifySidebarLayout();
 		}
-		document.querySelectorAll("#gift-envelope-overlay").forEach((n) => n.remove());
+		document.querySelectorAll("#gift-envelope-overlay").forEach((n) => {
+			n.remove();
+		});
 		lockBodyScroll(false);
 		return;
 	}
 
-	const root = document.querySelector(`.gift-surprise[data-gift-id="${giftId}"]`);
-	const overlays = Array.from(document.querySelectorAll("#gift-envelope-overlay"));
+	const root = document.querySelector(
+		`.gift-surprise[data-gift-id="${giftId}"]`,
+	);
+	const overlays = Array.from(
+		document.querySelectorAll("#gift-envelope-overlay"),
+	);
 	if (overlays.length > 1) {
 		const keep =
 			overlays.find((n) => n.closest("widget-layout.announcement-widget")) ||
@@ -414,7 +452,8 @@ function initGiftCardLifecycle(): void {
 		});
 	}
 	const overlay = document.getElementById("gift-envelope-overlay");
-	if (!(root instanceof HTMLElement) || !(overlay instanceof HTMLElement)) return;
+	if (!(root instanceof HTMLElement) || !(overlay instanceof HTMLElement))
+		return;
 
 	if (root.dataset.giftBound === "1") return;
 	root.dataset.giftBound = "1";
@@ -422,7 +461,8 @@ function initGiftCardLifecycle(): void {
 	const check = root.querySelector(".gift-surprise__check");
 	const badge = root.querySelector(".gift-surprise__opened-badge");
 	const hit = root.querySelector(".gift-surprise__hit");
-	if (!(check instanceof HTMLInputElement) || !(badge instanceof HTMLElement)) return;
+	if (!(check instanceof HTMLInputElement) || !(badge instanceof HTMLElement))
+		return;
 
 	const syncOpenedBadge = () => {
 		const opened = lsGet(keys.OPENED) === "1";
@@ -465,7 +505,10 @@ function initGiftCardLifecycle(): void {
 		if (btn.dataset.dismissBound === "1") return;
 		btn.dataset.dismissBound = "1";
 		btn.addEventListener("click", () => {
-			if (overlay.classList.contains("is-open") || overlay.parentElement === document.body) {
+			if (
+				overlay.classList.contains("is-open") ||
+				overlay.parentElement === document.body
+			) {
 				disposeOverlay(overlay);
 			}
 			const card = getAnnouncementCard(btn);
@@ -477,7 +520,8 @@ function initGiftCardLifecycle(): void {
 export function bootGiftUi(): void {
 	initGiftCardLifecycle();
 	const cardEl = document.querySelector("[data-gift-card-id]");
-	const giftId = cardEl instanceof HTMLElement ? cardEl.dataset.giftCardId : null;
+	const giftId =
+		cardEl instanceof HTMLElement ? cardEl.dataset.giftCardId : null;
 	if (giftId) initGiftToast(giftId);
 }
 

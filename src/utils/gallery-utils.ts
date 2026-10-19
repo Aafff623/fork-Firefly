@@ -33,7 +33,9 @@ function albumDir(albumId: string): string {
 }
 
 /** 读取 photos.json；缺文件或坏 JSON 时返回空表 */
-export function loadAlbumPhotoMeta(albumId: string): Map<string, GalleryPhotoMeta> {
+export function loadAlbumPhotoMeta(
+	albumId: string,
+): Map<string, GalleryPhotoMeta> {
 	const metaPath = path.join(albumDir(albumId), "photos.json");
 	const map = new Map<string, GalleryPhotoMeta>();
 	if (!fs.existsSync(metaPath)) return map;
@@ -100,7 +102,8 @@ export function scanAlbumPhotoEntries(albumId: string): GalleryPhotoEntry[] {
 			.map((line) => line.trim())
 			.filter((line) => line && !line.startsWith("#"))
 			.map((remoteUrl) => {
-				const m = metaMap.get(remoteUrl) || metaMap.get(path.basename(remoteUrl));
+				const m =
+					metaMap.get(remoteUrl) || metaMap.get(path.basename(remoteUrl));
 				return {
 					src: remoteUrl,
 					file: remoteUrl,

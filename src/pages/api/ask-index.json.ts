@@ -1,6 +1,6 @@
-import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { getEffectivePostTime } from "@utils/content-utils";
+import type { APIRoute } from "astro";
 import { stripMd } from "@/utils/ask-retrieve";
 
 /**
@@ -25,9 +25,7 @@ export const GET: APIRoute = async () => {
 			desc: (p.data.description || "").trim(),
 			/** tags/themeTags 分开保留（AI 搜索需要） */
 			tags: (p.data.tags || []).map((t) => t.trim()).filter(Boolean),
-			themeTags: (p.data.themeTags || [])
-				.map((t) => t.trim())
-				.filter(Boolean),
+			themeTags: (p.data.themeTags || []).map((t) => t.trim()).filter(Boolean),
 			category: p.data.category || "",
 			/** epoch ms；updated 缺省为 null */
 			published: p.data.published?.getTime?.() ?? 0,

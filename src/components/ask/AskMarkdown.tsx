@@ -12,8 +12,8 @@ import rehypeKatex from "rehype-katex";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { SourceHoverCard } from "./Sources";
 import type { AskSource } from "./ask-types";
+import { SourceHoverCard } from "./Sources";
 
 /** 模型偶尔仍输出「链接：/posts/…」纯文本 → 收成可点 Markdown */
 export function normalizeAskMarkdown(src: string): string {

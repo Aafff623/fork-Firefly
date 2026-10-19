@@ -12,6 +12,7 @@ import {
 	WALLPAPER_NONE,
 	WALLPAPER_OVERLAY,
 } from "@constants/constants";
+import { isPickerPetId } from "@/lib/pets/builtinPets";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
 import {
 	backgroundWallpaper,
@@ -21,7 +22,6 @@ import {
 	siteConfig,
 } from "../config";
 import type { AvatarFrameId } from "../types/profileConfig";
-import { isPickerPetId } from "@/lib/pets/builtinPets";
 import { isHomePage as checkIsHomePage } from "./layout-utils";
 
 // Declare global functions
@@ -577,10 +577,10 @@ export function applyWallpaperModeToDocument(
 		// 根据模式添加相应的CSS类
 		switch (mode) {
 			case WALLPAPER_BANNER:
-			body.classList.add("enable-banner");
-			body.classList.add("wallpaper-transparent");
-			showBannerMode(true);
-			break;
+				body.classList.add("enable-banner");
+				body.classList.add("wallpaper-transparent");
+				showBannerMode(true);
+				break;
 			case WALLPAPER_FULLSCREEN:
 				body.classList.add("no-banner-layout");
 				showFullscreenMode(animate);
@@ -1771,8 +1771,7 @@ export function getStoredPetSelection(): string {
 
 /** 写入选宠并广播，供 SpritePet 即时换皮 */
 export function setPetSelection(petId: string): void {
-	const value =
-		petId === "default" || isPickerPetId(petId) ? petId : "default";
+	const value = petId === "default" || isPickerPetId(petId) ? petId : "default";
 	if (
 		typeof localStorage !== "undefined" &&
 		typeof localStorage.setItem === "function"

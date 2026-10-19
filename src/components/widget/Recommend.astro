@@ -42,17 +42,20 @@ const issue = `INDEX · ${i18n(I18nKey.smartRecommend)}`;
 const emptyText = i18n(I18nKey.noRecommendedPosts);
 const apiUrl = url("/api/allPostMeta.json");
 
-const initialRows: RelatedPostMeta[] = relatedPosts.slice(0, limit).map((p) => ({
-	id: p.id,
-	title: p.data.title,
-	category: (p.data.category || "NOTE").trim(),
-	published: formatDateToYYYYMMDD(p.data.published),
-}));
+const initialRows: RelatedPostMeta[] = relatedPosts
+	.slice(0, limit)
+	.map((p) => ({
+		id: p.id,
+		title: p.data.title,
+		category: (p.data.category || "NOTE").trim(),
+		published: formatDateToYYYYMMDD(p.data.published),
+	}));
 
 const hideRowCategoryKeys =
 	initialRows.length > 0 &&
 	initialRows.every(
-		(row) => row.category.toLowerCase() === initialRows[0].category.toLowerCase(),
+		(row) =>
+			row.category.toLowerCase() === initialRows[0].category.toLowerCase(),
 	);
 ---
 

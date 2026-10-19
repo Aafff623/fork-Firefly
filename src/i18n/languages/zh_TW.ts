@@ -345,8 +345,7 @@ export const zh_TW: Translation = {
 	[Key.settingsTabPets]: "桌寵",
 
 	[Key.petRoamTitle]: "桌寵奔跑",
-	[Key.petRoamHint]:
-		"關閉時固定站在日曆右下角，不隨頁面捲動；開啟後自由遊走。",
+	[Key.petRoamHint]: "關閉時固定站在日曆右下角，不隨頁面捲動；開啟後自由遊走。",
 	[Key.petPickerTitle]: "選擇桌寵",
 	[Key.petPickerDefault]: "預設 · DeepSeek",
 	[Key.petPickerDefaultHint]: "瀏覽 Maid · 文章 OpenPet",

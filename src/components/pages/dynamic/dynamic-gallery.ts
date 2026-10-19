@@ -34,9 +34,9 @@ export function registerDynamicGallery(): void {
 				: null;
 			// 已初始化时清掉 source 里 React 重渲出来的重复 img
 			if (this.dataset.ready) {
-				source
-					?.querySelectorAll<HTMLImageElement>("img")
-					.forEach((img) => img.remove());
+				source?.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+					img.remove();
+				});
 				return;
 			}
 			if (!source) return;

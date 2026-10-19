@@ -24,13 +24,16 @@ type ForwardRefComponent<Element, Props> = React.ForwardRefExoticComponent<
 
 // Astro SSR 注入的 window 桩缺 addEventListener/removeEventListener，
 // framer-motion 的 projection 会因此崩；SSR 下补空实现（客户端桩本来就有，不受影响）
-if (typeof window !== "undefined" && typeof (window as unknown as Record<string, unknown>).addEventListener !== "function") {
+if (
+	typeof window !== "undefined" &&
+	typeof (window as unknown as Record<string, unknown>).addEventListener !==
+		"function"
+) {
 	const noop = () => {};
 	const w = window as unknown as Record<string, unknown>;
 	w.addEventListener = noop;
 	w.removeEventListener = noop;
 }
-
 
 const timelineVariants = cva("ff-tl relative flex w-full flex-col", {
 	variants: {
@@ -61,11 +64,11 @@ const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
 
 		return (
 			<ol
-					ref={ref}
-					aria-label="Timeline"
-					className={cn(timelineVariants({ size }), "ff-tl-root", className)}
-					{...props}
-				>
+				ref={ref}
+				aria-label="Timeline"
+				className={cn(timelineVariants({ size }), "ff-tl-root", className)}
+				{...props}
+			>
 				{React.Children.map(children, (child, index) => {
 					if (
 						React.isValidElement(child) &&
@@ -188,7 +191,10 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 								<AlertCircle className="ff-tl-dot-svg" />
 							</div>
 							{showConnector && (
-								<TimelineConnector status="pending" className="ff-tl-connector" />
+								<TimelineConnector
+									status="pending"
+									className="ff-tl-connector"
+								/>
 							)}
 						</div>
 						<div className="ff-tl-panel card-base">
@@ -253,7 +259,9 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 				initial={reduceMotion ? false : { opacity: 0, y: 16 }}
 				animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
 				transition={{ duration: 0.35, ease: "easeOut" }}
-				{...(status === "in-progress" ? { "aria-current": "step" as const } : {})}
+				{...(status === "in-progress"
+					? { "aria-current": "step" as const }
+					: {})}
 				{...filteredProps}
 			>
 				<div className="ff-tl-grid">
@@ -453,11 +461,7 @@ const TimelineEmpty = React.forwardRef<
 	HTMLDivElement,
 	React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => (
-	<div
-		ref={ref}
-		className={cn("ff-tl-empty card-base", className)}
-		{...props}
-	>
+	<div ref={ref} className={cn("ff-tl-empty card-base", className)} {...props}>
 		<p>{children || "No timeline items to display"}</p>
 	</div>
 )) as ForwardRefComponent<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>;
@@ -465,13 +469,13 @@ TimelineEmpty.displayName = "TimelineEmpty";
 
 export {
 	Timeline,
-	TimelineItem,
 	TimelineConnector,
-	TimelineHeader,
-	TimelineTitle,
-	TimelineIcon,
-	TimelineDescription,
 	TimelineContent,
-	TimelineTime,
+	TimelineDescription,
 	TimelineEmpty,
+	TimelineHeader,
+	TimelineIcon,
+	TimelineItem,
+	TimelineTime,
+	TimelineTitle,
 };

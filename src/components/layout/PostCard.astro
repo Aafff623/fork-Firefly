@@ -11,9 +11,9 @@ import { tagAccentStyle } from "@/utils/accent-from-label";
 import type { PinKind } from "@/utils/content-utils";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getApiUrlList, processCoverImageSync } from "@/utils/image-utils";
+import { getPostListSummary } from "@/utils/post-list-summary";
 import { decorateListTitle } from "@/utils/title-mood";
 import { getFileDirFromPath, getTagUrl } from "@/utils/url-utils";
-import { getPostListSummary } from "@/utils/post-list-summary";
 
 interface Props {
 	class?: string;
@@ -113,10 +113,11 @@ const metaMaxTags = showTagsInRowMeta
 const descriptionClampLines = String(descriptionLines);
 const shouldClampDescription = descriptionLines > 0;
 
-const { description: descriptionText, words, minutes } = getPostListSummary(
-	entry.body,
-	description,
-);
+const {
+	description: descriptionText,
+	words,
+	minutes,
+} = getPostListSummary(entry.body, description);
 const railSection = (category || i18n(I18nKey.uncategorized)).trim() || "notes";
 const railTags = (tags || []).map((t) => t.trim()).filter(Boolean);
 const railWordsLabel =

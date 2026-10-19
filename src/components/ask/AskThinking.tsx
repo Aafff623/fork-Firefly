@@ -18,8 +18,8 @@ import {
 	Sparkles,
 } from "lucide-react";
 import { type ReactElement, useEffect, useRef, useState } from "react";
-import { SourceHoverCard } from "./Sources";
 import type { AskHit, TraceKind, TraceStep } from "./ask-types";
+import { SourceHoverCard } from "./Sources";
 
 const KIND_ICON: Record<TraceKind, LucideIcon> = {
 	parse: Brain,
@@ -149,20 +149,20 @@ export function AskThinking({
 				) : (
 					<Brain className="ask-think-trigger-icon" aria-hidden="true" />
 				)}
-					<span className="ask-think-trigger-text">
-						{running
-							? reasoning
-								? "深度思考中…"
-								: "思考中…"
-							: durationText
-								? `已深度思考（${durationText}）`
-								: "已深度思考"}
+				<span className="ask-think-trigger-text">
+					{running
+						? reasoning
+							? "深度思考中…"
+							: "思考中…"
+						: durationText
+							? `已深度思考（${durationText}）`
+							: "已深度思考"}
+				</span>
+				{!running && hitCount > 0 ? (
+					<span className="ask-think-trigger-hits">
+						· 找到 {hitCount} 篇相关笔记
 					</span>
-					{!running && hitCount > 0 ? (
-						<span className="ask-think-trigger-hits">
-							· 找到 {hitCount} 篇相关笔记
-						</span>
-					) : null}
+				) : null}
 				<ChevronDown className="ask-think-chevron" aria-hidden="true" />
 			</button>
 

@@ -208,7 +208,8 @@ export const collectionsConfig: CollectionsConfig = {
 		{
 			slug: "java-fullstack-distributed",
 			name: "分布式进阶",
-			description: "分布式原理、Git、Redis、Kafka、MongoDB、Nginx、Prometheus 与演进实战。",
+			description:
+				"分布式原理、Git、Redis、Kafka、MongoDB、Nginx、Prometheus 与演进实战。",
 			emoji: "🌐",
 			cover: "/assets/collections/java-fullstack-distributed.jpg",
 			parent: "java-fullstack",
@@ -216,7 +217,8 @@ export const collectionsConfig: CollectionsConfig = {
 		{
 			slug: "java-fullstack-microservices",
 			name: "前后端分离与微服务",
-			description: "Vue 3、前后端分离实战、微服务架构设计、Spring Cloud 与改造实战。",
+			description:
+				"Vue 3、前后端分离实战、微服务架构设计、Spring Cloud 与改造实战。",
 			emoji: "🧩",
 			cover: "/assets/collections/java-fullstack-microservices.jpg",
 			parent: "java-fullstack",
@@ -406,8 +408,7 @@ export const collectionsConfig: CollectionsConfig = {
 		{
 			slug: "site-series",
 			name: "本站系列",
-			description:
-				"园主本站：部署与域名、桌宠、发文流水线等站点自身记录。",
+			description: "园主本站：部署与域名、桌宠、发文流水线等站点自身记录。",
 			emoji: "🏡",
 			cover: "/assets/collections/site-series.jpg",
 		},

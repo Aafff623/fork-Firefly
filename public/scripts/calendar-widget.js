@@ -126,8 +126,8 @@
       return;
     }
 
-    /** 会话期预热上限：单页最多请求 N 张不同 GIF，达到后仅在本已缓存集合内轮换 */
-    const WARM_LIMIT = 3;
+    /** 会话期预热上限：当前候选池中的每张 GIF 最多请求一次，之后仅在已缓存集合内轮换 */
+    const WARM_LIMIT = gifs.length;
     function warmPreload(url) {
       const key = absoluteUrl(url);
       const status = cache[key];

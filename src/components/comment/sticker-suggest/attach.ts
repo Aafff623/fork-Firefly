@@ -81,7 +81,9 @@ function attachToEditor(
 	}
 	// 只保留一个视觉镜像，删掉多余叠层 // 中文注释
 	const mirrors = [...host.querySelectorAll(".waline-editor-visual")];
-	mirrors.slice(1).forEach((node) => node.remove());
+	mirrors.slice(1).forEach((node) => {
+		node.remove();
+	});
 
 	/** 最近一次可应用的触发词区间（供 Tab 插在词后） */ // 中文注释
 	let lastTokenRange: { start: number; end: number } | null = null;

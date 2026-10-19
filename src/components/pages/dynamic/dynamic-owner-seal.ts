@@ -71,7 +71,14 @@ export async function burstOwnerSealConfetti(
 	if (prefersReducedMotion()) return;
 	const box = captureCardNorm(cardEl);
 	const confetti = (await import("canvas-confetti")).default;
-	const colors = ["#ffb7c5", "#ff6b6b", "#ffe4ec", "#fdfaf3", "#e0483d", "#ecd9ae"];
+	const colors = [
+		"#ffb7c5",
+		"#ff6b6b",
+		"#ffe4ec",
+		"#fdfaf3",
+		"#e0483d",
+		"#ecd9ae",
+	];
 
 	const cx = box.x + box.w * 0.5;
 	const cy = box.y + box.h * 0.42;
@@ -80,7 +87,11 @@ export async function burstOwnerSealConfetti(
 	const top = box.y + box.h * 0.22;
 	const mid = box.y + box.h * 0.55;
 
-	const burst = (origin: { x: number; y: number }, count: number, spread: number) => {
+	const burst = (
+		origin: { x: number; y: number },
+		count: number,
+		spread: number,
+	) => {
 		confetti({
 			particleCount: count,
 			spread,

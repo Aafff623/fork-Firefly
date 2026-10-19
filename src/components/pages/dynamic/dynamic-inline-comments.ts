@@ -118,9 +118,7 @@ function detachOtherComposers(keep: HTMLElement) {
 		)
 		.forEach((el) => {
 			if (el === keep) return;
-			(
-				el as HTMLElement & { closeComposer?: () => void }
-			).closeComposer?.();
+			(el as HTMLElement & { closeComposer?: () => void }).closeComposer?.();
 		});
 }
 
@@ -156,8 +154,8 @@ export function registerDynamicInlineComments(): () => void {
 			this.dataset.ready = "true";
 
 			// 暴露给全局「只留一个写作框」
-			(this.el as HTMLElement & { closeComposer?: () => void }).closeComposer = () =>
-				this.setComposerOpen(false);
+			(this.el as HTMLElement & { closeComposer?: () => void }).closeComposer =
+				() => this.setComposerOpen(false);
 
 			if (isInOrNearViewport(this.el, 280)) {
 				void this.ensureLoaded();
@@ -233,8 +231,7 @@ export function registerDynamicInlineComments(): () => void {
 				panel.removeAttribute("hidden");
 			}
 			const listHost =
-				panel.querySelector<HTMLElement>("[data-comment-list-host]") ||
-				panel;
+				panel.querySelector<HTMLElement>("[data-comment-list-host]") || panel;
 			if (listHost === panel) {
 				panel.innerHTML = `<div class="dynamic-agent-comments is-loading" data-comment-list-host aria-busy="true">加载回复…</div>${composerHtml}`;
 			} else {
@@ -343,10 +340,7 @@ export function registerDynamicInlineComments(): () => void {
 			}
 			const ownerName = (this.dataset.ownerName || "").trim();
 			const nick = comment.nick.trim();
-			if (
-				ownerName &&
-				nick.toLowerCase() === ownerName.toLowerCase()
-			) {
+			if (ownerName && nick.toLowerCase() === ownerName.toLowerCase()) {
 				return {
 					name: ownerName,
 					avatar: this.dataset.ownerAvatar || GUEST_AVATAR,
@@ -471,7 +465,11 @@ export function registerDynamicInlineComments(): () => void {
 					window.location.origin,
 				);
 			};
-			document.addEventListener("pointerdown", this.#outsidePointerListener, true);
+			document.addEventListener(
+				"pointerdown",
+				this.#outsidePointerListener,
+				true,
+			);
 		}
 
 		private teardownOutsidePointer() {
@@ -522,7 +520,9 @@ export function registerDynamicInlineComments(): () => void {
 
 	return () => {
 		observer.disconnect();
-		controllers.forEach((controller) => controller.disconnect());
+		controllers.forEach((controller) => {
+			controller.disconnect();
+		});
 		controllers.clear();
 	};
 }

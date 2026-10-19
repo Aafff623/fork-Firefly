@@ -1,7 +1,4 @@
-import type {
-	DualRoutePetId,
-	PickerPetId,
-} from "@/lib/pets/builtinPets";
+import type { DualRoutePetId, PickerPetId } from "@/lib/pets/builtinPets";
 
 export type SpritePetRoamConfig = {
 	/** 浏览态是否在视口内侧栏卡之间游走 */

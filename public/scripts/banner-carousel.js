@@ -318,8 +318,28 @@
                 emitBannerSlide(bootIdx, getTotalSlides());
             }
 
-            // 启动
+            function whenSecondary(cb) {
+                var phase = document.documentElement.getAttribute('data-boot-phase');
+                if (phase === 'secondary' || !phase) {
+                    cb();
+                    return;
+                }
+                var done = false;
+                var finish = function () {
+                    if (done) return;
+                    done = true;
+                    window.removeEventListener('firefly:boot-phase', onPhase);
+                    cb();
+                };
+                var onPhase = function (e) {
+                    if (e.detail && e.detail.phase === 'secondary') finish();
+                };
+                window.addEventListener('firefly:boot-phase', onPhase);
+                window.setTimeout(finish, 15000);
+            }
+
+            // 下一张等次要阶段再自动切，避免和首张壁纸抢带宽
             if (isCarouselEnabled() && isBannerWallpaperMode()) {
-                startAutoPlay();
+                whenSecondary(startAutoPlay);
             }
         })();

@@ -114,10 +114,7 @@ export function escapeHtmlAttr(value: string): string {
  */
 export function renderBadgeInnerHTML(item: TocItem): string {
 	if (item.badgeKind === "index") {
-		return (
-			item.badgeLabel ??
-			formatTocBadgeLabel(item.badgeIndex ?? 0)
-		);
+		return item.badgeLabel ?? formatTocBadgeLabel(item.badgeIndex ?? 0);
 	}
 	if (item.badgeKind === "dot") return '<span class="toc-badge-dot"></span>';
 	return '<span class="toc-badge-dot toc-badge-dot-sm"></span>';

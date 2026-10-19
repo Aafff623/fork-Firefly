@@ -244,14 +244,7 @@
 		},
 		{
 			"id": "jue-jue-zi",
-			"keywords": [
-				"绝绝子",
-				"绝了",
-				"绝绝",
-				"太绝了",
-				"绝了啊",
-				"YYDS级"
-			],
+			"keywords": ["绝绝子", "绝了", "绝绝", "太绝了", "绝了啊", "YYDS级"],
 			"title": "绝绝子",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_lovely.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_lovely.png",
@@ -413,13 +406,7 @@
 		},
 		{
 			"id": "emmm",
-			"keywords": [
-				"emmm",
-				"嗯嗯",
-				"嗯",
-				"那啥",
-				"这个嘛"
-			],
+			"keywords": ["emmm", "嗯嗯", "嗯", "那啥", "这个嘛"],
 			"title": "emmm",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_think.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_think.png",
@@ -491,14 +478,7 @@
 		},
 		{
 			"id": "hai-xiu",
-			"keywords": [
-				"害羞",
-				"脸红",
-				"害臊",
-				"羞羞",
-				"脸红红",
-				"羞死了"
-			],
+			"keywords": ["害羞", "脸红", "害臊", "羞羞", "脸红红", "羞死了"],
 			"title": "害羞",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_shy.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_shy.png",
@@ -609,14 +589,7 @@
 		},
 		{
 			"id": "fan-bai-yan",
-			"keywords": [
-				"翻白眼",
-				"无语子",
-				"白眼",
-				"无语子啊",
-				"翻个白眼",
-				"丑拒"
-			],
+			"keywords": ["翻白眼", "无语子", "白眼", "无语子啊", "翻个白眼", "丑拒"],
 			"title": "翻白眼",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_rolling_eyes.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_rolling_eyes.png",
@@ -676,13 +649,7 @@
 		},
 		{
 			"id": "zai-jian-qian",
-			"keywords": [
-				"发财",
-				"暴富",
-				"暴富了",
-				"发财了",
-				"躺赚"
-			],
+			"keywords": ["发财", "暴富", "暴富了", "发财了", "躺赚"],
 			"title": "发财",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_money.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_money.png",
@@ -691,14 +658,7 @@
 		},
 		{
 			"id": "da-lian",
-			"keywords": [
-				"打脸",
-				"啪",
-				"打脸了",
-				"啪啪打脸",
-				"打脸现场",
-				"补刀"
-			],
+			"keywords": ["打脸", "啪", "打脸了", "啪啪打脸", "打脸现场", "补刀"],
 			"title": "打脸",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_slap.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_slap.png",
@@ -707,14 +667,7 @@
 		},
 		{
 			"id": "wa-ku",
-			"keywords": [
-				"挖鼻",
-				"呵呵",
-				"呵呵呵",
-				"干笑",
-				"嘿嘿",
-				"呵呵哒"
-			],
+			"keywords": ["挖鼻", "呵呵", "呵呵呵", "干笑", "嘿嘿", "呵呵哒"],
 			"title": "挖鼻",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_pick_nose.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_pick_nose.png",
@@ -747,14 +700,7 @@
 		},
 		{
 			"id": "xiao-ku",
-			"keywords": [
-				"苦笑",
-				"勉强",
-				"苦笑了",
-				"勉强笑",
-				"尬笑",
-				"强颜欢笑"
-			],
+			"keywords": ["苦笑", "勉强", "苦笑了", "勉强笑", "尬笑", "强颜欢笑"],
 			"title": "苦笑",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_chuckle.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_chuckle.png",
@@ -803,15 +749,7 @@
 		},
 		{
 			"id": "wei-xiao",
-			"keywords": [
-				"微笑",
-				"嘻嘻",
-				"嘿嘿嘿",
-				"偷笑",
-				"坏笑",
-				"滑稽",
-				"诶嘿"
-			],
+			"keywords": ["微笑", "嘻嘻", "嘿嘿嘿", "偷笑", "坏笑", "滑稽", "诶嘿"],
 			"title": "微笑",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_smirk.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_smirk.png",
@@ -820,12 +758,7 @@
 		},
 		{
 			"id": "liu-han",
-			"keywords": [
-				"流汗",
-				"冷汗",
-				"冷汗了",
-				"尴尬汗"
-			],
+			"keywords": ["流汗", "冷汗", "冷汗了", "尴尬汗"],
 			"title": "流汗",
 			"src": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_sweat.png",
 			"preview": "https://unpkg.com/@waline/emojis@1.4.0/bilibili/bb_sweat.png",

@@ -10,6 +10,7 @@
     "includes": [
       "**",
       "!**/src/**/*.css",
+      "!**/*.svg",
       "!**/src/public/**/*",
       "!**/dist/**/*",
       "!**/node_modules/**/*",

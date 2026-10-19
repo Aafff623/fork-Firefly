@@ -34,10 +34,12 @@ const giftMessage =
 function giftFingerprint(parts: string[]): string {
 	const s = parts.join("|");
 	let h = 0;
-	for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+	for (let i = 0; i < s.length; i++)
+		h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
 	return `g${(h >>> 0).toString(36)}`;
 }
-const giftId = loveLetter?.version || giftFingerprint([giftHeading, giftMessage]);
+const giftId =
+	loveLetter?.version || giftFingerprint([giftHeading, giftMessage]);
 ---
 
 <WidgetLayout

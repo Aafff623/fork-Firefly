@@ -264,7 +264,9 @@ export async function getRelatedPosts(
 	);
 
 	const currentTags = new Set(
-		(currentPost.data.tags || []).map((t) => t.trim().toLowerCase()).filter(Boolean),
+		(currentPost.data.tags || [])
+			.map((t) => t.trim().toLowerCase())
+			.filter(Boolean),
 	);
 	const currentTokens = tokenizeTitle(currentPost.data.title);
 	const currentCategory = (currentPost.data.category || "").trim();
@@ -288,10 +290,8 @@ export async function getRelatedPosts(
 			jaccardSimilarity(currentTokens, postTokens) * 100;
 
 		const effectiveMs = getEffectivePostTime(post.data);
-		const daysSince =
-			(now - effectiveMs) / (1000 * 60 * 60 * 24);
-		const timeFreshnessScore =
-			30 * Math.exp((-Math.LN2 * daysSince) / 180);
+		const daysSince = (now - effectiveMs) / (1000 * 60 * 60 * 24);
+		const timeFreshnessScore = 30 * Math.exp((-Math.LN2 * daysSince) / 180);
 
 		const postCategory = (post.data.category || "").trim();
 		const categoryBonus =
@@ -332,7 +332,9 @@ export async function getRelatedPosts(
 
 	scored.sort((a, b) => b.totalScore - a.totalScore);
 
-	const withTagMatch = scored.filter((s) => s.tagMatchScore > 0 || s.shared > 0);
+	const withTagMatch = scored.filter(
+		(s) => s.tagMatchScore > 0 || s.shared > 0,
+	);
 	const withoutTagMatch = scored.filter(
 		(s) => s.tagMatchScore === 0 && s.shared === 0,
 	);
@@ -420,7 +422,9 @@ export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
 			};
 		});
 
-	scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score);
+	scored.sort(
+		(a: { score: number }, b: { score: number }) => b.score - a.score,
+	);
 	return scored.slice(0, Math.max(1, maxCount)).map((s) => ({
 		id: s.post.id,
 		data: s.post.data,

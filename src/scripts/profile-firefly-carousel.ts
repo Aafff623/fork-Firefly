@@ -197,12 +197,14 @@ let live: Session | null = null;
 let swupBound = false;
 
 function fflyCtor(): FflyCtor | undefined {
-	return (window as unknown as { FireflyCharacter?: FflyCtor }).FireflyCharacter;
+	return (window as unknown as { FireflyCharacter?: FflyCtor })
+		.FireflyCharacter;
 }
 
 function overlayMap(): Record<string, string> {
-	const fx = (window as unknown as { FFLY_FX?: { MAP?: Record<string, string> } })
-		.FFLY_FX;
+	const fx = (
+		window as unknown as { FFLY_FX?: { MAP?: Record<string, string> } }
+	).FFLY_FX;
 	return fx?.MAP ?? {};
 }
 
@@ -257,8 +259,7 @@ function injectScript(src: string): Promise<void> {
 
 function vendorForcedOff(): boolean {
 	return (
-		import.meta.env.DEV &&
-		new URLSearchParams(location.search).has("ff-no-bot")
+		import.meta.env.DEV && new URLSearchParams(location.search).has("ff-no-bot")
 	);
 }
 
@@ -473,7 +474,10 @@ function watchMotto(S: Session): void {
 	S.mottoMo = new MutationObserver(() => {
 		S.mottoLast = performance.now();
 	});
-	S.mottoMo.observe(shell, { attributes: true, attributeFilter: ["data-mode"] });
+	S.mottoMo.observe(shell, {
+		attributes: true,
+		attributeFilter: ["data-mode"],
+	});
 }
 
 function scheduleVariant(
@@ -482,13 +486,14 @@ function scheduleVariant(
 	trickKind?: string | null,
 ): void {
 	S.variantDue =
-		performance.now() + trickPadMs(trickKind) + span(b.short ? JOLT_MS : VARIANT_MS);
+		performance.now() +
+		trickPadMs(trickKind) +
+		span(b.short ? JOLT_MS : VARIANT_MS);
 }
 
 function scheduleBucket(S: Session): void {
 	const b = bucketOf(S.bucket);
-	S.bucketDue =
-		performance.now() + span(b.short ? JOLT_BUCKET_MS : BUCKET_MS);
+	S.bucketDue = performance.now() + span(b.short ? JOLT_BUCKET_MS : BUCKET_MS);
 }
 
 function scheduleMacro(S: Session): void {
@@ -521,7 +526,8 @@ async function applyVariant(S: Session, v: Variant): Promise<void> {
 async function playIndex(S: Session, bi: number, vi: number): Promise<void> {
 	S.bucket = bi;
 	const b = bucketOf(bi);
-	S.variant = ((vi % b.variants.length) + b.variants.length) % b.variants.length;
+	S.variant =
+		((vi % b.variants.length) + b.variants.length) % b.variants.length;
 	S.busy = true;
 	try {
 		await applyVariant(S, b.variants[S.variant]);
@@ -552,19 +558,24 @@ function nextBucket(S: Session): void {
 }
 
 function showFace(S: Session, face: Face): void {
-	if (face === "bot") {
+	let resolved = face;
+	if (resolved === "bot") {
 		if (!S.engineOk || reduced() || S.dead || !ensureBot(S)) {
-			face = "avatar";
+			resolved = "avatar";
 		}
 	}
-	S.face = face;
+	S.face = resolved;
 	paintFace(S);
-	if (face === "bot" && S.bot) {
+	if (resolved === "bot" && S.bot) {
 		S.bot.setPaused(false);
 		S.bot.setFollowPointer(true);
 		hold(S.bot);
 		scheduleBucket(S);
-		scheduleVariant(S, bucketOf(S.bucket), bucketOf(S.bucket).variants[S.variant]?.trick);
+		scheduleVariant(
+			S,
+			bucketOf(S.bucket),
+			bucketOf(S.bucket).variants[S.variant]?.trick,
+		);
 	} else if (S.bot) {
 		// 宏切隐藏不清 pointerRaw：setFollowPointer(false) 会把鼠标参照清掉，
 		// Bot 面回来且鼠标静止时眼神失跟。paused 已停渲染，跟随保持开着继续采点。

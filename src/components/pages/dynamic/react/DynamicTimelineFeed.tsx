@@ -1,4 +1,11 @@
-import { Check, Circle, Flower2, MapPin, MessageCircle, Pin } from "lucide-react";
+import {
+	Check,
+	Circle,
+	Flower2,
+	MapPin,
+	MessageCircle,
+	Pin,
+} from "lucide-react";
 import {
 	Fragment,
 	type ReactElement,
@@ -90,7 +97,8 @@ export interface DynamicTimelineProps {
 }
 
 function kindIcon(kind: DynamicKind) {
-	if (kind === "note") return <Check className="ff-tl-dot-svg" strokeWidth={2.5} />;
+	if (kind === "note")
+		return <Check className="ff-tl-dot-svg" strokeWidth={2.5} />;
 	return <Circle className="ff-tl-dot-svg" strokeWidth={2} />;
 }
 
@@ -177,7 +185,11 @@ function NoteFoldedBlock({
 					const date = new Date(entry.published);
 					const title = dynamicNoteFoldTitle(entry.html, entry.searchText);
 					return (
-						<li key={entry.id} id={anchorId} className="dynamic-note-folded__item">
+						<li
+							key={entry.id}
+							id={anchorId}
+							className="dynamic-note-folded__item"
+						>
 							<a
 								className="dynamic-note-folded__link"
 								href={`#${anchorId}`}
@@ -263,7 +275,12 @@ function EntryBody({
 	const date = new Date(entry.published);
 	const lang =
 		typeof document !== "undefined" ? document.documentElement.lang : undefined;
-	const fullTime = formatFullTime(date, useLocalTz, timezone, lang || undefined);
+	const fullTime = formatFullTime(
+		date,
+		useLocalTz,
+		timezone,
+		lang || undefined,
+	);
 	const location = entry.location?.trim();
 	const authorIdentity = resolveAuthorIdentity(entry, profileName, avatarUrl);
 	const authorName = authorIdentity.name;
@@ -275,6 +292,7 @@ function EntryBody({
 	const mediaId = `${contentId}-media`;
 	const gallerySourceId = entry.images?.length ? mediaId : contentId;
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: html 变化时重跑样式增强（如展开全文后重新打类），删依赖会丢增强
 	useEffect(() => {
 		const el = document.getElementById(contentId);
 		if (!el) return;
@@ -375,7 +393,12 @@ function EntryBody({
 			/>
 
 			{entry.images?.length ? (
-				<div id={mediaId} className="dynamic-media-staging" hidden aria-hidden="true">
+				<div
+					id={mediaId}
+					className="dynamic-media-staging"
+					hidden
+					aria-hidden="true"
+				>
 					{entry.images.map((image) => (
 						<img
 							key={image.src}
@@ -422,7 +445,11 @@ function EntryBody({
 							data-gallery-prev=""
 							aria-label={prevImageLabel}
 						/>
-						<img className="dynamic-gallery-main-image" data-gallery-main="" alt="" />
+						<img
+							className="dynamic-gallery-main-image"
+							data-gallery-main=""
+							alt=""
+						/>
 						<button
 							type="button"
 							className="btn-plain dynamic-gallery-nav dynamic-gallery-next"
@@ -430,7 +457,10 @@ function EntryBody({
 							aria-label={nextImageLabel}
 						/>
 					</div>
-					<div className="dynamic-gallery-thumbnails" data-gallery-thumbnails="" />
+					<div
+						className="dynamic-gallery-thumbnails"
+						data-gallery-thumbnails=""
+					/>
 				</div>
 			</dynamic-gallery>
 
@@ -473,7 +503,8 @@ function EntryBody({
 
 function syncYearSelect(data: DynamicData[], allYearsText: string) {
 	const page = document.querySelector(".dynamic-page");
-	const yearSelect = page?.querySelector<HTMLSelectElement>("[data-year-select]");
+	const yearSelect =
+		page?.querySelector<HTMLSelectElement>("[data-year-select]");
 	if (!yearSelect) return;
 	yearSelect.replaceChildren();
 	const all = document.createElement("option");
@@ -531,7 +562,9 @@ export default function DynamicTimeline({
 	);
 	/** 已渲染条数：滚动触底再 +batch，而不是一次铺满 */
 	const [visibleCount, setVisibleCount] = useState(() =>
-		hasInitial ? Math.min(batch, (initialEntries as DynamicData[]).length) : batch,
+		hasInitial
+			? Math.min(batch, (initialEntries as DynamicData[]).length)
+			: batch,
 	);
 	const [loading, setLoading] = useState(!hasInitial);
 	/** 全量目录是否已从 API 就位（首批 SSR 期间勿把顶栏计数改成 8） */
@@ -556,8 +589,7 @@ export default function DynamicTimeline({
 
 	const stampOwnerSeal = (entryId: string, fromBtn: HTMLElement) => {
 		if (!OWNER_SEAL_DEV || sealedIds.has(entryId) || stampingId) return;
-		const card =
-			fromBtn.closest<HTMLElement>(".ff-tl-article") || fromBtn;
+		const card = fromBtn.closest<HTMLElement>(".ff-tl-article") || fromBtn;
 		// 先启动取样（函数内同步 capture），再卸按钮，避免原点掉到左上角
 		void burstOwnerSealConfetti(card);
 		setStampingId(entryId);
@@ -587,10 +619,7 @@ export default function DynamicTimeline({
 
 	/** 默认「全部」且无搜索时，连续笔记折叠 */
 	const collapseNotes =
-		year === "all" &&
-		kindFilter === "all" &&
-		agentFilter === "all" &&
-		!query;
+		year === "all" && kindFilter === "all" && agentFilter === "all" && !query;
 
 	const timelineRows = useMemo(
 		() => groupConsecutiveNotes(filtered, collapseNotes),
@@ -613,11 +642,16 @@ export default function DynamicTimeline({
 		const searchInput = page?.querySelector<HTMLInputElement>(
 			"[data-dynamic-search]",
 		);
-		const yearSelect = page?.querySelector<HTMLSelectElement>("[data-year-select]");
-		const kindSelect = page?.querySelector<HTMLSelectElement>("[data-kind-select]");
-		const agentSelect = page?.querySelector<HTMLSelectElement>("[data-agent-select]");
+		const yearSelect =
+			page?.querySelector<HTMLSelectElement>("[data-year-select]");
+		const kindSelect =
+			page?.querySelector<HTMLSelectElement>("[data-kind-select]");
+		const agentSelect = page?.querySelector<HTMLSelectElement>(
+			"[data-agent-select]",
+		);
 
-		const onSearch = () => setQuery(searchInput?.value.toLocaleLowerCase().trim() || "");
+		const onSearch = () =>
+			setQuery(searchInput?.value.toLocaleLowerCase().trim() || "");
 		const onYear = () => setYear(yearSelect?.value || "all");
 		const onKind = () => {
 			const value = kindSelect?.value || "all";
@@ -725,6 +759,7 @@ export default function DynamicTimeline({
 	}, [filtered, loading]);
 
 	// 触底懒加载（按 row）
+	// biome-ignore lint/correctness/useExhaustiveDependencies: visibleCount 变化（渲染更多行）后 sentinel 位移，需重建 IO
 	useEffect(() => {
 		const node = sentinelRef.current;
 		if (!node || !hasMore || loading) return;
@@ -782,12 +817,15 @@ export default function DynamicTimeline({
 				});
 			}
 			setVisibleCount((n) => Math.max(n, rowIndex + 1));
-			window.setTimeout(() => {
-				document.getElementById(anchorId)?.scrollIntoView({
-					behavior: "smooth",
-					block: "start",
-				});
-			}, expandHeadId ? 80 : 0);
+			window.setTimeout(
+				() => {
+					document.getElementById(anchorId)?.scrollIntoView({
+						behavior: "smooth",
+						block: "start",
+					});
+				},
+				expandHeadId ? 80 : 0,
+			);
 		};
 
 		jumpToHash();
@@ -872,136 +910,138 @@ export default function DynamicTimeline({
 			<Timeline size="sm" className="ff-tl--stagger" iconsize="sm">
 				{renderSlots.length === 0 ? (
 					<TimelineEmpty>{noResultsText}</TimelineEmpty>
-				) : (() => {
-					// 星轨移植：行进视口渐显（timeline.tsx whileInView）+ 行序 stagger + 跨年插年份吸顶胶囊
-					let lastYear: string | null = null;
-					return renderSlots.map((slot, index) => {
-						const { entry, kind } = slot;
-						const rail = dynamicKindToRail(kind);
-						const status = rail.statusClass as TimelineStatus;
-						const side: TimelineSide = index % 2 === 0 ? "left" : "right";
-						const anchorId = dynamicAnchor(entry.id);
-						const date = new Date(entry.published);
-						const shortDate = formatShortDate(date, useLocalTz);
-						const itemYear = String(date.getUTCFullYear());
-						const showYearPill = itemYear !== lastYear;
-						lastYear = itemYear;
+				) : (
+					(() => {
+						// 星轨移植：行进视口渐显（timeline.tsx whileInView）+ 行序 stagger + 跨年插年份吸顶胶囊
+						let lastYear: string | null = null;
+						return renderSlots.map((slot, index) => {
+							const { entry, kind } = slot;
+							const rail = dynamicKindToRail(kind);
+							const status = rail.statusClass as TimelineStatus;
+							const side: TimelineSide = index % 2 === 0 ? "left" : "right";
+							const anchorId = dynamicAnchor(entry.id);
+							const date = new Date(entry.published);
+							const shortDate = formatShortDate(date, useLocalTz);
+							const itemYear = String(date.getUTCFullYear());
+							const showYearPill = itemYear !== lastYear;
+							lastYear = itemYear;
 
-						return (
-							<Fragment key={slot.key}>
-								{showYearPill && (
-									<li className="ff-tl-year-pill" aria-hidden="true">
-										<span>{itemYear}</span>
-									</li>
-								)}
-								<TimelineItem
-									key={slot.key}
-									id={anchorId}
-									date={shortDate}
-									status={status}
-									iconColor={kindColor(kind)}
-									icon={kindIcon(kind)}
-									side={side}
-									pinned={entry.pinned}
-									showConnector={index !== renderSlots.length - 1 || hasMore}
-									transition={{ delay: (index % 8) * 0.05 }}
-								>
-									<article
-										className="ff-tl-article"
-										data-note-layout={kind === "note" ? "split" : undefined}
-										aria-labelledby={`${anchorId}-author`}
+							return (
+								<Fragment key={slot.key}>
+									{showYearPill && (
+										<li className="ff-tl-year-pill" aria-hidden="true">
+											<span>{itemYear}</span>
+										</li>
+									)}
+									<TimelineItem
+										key={slot.key}
+										id={anchorId}
+										date={shortDate}
+										status={status}
+										iconColor={kindColor(kind)}
+										icon={kindIcon(kind)}
+										side={side}
+										pinned={entry.pinned}
+										showConnector={index !== renderSlots.length - 1 || hasMore}
+										transition={{ delay: (index % 8) * 0.05 }}
 									>
-										{OWNER_SEAL_DEV &&
-										entry.author &&
-										agentPersonas[entry.author] ? (
-											sealedIds.has(entry.id) ? (
-												<button
-													type="button"
-													className={[
-														"dynamic-seal",
-														"is-visible",
-														"is-action",
-														stampingId === entry.id ? "is-stamping" : "",
-													]
-														.filter(Boolean)
-														.join(" ")}
-													title="撤销「作者阅过」（再点一次）"
-													aria-label="撤销作者阅过"
-													onClick={() => unstampOwnerSeal(entry.id)}
-												>
-													作者阅过
-												</button>
-											) : (
-												<button
-													type="button"
-													className="dynamic-seal-flower"
-													title="盖章「作者阅过」（仅本地 DEV）"
-													aria-label="盖章：作者阅过"
-													onClick={(e) =>
-														stampOwnerSeal(entry.id, e.currentTarget)
-													}
-												>
-													<Flower2 className="size-4" aria-hidden="true" />
-												</button>
-											)
-										) : null}
-										<EntryBody
-											entry={entry}
-											kind={kind}
-											anchorId={anchorId}
-											showComments={showComments}
-											useLocalTz={useLocalTz}
-											timezone={timezone}
-											profileName={profileName}
-											profileUrl={profileUrl}
-											avatarUrl={avatarUrl}
-											commentsLabel={commentsLabel}
-											pinnedLabel={pinnedLabel}
-											ownerBadgeLabel={ownerBadgeLabel}
-											collapseGalleryLabel={collapseGalleryLabel}
-											viewOriginalLabel={viewOriginalLabel}
-											prevImageLabel={prevImageLabel}
-											nextImageLabel={nextImageLabel}
-											viewImageLabel={viewImageLabel}
-											selectImageLabel={selectImageLabel}
-										/>
-										{slot.folded?.length ? (
-											<NoteFoldedBlock
-												folded={slot.folded}
+										<article
+											className="ff-tl-article"
+											data-note-layout={kind === "note" ? "split" : undefined}
+											aria-labelledby={`${anchorId}-author`}
+										>
+											{OWNER_SEAL_DEV &&
+											entry.author &&
+											agentPersonas[entry.author] ? (
+												sealedIds.has(entry.id) ? (
+													<button
+														type="button"
+														className={[
+															"dynamic-seal",
+															"is-visible",
+															"is-action",
+															stampingId === entry.id ? "is-stamping" : "",
+														]
+															.filter(Boolean)
+															.join(" ")}
+														title="撤销「作者阅过」（再点一次）"
+														aria-label="撤销作者阅过"
+														onClick={() => unstampOwnerSeal(entry.id)}
+													>
+														作者阅过
+													</button>
+												) : (
+													<button
+														type="button"
+														className="dynamic-seal-flower"
+														title="盖章「作者阅过」（仅本地 DEV）"
+														aria-label="盖章：作者阅过"
+														onClick={(e) =>
+															stampOwnerSeal(entry.id, e.currentTarget)
+														}
+													>
+														<Flower2 className="size-4" aria-hidden="true" />
+													</button>
+												)
+											) : null}
+											<EntryBody
+												entry={entry}
+												kind={kind}
+												anchorId={anchorId}
+												showComments={showComments}
 												useLocalTz={useLocalTz}
 												timezone={timezone}
-												onExpand={() => {
-													if (!slot.runId) return;
-													setExpandedRunIds((prev) => {
-														const next = new Set(prev);
-														next.add(slot.runId as string);
-														return next;
-													});
-												}}
+												profileName={profileName}
+												profileUrl={profileUrl}
+												avatarUrl={avatarUrl}
+												commentsLabel={commentsLabel}
+												pinnedLabel={pinnedLabel}
+												ownerBadgeLabel={ownerBadgeLabel}
+												collapseGalleryLabel={collapseGalleryLabel}
+												viewOriginalLabel={viewOriginalLabel}
+												prevImageLabel={prevImageLabel}
+												nextImageLabel={nextImageLabel}
+												viewImageLabel={viewImageLabel}
+												selectImageLabel={selectImageLabel}
 											/>
-										) : null}
-										{slot.showCollapse && slot.runId ? (
-											<button
-												type="button"
-												className="dynamic-note-folded__toggle btn-plain"
-												onClick={() => {
-													const runId = slot.runId as string;
-													setExpandedRunIds((prev) => {
-														const next = new Set(prev);
-														next.delete(runId);
-														return next;
-													});
-												}}
-											>
-												收起笔记
-											</button>
-										) : null}
-									</article>
-								</TimelineItem>
-							</Fragment>
-						);
-					});
-				})()}
+											{slot.folded?.length ? (
+												<NoteFoldedBlock
+													folded={slot.folded}
+													useLocalTz={useLocalTz}
+													timezone={timezone}
+													onExpand={() => {
+														if (!slot.runId) return;
+														setExpandedRunIds((prev) => {
+															const next = new Set(prev);
+															next.add(slot.runId as string);
+															return next;
+														});
+													}}
+												/>
+											) : null}
+											{slot.showCollapse && slot.runId ? (
+												<button
+													type="button"
+													className="dynamic-note-folded__toggle btn-plain"
+													onClick={() => {
+														const runId = slot.runId as string;
+														setExpandedRunIds((prev) => {
+															const next = new Set(prev);
+															next.delete(runId);
+															return next;
+														});
+													}}
+												>
+													收起笔记
+												</button>
+											) : null}
+										</article>
+									</TimelineItem>
+								</Fragment>
+							);
+						});
+					})()
+				)}
 			</Timeline>
 
 			{hasMore ? (

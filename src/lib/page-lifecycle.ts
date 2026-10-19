@@ -20,7 +20,12 @@ interface Lifecycle {
 function getLifecycle(): Lifecycle {
 	const g = globalThis as Record<symbol, Lifecycle | undefined>;
 	if (!g[GLOBAL_KEY]) {
-		g[GLOBAL_KEY] = { epoch: 0, controller: null, cleanups: new Set(), booted: false };
+		g[GLOBAL_KEY] = {
+			epoch: 0,
+			controller: null,
+			cleanups: new Set(),
+			booted: false,
+		};
 	}
 	return g[GLOBAL_KEY] as Lifecycle;
 }
@@ -61,7 +66,10 @@ function onPage(
 	options?: AddEventListenerOptions,
 ): Cleanup {
 	const lc = getLifecycle();
-	target.addEventListener(type, handler, { ...options, signal: lc.controller?.signal });
+	target.addEventListener(type, handler, {
+		...options,
+		signal: lc.controller?.signal,
+	});
 	return () => target.removeEventListener(type, handler);
 }
 
@@ -95,13 +103,13 @@ function boot(): void {
 }
 
 export {
-	startPage,
-	disposeCurrent as disposePage,
-	registerPageCleanup,
-	onPage,
-	observePage,
-	setPageTimeout,
-	requestPageFrame,
-	mountOnPageView,
 	boot as bootPageLifecycle,
+	disposeCurrent as disposePage,
+	mountOnPageView,
+	observePage,
+	onPage,
+	registerPageCleanup,
+	requestPageFrame,
+	setPageTimeout,
+	startPage,
 };

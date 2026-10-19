@@ -42,8 +42,7 @@ onMount(() => {
 
 	const BG_LIGHT = 0xffffff;
 	const BG_DARK = 0x111318;
-	const isDarkTheme = () =>
-		document.documentElement.classList.contains("dark");
+	const isDarkTheme = () => document.documentElement.classList.contains("dark");
 
 	const scene = new THREE.Scene();
 	scene.background = new THREE.Color(isDarkTheme() ? BG_DARK : BG_LIGHT);
@@ -172,8 +171,7 @@ onMount(() => {
 		const tex = textures[p.mediaIndex];
 		if (!tex) return;
 		const img = tex.image as HTMLImageElement | undefined;
-		const aspect =
-			img && img.width && img.height ? img.width / img.height : 1;
+		const aspect = img && img.width && img.height ? img.width / img.height : 1;
 		p.material.map = tex;
 		p.material.color.set(0xffffff);
 		p.material.needsUpdate = true;
@@ -194,8 +192,10 @@ onMount(() => {
 		const s = wrapSalt * 7919 + 17;
 		const dist = 24 + seeded(s) * 95;
 		const spread = 35 + seeded(s + 1) * 55;
-		p.mesh.position.x = camera.position.x + (seeded(s + 2) - 0.5) * spread * 2.2;
-		p.mesh.position.y = camera.position.y + (seeded(s + 3) - 0.5) * spread * 1.5;
+		p.mesh.position.x =
+			camera.position.x + (seeded(s + 2) - 0.5) * spread * 2.2;
+		p.mesh.position.y =
+			camera.position.y + (seeded(s + 3) - 0.5) * spread * 1.5;
 		p.mesh.position.z = camera.position.z - dist;
 		p.baseY = 8 + seeded(s + 4) * 14;
 		p.mediaIndex = Math.floor(seeded(s + 5) * photos.length) % photos.length;
@@ -550,8 +550,7 @@ onMount(() => {
 			camera.position.x =
 				demoOrigin.x + Math.sin(demoT) * 22 + Math.sin(demoT * 0.37) * 8;
 			camera.position.y = demoOrigin.y + Math.sin(demoT * 0.7) * 12;
-			camera.position.z =
-				demoOrigin.z - 8 + Math.sin(demoT * 0.45) * 6;
+			camera.position.z = demoOrigin.z - 8 + Math.sin(demoT * 0.45) * 6;
 		} else if (focusActive) {
 			camera.position.x += (focusTarget.x - camera.position.x) * 0.08;
 			camera.position.y += (focusTarget.y - camera.position.y) * 0.08;

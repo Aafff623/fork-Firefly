@@ -14,7 +14,13 @@ interface Props {
 
 const { class: className } = Astro.props;
 
-const preferred = ["GitHub", "Bilibili", "Twitter", "Email", "Telegram"] as const;
+const preferred = [
+	"GitHub",
+	"Bilibili",
+	"Twitter",
+	"Email",
+	"Telegram",
+] as const;
 const linkMap = new Map(profileConfig.links.map((l) => [l.name, l]));
 const fanLinks = preferred
 	.map((name) => linkMap.get(name))

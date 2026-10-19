@@ -2,7 +2,7 @@
 /**
  * 无限画布入口：方块 App 图标 → 全屏挂载 InfiniteAlbumCanvas（按需加载/卸载）
  */
-import { onDestroy, type Component } from "svelte";
+import { type Component, onDestroy } from "svelte";
 
 interface Props {
 	photos?: string[];
@@ -37,7 +37,9 @@ function warmup() {
 	if (open || loading) return;
 	if (photosUrl && resolvedPhotos.length === 0) {
 		void fetch(photosUrl)
-			.then(async (r) => (r.ok ? ((await r.json()) as { photos?: string[] }) : null))
+			.then(async (r) =>
+				r.ok ? ((await r.json()) as { photos?: string[] }) : null,
+			)
 			.then((d) => {
 				if (d && Array.isArray(d.photos) && resolvedPhotos.length === 0) {
 					resolvedPhotos = d.photos;

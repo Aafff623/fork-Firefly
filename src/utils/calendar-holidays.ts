@@ -30,31 +30,53 @@ const SOLAR_FIXED: Record<string, HolidayEntry[]> = {
 	],
 	"03-12": [{ name: "植树节", nameEn: "Arbor Day (CN)", region: "cn" }],
 	"03-14": [{ name: "白色情人节", nameEn: "White Day", region: "intl" }],
-	"03-17": [{ name: "圣帕特里克节", nameEn: "St. Patrick's Day", region: "intl" }],
+	"03-17": [
+		{ name: "圣帕特里克节", nameEn: "St. Patrick's Day", region: "intl" },
+	],
 	"04-01": [{ name: "愚人节", nameEn: "April Fools' Day", region: "intl" }],
 	"04-22": [{ name: "世界地球日", nameEn: "Earth Day", region: "intl" }],
 	"04-23": [{ name: "世界读书日", nameEn: "World Book Day", region: "intl" }],
 	"05-01": [
 		{ name: "劳动节", nameEn: "Labour Day", region: "cn" },
-		{ name: "国际劳动节", nameEn: "International Workers' Day", region: "intl" },
+		{
+			name: "国际劳动节",
+			nameEn: "International Workers' Day",
+			region: "intl",
+		},
 	],
 	"05-04": [{ name: "青年节", nameEn: "Youth Day (CN)", region: "cn" }],
-	"05-12": [{ name: "护士节", nameEn: "International Nurses Day", region: "intl" }],
+	"05-12": [
+		{ name: "护士节", nameEn: "International Nurses Day", region: "intl" },
+	],
 	"06-01": [
 		{ name: "儿童节", nameEn: "Children's Day", region: "cn" },
-		{ name: "国际儿童节", nameEn: "International Children's Day", region: "intl" },
+		{
+			name: "国际儿童节",
+			nameEn: "International Children's Day",
+			region: "intl",
+		},
 	],
-	"06-05": [{ name: "世界环境日", nameEn: "World Environment Day", region: "intl" }],
+	"06-05": [
+		{ name: "世界环境日", nameEn: "World Environment Day", region: "intl" },
+	],
 	"07-01": [
 		{ name: "建党节", nameEn: "CPC Founding Day", region: "cn" },
 		{ name: "加拿大国庆", nameEn: "Canada Day", region: "intl" },
 	],
-	"07-04": [{ name: "美国独立日", nameEn: "Independence Day (US)", region: "intl" }],
+	"07-04": [
+		{ name: "美国独立日", nameEn: "Independence Day (US)", region: "intl" },
+	],
 	"07-14": [{ name: "法国国庆", nameEn: "Bastille Day", region: "intl" }],
 	"08-01": [{ name: "建军节", nameEn: "PLA Day", region: "cn" }],
 	"08-15": [{ name: "日本终战日", nameEn: "V-J Day", region: "intl" }],
 	"09-10": [{ name: "教师节", nameEn: "Teachers' Day (CN)", region: "cn" }],
-	"09-21": [{ name: "国际和平日", nameEn: "International Day of Peace", region: "intl" }],
+	"09-21": [
+		{
+			name: "国际和平日",
+			nameEn: "International Day of Peace",
+			region: "intl",
+		},
+	],
 	"10-01": [
 		{ name: "国庆节", nameEn: "National Day (CN)", region: "cn" },
 		{ name: "国际音乐日", nameEn: "International Music Day", region: "intl" },
@@ -64,7 +86,11 @@ const SOLAR_FIXED: Record<string, HolidayEntry[]> = {
 	"11-01": [{ name: "诸圣节", nameEn: "All Saints' Day", region: "intl" }],
 	"11-11": [
 		{ name: "光棍节", nameEn: "Singles' Day", region: "cn" },
-		{ name: "停战纪念日", nameEn: "Remembrance / Veterans Day", region: "intl" },
+		{
+			name: "停战纪念日",
+			nameEn: "Remembrance / Veterans Day",
+			region: "intl",
+		},
 	],
 	"12-24": [{ name: "平安夜", nameEn: "Christmas Eve", region: "intl" }],
 	"12-25": [{ name: "圣诞节", nameEn: "Christmas Day", region: "intl" }],
@@ -85,7 +111,7 @@ function nthWeekdayOfMonth(
 ): string {
 	const first = new Date(year, monthIndex, 1);
 	const firstWd = first.getDay();
-	let day = 1 + ((weekday - firstWd + 7) % 7) + (nth - 1) * 7;
+	const day = 1 + ((weekday - firstWd + 7) % 7) + (nth - 1) * 7;
 	const mm = String(monthIndex + 1).padStart(2, "0");
 	const dd = String(day).padStart(2, "0");
 	return `${year}-${mm}-${dd}`;
@@ -100,7 +126,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-04": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"05-31": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"10-06": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-29": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-29": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 	2026: {
 		"02-16": [{ name: "除夕", nameEn: "Chinese New Year's Eve", region: "cn" }],
@@ -109,7 +137,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-05": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"06-19": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"09-25": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-18": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-18": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 	2027: {
 		"02-05": [{ name: "除夕", nameEn: "Chinese New Year's Eve", region: "cn" }],
@@ -118,7 +148,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-05": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"06-09": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"09-15": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-08": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-08": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 	2028: {
 		"01-25": [{ name: "除夕", nameEn: "Chinese New Year's Eve", region: "cn" }],
@@ -127,7 +159,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-04": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"05-28": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"10-03": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-26": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-26": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 	2029: {
 		"02-12": [{ name: "除夕", nameEn: "Chinese New Year's Eve", region: "cn" }],
@@ -136,7 +170,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-04": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"06-16": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"09-22": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-16": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-16": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 	2030: {
 		"02-02": [{ name: "除夕", nameEn: "Chinese New Year's Eve", region: "cn" }],
@@ -145,7 +181,9 @@ const LUNAR_AND_SOLAR_TERM: Record<number, Record<string, HolidayEntry[]>> = {
 		"04-05": [{ name: "清明节", nameEn: "Qingming Festival", region: "cn" }],
 		"06-05": [{ name: "端午节", nameEn: "Dragon Boat Festival", region: "cn" }],
 		"09-12": [{ name: "中秋节", nameEn: "Mid-Autumn Festival", region: "cn" }],
-		"10-05": [{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" }],
+		"10-05": [
+			{ name: "重阳节", nameEn: "Double Ninth Festival", region: "cn" },
+		],
 	},
 };
 
@@ -219,12 +257,8 @@ export function buildHolidayMap(
 		const thanks = nthWeekdayOfMonth(year, 10, 4, 4); // Nov Thu #4
 
 		const floaters: Record<string, HolidayEntry[]> = {
-			[mothers]: [
-				{ name: "母亲节", nameEn: "Mother's Day", region: "intl" },
-			],
-			[fathers]: [
-				{ name: "父亲节", nameEn: "Father's Day", region: "intl" },
-			],
+			[mothers]: [{ name: "母亲节", nameEn: "Mother's Day", region: "intl" }],
+			[fathers]: [{ name: "父亲节", nameEn: "Father's Day", region: "intl" }],
 			[thanks]: [
 				{ name: "感恩节", nameEn: "Thanksgiving (US)", region: "intl" },
 			],

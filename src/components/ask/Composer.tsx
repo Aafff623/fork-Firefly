@@ -2,7 +2,14 @@
  * 输入条：Grok 式胶囊（左 + / 输入 / 人设选择 / 麦 / 发送圆钮）。
  * 修复点：Enter 加 IME isComposing 判断（中文选词回车不再误发送）。
  */
-import { ArrowUp, ChevronDown, Mic, Paperclip, Plus, Square } from "lucide-react";
+import {
+	ArrowUp,
+	ChevronDown,
+	Mic,
+	Paperclip,
+	Plus,
+	Square,
+} from "lucide-react";
 import {
 	type KeyboardEvent,
 	type ReactElement,
@@ -274,11 +281,7 @@ export function AskComposer({
 							/>
 						</button>
 						{personaOpen ? (
-							<div
-								id={personaListId}
-								className="ask-menu right"
-								role="listbox"
-							>
+							<div id={personaListId} className="ask-menu right" role="listbox">
 								{ASK_PERSONAS.map((opt) => (
 									<button
 										key={opt.id}
@@ -320,7 +323,10 @@ export function AskComposer({
 					onClick={() => submit()}
 				>
 					{busy ? (
-						<Square style={{ width: "0.875rem", height: "0.875rem" }} fill="currentColor" />
+						<Square
+							style={{ width: "0.875rem", height: "0.875rem" }}
+							fill="currentColor"
+						/>
 					) : (
 						<ArrowUp strokeWidth={2.5} />
 					)}

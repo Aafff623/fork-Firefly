@@ -1,10 +1,6 @@
 /** 梗图 URL 白名单 */ // 中文注释：只允许可信 CDN / 本站 COS
 
-const ALLOWED_HOST_SUFFIXES = [
-	"unpkg.com",
-	"cdn.jsdelivr.net",
-	"myqcloud.com",
-];
+const ALLOWED_HOST_SUFFIXES = ["unpkg.com", "cdn.jsdelivr.net", "myqcloud.com"];
 
 export function isAllowedStickerUrl(url: string): boolean {
 	try {

@@ -1,11 +1,11 @@
 ---
-import WorkInProgress from "@/components/common/WorkInProgress.astro";
 import NavSideNav from "@components/pages/nav/NavSideNav.astro";
 // 藏经阁视图：mast + 侧边栏 + 搜索 + 模块分区 + 预览弹层 + 交互脚本
 // 总览页传全部模块（showPinned 开「常用」行）；模块页传单模块，侧栏显示其二级子类锚点
 // PROD 只出「正在开发中」；DEV 才跑完整目录（与 /ask、/achievements 同一口径）
 import SiteCard from "@components/pages/nav/SiteCard.astro";
 import { Icon } from "astro-icon/components";
+import WorkInProgress from "@/components/common/WorkInProgress.astro";
 import { isNavSitePreviewable, type NavModule, type NavSite } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";

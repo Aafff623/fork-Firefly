@@ -6,9 +6,9 @@
  */ // 中文注释：密钥仅服务端
 
 import {
+	entriesToItems,
 	getEntryById,
 	listCatalogForAgent,
-	entriesToItems,
 } from "./l1-lexicon";
 import type { SuggestItem } from "./types";
 
@@ -31,7 +31,8 @@ function readEnv(name: string): string {
 }
 
 export function getDeepSeekEnv(): AgentEnv | null {
-	const apiKey = readEnv("DEEPSEEK_API_KEY") || readEnv("STICKER_AGENT_API_KEY");
+	const apiKey =
+		readEnv("DEEPSEEK_API_KEY") || readEnv("STICKER_AGENT_API_KEY");
 	if (!apiKey) return null;
 	const baseUrl = (
 		readEnv("DEEPSEEK_API_BASE") ||

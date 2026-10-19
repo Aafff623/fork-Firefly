@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import path from "node:path";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { assertSafeSvgForDom, initMerman, renderSvg } from "@mermanjs/web";
 import { h } from "hastscript";
 import { visit } from "unist-util-visit";

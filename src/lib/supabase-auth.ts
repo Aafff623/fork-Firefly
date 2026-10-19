@@ -117,10 +117,7 @@ export function viewerFromUser(user: User): Viewer {
 		]) ||
 		user.email?.split("@")[0] ||
 		"user";
-	const avatarUrl = readIdentityString(identityData, [
-		"avatar_url",
-		"picture",
-	]);
+	const avatarUrl = readIdentityString(identityData, ["avatar_url", "picture"]);
 	return { id: user.id, login, avatarUrl };
 }
 

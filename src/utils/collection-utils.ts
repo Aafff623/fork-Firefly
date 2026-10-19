@@ -1,8 +1,8 @@
 import { type CollectionEntry, getCollection } from "astro:content";
-import { collectionsConfig } from "@/config";
-import type { CollectionMeta } from "@/types/collectionsConfig";
 import { getEffectivePostTime } from "@utils/content-utils";
 import { url } from "@utils/url-utils";
+import { collectionsConfig } from "@/config";
+import type { CollectionMeta } from "@/types/collectionsConfig";
 
 export type CollectionEntryWithMeta = {
 	meta: CollectionMeta;

@@ -45,9 +45,7 @@ export async function loadDynamicEntries(): Promise<DynamicEntryJson[]> {
 	let dynamics = sortDynamics(await getCollection("dynamic"));
 	// 系统动态过滤：默认只留真实动态（园主手写 / Agent 发布）
 	if (dynamicConfig.includeSystemNotes !== true) {
-		dynamics = dynamics.filter(
-			(entry) => !isSystemNoteHtml(entry.body || ""),
-		);
+		dynamics = dynamics.filter((entry) => !isSystemNoteHtml(entry.body || ""));
 	}
 	return Promise.all(
 		dynamics.map(async (entry) => {
@@ -82,10 +80,7 @@ export async function loadDynamicEntries(): Promise<DynamicEntryJson[]> {
 	);
 }
 
-export function dynamicEntryNavTitle(
-	html: string,
-	searchText: string,
-): string {
+export function dynamicEntryNavTitle(html: string, searchText: string): string {
 	const text = (html || "")
 		.replace(/<[^>]+>/g, " ")
 		.replace(/\s+/g, " ")
