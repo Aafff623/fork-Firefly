@@ -35,12 +35,16 @@ Status: resolved（2026-10-19；门禁已落地，实施项核查后大多为现
 
 `src/lib/delivery-budget.ts` 新增 `HOME_DECORATIVE_BUDGETS` + `classifyDecorative()`；`scripts/check-delivery-budget.ts` 对 home 页面按四类路径模式断言：
 
-| 类 | 上限 | 当前实测 |
+| 类 | 上限 | 当前静态引用实测 |
 |---|---|---|
-| pets | 1.3 MB | 0（运行时加载） |
-| banner | 600 KB | 0（运行时加载） |
-| atmosphere | 600 KB | 252 KB |
-| video | 1.6 MB | 1510 KB（gn-01.mp4 data-src，LCP 后加载） |
+| pets | 1.3 MB | 0 |
+| banner | 600 KB | 0 |
+| atmosphere | 600 KB | 0 |
+| video | 200 KB | 0 |
+
+统计口径 = `extractAssetRefs()` 收的 tag 属性（`src` / `poster` / `srcset`），**不含 `data-src`**，也不含 JSON island 里的运行时清单；上表 0 即四类都未被 HTML 静态引用。此前表里写的「atmosphere 252KB / video 1510KB」是运行时请求口径，与本门禁的输入不是一回事，已更正。
+
+video 上限 200KB 是刻意的：首页视频走 `data-src`，任何改回直接 `src` 的视频最小也有 1.3MB，必越过此线；若沿用 1600KB，单个 1510KB 视频改成 `src` 也不会报警，断言等于失效。
 
 上限的实际作用是**防回归**：谁把运行时按需加载的装饰资产改成首屏静态引用（eager/preload/直接 src），门禁即红。当前 865 页 0 违规。
 

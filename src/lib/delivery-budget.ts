@@ -103,14 +103,21 @@ export const DELIVERY_BUDGETS: Readonly<Record<PageClass, DeliveryBudget>> = {
  * spritesheet、横幅轮播、氛围图切换当前都由 JS 运行时按需加载（boot
  * secondary / preloadNextSlide / LCP 后注入），不进 HTML 静态引用；
  * 将来谁把它们改成首屏静态引用（eager / preload / 直接 src），这里会抓住。
- * 阈值 = 2026-10-19 实测（静态引用 atmosphere 252KB / video 1510KB /
- * pets 0 / banner 0）+ 余量。
+ *
+ * 统计口径 = `extractAssetRefs()` 收的 tag 属性（src / poster / srcset），
+ * **不含 `data-src`**，也不含 JSON island 里的运行时清单。因此首页四类
+ * 当前静态量都是 0；票面旧表里「atmosphere 252KB / video 1510KB」是运行时
+ * 请求口径，不是本门禁的输入。
+ *
+ * video 上限刻意压到 200KB：首页视频走 `data-src`（0 字节静态引用），
+ * 任何被改成直接 `src` 的视频最小也有 1.3MB，一定会越过此线；若沿用
+ * 1600KB，单个 1510KB 视频改成 `src` 也不会报警，断言等于失效。
  */
 export const HOME_DECORATIVE_BUDGETS: Readonly<Record<string, number>> = {
 	pets: 1300 * 1024,
 	banner: 600 * 1024,
 	atmosphere: 600 * 1024,
-	video: 1600 * 1024,
+	video: 200 * 1024,
 };
 
 /** 装饰资产分类：命中返回类名，未命中返回 null（非装饰资产不参与本预算）。 */
