@@ -9,6 +9,19 @@ Status: open（Blocked by: 05；实施方式待园主确认「删除边界」见
 
 目标：`git ls-files` 跟踪体积从 ~950MB 降到 ~300MB；线上图片全部经 `https://img.threetwoa.live/` 访问；迁移后全站构建 + validate 通过。
 
+## 适配点调查结论（2026-10-19 已查清，比预想干净）
+
+1. **`validate_post.py`——零改动**：393 行只查 `./` 相对路径的本地存在性，`https://` 外链不进检查模式；cover 同只查 `./` 开头（405-407 行）。R2 URL 天然通过。
+2. **`cascade_check.py`——零改动**：其「图片」逻辑只有 dynamic covers slug 检查（195 行），不碰正文图片路径。
+3. **LQIP——走仓内既定外链降级，不改代码**：`getLqipProps` 对 `isExternalImage` 返回 `background: var(--mood)` 素色占位（lqip-utils.ts:64/75）。即迁移后正文图从彩色 LQIP 占位降为素色占位——**这与增量文章（post-publish 的图本就走 R2）行为完全一致**，迁移反而统一了存量与增量的体验，无需给 upload_r2.py 加 LQIP 伴随输出。
+
+## 实施进度
+
+- 迁移脚本就绪：`temp/scripts/migrate-post-images/migrate.mjs`（本地专属）。按帖流程：上传（key=`posts/<slug>/<file>`，逐个 `--verify`）→ 全部成功才改写三种引用形态（`./images/x`、`images/x`、`/posts/<slug>/images/x` → `https://img.threetwoa.live/posts/<slug>/x`）→ 跑 validate。上传失败即停该帖不改写，引用永远可达。
+- dry-run 已验证：java-course8（106 文件）清单正确；agents-md-handbook 4 处引用改写命中；validate 通过。
+- 存量盘点：115 帖 / 2180 图片文件 / md 引用 909+ 处（`./images/` 为主形态）。
+- **Blocked：缺 R2 Secret Access Key**。temp/secrets 的 cf-r2-api-token 实测对 R2 REST API 认证失败（10000），.env/.env.local 无 R2 S3 凭对。需园主到 CF dashboard 签一对（R2 → Manage API Tokens → Object Read & Write，限 firefly-comment 桶），贴值后按铁规落盘 temp/secrets/，即可试点 1 帖 → 全量。
+
 ## 方案
 
 ### 1. 盘点与分批
@@ -33,11 +46,9 @@ Status: open（Blocked by: 05；实施方式待园主确认「删除边界」见
 - `git rm --cached` + 提交删除（工作区文件可保留本地副本，避免 dev 预览断图）。
 - **待园主确认的删除边界**：(a) 只从 index 删（pack 仍含历史 blob，fresh clone checkout 立减但 clone 传输不变）；(b) 还是接受历史重写（filter-repo 清 pack，但改写已推送的 master 历史需 force push——按 AGENTS.md 规则 10，force push 必须单独授权，默认不做）。**默认按 (a) 执行**；(b) 若园主以后授权，作为独立动作另开。
 
-### 5. 三个适配点（实施前必须先解决，按序）
+### 5. 三个适配点
 
-1. **`validate_post.py`**：图片检查假设本地文件存在（尺寸/格式/体积）。需确认它对 R2 URL 的行为——跳过还是误报。若误报，先修校验器（可加「外链图片跳过本地检查」分支）。
-2. **`lqips.json` / LQIP 生成**：构建期对本地图生成 base64 占位。迁 R2 后正文图的 LQIP 从哪来？选项：(i) 上传时把 LQIP 一并写进某个 manifest；(ii) 构建期对 R2 URL 拉取生成（构建变慢）；(iii) 外链图不挂 LQIP（接受加载体验变化）。**建议 (i)，在 upload_r2.py 加 LQIP 输出**。
-3. **`cascade_check.py`**：级联检查可能校验图片路径存在性，同 1 先确认。
+已查清，见上方「适配点调查结论」：validate/cascade 零改动，LQIP 走仓内既定外链降级（与增量文章行为一致）。实施前无需额外改造。
 
 ### 6. 验收
 
