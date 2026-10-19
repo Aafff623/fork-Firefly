@@ -36,7 +36,11 @@ function socialBrandKey(name: string, icon: string): string {
 	if (n.includes("github")) return "github";
 	if (n.includes("bilibili")) return "bilibili";
 	if (n.includes("mail") || n.includes("email")) return "email";
-	if (n.includes("twitter") || n.includes("x-twitter") || /(^|\s)x(\s|$)/.test(n))
+	if (
+		n.includes("twitter") ||
+		n.includes("x-twitter") ||
+		/(^|\s)x(\s|$)/.test(n)
+	)
 		return "x";
 	if (n.includes("telegram")) return "telegram";
 	return "default";
