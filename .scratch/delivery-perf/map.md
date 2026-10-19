@@ -41,6 +41,12 @@
 
 <!-- 空：本会话只做 charting，不解决任何 ticket -->
 
+## Research so far
+
+- **02（CSS 构成）已解**（2026-10-19）：首页 585KB = Tailwind 层 128.5KB + 层外自研 287.5KB（Layout.css 416KB 全站单点）；口径修正：gzip 传输 102KB vs 参考站 84KB 只差 1.2×；可立即裁剪三项（ask.css / fancybox / 页面专用 css 挪页面级）≈58KB raw。答案见 `issues/02-research-css-composition.md`。
+- **03（JS chunk 归属）已解**（2026-10-19）：产物实际 117 chunk；首页冷加载静态闭包 = 39 个 / 237.5KB（Chrome 74 属交互后口径）；三个可延后项（SpritePet / DisplaySettingsIntegrated 等）合计 ~65KB。答案见 `issues/03-research-js-chunk-topology.md`。
+- **门禁 4 条历史失败已修**（commit `70b72aa0`）：ui-motion 三条为门禁快照过时（clock 0.92 / footer 暗色 / tag sphere 帧归一化均有验收证据），v41 AskChat 孤儿加 DEV-only 豁免；干净 HEAD 门禁链全绿。
+
 ## Not yet specified
 
 - **正文图片管线**：全站 2400+ 张正文图（`public/` 共 144MB）在构建期经 LQIP + Astro 图片优化；参考站走「内容分仓 + 构建期 avif + CDN 侧格式协商」。要不要改、改到哪一层，等「内容与代码分仓」这条决策落地后才能问得够具体。
