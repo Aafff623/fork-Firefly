@@ -1,7 +1,7 @@
 # 存量正文图迁 R2：650MB → tracked ~300MB
 
 Type: task
-Status: open（Blocked by: 05；实施方式待园主确认「删除边界」见下）
+Status: resolved（2026-10-19 实施完成，commit `64dc41f5` 待园主授权推送）
 
 ## Question
 
@@ -21,6 +21,16 @@ Status: open（Blocked by: 05；实施方式待园主确认「删除边界」见
 - dry-run 已验证：java-course8（106 文件）清单正确；agents-md-handbook 4 处引用改写命中；validate 通过。
 - 存量盘点：115 帖 / 2180 图片文件 / md 引用 909+ 处（`./images/` 为主形态）。
 - **Blocked：缺 R2 Secret Access Key**。temp/secrets 的 cf-r2-api-token 实测对 R2 REST API 认证失败（10000），.env/.env.local 无 R2 S3 凭对。需园主到 CF dashboard 签一对（R2 → Manage API Tokens → Object Read & Write，限 firefly-comment 桶），贴值后按铁规落盘 temp/secrets/，即可试点 1 帖 → 全量。
+
+## 实施结果（2026-10-19）
+
+- **凭据解法**：R2 S3 五值一直在 `.dev.vars`（gitignored，9-15 创建）——此前只查了 `.env` 漏了它。无需园主签新 token。
+- **执行**：试点 agents-md-handbook（4 图）→ 全量 115 帖 → 间歇网络失败 29 帖重试补齐（脚本加单文件退避重试）→ xiuxing-metaphysics（242 图）与 xiuxing-stories（89 图）补迁。
+- **结果**：2256 张图全部上传（key=`posts/<slug>/<file>`）、2253 处 md 引用改写为 `https://img.threetwoa.live/...`、2256 文件出 git 索引（工作区保留）。
+- **tracked 949.9MB → 343.4MB（-606MB / -64%）**，超 08 票目标（<350MB）。
+- **验证**：`pnpm build` exit 0；`check-delivery-budget` 865 页 0 违规；v41/ui-motion/community 门禁 29/10/9 全绿；线上抽 8 帖图片 URL 全部 200（jpg/webp/png 混合）；lqips.json 被构建重写已按约定还原。
+- **删除边界**：按默认只出 index、不做历史重写；pack 1.64GB 的稀释留待园主授权后单独动作。
+- CI 影响：fresh clone 不再拉 650MB 图；构建期图片全外链（本地构建已等价验证）。
 
 ## 方案
 
