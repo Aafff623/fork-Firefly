@@ -28,7 +28,13 @@ jobs:
           run_install: false
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Run behavior gates
+        run: pnpm run check:behavior
+
+      - name: Astro check
+        run: pnpm run check
 
       - name: Build (Cloudflare Workers adapter)
         run: pnpm run build
@@ -42,6 +48,9 @@ jobs:
       # 注意：这里**只**放产物级门禁。四个源码门禁（check:gates）当前在 master 上有
       # 4 条历史失败（v41 的 AskChat 孤儿 chunk、ui-motion 的时钟/页脚/tag sphere 三条），
       # 放进部署前会直接堵住上线。它们在 build.yml 里跑，先把红灯亮出来，修完再挪过来。
+      - name: Check v41 dist gates
+        run: node scripts/check-v41-gates.mjs
+
       - name: Check delivery budget
         run: pnpm run check:budget
 
