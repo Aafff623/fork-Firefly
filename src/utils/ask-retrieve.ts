@@ -439,10 +439,17 @@ function scorePost(
 	return { score, snippet: snippetAround(plain, terms) };
 }
 
-function toHit(post: AskPost, score: number, snippet: string): AskHit {
+type PostUrlFor = (slug: string) => string;
+
+function toHit(
+	post: AskPost,
+	score: number,
+	snippet: string,
+	urlFor: PostUrlFor,
+): AskHit {
 	return {
 		title: post.title,
-		url: getPostUrlBySlug(post.slug),
+		url: urlFor(post.slug),
 		snippet,
 		score,
 		date: post.time ? formatDate(new Date(post.time)) : undefined,
@@ -463,20 +470,20 @@ function metaOf(
 	};
 }
 
-export async function retrieveSiteHits(
+export function retrieveSiteHitsFromPosts(
 	query: string,
+	posts: readonly AskPost[],
 	limit = 5,
-	origin?: string,
-): Promise<AskRetrieveResult> {
+	urlFor: PostUrlFor = getPostUrlBySlug,
+): AskRetrieveResult {
 	const t0 = Date.now();
-	const posts = await loadAskPosts(origin);
 	// 索引已按时间新→旧预排序
 	const scanned = posts.length;
 
 	if (isRecentIntent(query)) {
 		const hits = posts
 			.slice(0, limit)
-			.map((post, i) => toHit(post, 100 - i, postSnippet(post)));
+			.map((post, i) => toHit(post, 100 - i, postSnippet(post), urlFor));
 
 		return {
 			labels: ["园主近期文章", "按发布时间"],
@@ -491,7 +498,7 @@ export async function retrieveSiteHits(
 		const labels = expandSiteMetaLabels(query);
 		const scored = posts.map((post) => {
 			const { score, snippet } = scorePost(post, labels, { siteMeta: true });
-			return toHit(post, score, snippet);
+			return toHit(post, score, snippet, urlFor);
 		});
 		// site-meta 门槛更高：宁可少而准
 		const matchedAll = scored.filter((h) => h.score >= 8);
@@ -509,7 +516,7 @@ export async function retrieveSiteHits(
 						siteMeta: true,
 					});
 					const floor = isSiteDoc(post) ? Math.max(score, 10) : score;
-					return toHit(post, floor, snippet || postSnippet(post));
+					return toHit(post, floor, snippet || postSnippet(post), urlFor);
 				})
 				.sort((a, b) => b.score - a.score)
 				.slice(0, Math.min(limit, 4));
@@ -527,7 +534,7 @@ export async function retrieveSiteHits(
 	const labels = extractAskLabels(query);
 	const scored = posts.map((post) => {
 		const { score, snippet } = scorePost(post, labels);
-		return toHit(post, score, snippet);
+		return toHit(post, score, snippet, urlFor);
 	});
 
 	const matchedAll = scored.filter((h) => h.score >= 2.5);
@@ -543,6 +550,15 @@ export async function retrieveSiteHits(
 		scope: "本站文章库 posts（标题 / 摘要 / 标签 / 正文 · 逐篇打分）",
 		meta: metaOf(t0, scanned, matchedAll.length),
 	};
+}
+
+export async function retrieveSiteHits(
+	query: string,
+	limit = 5,
+	origin?: string,
+): Promise<AskRetrieveResult> {
+	const posts = await loadAskPosts(origin);
+	return retrieveSiteHitsFromPosts(query, posts, limit);
 }
 
 /** 发给 MaxKB 的附件载荷（API 层已裁剪；文本注入全文，图片只报名） */
