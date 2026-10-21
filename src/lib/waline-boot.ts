@@ -3,8 +3,8 @@ import { init, type WalineInstance } from "@waline/client/full";
 const MAX_BYTES = 5 * 1024 * 1024;
 let swupHooksRegistered = false;
 
-/** 本次会话评论区上传成功的图（仅这些允许 DELETE 同步删桶） */
-const managedCommentImageUrls = new Set<string>();
+/** 本次会话评论区上传成功的图（URL → deleteToken，仅这些允许 DELETE 同步删桶） */
+const managedCommentImageUrls = new Map<string, string>();
 /** 进行中的上传，取消占位时 abort */
 let activeUploadAbort: AbortController | null = null;
 /** 最近一次 boot 的 uploadApi，dispose 时清孤儿用 */
@@ -106,8 +106,8 @@ export function disposeWaline(): void {
 	activeUploadAbort = null;
 	// 离页时草稿里未提交的会话上传图 → 同步删桶，避免孤儿占存储
 	if (lastUploadApi && managedCommentImageUrls.size > 0) {
-		for (const url of [...managedCommentImageUrls]) {
-			deleteCommentImage(lastUploadApi, url);
+		for (const [url, token] of [...managedCommentImageUrls]) {
+			deleteCommentImage(lastUploadApi, url, token);
 		}
 	}
 	managedCommentImageUrls.clear();
@@ -410,9 +410,16 @@ function extractMarkdownImageUrls(text: string): Set<string> {
 }
 
 /** best-effort：编辑区撤销本会话上传图时，同步 DELETE 对象存储 */
-function deleteCommentImage(uploadApi: string, url: string): void {
+function deleteCommentImage(
+	uploadApi: string,
+	url: string,
+	token: string,
+): void {
 	if (!uploadApi || !url) return;
-	const endpoint = `${uploadApi.replace(/\/?$/, "/")}?url=${encodeURIComponent(url)}`;
+	const base = uploadApi.replace(/\/?$/, "/");
+	const endpoint = `${base}?url=${encodeURIComponent(url)}${
+		token ? `&token=${encodeURIComponent(token)}` : ""
+	}`;
 	void fetch(endpoint, {
 		method: "DELETE",
 		headers: { Origin: window.location.origin },
@@ -427,10 +434,10 @@ function pruneRemovedManagedImages(
 ): void {
 	if (!uploadApi || managedCommentImageUrls.size === 0) return;
 	const stillPresent = extractMarkdownImageUrls(editorValue);
-	for (const url of [...managedCommentImageUrls]) {
+	for (const [url, token] of [...managedCommentImageUrls]) {
 		if (stillPresent.has(url)) continue;
 		managedCommentImageUrls.delete(url);
-		deleteCommentImage(uploadApi, url);
+		deleteCommentImage(uploadApi, url, token);
 	}
 }
 
@@ -900,7 +907,7 @@ async function imageUploader(uploadApi: string, file: File): Promise<string> {
 			headers: { Origin: window.location.origin },
 			signal: ac.signal,
 		});
-		let data: { url?: string; error?: string } = {};
+		let data: { url?: string; deleteToken?: string; error?: string } = {};
 		try {
 			data = await res.json();
 		} catch {
@@ -914,7 +921,7 @@ async function imageUploader(uploadApi: string, file: File): Promise<string> {
 					: "图片上传失败");
 			throw new Error(msg);
 		}
-		managedCommentImageUrls.add(data.url);
+		managedCommentImageUrls.set(data.url, data.deleteToken ?? "");
 		return data.url;
 	} catch (error) {
 		if (
