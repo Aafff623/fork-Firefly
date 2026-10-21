@@ -9,53 +9,27 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import {
 	getDefaultAvatarFrameId,
-	getDefaultBannerCarouselEnabled,
-	getDefaultBannerTitleEnabled,
-	getDefaultCardBorderEnabled,
-	getDefaultCardFollowThemeEnabled,
-	getDefaultGradientEnabled,
 	getDefaultHue,
-	getDefaultNoteCardEnabled,
 	getDefaultOverlayBlur,
 	getDefaultOverlayCardOpacity,
 	getDefaultOverlayOpacity,
 	getDefaultPetSelection,
-	getDefaultSakuraEnabled,
-	getDefaultWavesEnabled,
 	getHue,
-	getPetRoamEnabled,
 	getStoredAvatarFrameId,
-	getStoredBannerCarouselEnabled,
-	getStoredBannerTitleEnabled,
-	getStoredCardBorderEnabled,
-	getStoredCardFollowThemeEnabled,
-	getStoredGradientEnabled,
-	getStoredNoteCardEnabled,
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
 	getStoredPetSelection,
-	getStoredSakuraEnabled,
 	getStoredTitleSoundEnabled,
 	getStoredWallpaperMode,
-	getStoredWavesEnabled,
 	setAvatarFrameId,
-	setBannerCarouselEnabled,
-	setBannerTitleEnabled,
-	setCardBorderEnabled,
-	setCardFollowThemeEnabled,
-	setGradientEnabled,
 	setHue,
-	setNoteCardEnabled,
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
-	setPetRoamEnabled,
 	setPetSelection,
-	setSakuraEnabled,
 	setTitleSoundEnabled,
 	setWallpaperMode,
-	setWavesEnabled,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
@@ -67,6 +41,11 @@ import {
 	spritePetConfig,
 } from "@/config";
 import { findBuiltinPet } from "@/lib/pets/builtinPets";
+import {
+	getSimpleToggleDefaults,
+	readSimpleToggle,
+	writeSimpleToggle,
+} from "@/lib/settings/simple-toggles";
 import type { WALLPAPER_MODE } from "@/types/config";
 import type { AvatarFrameId } from "@/types/profileConfig";
 
@@ -103,15 +82,16 @@ let isMobileWidth = $state(
 );
 let isSwitching = $state(false);
 let wavesEnabled = $state(true);
-const defaultWavesEnabled = getDefaultWavesEnabled();
+const toggleDefaults = getSimpleToggleDefaults();
+const defaultWavesEnabled = toggleDefaults.waves;
 let gradientEnabled = $state(true);
-const defaultGradientEnabled = getDefaultGradientEnabled();
+const defaultGradientEnabled = toggleDefaults.gradient;
 let bannerTitleEnabled = $state(true);
-const defaultBannerTitleEnabled = getDefaultBannerTitleEnabled();
+const defaultBannerTitleEnabled = toggleDefaults.bannerTitle;
 let bannerCarouselEnabled = $state(true);
-const defaultBannerCarouselEnabled = getDefaultBannerCarouselEnabled();
+const defaultBannerCarouselEnabled = toggleDefaults.bannerCarousel;
 let sakuraEnabled = $state(false);
-const defaultSakuraEnabled = getDefaultSakuraEnabled();
+const defaultSakuraEnabled = toggleDefaults.sakura;
 let titleSoundEnabled = $state(true);
 let petRoamEnabled = $state(false);
 const defaultPetRoamEnabled = false;
@@ -122,11 +102,11 @@ const defaultOverlayBlur = getDefaultOverlayBlur();
 let overlayCardOpacity = $state(getDefaultOverlayCardOpacity());
 const defaultOverlayCardOpacity = getDefaultOverlayCardOpacity();
 let cardBorderEnabled = $state(false);
-const defaultCardBorderEnabled = getDefaultCardBorderEnabled();
+const defaultCardBorderEnabled = toggleDefaults.cardBorder;
 let cardFollowThemeEnabled = $state(false);
-const defaultCardFollowThemeEnabled = getDefaultCardFollowThemeEnabled();
+const defaultCardFollowThemeEnabled = toggleDefaults.cardFollowTheme;
 let noteCardEnabled = $state(true);
-const defaultNoteCardEnabled = getDefaultNoteCardEnabled();
+const defaultNoteCardEnabled = toggleDefaults.noteCard;
 
 const isWallpaperSwitchable = displaySettingsConfig.wallpaperModeSwitchable;
 const allowLayoutSwitch = displaySettingsConfig.layoutSwitchable;
@@ -421,12 +401,12 @@ function resetPetSelection() {
 
 function resetWavesEnabled() {
 	wavesEnabled = defaultWavesEnabled;
-	setWavesEnabled(defaultWavesEnabled);
+	writeSimpleToggle("waves", defaultWavesEnabled);
 }
 
 function resetGradientEnabled() {
 	gradientEnabled = defaultGradientEnabled;
-	setGradientEnabled(defaultGradientEnabled);
+	writeSimpleToggle("gradient", defaultGradientEnabled);
 }
 
 function resetBannerSettings() {
@@ -435,22 +415,22 @@ function resetBannerSettings() {
 		bannerTitleEnabled !== defaultBannerTitleEnabled
 	) {
 		bannerTitleEnabled = defaultBannerTitleEnabled;
-		setBannerTitleEnabled(defaultBannerTitleEnabled);
+		writeSimpleToggle("bannerTitle", defaultBannerTitleEnabled);
 	}
 	if (isWavesSwitchable && wavesEnabled !== defaultWavesEnabled) {
 		wavesEnabled = defaultWavesEnabled;
-		setWavesEnabled(defaultWavesEnabled);
+		writeSimpleToggle("waves", defaultWavesEnabled);
 	}
 	if (isGradientSwitchable && gradientEnabled !== defaultGradientEnabled) {
 		gradientEnabled = defaultGradientEnabled;
-		setGradientEnabled(defaultGradientEnabled);
+		writeSimpleToggle("gradient", defaultGradientEnabled);
 	}
 	if (
 		isBannerCarouselSwitchable &&
 		bannerCarouselEnabled !== defaultBannerCarouselEnabled
 	) {
 		bannerCarouselEnabled = defaultBannerCarouselEnabled;
-		setBannerCarouselEnabled(defaultBannerCarouselEnabled);
+		writeSimpleToggle("bannerCarousel", defaultBannerCarouselEnabled);
 	}
 }
 
@@ -476,27 +456,27 @@ function resetOverlaySettings() {
 
 function toggleWavesEnabled() {
 	wavesEnabled = !wavesEnabled;
-	setWavesEnabled(wavesEnabled);
+	writeSimpleToggle("waves", wavesEnabled);
 }
 
 function toggleGradientEnabled() {
 	gradientEnabled = !gradientEnabled;
-	setGradientEnabled(gradientEnabled);
+	writeSimpleToggle("gradient", gradientEnabled);
 }
 
 function toggleBannerTitleEnabled() {
 	bannerTitleEnabled = !bannerTitleEnabled;
-	setBannerTitleEnabled(bannerTitleEnabled);
+	writeSimpleToggle("bannerTitle", bannerTitleEnabled);
 }
 
 function toggleBannerCarouselEnabled() {
 	bannerCarouselEnabled = !bannerCarouselEnabled;
-	setBannerCarouselEnabled(bannerCarouselEnabled);
+	writeSimpleToggle("bannerCarousel", bannerCarouselEnabled);
 }
 
 function toggleSakuraEnabled() {
 	sakuraEnabled = !sakuraEnabled;
-	setSakuraEnabled(sakuraEnabled);
+	writeSimpleToggle("sakura", sakuraEnabled);
 }
 
 function toggleTitleSoundEnabled() {
@@ -506,22 +486,22 @@ function toggleTitleSoundEnabled() {
 
 function togglePetRoamEnabled() {
 	petRoamEnabled = !petRoamEnabled;
-	setPetRoamEnabled(petRoamEnabled);
+	writeSimpleToggle("petRoam", petRoamEnabled);
 }
 
 function toggleCardBorderEnabled() {
 	cardBorderEnabled = !cardBorderEnabled;
-	setCardBorderEnabled(cardBorderEnabled);
+	writeSimpleToggle("cardBorder", cardBorderEnabled);
 }
 
 function toggleCardFollowThemeEnabled() {
 	cardFollowThemeEnabled = !cardFollowThemeEnabled;
-	setCardFollowThemeEnabled(cardFollowThemeEnabled);
+	writeSimpleToggle("cardFollowTheme", cardFollowThemeEnabled);
 }
 
 function toggleNoteCardEnabled() {
 	noteCardEnabled = !noteCardEnabled;
-	setNoteCardEnabled(noteCardEnabled);
+	writeSimpleToggle("noteCard", noteCardEnabled);
 }
 
 function resetCardSettings() {
@@ -530,18 +510,18 @@ function resetCardSettings() {
 		cardBorderEnabled !== defaultCardBorderEnabled
 	) {
 		cardBorderEnabled = defaultCardBorderEnabled;
-		setCardBorderEnabled(defaultCardBorderEnabled);
+		writeSimpleToggle("cardBorder", defaultCardBorderEnabled);
 	}
 	if (
 		isCardFollowThemeSwitchable &&
 		cardFollowThemeEnabled !== defaultCardFollowThemeEnabled
 	) {
 		cardFollowThemeEnabled = defaultCardFollowThemeEnabled;
-		setCardFollowThemeEnabled(defaultCardFollowThemeEnabled);
+		writeSimpleToggle("cardFollowTheme", defaultCardFollowThemeEnabled);
 	}
 	if (isNoteCardSwitchable && noteCardEnabled !== defaultNoteCardEnabled) {
 		noteCardEnabled = defaultNoteCardEnabled;
-		setNoteCardEnabled(defaultNoteCardEnabled);
+		writeSimpleToggle("noteCard", defaultNoteCardEnabled);
 	}
 }
 
@@ -632,27 +612,27 @@ onMount(() => {
 	wallpaperMode = getStoredWallpaperMode();
 
 	// 从localStorage读取水波纹动画状态
-	wavesEnabled = getStoredWavesEnabled();
+	wavesEnabled = readSimpleToggle("waves");
 
 	// 从localStorage读取渐变过渡状态
-	gradientEnabled = getStoredGradientEnabled();
+	gradientEnabled = readSimpleToggle("gradient");
 
 	// 从localStorage读取横幅标题状态
-	bannerTitleEnabled = getStoredBannerTitleEnabled();
+	bannerTitleEnabled = readSimpleToggle("bannerTitle");
 
 	// 从localStorage读取横幅轮播状态
-	bannerCarouselEnabled = getStoredBannerCarouselEnabled();
+	bannerCarouselEnabled = readSimpleToggle("bannerCarousel");
 
 	// 从localStorage读取樱花特效状态（钉住或 Intro 进行中）
 	sakuraEnabled =
-		getStoredSakuraEnabled() ||
+		readSimpleToggle("sakura") ||
 		document.documentElement.getAttribute("data-sakura-enabled") === "true";
 
 	// 标题音效开关（默认开，与设置面板联动）
 	titleSoundEnabled = getStoredTitleSoundEnabled();
 
 	// 桌宠奔跑开关
-	petRoamEnabled = getPetRoamEnabled();
+	petRoamEnabled = readSimpleToggle("petRoam");
 
 	// 桌宠选中项
 	selectedPetId = getStoredPetSelection();
@@ -664,9 +644,9 @@ onMount(() => {
 	window.addEventListener("sakuraIntroEnded", handleSakuraIntroEnded);
 
 	// 从localStorage读取卡片样式状态
-	cardBorderEnabled = getStoredCardBorderEnabled();
-	cardFollowThemeEnabled = getStoredCardFollowThemeEnabled();
-	noteCardEnabled = getStoredNoteCardEnabled();
+	cardBorderEnabled = readSimpleToggle("cardBorder");
+	cardFollowThemeEnabled = readSimpleToggle("cardFollowTheme");
+	noteCardEnabled = readSimpleToggle("noteCard");
 
 	// 从localStorage读取全屏透明设置状态
 	overlayOpacity = getStoredOverlayOpacity();
@@ -940,7 +920,7 @@ $effect(() => {
 			<div class="section-title">
 				{i18n(I18nKey.noteCardSettings)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
-						class:opacity-0={noteCardEnabled === defaultNoteCardEnabled} class:pointer-events-none={noteCardEnabled === defaultNoteCardEnabled} onclick={() => { noteCardEnabled = defaultNoteCardEnabled; setNoteCardEnabled(defaultNoteCardEnabled); }}>
+						class:opacity-0={noteCardEnabled === defaultNoteCardEnabled} class:pointer-events-none={noteCardEnabled === defaultNoteCardEnabled} onclick={() => { noteCardEnabled = defaultNoteCardEnabled; writeSimpleToggle("noteCard", defaultNoteCardEnabled); }}>
 					<div class="text-(--btn-content)">
 						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
 					</div>
@@ -1153,7 +1133,7 @@ $effect(() => {
 			<div class="section-title">
 				{i18n(I18nKey.effectsSettings)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
-						class:opacity-0={sakuraEnabled === defaultSakuraEnabled} class:pointer-events-none={sakuraEnabled === defaultSakuraEnabled} onclick={() => { sakuraEnabled = defaultSakuraEnabled; setSakuraEnabled(defaultSakuraEnabled); }}>
+						class:opacity-0={sakuraEnabled === defaultSakuraEnabled} class:pointer-events-none={sakuraEnabled === defaultSakuraEnabled} onclick={() => { sakuraEnabled = defaultSakuraEnabled; writeSimpleToggle("sakura", defaultSakuraEnabled); }}>
 					<div class="text-(--btn-content)">
 						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
 					</div>

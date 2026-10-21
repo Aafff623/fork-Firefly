@@ -13,6 +13,10 @@ import {
 	WALLPAPER_OVERLAY,
 } from "@constants/constants";
 import { isPickerPetId } from "@/lib/pets/builtinPets";
+import {
+	readBooleanSetting,
+	writeBooleanSetting,
+} from "@/lib/settings/boolean-storage";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
 import {
 	backgroundWallpaper,
@@ -1319,27 +1323,11 @@ export function getDefaultWavesEnabled(): boolean {
 }
 
 export function getStoredWavesEnabled(): boolean {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.getItem !== "function"
-	) {
-		return getDefaultWavesEnabled();
-	}
-	const stored = localStorage.getItem("wavesEnabled");
-	if (stored === null) {
-		return getDefaultWavesEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting("wavesEnabled", getDefaultWavesEnabled());
 }
 
 export function setWavesEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("wavesEnabled", String(enabled));
+	if (!writeBooleanSetting("wavesEnabled", enabled)) return;
 	applyWavesEnabledToDocument(enabled);
 }
 
@@ -1376,27 +1364,11 @@ export function getDefaultGradientEnabled(): boolean {
 }
 
 export function getStoredGradientEnabled(): boolean {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.getItem !== "function"
-	) {
-		return getDefaultGradientEnabled();
-	}
-	const stored = localStorage.getItem("gradientEnabled");
-	if (stored === null) {
-		return getDefaultGradientEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting("gradientEnabled", getDefaultGradientEnabled());
 }
 
 export function setGradientEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("gradientEnabled", String(enabled));
+	if (!writeBooleanSetting("gradientEnabled", enabled)) return;
 	applyGradientEnabledToDocument(enabled);
 }
 
@@ -1544,57 +1516,31 @@ export function getDefaultBannerCarouselEnabled(): boolean {
 }
 
 export function getStoredBannerTitleEnabled(): boolean {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.getItem !== "function"
-	) {
-		return getDefaultBannerTitleEnabled();
-	}
-	const stored = localStorage.getItem("bannerTitleEnabled");
-	if (stored === null) {
-		return getDefaultBannerTitleEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting(
+		"bannerTitleEnabled",
+		getDefaultBannerTitleEnabled(),
+	);
 }
 
 export function getStoredBannerCarouselEnabled(): boolean {
-	const isSwitchable = displaySettingsConfig.bannerCarouselSwitchable;
-	if (!isSwitchable) {
+	if (!displaySettingsConfig.bannerCarouselSwitchable) {
 		return getDefaultBannerCarouselEnabled();
 	}
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.getItem !== "function"
-	) {
-		return getDefaultBannerCarouselEnabled();
-	}
-	const stored = localStorage.getItem("bannerCarouselEnabled");
-	if (stored === null) {
-		return getDefaultBannerCarouselEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting(
+		"bannerCarouselEnabled",
+		getDefaultBannerCarouselEnabled(),
+	);
 }
 
 export function setBannerTitleEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("bannerTitleEnabled", String(enabled));
+	if (!writeBooleanSetting("bannerTitleEnabled", enabled)) return;
 	applyBannerTitleEnabledToDocument(enabled);
 }
 
 export function setBannerCarouselEnabled(enabled: boolean): void {
 	const safeEnabled = !!enabled;
-	const isSwitchable = displaySettingsConfig.bannerCarouselSwitchable;
-	if (
-		isSwitchable &&
-		typeof localStorage !== "undefined" &&
-		typeof localStorage.setItem === "function"
-	) {
-		localStorage.setItem("bannerCarouselEnabled", String(safeEnabled));
+	if (displaySettingsConfig.bannerCarouselSwitchable) {
+		writeBooleanSetting("bannerCarouselEnabled", safeEnabled);
 	}
 	applyBannerCarouselEnabledToDocument(safeEnabled);
 	if (typeof window !== "undefined") {
@@ -1648,24 +1594,11 @@ export function getStoredCardBorderEnabled(): boolean {
 	if (!displaySettingsConfig.cardBorderSwitchable) {
 		return getDefaultCardBorderEnabled();
 	}
-	if (typeof localStorage === "undefined") {
-		return getDefaultCardBorderEnabled();
-	}
-	const stored = localStorage.getItem("cardBorderEnabled");
-	if (stored === null) {
-		return getDefaultCardBorderEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting("cardBorderEnabled", getDefaultCardBorderEnabled());
 }
 
 export function setCardBorderEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("cardBorderEnabled", String(enabled));
+	if (!writeBooleanSetting("cardBorderEnabled", enabled)) return;
 	if (enabled) {
 		document.documentElement.classList.add("enable-card-border");
 	} else {
@@ -1684,24 +1617,11 @@ export function getStoredNoteCardEnabled(): boolean {
 	if (!displaySettingsConfig.noteCardSwitchable) {
 		return getDefaultNoteCardEnabled();
 	}
-	if (typeof localStorage === "undefined") {
-		return getDefaultNoteCardEnabled();
-	}
-	const stored = localStorage.getItem("noteCardEnabled");
-	if (stored === null) {
-		return getDefaultNoteCardEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting("noteCardEnabled", getDefaultNoteCardEnabled());
 }
 
 export function setNoteCardEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("noteCardEnabled", String(enabled));
+	if (!writeBooleanSetting("noteCardEnabled", enabled)) return;
 	if (enabled) {
 		document.documentElement.classList.remove("note-cards-off");
 	} else {
@@ -1719,24 +1639,14 @@ export function getStoredCardFollowThemeEnabled(): boolean {
 	if (!displaySettingsConfig.cardFollowThemeSwitchable) {
 		return false;
 	}
-	if (typeof localStorage === "undefined") {
-		return getDefaultCardFollowThemeEnabled();
-	}
-	const stored = localStorage.getItem("cardFollowThemeEnabled");
-	if (stored === null) {
-		return getDefaultCardFollowThemeEnabled();
-	}
-	return stored === "true";
+	return readBooleanSetting(
+		"cardFollowThemeEnabled",
+		getDefaultCardFollowThemeEnabled(),
+	);
 }
 
 export function setCardFollowThemeEnabled(enabled: boolean): void {
-	if (
-		typeof localStorage === "undefined" ||
-		typeof localStorage.setItem !== "function"
-	) {
-		return;
-	}
-	localStorage.setItem("cardFollowThemeEnabled", String(enabled));
+	if (!writeBooleanSetting("cardFollowThemeEnabled", enabled)) return;
 	if (enabled) {
 		document.body.classList.add("card-follow-theme-hue");
 	} else {
