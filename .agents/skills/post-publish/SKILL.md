@@ -138,7 +138,7 @@ python .agents/skills/_shared/scripts/validate_post.py src/content/posts/_draftb
 
 出箱后（你点头「可以发了」、迁到 posts/ 并 draft:false 之后）：
 
-1. 跑 `_shared/scripts/cascade_check.py --slug <slug>` 核对四表面：最新动态 / 站点统计 /
+1. 跑 `.agents/skills/post-publish/scripts/cascade_check.py --slug <slug>` 核对四表面：最新动态 / 站点统计 /
    分类标签 / 热力图。**不发“发布了新笔记”动态**（includeSystemNotes=false，脚本会拒）。
 2. 可选：Agent 协作者评论（`pnpm agent-comment --agent <key> --comment "…" --path /posts/<slug>/`；
    语气「接梗→同频→人话」；Waline 限流 ~60s；密钥只本机不入库）。
@@ -146,8 +146,8 @@ python .agents/skills/_shared/scripts/validate_post.py src/content/posts/_draftb
 ### 7. 交付闭环（硬门禁）
 
 ```text
-pnpm dev 本地预览 → pnpm check → 园主确认 → push → 等 Vercel Ready
-→ 打开 https://www.threetwoa.live 核线上（备用 fork-firefly.vercel.app）
+pnpm dev 本地预览 → pnpm check → 园主确认 → push → 等 deploy-cf.yml CI 绿
+→ 打开 https://www.threetwoa.live 核线上
 ```
 
 - 未本地验收不得 push；未看线上不得宣称部署完成。
@@ -164,7 +164,7 @@ pnpm dev 本地预览 → pnpm check → 园主确认 → push → 等 Vercel Re
 ## 参考与复用
 
 - 红线文档：`_shared/post-redlines.md` · 机器校验：`validate_post.py`
-- 图片：`_shared/scripts/image_utils.py` · R2：`upload_r2.py` · 级联：`cascade_check.py`
+- 图片：`_shared/scripts/image_utils.py` · R2：`upload_r2.py` · 级联：`.agents/skills/post-publish/scripts/cascade_check.py`
 - vault helpers：`_shared/scripts/vault_lib.py`（resolve_vault_file / manifest）
 - 分类词表：`CONTEXT.md` · 合集：`src/config/collectionsConfig.ts`
 - 标题防 AI：`references/heading-anti-ai.md`（本 skill 同目录）

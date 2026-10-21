@@ -38,5 +38,5 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
 
 ## 现存 effort
 
-- `.scratch/delivery-perf/` —— 交付性能改造（决策地图 + 7 张决策票；票 06 已解出）。
-  产出的实现落在分支 `perf/delivery-budget`。
+- `.scratch/delivery-perf/` —— 交付性能改造（决策地图 + 8 张票；01–06、08 已解，07 open）。
+  产出的实现已合入 `master`，与 `origin/master` 同步。

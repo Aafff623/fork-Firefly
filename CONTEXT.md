@@ -61,7 +61,7 @@ Content Collections（`src/content.config.ts`）：
 
 **草稿箱 ≠ `draft: true` demo**：箱内正文永不入库；主题示例帖 `posts/draft.md` 可跟踪且仅靠 FM 藏生产首页。见 `AGENTS.md` / `docs/agents/workflow.md`。
 
-**内容收束状态**：原「2026-08 约 24 篇生产文章」是历史快照，已不再代表当前 checkout。当前工作树包含 734 个文章入口（其中 31 个仍是未跟踪导入 WIP）；最终生产公开名单待园主确认，不能仅按当前文件数量发布。
+**内容收束状态**：原「2026-08 约 24 篇生产文章」是历史快照，已不再代表当前 checkout。当前工作树包含 130 篇 tracked 文章（另 1 篇 gitignored 草稿箱 md）；最终生产公开名单待园主确认，不能仅按当前文件数量发布。
 
 ### 现行分类词表（发帖门禁）
 
@@ -231,7 +231,7 @@ Content Collections（`src/content.config.ts`）：
 
 ## 交付闭环（与 workflow 一致）
 
-本地预览 → 本地校验 → push → Vercel Ready → **再核线上**。详见 `docs/agents/workflow.md`。
+本地预览 → 本地校验 → push → `deploy-cf.yml` CI 绿 → **再核线上**。详见 `docs/agents/workflow.md`。
 
 ## 参考
 

@@ -79,7 +79,7 @@ pnpm new-d <content>
 | `wiki-post` | `.agents/skills/wiki-post/` | GitHub Wiki 手册；用户说「发布/推送 Wiki」才 push `.wiki.git` |
 | `gsap-*`（官方 8 件） | `.agents/skills/gsap-{core,timeline,scrolltrigger,plugins,utils,react,performance,frameworks}/` | 写/审 GSAP 动画 |
 
-vault / 图片 / 校验机械脚本在 `_shared/scripts/`（`vault_lib.py` / `image_utils.py` / `upload_r2.py` / `validate_post.py` / `cascade_check.py` 等）；post-publish 的脚本在 `post-publish/scripts/`。映射表仍是 `.ob2blog/manifest.json`。
+vault / 图片 / 校验机械脚本在 `_shared/scripts/`（`vault_lib.py` / `image_utils.py` / `upload_r2.py` / `validate_post.py` 等）；`cascade_check.py` 与 post-publish 的脚本在 `post-publish/scripts/`。映射表仍是 `.ob2blog/manifest.json`。
 
 分工：发文一律 `post-publish`（内置「沉淀 → 成帖 → 发布 → 收尾」一条链），短动态走 `dynamic-publish`。配图只使用已有的本地、官方或合规素材；缺图时标记待补，不在发布链路中调用模型生图（封面生图需园主点头）。
 
