@@ -59,9 +59,11 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script>
     import walineStyleUrl from "@waline/client/waline.css?url";
+    import { registerPageCleanup } from "@/lib/page-lifecycle";
 
     let bootedOnce = false;
     let pendingIO: IntersectionObserver | null = null;
+    let pageCleanupArmed = false;
     let walineStylesPromise: Promise<void> | null = null;
 
     const loadWalineStyles = () => {
@@ -100,8 +102,19 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       bootWalineFromShell();
     };
 
+    const armPageCleanup = () => {
+      if (pageCleanupArmed) return;
+      pageCleanupArmed = true;
+      registerPageCleanup(() => {
+        pageCleanupArmed = false;
+        pendingIO?.disconnect();
+        pendingIO = null;
+      });
+    };
+
     const bootWhenNear = () => {
       if (bootedOnce) return;
+      armPageCleanup();
 
       const shell = document.querySelector(".waline-shell");
       if (!(shell instanceof Element) || typeof IntersectionObserver === "undefined") {
@@ -124,14 +137,18 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       io.observe(shell);
     };
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", bootWhenNear, { once: true });
-    } else {
-      bootWhenNear();
+    const gateWindow = window as Window & { __walineLazyGateBound?: boolean };
+    if (!gateWindow.__walineLazyGateBound) {
+      gateWindow.__walineLazyGateBound = true;
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootWhenNear, { once: true });
+      } else {
+        bootWhenNear();
+      }
+      // 兜底：软导航可能先于 IO 触发（用户没滚近评论区就跳走），旧 shell 的 IO
+      // 永不回调；必须在模块作用域监听切页，对新页面的评论区重挂懒启动
+      document.addEventListener("swup:page:view", bootWhenNear);
     }
-    // 兜底：软导航可能先于 IO 触发（用户没滚近评论区就跳走），旧 shell 的 IO
-    // 永不回调；必须在模块作用域监听切页，对新页面的评论区重挂懒启动
-    document.addEventListener("swup:page:view", bootWhenNear);
   </script>
   {
     stickerSuggestEnabled && (
@@ -145,7 +162,13 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
           setTimeout(boot, 0);
         }
         // Swup 等软导航后可能重建评论区 // 中文注释
-        document.addEventListener("swup:page:view", () => setTimeout(boot, 50));
+        const stickerWindow = window as Window & {
+          __walineStickerPageViewBound?: boolean;
+        };
+        if (!stickerWindow.__walineStickerPageViewBound) {
+          stickerWindow.__walineStickerPageViewBound = true;
+          document.addEventListener("swup:page:view", () => setTimeout(boot, 50));
+        }
       </script>
     )
   }
@@ -159,7 +182,13 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       setTimeout(bootAvatars, 0);
     }
     // Swup 等软导航后可能重建评论区 // 中文注释
-    document.addEventListener("swup:page:view", () => setTimeout(bootAvatars, 50));
+    const avatarWindow = window as Window & {
+      __walineAvatarPageViewBound?: boolean;
+    };
+    if (!avatarWindow.__walineAvatarPageViewBound) {
+      avatarWindow.__walineAvatarPageViewBound = true;
+      document.addEventListener("swup:page:view", () => setTimeout(bootAvatars, 50));
+    }
   </script>
 </div>
 

@@ -15,6 +15,8 @@ interface Lifecycle {
 	controller: AbortController | null;
 	cleanups: Set<Cleanup>;
 	booted: boolean;
+	/** 首屏 page:view 只认领 epoch，不销毁 boot 阶段已登记的清理。 */
+	viewed: boolean;
 }
 
 function getLifecycle(): Lifecycle {
@@ -25,6 +27,7 @@ function getLifecycle(): Lifecycle {
 			controller: null,
 			cleanups: new Set(),
 			booted: false,
+			viewed: false,
 		};
 	}
 	return g[GLOBAL_KEY] as Lifecycle;
@@ -70,7 +73,8 @@ function onPage(
 		...options,
 		signal: lc.controller?.signal,
 	});
-	return () => target.removeEventListener(type, handler);
+	const capture = typeof options === "boolean" ? options : options?.capture;
+	return () => target.removeEventListener(type, handler, capture);
 }
 
 function observePage(observer: MutationObserver | ResizeObserver): Cleanup {
@@ -89,23 +93,30 @@ function requestPageFrame(callback: FrameRequestCallback): Cleanup {
 	return registerPageCleanup(() => window.cancelAnimationFrame(id));
 }
 
-function mountOnPageView(mount: () => Cleanup): void {
-	registerPageCleanup(mount());
-}
-
 function boot(): void {
 	if (typeof window === "undefined") return;
 	const lc = getLifecycle();
 	if (lc.booted) return;
 	lc.booted = true;
-	document.addEventListener(BEFORE_SWAP, () => disposeCurrent());
-	document.addEventListener(PAGE_READY, () => startPage());
+	document.addEventListener(BEFORE_SWAP, () => {
+		disposeCurrent();
+		lc.viewed = false;
+	});
+	document.addEventListener(PAGE_READY, () => {
+		if (lc.viewed) {
+			startPage();
+			return;
+		}
+		lc.viewed = true;
+		// 首屏：保留 boot 阶段已登记的清理；缺 controller 时补一个给 onPage。
+		if (!lc.controller) lc.controller = new AbortController();
+	});
+	lc.controller = new AbortController();
 }
 
 export {
 	boot as bootPageLifecycle,
 	disposeCurrent as disposePage,
-	mountOnPageView,
 	observePage,
 	onPage,
 	registerPageCleanup,

@@ -53,6 +53,8 @@ const lockHeight = textsArr.length > 1;
 }
 
 <script>
+  import { registerPageCleanup } from "@/lib/page-lifecycle";
+
   class TypewriterEffect {
     private element: HTMLElement;
     private texts: string[];
@@ -217,9 +219,26 @@ const lockHeight = textsArr.length > 1;
   }
 
   let delayedInitId = 0;
+  let pageCleanupArmed = false;
+
+  function armPageCleanup() {
+    if (pageCleanupArmed) return;
+    pageCleanupArmed = true;
+    registerPageCleanup(() => {
+      pageCleanupArmed = false;
+      window.clearTimeout(delayedInitId);
+      document.querySelectorAll<HTMLElement>(".typewriter").forEach((element) => {
+        const typed = element as HTMLElement & {
+          __typewriterInstance?: TypewriterEffect;
+        };
+        typed.__typewriterInstance?.destroy();
+      });
+    });
+  }
 
   // 初始化所有打字机效果
   function runInitWithDelay() {
+    armPageCleanup();
     initTypewriterElements();
     // 兼容 banner 晚于内容替换出现；只补绑新节点，不重启现有实例。
     window.clearTimeout(delayedInitId);

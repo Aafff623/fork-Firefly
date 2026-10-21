@@ -430,6 +430,11 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
 
+<script>
+	import { bootPageLifecycle } from "@/lib/page-lifecycle";
+	bootPageLifecycle();
+</script>
+
 <!-- 为全屏壁纸模式添加body类 -->
 {shouldEnableTransparency && (
 	<script>

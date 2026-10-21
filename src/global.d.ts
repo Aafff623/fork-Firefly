@@ -91,6 +91,11 @@ declare global {
 		__twikooBound?: boolean;
 		/** RepelText swup 监听幂等 guard */
 		__repelSwupBound?: boolean;
+		/** RepelText 指针排斥单例，防止脚本重跑叠 rAF */
+		__repelEngine?: {
+			scheduleInit: () => void;
+			prune: () => void;
+		};
 		/** TypewriterText swup 监听幂等 guard */
 		__typewriterSwupBound?: boolean;
 		/** Navbar 按钮 swup 监听幂等 guard */
@@ -101,6 +106,8 @@ declare global {
 		__footerWordmarkBound?: boolean;
 		/** 登录弹层 document 监听幂等 guard */
 		__loginModalBound?: boolean;
+		/** 首访萤火扣加载罩脚本幂等 guard */
+		__ffBootBound?: boolean;
 	}
 
 	interface MediaQueryList {

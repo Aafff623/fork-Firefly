@@ -30,8 +30,7 @@ function processCard(card: HTMLElement) {
 }
 
 export function attachAgentAvatars(): void {
-	// page-lifecycle 全仓无启动点，这里幂等 boot（Symbol.for guard），
-	// 否则 observePage 注册的清理在 astro:before-swap 时不会被执行。
+	// 页面壳已全局 boot；嵌入页（无 MainGridLayout）这里再幂等 boot 一次。
 	bootPageLifecycle();
 
 	const root = document.querySelector<HTMLElement>("#waline");
