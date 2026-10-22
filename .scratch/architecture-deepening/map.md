@@ -29,3 +29,7 @@
 ## Review / plan
 
 本次复核与执行计划见 `temp/reports/project-analysis/2026-10-21-执行复核与计划.md`（本地专用）。
+
+## Handoff
+
+交给 Codex 的冷启动交接：`temp/handoff/2026-10-22-architecture-deepening-codex.md`（本地专用，含剩余任务、验收与已知坑）。
