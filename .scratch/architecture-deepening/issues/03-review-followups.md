@@ -78,4 +78,6 @@ Status: claimed
 - `astro check`：0 errors / 0 warnings / 10 hints
 - `tsc --noEmit`：0 错
 - `biome check`（本轮改动文件）：0 错
-- `pnpm run build` + v41 + budget：见执行报告
+- `pnpm run build` + v41 + budget：build exit 0；v41 29/29、budget 865 页 0 违规
+- 浏览器（生产预览 4322）：面板正常渲染，水波纹开关 开→关→开，`localStorage` / 旋钮 class / `data-waves-enabled` 三处同步
+- 浏览器（dev 4321）：同一操作复测通过。首次验证时 island 在 Vite 重新优化依赖期间短暂为空（同页 AskChat 也报 React 重复实例），优化完成后自愈；生产预览不受影响
