@@ -14,8 +14,12 @@ const classes = new Set<string>();
 
 function makeClassList() {
 	return {
-		add: (...names: string[]) => names.forEach((n) => classes.add(n)),
-		remove: (...names: string[]) => names.forEach((n) => classes.delete(n)),
+		add: (...names: string[]) => {
+			for (const n of names) classes.add(n);
+		},
+		remove: (...names: string[]) => {
+			for (const n of names) classes.delete(n);
+		},
 		contains: (name: string) => classes.has(name),
 	};
 }
@@ -59,6 +63,9 @@ const {
 	writeSimpleToggle,
 	SIMPLE_TOGGLE_IDS,
 } = await import("../src/lib/settings/simple-toggles");
+const { displaySettingsConfig } = await import(
+	"../src/config/displaySettingsConfig"
+);
 
 assert.equal(SIMPLE_TOGGLE_IDS.length, 9, "9 simple toggles");
 assert.equal(
@@ -78,33 +85,34 @@ for (const id of SIMPLE_TOGGLE_IDS) {
 	assert.equal(typeof readSimpleToggle(id), "boolean", `${id} read is boolean`);
 }
 
-/** 面板开放、可回环的开关：写入值必须读得回来，且 apply 的 DOM 副作用发生。 */
-const roundTripIds = [
-	"waves",
-	"gradient",
-	"bannerTitle",
-	"bannerCarousel",
-	"sakura",
-	"petRoam",
-	"noteCard",
-] as const;
+/**
+ * 面板开放、可回环的开关：写入值必须读得回来。
+ * bannerCarousel / cardBorder / cardFollowTheme / noteCard 受 displaySettingsConfig 门控：
+ * 面板关掉时写入必须无痕，开着时才回环——断言跟着配置走，不把当前配置写死进测试。
+ */
+const gates: Partial<Record<string, boolean>> = {
+	bannerCarousel: displaySettingsConfig.bannerCarouselSwitchable,
+	cardBorder: displaySettingsConfig.cardBorderSwitchable,
+	cardFollowTheme: displaySettingsConfig.cardFollowThemeSwitchable,
+	noteCard: displaySettingsConfig.noteCardSwitchable,
+};
 
-for (const id of roundTripIds) {
+for (const id of SIMPLE_TOGGLE_IDS) {
 	const before = readSimpleToggle(id);
 	writeSimpleToggle(id, !before);
+	const expected = gates[id] === false ? before : !before;
 	assert.equal(
 		readSimpleToggle(id),
-		!before,
-		`${id} write must be readable back`,
+		expected,
+		gates[id] === false
+			? `${id} stays on the site default while the panel is closed`
+			: `${id} write must be readable back`,
 	);
 	writeSimpleToggle(id, before);
 	assert.equal(readSimpleToggle(id), before, `${id} restores`);
 }
 
-assert.ok(
-	attrs.has("data-waves-enabled"),
-	"waves apply reaches the document",
-);
+assert.ok(attrs.has("data-waves-enabled"), "waves apply reaches the document");
 assert.ok(
 	events.some((e) => e.type === "bannerCarouselChange"),
 	"banner carousel notifies listeners",
@@ -124,17 +132,6 @@ assert.equal(store.get("sakuraPinned"), "true", "sakura on pins");
 writeSimpleToggle("sakura", false);
 assert.notEqual(store.get("sakuraPinned"), "true", "sakura off unpins");
 
-/** 面板未开放的开关：写入不得伪造出「已生效」的读取结果。 */
-for (const id of ["cardBorder", "cardFollowTheme"] as const) {
-	const locked = readSimpleToggle(id);
-	writeSimpleToggle(id, !locked);
-	assert.equal(
-		readSimpleToggle(id),
-		locked,
-		`${id} stays on the site default while the panel is closed`,
-	);
-}
-
 /** 不可写环境：写入必须完全无痕，读取保持原值。 */
 Object.assign(globalThis, { localStorage: undefined });
 for (const id of SIMPLE_TOGGLE_IDS) {
@@ -150,6 +147,7 @@ for (const id of SIMPLE_TOGGLE_IDS) {
 	);
 }
 
+const openCount = SIMPLE_TOGGLE_IDS.filter((id) => gates[id] !== false).length;
 console.log(
-	`PASS simple toggles facade (${SIMPLE_TOGGLE_IDS.length} ids, ${roundTripIds.length} round-trip, 2 locked, storage-less)`,
+	`PASS simple toggles facade (${SIMPLE_TOGGLE_IDS.length} ids, ${openCount} round-trip, ${SIMPLE_TOGGLE_IDS.length - openCount} gated, storage-less)`,
 );

@@ -416,16 +416,25 @@ function deleteCommentImage(
 	token: string,
 ): void {
 	if (!uploadApi || !url) return;
+	// 服务端只认带 token 的删除；没有 token 必被 403，发了也只是留个孤儿
+	if (!token) {
+		console.warn("[Waline] 缺少删除令牌，跳过图床清理:", url);
+		return;
+	}
 	const base = uploadApi.replace(/\/?$/, "/");
-	const endpoint = `${base}?url=${encodeURIComponent(url)}${
-		token ? `&token=${encodeURIComponent(token)}` : ""
-	}`;
+	const endpoint = `${base}?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
 	void fetch(endpoint, {
 		method: "DELETE",
 		headers: { Origin: window.location.origin },
-	}).catch(() => {
-		/* ignore network errors */
-	});
+	})
+		.then((res) => {
+			if (!res.ok) {
+				console.warn(`[Waline] 图床清理失败 ${res.status}:`, url);
+			}
+		})
+		.catch(() => {
+			/* ignore network errors */
+		});
 }
 
 function pruneRemovedManagedImages(

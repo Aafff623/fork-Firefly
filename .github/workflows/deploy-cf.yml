@@ -42,12 +42,10 @@ jobs:
           CF_WORKERS: '1'
           NODE_OPTIONS: --max-old-space-size=4096
 
-      # 产物级交付预算门禁：复用上面这次构建的 dist，不额外多跑一遍 build。
+      # 产物级门禁：复用上面这次构建的 dist，不额外多跑一遍 build。
       # 阈值与白名单唯一定义在 src/lib/delivery-budget.ts；超预算即拦下部署。
-      #
-      # 注意：这里**只**放产物级门禁。四个源码门禁（check:gates）当前在 master 上有
-      # 4 条历史失败（v41 的 AskChat 孤儿 chunk、ui-motion 的时钟/页脚/tag sphere 三条），
-      # 放进部署前会直接堵住上线。它们在 build.yml 里跑，先把红灯亮出来，修完再挪过来。
+      # 四个源码门禁（check:gates）只在 build.yml 里跑；本文件另有 check:behavior
+      # 与 astro check 作为部署前置。
       - name: Check v41 dist gates
         run: node scripts/check-v41-gates.mjs
 

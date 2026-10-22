@@ -152,7 +152,13 @@ function objectKeyFromPublicUrl(
 	if (parsed.origin !== base.origin) return null;
 
 	const basePath = base.pathname.replace(/\/+$/, "");
-	let path = decodeURIComponent(parsed.pathname);
+	let path: string;
+	try {
+		path = decodeURIComponent(parsed.pathname);
+	} catch {
+		// 坏百分号编码（`/comment/%`）不能变成 500
+		return null;
+	}
 	if (basePath && basePath !== "/" && path.startsWith(basePath)) {
 		path = path.slice(basePath.length);
 	}

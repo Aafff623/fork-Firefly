@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 四个源码门禁 + 三个行为测试（page lifecycle / comment image / ask retrieval）。
+      # 四个源码门禁 + 五个行为测试（页面生命周期 / 评论图策略 / 检索排序 / 设置存储 / 开关 facade）。
       # 产物级 v41 dist 与交付预算门禁在 deploy-cf.yml 的 build 之后跑。
       - name: Run repo gates
         run: pnpm run check:gates

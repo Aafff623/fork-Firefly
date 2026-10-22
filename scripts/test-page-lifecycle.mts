@@ -50,6 +50,33 @@ registerPageCleanup(() => {
 documentTarget.dispatchEvent(new Event("astro:before-swap"));
 assert.equal(secondCleaned, 1, "new epoch should register new page cleanups");
 
+// 重复 page:view（中间没有 before-swap）不能把当前页刚登记的清理销毁掉
+documentTarget.dispatchEvent(new Event("swup:page:view"));
+let duplicateCleaned = 0;
+registerPageCleanup(() => {
+	duplicateCleaned += 1;
+});
+documentTarget.dispatchEvent(new Event("swup:page:view"));
+assert.equal(duplicateCleaned, 0, "duplicate page:view keeps live cleanups");
+documentTarget.dispatchEvent(new Event("astro:before-swap"));
+assert.equal(duplicateCleaned, 1, "cleanup still runs on the next swap");
+
+// before-swap 与 page:view 之间没有 controller，此时挂的监听也不能漏
+documentTarget.dispatchEvent(new Event("astro:before-swap"));
+let gapHits = 0;
+const gapHandler = () => {
+	gapHits += 1;
+};
+onPage(documentTarget, "lifecycle:gap", gapHandler);
+documentTarget.dispatchEvent(new Event("lifecycle:gap"));
+assert.equal(gapHits, 1, "gap listener is live");
+documentTarget.dispatchEvent(new Event("swup:page:view"));
+documentTarget.dispatchEvent(new Event("lifecycle:gap"));
+assert.equal(gapHits, 2, "gap listener survives into the adopted epoch");
+documentTarget.dispatchEvent(new Event("astro:before-swap"));
+documentTarget.dispatchEvent(new Event("lifecycle:gap"));
+assert.equal(gapHits, 2, "gap listener removed by the next swap");
+
 documentTarget.dispatchEvent(new Event("swup:page:view"));
 let disconnected = 0;
 observePage({

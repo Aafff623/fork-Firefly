@@ -386,6 +386,10 @@ export async function deleteCommentImageObject(
 	cfg: UploadConfig,
 	key: string,
 ): Promise<void> {
+	// 纵深防御：API 层已校验，store 也不接受 comment/ 之外的 key
+	if (!key.startsWith("comment/") || key.includes("..") || key.includes("//")) {
+		throw new Error("Refusing to delete outside comment/");
+	}
 	if (cfg.kind === "r2") {
 		await deleteObjectFromR2(cfg, key);
 		return;

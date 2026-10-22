@@ -69,12 +69,20 @@ function onPage(
 	options?: AddEventListenerOptions,
 ): Cleanup {
 	const lc = getLifecycle();
+	const capture = typeof options === "boolean" ? options : options?.capture;
+	const remove = () => target.removeEventListener(type, handler, capture);
+	// before-swap 到 page:view 之间没有 controller；此时挂的监听只能用 cleanup 摘，
+	// 否则 signal 为空，永远不会被 abort。
+	if (!lc.controller) {
+		target.addEventListener(type, handler, options);
+		registerPageCleanup(remove);
+		return remove;
+	}
 	target.addEventListener(type, handler, {
 		...options,
-		signal: lc.controller?.signal,
+		signal: lc.controller.signal,
 	});
-	const capture = typeof options === "boolean" ? options : options?.capture;
-	return () => target.removeEventListener(type, handler, capture);
+	return remove;
 }
 
 function observePage(observer: MutationObserver | ResizeObserver): Cleanup {
@@ -104,7 +112,9 @@ function boot(): void {
 	});
 	document.addEventListener(PAGE_READY, () => {
 		if (lc.viewed) {
-			startPage();
+			// 重复 page:view（中间没有 before-swap）只补 controller；
+			// 此时清理仍属于当前页，销毁它们会把刚挂好的消费者打掉。
+			if (!lc.controller) lc.controller = new AbortController();
 			return;
 		}
 		lc.viewed = true;
