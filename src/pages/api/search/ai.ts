@@ -161,7 +161,12 @@ export const POST: APIRoute = async ({ request, url }) => {
 		);
 	}
 
-	const allCandidates = (await loadAskIndex(url.origin)).map(toCandidate);
+	let allCandidates: Candidate[];
+	try {
+		allCandidates = (await loadAskIndex(url.origin)).map(toCandidate);
+	} catch {
+		return json({ error: "站内索引暂时不可用，请稍后再试" }, 502);
+	}
 	const candidates = allCandidates
 		.map((candidate, index) => ({
 			candidate,

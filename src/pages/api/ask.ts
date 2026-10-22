@@ -295,7 +295,15 @@ export const POST: APIRoute = async ({ request, url }) => {
 		}
 		const limit = Math.min(Math.max(Number(body.limit) || 5, 1), 10);
 		// 每次现算；禁止中间层把检索结果当答案缓存
-		const data = await retrieveSiteHits(message, limit, url.origin);
+		let data: Awaited<ReturnType<typeof retrieveSiteHits>>;
+		try {
+			data = await retrieveSiteHits(message, limit, url.origin);
+		} catch {
+			return json(
+				{ code: 502, message: "站内索引暂时不可用，请稍后再试" },
+				502,
+			);
+		}
 		return json({ code: 200, message: "成功", data }, 200, {
 			"Cache-Control": "no-store, no-cache, must-revalidate",
 		});

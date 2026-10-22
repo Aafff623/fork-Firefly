@@ -68,6 +68,14 @@ async function fetchIndexResponse(url: string): Promise<Response> {
 	return fetch(url);
 }
 
+/** 索引取不到且无旧缓存：上层必须报错，不能把失败答成「站内暂无」。 */
+export class AskIndexUnavailableError extends Error {
+	constructor() {
+		super("ask-index unavailable");
+		this.name = "AskIndexUnavailableError";
+	}
+}
+
 export async function loadAskIndex(origin?: string): Promise<AskIndexItem[]> {
 	const base = origin || siteConfig.site_url;
 	if (askIndexCache && Date.now() - askIndexCache.at < ASK_INDEX_TTL_MS) {
@@ -81,7 +89,8 @@ export async function loadAskIndex(origin?: string): Promise<AskIndexItem[]> {
 		askIndexCache = { at: Date.now(), items };
 		return items;
 	} catch {
-		return askIndexCache ? askIndexCache.items : [];
+		if (askIndexCache) return askIndexCache.items;
+		throw new AskIndexUnavailableError();
 	}
 }
 

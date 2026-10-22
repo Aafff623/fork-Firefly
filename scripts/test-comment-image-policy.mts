@@ -6,7 +6,13 @@ import {
 import { hasImageSignature } from "../src/lib/image-signature";
 
 const png = new Uint8Array([
-	0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0,
+	0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x49, 0x48,
+	0x44, 0x52,
+]);
+/** 魔数对、但第一块不是 IHDR 的多态文件 */
+const pngWithoutIhdr = new Uint8Array([
+	0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x3c, 0x68,
+	0x74, 0x6d,
 ]);
 const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0]);
 const gif = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
@@ -18,8 +24,21 @@ const avif = new Uint8Array([
 ]);
 
 assert.equal(hasImageSignature(png, "image/png"), true);
+assert.equal(
+	hasImageSignature(pngWithoutIhdr, "image/png"),
+	false,
+	"PNG magic alone is not enough — first chunk must be IHDR",
+);
 assert.equal(hasImageSignature(jpeg, "image/jpeg"), true);
 assert.equal(hasImageSignature(gif, "image/gif"), true);
+assert.equal(
+	hasImageSignature(
+		new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x30, 0x61]),
+		"image/gif",
+	),
+	false,
+	"GIF version must be 87a/89a",
+);
 assert.equal(hasImageSignature(webp, "image/webp"), true);
 assert.equal(hasImageSignature(avif, "image/avif"), true);
 assert.equal(
@@ -60,6 +79,28 @@ assert.equal(
 	),
 	false,
 	"tampered token must be rejected",
+);
+
+const expired = await createCommentImageDeleteToken(secret, objectKey, -1000);
+assert.equal(
+	await verifyCommentImageDeleteToken(secret, objectKey, expired),
+	false,
+	"expired token must be rejected",
+);
+const stillValid = await createCommentImageDeleteToken(
+	secret,
+	objectKey,
+	60_000,
+);
+assert.equal(
+	await verifyCommentImageDeleteToken(secret, objectKey, stillValid),
+	true,
+	"token inside its ttl verifies",
+);
+assert.equal(
+	await verifyCommentImageDeleteToken(secret, objectKey, "no-dot"),
+	false,
+	"malformed token must be rejected",
 );
 
 console.log("PASS comment image signature + delete token");

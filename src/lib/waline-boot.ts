@@ -422,10 +422,13 @@ function deleteCommentImage(
 		return;
 	}
 	const base = uploadApi.replace(/\/?$/, "/");
-	const endpoint = `${base}?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
-	void fetch(endpoint, {
+	void fetch(base, {
 		method: "DELETE",
-		headers: { Origin: window.location.origin },
+		headers: {
+			Origin: window.location.origin,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ url, token }),
 	})
 		.then((res) => {
 			if (!res.ok) {

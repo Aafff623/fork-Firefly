@@ -60,9 +60,21 @@ Status: claimed
 - 本地 `pnpm build` 会重写 `src/constants/lqips.json`（本次为他人 WIP 的 java-course 封面补条目），
   未提交，留给对应改动。
 
+## 第二轮：残留收口（2026-10-22）
+
+| 残留 | 处理 |
+|---|---|
+| 删除 token 无过期、走 query | **已修**：token 改为 `exp.signature`（默认 24h），签名消息加 `comment-image-delete-v1\|key\|exp` 域前缀；DELETE 只收 JSON body，POST 响应加 `no-store`。客户端同步改为 body。 |
+| 密钥用途混用 | **部分修**：HMAC 消息带域前缀，存储私钥不再直接作为「任意消息」的签名密钥空间；独立 `COMMENT_IMAGE_DELETE_SECRET` 仍可覆盖，但不强制 503（强制会让未配变量的线上删除全挂）。 |
+| magic-byte 只查文件头 | **加强**：PNG 要求首块为 IHDR、GIF 要求版本 `87a/89a`；JPEG/WebP 维持魔数，像素上限与转码仍未做（另一个量级）。 |
+| ask 索引失败答成「暂无」 | **已修**：`loadAskIndex` 无缓存可用时抛 `AskIndexUnavailableError`，`/api/ask` 与 `/api/search/ai` 返回 502。 |
+| 设置写入失败仍翻 UI | **已修**：`writeSimpleToggle` 返回 boolean（无 localStorage / setItem 抛错都算失败），面板的开关与 reset 只在成功时改本地状态。 |
+| `petRoam` 默认值两处不一致 | **已修**：删掉未使用的 `defaultPetRoamEnabled`（组件从来不读 facade 的这个默认值）。 |
+| 上传无鉴权 + 进程内限流 | **未修（等园主）**：需要 CF Rate Limiting / Turnstile 这类平台能力与站点密钥，属部署面决策，不在代码里擅自加。 |
+
 ## Verification
 
-- `pnpm run check:behavior`：5/5 PASS
+- `pnpm run check:behavior`：5/5 PASS（新增 token 过期/畸形、PNG 无 IHDR、GIF 版本、写失败回报、索引故障断言）
 - `astro check`：0 errors / 0 warnings / 10 hints
 - `tsc --noEmit`：0 错
 - `biome check`（本轮改动文件）：0 错

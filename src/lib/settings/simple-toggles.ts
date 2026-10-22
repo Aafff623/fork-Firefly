@@ -106,6 +106,18 @@ export function readSimpleToggle(id: SimpleToggleId): boolean {
 	return ENTRIES[id].storedValue();
 }
 
-export function writeSimpleToggle(id: SimpleToggleId, value: boolean): void {
-	ENTRIES[id].apply(value);
+/** 返回 false 表示当前环境写不进去（无 localStorage / 存储异常），调用方据此回滚 UI。 */
+export function writeSimpleToggle(id: SimpleToggleId, value: boolean): boolean {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.setItem !== "function"
+	) {
+		return false;
+	}
+	try {
+		ENTRIES[id].apply(value);
+		return true;
+	} catch {
+		return false;
+	}
 }

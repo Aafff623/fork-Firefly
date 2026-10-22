@@ -94,7 +94,6 @@ let sakuraEnabled = $state(false);
 const defaultSakuraEnabled = toggleDefaults.sakura;
 let titleSoundEnabled = $state(true);
 let petRoamEnabled = $state(false);
-const defaultPetRoamEnabled = false;
 let overlayOpacity = $state(getDefaultOverlayOpacity());
 const defaultOverlayOpacity = getDefaultOverlayOpacity();
 let overlayBlur = $state(getDefaultOverlayBlur());
@@ -400,37 +399,45 @@ function resetPetSelection() {
 }
 
 function resetWavesEnabled() {
-	wavesEnabled = defaultWavesEnabled;
-	writeSimpleToggle("waves", defaultWavesEnabled);
+	if (writeSimpleToggle("waves", defaultWavesEnabled)) {
+		wavesEnabled = defaultWavesEnabled;
+	}
 }
 
 function resetGradientEnabled() {
-	gradientEnabled = defaultGradientEnabled;
-	writeSimpleToggle("gradient", defaultGradientEnabled);
+	if (writeSimpleToggle("gradient", defaultGradientEnabled)) {
+		gradientEnabled = defaultGradientEnabled;
+	}
 }
 
 function resetBannerSettings() {
 	if (
 		isBannerTitleSwitchable &&
-		bannerTitleEnabled !== defaultBannerTitleEnabled
+		bannerTitleEnabled !== defaultBannerTitleEnabled &&
+		writeSimpleToggle("bannerTitle", defaultBannerTitleEnabled)
 	) {
 		bannerTitleEnabled = defaultBannerTitleEnabled;
-		writeSimpleToggle("bannerTitle", defaultBannerTitleEnabled);
 	}
-	if (isWavesSwitchable && wavesEnabled !== defaultWavesEnabled) {
+	if (
+		isWavesSwitchable &&
+		wavesEnabled !== defaultWavesEnabled &&
+		writeSimpleToggle("waves", defaultWavesEnabled)
+	) {
 		wavesEnabled = defaultWavesEnabled;
-		writeSimpleToggle("waves", defaultWavesEnabled);
 	}
-	if (isGradientSwitchable && gradientEnabled !== defaultGradientEnabled) {
+	if (
+		isGradientSwitchable &&
+		gradientEnabled !== defaultGradientEnabled &&
+		writeSimpleToggle("gradient", defaultGradientEnabled)
+	) {
 		gradientEnabled = defaultGradientEnabled;
-		writeSimpleToggle("gradient", defaultGradientEnabled);
 	}
 	if (
 		isBannerCarouselSwitchable &&
-		bannerCarouselEnabled !== defaultBannerCarouselEnabled
+		bannerCarouselEnabled !== defaultBannerCarouselEnabled &&
+		writeSimpleToggle("bannerCarousel", defaultBannerCarouselEnabled)
 	) {
 		bannerCarouselEnabled = defaultBannerCarouselEnabled;
-		writeSimpleToggle("bannerCarousel", defaultBannerCarouselEnabled);
 	}
 }
 
@@ -455,28 +462,28 @@ function resetOverlaySettings() {
 }
 
 function toggleWavesEnabled() {
-	wavesEnabled = !wavesEnabled;
-	writeSimpleToggle("waves", wavesEnabled);
+	const next = !wavesEnabled;
+	if (writeSimpleToggle("waves", next)) wavesEnabled = next;
 }
 
 function toggleGradientEnabled() {
-	gradientEnabled = !gradientEnabled;
-	writeSimpleToggle("gradient", gradientEnabled);
+	const next = !gradientEnabled;
+	if (writeSimpleToggle("gradient", next)) gradientEnabled = next;
 }
 
 function toggleBannerTitleEnabled() {
-	bannerTitleEnabled = !bannerTitleEnabled;
-	writeSimpleToggle("bannerTitle", bannerTitleEnabled);
+	const next = !bannerTitleEnabled;
+	if (writeSimpleToggle("bannerTitle", next)) bannerTitleEnabled = next;
 }
 
 function toggleBannerCarouselEnabled() {
-	bannerCarouselEnabled = !bannerCarouselEnabled;
-	writeSimpleToggle("bannerCarousel", bannerCarouselEnabled);
+	const next = !bannerCarouselEnabled;
+	if (writeSimpleToggle("bannerCarousel", next)) bannerCarouselEnabled = next;
 }
 
 function toggleSakuraEnabled() {
-	sakuraEnabled = !sakuraEnabled;
-	writeSimpleToggle("sakura", sakuraEnabled);
+	const next = !sakuraEnabled;
+	if (writeSimpleToggle("sakura", next)) sakuraEnabled = next;
 }
 
 function toggleTitleSoundEnabled() {
@@ -485,43 +492,46 @@ function toggleTitleSoundEnabled() {
 }
 
 function togglePetRoamEnabled() {
-	petRoamEnabled = !petRoamEnabled;
-	writeSimpleToggle("petRoam", petRoamEnabled);
+	const next = !petRoamEnabled;
+	if (writeSimpleToggle("petRoam", next)) petRoamEnabled = next;
 }
 
 function toggleCardBorderEnabled() {
-	cardBorderEnabled = !cardBorderEnabled;
-	writeSimpleToggle("cardBorder", cardBorderEnabled);
+	const next = !cardBorderEnabled;
+	if (writeSimpleToggle("cardBorder", next)) cardBorderEnabled = next;
 }
 
 function toggleCardFollowThemeEnabled() {
-	cardFollowThemeEnabled = !cardFollowThemeEnabled;
-	writeSimpleToggle("cardFollowTheme", cardFollowThemeEnabled);
+	const next = !cardFollowThemeEnabled;
+	if (writeSimpleToggle("cardFollowTheme", next)) cardFollowThemeEnabled = next;
 }
 
 function toggleNoteCardEnabled() {
-	noteCardEnabled = !noteCardEnabled;
-	writeSimpleToggle("noteCard", noteCardEnabled);
+	const next = !noteCardEnabled;
+	if (writeSimpleToggle("noteCard", next)) noteCardEnabled = next;
 }
 
 function resetCardSettings() {
 	if (
 		isCardBorderSwitchable &&
-		cardBorderEnabled !== defaultCardBorderEnabled
+		cardBorderEnabled !== defaultCardBorderEnabled &&
+		writeSimpleToggle("cardBorder", defaultCardBorderEnabled)
 	) {
 		cardBorderEnabled = defaultCardBorderEnabled;
-		writeSimpleToggle("cardBorder", defaultCardBorderEnabled);
 	}
 	if (
 		isCardFollowThemeSwitchable &&
-		cardFollowThemeEnabled !== defaultCardFollowThemeEnabled
+		cardFollowThemeEnabled !== defaultCardFollowThemeEnabled &&
+		writeSimpleToggle("cardFollowTheme", defaultCardFollowThemeEnabled)
 	) {
 		cardFollowThemeEnabled = defaultCardFollowThemeEnabled;
-		writeSimpleToggle("cardFollowTheme", defaultCardFollowThemeEnabled);
 	}
-	if (isNoteCardSwitchable && noteCardEnabled !== defaultNoteCardEnabled) {
+	if (
+		isNoteCardSwitchable &&
+		noteCardEnabled !== defaultNoteCardEnabled &&
+		writeSimpleToggle("noteCard", defaultNoteCardEnabled)
+	) {
 		noteCardEnabled = defaultNoteCardEnabled;
-		writeSimpleToggle("noteCard", defaultNoteCardEnabled);
 	}
 }
 
@@ -920,7 +930,7 @@ $effect(() => {
 			<div class="section-title">
 				{i18n(I18nKey.noteCardSettings)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
-						class:opacity-0={noteCardEnabled === defaultNoteCardEnabled} class:pointer-events-none={noteCardEnabled === defaultNoteCardEnabled} onclick={() => { noteCardEnabled = defaultNoteCardEnabled; writeSimpleToggle("noteCard", defaultNoteCardEnabled); }}>
+						class:opacity-0={noteCardEnabled === defaultNoteCardEnabled} class:pointer-events-none={noteCardEnabled === defaultNoteCardEnabled} onclick={() => { if (writeSimpleToggle("noteCard", defaultNoteCardEnabled)) noteCardEnabled = defaultNoteCardEnabled; }}>
 					<div class="text-(--btn-content)">
 						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
 					</div>
@@ -1133,7 +1143,7 @@ $effect(() => {
 			<div class="section-title">
 				{i18n(I18nKey.effectsSettings)}
 				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
-						class:opacity-0={sakuraEnabled === defaultSakuraEnabled} class:pointer-events-none={sakuraEnabled === defaultSakuraEnabled} onclick={() => { sakuraEnabled = defaultSakuraEnabled; writeSimpleToggle("sakura", defaultSakuraEnabled); }}>
+						class:opacity-0={sakuraEnabled === defaultSakuraEnabled} class:pointer-events-none={sakuraEnabled === defaultSakuraEnabled} onclick={() => { if (writeSimpleToggle("sakura", defaultSakuraEnabled)) sakuraEnabled = defaultSakuraEnabled; }}>
 					<div class="text-(--btn-content)">
 						<Icon icon="lucide:rotate-ccw" class="text-[0.75rem]"></Icon>
 					</div>

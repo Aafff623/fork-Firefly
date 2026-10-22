@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import {
+	AskIndexUnavailableError,
 	type AskPost,
+	loadAskIndex,
+	retrieveSiteHits,
 	retrieveSiteHitsFromPosts,
 } from "../src/utils/ask-retrieve";
 
@@ -58,6 +61,29 @@ assert.ok(siteMeta.hits.length > 0, "site-meta should fall back to site docs");
 const empty = retrieveSiteHitsFromPosts("量子纠缠xyz", posts, 5, urlFor);
 assert.equal(empty.hits.length, 0, "unknown keyword should not fabricate hits");
 
+/*
+ * 索引取不到时必须抛错，不能把失败答成「站内暂无」。
+ * 走真实 loadAskIndex（索引缓存为空），用一个必失败的 fetch 触发。
+ */
+const originalFetch = globalThis.fetch;
+globalThis.fetch = (async () => {
+	throw new Error("network down");
+}) as typeof globalThis.fetch;
+try {
+	await assert.rejects(
+		() => loadAskIndex("http://127.0.0.1:1"),
+		AskIndexUnavailableError,
+		"index outage must surface as AskIndexUnavailableError",
+	);
+	await assert.rejects(
+		() => retrieveSiteHits("量子纠缠", 5, "http://127.0.0.1:1"),
+		AskIndexUnavailableError,
+		"retrieveSiteHits must not swallow index outage",
+	);
+} finally {
+	globalThis.fetch = originalFetch;
+}
+
 console.log(
-	"PASS ask retrieval pure core (recent / keyword / site-meta / empty)",
+	"PASS ask retrieval pure core (recent / keyword / site-meta / empty / index outage)",
 );

@@ -2,7 +2,7 @@
  * Waline 自定义图片上传代理（服务端持密钥）。
  * GET    → { enabled, backend?: "r2"|"cos" }
  * POST   → multipart `image` → { url, deleteToken }
- * DELETE → JSON `{ url, token }` 或 `?url=&token=` → 删除本会话图床对象（仅 `comment/` 前缀）
+ * DELETE → JSON `{ url, token }` → 删除本会话图床对象（仅 `comment/` 前缀）
  *
  * 优先 Cloudflare R2（S3 兼容 SigV4）；未配 R2 时回退腾讯云 COS。
  * 兼容 Astro Node（本地 / Vercel），不引入云厂商 SDK。
@@ -292,7 +292,10 @@ export const POST: APIRoute = async ({ request }) => {
 		key,
 	);
 	return new Response(JSON.stringify({ url, deleteToken }), {
-		headers: { "Content-Type": "application/json; charset=utf-8" },
+		headers: {
+			"Content-Type": "application/json; charset=utf-8",
+			"Cache-Control": "no-store",
+		},
 	});
 };
 
@@ -318,23 +321,14 @@ export const DELETE: APIRoute = async ({ request }) => {
 	let rawUrl = "";
 	let rawToken = "";
 	try {
-		const params = new URL(request.url).searchParams;
-		rawUrl = params.get("url") ?? "";
-		rawToken = params.get("token") ?? "";
+		const body = (await request.json()) as {
+			url?: unknown;
+			token?: unknown;
+		};
+		if (typeof body?.url === "string") rawUrl = body.url;
+		if (typeof body?.token === "string") rawToken = body.token;
 	} catch {
-		/* ignore */
-	}
-	if (!rawUrl || !rawToken) {
-		try {
-			const body = (await request.json()) as {
-				url?: unknown;
-				token?: unknown;
-			};
-			if (!rawUrl && typeof body?.url === "string") rawUrl = body.url;
-			if (!rawToken && typeof body?.token === "string") rawToken = body.token;
-		} catch {
-			/* ignore */
-		}
+		/* 空 body / 非法 JSON 一律按缺参处理 */
 	}
 	rawUrl = rawUrl.trim();
 	rawToken = rawToken.trim();

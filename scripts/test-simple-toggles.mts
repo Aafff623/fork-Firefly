@@ -132,13 +132,14 @@ assert.equal(store.get("sakuraPinned"), "true", "sakura on pins");
 writeSimpleToggle("sakura", false);
 assert.notEqual(store.get("sakuraPinned"), "true", "sakura off unpins");
 
-/** 不可写环境：写入必须完全无痕，读取保持原值。 */
+/** 不可写环境：写入必须完全无痕，读取保持原值，并明确回报 false。 */
 Object.assign(globalThis, { localStorage: undefined });
 for (const id of SIMPLE_TOGGLE_IDS) {
 	const before = readSimpleToggle(id);
-	assert.doesNotThrow(
-		() => writeSimpleToggle(id, !before),
-		`${id} write is safe without storage`,
+	assert.equal(
+		writeSimpleToggle(id, !before),
+		false,
+		`${id} reports not written without storage`,
 	);
 	assert.equal(
 		readSimpleToggle(id),
@@ -146,6 +147,23 @@ for (const id of SIMPLE_TOGGLE_IDS) {
 		`${id} read unchanged without storage`,
 	);
 }
+
+/** 配额异常 / setItem 抛错：同样回报 false，UI 才能回滚。 */
+const throwingStorage = {
+	getItem: (key: string) => store.get(key) ?? null,
+	setItem: () => {
+		throw new Error("QuotaExceededError");
+	},
+	removeItem: (key: string) => {
+		store.delete(key);
+	},
+};
+Object.assign(globalThis, { localStorage: throwingStorage });
+assert.equal(
+	writeSimpleToggle("waves", true),
+	false,
+	"storage exception must surface as false",
+);
 
 const openCount = SIMPLE_TOGGLE_IDS.filter((id) => gates[id] !== false).length;
 console.log(
