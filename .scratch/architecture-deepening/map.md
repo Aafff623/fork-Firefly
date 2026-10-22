@@ -23,6 +23,7 @@
 - **P6** Layout / Profile / PostPage 迁移（被其他 Agent 未提交改动阻塞）。
 - **P6-s** 设置模块：完成（`boolean-storage` + `simple-toggles` facade，`DisplaySettingsIntegrated` 9 个开关全部迁移，测试 + 浏览器五项开关实测）。见 `issues/02-task-settings-simple-toggles-facade.md`。
 - **P7** 完整 build + 多跳浏览器回归 + 最终审计：完成。
+- **审查收口**：三线独立审查（代码 / 安全 / 静默失败）+ 与旧实现逐函数比对，无 Blocker；本次引入的边界缺陷已修并追加提交，残留清单见 `issues/03-review-followups.md`。
 - Pet 运行时：架构评审评级为 Worth exploring，风险最高、当前无用户可见故障；不并入本轮页面生命周期收尾，单独开 effort。
 
 ## Review / plan
