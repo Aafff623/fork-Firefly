@@ -1,4 +1,5 @@
 import type { SearchResult } from "@/global";
+import { type ArticleCard, rankArticles } from "@/lib/article-index";
 import { getPostUrlBySlug, url } from "@/utils/url-utils";
 
 export type SearchMode = "title" | "tag" | "ai";
@@ -36,10 +37,6 @@ export class PostSearchError extends Error {
 
 let metadataPromise: Promise<PostSearchMeta[]> | null = null;
 
-function normalize(value: string): string {
-	return value.trim().toLocaleLowerCase();
-}
-
 function escapeHtml(value: string): string {
 	return value
 		.replaceAll("&", "&amp;")
@@ -76,39 +73,28 @@ function highlight(value: string, query: string): string {
 	return output + escapeHtml(value.slice(lastIndex));
 }
 
-function fuzzyScore(text: string, query: string): number {
-	const haystack = normalize(text);
-	const needle = normalize(query);
-	if (!haystack || !needle) return 0;
-	if (haystack === needle) return 1200;
-	if (haystack.includes(needle)) return 900 + needle.length / haystack.length;
-
-	let cursor = 0;
-	let matched = 0;
-	for (const character of needle) {
-		const found = haystack.indexOf(character, cursor);
-		if (found < 0) continue;
-		matched += 1;
-		cursor = found + 1;
-	}
-	return matched === needle.length ? 300 + matched / haystack.length : 0;
-}
-
-function tagScore(tags: string[], query: string): number {
-	return tags.reduce((best, tag) => {
-		const normalizedTag = normalize(tag);
-		const normalizedQuery = normalize(query);
-		if (!normalizedTag || !normalizedQuery) return best;
-		if (normalizedTag === normalizedQuery) return Math.max(best, 1300);
-		if (normalizedTag.startsWith(normalizedQuery)) return Math.max(best, 1000);
-		if (normalizedTag.includes(normalizedQuery)) {
-			return Math.max(
-				best,
-				800 + normalizedQuery.length / normalizedTag.length,
-			);
-		}
-		return Math.max(best, fuzzyScore(normalizedTag, normalizedQuery));
-	}, 0);
+function toArticleCard(post: PostSearchMeta): ArticleCard {
+	return {
+		id: post.id,
+		slug: post.id,
+		title: post.title,
+		description: post.description,
+		published: post.published,
+		updated: post.updated,
+		category: post.category,
+		tags: post.tags,
+		themeTags: post.themeTags,
+		pinned: post.pinned,
+		draft: false,
+		password: post.password,
+		collections: [],
+		summary: post.description,
+		excerpt: post.description,
+		words: 0,
+		minutes: 0,
+		pinKind: post.pinned ? "sticky" : null,
+		heat: post.topicHeat,
+	};
 }
 
 function toResult(
@@ -151,18 +137,25 @@ async function searchWithAi(query: string): Promise<SearchResult[]> {
 		headers: { "content-type": "application/json" },
 		body: JSON.stringify({ query }),
 	});
-	let payload: { results?: PostSearchMeta[]; code?: string; message?: string } =
-		{};
+	let payload: {
+		results?: PostSearchMeta[];
+		code?: string;
+		message?: string;
+		error?: string;
+		retryAfter?: number;
+	} = {};
 	try {
 		payload = (await response.json()) as typeof payload;
 	} catch {
 		// Keep the user-facing error stable when the deployment returns a non-JSON 404/500.
 	}
 	if (!response.ok) {
-		throw new PostSearchError(
-			payload.message || "AI 搜索暂时不可用，请先配置服务端 API Key",
-			payload.code,
-		);
+		const message =
+			payload.message ||
+			(response.status === 429
+				? "AI 搜索请求过于频繁，请稍后再试"
+				: "AI 搜索暂时不可用，请先配置服务端 API Key");
+		throw new PostSearchError(message, payload.code ?? payload.error);
 	}
 	return (payload.results || []).map((post) => toResult(post, query, "ai"));
 }
@@ -176,22 +169,18 @@ export async function searchPosts(
 	if (mode === "ai") return searchWithAi(trimmedQuery);
 
 	const posts = await loadMetadata();
-	return posts
-		.map((post, index) => {
-			const score =
-				mode === "title"
-					? fuzzyScore(post.title, trimmedQuery)
-					: tagScore(post.tags, trimmedQuery);
-			return { post, score, index };
-		})
-		.filter(({ score }) => score > 0)
-		.sort(
-			(a, b) =>
-				b.score - a.score ||
-				b.post.published - a.post.published ||
-				a.index - b.index,
-		)
-		.map(({ post }) => toResult(post, trimmedQuery, mode));
+	const byId = new Map(posts.map((post) => [post.id, post]));
+	const ranked = rankArticles(posts.map(toArticleCard), "search", {
+		text: trimmedQuery,
+		focus: mode === "title" ? "title" : "tag",
+	});
+
+	const results: SearchResult[] = [];
+	for (const card of ranked) {
+		const post = byId.get(card.id);
+		if (post) results.push(toResult(post, trimmedQuery, mode));
+	}
+	return results;
 }
 
 export function isPostSearchError(error: unknown): error is PostSearchError {

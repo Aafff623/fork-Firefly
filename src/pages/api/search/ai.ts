@@ -1,13 +1,25 @@
 import type { APIRoute } from "astro";
+import {
+	createRateLimiter,
+	getClientAddress,
+	json,
+	rateLimited,
+	readJson,
+	upstreamError,
+} from "@/lib/api/http";
+import { type ArticleCard, rankArticles } from "@/lib/article-index";
+import { buildArticleCards } from "@/lib/article-index-builder";
 import { type AskIndexItem, loadAskIndex } from "@/utils/ask-retrieve";
 
 export const prerender = false;
 
 const MAX_QUERY_LENGTH = 160;
 const MAX_CANDIDATES = 36;
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 12;
-const rateHits = new Map<string, number[]>();
+const searchAiRateLimit = createRateLimiter({
+	max: 12,
+	windowMs: 10 * 60 * 1000,
+	keyPrefix: "search-ai",
+});
 
 type Candidate = {
 	id: string;
@@ -23,66 +35,12 @@ type Candidate = {
 	topicHeat: number;
 };
 
-function json(body: unknown, status = 200): Response {
-	return new Response(JSON.stringify(body), {
-		status,
-		headers: { "content-type": "application/json; charset=utf-8" },
-	});
-}
-
 function env(name: string, fallback = ""): string {
 	return (
 		process.env[name] ||
 		(import.meta.env[name] as string | undefined) ||
 		fallback
 	).trim();
-}
-
-function normalized(value: string): string {
-	return value.toLocaleLowerCase().trim();
-}
-
-function scoreCandidate(candidate: Candidate, query: string): number {
-	const terms = normalized(query).split(/\s+/).filter(Boolean);
-	const fields = [
-		{ value: candidate.title, weight: 8 },
-		{ value: candidate.tags.join(" "), weight: 6 },
-		{ value: candidate.themeTags.join(" "), weight: 5 },
-		{ value: candidate.description, weight: 2 },
-	];
-	return terms.reduce((total, term) => {
-		return (
-			total +
-			fields.reduce((fieldTotal, field) => {
-				const value = normalized(field.value);
-				if (value === term) return fieldTotal + field.weight * 12;
-				if (value.includes(term)) return fieldTotal + field.weight * 5;
-				return fieldTotal;
-			}, 0)
-		);
-	}, 0);
-}
-
-function getClientAddress(request: Request): string {
-	return (
-		request.headers.get("cf-connecting-ip") ||
-		request.headers.get("x-forwarded-for")?.split(",")[0] ||
-		"unknown"
-	).trim();
-}
-
-function isRateLimited(address: string): boolean {
-	const now = Date.now();
-	const recent = (rateHits.get(address) || []).filter(
-		(timestamp) => now - timestamp < RATE_WINDOW_MS,
-	);
-	if (recent.length >= RATE_MAX) {
-		rateHits.set(address, recent);
-		return true;
-	}
-	recent.push(now);
-	rateHits.set(address, recent);
-	return false;
 }
 
 function toCandidate(post: AskIndexItem): Candidate {
@@ -99,6 +57,28 @@ function toCandidate(post: AskIndexItem): Candidate {
 		pinned: post.pinned,
 		topicHeat: 0,
 	};
+}
+
+/** 索引条目 → 统一卡片，只用于排序，不改变对外响应形状 */
+function toCards(items: readonly AskIndexItem[]): ArticleCard[] {
+	return buildArticleCards(
+		items.map((item) => ({
+			id: item.slug,
+			body: item.excerpt,
+			data: {
+				title: item.title,
+				description: item.desc,
+				published: item.published,
+				updated: item.updated,
+				category: item.category,
+				tags: item.tags,
+				themeTags: item.themeTags,
+				pinned: item.pinned,
+				password: item.password,
+			},
+		})),
+		{ includeDrafts: true },
+	);
 }
 
 function parseModelIds(content: string): string[] {
@@ -125,65 +105,55 @@ function parseModelIds(content: string): string[] {
 }
 
 export const POST: APIRoute = async ({ request, url }) => {
-	if (isRateLimited(getClientAddress(request))) {
-		return json(
-			{ code: "rate_limited", message: "AI 搜索请求过于频繁，请稍后再试" },
-			429,
-		);
+	const gate = searchAiRateLimit.check(getClientAddress(request));
+	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
+
+	const read = await readJson<{ query?: unknown }>(request);
+	if (read.kind !== "ok") {
+		return json(400, { code: "invalid_json", message: "搜索请求格式不正确" });
 	}
 
-	let body: { query?: unknown } = {};
-	try {
-		body = (await request.json()) as typeof body;
-	} catch {
-		return json({ code: "invalid_json", message: "搜索请求格式不正确" }, 400);
-	}
-
-	const query = typeof body.query === "string" ? body.query.trim() : "";
+	const query =
+		typeof read.data.query === "string" ? read.data.query.trim() : "";
 	if (!query || query.length > MAX_QUERY_LENGTH) {
-		return json(
-			{
-				code: "invalid_query",
-				message: `搜索词需为 1-${MAX_QUERY_LENGTH} 个字符`,
-			},
-			400,
-		);
+		return json(400, {
+			code: "invalid_query",
+			message: `搜索词需为 1-${MAX_QUERY_LENGTH} 个字符`,
+		});
 	}
 
 	const apiKey = env("STEPFUN_API_KEY");
 	if (!apiKey) {
-		return json(
-			{
-				code: "stepfun_unconfigured",
-				message: "AI 搜索尚未配置阶跃星辰 API Key",
-			},
-			503,
-		);
+		return json(503, {
+			code: "stepfun_unconfigured",
+			message: "AI 搜索尚未配置阶跃星辰 API Key",
+		});
 	}
 
-	let allCandidates: Candidate[];
+	let items: AskIndexItem[];
 	try {
-		allCandidates = (await loadAskIndex(url.origin)).map(toCandidate);
+		items = await loadAskIndex(url.origin);
 	} catch {
-		return json({ error: "站内索引暂时不可用，请稍后再试" }, 502);
+		return json(502, {
+			error: "index_unavailable",
+			message: "站内索引暂时不可用，请稍后再试",
+		});
 	}
-	const candidates = allCandidates
-		.map((candidate, index) => ({
-			candidate,
-			score: scoreCandidate(candidate, query),
-			index,
-		}))
-		.filter(({ score }) => score > 0)
-		.sort(
-			(a, b) =>
-				b.score - a.score ||
-				b.candidate.published - a.candidate.published ||
-				a.index - b.index,
-		)
-		.slice(0, MAX_CANDIDATES)
-		.map(({ candidate }) => candidate);
+	const candidateById = new Map<string, Candidate>(
+		items.map((item) => {
+			const candidate = toCandidate(item);
+			return [candidate.id, candidate] as const;
+		}),
+	);
+	const candidates = rankArticles(toCards(items), "search", {
+		text: query,
+		focus: "all",
+		limit: MAX_CANDIDATES,
+	})
+		.map((card) => candidateById.get(card.id))
+		.filter((candidate): candidate is Candidate => candidate !== undefined);
 
-	if (!candidates.length) return json({ results: [] });
+	if (!candidates.length) return json(200, { results: [] });
 
 	const apiBase = env(
 		"STEPFUN_API_BASE",
@@ -225,17 +195,11 @@ export const POST: APIRoute = async ({ request, url }) => {
 			}),
 		});
 	} catch {
-		return json(
-			{ code: "stepfun_network_error", message: "AI 搜索服务暂时无法连接" },
-			502,
-		);
+		return upstreamError(0, "AI 搜索服务暂时无法连接");
 	}
 
 	if (!response.ok) {
-		return json(
-			{ code: "stepfun_request_failed", message: "AI 搜索服务暂时不可用" },
-			502,
-		);
+		return upstreamError(response.status, "AI 搜索服务暂时不可用");
 	}
 
 	try {
@@ -250,13 +214,13 @@ export const POST: APIRoute = async ({ request, url }) => {
 			.map((id) => byId.get(id))
 			.filter((candidate): candidate is Candidate => !!candidate);
 		const seen = new Set(ordered.map((candidate) => candidate.id));
-		return json({
+		return json(200, {
 			results: [
 				...ordered,
 				...candidates.filter((candidate) => !seen.has(candidate.id)),
 			],
 		});
 	} catch {
-		return json({ results: candidates });
+		return json(200, { results: candidates });
 	}
 };
