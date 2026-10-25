@@ -57,7 +57,7 @@ export type ArticleCard = {
 	collections: string[];
 	/** 列表展示摘要（最多 160 字） */
 	summary: string;
-	/** 正文纯文本长摘录（最多 800 字），供问答打分补充召回 */
+	/** 正文原始摘录（最多 800 字），供问答打分补充召回；下游按需 stripMd */
 	excerpt: string;
 	words: number;
 	minutes: number;

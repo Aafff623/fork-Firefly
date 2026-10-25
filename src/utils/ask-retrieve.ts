@@ -94,8 +94,11 @@ export async function loadAskIndex(origin?: string): Promise<AskIndexItem[]> {
 		const url = new URL("/api/ask-index.json", base).toString();
 		const res = await fetchIndexResponse(url);
 		if (!res.ok) throw new Error(`ask-index ${res.status}`);
-		const items = (await res.json()) as AskIndexItem[];
-		askIndexCache = { at: Date.now(), items };
+		const items: unknown = await res.json();
+		if (!Array.isArray(items)) {
+			throw new Error("ask-index returned a non-array payload");
+		}
+		askIndexCache = { at: Date.now(), items: items as AskIndexItem[] };
 		return items;
 	} catch {
 		if (askIndexCache) return askIndexCache.items;
@@ -455,8 +458,9 @@ export function retrieveSiteHitsFromPosts(
 		if (!hits.length) {
 			hits = cards
 				.filter(isSiteDocument)
-				.map((card) => {
-					const score = Math.max(
+				.map((card) => ({
+					card,
+					score: Math.max(
 						scoreArticle(card, {
 							mode: "ask",
 							terms: labels,
@@ -464,13 +468,16 @@ export function retrieveSiteHitsFromPosts(
 							now,
 						}),
 						10,
-					);
-					return toCardHit(card, score, labels, urlFor);
-				})
+					),
+				}))
 				.sort(
-					(a, b) => b.score - a.score || a.title.localeCompare(b.title, "zh"),
+					(a, b) =>
+						b.score - a.score ||
+						getEffectiveTime(b.card) - getEffectiveTime(a.card) ||
+						a.card.slug.localeCompare(b.card.slug),
 				)
-				.slice(0, Math.min(limit, 4));
+				.slice(0, Math.min(limit, 4))
+				.map(({ card, score }) => toCardHit(card, score, labels, urlFor));
 		}
 
 		return {

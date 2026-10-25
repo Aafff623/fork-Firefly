@@ -29,7 +29,10 @@ let devCache: { at: number; index: LoadedArticleIndex } | null = null;
  */
 export function loadArticleIndex(): Promise<LoadedArticleIndex> {
 	if (import.meta.env.PROD) {
-		buildCache ??= buildArticleIndex();
+		buildCache ??= buildArticleIndex().catch((error) => {
+			buildCache = null;
+			throw error;
+		});
 		return buildCache;
 	}
 	if (devCache && Date.now() - devCache.at < DEV_CACHE_TTL_MS) {

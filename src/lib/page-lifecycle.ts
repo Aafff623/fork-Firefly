@@ -44,8 +44,8 @@ function disposeCurrent(): void {
 	for (const fn of lc.cleanups) {
 		try {
 			fn();
-		} catch {
-			/* 清理失败静默 */
+		} catch (error) {
+			console.error("[page-lifecycle] cleanup failed", error);
 		}
 	}
 	lc.cleanups.clear();
