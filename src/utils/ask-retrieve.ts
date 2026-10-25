@@ -4,8 +4,17 @@
  * - 「怎么部署这个博客 / 技术栈」类 → site-meta：锚到本站文档 + 注入站点事实
  * - 其它 → 关键词打分；泛词（部署/上线…）禁止只靠正文偶然命中刷屏
  */
+
 import { getPostUrlBySlug } from "@utils/url-utils";
 import { siteConfig } from "@/config";
+import {
+	type ArticleCard,
+	getEffectiveTime,
+	isSiteDocument,
+	rankArticles,
+	scoreArticle,
+} from "@/lib/article-index";
+import { buildArticleCards } from "@/lib/article-index-builder";
 import { type AskPersonaId, getAskPersona } from "@/utils/ask-personas";
 
 /**
@@ -201,30 +210,6 @@ const STOP = new Set([
 ]);
 
 /**
- * 过宽的中文词：几乎每篇技术文都会沾一点。
- * 仅标题/摘要/标签计分；正文命中必须同时带站点锚点，否则不算。
- */
-const BROAD_TERMS = new Set([
-	"部署",
-	"上线",
-	"托管",
-	"构建",
-	"配置",
-	"教程",
-	"实战",
-	"项目",
-	"平台",
-	"应用",
-]);
-
-/** 判断「这篇是不是在讲本站 / Firefly 主题本身」 */
-const SITE_DOC_RE = /firefly|fuwari|fork-firefly|数字花园|本站|cuteleaf/i;
-
-/** 正文里出现这些，才允许泛词「部署」等借正文得分 */
-const SITE_ANCHOR_RE =
-	/firefly|fuwari|astro|vercel|edgeone|pnpm|tailwind|pagefind|swup|数字花园|fork-firefly/i;
-
-/**
  * 站点元问题可注入的硬事实（来自 CONTEXT，不是某篇帖的缓存答案）。
  * 帖子未必写「怎么部署本站」时，靠这里保证模型有正确锚点。
  */
@@ -287,17 +272,21 @@ function postSnippet(post: AskPost, max = 140): string {
 	return plain.length <= max ? plain : `${plain.slice(0, max)}…`;
 }
 
-function isSiteDoc(post: AskPost): boolean {
-	const slug = post.slug.toLowerCase();
-	if (SITE_DOC_RE.test(`${slug}\n${post.title}\n${post.tags}`)) return true;
-	if (slug.startsWith("guide/") || slug.startsWith("about")) return true;
-	if (
-		post.category === "功能" &&
-		/firefly|astro|主题/i.test(`${post.title}\n${post.tags}`)
-	) {
-		return true;
-	}
-	return false;
+function buildAskCards(posts: readonly AskPost[]): ArticleCard[] {
+	return buildArticleCards(
+		posts.map((post) => ({
+			id: post.slug,
+			body: post.excerpt,
+			data: {
+				title: post.title,
+				description: post.desc,
+				published: post.time,
+				category: post.category,
+				tags: post.tags.split(/\s+/).filter(Boolean),
+			},
+		})),
+		{ includeDrafts: true },
+	);
 }
 
 /**
@@ -370,82 +359,25 @@ function snippetAround(hay: string, terms: string[], max = 140): string {
 	return `${start > 0 ? "…" : ""}${slice}${end < hay.length ? "…" : ""}`;
 }
 
-function scorePost(
-	post: AskPost,
-	terms: string[],
-	opts?: { siteMeta?: boolean },
-): { score: number; snippet: string } {
-	if (!terms.length) return { score: 0, snippet: postSnippet(post) };
-	const title = post.title;
-	const desc = post.desc;
-	const tags = post.tags;
-	const category = post.category;
-	const body = post.excerpt;
-	const siteDoc = isSiteDoc(post);
-	const bodyHasSiteAnchor = SITE_ANCHOR_RE.test(
-		`${title}\n${desc}\n${tags}\n${body}`,
-	);
-
-	let score = 0;
-	let matched = false;
-	for (const t of terms) {
-		const tl = t.toLowerCase();
-		const w = t.length >= 3 ? 1.35 : 0.7;
-		const broad = BROAD_TERMS.has(t) || BROAD_TERMS.has(tl);
-		let hit = false;
-
-		if (title.toLowerCase().includes(tl)) {
-			score += 8 * w;
-			hit = true;
-		}
-		if (desc.toLowerCase().includes(tl)) {
-			score += 4 * w;
-			hit = true;
-		}
-		if (tags.toLowerCase().includes(tl)) {
-			score += 3 * w;
-			hit = true;
-		}
-		if (category.toLowerCase().includes(tl)) {
-			score += 2 * w;
-			hit = true;
-		}
-
-		const bodyHit = body.toLowerCase().includes(tl);
-		if (bodyHit) {
-			// 泛词：正文单独命中不够格，除非本站文档或正文带站点锚点
-			if (broad && !hit && !siteDoc && !bodyHasSiteAnchor) {
-				// skip body credit
-			} else if (broad && !hit) {
-				score += 0.35 * w;
-				hit = true;
-			} else {
-				score += 1 * w;
-				hit = true;
-			}
-		}
-		if (hit) matched = true;
-	}
-
-	if (!matched) {
-		return { score: 0, snippet: postSnippet(post) };
-	}
-
-	if (opts?.siteMeta && siteDoc) {
-		score += 18;
-	} else if (siteDoc) {
-		score += 4;
-	}
-
-	const ageDays = (Date.now() - post.time) / (1000 * 60 * 60 * 24);
-	// site-meta 不给「新文红利」，避免最新无关帖压过主题文档
-	if (!opts?.siteMeta) {
-		if (ageDays <= 30) score += 2.5;
-		else if (ageDays <= 90) score += 1;
-	}
-
-	const plain = stripMd(`${desc}\n${body}`) || desc || title;
-	return { score, snippet: snippetAround(plain, terms) };
+function toCardHit(
+	card: ArticleCard,
+	score: number,
+	terms: readonly string[],
+	urlFor: PostUrlFor,
+): AskHit {
+	const plain =
+		stripMd(`${card.description}\n${card.excerpt}`) ||
+		card.description ||
+		card.title;
+	const time = getEffectiveTime(card);
+	return {
+		title: card.title,
+		url: urlFor(card.slug),
+		snippet: snippetAround(plain, [...terms]),
+		score,
+		date: time ? formatDate(new Date(time)) : undefined,
+		icon: ASK_SITE_ICON,
+	};
 }
 
 type PostUrlFor = (slug: string) => string;
@@ -503,59 +435,64 @@ export function retrieveSiteHitsFromPosts(
 		};
 	}
 
+	const cards = buildAskCards(posts);
+	const now = Date.now();
+
 	if (isSiteMetaIntent(query)) {
 		const labels = expandSiteMetaLabels(query);
-		const scored = posts.map((post) => {
-			const { score, snippet } = scorePost(post, labels, { siteMeta: true });
-			return toHit(post, score, snippet, urlFor);
+		const ranked = rankArticles(cards, "ask", {
+			terms: labels,
+			siteMeta: true,
+			now,
 		});
 		// site-meta 门槛更高：宁可少而准
-		const matchedAll = scored.filter((h) => h.score >= 8);
-		let ranked = matchedAll
-			.slice()
-			.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "zh"))
-			.slice(0, limit);
+		const matchedAll = ranked.filter((hit) => hit.score >= 8);
+		let hits = matchedAll
+			.slice(0, limit)
+			.map((card) => toCardHit(card, card.score, labels, urlFor));
 
 		// 若仍空：强制拉本站文档（Firefly / guide），避免再回去用泛词「部署」扫库
-		if (!ranked.length) {
-			ranked = posts
-				.filter(isSiteDoc)
-				.map((post) => {
-					const { score, snippet } = scorePost(post, labels, {
-						siteMeta: true,
-					});
-					const floor = isSiteDoc(post) ? Math.max(score, 10) : score;
-					return toHit(post, floor, snippet || postSnippet(post), urlFor);
+		if (!hits.length) {
+			hits = cards
+				.filter(isSiteDocument)
+				.map((card) => {
+					const score = Math.max(
+						scoreArticle(card, {
+							mode: "ask",
+							terms: labels,
+							siteMeta: true,
+							now,
+						}),
+						10,
+					);
+					return toCardHit(card, score, labels, urlFor);
 				})
-				.sort((a, b) => b.score - a.score)
+				.sort(
+					(a, b) => b.score - a.score || a.title.localeCompare(b.title, "zh"),
+				)
 				.slice(0, Math.min(limit, 4));
 		}
 
 		return {
 			labels,
 			intent: "site-meta",
-			hits: ranked,
+			hits,
 			scope: "本站元信息（Firefly/主题文档优先 · 并注入站点硬事实）",
-			meta: metaOf(t0, scanned, matchedAll.length || ranked.length),
+			meta: metaOf(t0, scanned, matchedAll.length || hits.length),
 		};
 	}
 
 	const labels = extractAskLabels(query);
-	const scored = posts.map((post) => {
-		const { score, snippet } = scorePost(post, labels);
-		return toHit(post, score, snippet, urlFor);
-	});
-
-	const matchedAll = scored.filter((h) => h.score >= 2.5);
-	const ranked = matchedAll
-		.slice()
-		.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "zh"))
-		.slice(0, limit);
+	const ranked = rankArticles(cards, "ask", { terms: labels, now });
+	const matchedAll = ranked.filter((hit) => hit.score >= 2.5);
+	const hits = matchedAll
+		.slice(0, limit)
+		.map((card) => toCardHit(card, card.score, labels, urlFor));
 
 	return {
 		labels: labels.length ? labels : ["（未抽出可用关键词）"],
 		intent: "keyword",
-		hits: ranked,
+		hits,
 		scope: "本站文章库 posts（标题 / 摘要 / 标签 / 正文 · 逐篇打分）",
 		meta: metaOf(t0, scanned, matchedAll.length),
 	};

@@ -2,41 +2,50 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils";
+import {
+	type ArticleTiming,
+	getAutoPinnedId,
+	getEffectiveTime,
+	isArticleVisible,
+	isThemeDemoPost,
+	type PinKind,
+} from "@/lib/article-index";
+import { loadArticleIndex } from "@/lib/article-index-loader";
 
-/** sticky=人工常驻 · auto=默认动态置顶（最新 published/updated） */
-export type PinKind = "sticky" | "auto";
+export type { PinKind };
 
 /** 用于默认置顶：有更新时间用 updated，否则用 published */
 export function getEffectivePostTime(data: {
 	published: Date;
 	updated?: Date;
 }): number {
-	return (data.updated ?? data.published).getTime();
+	return getEffectiveTime(data);
 }
 
 /** 在非常驻文章中选出默认置顶（时间戳最新的一篇） */
 export function getAutoPinnedPostId(
 	posts: CollectionEntry<"posts">[],
 ): string | null {
-	let bestId: string | null = null;
-	let bestTime = Number.NEGATIVE_INFINITY;
-	for (const post of posts) {
-		if (post.data.pinned) continue;
-		// 生产：草稿不抢默认置顶大卡。
-		// 本地 DEV：草稿（含 _draftbox）要能顶到首页，方便调试预览。
-		if (post.data.draft && import.meta.env.PROD) continue;
-		const time = getEffectivePostTime(post.data);
-		// 时间相同则 id 字典序更大者胜，保证结果稳定
-		if (
-			bestId === null ||
-			time > bestTime ||
-			(time === bestTime && post.id.localeCompare(bestId) > 0)
-		) {
-			bestTime = time;
-			bestId = post.id;
-		}
-	}
-	return bestId;
+	return getAutoPinnedId(posts.map(toArticleTiming), {
+		includeDrafts: !import.meta.env.PROD,
+	});
+}
+
+/** 草稿可见性唯一入口的 entry 适配：生产隐藏，DEV 放行 */
+function isVisiblePost(post: CollectionEntry<"posts">): boolean {
+	return isArticleVisible(post.data.draft, {
+		includeDrafts: !import.meta.env.PROD,
+	});
+}
+
+function toArticleTiming(post: CollectionEntry<"posts">): ArticleTiming {
+	return {
+		id: post.id,
+		published: post.data.published,
+		updated: post.data.updated,
+		pinned: post.data.pinned,
+		draft: post.data.draft,
+	};
 }
 
 export function getPostPinKind(
@@ -48,48 +57,19 @@ export function getPostPinKind(
 	return null;
 }
 
-function compareByEffectiveTimeDesc(
-	a: CollectionEntry<"posts">,
-	b: CollectionEntry<"posts">,
-): number {
-	return getEffectivePostTime(b.data) - getEffectivePostTime(a.data);
-}
-
-/** 主题 demo：`posts/` 根下单文件。成帖与草稿箱都在子目录，DEV/PROD 都不进首页列表。 */
-function isThemeDemoPost(post: { filePath?: string }): boolean {
-	const norm = (post.filePath ?? "").replace(/\\/g, "/");
-	return /^src\/content\/posts\/[^/]+\.(md|mdx)$/.test(norm);
-}
-
-// Retrieve posts and sort: 常驻 → 默认置顶 → 其余（均按有效时间倒序）
-async function getRawSortedPosts() {
-	const allBlogPosts = (
-		await getCollection("posts", ({ data }) => {
-			return import.meta.env.PROD ? data.draft !== true : true;
-		})
-	).filter((post) => !isThemeDemoPost(post));
-
-	const autoPinnedId = getAutoPinnedPostId(allBlogPosts);
-	// 生产藏草稿常驻置顶；DEV 保留，便于草稿箱本地调试
-	const stickyPosts = allBlogPosts
-		.filter((post) => {
-			if (!post.data.pinned) return false;
-			if (post.data.draft && import.meta.env.PROD) return false;
-			return true;
-		})
-		.sort(compareByEffectiveTimeDesc);
-	const autoPosts = autoPinnedId
-		? allBlogPosts.filter((post) => post.id === autoPinnedId)
-		: [];
-	const restPosts = allBlogPosts
-		.filter((post) => !post.data.pinned && post.id !== autoPinnedId)
-		.sort(compareByEffectiveTimeDesc);
-
-	return [...stickyPosts, ...autoPosts, ...restPosts];
+/** 列表顺序由索引提供：常驻 → 默认置顶 → 其余（均按有效时间倒序） */
+async function getSortedEntries(): Promise<CollectionEntry<"posts">[]> {
+	const index = await loadArticleIndex();
+	const entries: CollectionEntry<"posts">[] = [];
+	for (const card of index.list()) {
+		const entry = index.entry(card.id);
+		if (entry) entries.push(entry);
+	}
+	return entries;
 }
 
 export async function getSortedPosts(): Promise<CollectionEntry<"posts">[]> {
-	const sorted = await getRawSortedPosts();
+	const sorted = await getSortedEntries();
 
 	for (let i = 1; i < sorted.length; i++) {
 		sorted[i].data.nextSlug = sorted[i - 1].id;
@@ -107,7 +87,7 @@ export type PostForList = {
 	data: CollectionEntry<"posts">["data"];
 };
 export async function getSortedPostsList(): Promise<PostForList[]> {
-	const sortedFullPosts = await getRawSortedPosts();
+	const sortedFullPosts = await getSortedEntries();
 
 	// delete post.body
 	const sortedPostsList = sortedFullPosts.map((post) => ({
@@ -124,9 +104,9 @@ export type Tag = {
 
 /** 全站一级标签统计；不含 themeTags（二级主题，仅文章侧栏展示） */
 export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allBlogPosts = (await getCollection<"posts">("posts")).filter(
+		isVisiblePost,
+	);
 
 	const countMap: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { tags: string[] } }) => {
@@ -151,9 +131,9 @@ export type Category = {
 };
 
 export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allBlogPosts = (await getCollection<"posts">("posts")).filter(
+		isVisiblePost,
+	);
 	const count: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
 		if (!post.data.category) {
@@ -238,9 +218,9 @@ export async function getRelatedPosts(
 	currentPost: CollectionEntry<"posts">,
 	maxCount = 3,
 ): Promise<PostForList[]> {
-	const allPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allPosts = (await getCollection<"posts">("posts")).filter(
+		isVisiblePost,
+	);
 
 	const tagCorpusFreq = new Map<string, number>();
 	for (const p of allPosts) {
@@ -369,11 +349,9 @@ export async function getRelatedPosts(
  * 无真实 PV 时：标签流行度 + 置顶 + 近更，再加重近 60 天半衰期。
  */
 export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
-	const allPosts = (
-		await getCollection<"posts">("posts", ({ data }) => {
-			return import.meta.env.PROD ? data.draft !== true : true;
-		})
-	).filter((post) => !isThemeDemoPost(post));
+	const allPosts = (await getCollection<"posts">("posts"))
+		.filter(isVisiblePost)
+		.filter((post) => !isThemeDemoPost(post.filePath));
 
 	const tagCorpusFreq = new Map<string, number>();
 	for (const p of allPosts) {
