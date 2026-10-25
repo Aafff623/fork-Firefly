@@ -229,6 +229,9 @@ export const POST: APIRoute = async ({ request, url }) => {
 
 	if (action === "retrieve") {
 		const read = await readJson<{ message?: string; limit?: number }>(request);
+		if (read.kind === "too-large") {
+			return json(413, { code: 413, message: "请求体过大" });
+		}
 		if (read.kind === "invalid-json") {
 			return json(400, { code: 400, message: "请求体不是合法 JSON" });
 		}
@@ -242,8 +245,12 @@ export const POST: APIRoute = async ({ request, url }) => {
 		let data: Awaited<ReturnType<typeof retrieveSiteHits>>;
 		try {
 			data = await retrieveSiteHits(message, limit, url.origin);
-		} catch {
-			return upstreamError(0, "站内索引暂时不可用，请稍后再试");
+		} catch (error) {
+			console.error("[ask] site index unavailable", error);
+			return json(503, {
+				error: "index_unavailable",
+				message: "站内索引暂时不可用，请稍后再试",
+			});
 		}
 		return json(
 			200,
@@ -269,6 +276,9 @@ export const POST: APIRoute = async ({ request, url }) => {
 				text?: unknown;
 			}>;
 		}>(request);
+		if (read.kind === "too-large") {
+			return json(413, { code: 413, message: "请求体过大" });
+		}
 		if (read.kind === "invalid-json") {
 			return json(400, { code: 400, message: "请求体不是合法 JSON" });
 		}
@@ -399,7 +409,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 			} catch {
 				/* keep text */
 			}
-			return upstreamError(upstream.status || 0, messageText);
+			return upstreamError(
+				upstream.status || 0,
+				import.meta.env.DEV ? messageText : "上游问答服务暂时不可用",
+			);
 		}
 
 		// 少数错误仍以 JSON 返回

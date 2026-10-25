@@ -918,7 +918,12 @@ async function imageUploader(uploadApi: string, file: File): Promise<string> {
 			headers: { Origin: window.location.origin },
 			signal: ac.signal,
 		});
-		let data: { url?: string; deleteToken?: string; error?: string } = {};
+		let data: {
+			url?: string;
+			deleteToken?: string;
+			error?: string;
+			message?: string;
+		} = {};
 		try {
 			data = await res.json();
 		} catch {
@@ -926,6 +931,7 @@ async function imageUploader(uploadApi: string, file: File): Promise<string> {
 		}
 		if (!res.ok || !data.url) {
 			const msg =
+				data.message ||
 				data.error ||
 				(res.status === 503
 					? "未配置图床（R2_* 或 COS_*），无法上传大图"

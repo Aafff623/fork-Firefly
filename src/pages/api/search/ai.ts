@@ -20,6 +20,12 @@ const searchAiRateLimit = createRateLimiter({
 	windowMs: 10 * 60 * 1000,
 	keyPrefix: "search-ai",
 });
+/** 付费模型总闸：单 isolate 每小时最多 300 次，防止换 IP 放大账单。 */
+const searchAiGlobalRateLimit = createRateLimiter({
+	max: 300,
+	windowMs: 60 * 60 * 1000,
+	keyPrefix: "search-ai-global",
+});
 
 type Candidate = {
 	id: string;
@@ -98,23 +104,35 @@ function parseModelIds(content: string): string[] {
 		) {
 			return parsed.ids.filter((id): id is string => typeof id === "string");
 		}
-	} catch {
+	} catch (error) {
+		console.warn("[search/ai] model ids unparsable", error);
 		// The lexical order below is safer than guessing from malformed model output.
 	}
 	return [];
 }
 
 export const POST: APIRoute = async ({ request, url }) => {
+	const globalGate = searchAiGlobalRateLimit.check("global");
+	if (!globalGate.allowed) return rateLimited(globalGate.retryAfterSeconds);
 	const gate = searchAiRateLimit.check(getClientAddress(request));
 	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
 
 	const read = await readJson<{ query?: unknown }>(request);
-	if (read.kind !== "ok") {
+	if (read.kind === "too-large") {
+		return json(413, {
+			code: "payload_too_large",
+			message: "搜索请求体过大",
+		});
+	}
+	if (read.kind === "empty") {
+		return json(400, { code: "missing_body", message: "搜索请求体为空" });
+	}
+	if (read.kind === "invalid-json") {
 		return json(400, { code: "invalid_json", message: "搜索请求格式不正确" });
 	}
 
-	const query =
-		typeof read.data.query === "string" ? read.data.query.trim() : "";
+	const body = read.data;
+	const query = typeof body?.query === "string" ? body.query.trim() : "";
 	if (!query || query.length > MAX_QUERY_LENGTH) {
 		return json(400, {
 			code: "invalid_query",
@@ -220,7 +238,8 @@ export const POST: APIRoute = async ({ request, url }) => {
 				...candidates.filter((candidate) => !seen.has(candidate.id)),
 			],
 		});
-	} catch {
+	} catch (error) {
+		console.warn("[search/ai] model response unparsable", error);
 		return json(200, { results: candidates });
 	}
 };

@@ -14,6 +14,7 @@ import {
 	createRateLimiter,
 	getClientAddress,
 	json,
+	NO_STORE_HEADERS,
 	rateLimited,
 	readJson,
 } from "@/lib/api/http";
@@ -30,6 +31,7 @@ import {
 	verifyCommentImageDeleteToken,
 } from "@/lib/comment-image-token";
 import { hasImageSignature } from "@/lib/image-signature";
+import { sameOriginRequest } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
@@ -42,11 +44,16 @@ const EXT: Record<string, string> = {
 	"image/webp": "webp",
 };
 
-/** 同 IP 10 分钟最多 20 次（冷启动会重置，够挡刷）；窗口数学在 api/http。 */
-const commentImageRateLimit = createRateLimiter({
+/** 同 IP 10 分钟最多 20 次（冷启动会重置，够挡刷）；上传与删除分桶。 */
+const commentImageUploadRateLimit = createRateLimiter({
 	max: 20,
 	windowMs: 10 * 60 * 1000,
-	keyPrefix: "comment-image",
+	keyPrefix: "comment-image-upload",
+});
+const commentImageDeleteRateLimit = createRateLimiter({
+	max: 20,
+	windowMs: 10 * 60 * 1000,
+	keyPrefix: "comment-image-delete",
 });
 
 function readEnvFile(): Record<string, string> {
@@ -206,7 +213,10 @@ export const POST: APIRoute = async ({ request }) => {
 		});
 	}
 
-	const gate = commentImageRateLimit.check(getClientAddress(request));
+	if (!sameOriginRequest(request)) {
+		return json(403, { error: "origin_mismatch" });
+	}
+	const gate = commentImageUploadRateLimit.check(getClientAddress(request));
 	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
 
 	let form: FormData;
@@ -238,10 +248,9 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 	try {
 		await putCommentImage(cfg, key, body, file.type);
-	} catch (e) {
-		return json(502, {
-			error: e instanceof Error ? e.message : "Upload failed",
-		});
+	} catch (error) {
+		console.error("[comment-image] upload failed", error);
+		return json(502, { error: "upload_failed" });
 	}
 
 	const url = `${cfg.publicBaseUrl}/${encodeObjectKey(key)}`;
@@ -249,7 +258,7 @@ export const POST: APIRoute = async ({ request }) => {
 		getDeleteSecret(cfg),
 		key,
 	);
-	return json(200, { url, deleteToken }, { "Cache-Control": "no-store" });
+	return json(200, { url, deleteToken }, NO_STORE_HEADERS);
 };
 
 export const DELETE: APIRoute = async ({ request }) => {
@@ -261,10 +270,16 @@ export const DELETE: APIRoute = async ({ request }) => {
 		});
 	}
 
-	const gate = commentImageRateLimit.check(getClientAddress(request));
+	if (!sameOriginRequest(request)) {
+		return json(403, { error: "origin_mismatch" });
+	}
+	const gate = commentImageDeleteRateLimit.check(getClientAddress(request));
 	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
 
 	const read = await readJson<{ url?: unknown; token?: unknown }>(request);
+	if (read.kind === "too-large") {
+		return json(413, { error: "payload_too_large" });
+	}
 	if (read.kind === "invalid-json") {
 		return json(400, { error: "invalid_json", code: "invalid_json" });
 	}
@@ -298,10 +313,9 @@ export const DELETE: APIRoute = async ({ request }) => {
 
 	try {
 		await deleteCommentImageObject(cfg, key);
-	} catch (e) {
-		return json(502, {
-			error: e instanceof Error ? e.message : "Delete failed",
-		});
+	} catch (error) {
+		console.error("[comment-image] delete failed", error);
+		return json(502, { error: "delete_failed" });
 	}
 
 	return json(200, { ok: true, key });

@@ -1,15 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { APIRoute } from "astro";
-import { json, rateLimited, readJson } from "@/lib/api/http";
-import { type OwnerAuthResult, requireOwnerUser } from "@/lib/supabase-auth";
+import { authFailure, json, NO_STORE_HEADERS, readJson } from "@/lib/api/http";
+import { requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
 const POSTS_ROOT = path.join(process.cwd(), "src", "content", "posts");
 const GITHUB_REPO = "Aafff623/fork-Firefly";
 const GITHUB_EDIT_BRANCH = "master";
-const NO_STORE = { "Cache-Control": "no-store" };
 
 function toPosix(p: string): string {
 	return p.replace(/\\/g, "/");
@@ -95,24 +94,26 @@ async function resolvePostFile(
 	return null;
 }
 
-function denied(auth: Extract<OwnerAuthResult, { ok: false }>): Response {
-	if (auth.status === 429) return rateLimited(auth.retryAfterSeconds ?? 1);
-	return json(auth.status, { ok: false, error: auth.error }, NO_STORE);
-}
-
 export const POST: APIRoute = async ({ request, cookies }) => {
 	const validation = await requireOwnerUser(request, cookies, {
 		originCheck: true,
 	});
-	if (!validation.ok) return denied(validation);
+	if (!validation.ok) return authFailure(validation);
 
 	const read = await readJson<{
 		postId?: string;
 		pinned?: boolean;
 		filePath?: string;
 	}>(request);
+	if (read.kind === "too-large") {
+		return json(
+			413,
+			{ ok: false, error: "payload_too_large" },
+			NO_STORE_HEADERS,
+		);
+	}
 	if (read.kind === "invalid-json") {
-		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE_HEADERS);
 	}
 	const body = read.kind === "ok" ? read.data : null;
 
@@ -123,7 +124,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		!/^[a-z0-9][a-z0-9/_-]{0,180}$/i.test(postId) ||
 		typeof pinned !== "boolean"
 	) {
-		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE);
+		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE_HEADERS);
 	}
 
 	const absolute = await resolvePostFile(postId, body?.filePath);
@@ -143,21 +144,29 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				error: "prod_write_disabled",
 				editUrl,
 			},
-			NO_STORE,
+			NO_STORE_HEADERS,
 		);
 	}
 
 	if (!absolute) {
-		return json(404, { ok: false, error: "file_not_found", editUrl }, NO_STORE);
+		return json(
+			404,
+			{ ok: false, error: "file_not_found", editUrl },
+			NO_STORE_HEADERS,
+		);
 	}
 
 	try {
 		const raw = await fs.readFile(absolute, "utf8");
 		const next = setPinnedFrontmatter(raw, pinned);
 		await fs.writeFile(absolute, next, "utf8");
-		return json(200, { ok: true, pinned }, NO_STORE);
+		return json(200, { ok: true, pinned }, NO_STORE_HEADERS);
 	} catch (error) {
-		void error;
-		return json(500, { ok: false, error: "write_failed", editUrl }, NO_STORE);
+		console.error("[admin/pin] write failed", error);
+		return json(
+			500,
+			{ ok: false, error: "write_failed", editUrl },
+			NO_STORE_HEADERS,
+		);
 	}
 };

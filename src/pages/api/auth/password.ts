@@ -3,6 +3,7 @@ import {
 	createRateLimiter,
 	getClientAddress,
 	json,
+	NO_STORE_HEADERS,
 	rateLimited,
 	readJson,
 } from "@/lib/api/http";
@@ -19,7 +20,6 @@ export const prerender = false;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_RATE_LIMIT = 10;
-const NO_STORE = { "Cache-Control": "no-store" };
 
 /** 同 IP 每分钟最多 10 次；窗口数学与 429 响应由 api/http 统一。 */
 const passwordRateLimit = createRateLimiter({
@@ -31,11 +31,15 @@ const passwordRateLimit = createRateLimiter({
 /** 邮箱密码登录/注册（服务端完成，浏览器不持有 token） */
 export const POST: APIRoute = async ({ request, cookies }) => {
 	if (!sameOriginRequest(request)) {
-		return json(403, { ok: false, error: "origin_mismatch" }, NO_STORE);
+		return json(403, { ok: false, error: "origin_mismatch" }, NO_STORE_HEADERS);
 	}
 	const client = createAuthClient(request, cookies);
 	if (!client) {
-		return json(503, { ok: false, error: "supabase_unconfigured" }, NO_STORE);
+		return json(
+			503,
+			{ ok: false, error: "supabase_unconfigured" },
+			NO_STORE_HEADERS,
+		);
 	}
 
 	const gate = passwordRateLimit.check(getClientAddress(request));
@@ -47,8 +51,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		password?: unknown;
 		next?: unknown;
 	}>(request);
+	if (read.kind === "too-large") {
+		return json(
+			413,
+			{ ok: false, error: "payload_too_large" },
+			NO_STORE_HEADERS,
+		);
+	}
 	if (read.kind === "invalid-json") {
-		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE_HEADERS);
 	}
 	const body = read.kind === "ok" ? read.data : null;
 
@@ -61,7 +72,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		!EMAIL_PATTERN.test(email) ||
 		password.length < PASSWORD_MIN_LENGTH
 	) {
-		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE);
+		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE_HEADERS);
 	}
 	const next = safeReturnTo(typeof body?.next === "string" ? body.next : null);
 
@@ -83,7 +94,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			return json(
 				400,
 				{ ok: false, error: emailTaken ? "email_taken" : "signup_failed" },
-				NO_STORE,
+				NO_STORE_HEADERS,
 			);
 		}
 		if (data.session && data.user) {
@@ -94,10 +105,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					role: isOwnerUser(data.user) ? "owner" : "user",
 					viewer: viewerFromUser(data.user),
 				},
-				NO_STORE,
+				NO_STORE_HEADERS,
 			);
 		}
-		return json(200, { ok: true, confirmationRequired: true }, NO_STORE);
+		return json(
+			200,
+			{ ok: true, confirmationRequired: true },
+			NO_STORE_HEADERS,
+		);
 	}
 
 	const { data, error } = await client.auth.signInWithPassword({
@@ -110,9 +125,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			error?.code === "email_not_confirmed" ||
 			/not confirmed/i.test(error?.message ?? "");
 		if (notConfirmed) {
-			return json(403, { ok: false, error: "email_not_confirmed" }, NO_STORE);
+			return json(
+				403,
+				{ ok: false, error: "email_not_confirmed" },
+				NO_STORE_HEADERS,
+			);
 		}
-		return json(401, { ok: false, error: "invalid_credentials" }, NO_STORE);
+		return json(
+			401,
+			{ ok: false, error: "invalid_credentials" },
+			NO_STORE_HEADERS,
+		);
 	}
 	return json(
 		200,
@@ -121,6 +144,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			role: isOwnerUser(data.user) ? "owner" : "user",
 			viewer: viewerFromUser(data.user),
 		},
-		NO_STORE,
+		NO_STORE_HEADERS,
 	);
 };

@@ -69,6 +69,28 @@ assert.deepEqual(
 	"null is legal JSON, routes decide what it means",
 );
 
+const tooLarge = await readJson(
+	new Request("http://localhost/api", {
+		method: "POST",
+		body: JSON.stringify({ payload: "x".repeat(100) }),
+	}),
+	{ maxBytes: 20 },
+);
+assert.deepEqual(
+	tooLarge,
+	{ kind: "too-large" },
+	"body over maxBytes is rejected without parsing",
+);
+
+const customLimit = await readJson(
+	new Request("http://localhost/api", {
+		method: "POST",
+		body: JSON.stringify({ payload: "x".repeat(100) }),
+	}),
+	{ maxBytes: 1024 },
+);
+assert.equal(customLimit.kind, "ok", "custom maxBytes allows larger bodies");
+
 /* ---------- limiter: window math, isolation, retry-after ---------- */
 
 let now = 1_000_000;
@@ -144,6 +166,7 @@ assert.equal(
 assert.deepEqual(await limited.json(), {
 	error: "rate_limited",
 	code: "rate_limited",
+	message: "请求过于频繁，请稍后再试",
 	retryAfter: 3,
 });
 

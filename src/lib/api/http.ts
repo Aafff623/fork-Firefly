@@ -8,6 +8,10 @@
 
 const JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 
+export const NO_STORE_HEADERS: Readonly<Record<string, string>> = {
+	"Cache-Control": "no-store",
+};
+
 /** 统一 JSON 响应：content-type 固定带 charset，附加头由调用方给。 */
 export function json(
 	status: number,
@@ -22,18 +26,49 @@ export function json(
 export type JsonReadResult<T> =
 	| Readonly<{ kind: "ok"; data: T }>
 	| Readonly<{ kind: "empty" }>
-	| Readonly<{ kind: "invalid-json" }>;
+	| Readonly<{ kind: "invalid-json" }>
+	| Readonly<{ kind: "too-large" }>;
+
+export type ReadJsonOptions = Readonly<{
+	/** 请求体字节上限；默认 64KB，大请求端点显式放宽 */
+	maxBytes?: number;
+}>;
+
+const DEFAULT_MAX_JSON_BYTES = 64 * 1024;
 
 /**
- * 请求体三态：合法 JSON / 空 body / 坏 JSON。
- * 空 body 与坏 JSON 必须分开，前者是「缺参」，后者是「编码错误」。
+ * 请求体四态：合法 JSON / 空 body / 坏 JSON / 超限。
+ * 流式累计字节，超过上限立即 cancel，不把整个 body 读进内存。
  */
 export async function readJson<T = unknown>(
 	request: Request,
+	options: ReadJsonOptions = {},
 ): Promise<JsonReadResult<T>> {
-	let text: string;
+	const maxBytes = options.maxBytes ?? DEFAULT_MAX_JSON_BYTES;
+	const declared = Number(request.headers.get("content-length") ?? "");
+	if (Number.isFinite(declared) && declared > maxBytes) {
+		return { kind: "too-large" };
+	}
+	const body = request.body;
+	if (!body) return { kind: "empty" };
+
+	const reader = body.getReader();
+	const decoder = new TextDecoder();
+	let text = "";
+	let received = 0;
 	try {
-		text = await request.text();
+		for (;;) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			if (!value) continue;
+			received += value.byteLength;
+			if (received > maxBytes) {
+				await reader.cancel();
+				return { kind: "too-large" };
+			}
+			text += decoder.decode(value, { stream: true });
+		}
+		text += decoder.decode();
 	} catch {
 		return { kind: "invalid-json" };
 	}
@@ -94,6 +129,13 @@ export function createRateLimiter(options: RateLimiterOptions): RateLimiter {
 			}
 			recent.push(at);
 			hits.set(bucket, recent);
+			if (hits.size > 5_000) {
+				for (const [id, timestamps] of hits) {
+					if (!timestamps.some((timestamp) => at - timestamp < windowMs)) {
+						hits.delete(id);
+					}
+				}
+			}
 			return { allowed: true, retryAfterSeconds: 0 };
 		},
 	};
@@ -107,8 +149,29 @@ export function rateLimited(retryAfterSeconds: number): Response {
 	const retryAfter = Math.max(1, Math.ceil(retryAfterSeconds));
 	return json(
 		429,
-		{ error: "rate_limited", code: "rate_limited", retryAfter },
+		{
+			error: "rate_limited",
+			code: "rate_limited",
+			message: "请求过于频繁，请稍后再试",
+			retryAfter,
+		},
 		{ "Retry-After": String(retryAfter) },
+	);
+}
+
+/** owner/admin 鉴权失败映射：429 走统一限流，其余保留原状态与错误码。 */
+export function authFailure(result: {
+	status: number;
+	error: string;
+	retryAfterSeconds?: number;
+}): Response {
+	if (result.status === 429) {
+		return rateLimited(result.retryAfterSeconds ?? 1);
+	}
+	return json(
+		result.status,
+		{ ok: false, error: result.error },
+		NO_STORE_HEADERS,
 	);
 }
 
