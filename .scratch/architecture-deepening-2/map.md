@@ -32,7 +32,7 @@
 - **21 内容消费方**（2026-10-25）：相关推荐、热文、标签、分类、ask-index 全部接 ArticleIndex；页面冒烟通过。
 - **22 prev/next**（2026-10-25）：排序不再改写共享 entry，改显式 `getAdjacentPosts`；删除无用 schema 字段。
 - **23 review 残留**（2026-10-25）：安全 / 静默失败 / Standards / Spec 四线审查后，已修 429 文案、null body、索引 503、readJson 上限、评论图同源/分桶、SpritePet 隐藏恢复等；上传全球配额、Supabase 抖动、Waline 失败态等留 `ready-for-human`。
-- **验证备注**：文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；完整 build 与交付预算未跑。
+- **验证备注**：`astro build` 通过；`check-delivery-budget` 865 页 0 违规；`tsc` 0；`astro check` 0 errors；`check:behavior` 11/11；v41/社区/UI 门禁通过。文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）。
 
 ## Not yet specified
 
