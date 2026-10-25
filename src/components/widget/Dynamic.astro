@@ -286,7 +286,7 @@ if (!memos?.enable) {
       initDynamicsDismiss();
     }
 
-    document.addEventListener("swup:contentReplaced", function () {
+    document.addEventListener("swup:page:view", function () {
       setTimeout(initDynamicsDismiss, 50);
     });
   })();

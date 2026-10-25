@@ -163,10 +163,6 @@ export function bootSidebarBalance(options?: {
 	window.addEventListener("scroll", schedule, { passive: true });
 	window.addEventListener("resize", schedule);
 	document.addEventListener("firefly:sidebar-layout", schedule);
-	document.addEventListener("swup:contentReplaced", () => {
-		last = null;
-		schedule();
-	});
 	document.addEventListener("astro:page-load", () => {
 		last = null;
 		schedule();

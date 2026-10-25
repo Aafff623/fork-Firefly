@@ -178,7 +178,7 @@ const useContentPadding = !adConfig.padding;
   }
 
   initAd();
-  document.addEventListener("swup:contentReplaced", function () {
+  document.addEventListener("swup:page:view", function () {
     setTimeout(initAd, 100);
   });
 </script>

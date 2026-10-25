@@ -264,6 +264,6 @@ const enablePoster = siteConfig.post.sharePoster !== false;
     } else {
       bindCopy();
     }
-    document.addEventListener("swup:contentReplaced", bindCopy);
+    document.addEventListener("swup:page:view", bindCopy);
   })();
 </script>

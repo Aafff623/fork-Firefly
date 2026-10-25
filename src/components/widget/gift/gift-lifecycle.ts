@@ -537,7 +537,6 @@ export function installGiftSurprise(): void {
 
 	if (swupBound) return;
 	swupBound = true;
-	document.addEventListener("swup:contentReplaced", run);
 	document.addEventListener("swup:content:replace", run);
 	document.addEventListener("swup:page:view", run);
 }

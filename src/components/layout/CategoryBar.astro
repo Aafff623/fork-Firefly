@@ -532,14 +532,6 @@ function initialActive(categoryName: string): {
       updateCategoryBar();
       initScrollFeatures();
     });
-    document.addEventListener("swup:contentReplaced", () => {
-      updateCategoryBar();
-      // 某些 swup 生命周期下 URL/DOM 状态同步稍晚，下一帧再校正一次避免状态残留
-      requestAnimationFrame(() => {
-        updateCategoryBar();
-      });
-    });
-
     // resize 监听只需注册一次；updateScrollHint 每次实时查询当前 bar，导航后依然有效
     window.addEventListener("resize", scheduleScrollHint);
 

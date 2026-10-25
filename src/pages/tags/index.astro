@@ -347,7 +347,6 @@ const ranked = [...tags]
     } else {
       boot();
     }
-    document.addEventListener("swup:contentReplaced", boot);
     document.addEventListener("swup:page:view", boot);
   })();
 </script>
@@ -430,7 +429,6 @@ const ranked = [...tags]
     } else {
       bootSearch();
     }
-    document.addEventListener("swup:contentReplaced", bootSearch);
     document.addEventListener("swup:page:view", bootSearch);
   })();
 </script>

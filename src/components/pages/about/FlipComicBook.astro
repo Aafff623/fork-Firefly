@@ -296,5 +296,5 @@ const pages = [
   } else {
     init();
   }
-  document.addEventListener("swup:contentReplaced", () => setTimeout(init, 40));
+  document.addEventListener("swup:page:view", () => setTimeout(init, 40));
 </script>

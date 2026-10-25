@@ -193,8 +193,8 @@ const hideSidebarOnPostPage =
 
   // 设置自动关闭功能
   function setupAutoClose() {
-    // 幂等 guard：initFloatingTOC() 会在每次导航时被调用（swup:contentReplaced /
-    // astro:page-load / popstate / password:decrypted 都会触发），若不守卫，
+    // 幂等 guard：initFloatingTOC() 会在每次导航时被调用（astro:page-load /
+    // popstate / password:decrypted 都会触发），若不守卫，
     // 每次都会重新注册下方 8 个 document/window 监听器并再次包装 history，
     // 导致跨跳累积（实测约每跳 +8）。
     if (window.__floatingTOCAutoCloseBound) return;
@@ -354,11 +354,6 @@ const hideSidebarOnPostPage =
   if (typeof window !== "undefined" && !window.floatingTOCListenersInitialized) {
     window.floatingTOCListenersInitialized = true;
 
-    // Swup 路由切换
-    document.addEventListener("swup:contentReplaced", () => {
-      setTimeout(initFloatingTOC, 100);
-    });
-    
     // Astro 页面切换事件
     document.addEventListener("astro:page-load", () => {
       setTimeout(initFloatingTOC, 100);

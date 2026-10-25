@@ -42,6 +42,5 @@ import FloatingButton from "@/components/common/FloatingButton.astro";
   requestAnimationFrame(updateCommentButtonVisibility);
 
   document.addEventListener("astro:page-load", updateCommentButtonVisibility);
-  document.addEventListener("swup:contentReplaced", updateCommentButtonVisibility);
   document.addEventListener("swup:enable", updateCommentButtonVisibility);
 </script>

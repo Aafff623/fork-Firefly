@@ -811,7 +811,6 @@ export function bootProfileFireflyCarousel(): void {
 	const rebound = () => {
 		void start();
 	};
-	document.addEventListener("swup:contentReplaced", rebound);
 	document.addEventListener("swup:content:replace", rebound);
 	document.addEventListener("swup:page:view", rebound);
 }

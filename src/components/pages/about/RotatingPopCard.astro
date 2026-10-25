@@ -215,7 +215,7 @@ const githubAvatar = "https://github.com/Aafff623.png?size=160";
   } else {
     init();
   }
-  document.addEventListener("swup:contentReplaced", () => {
+  document.addEventListener("swup:page:view", () => {
     setTimeout(init, 30);
   });
 </script>
