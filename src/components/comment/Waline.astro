@@ -59,7 +59,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script>
     import walineStyleUrl from "@waline/client/waline.css?url";
-    import { registerPageCleanup } from "@/lib/page-lifecycle";
+    import { onPageView, registerPageCleanup } from "@/lib/page-lifecycle";
 
     let bootedOnce = false;
     let pendingIO: IntersectionObserver | null = null;
@@ -146,8 +146,8 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
         bootWhenNear();
       }
       // 兜底：软导航可能先于 IO 触发（用户没滚近评论区就跳走），旧 shell 的 IO
-      // 永不回调；必须在模块作用域监听切页，对新页面的评论区重挂懒启动
-      document.addEventListener("swup:page:view", bootWhenNear);
+      // 永不回调；订阅页面生命周期，对新页面的评论区重挂懒启动
+      onPageView(bootWhenNear);
     }
   </script>
   {
@@ -173,6 +173,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     )
   }
   <script>
+    import { onPageView } from "@/lib/page-lifecycle";
     import { attachAgentAvatars } from "./agent-avatar";
     // agent 协作者评论：按昵称映射本地头像 // 中文注释
     const bootAvatars = () => attachAgentAvatars();
@@ -187,7 +188,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     };
     if (!avatarWindow.__walineAvatarPageViewBound) {
       avatarWindow.__walineAvatarPageViewBound = true;
-      document.addEventListener("swup:page:view", () => setTimeout(bootAvatars, 50));
+      onPageView(() => setTimeout(bootAvatars, 50));
     }
   </script>
 </div>

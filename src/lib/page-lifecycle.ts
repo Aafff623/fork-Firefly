@@ -10,10 +10,13 @@ const GLOBAL_KEY = Symbol.for("__fireflyPageLifecycle");
 const BEFORE_SWAP = "astro:before-swap";
 const PAGE_READY = "swup:page:view";
 
+type ViewListener = (epoch: number) => void;
+
 interface Lifecycle {
 	epoch: number;
 	controller: AbortController | null;
 	cleanups: Set<Cleanup>;
+	viewListeners: Set<ViewListener>;
 	booted: boolean;
 	/** 首屏 page:view 只认领 epoch，不销毁 boot 阶段已登记的清理。 */
 	viewed: boolean;
@@ -26,6 +29,7 @@ function getLifecycle(): Lifecycle {
 			epoch: 0,
 			controller: null,
 			cleanups: new Set(),
+			viewListeners: new Set(),
 			booted: false,
 			viewed: false,
 		};
@@ -46,12 +50,6 @@ function disposeCurrent(): void {
 	}
 	lc.cleanups.clear();
 	lc.epoch += 1;
-}
-
-function startPage(): void {
-	const lc = getLifecycle();
-	disposeCurrent();
-	lc.controller = new AbortController();
 }
 
 function registerPageCleanup(fn: Cleanup): Cleanup {
@@ -91,14 +89,21 @@ function observePage(observer: MutationObserver | ResizeObserver): Cleanup {
 	});
 }
 
-function setPageTimeout(callback: () => void, delay: number): Cleanup {
-	const id = window.setTimeout(callback, delay);
-	return registerPageCleanup(() => window.clearTimeout(id));
+/** 订阅每次进入新页面的 page:view；订阅本身跨页存活，返回的 cleanup 才会摘除。 */
+function onPageView(listener: ViewListener): Cleanup {
+	const lc = getLifecycle();
+	lc.viewListeners.add(listener);
+	return () => {
+		lc.viewListeners.delete(listener);
+	};
 }
 
-function requestPageFrame(callback: FrameRequestCallback): Cleanup {
-	const id = window.requestAnimationFrame(callback);
-	return registerPageCleanup(() => window.cancelAnimationFrame(id));
+function currentEpoch(): number {
+	return getLifecycle().epoch;
+}
+
+function isCurrentEpoch(epoch: number): boolean {
+	return getLifecycle().epoch === epoch;
 }
 
 function boot(): void {
@@ -120,17 +125,23 @@ function boot(): void {
 		lc.viewed = true;
 		// 首屏：保留 boot 阶段已登记的清理；缺 controller 时补一个给 onPage。
 		if (!lc.controller) lc.controller = new AbortController();
+		for (const listener of lc.viewListeners) {
+			try {
+				listener(lc.epoch);
+			} catch (error) {
+				console.error("[page-lifecycle] onPageView listener failed", error);
+			}
+		}
 	});
 	lc.controller = new AbortController();
 }
 
 export {
 	boot as bootPageLifecycle,
-	disposeCurrent as disposePage,
+	currentEpoch,
+	isCurrentEpoch,
 	observePage,
 	onPage,
+	onPageView,
 	registerPageCleanup,
-	requestPageFrame,
-	setPageTimeout,
-	startPage,
 };
