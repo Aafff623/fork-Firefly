@@ -16,4 +16,4 @@
 
 - 改了 17 个干净文件：6 个只监听死事件的组件换成 `swup:page:view`；其余文件删掉永不触发的 `contentReplaced` 监听，保留已有的 `astro:page-load` / `content:replace` / `page:view`。
 - `CoverImage`、`RepelText`、`TypewriterText`、`PostPage`、`Profile`、`Layout` 仍有死事件，均在他人 WIP 中，未动。
-- 浏览器复验待 dev server 稳定后进行；本票先以静态替换 + 行为测试收口。
+- 浏览器复验：dev 4343 上 About 页当前 WIP 未渲染 FlipComicBook / RotatingPopCard，无法点验这两项；Dynamic / SiteStats / Advertisement / ShareBar 也因页面状态未逐项点验。本票先以静态替换 + 行为测试收口。

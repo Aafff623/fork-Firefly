@@ -28,8 +28,9 @@
 - **12 评论运行时**（2026-10-25）：Giscus/Waline 两个 adapter 接入 runtime；社区 9/9、v41 门禁通过；浏览器未验证。
 - **19 search/ai**（2026-10-25）：接入 `api/http` 429/502，前端补 429 文案；端点级 curl 未跑。
 - **残留票**：21（相关/热文/标签/分类/ask-index 接入索引）、22（prev/next 不再改写共享 entry）。
-- **进行中**：15（SpritePet 接 animator）；20（props 收口）等 15。
-- **验证备注**：文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。
+- **15 SpritePet 接线**（2026-10-25）：animator 接管帧时钟/优先级/暂停；真机验证 idle→waving、点击 waiting、拖拽移动、软导航后存活。
+- **20 props 收口**：15 已完成，待做。
+- **验证备注**：文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；完整 build 与交付预算未跑。
 
 ## Not yet specified
 

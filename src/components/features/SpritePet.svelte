@@ -4,7 +4,7 @@
  * 默认：浏览 defaultPetId · 文章 postPetId（路由换皮）。
  * 访客覆盖：设置里选 Codex 单皮 → 仅浏览态换皮；文章页始终 postPetId。
  */
-import { onDestroy, onMount } from "svelte";
+import { onDestroy, onMount, untrack } from "svelte";
 import {
 	type BuiltinPetId,
 	type DualRoutePetId,
@@ -15,15 +15,16 @@ import {
 } from "@/lib/pets/builtinPets";
 import {
 	getAtlas,
-	getPetAnimationDurationMs,
-	getPetAnimationPlaybackStep,
-	getPetAnimationPlaybackTickAtElapsedMs,
-	getPetLookFrame,
 	type PetAnimationState,
 	type PetAtlasFrame,
 	type PetLookDirection,
 	quantizePetLookDirection,
 } from "@/lib/pets/petAnimation";
+import {
+	createPetAnimator,
+	type PetAnimator,
+	type PetAnimatorFrame,
+} from "@/lib/pets/petAnimator";
 import {
 	createPetRendererGate,
 	shouldSkipPetSheet,
@@ -40,7 +41,6 @@ import {
 	pickNextRoamAnchor,
 } from "@/lib/pets/petRoamAnchors";
 import {
-	canPlayByPriority,
 	getPetPagePersonaDef,
 	type PetScenarioPriority,
 	resolvePostReadMood,
@@ -299,12 +299,16 @@ let recentRoamAnchorIds: PetRoamAnchorId[] = [];
 /** 钻洞/近距换位代数：滚动/定时并发时只让最后一次落地 */
 let roamPortalGen = 0;
 
-let playbackFrame: number | null = null;
-let transientTimer: ReturnType<typeof setTimeout> | null = null;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let readScrollTimer: ReturnType<typeof setTimeout> | null = null;
-/** 当前瞬态动作优先级；结束后清 null */
-let activeScenarioPriority: PetScenarioPriority | null = null;
+/** 当前动作播完要跑的回调（playSequence 的下一段挂这里）；被抢占或暂停时清空 */
+let pendingTransientDone: (() => void) | null = null;
+/** 已画到 DOM 的最后一帧；换皮 / 尺寸变化时按新几何重画 */
+let lastAnimatorFrame: PetAnimatorFrame | null = null;
+/** 帧时钟是否已起过；首帧由 DOM 就绪后的 effect 放行 */
+let playbackBooted = false;
+/** 组件内一次性 timeout（原先散落未登记），销毁时统一清 */
+const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>();
 /** Tab 后台：停表，回前台再恢复 */
 let pageVisible = true;
 let navigationPaused = false;
@@ -335,6 +339,36 @@ let dragStart: {
 } | null = null;
 
 const effectiveMotion = $derived(motionEnabled && !prefersReducedMotion);
+
+/**
+ * 帧时钟 / 动作时长 / 动作优先级 / 暂停态全交给 animator。
+ * reducedMotion 直接用「组件此刻是否还该动」：系统偏好或 prop 关掉时只画首帧。
+ */
+const petAnimator: PetAnimator = createPetAnimator({
+	now: () => performance.now(),
+	raf: (tick) => requestAnimationFrame(tick),
+	cancelRaf: (playbackFrame) => cancelAnimationFrame(playbackFrame),
+	timeout: (callback, delayMs) => setTimeout(callback, delayMs),
+	clearTimeout: (handle) => clearTimeout(handle),
+	reducedMotion: () => !effectiveMotion,
+	pace: () => effectiveIdlePace,
+	onFrame: handleAnimatorFrame,
+	onIdle: handleAnimatorIdle,
+});
+
+/** 登记一次性 timeout：销毁时统一清掉，避免回调摸已卸载的节点 */
+function trackTimeout(callback: () => void, delayMs: number) {
+	const handle = setTimeout(() => {
+		pendingTimeouts.delete(handle);
+		callback();
+	}, delayMs);
+	pendingTimeouts.add(handle);
+}
+
+function clearTrackedTimeouts() {
+	for (const handle of pendingTimeouts) clearTimeout(handle);
+	pendingTimeouts.clear();
+}
 
 function angularDistanceDeg(a: number, b: number): number {
 	const delta = Math.abs(a - b) % 360;
@@ -368,13 +402,12 @@ function resolveLookWithHysteresis(
 }
 
 function applyGazeFrame(direction: PetLookDirection | null) {
-	if (!spriteEl || !effectiveLookFollow) return;
-	stopPlayback();
+	if (!spriteEl || !effectiveLookFollow || animationState !== "idle") return;
 	gazeActive = true;
 	stickyLook = direction;
 	lookDirection = direction;
-	const look = getPetLookFrame(direction);
-	applyFrame(look, "idle", "gaze");
+	// animator 停掉 idle 帧时钟，只画一张静止视线帧（phase = gaze）
+	petAnimator.setGaze(direction);
 }
 
 function exitGazeAndResumeIdle() {
@@ -408,50 +441,77 @@ function applyFrame(
 	spriteEl.style.backgroundPosition = atlasBackgroundPosition(frame);
 }
 
-function stopPlayback() {
-	if (playbackFrame !== null) {
-		cancelAnimationFrame(playbackFrame);
-		playbackFrame = null;
+/** animator 信号只有 frame + phase；motionState 用组件当前状态补 */
+function resolveMotionState(signal: PetAnimatorFrame): PetAnimationState {
+	return signal.phase === "action" ? animationState : "idle";
+}
+
+function paintAnimatorFrame(signal: PetAnimatorFrame) {
+	applyFrame(signal.frame, resolveMotionState(signal), signal.phase);
+}
+
+function handleAnimatorFrame(signal: PetAnimatorFrame) {
+	lastAnimatorFrame = signal;
+	paintAnimatorFrame(signal);
+}
+
+/** 动作播完：animator 已回 idle，这里同步组件状态并按顺序跑待办回调 */
+function handleAnimatorIdle() {
+	animationState = "idle";
+	const done = pendingTransientDone;
+	pendingTransientDone = null;
+	if (done) done();
+	if (
+		animationState === "idle" &&
+		gazeActive &&
+		stickyLook !== undefined &&
+		effectiveLookFollow
+	) {
+		applyGazeFrame(stickyLook);
 	}
 }
 
-function startPlayback(state: PetAnimationState) {
-	stopPlayback();
-	if (!spriteEl || !pageVisible || navigationPaused) return;
+function paintLastAnimatorFrame() {
+	if (!lastAnimatorFrame) return;
+	paintAnimatorFrame(lastAnimatorFrame);
+}
 
-	if (state === "idle" && stickyLook !== undefined && effectiveLookFollow) {
-		applyGazeFrame(stickyLook);
+/**
+ * 持续态（拖拽小跑 / 游走小跑 / 换皮前导）本来没有结束时间：
+ * 按 setTimeout 上限折成一次长动作（单轮 ≥700ms × 1200 ≈ 14 分钟），
+ * 期间任何新状态都会直接改写它。
+ */
+const SUSTAINED_ACTION_LOOPS = 1_200;
+
+/** 强优先级归位 idle：抢过正在播的动作，清掉未完成的瞬态回调 */
+function resetIdlePlayback() {
+	pendingTransientDone = null;
+	animationState = "idle";
+	petAnimator.play("idle", 1, "hard");
+}
+
+function startPlayback(
+	state: PetAnimationState,
+	priority: PetScenarioPriority = "ambient",
+) {
+	if (state === "idle") {
+		if (stickyLook !== undefined && effectiveLookFollow) {
+			applyGazeFrame(stickyLook);
+			return;
+		}
+		resetIdlePlayback();
 		return;
 	}
 
 	gazeActive = false;
-	if (!effectiveMotion) {
-		const step = getPetAnimationPlaybackStep(state, 0);
-		applyFrame(step.frame, step.motionState, step.phase);
+	const previous = animationState;
+	animationState = state;
+	if (!spriteEl || !pageVisible || navigationPaused) return;
+	if (!petAnimator.play(state, SUSTAINED_ACTION_LOOPS, priority)) {
+		animationState = previous;
 		return;
 	}
-
-	const startedAt = performance.now();
-	// 仅 idle 环境动作变慢；点击/拖拽等瞬态仍原速
-	const pace = state === "idle" ? effectiveIdlePace : 1;
-	let lastFrameKey = "";
-	const tick = () => {
-		if (!pageVisible) {
-			stopPlayback();
-			return;
-		}
-		const next = getPetAnimationPlaybackTickAtElapsedMs(
-			state,
-			Math.max(0, (performance.now() - startedAt) / pace),
-		);
-		const frameKey = `${next.frame.rowIndex}:${next.frame.columnIndex}:${next.motionState}:${next.phase}`;
-		if (frameKey !== lastFrameKey) {
-			lastFrameKey = frameKey;
-			applyFrame(next.frame, next.motionState, next.phase);
-		}
-		playbackFrame = requestAnimationFrame(tick);
-	};
-	playbackFrame = requestAnimationFrame(tick);
+	pendingTransientDone = null;
 }
 
 function playTransient(
@@ -461,20 +521,41 @@ function playTransient(
 	priority: PetScenarioPriority = "ui",
 ) {
 	if (!pageVisible) return;
+	// reduced-motion / 关动效：非 idle 一律不播（animator 只画首帧、不回 idle）
 	if (!effectiveMotion && state !== "idle") return;
-	if (!canPlayByPriority(activeScenarioPriority, priority)) return;
-	if (transientTimer) clearTimeout(transientTimer);
+	if (state === "idle") {
+		// idle 没有动作时长，直接归位并立刻回调（当前无调用点）
+		resetIdlePlayback();
+		onDone?.();
+		return;
+	}
+
+	const previous = animationState;
+	animationState = state;
+	if (!petAnimator.play(state, loops, priority)) {
+		animationState = previous;
+		return;
+	}
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
-	activeScenarioPriority = priority;
-	animationState = state;
-	transientTimer = setTimeout(() => {
-		animationState = "idle";
-		transientTimer = null;
-		activeScenarioPriority = null;
-		onDone?.();
-	}, getPetAnimationDurationMs(state) * loops);
+	pendingTransientDone = onDone ?? null;
+}
+
+/** 暂停：冻结帧时钟与动作计时、取消未完成的瞬态回调，画面停在当前帧 */
+function suspendPlayback() {
+	pendingTransientDone = null;
+	petAnimator.pause();
+}
+
+/** 恢复：解冻后强优先级归位 idle，不续播被打断的动作 */
+function resumeIdlePlayback() {
+	petAnimator.resume();
+	pendingTransientDone = null;
+	resetIdlePlayback();
+	if (gazeActive && stickyLook !== undefined && effectiveLookFollow) {
+		applyGazeFrame(stickyLook);
+	}
 }
 
 function playSequence(
@@ -551,15 +632,10 @@ function preloadActivePetSheet(): Promise<void> {
 }
 
 function clearTransientAndGaze() {
-	stopPlayback();
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
-	activeScenarioPriority = null;
-	if (transientTimer) {
-		clearTimeout(transientTimer);
-		transientTimer = null;
-	}
+	resetIdlePlayback();
 }
 
 /**
@@ -601,13 +677,11 @@ async function syncPetFromPath(
 	// 换班前导：进文跑步离开，回浏览挥手告别
 	if (useFade && effectiveMotion) {
 		if (swappingToPost) {
-			animationState = "running";
-			activeScenarioPriority = "route";
+			startPlayback("running", "route");
 			await waitMs(220);
 			if (gen !== skinSwapGen) return false;
 		} else if (swappingFromPost) {
-			animationState = "waving";
-			activeScenarioPriority = "route";
+			startPlayback("waving", "route");
 			await waitMs(280);
 			if (gen !== skinSwapGen) return false;
 		}
@@ -631,7 +705,6 @@ async function syncPetFromPath(
 	if (useFade) {
 		await waitMs(SKIN_CROSSFADE_MS);
 	}
-	activeScenarioPriority = null;
 	return gen === skinSwapGen;
 }
 
@@ -655,7 +728,7 @@ async function applyVisitorSelection(next: StoredPetSelection) {
 function pulseForThemeChange() {
 	if (!effectiveMotion || prefersReducedMotion || hidden) return;
 	themePulse = true;
-	window.setTimeout(() => {
+	trackTimeout(() => {
 		themePulse = false;
 	}, THEME_PULSE_MS);
 }
@@ -1048,10 +1121,10 @@ function scheduleBrowseDefaultPlacement() {
 		if (isFinal) parkAtBrowseFallback(true);
 	};
 	requestAnimationFrame(() => tryPlace(false));
-	window.setTimeout(() => tryPlace(false), 120);
-	window.setTimeout(() => tryPlace(false), 360);
-	window.setTimeout(() => tryPlace(false), 800);
-	window.setTimeout(() => tryPlace(true), 1600);
+	trackTimeout(() => tryPlace(false), 120);
+	trackTimeout(() => tryPlace(false), 360);
+	trackTimeout(() => tryPlace(false), 800);
+	trackTimeout(() => tryPlace(true), 1600);
 }
 
 function canRoamNow(): boolean {
@@ -1237,12 +1310,11 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
-	stopPlayback();
 
 	try {
 		// 进洞：先播一小段跑（或按宠指定形态），再压透明
 		if (useFade) {
-			animationState = leadState;
+			startPlayback(leadState);
 			await waitMs(leadMs);
 			if (gen !== roamPortalGen) return;
 			skinOpacity = 0;
@@ -1257,7 +1329,7 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 			await waitMs(holdMs);
 			if (gen !== roamPortalGen) return;
 			// 出洞：透明拉回；有按宠形态则保持该形态，否则朝内容方向小跑
-			animationState = exitState;
+			startPlayback(exitState);
 			skinOpacity = 1;
 			await waitMs(exitMs);
 			if (gen !== roamPortalGen) return;
@@ -1291,7 +1363,7 @@ async function portalToAnchor(target: PetRoamResolvedAnchor) {
 				playTransient(target.arrivalAction, 1, undefined, "ambient");
 			}
 		} else {
-			animationState = "idle";
+			resetIdlePlayback();
 		}
 	} finally {
 		if (gen === roamPortalGen) {
@@ -1341,8 +1413,7 @@ async function runToAnchor(target: PetRoamResolvedAnchor) {
 	gazeActive = false;
 	stickyLook = undefined;
 	lookDirection = undefined;
-	stopPlayback();
-	animationState = dirRun;
+	startPlayback(dirRun);
 
 	const startX = dockMode === "card" ? dockFixedX : (posX ?? target.x);
 	const startY = dockMode === "card" ? dockFixedY : (posY ?? target.y);
@@ -1396,7 +1467,7 @@ async function runToAnchor(target: PetRoamResolvedAnchor) {
 			playTransient(target.arrivalAction, 1, undefined, "ambient");
 		}
 	} else {
-		animationState = "idle";
+		resetIdlePlayback();
 	}
 
 	if (gen === roamPortalGen) {
@@ -1677,7 +1748,7 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 	}
 
 	suppressClick = true;
-	setTimeout(() => {
+	trackTimeout(() => {
 		suppressClick = false;
 	}, 0);
 
@@ -1686,7 +1757,7 @@ function finishDrag(pointerId: number, clientX: number, clientY: number) {
 	const screen = clampToViewport(origin.originLeft + dx, origin.originTop + dy);
 	dockMode = "free";
 	currentAnchorId = null;
-	animationState = "idle";
+	resetIdlePlayback();
 
 	// 文章页：松手弹回配置定格位（不跟手停在浮动钮上）
 	if (isPostViewportMode()) {
@@ -1752,8 +1823,10 @@ function onWindowPointerMove(event: PointerEvent) {
 			grabJumping = false;
 			// 若仍在拖，接上跑步；避免 playTransient 收尾强制 idle 闪一下
 			if (dragging && dragStart) {
-				animationState =
-					dragStart.facing === "right" ? "running-left" : "running-right";
+				startPlayback(
+					dragStart.facing === "right" ? "running-left" : "running-right",
+					"ui",
+				);
 			}
 		});
 	}
@@ -1772,8 +1845,10 @@ function onWindowPointerMove(event: PointerEvent) {
 	posY = next.y;
 	// 抓取跳跃播完前保持跳帧；之后才跟拖拽方向小跑
 	if (grabJumping) return;
-	animationState =
+	const runState: PetAnimationState =
 		dragStart.facing === "right" ? "running-left" : "running-right";
+	// 同状态重复下发会把动作时钟重置到 0，只在真正换向时才重起
+	if (animationState !== runState) startPlayback(runState, "ui");
 }
 
 function onWindowPointerUp(event: PointerEvent) {
@@ -1867,24 +1942,37 @@ function onSitePointerDown(event: Event) {
 	}
 }
 
-// 不读取 lookDirection，避免转头触发整段动画重启
+/**
+ * DOM 就绪 / 换皮 / 尺寸变化：首跑放行 idle 时钟，之后只把最后一帧按新几何重画。
+ * 帧时钟与动作优先级归 animator，这里不再驱动播放。
+ */
 $effect(() => {
-	void animationState;
-	void effectiveMotion;
+	const el = spriteEl;
 	void effectiveSize;
 	void height;
-	void activePetId;
 	void atlasUrl;
-	if (
-		animationState === "idle" &&
-		gazeActive &&
-		stickyLook !== undefined &&
-		effectiveLookFollow
-	) {
-		applyGazeFrame(stickyLook);
+	if (!el) return;
+	if (!playbackBooted) {
+		playbackBooted = true;
+		untrack(() => startPlayback(animationState));
 		return;
 	}
-	startPlayback(animationState);
+	untrack(paintLastAnimatorFrame);
+});
+
+// 动效开关运行期翻转：animator 不会自己起表，这里按当前状态重放一次
+$effect(() => {
+	const animated = effectiveMotion;
+	untrack(() => {
+		if (!playbackBooted || !spriteEl) return;
+		if (animated) {
+			startPlayback(animationState);
+			return;
+		}
+		// 关动效：归位 idle 并停在首帧。必须归位——animator 的 reduced-motion 分支
+		// 会连动作计时一起清掉，留着动作态就再也不会自己结束。
+		resetIdlePlayback();
+	});
 });
 
 // hidden 切换后根节点会重建：始终挂 body（卡片模式只同步 fixed 坐标）
@@ -1930,7 +2018,7 @@ onMount(() => {
 				"waving",
 				2,
 				() => {
-					setTimeout(() => reactToRoute(), 120);
+					trackTimeout(() => reactToRoute(), 120);
 				},
 				"route",
 			);
@@ -1945,7 +2033,7 @@ onMount(() => {
 		// 入场后再钉一次，避免封面 GIF 撑高后错位。
 		if (!roamSwitchOn) {
 			pinToCalendarStill();
-			window.setTimeout(() => {
+			trackTimeout(() => {
 				if (!roamSwitchOn) pinToCalendarStill();
 			}, 1100);
 		}
@@ -2132,7 +2220,7 @@ onMount(() => {
 						"route",
 					);
 				} else {
-					animationState = "idle";
+					resetIdlePlayback();
 				}
 			} else {
 				// 同皮也可能刚从 opacity:0 拉回；补一次可见性
@@ -2141,9 +2229,15 @@ onMount(() => {
 			}
 		})();
 	};
+	let swupHookBound = false;
 	const bindSwup = () => {
-		// 只绑 page:view：再绑 content:replace 会同一趟导航跑两次换皮，易把 opacity 卡死
-		win.swup?.hooks?.on("page:view", onSwupArrive);
+		// 只绑 page:view：再绑 content:replace 会同一趟导航跑两次换皮，易把 opacity 卡死。
+		// swup:enable 可能多次派发，重复 on 会让同一钩子叠两遍，这里只认第一次。
+		if (swupHookBound) return;
+		const hooks = win.swup?.hooks;
+		if (!hooks) return;
+		hooks.on("page:view", onSwupArrive);
+		swupHookBound = true;
 	};
 	bindSwup();
 	document.addEventListener("swup:enable", bindSwup);
@@ -2154,17 +2248,13 @@ onMount(() => {
 		);
 		navigationPaused = active;
 		if (active) {
-			stopPlayback();
+			// 旧语义：暂停时取消瞬态、画面停住；恢复时重新起 idle，不续播
+			suspendPlayback();
 			stopRoamLoop();
-			if (transientTimer) {
-				clearTimeout(transientTimer);
-				transientTimer = null;
-			}
 			return;
 		}
 		if (!pageVisible || hidden) return;
-		animationState = "idle";
-		startPlayback("idle");
+		resumeIdlePlayback();
 		if (canRoamOnBrowse() && !userPinnedPosition && !balanceParkActive) {
 			startRoamLoop();
 		}
@@ -2245,7 +2335,7 @@ onMount(() => {
 	const onVisibility = () => {
 		pageVisible = document.visibilityState === "visible";
 		if (!pageVisible) {
-			stopPlayback();
+			suspendPlayback();
 			stopRoamLoop();
 			if (idleTimer) {
 				clearTimeout(idleTimer);
@@ -2257,10 +2347,10 @@ onMount(() => {
 			}
 			return;
 		}
-		// 回前台：恢复 idle 与浏览态游走
+		// 回前台：恢复 idle 与浏览态游走（导航仍暂停时保持冻结）
 		skinOpacity = 1;
-		if (effectiveMotion) {
-			startPlayback("idle");
+		if (!navigationPaused) {
+			resumeIdlePlayback();
 		}
 		resetIdleTimer();
 		if (
@@ -2331,6 +2421,7 @@ onMount(() => {
 		calendarHostObserver?.disconnect();
 		document.removeEventListener("swup:enable", bindSwup);
 		win.swup?.hooks?.off?.("page:view", onSwupArrive);
+		swupHookBound = false;
 		window.removeEventListener(
 			"firefly:navigation-priority",
 			onNavigationPriority,
@@ -2351,8 +2442,9 @@ onMount(() => {
 
 onDestroy(() => {
 	stopRoamLoop();
-	stopPlayback();
-	if (transientTimer) clearTimeout(transientTimer);
+	petAnimator.dispose();
+	pendingTransientDone = null;
+	clearTrackedTimeouts();
 	if (idleTimer) clearTimeout(idleTimer);
 	if (readScrollTimer) clearTimeout(readScrollTimer);
 	if (lookRaf) cancelAnimationFrame(lookRaf);
