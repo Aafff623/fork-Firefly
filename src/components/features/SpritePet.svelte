@@ -5,6 +5,7 @@
  * 访客覆盖：设置里选 Codex 单皮 → 仅浏览态换皮；文章页始终 postPetId。
  */
 import { onDestroy, onMount, untrack } from "svelte";
+import { spritePetConfig } from "@/config";
 import {
 	type BuiltinPetId,
 	type DualRoutePetId,
@@ -58,56 +59,33 @@ interface Props {
 	defaultPetId: DualRoutePetId;
 	postPetId: DualRoutePetId;
 	position?: "bottom-left" | "bottom-right";
-	offsetX?: number;
-	offsetY?: number;
-	/** 文章页视口定格偏移；缺省跟 offsetX/Y */
-	postOffsetX?: number;
-	postOffsetY?: number;
 	size?: number;
-	motionEnabled?: boolean;
-	draggable?: boolean;
-	clickInteract?: boolean;
-	lookFollow?: boolean;
-	reactToSiteUi?: boolean;
-	hideOnMobileBrowse?: boolean;
-	hideOnMobilePost?: boolean;
-	mobileBreakpoint?: number;
 	roam?: SpritePetRoamConfig;
-	zIndex?: number;
 }
 
 let {
 	defaultPetId,
 	postPetId,
-	position = "bottom-right",
-	offsetX = 28,
-	offsetY = 96,
-	postOffsetX,
-	postOffsetY,
-	size = 128,
-	motionEnabled = true,
-	draggable = true,
-	clickInteract = true,
-	lookFollow = true,
-	reactToSiteUi = true,
-	hideOnMobileBrowse = false,
-	hideOnMobilePost = true,
-	mobileBreakpoint = 768,
-	roam = {
-		enable: true,
-		intervalMs: 7_500,
-		minIntervalMs: 7_500,
-		jitterMs: 0,
-		fadeMs: 380,
-		portalHoldMs: 160,
-		scrollLeaveDelayMs: 2_400,
-		resumeAfterDragMs: 2_000,
-		nearMoveMaxPx: 420,
-		nearMoveMs: 520,
-		pauseWhenPinned: false,
-	},
-	zIndex = 1000,
+	position = spritePetConfig.position,
+	size = spritePetConfig.size,
+	roam = spritePetConfig.roam,
 }: Props = $props();
+
+/** 站点固定值留在配置里；组件只保留会随调用点变化的 5 个核心 props。 */
+const offsetX = spritePetConfig.offset.x;
+const offsetY = spritePetConfig.offset.y;
+const postOffsetX = spritePetConfig.postOffset?.x;
+const postOffsetY = spritePetConfig.postOffset?.y;
+const motionEnabled = spritePetConfig.motionEnabled;
+const draggable = spritePetConfig.draggable;
+const clickInteract = spritePetConfig.clickInteract;
+const lookFollow = spritePetConfig.lookFollow;
+const reactToSiteUi = spritePetConfig.reactToSiteUi;
+const hideOnMobileBrowse =
+	spritePetConfig.responsive.hideOnMobileBrowse ?? false;
+const hideOnMobilePost = spritePetConfig.responsive.hideOnMobilePost ?? true;
+const mobileBreakpoint = spritePetConfig.responsive.mobileBreakpoint ?? 768;
+const zIndex = spritePetConfig.zIndex;
 
 /** v3：默认锚到「最新动态」旁，废弃旧左下角记忆 */
 /** v4：位置必须相对侧栏卡片角；丢弃旧版贴视口右下的坐标 */
