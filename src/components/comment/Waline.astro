@@ -59,14 +59,15 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
   {stickerSuggestEnabled && <link rel="stylesheet" href={stickerSuggestStyles} />}
   <script>
     import walineStyleUrl from "@waline/client/waline.css?url";
-    import { onPageView, registerPageCleanup } from "@/lib/page-lifecycle";
+    import {
+      mountComment,
+      registerCommentAdapter,
+      type CommentAdapter,
+    } from "@/lib/comment-runtime";
 
-    let bootedOnce = false;
-    let pendingIO: IntersectionObserver | null = null;
-    let pageCleanupArmed = false;
     let walineStylesPromise: Promise<void> | null = null;
 
-    const loadWalineStyles = () => {
+    const loadWalineStyles = (): Promise<void> => {
       if (walineStylesPromise) return walineStylesPromise;
 
       walineStylesPromise = new Promise((resolve, reject) => {
@@ -91,64 +92,68 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       return walineStylesPromise;
     };
 
-    const start = async () => {
-      const [{ bootWalineFromShell, registerWalineSwupHooks }] = await Promise.all([
-        import("@/lib/waline-boot"),
-        loadWalineStyles(),
-      ]);
-      // 注册后，后续软导航由 waline-boot 自带的 swup 钩子接管（幂等，只注册一次）
-      registerWalineSwupHooks();
-      bootedOnce = true;
-      bootWalineFromShell();
-    };
+    /**
+     * Waline adapter：懒启动、样式加载、Vue 实例销毁。
+     * 页面就绪、切页重挂、离页清理统一由 comment-runtime 驱动；
+     * 这里不再自己监听 swup 事件，也不再维护第二套 booted 状态。
+     */
+    const createWalineAdapter = (): CommentAdapter => {
+      let shell: HTMLElement | null = null;
+      let nearObserver: IntersectionObserver | null = null;
+      let disposeWaline: (() => void) | null = null;
+      let disposed = false;
 
-    const armPageCleanup = () => {
-      if (pageCleanupArmed) return;
-      pageCleanupArmed = true;
-      registerPageCleanup(() => {
-        pageCleanupArmed = false;
-        pendingIO?.disconnect();
-        pendingIO = null;
-      });
-    };
+      const boot = async (target: HTMLElement): Promise<void> => {
+        try {
+          const [walineBoot] = await Promise.all([
+            import("@/lib/waline-boot"),
+            loadWalineStyles(),
+          ]);
+          // 异步加载可能晚于离页 dispose：此时不再初始化
+          if (disposed || shell !== target) return;
+          disposeWaline = walineBoot.disposeWaline;
+          walineBoot.bootWalineFromShell(target);
+        } catch (error) {
+          console.error("[Waline] Failed to load runtime:", error);
+        }
+      };
 
-    const bootWhenNear = () => {
-      if (bootedOnce) return;
-      armPageCleanup();
-
-      const shell = document.querySelector(".waline-shell");
-      if (!(shell instanceof Element) || typeof IntersectionObserver === "undefined") {
-        void start();
-        return;
-      }
-
-      // 软导航后旧 IO 观察的是已脱离 DOM 的 shell，先摘掉再对新 shell 重挂
-      pendingIO?.disconnect();
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (!entries.some((entry) => entry.isIntersecting)) return;
-          io.disconnect();
-          if (pendingIO === io) pendingIO = null;
-          void start();
+      return {
+        mount(root: HTMLElement): void {
+          shell = root;
+          if (typeof IntersectionObserver === "undefined") {
+            void boot(root);
+            return;
+          }
+          nearObserver = new IntersectionObserver(
+            (entries) => {
+              if (!entries.some((entry) => entry.isIntersecting)) return;
+              nearObserver?.disconnect();
+              nearObserver = null;
+              void boot(root);
+            },
+            { rootMargin: "200px 0px" },
+          );
+          nearObserver.observe(root);
         },
-        { rootMargin: "200px 0px" },
-      );
-      pendingIO = io;
-      io.observe(shell);
+        dispose(): void {
+          disposed = true;
+          nearObserver?.disconnect();
+          nearObserver = null;
+          shell = null;
+          disposeWaline?.();
+          disposeWaline = null;
+        },
+      };
     };
 
-    const gateWindow = window as Window & { __walineLazyGateBound?: boolean };
-    if (!gateWindow.__walineLazyGateBound) {
-      gateWindow.__walineLazyGateBound = true;
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", bootWhenNear, { once: true });
-      } else {
-        bootWhenNear();
-      }
-      // 兜底：软导航可能先于 IO 触发（用户没滚近评论区就跳走），旧 shell 的 IO
-      // 永不回调；订阅页面生命周期，对新页面的评论区重挂懒启动
-      onPageView(bootWhenNear);
-    }
+    registerCommentAdapter("waline", {
+      selector: ".waline-shell",
+      createAdapter: createWalineAdapter,
+    });
+
+    const shell = document.querySelector(".waline-shell");
+    if (shell instanceof HTMLElement) mountComment("waline", shell);
   </script>
   {
     stickerSuggestEnabled && (

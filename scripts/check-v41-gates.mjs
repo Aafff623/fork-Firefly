@@ -84,6 +84,7 @@ assert(
 );
 
 const waline = read("src/components/comment/Waline.astro");
+const commentRuntime = read("src/lib/comment-runtime.ts");
 assert(
 	"A4 Waline dynamic import",
 	waline.includes('import("@/lib/waline-boot")') &&
@@ -201,9 +202,12 @@ assert(
 );
 
 assert(
-	"R1 Waline module-scope swup fallback",
-	waline.includes('document.addEventListener("swup:page:view", bootWhenNear)'),
-	"Waline lazy boot has no swup fallback → comments die after navigating away pre-IO",
+	"R1 Waline lazy boot re-mounted by comment-runtime",
+	waline.includes('registerCommentAdapter("waline"') &&
+		waline.includes('mountComment("waline"') &&
+		commentRuntime.includes("registerPageCleanup") &&
+		commentRuntime.includes("onPageView"),
+	"Waline lazy boot is not re-mounted through comment-runtime on soft navigation",
 );
 
 assert(

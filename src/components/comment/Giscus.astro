@@ -40,58 +40,80 @@ const discussionUrl = `https://github.com/${giscus.repo}/discussions`;
 	</p>
 </noscript>
 
-<script is:inline>
-  (() => {
-    const previous = window.__fireflyGiscusRuntime;
-    previous?.dispose?.();
+<script>
+  import {
+    mountComment,
+    registerCommentAdapter,
+    type CommentAdapter,
+  } from "@/lib/comment-runtime";
 
-    const host = document.querySelector("[data-giscus-host]");
-    if (!(host instanceof HTMLElement)) return;
+  const currentTheme = (): string =>
+    document.documentElement.classList.contains("dark") ? "dark" : "light";
 
-    const status = host.querySelector("[data-giscus-status]");
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let intersectionObserver = null;
-    let themeObserver = null;
-    let readyObserver = null;
+  /**
+   * Giscus adapter：只负责 iframe 的懒加载、主题同步与自身 DOM 清理。
+   * 何时挂载、何时销毁、切页后如何找回新根，都由 comment-runtime 统一管理。
+   */
+  const createGiscusAdapter = (): CommentAdapter => {
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (
+        callback: IdleRequestCallback,
+        options?: IdleRequestOptions,
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    let host: HTMLElement | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let themeObserver: MutationObserver | null = null;
+    let readyObserver: MutationObserver | null = null;
     let idleId = 0;
     let fallbackTimer = 0;
     let loadTimer = 0;
     let mounted = false;
+    let disposed = false;
 
-    const setStatus = (message, isError = false) => {
+    const setStatus = (message: string, isError = false): void => {
+      const status = host?.querySelector("[data-giscus-status]");
       if (!(status instanceof HTMLElement)) return;
       status.hidden = !message;
       status.classList.toggle("is-error", isError);
       if (message) status.textContent = message;
     };
 
-    const currentTheme = () =>
-      document.documentElement.classList.contains("dark") ? "dark" : "light";
-
-    const sendTheme = () => {
-      const frame = host.querySelector("iframe.giscus-frame");
+    const sendTheme = (): void => {
+      const frame = host?.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
       frame?.contentWindow?.postMessage(
         { giscus: { setConfig: { theme: currentTheme() } } },
         "https://giscus.app",
       );
     };
 
-    const markReady = () => {
-      if (!host.querySelector("iframe.giscus-frame")) return false;
+    const markReady = (): boolean => {
+      if (!host?.querySelector("iframe.giscus-frame")) return false;
       window.clearTimeout(loadTimer);
       readyObserver?.disconnect();
+      readyObserver = null;
       setStatus("");
       sendTheme();
       return true;
     };
 
-    const mount = () => {
-      if (mounted || signal.aborted || !host.isConnected) return;
-      mounted = true;
+    /** 摘掉懒加载侧的 observer / 定时器；重复调用安全 */
+    const cancelPending = (): void => {
       intersectionObserver?.disconnect();
+      intersectionObserver = null;
       window.clearTimeout(fallbackTimer);
-      if (idleId && "cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
+      fallbackTimer = 0;
+      if (idleId && idleWindow.cancelIdleCallback) {
+        idleWindow.cancelIdleCallback(idleId);
+      }
+      idleId = 0;
+    };
+
+    const mountFrame = (): void => {
+      if (mounted || disposed || !host || !host.isConnected) return;
+      mounted = true;
+      cancelPending();
 
       setStatus("正在连接 GitHub Discussions…");
       host
@@ -148,46 +170,53 @@ const discussionUrl = `https://github.com/${giscus.repo}/discussions`;
       }, 10000);
     };
 
-    const dispose = () => {
-      controller.abort();
-      intersectionObserver?.disconnect();
-      themeObserver?.disconnect();
-      readyObserver?.disconnect();
-      window.clearTimeout(fallbackTimer);
-      window.clearTimeout(loadTimer);
-      if (idleId && "cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
-      host
-        .querySelectorAll("iframe.giscus-frame, script[data-firefly-giscus]")
-        .forEach((node) => node.remove());
-    };
+    return {
+      mount(root: HTMLElement): void {
+        host = root;
+        intersectionObserver = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) mountFrame();
+          },
+          { rootMargin: "600px 0px" },
+        );
+        intersectionObserver.observe(root);
 
-    intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) mount();
+        if (idleWindow.requestIdleCallback) {
+          idleId = idleWindow.requestIdleCallback(mountFrame, { timeout: 2500 });
+        } else {
+          fallbackTimer = window.setTimeout(mountFrame, 1800);
+        }
+
+        themeObserver = new MutationObserver(sendTheme);
+        themeObserver.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["class", "data-theme"],
+        });
       },
-      { rootMargin: "600px 0px" },
-    );
-    intersectionObserver.observe(host);
+      dispose(): void {
+        disposed = true;
+        cancelPending();
+        themeObserver?.disconnect();
+        themeObserver = null;
+        readyObserver?.disconnect();
+        readyObserver = null;
+        window.clearTimeout(loadTimer);
+        loadTimer = 0;
+        host
+          ?.querySelectorAll("iframe.giscus-frame, script[data-firefly-giscus]")
+          .forEach((node) => node.remove());
+        host = null;
+      },
+    };
+  };
 
-    if ("requestIdleCallback" in window) {
-      idleId = window.requestIdleCallback(mount, { timeout: 2500 });
-    } else {
-      fallbackTimer = window.setTimeout(mount, 1800);
-    }
+  registerCommentAdapter("giscus", {
+    selector: "[data-giscus-host]",
+    createAdapter: createGiscusAdapter,
+  });
 
-    themeObserver = new MutationObserver(sendTheme);
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme"],
-    });
-
-    document.addEventListener("astro:before-swap", dispose, { signal });
-    document.addEventListener("swup:visit:start", dispose, {
-      signal,
-      once: true,
-    });
-    window.__fireflyGiscusRuntime = { dispose, mount };
-  })();
+  const host = document.querySelector("[data-giscus-host]");
+  if (host instanceof HTMLElement) mountComment("giscus", host);
 </script>
 
 <style is:global>

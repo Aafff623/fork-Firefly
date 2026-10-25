@@ -16,6 +16,7 @@ const [
 	layout,
 	nav,
 	community,
+	commentRuntime,
 ] = await Promise.all([
 	source("src/config/commentConfig.ts"),
 	source("src/components/comment/Giscus.astro"),
@@ -25,6 +26,7 @@ const [
 	source("src/layouts/Layout.astro"),
 	source("src/config/navBarConfig.ts"),
 	source("src/pages/community.astro"),
+	source("src/lib/comment-runtime.ts"),
 ]);
 
 const gates = [
@@ -43,7 +45,10 @@ const gates = [
 		"Giscus 有延迟挂载与跨页清理",
 		giscus.includes("IntersectionObserver") &&
 			giscus.includes("requestIdleCallback") &&
-			giscus.includes('document.addEventListener("astro:before-swap", dispose'),
+			giscus.includes("registerCommentAdapter") &&
+			giscus.includes("mountComment") &&
+			commentRuntime.includes("registerPageCleanup") &&
+			commentRuntime.includes("onPageView"),
 	],
 	[
 		"评论组件支持页面级 service override",

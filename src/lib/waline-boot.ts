@@ -1,7 +1,6 @@
 import { init, type WalineInstance } from "@waline/client/full";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-let swupHooksRegistered = false;
 
 /** 本次会话评论区上传成功的图（URL → deleteToken，仅这些允许 DELETE 同步删桶） */
 const managedCommentImageUrls = new Map<string, string>();
@@ -999,51 +998,5 @@ export function bootWalineFromShell(shell?: Element | null): void {
 		disposeWaline();
 		console.error("[Waline] Failed to initialize:", error);
 		shellEl.classList.add("waline-ready");
-	}
-}
-
-function scheduleWalineBoot(delay = 0) {
-	window.setTimeout(() => {
-		for (const shell of document.querySelectorAll(".waline-shell")) {
-			const root = shell.querySelector("#waline");
-			if (!root) continue;
-			if (root.querySelector(".wl-panel, .wl-cards, .wl-empty")) {
-				shell.classList.add("waline-ready");
-				continue;
-			}
-			if (shell instanceof HTMLElement && shell.dataset.walineBooted === "1")
-				continue;
-			bootWalineFromShell(shell);
-		}
-	}, delay);
-}
-
-export function registerWalineSwupHooks(): void {
-	if (swupHooksRegistered) return;
-	swupHooksRegistered = true;
-
-	document.addEventListener("swup:page:view", () => scheduleWalineBoot(50));
-	// Swup 换页前销毁旧 Waline：Vue 实例 + observer + document/window 事件全部释放
-	document.addEventListener("astro:before-swap", disposeWaline);
-
-	const bindSwupHooks = () => {
-		const swup = (
-			window as Window & {
-				swup?: { hooks?: { on: (event: string, cb: () => void) => void } };
-			}
-		).swup;
-		swup?.hooks?.on("content:replace", () => scheduleWalineBoot(200));
-	};
-
-	if (
-		(
-			window as Window & {
-				swup?: { hooks?: { on: (event: string, cb: () => void) => void } };
-			}
-		).swup?.hooks
-	) {
-		bindSwupHooks();
-	} else {
-		document.addEventListener("swup:enable", bindSwupHooks, { once: true });
 	}
 }
