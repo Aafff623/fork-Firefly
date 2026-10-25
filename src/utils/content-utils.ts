@@ -1,4 +1,4 @@
-import { type CollectionEntry, getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils";
@@ -6,8 +6,6 @@ import {
 	type ArticleTiming,
 	getAutoPinnedId,
 	getEffectiveTime,
-	isArticleVisible,
-	isThemeDemoPost,
 	type PinKind,
 } from "@/lib/article-index";
 import { loadArticleIndex } from "@/lib/article-index-loader";
@@ -27,13 +25,6 @@ export function getAutoPinnedPostId(
 	posts: CollectionEntry<"posts">[],
 ): string | null {
 	return getAutoPinnedId(posts.map(toArticleTiming), {
-		includeDrafts: !import.meta.env.PROD,
-	});
-}
-
-/** 草稿可见性唯一入口的 entry 适配：生产隐藏，DEV 放行 */
-function isVisiblePost(post: CollectionEntry<"posts">): boolean {
-	return isArticleVisible(post.data.draft, {
 		includeDrafts: !import.meta.env.PROD,
 	});
 }
@@ -69,18 +60,30 @@ async function getSortedEntries(): Promise<CollectionEntry<"posts">[]> {
 }
 
 export async function getSortedPosts(): Promise<CollectionEntry<"posts">[]> {
-	const sorted = await getSortedEntries();
+	return getSortedEntries();
+}
 
-	for (let i = 1; i < sorted.length; i++) {
-		sorted[i].data.nextSlug = sorted[i - 1].id;
-		sorted[i].data.nextTitle = sorted[i - 1].data.title;
-	}
-	for (let i = 0; i < sorted.length - 1; i++) {
-		sorted[i].data.prevSlug = sorted[i + 1].id;
-		sorted[i].data.prevTitle = sorted[i + 1].data.title;
-	}
+export type AdjacentPost = {
+	id: string;
+	title: string;
+};
 
-	return sorted;
+/** 上一篇/下一篇：返回显式视图，不再改写共享 entry 的 frontmatter 派生字段。 */
+export async function getAdjacentPosts(postId: string): Promise<{
+	prev: AdjacentPost | null;
+	next: AdjacentPost | null;
+}> {
+	const cards = (await loadArticleIndex()).list();
+	const index = cards.findIndex((card) => card.id === postId);
+	if (index < 0) return { prev: null, next: null };
+
+	const toAdjacent = (card: (typeof cards)[number] | undefined) =>
+		card ? { id: card.id, title: card.title } : null;
+
+	return {
+		prev: toAdjacent(cards[index + 1]),
+		next: toAdjacent(cards[index - 1]),
+	};
 }
 export type PostForList = {
 	id: string;
@@ -104,13 +107,11 @@ export type Tag = {
 
 /** 全站一级标签统计；不含 themeTags（二级主题，仅文章侧栏展示） */
 export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = (await getCollection<"posts">("posts")).filter(
-		isVisiblePost,
-	);
+	const cards = (await loadArticleIndex()).list();
 
 	const countMap: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { tags: string[] } }) => {
-		post.data.tags.forEach((tag: string) => {
+	cards.forEach((card) => {
+		card.tags.forEach((tag) => {
 			if (!countMap[tag]) countMap[tag] = 0;
 			countMap[tag]++;
 		});
@@ -131,23 +132,15 @@ export type Category = {
 };
 
 export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = (await getCollection<"posts">("posts")).filter(
-		isVisiblePost,
-	);
+	const cards = (await loadArticleIndex()).list();
 	const count: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
-		if (!post.data.category) {
+	cards.forEach((card) => {
+		if (!card.category) {
 			const ucKey = i18n(I18nKey.uncategorized);
 			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;
 			return;
 		}
-
-		const categoryName =
-			typeof post.data.category === "string"
-				? post.data.category.trim()
-				: String(post.data.category).trim();
-
-		count[categoryName] = count[categoryName] ? count[categoryName] + 1 : 1;
+		count[card.category] = count[card.category] ? count[card.category] + 1 : 1;
 	});
 
 	const lst = Object.keys(count).sort((a, b) => {
@@ -218,46 +211,26 @@ export async function getRelatedPosts(
 	currentPost: CollectionEntry<"posts">,
 	maxCount = 3,
 ): Promise<PostForList[]> {
-	const allPosts = (await getCollection<"posts">("posts")).filter(
-		isVisiblePost,
+	const index = await loadArticleIndex();
+	const cards = index.list();
+	const currentCard = cards.find((card) => card.id === currentPost.id);
+	if (!currentCard) return [];
+
+	const maxHeat = Math.max(1, ...cards.map((card) => card.heat));
+	const candidates = cards.filter(
+		(card) => card.id !== currentPost.id && !card.password,
 	);
 
-	const tagCorpusFreq = new Map<string, number>();
-	for (const p of allPosts) {
-		for (const t of p.data.tags || []) {
-			const key = t.trim().toLowerCase();
-			if (!key) continue;
-			tagCorpusFreq.set(key, (tagCorpusFreq.get(key) || 0) + 1);
-		}
-	}
-	let maxTopicHeat = 1;
-	for (const p of allPosts) {
-		let h = 0;
-		for (const t of p.data.tags || []) {
-			h += tagCorpusFreq.get(t.trim().toLowerCase()) || 0;
-		}
-		if (h > maxTopicHeat) maxTopicHeat = h;
-	}
-
-	const candidates = allPosts.filter(
-		(p) => p.id !== currentPost.id && !p.data.password,
-	);
-
-	const currentTags = new Set(
-		(currentPost.data.tags || [])
-			.map((t) => t.trim().toLowerCase())
-			.filter(Boolean),
-	);
-	const currentTokens = tokenizeTitle(currentPost.data.title);
-	const currentCategory = (currentPost.data.category || "").trim();
+	const currentTags = new Set(currentCard.tags.map((tag) => tag.toLowerCase()));
+	const currentTokens = tokenizeTitle(currentCard.title);
+	const currentCategory = currentCard.category.trim();
 	const now = Date.now();
 
-	const scored = candidates.map((post) => {
-		const rawTags = post.data.tags || [];
-		const postTags = new Set(
-			rawTags.map((t) => t.trim().toLowerCase()).filter(Boolean),
-		);
+	const scored = candidates.flatMap((card) => {
+		const entry = index.entry(card.id);
+		if (!entry) return [];
 
+		const postTags = new Set(card.tags.map((tag) => tag.toLowerCase()));
 		let shared = 0;
 		for (const t of currentTags) {
 			if (postTags.has(t)) shared++;
@@ -265,30 +238,21 @@ export async function getRelatedPosts(
 		const tagMatchScore = jaccardSimilarity(currentTags, postTags) * 100;
 		const sharedTagBonus = Math.min(36, shared * 12);
 
-		const postTokens = tokenizeTitle(post.data.title);
 		const titleSimilarityScore =
-			jaccardSimilarity(currentTokens, postTokens) * 100;
+			jaccardSimilarity(currentTokens, tokenizeTitle(card.title)) * 100;
 
-		const effectiveMs = getEffectivePostTime(post.data);
-		const daysSince = (now - effectiveMs) / (1000 * 60 * 60 * 24);
+		const daysSince = (now - getEffectiveTime(card)) / (1000 * 60 * 60 * 24);
 		const timeFreshnessScore = 30 * Math.exp((-Math.LN2 * daysSince) / 180);
 
-		const postCategory = (post.data.category || "").trim();
 		const categoryBonus =
-			currentCategory && postCategory && currentCategory === postCategory
+			currentCategory && card.category && currentCategory === card.category
 				? 12
 				: 0;
 
-		let topicHeat = 0;
-		for (const t of postTags) {
-			topicHeat += tagCorpusFreq.get(t) || 0;
-		}
-		const topicHeatNorm =
-			22 * (Math.log1p(topicHeat) / Math.log1p(maxTopicHeat));
-		const pinBonus = post.data.pinned ? 12 : 0;
-		const updatedMs = post.data.updated?.getTime();
+		const topicHeatNorm = 22 * (Math.log1p(card.heat) / Math.log1p(maxHeat));
+		const pinBonus = card.pinned ? 12 : 0;
 		const recentUpdateBonus =
-			updatedMs && now - updatedMs < 30 * 24 * 60 * 60 * 1000 ? 6 : 0;
+			card.updated && now - card.updated < 30 * 24 * 60 * 60 * 1000 ? 6 : 0;
 		const heatScore = topicHeatNorm + pinBonus + recentUpdateBonus;
 
 		const totalScore =
@@ -299,15 +263,17 @@ export async function getRelatedPosts(
 			categoryBonus +
 			heatScore;
 
-		return {
-			post,
-			totalScore,
-			tagMatchScore,
-			shared,
-			timeFreshnessScore,
-			categoryBonus,
-			heatScore,
-		};
+		return [
+			{
+				post: entry,
+				totalScore,
+				tagMatchScore,
+				shared,
+				timeFreshnessScore,
+				categoryBonus,
+				heatScore,
+			},
+		];
 	});
 
 	scored.sort((a, b) => b.totalScore - a.totalScore);
@@ -349,60 +315,30 @@ export async function getRelatedPosts(
  * 无真实 PV 时：标签流行度 + 置顶 + 近更，再加重近 60 天半衰期。
  */
 export async function getHotPosts(maxCount = 8): Promise<PostForList[]> {
-	const allPosts = (await getCollection<"posts">("posts"))
-		.filter(isVisiblePost)
-		.filter((post) => !isThemeDemoPost(post.filePath));
-
-	const tagCorpusFreq = new Map<string, number>();
-	for (const p of allPosts) {
-		for (const t of p.data.tags || []) {
-			const key = t.trim().toLowerCase();
-			if (!key) continue;
-			tagCorpusFreq.set(key, (tagCorpusFreq.get(key) || 0) + 1);
-		}
-	}
-	let maxTopicHeat = 1;
-	for (const p of allPosts) {
-		let h = 0;
-		for (const t of p.data.tags || []) {
-			h += tagCorpusFreq.get(t.trim().toLowerCase()) || 0;
-		}
-		if (h > maxTopicHeat) maxTopicHeat = h;
-	}
-
+	const index = await loadArticleIndex();
+	const cards = index.list();
+	const maxHeat = Math.max(1, ...cards.map((card) => card.heat));
 	const now = Date.now();
-	const scored = allPosts
-		.filter((p) => !p.data.password)
-		.map((post) => {
-			const postTags = (post.data.tags || [])
-				.map((t) => t.trim().toLowerCase())
-				.filter(Boolean);
-			let topicHeat = 0;
-			for (const t of postTags) {
-				topicHeat += tagCorpusFreq.get(t) || 0;
-			}
-			const topicHeatNorm =
-				18 * (Math.log1p(topicHeat) / Math.log1p(maxTopicHeat));
-			const pinBonus = post.data.pinned ? 10 : 0;
-			const updatedMs = post.data.updated?.getTime();
-			const recentUpdateBonus =
-				updatedMs && now - updatedMs < 30 * 24 * 60 * 60 * 1000 ? 8 : 0;
-			const heatScore = topicHeatNorm + pinBonus + recentUpdateBonus;
 
-			// 热笺：60 天半衰期，时效权重大于热度代理
-			const daysSince =
-				(now - getEffectivePostTime(post.data)) / (1000 * 60 * 60 * 24);
-			const timeFreshnessScore = 48 * Math.exp((-Math.LN2 * daysSince) / 60);
+	const scored = cards.flatMap((card) => {
+		if (card.password) return [];
+		const entry = index.entry(card.id);
+		if (!entry) return [];
 
-			return {
-				post,
-				score: heatScore + timeFreshnessScore,
-			};
-		});
+		const topicHeatNorm = 18 * (Math.log1p(card.heat) / Math.log1p(maxHeat));
+		const pinBonus = card.pinned ? 10 : 0;
+		const recentUpdateBonus =
+			card.updated && now - card.updated < 30 * 24 * 60 * 60 * 1000 ? 8 : 0;
+		const heatScore = topicHeatNorm + pinBonus + recentUpdateBonus;
 
-	scored.sort(
-		(a: { score: number }, b: { score: number }) => b.score - a.score,
-	);
+		// 热笺：60 天半衰期，时效权重大于热度代理
+		const daysSince = (now - getEffectiveTime(card)) / (1000 * 60 * 60 * 24);
+		const timeFreshnessScore = 48 * Math.exp((-Math.LN2 * daysSince) / 60);
+
+		return [{ post: entry, score: heatScore + timeFreshnessScore }];
+	});
+
+	scored.sort((a, b) => b.score - a.score);
 	return scored.slice(0, Math.max(1, maxCount)).map((s) => ({
 		id: s.post.id,
 		data: s.post.data,

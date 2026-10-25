@@ -25,10 +25,6 @@ type PostData = {
 	comment: boolean;
 	password: string;
 	passwordHint: string;
-	prevTitle: string;
-	prevSlug: string;
-	nextTitle: string;
-	nextSlug: string;
 };
 
 type DynamicData = {
@@ -81,10 +77,6 @@ const postsCollection: ContentCollection<PostData> = defineCollection({
 		passwordHint: z.string().optional().default(""),
 
 		/* For internal use */
-		prevTitle: z.string().default(""),
-		prevSlug: z.string().default(""),
-		nextTitle: z.string().default(""),
-		nextSlug: z.string().default(""),
 	}),
 });
 

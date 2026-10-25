@@ -96,10 +96,6 @@ export function validateOwnerPostSource(source: string): OwnerSourceValidation {
 			"licenseUrl",
 			"password",
 			"passwordHint",
-			"prevTitle",
-			"prevSlug",
-			"nextTitle",
-			"nextSlug",
 		]) {
 			if (data[field] !== undefined && typeof data[field] !== "string") {
 				return { ok: false, error: `${field}_must_be_string` };

@@ -7,7 +7,11 @@ import KatexManager from "@components/features/KatexManager.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getRelatedPosts, getSortedPosts } from "@utils/content-utils";
+import {
+	getAdjacentPosts,
+	getRelatedPosts,
+	getSortedPosts,
+} from "@utils/content-utils";
 import { LEGACY_REDIRECT_TARGETS } from "@utils/legacy-course-redirects";
 import {
 	getFileDirFromPath,
@@ -54,6 +58,7 @@ const { entry: rawEntry, legacyRedirectTo } = Astro.props;
 // （getStaticPaths 只为有 entry 的文章产出 postPaths）。
 // 显式收窄一次，模板的非跳转分支就不必重复几十处非空断言。
 const entry = rawEntry as NonNullable<typeof rawEntry>;
+const adjacentPosts = rawEntry ? await getAdjacentPosts(rawEntry.id) : null;
 
 const getDirectImageUrl = (src: string | undefined): string | null => {
 	if (!src) return null;
@@ -520,7 +525,7 @@ const {
     class="flex flex-col md:flex-row justify-between mb-4 gap-3 overflow-hidden w-full"
   >
     <a
-      href={entry.data.nextSlug ? getPostUrlBySlug(entry.data.nextSlug) : url("/")}
+      href={adjacentPosts?.next ? getPostUrlBySlug(adjacentPosts.next.id) : url("/")}
       class="w-full overflow-hidden active:scale-95"
     >
       <div class="btn-card rounded-2xl w-full min-h-15 max-w-full px-3.5 py-2.5 flex items-center justify-start! gap-2.5">
@@ -529,18 +534,18 @@ const {
           class="text-xl shrink-0 text-(--primary)"
         />
         <div class="overflow-hidden transition text-sm font-medium leading-snug line-clamp-2 max-w-[calc(100%-1.75rem)] text-black/75 dark:text-white/75">
-          {entry.data.nextTitle || i18n(I18nKey.home)}
+          {adjacentPosts?.next?.title || i18n(I18nKey.home)}
         </div>
       </div>
     </a>
 
     <a
-      href={entry.data.prevSlug ? getPostUrlBySlug(entry.data.prevSlug) : url("/")}
+      href={adjacentPosts?.prev ? getPostUrlBySlug(adjacentPosts.prev.id) : url("/")}
       class="w-full overflow-hidden active:scale-95"
     >
       <div class="btn-card rounded-2xl w-full min-h-15 max-w-full px-3.5 py-2.5 flex items-center justify-end! gap-2.5">
         <div class="overflow-hidden transition text-sm font-medium leading-snug line-clamp-2 max-w-[calc(100%-1.75rem)] text-black/75 dark:text-white/75 text-right">
-          {entry.data.prevTitle || i18n(I18nKey.home)}
+          {adjacentPosts?.prev?.title || i18n(I18nKey.home)}
         </div>
         <Icon is:inline
           name="lucide:chevron-right"

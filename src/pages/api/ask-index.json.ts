@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import { getEffectivePostTime } from "@utils/content-utils";
 import type { APIRoute } from "astro";
+import { isArticleVisible } from "@/lib/article-index";
 import { stripMd } from "@/utils/ask-retrieve";
 
 /**
@@ -16,7 +17,7 @@ export const prerender = true;
 
 export const GET: APIRoute = async () => {
 	const posts = await getCollection("posts", ({ data }) =>
-		import.meta.env.PROD ? data.draft !== true : true,
+		isArticleVisible(data.draft, { includeDrafts: !import.meta.env.PROD }),
 	);
 	const items = posts
 		.map((p) => ({

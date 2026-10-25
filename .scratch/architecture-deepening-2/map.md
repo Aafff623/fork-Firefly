@@ -29,7 +29,9 @@
 - **19 search/ai**（2026-10-25）：接入 `api/http` 429/502，前端补 429 文案；端点级 curl 未跑。
 - **残留票**：21（相关/热文/标签/分类/ask-index 接入索引）、22（prev/next 不再改写共享 entry）。
 - **15 SpritePet 接线**（2026-10-25）：animator 接管帧时钟/优先级/暂停；真机验证 idle→waving、点击 waiting、拖拽移动、软导航后存活。
-- **20 props 收口**：15 已完成，待做。
+- **20 props 收口**（2026-10-25）：SpritePet 18 → 5 个 props，固定项回 `spritePetConfig`；首页/文章页冒烟无布局变化。
+- **21 内容消费方**（2026-10-25）：相关推荐、热文、标签、分类、ask-index 全部接 ArticleIndex；页面冒烟通过。
+- **22 prev/next**（2026-10-25）：排序不再改写共享 entry，改显式 `getAdjacentPosts`；删除无用 schema 字段。
 - **验证备注**：文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；完整 build 与交付预算未跑。
 
 ## Not yet specified
