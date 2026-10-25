@@ -21,7 +21,8 @@
 - **桌宠范围**（2026-10-25）：先抽 animator 并接 SpritePet；Profile 与桌宠的 DOM 边界票 blocked。
 - **01 死事件**（2026-10-25，`41d32211`）：6 个组件改 `swup:page:view`，干净文件死监听清掉；WIP 文件保留，浏览器复验待做。
 - **02 onPageView**（2026-10-25，`3203bf2e`）：seam 补 `onPageView` / epoch；Waline 懒启动与 agent 头像接入；测试改动待共享 WIP 提交。
-- **进行中**：03/04/05（API）、07/08/09（ArticleIndex）、12（评论运行时）、14（桌宠 animator）由四条实现线并行推进。
+- **14 桌宠 animator**（2026-10-25）：核心与假时钟测试落地；未接 SpritePet，15 待做。
+- **进行中**：03/04/05（API）、07/08/09（ArticleIndex）、12（评论运行时）由三条实现线推进。
 
 ## Not yet specified
 
