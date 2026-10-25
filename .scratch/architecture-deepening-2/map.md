@@ -19,6 +19,9 @@
 - **WIP 边界**（2026-10-25）：只做干净文件；`setting-utils`、`Layout`、`Profile`、`GlyphTitleEffects` 相关票 blocked。
 - **评论范围**（2026-10-25）：本轮统一 Giscus + Waline 两个 adapter；Dynamic 内联评论由 React effect 管理，暂不迁；贴纸策略票 blocked。
 - **桌宠范围**（2026-10-25）：先抽 animator 并接 SpritePet；Profile 与桌宠的 DOM 边界票 blocked。
+- **01 死事件**（2026-10-25，`41d32211`）：6 个组件改 `swup:page:view`，干净文件死监听清掉；WIP 文件保留，浏览器复验待做。
+- **02 onPageView**（2026-10-25，`3203bf2e`）：seam 补 `onPageView` / epoch；Waline 懒启动与 agent 头像接入；测试改动待共享 WIP 提交。
+- **进行中**：03/04/05（API）、07/08/09（ArticleIndex）、12（评论运行时）、14（桌宠 animator）由四条实现线并行推进。
 
 ## Not yet specified
 
