@@ -4,10 +4,16 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved（2026-10-25，`07fec9d3`）
 
-- [ ] `json(status, body, headers?)` 统一 JSON content-type / charset
-- [ ] `readJson(request)` 区分 `ok` / `empty` / `invalid-json`
-- [ ] `createRateLimiter({ max, windowMs, keyPrefix, now? })` 返回 `allowed` 与 `retryAfterSeconds`
-- [ ] `getClientAddress(request)` 顺序固定：`cf-connecting-ip` → `x-real-ip` → `x-forwarded-for` → `unknown`
-- [ ] 新增行为测试：窗口、过期、键隔离、`Retry-After`、IP 顺序
+- [x] `json(status, body, headers?)` 统一 JSON content-type / charset
+- [x] `readJson(request)` 区分 `ok` / `empty` / `invalid-json`
+- [x] `createRateLimiter({ max, windowMs, keyPrefix, now? })` 返回 `allowed` 与 `retryAfterSeconds`
+- [x] `getClientAddress(request)` 顺序固定：`cf-connecting-ip` → `x-real-ip` → `x-forwarded-for` → `unknown`
+- [x] 新增行为测试：窗口、过期、键隔离、`Retry-After`、IP 顺序
+
+## Result
+
+- 新增 `api/http`：`json`、`readJson`、`createRateLimiter`、`getClientAddress`，以及 `rateLimited` / `upstreamError` 两个响应构造。
+- `scripts/test-api-http.mts` 覆盖三态解析、窗口滑动、键隔离、`Retry-After`、IP 顺序、429/502 body；本地通过。
+- 本票不改端点行为；端点接入见 04/05/19。

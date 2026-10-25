@@ -22,7 +22,9 @@
 - **01 死事件**（2026-10-25，`41d32211`）：6 个组件改 `swup:page:view`，干净文件死监听清掉；WIP 文件保留，浏览器复验待做。
 - **02 onPageView**（2026-10-25，`3203bf2e`）：seam 补 `onPageView` / epoch；Waline 懒启动与 agent 头像接入；测试改动待共享 WIP 提交。
 - **14 桌宠 animator**（2026-10-25）：核心与假时钟测试落地；未接 SpritePet，15 待做。
-- **进行中**：03/04/05（API）、07/08/09（ArticleIndex）、12（评论运行时）由三条实现线推进。
+- **03 API 横切面**（2026-10-25，`07fec9d3`）：`api/http` 落地，ask / 评论图 / auth / owner / admin 接入；search/ai 移到 19，等 09。
+- **05 评论图与 auth**（2026-10-25，`07fec9d3`）：坏 JSON 与缺参分开，429 统一；admin/pin 保持 403「禁止写」，owner 保持 503「provider 未配置」。
+- **进行中**：07/08/09（ArticleIndex）、12（评论运行时）由两条实现线推进；19 等 09。
 
 ## Not yet specified
 
