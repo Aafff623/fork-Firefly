@@ -204,9 +204,10 @@ assert(
 assert(
 	"R1 Waline lazy boot re-mounted by comment-runtime",
 	waline.includes('registerCommentAdapter("waline"') &&
+		waline.includes('selector: ".waline-shell"') &&
 		waline.includes('mountComment("waline"') &&
-		commentRuntime.includes("registerPageCleanup") &&
-		commentRuntime.includes("onPageView"),
+		commentRuntime.includes("registerPageCleanup(") &&
+		commentRuntime.includes("onPageView("),
 	"Waline lazy boot is not re-mounted through comment-runtime on soft navigation",
 );
 

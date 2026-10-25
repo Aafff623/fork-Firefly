@@ -45,10 +45,14 @@ const gates = [
 		"Giscus 有延迟挂载与跨页清理",
 		giscus.includes("IntersectionObserver") &&
 			giscus.includes("requestIdleCallback") &&
-			giscus.includes("registerCommentAdapter") &&
-			giscus.includes("mountComment") &&
-			commentRuntime.includes("registerPageCleanup") &&
-			commentRuntime.includes("onPageView"),
+			giscus.includes('registerCommentAdapter("giscus"') &&
+			giscus.includes('selector: "[data-giscus-host]"') &&
+			giscus.includes('mountComment("giscus"') &&
+			waline.includes('registerCommentAdapter("waline"') &&
+			waline.includes('selector: ".waline-shell"') &&
+			waline.includes('mountComment("waline"') &&
+			commentRuntime.includes("registerPageCleanup(") &&
+			commentRuntime.includes("onPageView("),
 	],
 	[
 		"评论组件支持页面级 service override",

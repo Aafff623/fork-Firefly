@@ -189,12 +189,3 @@ export function registerCommentAdapter(
 export function mountComment(channel: string, root: HTMLElement): void {
 	getCommentRuntime().mount(channel, root);
 }
-
-/** 销毁当前通道实例；可重复调用，之后仍可再次 mount。 */
-export function disposeComment(): void {
-	getCommentRuntime().dispose();
-}
-
-export function isCommentMounted(): boolean {
-	return getCommentRuntime().isMounted();
-}
