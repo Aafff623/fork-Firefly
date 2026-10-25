@@ -40,3 +40,7 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
 
 - `.scratch/delivery-perf/` —— 交付性能改造（决策地图 + 8 张票；01–06、08 已解，07 open）。
   产出的实现已合入 `master`，与 `origin/master` 同步。
+- `.scratch/architecture-deepening/` —— 2026-10-21 首轮架构深化（生命周期 / 设置 facade / 评论图 / 检索 seam / CI 门禁；P6 等 blocked）。
+- `.scratch/architecture-deepening-2/` —— 2026-10-25 第二轮（issue / spec / map + 23 张票）。
+  15 张已解，06/10/11/13/16/17/18 被其他 Agent WIP 挡住；23 是深度 review 残留（上传配额 / Supabase 抖动 / Waline 失败态等）。
+- 两个 effort 的实现均只做本地 commit，未 push。
