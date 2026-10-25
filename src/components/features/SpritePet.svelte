@@ -481,10 +481,10 @@ function startPlayback(
 		return;
 	}
 
+	if (!spriteEl || !pageVisible || navigationPaused) return;
 	gazeActive = false;
 	const previous = animationState;
 	animationState = state;
-	if (!spriteEl || !pageVisible || navigationPaused) return;
 	if (!petAnimator.play(state, SUSTAINED_ACTION_LOOPS, priority)) {
 		animationState = previous;
 		return;
@@ -562,6 +562,7 @@ function is404Page() {
 }
 
 function updateHidden() {
+	const wasHidden = hidden;
 	const narrow = window.innerWidth <= mobileBreakpoint;
 	if (isPostPath()) {
 		hidden = hideOnMobilePost && narrow;
@@ -571,6 +572,10 @@ function updateHidden() {
 	// 从隐藏恢复时务必可见（{#if !hidden} 重建节点时沿用旧 skinOpacity）
 	if (!hidden && skinOpacity < 1) {
 		skinOpacity = 1;
+	}
+	// 隐藏期间可能被导航优先级暂停；恢复可见时补一次 resume，避免永久停表
+	if (wasHidden && !hidden && pageVisible && !navigationPaused) {
+		resumeIdlePlayback();
 	}
 	if (hidden || !canRoamOnBrowse()) {
 		stopRoamLoop();
