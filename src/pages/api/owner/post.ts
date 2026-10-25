@@ -1,4 +1,5 @@
 import type { APIRoute, AstroCookies } from "astro";
+import { json, rateLimited, readJson } from "@/lib/api/http";
 import {
 	archiveOwnerPost,
 	atomicWriteOwnerPost,
@@ -7,148 +8,170 @@ import {
 	normalizeOwnerSlug,
 	validateOwnerPostSource,
 } from "@/lib/owner-content";
-import { requireOwnerUser } from "@/lib/supabase-auth";
+import { type OwnerAuthResult, requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
+
+const NO_STORE = { "Cache-Control": "no-store" };
 
 function isDevelopment(): boolean {
 	return import.meta.env.DEV;
 }
 
-function json(body: object, status = 200): Response {
-	return Response.json(body, {
-		status,
-		headers: { "Cache-Control": "no-store" },
-	});
+/** 生产环境的 owner 写入依赖 Git provider；与 admin/pin 的「禁止写」区分 */
+function productionWriteDisabled(): Response {
+	return json(
+		503,
+		{ ok: false, error: "production_git_provider_unconfigured" },
+		NO_STORE,
+	);
+}
+
+function denied(auth: Extract<OwnerAuthResult, { ok: false }>): Response {
+	if (auth.status === 429) return rateLimited(auth.retryAfterSeconds ?? 1);
+	return json(auth.status, { ok: false, error: auth.error }, NO_STORE);
 }
 
 async function ownerForRead(request: Request, cookies: AstroCookies) {
 	const auth = await requireOwnerUser(request, cookies, {
 		originCheck: false,
 	});
-	if (!auth.ok) {
-		return {
-			ok: false as const,
-			response: json({ ok: false, error: auth.error }, auth.status),
-		};
-	}
+	if (!auth.ok) return { ok: false as const, response: denied(auth) };
 	return { ok: true as const };
 }
 
 async function ownerForMutation(request: Request, cookies: AstroCookies) {
 	const auth = await requireOwnerUser(request, cookies, { originCheck: true });
-	if (!auth.ok) {
-		return {
-			ok: false as const,
-			response: json({ ok: false, error: auth.error }, auth.status),
-		};
-	}
+	if (!auth.ok) return { ok: false as const, response: denied(auth) };
 	return { ok: true as const };
 }
 
 export const GET: APIRoute = async ({ request, cookies }) => {
 	const auth = await ownerForRead(request, cookies);
 	if (!auth.ok) return auth.response;
-	if (!isDevelopment()) {
-		return json(
-			{ ok: false, error: "production_git_provider_unconfigured" },
-			503,
-		);
-	}
+	if (!isDevelopment()) return productionWriteDisabled();
 	const slug = normalizeOwnerSlug(
 		new URL(request.url).searchParams.get("slug") ?? "",
 	);
-	if (!slug) return json({ ok: false, error: "invalid_slug" }, 400);
+	if (!slug) {
+		return json(400, { ok: false, error: "invalid_slug" }, NO_STORE);
+	}
 	const post = await findOwnerPost(slug);
-	if (!post) return json({ ok: false, error: "post_not_found" }, 404);
-	return json({
-		ok: true,
-		slug,
-		path: post.relativePath,
-		source: post.source,
-		baseSha: post.baseSha,
-		provider: "local-dev",
-	});
+	if (!post) {
+		return json(404, { ok: false, error: "post_not_found" }, NO_STORE);
+	}
+	return json(
+		200,
+		{
+			ok: true,
+			slug,
+			path: post.relativePath,
+			source: post.source,
+			baseSha: post.baseSha,
+			provider: "local-dev",
+		},
+		NO_STORE,
+	);
 };
 
 export const PUT: APIRoute = async ({ request, cookies }) => {
 	const auth = await ownerForMutation(request, cookies);
 	if (!auth.ok) return auth.response;
-	if (!isDevelopment()) {
+	if (!isDevelopment()) return productionWriteDisabled();
+	const contentLength = Number(request.headers.get("content-length") ?? "0");
+	if (contentLength > 1_700_000) {
+		return json(413, { ok: false, error: "payload_too_large" }, NO_STORE);
+	}
+	const read = await readJson<{
+		slug?: string;
+		source?: string;
+		baseSha?: string;
+	}>(request);
+	if (read.kind === "invalid-json") {
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
+	}
+	const body = read.kind === "ok" ? read.data : null;
+	const slug = normalizeOwnerSlug(body?.slug ?? "");
+	const source = body?.source;
+	const baseSha = body?.baseSha;
+	if (!slug || typeof source !== "string" || typeof baseSha !== "string") {
+		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE);
+	}
+	const validation = validateOwnerPostSource(source);
+	if (!validation.ok) {
+		return json(400, { ok: false, error: validation.error }, NO_STORE);
+	}
+	const post = await findOwnerPost(slug);
+	if (!post) {
+		return json(404, { ok: false, error: "post_not_found" }, NO_STORE);
+	}
+	const currentSha = await contentSha256(post.source);
+	if (currentSha !== baseSha) {
 		return json(
-			{ ok: false, error: "production_git_provider_unconfigured" },
-			503,
+			409,
+			{ ok: false, error: "base_sha_conflict", currentSha },
+			NO_STORE,
 		);
 	}
-	const contentLength = Number(request.headers.get("content-length") ?? "0");
-	if (contentLength > 1_700_000)
-		return json({ ok: false, error: "payload_too_large" }, 413);
-	let body: { slug?: string; source?: string; baseSha?: string };
 	try {
-		body = (await request.json()) as typeof body;
+		const nextSha = await atomicWriteOwnerPost(post, source);
+		return json(
+			200,
+			{ ok: true, slug, baseSha: nextSha, provider: "local-dev" },
+			NO_STORE,
+		);
 	} catch {
-		return json({ ok: false, error: "invalid_json" }, 400);
-	}
-	const slug = normalizeOwnerSlug(body.slug ?? "");
-	if (
-		!slug ||
-		typeof body.source !== "string" ||
-		typeof body.baseSha !== "string"
-	) {
-		return json({ ok: false, error: "invalid_payload" }, 400);
-	}
-	const validation = validateOwnerPostSource(body.source);
-	if (!validation.ok) return json({ ok: false, error: validation.error }, 400);
-	const post = await findOwnerPost(slug);
-	if (!post) return json({ ok: false, error: "post_not_found" }, 404);
-	const currentSha = await contentSha256(post.source);
-	if (currentSha !== body.baseSha) {
-		return json({ ok: false, error: "base_sha_conflict", currentSha }, 409);
-	}
-	try {
-		const nextSha = await atomicWriteOwnerPost(post, body.source);
-		return json({ ok: true, slug, baseSha: nextSha, provider: "local-dev" });
-	} catch {
-		return json({ ok: false, error: "write_failed" }, 500);
+		return json(500, { ok: false, error: "write_failed" }, NO_STORE);
 	}
 };
 
 export const DELETE: APIRoute = async ({ request, cookies }) => {
 	const auth = await ownerForMutation(request, cookies);
 	if (!auth.ok) return auth.response;
-	if (!isDevelopment()) {
+	if (!isDevelopment()) return productionWriteDisabled();
+	const read = await readJson<{
+		slug?: string;
+		baseSha?: string;
+		confirmation?: string;
+	}>(request);
+	if (read.kind === "invalid-json") {
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
+	}
+	const body = read.kind === "ok" ? read.data : null;
+	const slug = normalizeOwnerSlug(body?.slug ?? "");
+	const confirmation = body?.confirmation;
+	const baseSha = body?.baseSha;
+	if (!slug || confirmation !== `ARCHIVE ${slug}` || !baseSha) {
 		return json(
-			{ ok: false, error: "production_git_provider_unconfigured" },
-			503,
+			400,
+			{ ok: false, error: "archive_confirmation_required" },
+			NO_STORE,
 		);
 	}
-	let body: { slug?: string; baseSha?: string; confirmation?: string };
-	try {
-		body = (await request.json()) as typeof body;
-	} catch {
-		return json({ ok: false, error: "invalid_json" }, 400);
-	}
-	const slug = normalizeOwnerSlug(body.slug ?? "");
-	if (!slug || body.confirmation !== `ARCHIVE ${slug}` || !body.baseSha) {
-		return json({ ok: false, error: "archive_confirmation_required" }, 400);
-	}
 	const post = await findOwnerPost(slug);
-	if (!post) return json({ ok: false, error: "post_not_found" }, 404);
-	if (post.baseSha !== body.baseSha) {
+	if (!post) {
+		return json(404, { ok: false, error: "post_not_found" }, NO_STORE);
+	}
+	if (post.baseSha !== baseSha) {
 		return json(
-			{ ok: false, error: "base_sha_conflict", currentSha: post.baseSha },
 			409,
+			{ ok: false, error: "base_sha_conflict", currentSha: post.baseSha },
+			NO_STORE,
 		);
 	}
 	try {
 		const archivedPath = await archiveOwnerPost(post);
-		return json({
-			ok: true,
-			archived: true,
-			archivedPath,
-			provider: "local-dev",
-		});
+		return json(
+			200,
+			{
+				ok: true,
+				archived: true,
+				archivedPath,
+				provider: "local-dev",
+			},
+			NO_STORE,
+		);
 	} catch {
-		return json({ ok: false, error: "archive_failed" }, 500);
+		return json(500, { ok: false, error: "archive_failed" }, NO_STORE);
 	}
 };

@@ -1,6 +1,12 @@
 import type { APIRoute } from "astro";
 import {
-	checkMutationRate,
+	createRateLimiter,
+	getClientAddress,
+	json,
+	rateLimited,
+	readJson,
+} from "@/lib/api/http";
+import {
 	createAuthClient,
 	isOwnerUser,
 	safeReturnTo,
@@ -13,51 +19,51 @@ export const prerender = false;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_RATE_LIMIT = 10;
+const NO_STORE = { "Cache-Control": "no-store" };
 
-function json(body: object, status = 200): Response {
-	return Response.json(body, {
-		status,
-		headers: { "Cache-Control": "no-store" },
-	});
-}
+/** 同 IP 每分钟最多 10 次；窗口数学与 429 响应由 api/http 统一。 */
+const passwordRateLimit = createRateLimiter({
+	max: PASSWORD_RATE_LIMIT,
+	windowMs: 60_000,
+	keyPrefix: "password",
+});
 
 /** 邮箱密码登录/注册（服务端完成，浏览器不持有 token） */
-export const POST: APIRoute = async ({ request, cookies, clientAddress }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
 	if (!sameOriginRequest(request)) {
-		return json({ ok: false, error: "origin_mismatch" }, 403);
+		return json(403, { ok: false, error: "origin_mismatch" }, NO_STORE);
 	}
 	const client = createAuthClient(request, cookies);
-	if (!client) return json({ ok: false, error: "supabase_unconfigured" }, 503);
-
-	const rateKey = `password:${clientAddress ?? "unknown"}`;
-	if (!checkMutationRate(rateKey, Date.now(), PASSWORD_RATE_LIMIT, 60_000)) {
-		return json({ ok: false, error: "rate_limited" }, 429);
+	if (!client) {
+		return json(503, { ok: false, error: "supabase_unconfigured" }, NO_STORE);
 	}
 
-	let body: {
+	const gate = passwordRateLimit.check(getClientAddress(request));
+	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
+
+	const read = await readJson<{
 		intent?: unknown;
 		email?: unknown;
 		password?: unknown;
 		next?: unknown;
-	};
-	try {
-		body = (await request.json()) as typeof body;
-	} catch {
-		return json({ ok: false, error: "invalid_json" }, 400);
+	}>(request);
+	if (read.kind === "invalid-json") {
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
 	}
+	const body = read.kind === "ok" ? read.data : null;
 
-	const intent = body.intent;
+	const intent = body?.intent;
 	const email =
-		typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-	const password = typeof body.password === "string" ? body.password : "";
+		typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+	const password = typeof body?.password === "string" ? body.password : "";
 	if (
 		(intent !== "signin" && intent !== "signup") ||
 		!EMAIL_PATTERN.test(email) ||
 		password.length < PASSWORD_MIN_LENGTH
 	) {
-		return json({ ok: false, error: "invalid_payload" }, 400);
+		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE);
 	}
-	const next = safeReturnTo(typeof body.next === "string" ? body.next : null);
+	const next = safeReturnTo(typeof body?.next === "string" ? body.next : null);
 
 	if (intent === "signup") {
 		const redirectTo = new URL(
@@ -75,18 +81,23 @@ export const POST: APIRoute = async ({ request, cookies, clientAddress }) => {
 				error.message,
 			);
 			return json(
-				{ ok: false, error: emailTaken ? "email_taken" : "signup_failed" },
 				400,
+				{ ok: false, error: emailTaken ? "email_taken" : "signup_failed" },
+				NO_STORE,
 			);
 		}
 		if (data.session && data.user) {
-			return json({
-				ok: true,
-				role: isOwnerUser(data.user) ? "owner" : "user",
-				viewer: viewerFromUser(data.user),
-			});
+			return json(
+				200,
+				{
+					ok: true,
+					role: isOwnerUser(data.user) ? "owner" : "user",
+					viewer: viewerFromUser(data.user),
+				},
+				NO_STORE,
+			);
 		}
-		return json({ ok: true, confirmationRequired: true });
+		return json(200, { ok: true, confirmationRequired: true }, NO_STORE);
 	}
 
 	const { data, error } = await client.auth.signInWithPassword({
@@ -99,13 +110,17 @@ export const POST: APIRoute = async ({ request, cookies, clientAddress }) => {
 			error?.code === "email_not_confirmed" ||
 			/not confirmed/i.test(error?.message ?? "");
 		if (notConfirmed) {
-			return json({ ok: false, error: "email_not_confirmed" }, 403);
+			return json(403, { ok: false, error: "email_not_confirmed" }, NO_STORE);
 		}
-		return json({ ok: false, error: "invalid_credentials" }, 401);
+		return json(401, { ok: false, error: "invalid_credentials" }, NO_STORE);
 	}
-	return json({
-		ok: true,
-		role: isOwnerUser(data.user) ? "owner" : "user",
-		viewer: viewerFromUser(data.user),
-	});
+	return json(
+		200,
+		{
+			ok: true,
+			role: isOwnerUser(data.user) ? "owner" : "user",
+			viewer: viewerFromUser(data.user),
+		},
+		NO_STORE,
+	);
 };

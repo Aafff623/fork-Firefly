@@ -1,13 +1,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { APIRoute } from "astro";
-import { requireOwnerUser } from "@/lib/supabase-auth";
+import { json, rateLimited, readJson } from "@/lib/api/http";
+import { type OwnerAuthResult, requireOwnerUser } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
 const POSTS_ROOT = path.join(process.cwd(), "src", "content", "posts");
 const GITHUB_REPO = "Aafff623/fork-Firefly";
 const GITHUB_EDIT_BRANCH = "master";
+const NO_STORE = { "Cache-Control": "no-store" };
 
 function toPosix(p: string): string {
 	return p.replace(/\\/g, "/");
@@ -93,43 +95,38 @@ async function resolvePostFile(
 	return null;
 }
 
+function denied(auth: Extract<OwnerAuthResult, { ok: false }>): Response {
+	if (auth.status === 429) return rateLimited(auth.retryAfterSeconds ?? 1);
+	return json(auth.status, { ok: false, error: auth.error }, NO_STORE);
+}
+
 export const POST: APIRoute = async ({ request, cookies }) => {
 	const validation = await requireOwnerUser(request, cookies, {
 		originCheck: true,
 	});
-	if (!validation.ok) {
-		return Response.json(
-			{ ok: false, error: validation.error },
-			{ status: validation.status },
-		);
-	}
+	if (!validation.ok) return denied(validation);
 
-	let body: { postId?: string; pinned?: boolean; filePath?: string };
-	try {
-		body = (await request.json()) as typeof body;
-	} catch {
-		return new Response(JSON.stringify({ ok: false, error: "invalid_json" }), {
-			status: 400,
-			headers: { "Content-Type": "application/json" },
-		});
+	const read = await readJson<{
+		postId?: string;
+		pinned?: boolean;
+		filePath?: string;
+	}>(request);
+	if (read.kind === "invalid-json") {
+		return json(400, { ok: false, error: "invalid_json" }, NO_STORE);
 	}
+	const body = read.kind === "ok" ? read.data : null;
 
-	const postId = body.postId?.trim();
+	const postId = body?.postId?.trim();
+	const pinned = body?.pinned;
 	if (
 		!postId ||
 		!/^[a-z0-9][a-z0-9/_-]{0,180}$/i.test(postId) ||
-		typeof body.pinned !== "boolean"
+		typeof pinned !== "boolean"
 	) {
-		return new Response(
-			JSON.stringify({ ok: false, error: "invalid_payload" }),
-			{
-				status: 400,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		return json(400, { ok: false, error: "invalid_payload" }, NO_STORE);
 	}
 
-	const absolute = await resolvePostFile(postId, body.filePath);
+	const absolute = await resolvePostFile(postId, body?.filePath);
 	const relative = absolute
 		? toPosix(path.relative(process.cwd(), absolute))
 		: `src/content/posts/${postId}.md`;
@@ -137,51 +134,30 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 	const canWriteLocal = import.meta.env.DEV;
 
-	// 非本地开发：不写盘（也不再强制打开 GitHub）
+	// 非本地开发：这里是「禁止写」，与 owner/* 的「Git provider 未配置」区分
 	if (!canWriteLocal) {
-		return new Response(
-			JSON.stringify({
+		return json(
+			403,
+			{
 				ok: false,
 				error: "prod_write_disabled",
 				editUrl,
-			}),
-			{
-				status: 403,
-				headers: { "Content-Type": "application/json" },
 			},
+			NO_STORE,
 		);
 	}
 
 	if (!absolute) {
-		return new Response(
-			JSON.stringify({ ok: false, error: "file_not_found", editUrl }),
-			{
-				status: 404,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		return json(404, { ok: false, error: "file_not_found", editUrl }, NO_STORE);
 	}
 
 	try {
 		const raw = await fs.readFile(absolute, "utf8");
-		const next = setPinnedFrontmatter(raw, body.pinned);
+		const next = setPinnedFrontmatter(raw, pinned);
 		await fs.writeFile(absolute, next, "utf8");
-		return new Response(JSON.stringify({ ok: true, pinned: body.pinned }), {
-			status: 200,
-			headers: { "Content-Type": "application/json" },
-		});
+		return json(200, { ok: true, pinned }, NO_STORE);
 	} catch (error) {
 		void error;
-		return new Response(
-			JSON.stringify({
-				ok: false,
-				error: "write_failed",
-				editUrl,
-			}),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		return json(500, { ok: false, error: "write_failed", editUrl }, NO_STORE);
 	}
 };

@@ -1,17 +1,12 @@
 import type { Provider } from "@supabase/supabase-js";
 import type { APIContext, APIRoute } from "astro";
+import { json } from "@/lib/api/http";
 import { createAuthClient, safeReturnTo } from "@/lib/supabase-auth";
 
 export const prerender = false;
 
 const OAUTH_PROVIDERS = new Set<Provider>(["github", "google"]);
-
-function json(body: object, status = 200): Response {
-	return Response.json(body, {
-		status,
-		headers: { "Cache-Control": "no-store" },
-	});
-}
+const NO_STORE = { "Cache-Control": "no-store" };
 
 function isOauthProvider(value: string): value is Provider {
 	return OAUTH_PROVIDERS.has(value as Provider);
@@ -35,7 +30,7 @@ function fail(
 			302,
 		);
 	}
-	return json({ ok: false, error }, status);
+	return json(status, { ok: false, error }, NO_STORE);
 }
 
 function isProviderDisabled(message: string): boolean {

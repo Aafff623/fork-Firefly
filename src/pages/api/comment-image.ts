@@ -11,6 +11,13 @@ import fs from "node:fs";
 import path from "node:path";
 import type { APIRoute } from "astro";
 import {
+	createRateLimiter,
+	getClientAddress,
+	json,
+	rateLimited,
+	readJson,
+} from "@/lib/api/http";
+import {
 	type CosConfig,
 	deleteCommentImageObject,
 	encodeObjectKey,
@@ -35,10 +42,12 @@ const EXT: Record<string, string> = {
 	"image/webp": "webp",
 };
 
-/** 简易限流：同 IP 10 分钟内最多 20 次（冷启动会重置，够挡刷） */
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 20;
-const rateHits = new Map<string, number[]>();
+/** 同 IP 10 分钟最多 20 次（冷启动会重置，够挡刷）；窗口数学在 api/http。 */
+const commentImageRateLimit = createRateLimiter({
+	max: 20,
+	windowMs: 10 * 60 * 1000,
+	keyPrefix: "comment-image",
+});
 
 function readEnvFile(): Record<string, string> {
 	const out: Record<string, string> = {};
@@ -168,27 +177,6 @@ function objectKeyFromPublicUrl(
 	return path;
 }
 
-function clientIp(request: Request): string {
-	return (
-		request.headers.get("cf-connecting-ip") ||
-		request.headers.get("x-real-ip") ||
-		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-		"unknown"
-	);
-}
-
-function allowRate(ip: string): boolean {
-	const now = Date.now();
-	const prev = (rateHits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
-	if (prev.length >= RATE_MAX) {
-		rateHits.set(ip, prev);
-		return false;
-	}
-	prev.push(now);
-	rateHits.set(ip, prev);
-	return true;
-}
-
 function objectKeyFor(file: File): string {
 	const ext = EXT[file.type] || "bin";
 	const d = new Date();
@@ -203,87 +191,57 @@ function objectKeyFor(file: File): string {
 
 export const GET: APIRoute = async () => {
 	const cfg = getUploadConfig();
-	return new Response(
-		JSON.stringify({
-			enabled: !!cfg,
-			backend: cfg?.kind ?? null,
-		}),
-		{
-			headers: { "Content-Type": "application/json; charset=utf-8" },
-		},
-	);
+	return json(200, {
+		enabled: !!cfg,
+		backend: cfg?.kind ?? null,
+	});
 };
 
 export const POST: APIRoute = async ({ request }) => {
 	const cfg = getUploadConfig();
 	if (!cfg) {
-		return new Response(
-			JSON.stringify({
-				error: "R2/COS credentials not configured",
-				code: "NO_KEY",
-			}),
-			{ status: 503, headers: { "Content-Type": "application/json" } },
-		);
+		return json(503, {
+			error: "R2/COS credentials not configured",
+			code: "NO_KEY",
+		});
 	}
 
-	if (!allowRate(clientIp(request))) {
-		return new Response(
-			JSON.stringify({ error: "Too many uploads, try later" }),
-			{ status: 429, headers: { "Content-Type": "application/json" } },
-		);
-	}
+	const gate = commentImageRateLimit.check(getClientAddress(request));
+	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
 
 	let form: FormData;
 	try {
 		form = await request.formData();
 	} catch {
-		return new Response(JSON.stringify({ error: "Invalid form data" }), {
-			status: 400,
-			headers: { "Content-Type": "application/json" },
-		});
+		return json(400, { error: "Invalid form data" });
 	}
 
 	const file = form.get("image");
 	if (!(file instanceof File)) {
-		return new Response(JSON.stringify({ error: "Missing image file" }), {
-			status: 400,
-			headers: { "Content-Type": "application/json" },
-		});
+		return json(400, { error: "Missing image file" });
 	}
 
 	if (!ALLOWED.has(file.type)) {
-		return new Response(
-			JSON.stringify({
-				error: "Unsupported type. Use jpeg/png/gif/webp.",
-			}),
-			{ status: 415, headers: { "Content-Type": "application/json" } },
-		);
+		return json(415, {
+			error: "Unsupported type. Use jpeg/png/gif/webp.",
+		});
 	}
 
 	if (file.size <= 0 || file.size > MAX_BYTES) {
-		return new Response(JSON.stringify({ error: "Image must be under 5MB" }), {
-			status: 413,
-			headers: { "Content-Type": "application/json" },
-		});
+		return json(413, { error: "Image must be under 5MB" });
 	}
 
 	const key = objectKeyFor(file);
 	const body = await file.arrayBuffer();
 	if (!hasImageSignature(new Uint8Array(body), file.type)) {
-		return new Response(
-			JSON.stringify({ error: "Image signature does not match type" }),
-			{ status: 415, headers: { "Content-Type": "application/json" } },
-		);
+		return json(415, { error: "Image signature does not match type" });
 	}
 	try {
 		await putCommentImage(cfg, key, body, file.type);
 	} catch (e) {
-		return new Response(
-			JSON.stringify({
-				error: e instanceof Error ? e.message : "Upload failed",
-			}),
-			{ status: 502, headers: { "Content-Type": "application/json" } },
-		);
+		return json(502, {
+			error: e instanceof Error ? e.message : "Upload failed",
+		});
 	}
 
 	const url = `${cfg.publicBaseUrl}/${encodeObjectKey(key)}`;
@@ -291,96 +249,60 @@ export const POST: APIRoute = async ({ request }) => {
 		getDeleteSecret(cfg),
 		key,
 	);
-	return new Response(JSON.stringify({ url, deleteToken }), {
-		headers: {
-			"Content-Type": "application/json; charset=utf-8",
-			"Cache-Control": "no-store",
-		},
-	});
+	return json(200, { url, deleteToken }, { "Cache-Control": "no-store" });
 };
 
 export const DELETE: APIRoute = async ({ request }) => {
 	const cfg = getUploadConfig();
 	if (!cfg) {
-		return new Response(
-			JSON.stringify({
-				error: "R2/COS credentials not configured",
-				code: "NO_KEY",
-			}),
-			{ status: 503, headers: { "Content-Type": "application/json" } },
-		);
-	}
-
-	if (!allowRate(clientIp(request))) {
-		return new Response(
-			JSON.stringify({ error: "Too many uploads, try later" }),
-			{ status: 429, headers: { "Content-Type": "application/json" } },
-		);
-	}
-
-	let rawUrl = "";
-	let rawToken = "";
-	try {
-		const body = (await request.json()) as {
-			url?: unknown;
-			token?: unknown;
-		};
-		if (typeof body?.url === "string") rawUrl = body.url;
-		if (typeof body?.token === "string") rawToken = body.token;
-	} catch {
-		/* 空 body / 非法 JSON 一律按缺参处理 */
-	}
-	rawUrl = rawUrl.trim();
-	rawToken = rawToken.trim();
-	if (!rawUrl) {
-		return new Response(JSON.stringify({ error: "Missing url" }), {
-			status: 400,
-			headers: { "Content-Type": "application/json" },
+		return json(503, {
+			error: "R2/COS credentials not configured",
+			code: "NO_KEY",
 		});
+	}
+
+	const gate = commentImageRateLimit.check(getClientAddress(request));
+	if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
+
+	const read = await readJson<{ url?: unknown; token?: unknown }>(request);
+	if (read.kind === "invalid-json") {
+		return json(400, { error: "invalid_json", code: "invalid_json" });
+	}
+	const body = read.kind === "ok" ? read.data : null;
+	const rawUrl = typeof body?.url === "string" ? body.url.trim() : "";
+	const rawToken = typeof body?.token === "string" ? body.token.trim() : "";
+	if (!rawUrl) {
+		return json(400, { error: "missing_url", code: "missing_url" });
 	}
 
 	const key = objectKeyFromPublicUrl(cfg, rawUrl);
 	if (!key) {
-		return new Response(
-			JSON.stringify({
-				error: "URL not allowed (must be comment/ under public base)",
-			}),
-			{ status: 403, headers: { "Content-Type": "application/json" } },
-		);
+		return json(403, {
+			error: "URL not allowed (must be comment/ under public base)",
+		});
 	}
 
 	const deleteSecret = getDeleteSecret(cfg);
 	if (!deleteSecret) {
-		return new Response(
-			JSON.stringify({
-				error: "Delete is not configured",
-				code: "NO_DELETE_KEY",
-			}),
-			{ status: 503, headers: { "Content-Type": "application/json" } },
-		);
+		return json(503, {
+			error: "Delete is not configured",
+			code: "NO_DELETE_KEY",
+		});
 	}
 	if (
 		!rawToken ||
 		!(await verifyCommentImageDeleteToken(deleteSecret, key, rawToken))
 	) {
-		return new Response(
-			JSON.stringify({ error: "Invalid or missing delete token" }),
-			{ status: 403, headers: { "Content-Type": "application/json" } },
-		);
+		return json(403, { error: "Invalid or missing delete token" });
 	}
 
 	try {
 		await deleteCommentImageObject(cfg, key);
 	} catch (e) {
-		return new Response(
-			JSON.stringify({
-				error: e instanceof Error ? e.message : "Delete failed",
-			}),
-			{ status: 502, headers: { "Content-Type": "application/json" } },
-		);
+		return json(502, {
+			error: e instanceof Error ? e.message : "Delete failed",
+		});
 	}
 
-	return new Response(JSON.stringify({ ok: true, key }), {
-		headers: { "Content-Type": "application/json; charset=utf-8" },
-	});
+	return json(200, { ok: true, key });
 };

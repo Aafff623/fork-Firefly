@@ -7,6 +7,14 @@
 import type { APIRoute } from "astro";
 import { siteConfig } from "@/config";
 import {
+	createRateLimiter,
+	getClientAddress,
+	json,
+	rateLimited,
+	readJson,
+	upstreamError,
+} from "@/lib/api/http";
+import {
 	type AskHit,
 	type AskIntent,
 	type AskPromptAttachment,
@@ -16,31 +24,12 @@ import {
 
 export const prerender = false;
 
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 20;
-const rateHits = new Map<string, number[]>();
-
-function getClientAddress(request: Request): string {
-	return (
-		request.headers.get("cf-connecting-ip") ||
-		request.headers.get("x-forwarded-for")?.split(",")[0] ||
-		"unknown"
-	).trim();
-}
-
-function isRateLimited(address: string): boolean {
-	const now = Date.now();
-	const recent = (rateHits.get(address) || []).filter(
-		(timestamp) => now - timestamp < RATE_WINDOW_MS,
-	);
-	if (recent.length >= RATE_MAX) {
-		rateHits.set(address, recent);
-		return true;
-	}
-	recent.push(now);
-	rateHits.set(address, recent);
-	return false;
-}
+/** 同 IP 10 分钟最多 20 次；窗口数学与 429 响应由 api/http 统一。 */
+const askRateLimit = createRateLimiter({
+	max: 20,
+	windowMs: 10 * 60 * 1000,
+	keyPrefix: "ask",
+});
 
 /**
  * 上游基址在模块加载期一次性校验：协议仅 http(s)、禁 userinfo、
@@ -107,37 +96,20 @@ const STEPFUN_MODEL =
 	process.env.STEPFUN_MODEL ||
 	"step-3.7-flash";
 
-function json(
-	data: unknown,
-	status = 200,
-	extraHeaders?: Record<string, string>,
-): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: {
-			"Content-Type": "application/json; charset=utf-8",
-			...extraHeaders,
-		},
-	});
-}
-
 function askClosed(): Response {
-	return json({ code: 404, message: "Not Found" }, 404);
+	return json(404, { code: 404, message: "Not Found" });
 }
 
 function tokenMissing(): Response {
-	return json(
-		{
-			code: 503,
-			message:
-				"未配置问答服务。请在服务端配置 STEPFUN_API_KEY，或继续配置 MAXKB_ACCESS_TOKEN。",
-		},
-		503,
-	);
+	return json(503, {
+		code: 503,
+		message:
+			"未配置问答服务。请在服务端配置 STEPFUN_API_KEY，或继续配置 MAXKB_ACCESS_TOKEN。",
+	});
 }
 
 function askWip(): Response {
-	return json({ code: 503, message: "正在开发中" }, 503);
+	return json(503, { code: 503, message: "正在开发中" });
 }
 
 function guardAsk(): Response | null {
@@ -170,21 +142,10 @@ async function readUpstreamJson(
 	return { ok: res.ok, status: res.status, data };
 }
 
-function upstreamUnreachable(err: unknown): {
-	ok: boolean;
-	status: number;
-	data: { code: number; message: string };
-} {
-	const message =
+function unreachableMessage(err: unknown): string {
+	const detail =
 		err instanceof Error ? err.message : "无法连接 MaxKB（127.0.0.1:8080）";
-	return {
-		ok: false,
-		status: 502,
-		data: {
-			code: 502,
-			message: `MaxKB 不可达：${message}。请确认 Docker Desktop 已开且 maxkb 容器在跑。`,
-		},
-	};
+	return `MaxKB 不可达：${detail}。请确认 Docker Desktop 已开且 maxkb 容器在跑。`;
 }
 
 /** POST /api/ask/?action=… */
@@ -195,17 +156,13 @@ export const POST: APIRoute = async ({ request, url }) => {
 	const action = url.searchParams.get("action") || "session";
 	const addr = getClientAddress(request);
 	if (action === "session" || action === "retrieve" || action === "chat") {
-		if (isRateLimited(addr)) {
-			return json(
-				{ code: 429, message: "太频繁了，请稍后再试（每 10 分钟最多 20 次）" },
-				429,
-			);
-		}
+		const gate = askRateLimit.check(addr);
+		if (!gate.allowed) return rateLimited(gate.retryAfterSeconds);
 	}
 
 	if (action === "session") {
 		if (STEPFUN_API_KEY) {
-			return json({
+			return json(200, {
 				code: 200,
 				message: "成功",
 				data: { token: "stepfun", chatId: "stepfun" },
@@ -227,7 +184,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 			);
 			auth = await readUpstreamJson(authRes);
 		} catch (err) {
-			auth = upstreamUnreachable(err);
+			return upstreamError(0, unreachableMessage(err));
 		}
 		const authBody = auth.data as {
 			code?: number;
@@ -235,13 +192,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 			data?: string;
 		};
 		if (!auth.ok || authBody?.code !== 200 || !authBody.data) {
-			return json(
-				{
-					code: authBody?.code ?? 502,
-					message: authBody?.message || "匿名鉴权失败",
-				},
-				auth.status >= 400 ? auth.status : 502,
-			);
+			return upstreamError(auth.status, authBody?.message || "匿名鉴权失败");
 		}
 
 		const openUrl = upstreamUrl("/open");
@@ -258,7 +209,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 			);
 			open = await readUpstreamJson(openRes);
 		} catch (err) {
-			open = upstreamUnreachable(err);
+			return upstreamError(0, unreachableMessage(err));
 		}
 		const openBody = open.data as {
 			code?: number;
@@ -266,16 +217,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 			data?: string;
 		};
 		if (!open.ok || openBody?.code !== 200 || !openBody.data) {
-			return json(
-				{
-					code: openBody?.code ?? 502,
-					message: openBody?.message || "打开会话失败",
-				},
-				open.status >= 400 ? open.status : 502,
-			);
+			return upstreamError(open.status, openBody?.message || "打开会话失败");
 		}
 
-		return json({
+		return json(200, {
 			code: 200,
 			message: "成功",
 			data: { token: authBody.data, chatId: openBody.data },
@@ -283,34 +228,34 @@ export const POST: APIRoute = async ({ request, url }) => {
 	}
 
 	if (action === "retrieve") {
-		let body: { message?: string; limit?: number };
-		try {
-			body = (await request.json()) as typeof body;
-		} catch {
-			return json({ code: 400, message: "请求体不是合法 JSON" }, 400);
+		const read = await readJson<{ message?: string; limit?: number }>(request);
+		if (read.kind === "invalid-json") {
+			return json(400, { code: 400, message: "请求体不是合法 JSON" });
 		}
-		const message = body.message?.trim();
+		const body = read.kind === "ok" ? read.data : null;
+		const message = body?.message?.trim();
 		if (!message) {
-			return json({ code: 400, message: "缺少 message" }, 400);
+			return json(400, { code: 400, message: "缺少 message" });
 		}
-		const limit = Math.min(Math.max(Number(body.limit) || 5, 1), 10);
+		const limit = Math.min(Math.max(Number(body?.limit) || 5, 1), 10);
 		// 每次现算；禁止中间层把检索结果当答案缓存
 		let data: Awaited<ReturnType<typeof retrieveSiteHits>>;
 		try {
 			data = await retrieveSiteHits(message, limit, url.origin);
 		} catch {
-			return json(
-				{ code: 502, message: "站内索引暂时不可用，请稍后再试" },
-				502,
-			);
+			return upstreamError(0, "站内索引暂时不可用，请稍后再试");
 		}
-		return json({ code: 200, message: "成功", data }, 200, {
-			"Cache-Control": "no-store, no-cache, must-revalidate",
-		});
+		return json(
+			200,
+			{ code: 200, message: "成功", data },
+			{
+				"Cache-Control": "no-store, no-cache, must-revalidate",
+			},
+		);
 	}
 
 	if (action === "chat") {
-		let body: {
+		const read = await readJson<{
 			token?: string;
 			chatId?: string;
 			message?: string;
@@ -323,32 +268,31 @@ export const POST: APIRoute = async ({ request, url }) => {
 				kind?: unknown;
 				text?: unknown;
 			}>;
-		};
-		try {
-			body = (await request.json()) as typeof body;
-		} catch {
-			return json({ code: 400, message: "请求体不是合法 JSON" }, 400);
+		}>(request);
+		if (read.kind === "invalid-json") {
+			return json(400, { code: 400, message: "请求体不是合法 JSON" });
 		}
-		const token = body.token?.trim();
-		const chatId = body.chatId?.trim();
-		const message = body.message?.trim();
+		const body = read.kind === "ok" ? read.data : null;
+		const token = body?.token?.trim();
+		const chatId = body?.chatId?.trim();
+		const message = body?.message?.trim();
 		if (!token || !chatId || !message) {
-			return json({ code: 400, message: "缺少 token / chatId / message" }, 400);
+			return json(400, { code: 400, message: "缺少 token / chatId / message" });
 		}
 		if (message.length > 4000) {
-			return json(
-				{ code: 400, message: "单次消息请控制在 4000 字符以内" },
-				400,
-			);
+			return json(400, {
+				code: 400,
+				message: "单次消息请控制在 4000 字符以内",
+			});
 		}
 		// chatId 会拼进上游 URL 路径：严格字符白名单 + 长度上限，杜绝路径形态注入
 		if (!/^[A-Za-z0-9\-_]{1,64}$/.test(chatId)) {
-			return json({ code: 400, message: "chatId 格式非法" }, 400);
+			return json(400, { code: 400, message: "chatId 格式非法" });
 		}
 
 		// 附件：最多 4 个；名字截 120；单段文本截 6000；总文本 12000（顺序保留先到的）
 		const ASK_ATTACH_MAX = 4;
-		const rawAttachments = Array.isArray(body.attachments)
+		const rawAttachments = Array.isArray(body?.attachments)
 			? body.attachments
 			: [];
 		const attachments: AskPromptAttachment[] = [];
@@ -372,13 +316,13 @@ export const POST: APIRoute = async ({ request, url }) => {
 		}
 
 		const intent: AskIntent =
-			body.intent === "recent"
+			body?.intent === "recent"
 				? "recent"
-				: body.intent === "site-meta"
+				: body?.intent === "site-meta"
 					? "site-meta"
 					: "keyword";
-		const hits = Array.isArray(body.hits) ? body.hits.slice(0, 10) : [];
-		const persona = body.persona || "guide";
+		const hits = Array.isArray(body?.hits) ? body.hits.slice(0, 10) : [];
+		const persona = body?.persona || "guide";
 		const prompt = buildAskPrompt(message, hits, intent, persona, attachments);
 
 		if (STEPFUN_API_KEY && token === "stepfun") {
@@ -405,13 +349,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 					}),
 				});
 			} catch {
-				return json(
-					{ code: 502, message: "阶跃星辰问答服务暂时无法连接" },
-					502,
-				);
+				return upstreamError(0, "阶跃星辰问答服务暂时无法连接");
 			}
 			if (!stepfun.ok || !stepfun.body) {
-				return json({ code: 502, message: "阶跃星辰问答服务暂时不可用" }, 502);
+				return upstreamError(stepfun.status, "阶跃星辰问答服务暂时不可用");
 			}
 			return new Response(stepfun.body, {
 				status: 200,
@@ -445,15 +386,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 				}),
 			});
 		} catch (err) {
-			const detail =
-				err instanceof Error ? err.message : "无法连接 MaxKB（127.0.0.1:8080）";
-			return json(
-				{
-					code: 502,
-					message: `MaxKB 不可达：${detail}。请确认 Docker Desktop 已开且 maxkb 容器在跑。`,
-				},
-				502,
-			);
+			return upstreamError(0, unreachableMessage(err));
 		}
 
 		const ctype = upstream.headers.get("content-type") || "";
@@ -466,7 +399,7 @@ export const POST: APIRoute = async ({ request, url }) => {
 			} catch {
 				/* keep text */
 			}
-			return json({ code: upstream.status || 502, message: messageText }, 502);
+			return upstreamError(upstream.status || 0, messageText);
 		}
 
 		// 少数错误仍以 JSON 返回
@@ -477,14 +410,14 @@ export const POST: APIRoute = async ({ request, url }) => {
 					code?: number;
 					message?: string;
 				};
-				return json(
-					parsed ?? { code: 502, message: "MaxKB 无响应" },
-					upstream.status >= 400 ? upstream.status : 200,
+				return upstreamError(
+					upstream.status,
+					parsed?.message || "MaxKB 无响应",
 				);
 			} catch {
-				return json(
-					{ code: 502, message: text.slice(0, 200) || "非 JSON 响应" },
-					502,
+				return upstreamError(
+					upstream.status,
+					text.slice(0, 200) || "非 JSON 响应",
 				);
 			}
 		}
@@ -500,5 +433,5 @@ export const POST: APIRoute = async ({ request, url }) => {
 		});
 	}
 
-	return json({ code: 400, message: `未知 action: ${action}` }, 400);
+	return json(400, { code: 400, message: `未知 action: ${action}` });
 };

@@ -1,13 +1,20 @@
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
+import { createRateLimiter } from "@/lib/api/http";
 
 /** 园主 GitHub 数字 id：与 Supabase identities 里 github provider 的 provider_id 比对 */
 export const OWNER_GITHUB_ID = 182515127;
 
 const MUTATION_RATE_LIMIT = 20;
 const MUTATION_WINDOW_MS = 60_000;
-const mutationWindows = new Map<string, number[]>();
+
+/** 园主写操作限流：窗口数学与 429 契约由 api/http 统一。 */
+const ownerMutationLimiter = createRateLimiter({
+	max: MUTATION_RATE_LIMIT,
+	windowMs: MUTATION_WINDOW_MS,
+	keyPrefix: "owner-mutation",
+});
 
 export type Viewer = Readonly<{
 	id: string;
@@ -17,7 +24,13 @@ export type Viewer = Readonly<{
 
 export type OwnerAuthResult =
 	| Readonly<{ ok: true; user: User }>
-	| Readonly<{ ok: false; status: number; error: string }>;
+	| Readonly<{
+			ok: false;
+			status: number;
+			error: string;
+			/** 仅 429 携带：路由用它写 Retry-After */
+			retryAfterSeconds?: number;
+	  }>;
 
 export function readSupabaseEnv(): Readonly<{
 	url: string;
@@ -143,25 +156,6 @@ export function sameOriginRequest(request: Request): boolean {
 	}
 }
 
-/** 进程内滑动窗口限流；Serverless 多实例下是尽力而为的软限制 */
-export function checkMutationRate(
-	userId: string,
-	now: number = Date.now(),
-	limit: number = MUTATION_RATE_LIMIT,
-	windowMs: number = MUTATION_WINDOW_MS,
-): boolean {
-	const recent = (mutationWindows.get(userId) ?? []).filter(
-		(timestamp) => now - timestamp < windowMs,
-	);
-	if (recent.length >= limit) {
-		mutationWindows.set(userId, recent);
-		return false;
-	}
-	recent.push(now);
-	mutationWindows.set(userId, recent);
-	return true;
-}
-
 /**
  * 园主鉴权：originCheck=true 用于写请求（Origin 校验 + 限流），
  * originCheck=false 用于只读请求（GET 幂等，不消耗限流额度）。
@@ -182,8 +176,16 @@ export async function requireOwnerUser(
 	if (!isOwnerUser(user)) {
 		return { ok: false, status: 403, error: "owner_required" };
 	}
-	if (options.originCheck && !checkMutationRate(user.id)) {
-		return { ok: false, status: 429, error: "rate_limited" };
+	if (options.originCheck) {
+		const gate = ownerMutationLimiter.check(user.id);
+		if (!gate.allowed) {
+			return {
+				ok: false,
+				status: 429,
+				error: "rate_limited",
+				retryAfterSeconds: gate.retryAfterSeconds,
+			};
+		}
 	}
 	return { ok: true, user };
 }

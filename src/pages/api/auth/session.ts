@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { json } from "@/lib/api/http";
 import {
 	isOwnerUser,
 	readAuthUser,
@@ -8,23 +9,27 @@ import {
 
 export const prerender = false;
 
-const noStoreJson = (body: unknown, init?: ResponseInit) => {
-	const response = Response.json(body, init);
-	response.headers.set("Cache-Control", "no-store");
-	return response;
-};
+const NO_STORE = { "Cache-Control": "no-store" };
 
 export const GET: APIRoute = async ({ request, cookies }) => {
 	if (!readSupabaseEnv()) {
-		return noStoreJson({ authenticated: false, status: "unconfigured" });
+		return json(
+			200,
+			{ authenticated: false, status: "unconfigured" },
+			NO_STORE,
+		);
 	}
 	const user = await readAuthUser(request, cookies);
 	if (!user) {
-		return noStoreJson({ authenticated: false, status: "guest" });
+		return json(200, { authenticated: false, status: "guest" }, NO_STORE);
 	}
-	return noStoreJson({
-		authenticated: true,
-		role: isOwnerUser(user) ? "owner" : "user",
-		viewer: viewerFromUser(user),
-	});
+	return json(
+		200,
+		{
+			authenticated: true,
+			role: isOwnerUser(user) ? "owner" : "user",
+			viewer: viewerFromUser(user),
+		},
+		NO_STORE,
+	);
 };
