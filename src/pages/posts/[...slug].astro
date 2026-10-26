@@ -23,9 +23,11 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import CoverImage from "@/components/common/CoverImage.astro";
 import PostMetadata from "@/components/layout/PostMeta.astro";
+import License from "@/components/misc/License.astro";
 import RelatedHighlight from "@/components/misc/RelatedHighlight.astro";
 import ShareBar from "@/components/misc/ShareBar.astro";
 import { coverImageConfig } from "@/config/coverImageConfig";
+import { licenseConfig } from "@/config/licenseConfig";
 import { profileConfig } from "@/config/profileConfig";
 import { siteConfig } from "@/config/siteConfig";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
@@ -449,6 +451,22 @@ const {
           }
         </>
       )}
+
+      {/* 版权署名块：正文末尾，按 licenseConfig.enable 开关；加密文章解锁后同样展示 */}
+      {
+        licenseConfig.enable && (
+          <License
+            title={entry.data.title}
+            id={entry.id}
+            pubDate={entry.data.published}
+            author={profileConfig.name}
+            sourceLink={new URL(getPostUrlBySlug(entry.id), Astro.site ?? Astro.url).href}
+            licenseName={licenseConfig.name}
+            licenseUrl={licenseConfig.url}
+            class="mb-6 rounded-xl license-container onload-animation"
+          />
+        )
+      }
     </div>
   </div>
 

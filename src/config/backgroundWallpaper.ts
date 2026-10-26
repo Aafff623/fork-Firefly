@@ -179,6 +179,18 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		position: "center",
 	},
 	/**
+	 * 横幅图片署名：壁纸用了别人的图时，在横幅右下角挂一行小字（默认关闭）
+	 * 只解决「署名」，不替代图片来源的合规审查
+	 */
+	credit: {
+		// 是否显示署名（关闭时布局与默认视觉完全不变）
+		enable: false,
+		// 署名文案，例如 "Photo by 某某 · CC BY 4.0"
+		text: "",
+		// 可选：原图 / 画师页链接，填写后署名可点击跳转
+		url: "",
+	},
+	/**
 	 * Banner + 正文氛围层 · 与横幅同色同频（BA-01～11 配对 banner-01～11）
 	 * 旧 PC 文件保留不删；色调可对上的已复制为 ba-*-paired.jpg
 	 */

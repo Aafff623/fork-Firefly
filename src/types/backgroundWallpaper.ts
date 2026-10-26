@@ -95,6 +95,15 @@ export type BackgroundWallpaperConfig = {
 		position?: string; // 壁纸位置，支持CSS object-position的所有值
 	};
 	/**
+	 * 横幅/壁纸图片署名：用了他人作品时标注出处
+	 * 默认关闭；只解决"署名"，不替代图片来源的合规审查
+	 */
+	credit?: {
+		enable: boolean; // 是否在横幅角落显示署名
+		text: string; // 署名文案，如 "Photo by 某某 · CC BY 4.0"
+		url?: string; // 可选：原图 / 画师页链接，填写后署名可点击跳转
+	};
+	/**
 	 * Banner 模式下的正文氛围全屏层（fixed 垫底，与横幅并存）
 	 * 用于铺满横幅以下白屏；与 mode 四选一互斥无关
 	 */

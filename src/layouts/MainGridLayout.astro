@@ -739,6 +739,19 @@ const lazyWallpaperRestJson = JSON.stringify(lazyWallpaperRest);
 
     <!-- Fullscreen 模式下显示向下滚动指示器 -->
     {(isFullscreenMode || isWallpaperSwitchable) && <ScrollDownIndicator />}
+
+    <!-- 横幅图片署名：默认关闭（credit.enable: false 时不输出任何 DOM） -->
+    {backgroundWallpaper.credit?.enable && backgroundWallpaper.credit.text && (
+    <div class="banner-credit absolute bottom-2.5 right-3 md:right-6 z-30 pointer-events-auto text-[11px] md:text-xs leading-snug text-white/70 hover:text-white transition drop-shadow-[0_1px_2px_rgb(0_0_0/0.85)]">
+        {backgroundWallpaper.credit.url ? (
+        <a href={backgroundWallpaper.credit.url} target="_blank" rel="noopener noreferrer">
+            {backgroundWallpaper.credit.text}
+        </a>
+        ) : (
+        <span>{backgroundWallpaper.credit.text}</span>
+        )}
+    </div>
+    )}
     </div>
 
     <!-- Water waves effect - 如果允许切换或任一设备启用则渲染 -->

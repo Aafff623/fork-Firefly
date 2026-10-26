@@ -83,10 +83,14 @@ if (title) {
 		: siteConfig.title;
 }
 
-let ogImageUrl: string | undefined;
-if (siteConfig.post.generateOgImages && postSlug) {
-	ogImageUrl = new URL(`/og/${postSlug}.png`, Astro.site).toString();
-}
+// 分享卡封面：默认用 public 下的品牌静图兜底（1200×630，全站常驻输出）；
+// 开启 generateOgImages 后文章页仍由 /og/<slug>.png 动态覆盖，静态图继续服务首页/归档/其它页。
+const DEFAULT_OG_IMAGE_PATH = "/assets/images/og/og-default.png";
+const siteBaseUrl = Astro.site ?? new URL(siteConfig.site_url);
+const ogImageUrl =
+	siteConfig.post.generateOgImages && postSlug
+		? new URL(`/og/${postSlug}.png`, siteBaseUrl).toString()
+		: new URL(DEFAULT_OG_IMAGE_PATH, siteBaseUrl).toString();
 
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
@@ -167,7 +171,11 @@ const siteLang = lang.replace("_", "-");
       property="og:description"
       content={description || siteConfig.description || pageTitle}
     />
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={pageTitle} />
     {
       setOGTypeArticle ? (
         <meta property="og:type" content="article" />
@@ -183,6 +191,7 @@ const siteLang = lang.replace("_", "-");
       name="twitter:description"
       content={description || siteConfig.description || pageTitle}
     />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     {/* 暂不加 viewport-fit=cover：它会让页面伸到状态栏底下，而 sticky 顶栏（4.5rem）
         与正文/侧栏的 5.5rem 让位偏移是散落各处的字面量，需要连同 env(safe-area-inset-top)
