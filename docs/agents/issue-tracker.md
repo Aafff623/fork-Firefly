@@ -43,4 +43,6 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
 - `.scratch/architecture-deepening/` —— 2026-10-21 首轮架构深化（生命周期 / 设置 facade / 评论图 / 检索 seam / CI 门禁；P6 等 blocked）。
 - `.scratch/architecture-deepening-2/` —— 2026-10-25 第二轮（issue / spec / map + 23 张票）。
   22 张实现票已解；23 是深度 review 残留（上传配额 / Supabase 抖动 / ArticleCard 适配器等），`ready-for-human`。
-- 两个 effort 的实现均已完成本地 commit；第二轮已推送，后续 review 修复按新提交处理。
+- `.scratch/refrepo-borrow-batch1/` —— 2026-10-26 参考仓库借鉴第一批（issue / spec + 16 张票）。
+  01/03/04/05/06/07/08/10/11/12/13/16 已完成并本地验证；02（takumi 许可/构建耗时）、09/14/15（i18n WIP）为 needs-info；未 push。
+- 两个 architecture effort 的实现均已完成本地 commit；第二轮已推送，后续 review 修复按新提交处理。
