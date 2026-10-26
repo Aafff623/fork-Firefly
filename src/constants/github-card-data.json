@@ -1,0 +1,38 @@
+{
+	"aafff623/fork-firefly": {
+		"description": "Astro 静态博客 · Firefly 二次开发 · 配置驱动与 Agent 发文流水线",
+		"language": "Astro",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/182515127?v=4",
+		"license": "MIT"
+	},
+	"gnipbao/story-to-handdrawn-video": {
+		"description": "Agent skill: convert Chinese story copy or ordered images into a hand-drawn diary-comic animation (silent MP4 picture track).",
+		"language": "HTML",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/16514704?v=4",
+		"license": "MIT"
+	},
+	"haloshin/ip-diagram-creator": {
+		"description": "个人 IP 图解创作器：用你的 IP 形象，生成专属内容图解。",
+		"language": null,
+		"avatarUrl": "https://avatars.githubusercontent.com/u/230503052?v=4",
+		"license": "MIT"
+	},
+	"saicaca/fuwari": {
+		"description": "✨A static blog template built with Astro.",
+		"language": "Astro",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/25200299?v=4",
+		"license": "MIT"
+	},
+	"san-y108/agent-cfo": {
+		"description": "AgentCFO | DAO AI 财务官 — Cobo Agentic Commerce 赛道",
+		"language": "Python",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/264119288?v=4",
+		"license": "MIT"
+	},
+	"weikezi-ai/create-whiteboard-video": {
+		"description": "「create-whiteboard-video」 一个高质量的视频skill。可以把文案、Markdown 口播稿、SRT 字幕、旁白音频、已有插图整理成带 project.json 的可续跑的项目，统一管理分镜、素材、字幕、渲染与质检结果。它支持整图斜向扫描和可选的语义分层绘制，适合知识讲解、故事演绎与手绘口播视频制作。",
+		"language": "Python",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/85433803?v=4",
+		"license": "MIT"
+	}
+}
