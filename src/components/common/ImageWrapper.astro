@@ -34,6 +34,8 @@ interface Props {
 	dataCoverImg?: boolean;
 	showLqip?: boolean;
 	showOverlay?: boolean;
+	/** 首访按启动节奏再插入真实 <img>，避免和横幅抢带宽 */
+	bootDefer?: "main" | "secondary";
 }
 
 const {
@@ -56,6 +58,7 @@ const {
 	dataCoverImg = false,
 	showLqip = true,
 	showOverlay = true,
+	bootDefer,
 } = Astro.props;
 
 const fallbackFormat = getFallbackFormat();
@@ -122,7 +125,22 @@ const lqipProps = isLocal
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     {fadeIn && showLqip && <div class="lqip-placeholder absolute inset-0 pointer-events-none" style={lqipProps.style} aria-hidden="true"></div>}
     {showOverlay && <div class="transition absolute inset-0 dark:bg-black/10 pointer-events-none"></div>}
-    {isLocal && img && usePicture && (
+    {isLocal && img && usePicture && (bootDefer ? (
+        <template data-boot-defer={bootDefer}>
+            <Picture
+                src={img}
+                alt={alt || ""}
+                class={imageClass}
+                style={imageStyle}
+                loading={loading}
+                fetchpriority="low"
+                data-cover-img={dataCoverImg ? true : undefined}
+                formats={formats}
+                fallbackFormat={fallbackFormat}
+                {...responsiveProps}
+            />
+        </template>
+    ) : (
         <Picture
             src={img}
             alt={alt || ""}
@@ -135,8 +153,21 @@ const lqipProps = isLocal
             fallbackFormat={fallbackFormat}
             {...responsiveProps}
         />
-    )}
-    {isLocal && img && !usePicture && (
+    ))}
+    {isLocal && img && !usePicture && (bootDefer ? (
+        <template data-boot-defer={bootDefer}>
+            <Image
+                src={img}
+                alt={alt || ""}
+                class={imageClass}
+                style={imageStyle}
+                loading={loading}
+                fetchpriority="low"
+                data-cover-img={dataCoverImg ? true : undefined}
+                {...responsiveProps}
+            />
+        </template>
+    ) : (
         <Image
             src={img}
             alt={alt || ""}
@@ -147,6 +178,20 @@ const lqipProps = isLocal
             data-cover-img={dataCoverImg ? true : undefined}
             {...responsiveProps}
         />
-    )}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority} data-cover-img={dataCoverImg ? true : undefined} referrerpolicy={referrerPolicy} />}
+    ))}
+    {!isLocal && (bootDefer ? (
+        <img
+            alt={alt || ""}
+            class={imageClass}
+            style={imageStyle}
+            loading={loading}
+            fetchpriority="low"
+            data-cover-img={dataCoverImg ? true : undefined}
+            data-boot-defer={bootDefer}
+            data-boot-src={isPublic ? url(src) : src}
+            referrerpolicy={referrerPolicy}
+        />
+    ) : (
+        <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority} data-cover-img={dataCoverImg ? true : undefined} referrerpolicy={referrerPolicy} />
+    ))}
 </div>
