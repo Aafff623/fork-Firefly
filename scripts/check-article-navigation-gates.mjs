@@ -69,15 +69,17 @@ assert(
 	/preload:\s*false/.test(astroConfig),
 );
 assert(
-	"only the first two article cards are marked for immediate preload",
-	/priorityPreload=\{index < 2\}/.test(postPage) &&
-		/data-swup-preload=\{priorityPreload \? "true" : undefined\}/.test(
-			postCard,
-		),
+	"article cards defer cover boot instead of eager loading",
+	postPage.includes('loading="lazy"') &&
+		postPage.includes('bootDefer="main"') &&
+		!postPage.includes("priorityPreload={index < 2}") &&
+		!postPage.includes('loading="eager"') &&
+		postCard.includes('bootDefer?: "main" | "secondary"') &&
+		postCard.includes("bootDefer={bootDefer}"),
 );
 assert(
-	"only the featured cover image is loaded eagerly",
-	/loading=\{index === 0 \? "eager" : "lazy"\}/.test(postPage),
+	"featured article card is still identifiable",
+	postPage.includes('listVariant={index === 0 ? "featured" : "row"}'),
 );
 assert(
 	"article navigation skips the progress-bar layout reflow",
