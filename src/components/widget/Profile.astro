@@ -48,7 +48,11 @@ function socialBrandKey(name: string, icon: string): string {
 ---
 
 {/* 对齐时钟：无 card-base 外壳，内容直接浮在壁纸上 */}
-<div class:list={["profile-widget", "p-2.5", className]} style={style}>
+<div
+  class:list={["profile-widget", "p-2.5", className]}
+  style={style}
+  data-pet-dock
+>
   <div
     class:list={[
       "profile-avatar-stage is-avatar relative mx-auto mt-0.5 lg:mt-0 mb-2 w-[58%] max-w-28 lg:w-[60%] lg:max-w-32",
@@ -72,8 +76,9 @@ function socialBrandKey(name: string, icon: string): string {
             src={profileConfig.avatar || ""}
             alt="Profile Image of the Author"
             class="profile-avatar-image mx-auto lg:w-full h-full lg:mt-0 object-cover"
-            loading="eager"
-            fetchpriority="high"
+            loading="lazy"
+            fetchpriority="low"
+            bootDefer="secondary"
             widths={[350]}
             sizes="350px"
             fadeIn={false}
@@ -119,9 +124,7 @@ function socialBrandKey(name: string, icon: string): string {
   <div class="px-2">
     <a
       href={aboutUrl}
-      class="repel-text font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition-colors block hover:text-(--primary)"
-      data-repel-radius="52"
-      data-repel-strength="2.2"
+      class="font-bold text-lg text-center mb-0.5 dark:text-neutral-50 transition-colors block hover:text-(--primary)"
       aria-label="前往关于页"
     >
       {profileConfig.name}
@@ -190,6 +193,26 @@ function socialBrandKey(name: string, icon: string): string {
 </div>
 
 <script>
+  import { onPageView } from "@/lib/page-lifecycle";
+
+  type VoiceWindow = Window & { __profileVoiceTimers?: Set<number> };
+  const voiceWindow = window as VoiceWindow;
+  const voiceTimers = (voiceWindow.__profileVoiceTimers ??= new Set<number>());
+
+  function setVoiceTimer(callback: () => void, delayMs: number): number {
+    const id = window.setTimeout(() => {
+      voiceTimers.delete(id);
+      callback();
+    }, delayMs);
+    voiceTimers.add(id);
+    return id;
+  }
+
+  function clearVoiceTimers(): void {
+    for (const id of voiceTimers) window.clearTimeout(id);
+    voiceTimers.clear();
+  }
+
   function initVoiceNoticeRotate(root?: ParentNode) {
     const scope = root ?? document;
     scope.querySelectorAll(".text-voice-shell--rotate").forEach((node) => {
@@ -219,19 +242,21 @@ function socialBrandKey(name: string, icon: string): string {
       const tick = () => {
         if (mode === "voice") {
           applyMode("notice");
-          shell.__voiceRotateTimer = window.setTimeout(tick, noticeDwell);
+          shell.__voiceRotateTimer = setVoiceTimer(tick, noticeDwell);
         } else {
           applyMode("voice");
-          shell.__voiceRotateTimer = window.setTimeout(tick, voiceDwell);
+          shell.__voiceRotateTimer = setVoiceTimer(tick, voiceDwell);
         }
       };
 
       applyMode("voice");
-      shell.__voiceRotateTimer = window.setTimeout(tick, voiceDwell);
+      shell.__voiceRotateTimer = setVoiceTimer(tick, voiceDwell);
     });
   }
 
   function bootVoiceNoticeRotate() {
+    // 切页重建前清掉旧链，避免 detached 节点上的计时器继续跑
+    clearVoiceTimers();
     document.querySelectorAll(".text-voice-shell--rotate").forEach((node) => {
       delete (node as HTMLElement).dataset.rotateBound;
     });
@@ -323,9 +348,7 @@ function socialBrandKey(name: string, icon: string): string {
   // 不守卫会跨跳累积 3 个 swup 监听器（bootProfileWidget 本身幂等）。
   if (!window.__profileWidgetBound) {
     window.__profileWidgetBound = true;
-    document.addEventListener("swup:contentReplaced", bootProfileWidget);
-    document.addEventListener("swup:content:replace", bootProfileWidget);
-    document.addEventListener("swup:page:view", bootProfileWidget);
+    onPageView(() => bootProfileWidget());
   }
 </script>
 

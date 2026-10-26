@@ -77,7 +77,8 @@ export const PET_ROAM_ANCHORS: readonly PetRoamAnchorDef[] = [
 	},
 	{
 		id: "profile",
-		selectors: [".profile-widget"],
+		// Profile 显式挂 data-pet-dock；桌宠不再靠裸 class 猜锚点
+		selectors: [".profile-widget[data-pet-dock]"],
 		column: "auto",
 		arrivalAction: "waving",
 	},

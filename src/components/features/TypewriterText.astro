@@ -232,6 +232,7 @@ const lockHeight = textsArr.length > 1;
           __typewriterInstance?: TypewriterEffect;
         };
         typed.__typewriterInstance?.destroy();
+        delete typed.__typewriterInstance;
       });
     });
   }
@@ -254,7 +255,6 @@ const lockHeight = textsArr.length > 1;
   // 支持页面切换时重新初始化（兼容不同 swup 事件名）；幂等 guard 防 Swup 重执行脚本时重复注册
   if (!window.__typewriterSwupBound) {
     window.__typewriterSwupBound = true;
-    document.addEventListener("swup:contentReplaced", runInitWithDelay);
     document.addEventListener("swup:content:replace", runInitWithDelay);
     document.addEventListener("swup:page:view", runInitWithDelay);
 

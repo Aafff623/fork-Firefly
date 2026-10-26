@@ -274,6 +274,7 @@
 
 <script>
 	import { titleSfx } from "@utils/title-sfx";
+	import { onPageView, registerPageCleanup } from "@/lib/page-lifecycle";
 
 	type Variant = { src: string; rotation: number; scale: number };
 	type HomeGlyph = {
@@ -602,8 +603,14 @@
 		return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 	}
 
+	const resizeArmers = new WeakMap<HTMLElement, () => void>();
+
 	function initPost(el: HTMLElement) {
-		if (el.dataset.postGlyphReady === "1") return;
+		if (el.dataset.postGlyphReady === "1") {
+			// 保留节点切页后重挂 resize；内存泄漏交给 per-page cleanup
+			resizeArmers.get(el)?.();
+			return;
+		}
 		const text = el.textContent?.trim() ?? "";
 		if (!text) return;
 
@@ -686,9 +693,17 @@
 			setActive(index);
 		});
 		el.addEventListener("pointerleave", () => setActive(-1));
-		window.addEventListener("resize", measure, { passive: true });
+		const armResize = () => {
+			window.removeEventListener("resize", measure);
+			window.addEventListener("resize", measure, { passive: true });
+			registerPageCleanup(() =>
+				window.removeEventListener("resize", measure),
+			);
+			measure();
+		};
+		resizeArmers.set(el, armResize);
+		armResize();
 		document.fonts?.ready.then(measure);
-		measure();
 	}
 
 	function boot() {
@@ -696,7 +711,6 @@
 		document.querySelectorAll<HTMLElement>("[data-post-glyph-render]").forEach(initPost);
 	}
 
-	document.addEventListener("astro:page-load", boot);
-	document.addEventListener("swup:page:view", boot);
+	onPageView(boot);
 	boot();
 </script>

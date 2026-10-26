@@ -1,8 +1,8 @@
-﻿---
+---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
-import PostCard from "@/components/layout/PostCard.astro";
 import PostPinAdmin from "@/components/controls/PostPinAdmin.svelte";
+import PostCard from "@/components/layout/PostCard.astro";
 import { displaySettingsConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -29,7 +29,8 @@ type PostEntry = CollectionEntry<"posts">;
 const defaultLayout =
 	forcedLayout ?? (siteConfig.postListLayout.defaultMode || "list");
 const mobileDefaultLayout =
-	forcedLayout ?? (siteConfig.postListLayout.mobileDefaultMode || defaultLayout);
+	forcedLayout ??
+	(siteConfig.postListLayout.mobileDefaultMode || defaultLayout);
 const layoutSwitchable = forcedLayout
 	? false
 	: displaySettingsConfig.layoutSwitchable;
@@ -80,8 +81,9 @@ const pinAdminLabels = {
         pinned={entry.data.pinned}
         pinKind={pinKind}
         password={!!entry.data.password}
-        loading={index === 0 ? "eager" : "lazy"}
-        priorityPreload={index < 2}
+        loading="lazy"
+        priorityPreload={false}
+        bootDefer="main"
         listVariant={index === 0 ? "featured" : "row"}
         class:list={immediateEntrance ? "onload-animation post-card-item" : "post-card-item"}
         style={immediateEntrance ? `animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);` : undefined}
@@ -277,8 +279,8 @@ const pinAdminLabels = {
   });
 
   // 幂等 guard：该脚本为内联模块脚本（无 import），每次被 Swup 重执行都会重新运行，
-  // 不守卫会跨跳累积下方 7 个 document/window 监听器（visibilitychange / layoutChange /
-  // resize / astro:page-load / astro:after-swap / swup:page:view / swup:contentReplaced）。
+  // 不守卫会跨跳累积下方 6 个 document/window 监听器（visibilitychange / layoutChange /
+  // resize / astro:page-load / astro:after-swap / swup:page:view）。
   if (!window.__postPageLayoutBound) {
     window.__postPageLayoutBound = true;
 
@@ -313,9 +315,6 @@ const pinAdminLabels = {
 
     // Swup 分页 / 站内切页：SSR 仍是默认 class，必须重套用户偏好
     document.addEventListener("swup:page:view", function () {
-      setTimeout(initLayout, 50);
-    });
-    document.addEventListener("swup:contentReplaced", function () {
       setTimeout(initLayout, 50);
     });
   }

@@ -22,7 +22,6 @@ interface Props {
 	formats?: ImageFormat[];
 	loading?: "lazy" | "eager";
 	apiUrls?: string[];
-	/** 首访按启动节奏再插入真实 <img>；由 ImageWrapper 的 data-boot-defer 消费 */
 	bootDefer?: "main" | "secondary";
 }
 
@@ -37,6 +36,7 @@ const {
 	formats = getImageFormats(),
 	loading = "lazy",
 	apiUrls = [],
+	bootDefer,
 } = Astro.props;
 
 const configQuality = getImageQuality();
@@ -110,6 +110,7 @@ const remoteReferrerPolicy =
 			class="w-full h-full"
 			position={position}
 			loading={loading}
+			bootDefer={bootDefer}
 			formats={formats}
 			quality={quality}
 			layout={layout}
@@ -126,7 +127,7 @@ const remoteReferrerPolicy =
 	<!-- 远程图片 -->
 	{!isLocal && (
 		<img
-			src={isPublic ? url(src) : src}
+			src={bootDefer ? undefined : (isPublic ? url(src) : src)}
 			alt={alt || ""}
 			class={preview ? "w-full h-full object-cover" : imageClass}
 			style={imageStyle}
@@ -134,6 +135,8 @@ const remoteReferrerPolicy =
 			decoding="async"
 			data-cover-img
 			data-remote="true"
+			data-boot-defer={bootDefer || undefined}
+			data-boot-src={bootDefer ? (isPublic ? url(src) : src) : undefined}
 			referrerpolicy={remoteReferrerPolicy}
 		/>
 	)}
@@ -142,6 +145,11 @@ const remoteReferrerPolicy =
 <style>
 	.cover-image-container {
 		min-height: 150px;
+	}
+
+	/* 横幅阶段封面还没开始下，转圈没意义 */
+	:global(html[data-boot-phase="banner"]) .cover-image-container .loading-spinner {
+		display: none;
 	}
 
 	@media (min-width: 768px) {
@@ -207,7 +215,7 @@ const remoteReferrerPolicy =
 			const img = container.querySelector('img[data-cover-img]') as
 				| (HTMLImageElement & { __coverImageEventsBound?: boolean })
 				| null;
-			if (!img) return;
+			if (!img || img.hasAttribute("data-boot-defer")) return;
 
 			const hideLoading = () => {
 				container.setAttribute('data-loading', 'false');
@@ -272,6 +280,6 @@ const remoteReferrerPolicy =
 	if (!window.__coverImageBound) {
 		window.__coverImageBound = true;
 		document.addEventListener('astro:page-load', initCoverImages);
-		document.addEventListener('swup:contentReplaced', initCoverImages);
+		window.addEventListener('firefly:boot-phase', initCoverImages);
 	}
 </script>
