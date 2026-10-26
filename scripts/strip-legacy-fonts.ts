@@ -6,21 +6,20 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolveSiteRoot } from "./site-root";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const dirs = ["dist/client/_astro"];
+// 产物根走 site-root：部署产物在 dist/client，本地偶尔只有 dist
+const dirs = [path.join(resolveSiteRoot(), "_astro")];
 
 let removed = 0;
 let bytes = 0;
 
 for (const dir of dirs) {
-	const abs = path.join(root, dir);
-	if (!fs.existsSync(abs)) continue;
-	for (const f of fs.readdirSync(abs)) {
+	if (!fs.existsSync(dir)) continue;
+	for (const f of fs.readdirSync(dir)) {
 		if (!/^KaTeX_/.test(f)) continue;
 		if (!/\.(ttf|woff)$/.test(f)) continue;
-		const p = path.join(abs, f);
+		const p = path.join(dir, f);
 		const stat = fs.statSync(p);
 		fs.rmSync(p);
 		removed += 1;
