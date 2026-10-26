@@ -1003,6 +1003,10 @@ export function bootWalineFromShell(shell?: Element | null): void {
 	} catch (error) {
 		disposeWaline();
 		console.error("[Waline] Failed to initialize:", error);
-		shellEl.classList.add("waline-ready");
+		shellEl.classList.remove("waline-ready");
+		shellEl.classList.add("waline-error");
+		shellEl.querySelector(".waline-loading")?.remove();
+		const hint = shellEl.querySelector(".waline-hint");
+		if (hint) hint.textContent = "评论加载失败，请刷新页面重试。";
 	}
 }

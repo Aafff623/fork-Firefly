@@ -70,7 +70,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
     const loadWalineStyles = (): Promise<void> => {
       if (walineStylesPromise) return walineStylesPromise;
 
-      walineStylesPromise = new Promise((resolve, reject) => {
+      const promise = new Promise<void>((resolve, reject) => {
         const existing = document.querySelector<HTMLLinkElement>(
           'link[data-waline-styles="true"]',
         );
@@ -88,8 +88,13 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
           once: true,
         });
         if (!existing) document.head.append(link);
+      }).catch((error) => {
+        // 允许下一次 page:view 重新尝试，而不是整场会话复用 rejected promise
+        walineStylesPromise = null;
+        throw error;
       });
-      return walineStylesPromise;
+      walineStylesPromise = promise;
+      return promise;
     };
 
     /**
@@ -103,6 +108,14 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
       let disposeWaline: (() => void) | null = null;
       let disposed = false;
 
+      const showBootError = (target: HTMLElement): void => {
+        target.classList.remove("waline-ready");
+        target.classList.add("waline-error");
+        target.querySelector(".waline-loading")?.remove();
+        const hint = target.querySelector(".waline-hint");
+        if (hint) hint.textContent = "评论加载失败，请刷新页面重试。";
+      };
+
       const boot = async (target: HTMLElement): Promise<void> => {
         try {
           const [walineBoot] = await Promise.all([
@@ -115,6 +128,7 @@ delete (config as { stickerSuggest?: unknown }).stickerSuggest;
           walineBoot.bootWalineFromShell(target);
         } catch (error) {
           console.error("[Waline] Failed to load runtime:", error);
+          showBootError(target);
         }
       };
 
