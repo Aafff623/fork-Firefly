@@ -1,4 +1,5 @@
 ---
+import { getEntry } from "astro:content";
 import GoogleAnalytics from "@components/analytics/GoogleAnalytics.astro";
 import La51Analytics from "@components/analytics/La51Analytics.astro";
 import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
@@ -92,6 +93,27 @@ const ogImageUrl =
 		? new URL(`/og/${postSlug}.png`, siteBaseUrl).toString()
 		: new URL(DEFAULT_OG_IMAGE_PATH, siteBaseUrl).toString();
 
+// canonical 以实际产出 URL（Astro.url 已含 base 与 trailingSlash 规则）拼站点域名，
+// 不手写 "/" 结尾，避免 base / trailingSlash 配置变化时漂移。
+// 预渲染页的 Astro.url 不含 query：/timeline/?tag= 这类前端筛选态 canonical 到干净的
+// 列表页（本仓标签总览是独立的 /tags/，canonical 指向自身），避免同一列表被筛出多份索引。
+const selfCanonicalUrl = new URL(Astro.url.pathname, siteBaseUrl);
+
+// 文章页的 frontmatter 数据（sourceLink / 发布时间）只在 postSlug 存在时取一次；
+// 转载文 canonical 指向原文，与 License 的 sourceLink 语义一致。
+const articleEntry = postSlug ? await getEntry("posts", postSlug) : undefined;
+const articleSourceLink = articleEntry?.data.sourceLink?.trim();
+const canonicalUrl = (() => {
+	if (articleSourceLink && /^(https?:)?\/\//.test(articleSourceLink)) {
+		try {
+			return new URL(articleSourceLink, siteBaseUrl).href;
+		} catch {
+			// 非法来源地址按普通页处理
+		}
+	}
+	return selfCanonicalUrl.href;
+})();
+
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
 
@@ -153,6 +175,7 @@ const siteLang = lang.replace("_", "-");
     )}
 
     <title>{pageTitle}</title>
+    <link rel="canonical" href={canonicalUrl} />
     <meta
       name="description"
       content={description || siteConfig.description || pageTitle}
@@ -183,6 +206,18 @@ const siteLang = lang.replace("_", "-");
         <meta property="og:type" content="website" />
       )
     }
+    {articleEntry && (
+      <meta
+        property="article:published_time"
+        content={articleEntry.data.published.toISOString()}
+      />
+    )}
+    {articleEntry?.data.updated && (
+      <meta
+        property="article:modified_time"
+        content={articleEntry.data.updated.toISOString()}
+      />
+    )}
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
@@ -681,6 +716,121 @@ const siteLang = lang.replace("_", "-");
       },
     ]}
   >
+    {!embed && (
+      <>
+        {/* 键盘第一站：视觉隐藏，聚焦后浮出，直跳 <main>（#swup-container 常驻，软导航不重建） */}
+        <a class="skip-to-content" href="#swup-container">跳到正文</a>
+        <script is:inline>
+          (function () {
+            function markMain() {
+              var link = document.querySelector(".skip-to-content");
+              if (!link) return;
+              var main = document.getElementById("swup-container");
+              if (!main) {
+                // 直接使用 Layout 的页面（如 /login/）没有 swup 容器，退回首个 <main>
+                main = document.querySelector("main");
+                if (main && !main.id) main.id = "main-content";
+                if (main) link.setAttribute("href", "#" + main.id);
+              }
+              if (main && !main.hasAttribute("tabindex")) {
+                main.setAttribute("tabindex", "-1");
+              }
+            }
+            // 脚本位于 slot 之前，首屏要等 DOM 解析完再找目标；软导航后容器仍在，补挂一次
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", markMain, { once: true });
+            } else {
+              markMain();
+            }
+            document.addEventListener("swup:page:view", markMain);
+          })();
+        </script>
+      </>
+    )}
+
+    {/* 无 JS 兜底：按系统偏好落暗色。noscript 只在脚本禁用/被拦时生效，
+        不会与首屏内联脚本（.dark class）冲突；只覆盖壳层 token 与常见文字色，
+        组件级细节沿用亮色布局，属渐进增强底线而非第二套主题。 */}
+    <noscript>
+      <style>
+        @media (prefers-color-scheme: dark) {
+          :root {
+            color-scheme: dark;
+            --primary: oklch(0.73 0.17 var(--hue));
+            --primary-hover: oklch(0.79 0.15 var(--hue));
+            --primary-gradient: linear-gradient(135deg, oklch(0.64 0.18 var(--hue-indigo)) 0%, oklch(0.73 0.17 var(--hue)) 50%, oklch(0.80 0.12 var(--hue-violet)) 100%);
+            --page-bg: oklch(0.16 0.005 260);
+            --theme-mesh: radial-gradient(ellipse 55% 35% at 12% 0%, oklch(0.55 0.12 var(--hue) / 0.08), transparent 55%), radial-gradient(ellipse 45% 30% at 88% 8%, oklch(0.58 0.10 var(--hue-indigo) / 0.06), transparent 50%);
+            --wallpaper-fade: linear-gradient(to bottom, transparent 0%, oklch(0.16 0.005 260 / 0.55) 55%, var(--page-bg) 100%);
+            --card-bg: oklch(0.22 0.006 260);
+            --card-bg-transparent: rgb(23 23 23 / var(--card-transparent-opacity, 0.6));
+            --deep-text: oklch(0.90 0.01 260);
+            --btn-content: oklch(0.82 0.01 260);
+            --btn-regular-bg: oklch(0.28 0.008 260);
+            --btn-regular-bg-hover: oklch(0.33 0.01 260);
+            --btn-regular-bg-active: oklch(0.38 0.012 260);
+            --btn-plain-bg-hover: oklch(0.28 0.008 260);
+            --btn-plain-bg-active: oklch(0.25 0.006 260);
+            --btn-card-bg-hover: oklch(0.28 0.008 260);
+            --btn-card-bg-active: oklch(0.32 0.01 260);
+            --line-divider: rgba(255, 255, 255, 0.08);
+            --line-color: rgba(255, 255, 255, 0.1);
+            --meta-divider: rgba(255, 255, 255, 0.2);
+            --content-meta: rgba(255, 255, 255, 0.6);
+            --muted: oklch(0.24 0.006 260);
+            --selection-bg: oklch(0.40 0.08 var(--hue));
+            --codeblock-bg: oklch(0.18 0.006 260);
+            --codeblock-topbar-bg: oklch(0.14 0.006 260);
+            --license-block-bg: var(--codeblock-bg);
+            --link-underline: oklch(0.40 0.06 var(--hue));
+            --link-hover: oklch(0.32 0.01 260);
+            --link-active: oklch(0.30 0.01 260);
+            --float-panel-bg: oklch(0.20 0.006 260);
+            --scrollbar-bg: var(--scrollbar-bg-dark);
+            --scrollbar-bg-hover: var(--scrollbar-bg-hover-dark);
+            --scrollbar-bg-active: var(--scrollbar-bg-active-dark);
+            --display-light-icon: 0;
+            --display-dark-icon: 1;
+            --toc-badge-bg: var(--btn-regular-bg);
+            --toc-btn-hover: oklch(0.28 0.008 260);
+            --toc-btn-active: oklch(0.32 0.01 260);
+            --toc-indicator-bg: oklch(0.28 0.008 260);
+            --toc-item-active: var(--primary);
+          }
+          body {
+            background-color: var(--page-bg);
+            color: var(--deep-text);
+          }
+          /* dark: 工具类依赖 .dark class，无 JS 时不会生效；把常用黑字浮到浅色 */
+          .text-90 { color: rgb(255 255 255 / 0.9); }
+          .text-75 { color: rgb(255 255 255 / 0.75); }
+          .text-50 { color: rgb(255 255 255 / 0.5); }
+          .text-30 { color: rgb(255 255 255 / 0.3); }
+          .text-25 { color: rgb(255 255 255 / 0.25); }
+          [class*="text-black/"] { color: rgb(255 255 255 / 0.75); }
+          /* 正文 typography 变量：dark:prose-invert 同样依赖 .dark class，按 token 补一份 */
+          .prose {
+            --tw-prose-body: var(--content-meta);
+            --tw-prose-headings: var(--deep-text);
+            --tw-prose-lead: var(--content-meta);
+            --tw-prose-links: var(--primary);
+            --tw-prose-bold: var(--deep-text);
+            --tw-prose-counters: var(--content-meta);
+            --tw-prose-bullets: var(--line-color);
+            --tw-prose-hr: var(--line-color);
+            --tw-prose-quotes: var(--deep-text);
+            --tw-prose-quote-borders: var(--line-color);
+            --tw-prose-captions: var(--content-meta);
+            --tw-prose-code: var(--deep-text);
+            --tw-prose-pre-code: oklch(0.90 0.01 260);
+            --tw-prose-pre-bg: var(--codeblock-bg);
+            --tw-prose-th-borders: var(--line-color);
+            --tw-prose-td-borders: var(--line-divider);
+          }
+        }
+      </style>
+    </noscript>
+
     {!embed && <BootLoader lang={lang} />}
 
     <div id="progress-bar"></div>

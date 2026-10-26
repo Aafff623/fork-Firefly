@@ -75,6 +75,22 @@ const getDirectImageUrl = (src: string | undefined): string | null => {
 	return src.startsWith("/") ? url(src) : null;
 };
 
+// JSON-LD 的 image 要绝对 URL：远程 / 站点绝对路径直接用；`./cover.jpg` 这类内容内相对
+// 文件在构建期没有稳定公开地址（由 ImageWrapper 走 Astro 资源管线），回退批 1 的默认 OG 图。
+const DEFAULT_OG_IMAGE_PATH = "/assets/images/og/og-default.png";
+const resolveJsonLdImage = (src: string | undefined): string => {
+	const base = Astro.site ?? new URL(siteConfig.site_url);
+	const fallback = new URL(DEFAULT_OG_IMAGE_PATH, base).href;
+	if (!src || src === "api") return fallback;
+	try {
+		if (src.startsWith("/")) return new URL(url(src), base).href;
+		if (/^(https?:)?\/\//.test(src)) return new URL(src, base).href;
+	} catch {
+		// 非法地址按无封面处理
+	}
+	return fallback;
+};
+
 dayjs.extend(utc);
 
 // 文章数据计算整体收进函数：旧分节跳转请求没有 entry，模板走跳转分支，不触发渲染
@@ -126,10 +142,14 @@ async function computePostData(postEntry: NonNullable<typeof entry>) {
 			url: Astro.site,
 		},
 		datePublished: formatDateToYYYYMMDD(postEntry.data.published),
+		// 与 PostMeta 展示一致：有 updated 用 updated，缺省时回落到 published
+		dateModified: formatDateToYYYYMMDD(
+			postEntry.data.updated ?? postEntry.data.published,
+		),
+		image: resolveJsonLdImage(processedImage),
 		inLanguage: postEntry.data.lang
 			? postEntry.data.lang.replace("_", "-")
 			: siteConfig.lang.replace("_", "-"),
-		// TODO include cover image here
 	};
 
 	const relatedPosts = await getRelatedPosts(postEntry, 3);
@@ -391,6 +411,19 @@ const {
           </div>
         )
       }
+
+      {(entry.data.draft || entry.id.startsWith("_draftbox/")) && (
+        <div
+          class="mb-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100"
+          role="status"
+        >
+          <span class="mt-0.5 rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white">DRAFT</span>
+          <div>
+            <div class="font-semibold">本文是草稿，尚未发布</div>
+            <div class="mt-0.5 text-xs opacity-80">仅在本地预览；请勿截图分享或当作正式文章引用。</div>
+          </div>
+        </div>
+      )}
 
       {entry.data.password ? (
         <EncryptedPost password={entry.data.password} slug={entry.id} hint={entry.data.passwordHint}>

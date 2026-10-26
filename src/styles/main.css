@@ -69,6 +69,49 @@ html {
     background-size: cover;
 }
 
+/* 全局焦点圈基础层：组件自带的 focus-visible 规则（scoped 或 utility 层）优先；
+   没有自定的控件统一走这一条，避免各处各写一份。 */
+@layer base {
+    :focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Skip to content：视觉隐藏但保留在 Tab 序列；聚焦后浮到左上角。
+   #swup-container 的 tabindex 由 Layout 内联脚本补，聚焦容器本身不画焦点圈。 */
+.skip-to-content {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100000;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--card-bg);
+    color: var(--deep-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 0.5rem 1.5rem color-mix(in oklch, black 24%, transparent);
+    transform: translateY(calc(-100% - 1.25rem));
+    transition: transform 0.16s ease;
+}
+
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+    transform: translateY(0);
+}
+
+#swup-container:focus,
+#swup-container:focus-visible {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skip-to-content {
+        transition: none;
+    }
+}
+
 /* Swup 提交新页面时必须即时定位；否则全局 smooth 会把回顶拖到正文出现之后。 */
 html.is-page-transitioning {
     scroll-behavior: auto;
@@ -561,6 +604,18 @@ body.enable-banner.wallpaper-transparent #wallpaper-wrapper:not(.wallpaper-overl
 .custom-md img,
 #post-cover img {
     @apply cursor-zoom-in;
+}
+
+/* 副标题排版约定（来源 antfu.me main.css h2 + p > em:first-child）：
+   H2 后第一段整体斜体 → 自动降为副标题（淡一档、略小、贴近标题）。
+   只挂正文 .custom-md，不影响侧栏/组件里的 h2；存量无 em 首段不受影响。 */
+.custom-md h2 + p > em:first-child {
+    display: block;
+    margin-top: -0.65rem;
+    color: var(--content-meta);
+    font-size: 0.9em;
+    letter-spacing: 0.01em;
+    line-height: 1.6;
 }
 
 ::selection {
