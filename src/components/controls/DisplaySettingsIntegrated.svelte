@@ -8,28 +8,20 @@ import {
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import {
-	getDefaultAvatarFrameId,
 	getDefaultHue,
 	getDefaultOverlayBlur,
 	getDefaultOverlayCardOpacity,
 	getDefaultOverlayOpacity,
-	getDefaultPetSelection,
 	getHue,
-	getStoredAvatarFrameId,
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
-	getStoredPetSelection,
 	getStoredTitleSoundEnabled,
-	getStoredWallpaperMode,
-	setAvatarFrameId,
 	setHue,
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
-	setPetSelection,
 	setTitleSoundEnabled,
-	setWallpaperMode,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import Icon from "@/components/common/Icon.svelte";
@@ -41,6 +33,7 @@ import {
 	spritePetConfig,
 } from "@/config";
 import { findBuiltinPet } from "@/lib/pets/builtinPets";
+import { settings } from "@/lib/settings/registry";
 import {
 	getSimpleToggleDefaults,
 	readSimpleToggle,
@@ -66,8 +59,9 @@ type TabKey = "appearance" | "wallpaper" | "effects" | "pets";
 
 let hue = $state(getHue());
 const defaultHue = getDefaultHue();
-let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
-const defaultWallpaperMode = backgroundWallpaper.mode;
+// 壁纸 / 选宠 / 头像框：键名、门控、默认值都由设置登记表提供
+const defaultWallpaperMode = settings.defaultOf("wallpaper") as WALLPAPER_MODE;
+let wallpaperMode: WALLPAPER_MODE = $state(defaultWallpaperMode);
 type PostListLayoutMode = "list" | "card";
 let currentLayout: PostListLayoutMode = $state("list");
 const defaultLayout = siteConfig.postListLayout.defaultMode;
@@ -135,13 +129,32 @@ const isPetPickerSwitchable =
 const pickerPets = isPetPickerSwitchable
 	? spritePetConfig.pickerPetIds.map((id) => findBuiltinPet(id))
 	: [];
-let selectedPetId = $state(getStoredPetSelection());
-const defaultPetSelection = getDefaultPetSelection();
+let selectedPetId = $state(settings.defaultOf("petId") as string);
+const defaultPetSelection = settings.defaultOf("petId") as string;
 const isAvatarFrameSwitchable =
 	displaySettingsConfig.avatarFrameSwitchable &&
 	profileConfig.avatarFrame?.enabled !== false;
-let selectedAvatarFrameId = $state<AvatarFrameId>(getStoredAvatarFrameId());
-const defaultAvatarFrameId = getDefaultAvatarFrameId();
+const defaultAvatarFrameId = settings.defaultOf("avatarFrame") as AvatarFrameId;
+let selectedAvatarFrameId = $state<AvatarFrameId>(defaultAvatarFrameId);
+
+function readWallpaperSetting(): WALLPAPER_MODE {
+	const value = settings.read("wallpaper");
+	return typeof value === "string"
+		? (value as WALLPAPER_MODE)
+		: defaultWallpaperMode;
+}
+
+function readPetSetting(): string {
+	const value = settings.read("petId");
+	return typeof value === "string" ? value : defaultPetSelection;
+}
+
+function readAvatarFrameSetting(): AvatarFrameId {
+	const value = settings.read("avatarFrame");
+	return typeof value === "string"
+		? (value as AvatarFrameId)
+		: defaultAvatarFrameId;
+}
 
 const avatarFrameChoices: {
 	id: AvatarFrameId;
@@ -183,7 +196,7 @@ const avatarFrameChoices: {
 
 function selectAvatarFrame(id: AvatarFrameId) {
 	selectedAvatarFrameId = id;
-	setAvatarFrameId(id);
+	settings.set("avatarFrame", id);
 }
 
 function resetAvatarFrame() {
@@ -374,7 +387,7 @@ function resetHue() {
 
 function resetWallpaperMode() {
 	wallpaperMode = defaultWallpaperMode;
-	setWallpaperMode(defaultWallpaperMode);
+	settings.set("wallpaper", defaultWallpaperMode);
 }
 
 function resetLayout() {
@@ -391,7 +404,7 @@ function resetLayout() {
 function selectPet(petId: string) {
 	if (!mounted || selectedPetId === petId) return;
 	selectedPetId = petId;
-	setPetSelection(petId);
+	settings.set("petId", petId);
 }
 
 function resetPetSelection() {
@@ -537,7 +550,7 @@ function resetCardSettings() {
 
 function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 	wallpaperMode = newMode;
-	setWallpaperMode(newMode);
+	settings.set("wallpaper", newMode);
 	window.scrollTo({ top: 0 });
 
 	if (newMode === WALLPAPER_OVERLAY) {
@@ -618,8 +631,8 @@ onMount(() => {
 
 	checkScreenSize();
 
-	// 从localStorage读取保存的壁纸模式
-	wallpaperMode = getStoredWallpaperMode();
+	// 从设置登记表读取当前壁纸模式
+	wallpaperMode = readWallpaperSetting();
 
 	// 从localStorage读取水波纹动画状态
 	wavesEnabled = readSimpleToggle("waves");
@@ -645,8 +658,8 @@ onMount(() => {
 	petRoamEnabled = readSimpleToggle("petRoam");
 
 	// 桌宠选中项
-	selectedPetId = getStoredPetSelection();
-	selectedAvatarFrameId = getStoredAvatarFrameId();
+	selectedPetId = readPetSetting();
+	selectedAvatarFrameId = readAvatarFrameSetting();
 
 	const handleSakuraIntroEnded = () => {
 		sakuraEnabled = false;
@@ -706,19 +719,13 @@ onMount(() => {
 });
 
 onMount(() => {
-	const handleWallpaperModeChange = (event: Event) => {
-		const customEvent = event as CustomEvent<{ mode: WALLPAPER_MODE }>;
-		wallpaperMode = customEvent.detail.mode;
-	};
+	const unsubscribeWallpaper = settings.subscribe("wallpaper", (value) => {
+		if (typeof value === "string") {
+			wallpaperMode = value as WALLPAPER_MODE;
+		}
+	});
 
-	window.addEventListener("wallpaperModeChange", handleWallpaperModeChange);
-
-	return () => {
-		window.removeEventListener(
-			"wallpaperModeChange",
-			handleWallpaperModeChange,
-		);
-	};
+	return unsubscribeWallpaper;
 });
 
 $effect(() => {

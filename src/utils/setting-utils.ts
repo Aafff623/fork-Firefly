@@ -1467,18 +1467,19 @@ export function getPetRoamEnabled(): boolean {
 	}
 }
 
-export function setPetRoamEnabled(enabled: boolean): void {
+export function setPetRoamEnabled(enabled: boolean): boolean {
 	if (typeof localStorage === "undefined") {
-		return;
+		return false;
 	}
 	try {
 		localStorage.setItem(PET_ROAM_ENABLED_KEY, String(enabled));
 	} catch {
-		/* ignore */
+		return false;
 	}
 	window.dispatchEvent(
 		new CustomEvent("firefly:pet-roam-toggle", { detail: { enabled } }),
 	);
+	return true;
 }
 
 /** 桌宠双击等：短暂飘樱，不写入常驻/钉住；已钉住则不动 */

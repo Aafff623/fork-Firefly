@@ -25,8 +25,8 @@ export const displaySettingsConfig: DisplaySettingsConfig = {
 
 	// ── 壁纸 (Wallpaper) ──────────────────────────────────
 
-	// 壁纸模式切换开关（导航栏入口改为壁纸面板）
-	wallpaperModeSwitchable: true,
+	// 壁纸模式固定为 Banner，避免旧的 localStorage.wallpaperMode 把首页切成全屏
+	wallpaperModeSwitchable: false,
 
 	// 水波纹动画开关
 	wavesSwitchable: true,

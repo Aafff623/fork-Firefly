@@ -3,6 +3,7 @@ import GoogleAnalytics from "@components/analytics/GoogleAnalytics.astro";
 import La51Analytics from "@components/analytics/La51Analytics.astro";
 import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
 import UmamiAnalytics from "@components/analytics/UmamiAnalytics.astro";
+import BootLoader from "@components/features/BootLoader.astro";
 import CodeGroupManager from "@components/features/CodeGroupManager.astro";
 import FancyboxManager from "@components/features/FancyboxManager.astro";
 import FontSetup from "@components/features/FontSetup.astro";
@@ -16,8 +17,6 @@ import {
 	analyticsConfig,
 	backgroundWallpaper,
 	commentConfig,
-	displaySettingsConfig,
-	expressiveCodeConfig,
 	musicPlayerConfig,
 	profileConfig,
 	siteConfig,
@@ -29,6 +28,7 @@ import {
 	PAGE_WIDTH,
 } from "@/constants/constants";
 import { defaultFavicons } from "@/constants/icon";
+import { serializeBootState } from "@/lib/settings/registry";
 // V7：页脚样式异步加载（纯手写 CSS、仅页底 Footer 使用）——不占首屏渲染阻塞
 import footerStyles from "@/styles/site-footer.css?url";
 import type { Favicon } from "@/types/config";
@@ -90,6 +90,10 @@ if (siteConfig.post.generateOgImages && postSlug) {
 
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
+
+// 首屏初始态：键名 / 默认值 / 门控 / 主题常量全部来自设置登记表，
+// 内联脚本只消费这份 JSON，不再在 Layout 里手写同一套键名。
+const settingsBoot = serializeBootState();
 
 // const siteLang = siteConfig.lang.replace('_', '-')
 if (!lang) {
@@ -180,7 +184,11 @@ const siteLang = lang.replace("_", "-");
       content={description || siteConfig.description || pageTitle}
     />
 
-    <meta name="viewport" content="width=device-width" />
+    {/* 暂不加 viewport-fit=cover：它会让页面伸到状态栏底下，而 sticky 顶栏（4.5rem）
+        与正文/侧栏的 5.5rem 让位偏移是散落各处的字面量，需要连同 env(safe-area-inset-top)
+        一起迁移并上真机核对，否则刘海机型正文会钻到顶栏底下。
+        在那之前 gift-surprise / site-footer / 文章加载失败提示里的 safe-area 规则仍为 0。 */}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     {
       favicons.map((favicon) => (
@@ -266,32 +274,25 @@ const siteLang = lang.replace("_", "-");
       is:inline
       define:vars={{
         BANNER_HEIGHT_EXTEND,
-        PAGE_WIDTH,
         configHue,
-        defaultMode: siteConfig.themeColor.defaultMode ?? "light",
-        timeLightFromHour:
-          siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7,
-        timeDarkFromHour:
-          siteConfig.themeColor.timeSchedule?.darkFromHour ?? 19,
-        themeTimeZone: siteConfig.timezone || "Asia/Shanghai",
-        defaultWallpaperMode: backgroundWallpaper.mode,
-        isWallpaperSwitchable:
-          displaySettingsConfig.wallpaperModeSwitchable,
-        darkTheme: expressiveCodeConfig.darkTheme,
-        lightTheme: expressiveCodeConfig.lightTheme,
         baseUrl: import.meta.env.BASE_URL,
-        cardTransparentOpacity:
-          backgroundWallpaper.atmosphere?.enable === true
-            ? (backgroundWallpaper.atmosphere.cardOpacity ?? 0.78)
-            : (backgroundWallpaper.overlay?.cardOpacity ?? 0.6),
-        defaultAvatarFrameId:
-          profileConfig.avatarFrame?.enabled === false
-            ? "none"
-            : (profileConfig.avatarFrame?.defaultId ?? "S3-metallic"),
-        avatarFrameFeatureOn: profileConfig.avatarFrame?.enabled !== false,
+        settingsBoot: JSON.stringify(settingsBoot),
       }}
     >
-      // 主题初始化 - 与 setting-utils.ts 保持一致（时段按站点时区 / 北京时间）
+      // 首屏配置全部来自设置登记表（settingsBoot）；这里只做同步的读存储 + 应用，保持防闪烁
+      const boot = JSON.parse(settingsBoot);
+
+      // 首页首访：先标横幅阶段，后面的封面/侧栏图等启动节奏再插入
+      (function markHomeBootPhase() {
+        var path = window.location.pathname;
+        var home =
+          path === baseUrl ||
+          path === "/" ||
+          (baseUrl !== "/" && path === baseUrl.replace(/\/$/, ""));
+        if (home) document.documentElement.setAttribute("data-boot-phase", "banner");
+      })();
+
+      // 主题初始化 - 时段按站点时区 / 北京时间
       const LIGHT_MODE = "light";
       const DARK_MODE = "dark";
       const SYSTEM_MODE = "system";
@@ -300,15 +301,19 @@ const siteLang = lang.replace("_", "-");
 
       // 一次性恢复时间感知：曾锁死的 light/dark 拉回 time
       if (
-        defaultMode === TIME_MODE &&
+        boot.defaults.theme === TIME_MODE &&
         localStorage.getItem(THEME_TIME_RESTORE_KEY) !== "1"
       ) {
-        localStorage.setItem("theme", TIME_MODE);
+        localStorage.setItem(boot.keys.theme, TIME_MODE);
         localStorage.setItem(THEME_TIME_RESTORE_KEY, "1");
       }
 
-      // 获取存储的主题，如果没有则使用默认值
-      const theme = localStorage.getItem("theme") || defaultMode;
+      // 获取存储的主题，没有或非法时使用默认值
+      const theme = (function resolveStoredTheme() {
+        const stored = localStorage.getItem(boot.keys.theme);
+        if (!stored) return boot.defaults.theme;
+        return boot.theme.modes.indexOf(stored) >= 0 ? stored : boot.defaults.theme;
+      })();
 
       // 获取系统主题
       function getSystemTheme() {
@@ -319,7 +324,7 @@ const siteLang = lang.replace("_", "-");
 
       function getZonedHour() {
         const hourPart = new Intl.DateTimeFormat("en-US", {
-          timeZone: themeTimeZone,
+          timeZone: boot.theme.timeZone,
           hour: "numeric",
           hourCycle: "h23",
         })
@@ -332,7 +337,7 @@ const siteLang = lang.replace("_", "-");
       function getTimeTheme() {
         const hour = getZonedHour();
         const isDarkHour =
-          hour >= timeDarkFromHour || hour < timeLightFromHour;
+          hour >= boot.theme.darkFromHour || hour < boot.theme.lightFromHour;
         return isDarkHour ? DARK_MODE : LIGHT_MODE;
       }
 
@@ -360,7 +365,7 @@ const siteLang = lang.replace("_", "-");
       // Set the theme for Expressive Code
       document.documentElement.setAttribute(
         "data-theme",
-        isDark ? darkTheme : lightTheme
+        isDark ? boot.theme.darkTheme : boot.theme.lightTheme
       );
 
       // Load the hue from local storage
@@ -369,33 +374,30 @@ const siteLang = lang.replace("_", "-");
 
       // 头像框：尽早写入，避免侧栏闪无框
       (function initAvatarFrameEarly() {
-        const allowed = {
-          none: 1,
-          "C3-conic-spin": 1,
-          "C2-dual-soft": 1,
-          "C6-metallic": 1,
-          "C5-stars-css": 1,
-          "S3-metallic": 1,
-          "S6-laurel": 1,
-        };
-        let id = defaultAvatarFrameId;
-        if (!avatarFrameFeatureOn) {
+        var allowed = {};
+        for (var i = 0; i < boot.avatarFrames.length; i++) {
+          allowed[boot.avatarFrames[i]] = 1;
+        }
+        var id = boot.defaults.avatarFrame;
+        if (!boot.gates.avatarFrame) {
           id = "none";
         } else {
           try {
-            const stored = localStorage.getItem("avatarFrameId");
+            const stored = localStorage.getItem(boot.keys.avatarFrame);
             if (stored && allowed[stored]) id = stored;
           } catch (e) {}
         }
         document.documentElement.setAttribute("data-avatar-frame", id);
       })();
 
-      // 设置卡片透明度（全屏透明模式下使用），优先使用用户自定义值
-      const storedCardOpacity = localStorage.getItem("overlayCardOpacity");
+      // 卡片透明度（banner 透明 / overlay 共用）：面板关闭时用站点默认，忽略残留值
+      const storedCardOpacity = boot.gates.overlayCardOpacity
+        ? localStorage.getItem(boot.keys.overlayCardOpacity)
+        : null;
       const parsedCardOpacity = storedCardOpacity === null ? NaN : Number.parseFloat(storedCardOpacity);
       const resolvedCardOpacity = Number.isFinite(parsedCardOpacity)
         ? Math.min(1, Math.max(0, parsedCardOpacity))
-        : cardTransparentOpacity;
+        : boot.defaults.overlayCardOpacity;
       document.documentElement.style.setProperty("--card-transparent-opacity", String(resolvedCardOpacity));
 
       // calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
@@ -439,9 +441,14 @@ const siteLang = lang.replace("_", "-");
       const WALLPAPER_FULLSCREEN = "fullscreen";
       const WALLPAPER_OVERLAY = "overlay";
       const WALLPAPER_NONE = "none";
-      const wallpaperMode = isWallpaperSwitchable
-        ? localStorage.getItem("wallpaperMode") || defaultWallpaperMode
-        : defaultWallpaperMode;
+      const wallpaperMode = (function resolveWallpaperMode() {
+        if (!boot.gates.wallpaperMode) return boot.defaults.wallpaperMode;
+        const stored = localStorage.getItem(boot.keys.wallpaperMode);
+        if (!stored) return boot.defaults.wallpaperMode;
+        return boot.wallpaperModes.indexOf(stored) >= 0
+          ? stored
+          : boot.defaults.wallpaperMode;
+      })();
 
       // 设置data-wallpaper-mode属性
       document.documentElement.setAttribute(
@@ -611,7 +618,7 @@ const siteLang = lang.replace("_", "-");
 
       // 初始化水波纹动画状态 - 在 html 元素上设置属性，CSS 会立即生效
       (function applyWavesEnabled() {
-        const wavesEnabled = localStorage.getItem("wavesEnabled");
+        const wavesEnabled = localStorage.getItem(boot.toggles.waves.key);
         if (wavesEnabled !== null) {
           document.documentElement.setAttribute("data-waves-enabled", wavesEnabled);
         }
@@ -619,7 +626,7 @@ const siteLang = lang.replace("_", "-");
 
       // 初始化渐变过渡状态 - 在 html 元素上设置属性，CSS 会立即生效
       (function applyGradientEnabled() {
-        const gradientEnabled = localStorage.getItem("gradientEnabled");
+        const gradientEnabled = localStorage.getItem(boot.toggles.gradient.key);
         if (gradientEnabled !== null) {
           document.documentElement.setAttribute("data-gradient-enabled", gradientEnabled);
         }
@@ -627,7 +634,7 @@ const siteLang = lang.replace("_", "-");
 
       // 初始化横幅标题显示状态 - 在 html 元素上设置属性，CSS 会立即生效
       (function applyBannerTitleEnabled() {
-        const bannerTitleEnabled = localStorage.getItem("bannerTitleEnabled");
+        const bannerTitleEnabled = localStorage.getItem(boot.toggles.bannerTitle.key);
         if (bannerTitleEnabled !== null) {
           document.documentElement.setAttribute("data-banner-title-enabled", bannerTitleEnabled);
         }
@@ -652,7 +659,6 @@ const siteLang = lang.replace("_", "-");
 
     <!-- Font Setup (Astro Font API) -->
     <FontSetup />
-    <!-- 文字斥力效果（agent-cfo DecodeHeadline 复刻），增强 .repel-text 元素 -->
     <GlyphTitleEffects />
   </head>
   <body
@@ -666,29 +672,30 @@ const siteLang = lang.replace("_", "-");
       },
     ]}
   >
+    {!embed && <BootLoader lang={lang} />}
 
     <div id="progress-bar"></div>
 
-    {/* 卡片样式：面板未开放时强制站点默认，开放时才读 localStorage */}
+    {/* 卡片样式：面板未开放时强制站点默认，开放时才读 localStorage；键名/门控来自登记表 */}
     <script is:inline define:vars={{
-      defaultBorder: siteConfig.card?.border ?? false,
-      defaultFollowTheme: siteConfig.card?.followTheme ?? false,
-      cardBorderSwitchable: displaySettingsConfig.cardBorderSwitchable,
-      cardFollowThemeSwitchable: displaySettingsConfig.cardFollowThemeSwitchable,
+      settingsBoot: JSON.stringify(settingsBoot),
     }}>
       (function() {
-        var border = defaultBorder;
-        if (cardBorderSwitchable) {
-          var storedBorder = localStorage.getItem("cardBorderEnabled");
+        var boot = JSON.parse(settingsBoot);
+        var borderToggle = boot.toggles.cardBorder;
+        var border = borderToggle.gate ? borderToggle.defaultValue : borderToggle.gatedValue;
+        if (borderToggle.gate) {
+          var storedBorder = localStorage.getItem(borderToggle.key);
           if (storedBorder !== null) border = storedBorder === "true";
         }
         if (border) document.documentElement.classList.add("enable-card-border");
         else document.documentElement.classList.remove("enable-card-border");
 
-        var follow = false;
-        if (cardFollowThemeSwitchable) {
-          var storedFollow = localStorage.getItem("cardFollowThemeEnabled");
-          follow = storedFollow !== null ? storedFollow === "true" : defaultFollowTheme;
+        var followToggle = boot.toggles.cardFollowTheme;
+        var follow = followToggle.gate ? followToggle.defaultValue : followToggle.gatedValue;
+        if (followToggle.gate) {
+          var storedFollow = localStorage.getItem(followToggle.key);
+          if (storedFollow !== null) follow = storedFollow === "true";
         }
         if (follow) document.body.classList.add("card-follow-theme-hue");
         else document.body.classList.remove("card-follow-theme-hue");
@@ -739,18 +746,11 @@ const siteLang = lang.replace("_", "-");
           if (!val || !val.includes("url(")) return; // 无底图使用方不处理
           (el as HTMLElement).dataset.heroImg = val;
           el.classList.add("hero-img-deferred");
-          // 兜底图先行渲染；真图在 idle 后再拉（弱网下 GIF 到达晚也不挡首屏）
-          const schedule =
-            "requestIdleCallback" in window
-              ? (cb: () => void) =>
-                  (window as unknown as {
-                    requestIdleCallback: (
-                      cb: () => void,
-                      o?: { timeout: number },
-                    ) => number;
-                  }).requestIdleCallback(cb, { timeout: 1200 })
-              : (cb: () => void) => window.setTimeout(cb, 600);
-          schedule(() => restore(el));
+          // 真图等到启动节奏进入次要阶段再拉，避免和横幅/封面抢带宽
+          void import("@/lib/boot-schedule").then(({ startBootSchedule, whenBootPhase }) => {
+            startBootSchedule();
+            void whenBootPhase("secondary").then(() => restore(el));
+          });
         });
       };
       if (document.readyState === "loading") {
@@ -924,7 +924,8 @@ const siteLang = lang.replace("_", "-");
     BANNER_HEIGHT_EXTEND,
     // MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
   } from "@/constants/constants";
-  import { backgroundWallpaper, expressiveCodeConfig, siteConfig } from "@/config";
+  import { backgroundWallpaper, siteConfig } from "@/config";
+  import { settings } from "@/lib/settings/registry";
   import {
     isCurtainFocusPath,
     syncCurtainFocusFromUrl,
@@ -1494,11 +1495,10 @@ function disableAnimation() {
         void prepareArticle(link.href, { priority: false, force: false }).catch(() => undefined);
       }
     };
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(preloadMarkedArticles, { timeout: 1_500 });
-    } else {
-      setTimeout(preloadMarkedArticles, 250);
-    }
+    void import("@/lib/boot-schedule").then(({ startBootSchedule, whenBootPhase }) => {
+      startBootSchedule();
+      void whenBootPhase("secondary").then(preloadMarkedArticles);
+    });
     document.addEventListener("swup:page:view", preloadMarkedArticles);
   }
 
@@ -1847,8 +1847,6 @@ function disableAnimation() {
       }
 
     });
-    // C：time 主题的小时格式化器会话级缓存（软导航复用，免逐次构造）
-    let timeThemeHourFormatter: Intl.DateTimeFormat | null = null;
     window.swup.hooks.on("page:view", (visit: { meta: Record<string, unknown> }) => {
       // 恢复 #main-grid 的过渡动画（visit:start 中禁用了）
       const mainGrid = document.getElementById("main-grid");
@@ -1895,39 +1893,9 @@ function disableAnimation() {
         }, 600);
       }
 
-      // 同步主题状态 - 解决从首页进入文章页面时代码块渲染问题
-      const storedTheme = localStorage.getItem("theme") || siteConfig.themeColor.defaultMode || "light";
-      let isDark = false;
-
-      if (storedTheme === "system") {
-        isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      } else if (storedTheme === "time") {
-        const tz = siteConfig.timezone || "Asia/Shanghai";
-        const lightFrom = siteConfig.themeColor.timeSchedule?.lightFromHour ?? 7;
-        const darkFrom = siteConfig.themeColor.timeSchedule?.darkFromHour ?? 19;
-        // C：Intl.DateTimeFormat 贵在构造——会话级缓存，软导航不再逐次重建
-        const hourFormatter = (timeThemeHourFormatter ??= new Intl.DateTimeFormat(
-          "en-US",
-          { timeZone: tz, hour: "numeric", hourCycle: "h23" },
-        ));
-        const hourPart = hourFormatter
-          .formatToParts(new Date())
-          .find((p) => p.type === "hour")?.value;
-        const hour = Number(hourPart);
-        isDark =
-          Number.isFinite(hour) && (hour >= darkFrom || hour < lightFrom);
-      } else {
-        isDark = storedTheme === "dark";
-      }
-
-      const expectedTheme = isDark
-        ? expressiveCodeConfig.darkTheme
-        : expressiveCodeConfig.lightTheme;
-      const currentTheme = document.documentElement.getAttribute("data-theme");
-
-      if (currentTheme !== expectedTheme) {
-        document.documentElement.setAttribute("data-theme", expectedTheme);
-      }
+      // 同步主题状态 - 解决从首页进入文章页面时代码块渲染问题；
+      // 读取 + 应用都走登记表，不再在这里重算时段 / 手写键名
+      settings.apply("theme", settings.read("theme"));
 
       setTimeout(() => {
         if (document.getElementById("tcomment")) {
@@ -2387,14 +2355,16 @@ function disableAnimation() {
   });
 
   // 浏览页侧栏失衡：分类折叠 + 宠钉日历（文章页早退）
+  import { startBootSchedule } from "@/lib/boot-schedule";
   import { bootSidebarBalance } from "@/lib/sidebar/sidebarBalance";
   import { spritePetConfig } from "@/config";
+  import { initWallpaperMode, initThemeListener, initAvatarFrame } from "@/utils/setting-utils";
+
+  startBootSchedule();
+
   bootSidebarBalance({
     minGapPx: spritePetConfig.roam?.balanceParkMinGapPx ?? 160,
   });
-
-  // Initialize wallpaper mode
-  import { initWallpaperMode, initThemeListener, initAvatarFrame } from "@/utils/setting-utils";
 
   function initCurtainFocusOnLoad() {
     // 首屏若落在动态/相册：先保持合拢，下一帧再推开，才能看到幕布动画
@@ -2460,7 +2430,4 @@ function disableAnimation() {
 
   initImageLoadFadeIn();
   document.addEventListener('astro:page-load', initImageLoadFadeIn);
-  document.addEventListener('swup:contentReplaced', () => {
-    requestAnimationFrame(initImageLoadFadeIn);
-  });
 </script>
