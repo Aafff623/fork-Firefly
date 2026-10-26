@@ -35,7 +35,7 @@
 - **06/13 贴纸建议**（2026-10-26）：策略顺序 / 8 字阈值 / 默认结果数移入 `lib/sticker-suggest/policy`（纯核心，依赖注入）；writeback 命中独立标 `source:"writeback"`；Agent 超限 429 + `Retry-After`，超长查询与无匹配仍是 200 空结果；客户端识别 429 静默退避（不弹 Toast、不缓存）；纯核心测试通过。
 - **10/11 设置登记表**（2026-10-26）：registry 14 行（主题/壁纸/overlay/头像框/宠物 + 9 布尔），`read/apply/applyAll/set/subscribe/defaultOf`；Layout 首屏消费序列化 boot state，面板走 registry；首屏/头像框写入冒烟通过。
 - **16/17/18 Profile/GlyphTitle/门禁**（2026-10-26）：Profile 单一 `onPageView` + voice 计时器集中清理；GlyphTitle resize 接 seam；全仓死事件清零，`check-lifecycle-events` 自测 + 扫描接入 `check:gates`。
-- **验证备注**：`astro build` 通过；`check-delivery-budget` 865 页 0 违规；`tsc` 0；`astro check` 0 errors；`check:behavior` 13/13；v41/社区/UI/死事件门禁通过。文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；软导航后 post glyph 计数 0（直载 1）待验收复验。
+- **验证备注**：`astro build` 通过；`check-delivery-budget` 865 页 0 违规；`tsc` 0；`astro check` 0 errors；`check:behavior` 13/13；v41/社区/UI/死事件门禁通过。PostPage 文章卡已切成 `loading="lazy" + bootDefer="main"`，文章导航门禁同步后 22/22 通过。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；软导航后 post glyph 计数 0（直载 1）待验收复验。
 
 ## Not yet specified
 
