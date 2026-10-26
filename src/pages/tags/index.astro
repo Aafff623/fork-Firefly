@@ -9,9 +9,16 @@ import { tagAliases } from "@/config/tagAliases";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getTagList } from "@/utils/content-utils";
+import { getSortedPosts, getTagList } from "@/utils/content-utils";
+import { collectTagGroups } from "@/utils/tag-slug";
+import { url } from "@/utils/url-utils";
 
 const tags = await getTagList();
+const allPosts = await getSortedPosts();
+const tagGroups = collectTagGroups(
+	tags,
+	allPosts.map((post) => ({ tags: post.data.tags })),
+);
 const ranked = [...tags]
 	.map((t) => ({ name: t.name.trim(), count: t.count }))
 	.filter((t) => t.name)
@@ -91,6 +98,35 @@ const ranked = [...tags]
       )
     }
   </div>
+
+  {
+    tagGroups.length > 0 && (
+      <details class="tags-static card-base mb-4 px-6 py-4 sm:px-8">
+        <summary class="tags-static__summary">
+          <span class="tags-static__summary-title">静态标签页</span>
+          <span class="tags-static__summary-hint">
+            {tagGroups.length} 个标签 · 可分享 URL · 每标签 RSS
+          </span>
+        </summary>
+        <p class="tags-static__note">
+          按归一 slug 合并同名不同形的写法；交互筛选仍用上方标签列表。
+        </p>
+        <ul class="tags-static__list">
+          {tagGroups.map((group) => (
+            <li class="tags-static__item">
+              <a
+                class="tags-static__link"
+                href={url(`/tags/${encodeURIComponent(group.slug)}/`)}
+              >
+                #{group.name}
+                <span class="tags-static__count">({group.count})</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    )
+  }
 </MainGridLayout>
 
 <style>
@@ -259,6 +295,84 @@ const ranked = [...tags]
     margin: 0 auto 0.75rem;
     font-size: 2.5rem;
     opacity: 0.55;
+  }
+
+  .tags-static__summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.75rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .tags-static__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tags-static__summary::before {
+    content: "▸";
+    color: var(--primary);
+    transition: transform 0.15s ease;
+  }
+
+  .tags-static[open] .tags-static__summary::before {
+    transform: rotate(90deg);
+  }
+
+  .tags-static__summary-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .tags-static__summary-hint {
+    font-size: 0.78rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .tags-static__note {
+    margin: 0.55rem 0 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .tags-static__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tags-static__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.22rem 0.55rem;
+    font-size: 0.82rem;
+    text-decoration: none;
+    color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 35%, transparent);
+    border-radius: 999px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .tags-static__link:hover {
+    color: var(--primary);
+    border-color: color-mix(in oklch, var(--primary) 55%, transparent);
+  }
+
+  .tags-static__link:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .tags-static__count {
+    font-size: 0.72rem;
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
   }
 </style>
 

@@ -1,77 +1,14 @@
-import { loadRenderers } from "astro:container";
-import { render } from "astro:content";
-import { getContainerRenderer as getMDXRenderer } from "@astrojs/mdx/container-renderer";
-import rss, { type RSSFeedItem } from "@astrojs/rss";
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
 import { getSortedPosts } from "@utils/content-utils";
-import { formatDateI18nWithTime } from "@utils/date-utils";
-import { url } from "@utils/url-utils";
+import { createRssResponse } from "@utils/rss-feed";
 import type { APIContext } from "astro";
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
-import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
-import pkg from "../../package.json";
-
-function stripInvalidXmlChars(str: string): string {
-	return str.replace(
-		// biome-ignore lint/suspicious/noControlCharactersInRegex: https://www.w3.org/TR/xml/#charsets
-		/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]/g,
-		"",
-	);
-}
 
 export async function GET(context: APIContext): Promise<Response> {
-	const includeContent = (siteConfig.feed?.contentMode ?? "full") === "full";
 	const blog = await getSortedPosts();
-	// summary 模式不渲染正文：连 MDX 渲染器和容器都不初始化，只出摘要 + 链接
-	const container = includeContent
-		? await AstroContainer.create({
-				renderers: await loadRenderers([getMDXRenderer()]),
-			})
-		: null;
-	const feedItems: RSSFeedItem[] = [];
-	for (const post of blog) {
-		if (!container) {
-			feedItems.push({
-				title: post.data.title,
-				pubDate: post.data.published,
-				description: post.data.description || "",
-				link: url(`/posts/${post.id}/`),
-			});
-			continue;
-		}
-		if (post.data.password) {
-			feedItems.push({
-				title: post.data.title,
-				pubDate: post.data.published,
-				description: post.data.description || "",
-				link: url(`/posts/${post.id}/`),
-				content: i18n(I18nKey.passwordProtectedRss),
-			});
-			continue;
-		}
-		const { Content } = await render(post);
-		const rawContent = await container.renderToString(Content);
-		const cleanedContent = stripInvalidXmlChars(rawContent);
-		feedItems.push({
-			title: post.data.title,
-			pubDate: post.data.published,
-			description: post.data.description || "",
-			link: url(`/posts/${post.id}/`),
-			content: sanitizeHtml(cleanedContent, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-			}),
-		});
-	}
-	return rss({
+	return createRssResponse({
 		title: siteConfig.title,
 		description: siteConfig.subtitle || "No description",
 		site: context.site ?? siteConfig.site_url,
-		customData: `<templateTheme>Firefly</templateTheme>
-		<templateThemeVersion>${pkg.version}</templateThemeVersion>
-		<templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl>
-		<lastBuildDate>${formatDateI18nWithTime(new Date())}</lastBuildDate>`,
-		items: feedItems,
+		posts: blog,
 	});
 }

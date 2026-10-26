@@ -1,0 +1,340 @@
+---
+/**
+ * 每标签静态可分页页：/tags/<slug>/、/tags/<slug>/2/ ……
+ * 与 /tags/ 交互页（标签列表/标签球/别名搜索）并存：
+ * - 交互页负责筛选体验，本路由提供可分享、可收录、可订阅的稳定 URL
+ * - slug 归一与合并规则见 @utils/tag-slug，每标签 RSS 见同目录 rss.xml.ts
+ */
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths, Page } from "astro";
+import { Icon } from "astro-icon/components";
+import PostPage from "@/components/layout/PostPage.astro";
+import { siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import {
+	getAutoPinnedPostId,
+	getSortedPosts,
+	getTagList,
+} from "@/utils/content-utils";
+import { TAG_RSS_ENABLED } from "@/utils/rss-feed";
+import { collectTagGroups, normalizeTagSlug } from "@/utils/tag-slug";
+import { url } from "@/utils/url-utils";
+
+interface Props {
+	page: Page<CollectionEntry<"posts">>;
+	tagName: string;
+	tagSlug: string;
+	tagVariants: string[];
+	autoPinnedId: string | null;
+}
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const [tagList, posts] = await Promise.all([getTagList(), getSortedPosts()]);
+	const groups = collectTagGroups(
+		tagList,
+		posts.map((post) => ({ tags: post.data.tags })),
+	);
+	const autoPinnedId = getAutoPinnedPostId(posts);
+
+	// 新增标签时若与既有标签归一后撞车，构建日志里留一行；页面头部也会标出合并写法
+	for (const group of groups) {
+		if (group.variants.length > 1) {
+			console.warn(
+				`[tag-slug] 标签写法冲突，已合并为 /tags/${group.slug}/：${group.variants.join(" / ")}`,
+			);
+		}
+	}
+
+	return groups.flatMap((group) => {
+		const tagPosts = posts.filter((post) =>
+			post.data.tags.some((tag) => normalizeTagSlug(tag) === group.slug),
+		);
+		return paginate(tagPosts, {
+			params: { tag: group.slug },
+			props: {
+				tagName: group.name,
+				tagSlug: group.slug,
+				tagVariants: group.variants,
+				autoPinnedId,
+			},
+			pageSize: siteConfig.pagination.postsPerPage,
+		});
+	});
+}) satisfies GetStaticPaths;
+
+const { page, tagName, tagSlug, tagVariants, autoPinnedId } = Astro.props;
+const basePath = url(`/tags/${encodeURIComponent(tagSlug)}/`);
+const pageUrl = (pageNumber: number): string =>
+	pageNumber <= 1 ? basePath : `${basePath}${pageNumber}/`;
+const rssUrl = url(`/tags/${encodeURIComponent(tagSlug)}/rss.xml`);
+// Astro 的 page.url.* 保留路由原文（中文未编码）；统一 encodeURI 后再进 href
+const encodedPath = (path: string | undefined): string | undefined =>
+	path ? encodeURI(path) : undefined;
+
+const HIDDEN = -1;
+const ADJ_DIST = 2;
+const VISIBLE = ADJ_DIST * 2 + 1;
+let count = 1;
+let left = page.currentPage;
+let right = page.currentPage;
+while (0 < left - 1 && right + 1 <= page.lastPage && count + 2 <= VISIBLE) {
+	count += 2;
+	left--;
+	right++;
+}
+while (0 < left - 1 && count < VISIBLE) {
+	count++;
+	left--;
+}
+while (right + 1 <= page.lastPage && count < VISIBLE) {
+	count++;
+	right++;
+}
+const pageNumbers: number[] = [];
+if (left > 1) pageNumbers.push(1);
+if (left === 3) pageNumbers.push(2);
+if (left > 3) pageNumbers.push(HIDDEN);
+for (let i = left; i <= right; i++) pageNumbers.push(i);
+if (right < page.lastPage - 2) pageNumbers.push(HIDDEN);
+if (right === page.lastPage - 2) pageNumbers.push(page.lastPage - 1);
+if (right < page.lastPage) pageNumbers.push(page.lastPage);
+---
+
+<MainGridLayout
+  title={`#${tagName}`}
+  description={`${tagName} · ${i18n(I18nKey.tags)} · ${siteConfig.title}`}
+>
+  <header class="tag-static-head card-base mb-4 px-6 py-5 sm:px-8 sm:py-6">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="tag-static-head__title">#{tagName}</h1>
+        <p class="tag-static-head__meta">
+          {page.total} {i18n(I18nKey.postsCount)} · {i18n(I18nKey.tags)}
+        </p>
+        {
+          tagVariants.length > 1 && (
+            <p class="tag-static-head__variants">
+              同名写法已合并：{tagVariants.join(" / ")}
+            </p>
+          )
+        }
+      </div>
+      <nav class="tag-static-head__actions" aria-label={i18n(I18nKey.tags)}>
+        {
+          TAG_RSS_ENABLED && (
+            <a
+              class="tag-static-head__rss"
+              href={rssUrl}
+              title={i18n(I18nKey.rss)}
+              aria-label={`${tagName} ${i18n(I18nKey.rss)}`}
+            >
+              <Icon is:inline name="lucide:rss" class="tag-static-head__icon" aria-hidden="true" />
+              RSS
+            </a>
+          )
+        }
+        <a class="tag-static-head__all" href={url("/tags/")}>
+          {i18n(I18nKey.allTags)}
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  {
+    page.data.length > 0 ? (
+      <PostPage page={page} autoPinnedId={autoPinnedId} />
+    ) : (
+      <div class="card-base px-8 py-12 text-center">
+        <Icon is:inline name="lucide:tags" class="text-5xl text-30 mx-auto mb-4" aria-hidden="true" />
+        <p class="text-30">{i18n(I18nKey.noData)}</p>
+      </div>
+    )
+  }
+
+  {
+    page.lastPage > 1 && (
+      <nav
+        class="tag-static-pagination mx-auto my-6 flex flex-wrap items-center justify-center gap-2"
+        aria-label={`${tagName} ${i18n(I18nKey.postList)}`}
+      >
+        {
+          page.url.prev ? (
+            <a
+              class="tag-static-pagination__button"
+              href={encodedPath(page.url.prev)}
+              aria-label={i18n(I18nKey.paginationPrev)}
+            >
+              <Icon is:inline name="lucide:chevron-left" aria-hidden="true" />
+            </a>
+          ) : (
+            <span
+              class="tag-static-pagination__button is-disabled"
+              aria-label={i18n(I18nKey.paginationPrev)}
+              aria-disabled="true"
+            >
+              <Icon is:inline name="lucide:chevron-left" aria-hidden="true" />
+            </span>
+          )
+        }
+        {pageNumbers.map((pageNumber) =>
+          pageNumber === HIDDEN ? (
+            <span class="tag-static-pagination__ellipsis" aria-hidden="true">
+              …
+            </span>
+          ) : pageNumber === page.currentPage ? (
+            <span
+              class="tag-static-pagination__button is-current"
+              aria-label={`${i18n(I18nKey.paginationPage)} ${pageNumber}`}
+              aria-current="page"
+            >
+              {pageNumber}
+            </span>
+          ) : (
+            <a
+              class="tag-static-pagination__button"
+              href={pageUrl(pageNumber)}
+              aria-label={`${i18n(I18nKey.paginationPage)} ${pageNumber}`}
+            >
+              {pageNumber}
+            </a>
+          ),
+        )}
+        {
+          page.url.next ? (
+            <a
+              class="tag-static-pagination__button"
+              href={encodedPath(page.url.next)}
+              aria-label={i18n(I18nKey.paginationNext)}
+            >
+              <Icon is:inline name="lucide:chevron-right" aria-hidden="true" />
+            </a>
+          ) : (
+            <span
+              class="tag-static-pagination__button is-disabled"
+              aria-label={i18n(I18nKey.paginationNext)}
+              aria-disabled="true"
+            >
+              <Icon is:inline name="lucide:chevron-right" aria-hidden="true" />
+            </span>
+          )
+        }
+      </nav>
+    )
+  }
+</MainGridLayout>
+
+<style>
+  .tag-static-head__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--primary);
+  }
+
+  .tag-static-head__meta {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .tag-static-head__variants {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+
+  .tag-static-head__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tag-static-head__rss,
+  .tag-static-head__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 45%, transparent);
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .tag-static-head__rss {
+    color: var(--primary);
+    background: color-mix(in oklch, var(--primary) 10%, transparent);
+  }
+
+  .tag-static-head__all {
+    color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 88%, transparent);
+  }
+
+  .tag-static-head__rss:hover,
+  .tag-static-head__all:hover {
+    border-color: color-mix(in oklch, var(--primary) 55%, transparent);
+    color: var(--primary);
+  }
+
+  .tag-static-head__rss:focus-visible,
+  .tag-static-head__all:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .tag-static-head__icon {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .tag-static-pagination__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: color-mix(in oklab, var(--content-meta) 92%, transparent);
+    background: color-mix(in oklch, var(--card-bg, #fff) 90%, transparent);
+    border: 1px solid color-mix(in oklch, var(--line-divider, #000) 45%, transparent);
+    border-radius: 0.55rem;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .tag-static-pagination__button.is-current {
+    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .tag-static-pagination__button.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .tag-static-pagination__button:not(.is-current):not(.is-disabled):hover {
+    color: var(--primary);
+    border-color: color-mix(in oklch, var(--primary) 55%, transparent);
+  }
+
+  .tag-static-pagination__button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .tag-static-pagination__ellipsis {
+    padding: 0 0.15rem;
+    color: var(--text-color-muted, oklch(0.5 0.02 70));
+  }
+</style>
