@@ -212,4 +212,10 @@ export type SiteConfig = {
 		 */
 		noReferrerDomains?: string[];
 	};
+
+	// 订阅（RSS）
+	feed?: {
+		/** "full" 输出正文全文（默认）· "summary" 只出摘要 + 链接 */
+		contentMode?: "full" | "summary";
+	};
 };

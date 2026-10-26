@@ -45,6 +45,8 @@
 4. **密钥**：不入库。
 5. **覆盖冲突**：本仓治理文件与上游主题说明冲突时，以本仓 `AGENTS.md` / `CONTEXT.md` 为准；上游原文已备份。
 6. **资产禁止空壳**：`CONTEXT` / `LANGUAGES` / `docs/agents/*` / `docs/glossary/*` / `docs/knowledge/official-docs.tree.json` 必须有可消费正文；缺内容时先调研再写盘，禁止只建空目录或一句话占位。弱关联产物（灵感 / 调研报告 / handoff / 知识文 / 临时脚本）归 `temp/` 对应分类，不在正式目录补建。
+7. **新配置项**：优先并入现有 `src/config/` 文件的一个字段，不新建「config 文件 + 设置注册表条目 + `test-settings-*` 脚本」三件套；确需新文件在 spec 里说明理由（出处：票 16 `.scratch/refrepo-borrow-batch1/issues/16-governance-standards.md`）。
+8. **新 test 脚本**：加 `test:*` 前先答「它守哪条发布红线」，守不住的不加（出处：同上）。
 
 ## 多 Agent 协作纪律
 

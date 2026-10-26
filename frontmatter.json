@@ -1,0 +1,134 @@
+{
+	"$schema": "https://frontmatter.codes/frontmatter.schema.json",
+	"frontMatter.framework.id": "astro",
+	"frontMatter.preview.host": "http://localhost:4321",
+	"frontMatter.content.publicFolder": "public",
+	"frontMatter.content.pageFolders": [
+		{
+			"title": "posts",
+			"path": "[[workspace]]/src/content/posts"
+		}
+	],
+	"frontMatter.taxonomy.contentTypes": [
+		{
+			"name": "default",
+			"pageBundle": true,
+			"previewPath": "/posts",
+			"filePrefix": null,
+			"clearEmpty": true,
+			"fields": [
+				{
+					"title": "title",
+					"name": "title",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "published",
+					"name": "published",
+					"type": "datetime",
+					"default": "{{now}}",
+					"isPublishDate": true
+				},
+				{
+					"title": "updated",
+					"name": "updated",
+					"type": "datetime"
+				},
+				{
+					"title": "description",
+					"name": "description",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "image",
+					"name": "image",
+					"type": "image",
+					"isPreviewImage": true
+				},
+				{
+					"title": "tags",
+					"name": "tags",
+					"type": "list"
+				},
+				{
+					"title": "themeTags",
+					"name": "themeTags",
+					"type": "list"
+				},
+				{
+					"title": "collections",
+					"name": "collections",
+					"type": "list"
+				},
+				{
+					"title": "category",
+					"name": "category",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "lang",
+					"name": "lang",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "draft",
+					"name": "draft",
+					"type": "boolean",
+					"default": false
+				},
+				{
+					"title": "pinned",
+					"name": "pinned",
+					"type": "boolean",
+					"default": false
+				},
+				{
+					"title": "author",
+					"name": "author",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "sourceLink",
+					"name": "sourceLink",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "licenseName",
+					"name": "licenseName",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "licenseUrl",
+					"name": "licenseUrl",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "comment",
+					"name": "comment",
+					"type": "boolean",
+					"default": true
+				},
+				{
+					"title": "password",
+					"name": "password",
+					"type": "string",
+					"single": true
+				},
+				{
+					"title": "passwordHint",
+					"name": "passwordHint",
+					"type": "string",
+					"single": true
+				}
+			]
+		}
+	]
+}

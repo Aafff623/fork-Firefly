@@ -22,11 +22,25 @@ function stripInvalidXmlChars(str: string): string {
 }
 
 export async function GET(context: APIContext): Promise<Response> {
+	const includeContent = (siteConfig.feed?.contentMode ?? "full") === "full";
 	const blog = await getSortedPosts();
-	const renderers = await loadRenderers([getMDXRenderer()]);
-	const container = await AstroContainer.create({ renderers });
+	// summary 模式不渲染正文：连 MDX 渲染器和容器都不初始化，只出摘要 + 链接
+	const container = includeContent
+		? await AstroContainer.create({
+				renderers: await loadRenderers([getMDXRenderer()]),
+			})
+		: null;
 	const feedItems: RSSFeedItem[] = [];
 	for (const post of blog) {
+		if (!container) {
+			feedItems.push({
+				title: post.data.title,
+				pubDate: post.data.published,
+				description: post.data.description || "",
+				link: url(`/posts/${post.id}/`),
+			});
+			continue;
+		}
 		if (post.data.password) {
 			feedItems.push({
 				title: post.data.title,

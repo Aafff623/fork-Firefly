@@ -30,6 +30,40 @@ const searchLabel = i18n(I18nKey.search);
 /** 展开时上浮的逐字提示（Search...... 形态） */
 const floatChars = [...`${searchLabel}......`];
 
+// --- URL 参数（票 10：?q= 可分享 / 可直达） ---
+/** 搜索页（/search/）由 AdvancedSearch 独占 ?q=，这里不接管，免得两个搜索框互相覆盖 */
+const isSearchPage = (): boolean =>
+	window.location.pathname.replace(/\/+$/, "").endsWith("/search");
+
+const readQueryFromUrl = (): string =>
+	new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+
+/**
+ * 关键词写回地址栏。只 replaceState 不 pushState：
+ * Swup 把历史索引记在 history.state 里，自己 push 会让前进/后退错位；
+ * replaceState 原地改 query，不新增历史条目。
+ */
+const syncQueryToUrl = (value: string): void => {
+	if (typeof window === "undefined" || isSearchPage()) return;
+	const trimmed = value.trim();
+	const next = new URL(window.location.href);
+	if ((next.searchParams.get("q") ?? "") === trimmed) return;
+	if (trimmed) {
+		next.searchParams.set("q", trimmed);
+	} else {
+		next.searchParams.delete("q");
+	}
+	try {
+		window.history.replaceState(
+			window.history.state,
+			"",
+			`${next.pathname}${next.search}${next.hash}`,
+		);
+	} catch {
+		// 极端环境禁用 History API 时静默放弃，搜索本身不受影响
+	}
+};
+
 // --- UI Logic ---
 const togglePanel = () => {
 	document
@@ -56,6 +90,7 @@ const closeSearchPanel = (): void => {
 	result = [];
 	searchError = "";
 	searchRequestId += 1;
+	syncQueryToUrl("");
 };
 
 const collapseDesktopSearch = (): void => {
@@ -91,6 +126,7 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 		setPanelVisibility(false, isDesktop);
 		result = [];
 		searchError = "";
+		syncQueryToUrl("");
 		return;
 	}
 	if (!initialized) return;
@@ -101,6 +137,7 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 
 	if (debounceTimer) clearTimeout(debounceTimer);
 	debounceTimer = setTimeout(async () => {
+		syncQueryToUrl(trimmedKeyword);
 		try {
 			const searchResults = await searchPosts(searchMode, trimmedKeyword);
 			if (requestId !== searchRequestId) return;
@@ -129,6 +166,17 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 
 // --- Initialization onMount ---
 onMount(() => {
+	// 票 10：带 ?q= 打开时先把关键词填进当前视口的输入框，交给下面的 initializePagefind 触发首搜
+	const initialQuery = isSearchPage() ? "" : readQueryFromUrl();
+	if (initialQuery) {
+		if (window.matchMedia("(min-width: 1024px)").matches) {
+			keywordDesktop = initialQuery;
+			desktopExpanded = true;
+		} else {
+			keywordMobile = initialQuery;
+		}
+	}
+
 	const initializePagefind = () => {
 		if (initialized) return;
 		initialized = true;

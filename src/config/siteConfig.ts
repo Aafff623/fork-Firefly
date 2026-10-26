@@ -273,6 +273,14 @@ export const siteConfig: SiteConfig = {
 		noReferrerDomains: ["*.hdslb.com", "*.bilibili.com"],
 	},
 
+	// 订阅（RSS）配置
+	feed: {
+		// 订阅条目内容模式：
+		// - "full": 输出正文全文（默认，保持原有行为）
+		// - "summary": 只输出摘要 + 链接，正文回源站看（feed 体积小很多）
+		contentMode: "full",
+	},
+
 	// 站点语言，在本配置文件顶部SITE_LANG定义
 	lang: SITE_LANG,
 };
