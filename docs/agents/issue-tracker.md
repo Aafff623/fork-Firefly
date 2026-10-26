@@ -45,4 +45,6 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
   22 张实现票已解；23 是深度 review 残留（上传配额 / Supabase 抖动 / ArticleCard 适配器等），`ready-for-human`。
 - `.scratch/refrepo-borrow-batch1/` —— 2026-10-26 参考仓库借鉴第一批（issue / spec + 16 张票）。
   01/03/04/05/06/07/08/10/11/12/13/16 已完成并本地验证；02（takumi 许可/构建耗时）、09/14/15（i18n WIP）为 needs-info；未 push。
+- `.scratch/refrepo-borrow-batch2/` … `batch5/` —— 2026-10-26 参考仓库借鉴第二至五批，共 70 张票。
+  本波已完成 batch2-01/02/03、batch3-11、batch5-01/11/12；其余按 spec 依赖与 WIP 状态保持 open / needs-info。
 - 两个 architecture effort 的实现均已完成本地 commit；第二轮已推送，后续 review 修复按新提交处理。
