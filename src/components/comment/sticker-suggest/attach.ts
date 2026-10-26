@@ -1,6 +1,7 @@
 /** 旁挂 type-ahead：等 wl-editor 出现后绑定 */ // 中文注释：与视觉镜像同构，失败静默
 
 import { normalizeQuery } from "@/lib/sticker-suggest/normalize";
+import { AGENT_QUERY_MAX_CHARS } from "@/lib/sticker-suggest/policy";
 import type { SuggestItem, SuggestResponse } from "@/lib/sticker-suggest/types";
 import { getCachedSuggest, setCachedSuggest } from "./client-cache";
 import { extractQueryToken } from "./extract-query";
@@ -27,15 +28,29 @@ function resolveEndpoint(path: string): string {
 
 /** 客户端总超时：略长于服务端 Agent 2.8s */ // 中文注释
 const FETCH_TIMEOUT_MS = 4500;
-/** 超过此长度的整句不打 Agent */ // 中文注释
-const AGENT_MAX_CHARS = 8;
+/** 429 没给 Retry-After 时的保守退避；上限 10 分钟 */ // 中文注释
+const RATE_LIMIT_FALLBACK_MS = 60_000;
+const RATE_LIMIT_MAX_MS = 10 * 60 * 1000;
+
+type SuggestFetch =
+	| { kind: "ok"; response: SuggestResponse }
+	| { kind: "rate_limited"; retryAfterMs: number }
+	| { kind: "error" };
+
+function retryAfterMsOf(res: Response): number {
+	const seconds = Number(res.headers.get("retry-after"));
+	if (Number.isFinite(seconds) && seconds > 0) {
+		return Math.min(seconds * 1000, RATE_LIMIT_MAX_MS);
+	}
+	return RATE_LIMIT_FALLBACK_MS;
+}
 
 async function fetchSuggest(
 	endpoint: string,
 	q: string,
 	signal?: AbortSignal,
 	l1Only = false,
-): Promise<SuggestResponse> {
+): Promise<SuggestFetch> {
 	const url = new URL(endpoint);
 	url.searchParams.set("q", q);
 	if (l1Only) url.searchParams.set("l1Only", "1");
@@ -44,13 +59,14 @@ async function fetchSuggest(
 		headers: { Accept: "application/json" },
 		signal,
 	});
+	// 429 是「稍后再试」，不是「没匹配到」：交给调用方静默退避，不缓存
 	if (res.status === 429) {
-		return { source: "none", items: [] };
+		return { kind: "rate_limited", retryAfterMs: retryAfterMsOf(res) };
 	}
 	if (!res.ok) {
-		return { source: "none", items: [] };
+		return { kind: "error" };
 	}
-	return (await res.json()) as SuggestResponse;
+	return { kind: "ok", response: (await res.json()) as SuggestResponse };
 }
 
 function attachToEditor(
@@ -60,7 +76,7 @@ function attachToEditor(
 ): void {
 	if (editor.dataset.stickerSuggestBound === BIND_VERSION) return;
 
-	// 卸掉旧版监听，避免第二次 Tab 仍走过期的 lastTokenRange 逻辑 // 中文注释
+	// 卸掉旧版监听，避免第二次 Tab 仍走旧逻辑 // 中文注释
 	editorListenerAbort.get(editor)?.abort();
 	const listenerAc = new AbortController();
 	editorListenerAbort.set(editor, listenerAc);
@@ -86,12 +102,11 @@ function attachToEditor(
 	});
 
 	/** 最近一次可应用的触发词区间（供 Tab 插在词后） */ // 中文注释
-	let lastTokenRange: { start: number; end: number } | null = null;
 	/** 当前浮层对应的查询 key；与光标词不一致时禁止 Tab，防插回旧位置 */ // 中文注释
 	let activeSuggestKey: string | null = null;
 
 	const pickItem = (item: SuggestItem) => {
-		// 应用当下重新截词，绝不回退到可能过期的 lastTokenRange // 中文注释
+		// 应用当下重新截词，不回退旧区间 // 中文注释
 		const live = extractQueryToken(
 			editor.value,
 			editor.selectionStart,
@@ -105,13 +120,11 @@ function attachToEditor(
 		) {
 			// 光标词与当前候选不一致时丢弃，避免插到旧位置 // 中文注释
 			activeSuggestKey = null;
-			lastTokenRange = null;
 			overlay.hide();
 			return;
 		}
 		const range = { start: live.start, end: live.end };
 		insertSuggestMarkdown(editor, item, range);
-		lastTokenRange = null;
 		activeSuggestKey = null;
 		overlay.hide();
 	};
@@ -139,7 +152,7 @@ function attachToEditor(
 				const low = k.toLowerCase();
 				if (!low.includes("waline") && !low.includes("wl_")) continue;
 				const raw = localStorage.getItem(k);
-				if (!raw || !raw.includes("![sticker:")) continue;
+				if (!raw?.includes("![sticker:")) continue;
 				try {
 					const parsed = JSON.parse(raw) as { comment?: unknown };
 					if (typeof parsed.comment === "string") {
@@ -184,10 +197,11 @@ function attachToEditor(
 	let timer: ReturnType<typeof setTimeout> | undefined;
 	let seq = 0;
 	let abort: AbortController | undefined;
+	/** 429 后的静默期：期间不发请求、不改 UI、不弹 Toast */ // 中文注释
+	let blockedUntil = 0;
 
 	/** 无候选时完全不展示，避免打断打字 */ // 中文注释
 	const hideQuiet = () => {
-		lastTokenRange = null;
 		activeSuggestKey = null;
 		overlay.hide();
 	};
@@ -202,6 +216,10 @@ function attachToEditor(
 	};
 
 	const run = async () => {
+		if (Date.now() < blockedUntil) {
+			hideQuiet();
+			return;
+		}
 		if (isWalinePopupOpen(walineRoot)) {
 			hideQuiet();
 			return;
@@ -225,7 +243,6 @@ function attachToEditor(
 			hideQuiet();
 			return;
 		}
-		lastTokenRange = { start: token.start, end: token.end };
 
 		const key = normalizeQuery(token.text);
 		const cached = getCachedSuggest(key);
@@ -242,15 +259,25 @@ function attachToEditor(
 		overlay.hide();
 		activeSuggestKey = null;
 		try {
-			const data = await fetchSuggest(
+			const result = await fetchSuggest(
 				endpoint,
 				token.text,
 				abort.signal,
-				token.text.length > AGENT_MAX_CHARS,
+				token.text.length > AGENT_QUERY_MAX_CHARS,
 			);
 			if (my !== seq) return;
-			setCachedSuggest(key, data);
-			showHits(data.items, key);
+			if (result.kind === "rate_limited") {
+				// 限流期间静默：不缓存、不显示空态，等窗口过去再允许请求
+				blockedUntil = Date.now() + result.retryAfterMs;
+				hideQuiet();
+				return;
+			}
+			if (result.kind === "error") {
+				overlay.hide();
+				return;
+			}
+			setCachedSuggest(key, result.response);
+			showHits(result.response.items, key);
 		} catch {
 			if (my === seq) overlay.hide();
 		} finally {
@@ -263,7 +290,6 @@ function attachToEditor(
 		// 一打字先收起旧候选，防止盯着旧浮层按 Tab 插到旧词后面 // 中文注释
 		if (overlay.hasSelectable()) {
 			overlay.hide();
-			lastTokenRange = null;
 		}
 		timer = setTimeout(() => {
 			void run();

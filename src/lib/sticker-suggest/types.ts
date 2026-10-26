@@ -1,6 +1,7 @@
 /** 梗图联想 · 共享类型（客户端 / 服务端） */ // 中文注释：API 与浮层共用契约
 
-export type SuggestSource = "l1" | "agent" | "none";
+/** writeback = Agent 上次命中写回的别名，与 L1 词表命中可区分 */ // 中文注释
+export type SuggestSource = "l1" | "writeback" | "agent" | "none";
 
 export type SuggestItem = {
 	id: string;

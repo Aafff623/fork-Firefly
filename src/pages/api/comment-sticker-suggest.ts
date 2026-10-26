@@ -1,18 +1,33 @@
 /**
- * 评论区梗图联想 API。
- * P0：L1 词表；P1：未命中且 agentEnabled → DeepSeek 官网直连。
- * GET  → ?q= &path=
+ * 评论区梗图联想 API（HTTP 层）。
+ *
+ * 策略顺序（L1 → writeback → Agent → 白名单）、8 字阈值、默认结果数都在
+ * `@/lib/sticker-suggest/policy`；本文件只做请求解析、限流与响应映射。
+ *
+ * GET  → ?q= &path= &l1Only=1
  * POST → { q, path? }
  */ // 中文注释：与 comment-image 并列，独立限流
 import type { APIRoute } from "astro";
 import { commentConfig } from "@/config";
+import {
+	createRateLimiter,
+	getClientAddress,
+	json,
+	NO_STORE_HEADERS,
+	rateLimited,
+	readJson,
+} from "@/lib/api/http";
 import { lookupLexicon } from "@/lib/sticker-suggest/l1-lexicon";
 import {
 	getDeepSeekEnv,
 	suggestByDeepSeek,
 } from "@/lib/sticker-suggest/l3-agent";
-import { normalizeQuery } from "@/lib/sticker-suggest/normalize";
-import type { SuggestResponse } from "@/lib/sticker-suggest/types";
+import {
+	DEFAULT_MAX_RESULTS,
+	type SuggestAgentAdapter,
+	type SuggestOutcome,
+	suggestStickers,
+} from "@/lib/sticker-suggest/policy";
 import { filterAllowedItems } from "@/lib/sticker-suggest/url-allowlist";
 import {
 	lookupWriteback,
@@ -22,139 +37,96 @@ import {
 export const prerender = false;
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 60;
-const AGENT_RATE_MAX = 20;
-const rateHits = new Map<string, number[]>();
-const agentHits = new Map<string, number[]>();
 
-function clientIp(request: Request): string {
-	return (
-		request.headers.get("cf-connecting-ip") ||
-		request.headers.get("x-real-ip") ||
-		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-		"unknown"
-	);
-}
-
-function allowRate(
-	store: Map<string, number[]>,
-	ip: string,
-	max: number,
-): boolean {
-	const now = Date.now();
-	const prev = (store.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
-	if (prev.length >= max) {
-		store.set(ip, prev);
-		return false;
-	}
-	prev.push(now);
-	store.set(ip, prev);
-	return true;
-}
-
-function json(data: unknown, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: {
-			"Content-Type": "application/json; charset=utf-8",
-			"Cache-Control": "no-store",
-		},
-	});
-}
+/** 同 IP 请求总量与 Agent 额度分开计数，窗口数学由 api/http 统一。 */
+const requestRateLimit = createRateLimiter({
+	max: 60,
+	windowMs: RATE_WINDOW_MS,
+	keyPrefix: "sticker-suggest",
+});
+const agentRateLimit = createRateLimiter({
+	max: 20,
+	windowMs: RATE_WINDOW_MS,
+	keyPrefix: "sticker-suggest-agent",
+});
 
 function maxResults(): number {
-	return commentConfig.waline?.stickerSuggest?.maxResults ?? 6;
+	return (
+		commentConfig.waline?.stickerSuggest?.maxResults ?? DEFAULT_MAX_RESULTS
+	);
 }
 
 function agentEnabled(): boolean {
 	return commentConfig.waline?.stickerSuggest?.agentEnabled === true;
 }
 
-async function suggest(
-	q: string,
-	ip: string,
-	l1Only = false,
-): Promise<SuggestResponse> {
-	const started = Date.now();
-	const limit = maxResults();
+/** 未配置密钥或配置关闭时 `available` 为假：不扣 Agent 额度，也不报错。 */
+const agentAdapter: SuggestAgentAdapter = {
+	available: () => agentEnabled() && getDeepSeekEnv() !== null,
+	suggest: (query, limit) => suggestByDeepSeek(query, limit),
+};
 
-	const l1 = filterAllowedItems(lookupLexicon(q, limit));
-	if (l1.length) {
-		return { source: "l1", items: l1, latencyMs: Date.now() - started };
-	}
-
-	const wb = filterAllowedItems(lookupWriteback(q, limit));
-	if (wb.length) {
-		return { source: "l1", items: wb, latencyMs: Date.now() - started };
-	}
-
-	if (l1Only || q.length > 8) {
-		return { source: "none", items: [], latencyMs: Date.now() - started };
-	}
-
-	if (!agentEnabled() || !getDeepSeekEnv()) {
-		return { source: "none", items: [], latencyMs: Date.now() - started };
-	}
-
-	if (!allowRate(agentHits, ip, AGENT_RATE_MAX)) {
-		return { source: "none", items: [], latencyMs: Date.now() - started };
-	}
-
-	const { items, entryIds } = await suggestByDeepSeek(q, limit);
-	const allowed = filterAllowedItems(items);
-	if (allowed.length && entryIds.length) {
-		mergeWriteback(
-			q,
-			entryIds.filter((id) => allowed.some((it) => it.id === id)),
-		);
-	}
-
-	// 即使空结果也标 agent，前端才能区分「没走模型」vs「模型判空」 // 中文注释
-	return {
-		source: "agent",
-		items: allowed,
-		latencyMs: Date.now() - started,
-	};
+function isL1Only(url: URL): boolean {
+	const flag = url.searchParams.get("l1Only");
+	return flag === "1" || flag === "true";
 }
 
-async function readQuery(request: Request, url: URL): Promise<string | null> {
-	if (request.method === "GET") {
-		return url.searchParams.get("q");
+type QueryRead =
+	| { kind: "ok"; q: string }
+	| { kind: "empty" }
+	| { kind: "invalid" };
+
+/** GET 读 query string；POST 读 JSON body。坏 JSON 不再伪装成缺参。 */
+async function readQuery(request: Request, url: URL): Promise<QueryRead> {
+	if (request.method !== "POST") {
+		const q = url.searchParams.get("q");
+		return q?.trim() ? { kind: "ok", q } : { kind: "empty" };
 	}
-	try {
-		const body = (await request.json()) as { q?: unknown };
-		return typeof body.q === "string" ? body.q : null;
-	} catch {
-		return null;
+	const read = await readJson<{ q?: unknown }>(request);
+	if (read.kind === "empty") return { kind: "empty" };
+	if (read.kind === "invalid-json" || read.kind === "too-large") {
+		return { kind: "invalid" };
 	}
+	const q = read.data?.q;
+	return typeof q === "string" && q.trim()
+		? { kind: "ok", q }
+		: { kind: "empty" };
+}
+
+function toResponse(outcome: SuggestOutcome): Response {
+	if (outcome.kind === "rate_limited") {
+		return rateLimited(outcome.retryAfterSeconds);
+	}
+	return json(200, outcome.response, NO_STORE_HEADERS);
 }
 
 async function handle(request: Request): Promise<Response> {
-	const ip = clientIp(request);
-	if (!allowRate(rateHits, ip, RATE_MAX)) {
-		return json({ error: "rate_limited" }, 429);
-	}
+	const ip = getClientAddress(request);
+	const decision = requestRateLimit.check(ip);
+	if (!decision.allowed) return rateLimited(decision.retryAfterSeconds);
 
 	const url = new URL(request.url);
-	const raw = await readQuery(request, url);
-	if (raw == null || !String(raw).trim()) {
-		return json({ error: "missing_q" }, 400);
+	const query = await readQuery(request, url);
+	if (query.kind === "invalid") {
+		return json(400, { error: "invalid_json" }, NO_STORE_HEADERS);
+	}
+	if (query.kind === "empty") {
+		return json(400, { error: "missing_q" }, NO_STORE_HEADERS);
 	}
 
-	const q = normalizeQuery(String(raw).slice(0, 32));
-	if (!q) {
-		return json({
-			source: "none",
-			items: [],
-			latencyMs: 0,
-		} satisfies SuggestResponse);
-	}
-
-	const l1Only =
-		url.searchParams.get("l1Only") === "1" ||
-		url.searchParams.get("l1Only") === "true";
-
-	return json(await suggest(q, ip, l1Only));
+	const outcome = await suggestStickers(
+		{ query: query.q.slice(0, 32), ip, l1Only: isL1Only(url) },
+		{
+			lookupL1: lookupLexicon,
+			lookupWriteback,
+			agent: agentAdapter,
+			allowlist: filterAllowedItems,
+			checkAgentRate: (key) => agentRateLimit.check(key),
+			recordAgentHits: mergeWriteback,
+			maxResults: maxResults(),
+		},
+	);
+	return toResponse(outcome);
 }
 
 export const GET: APIRoute = async ({ request }) => handle(request);
