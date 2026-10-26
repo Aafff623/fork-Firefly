@@ -42,5 +42,5 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
   产出的实现已合入 `master`，与 `origin/master` 同步。
 - `.scratch/architecture-deepening/` —— 2026-10-21 首轮架构深化（生命周期 / 设置 facade / 评论图 / 检索 seam / CI 门禁；P6 等 blocked）。
 - `.scratch/architecture-deepening-2/` —— 2026-10-25 第二轮（issue / spec / map + 23 张票）。
-  15 张已解，06/10/11/13/16/17/18 被其他 Agent WIP 挡住；23 是深度 review 残留（上传配额 / Supabase 抖动 / Waline 失败态等）。
-- 两个 effort 的实现均只做本地 commit，未 push。
+  22 张实现票已解；23 是深度 review 残留（上传配额 / Supabase 抖动 / ArticleCard 适配器等），`ready-for-human`。
+- 两个 effort 的实现均已完成本地 commit；第二轮已推送，后续 review 修复按新提交处理。

@@ -31,14 +31,15 @@
 - **20 props 收口**（2026-10-25）：SpritePet 18 → 5 个 props，固定项回 `spritePetConfig`；首页/文章页冒烟无布局变化。
 - **21 内容消费方**（2026-10-25）：相关推荐、热文、标签、分类、ask-index 全部接 ArticleIndex；页面冒烟通过。
 - **22 prev/next**（2026-10-25）：排序不再改写共享 entry，改显式 `getAdjacentPosts`；删除无用 schema 字段。
-- **23 review 残留**（2026-10-25）：安全 / 静默失败 / Standards / Spec 四线审查后，已修 429 文案、null body、索引 503、readJson 上限、评论图同源/分桶、SpritePet 隐藏恢复等；上传全球配额、Supabase 抖动、Waline 失败态等留 `ready-for-human`。
-- **验证备注**：`astro build` 通过；`check-delivery-budget` 865 页 0 违规；`tsc` 0；`astro check` 0 errors；`check:behavior` 11/11；v41/社区/UI 门禁通过。文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）。
+- **23 review 残留**（2026-10-25）：安全 / 静默失败 / Standards / Spec 四线审查后，已修 429 文案、null body、索引 503、readJson 上限、评论图同源/分桶、SpritePet 隐藏恢复、Waline 失败态等；上传全球配额、Supabase 抖动等留 `ready-for-human`。
+- **06/13 贴纸建议**（2026-10-26）：策略顺序 / 8 字阈值 / 默认结果数移入 `lib/sticker-suggest/policy`（纯核心，依赖注入）；writeback 命中独立标 `source:"writeback"`；Agent 超限 429 + `Retry-After`，超长查询与无匹配仍是 200 空结果；客户端识别 429 静默退避（不弹 Toast、不缓存）；纯核心测试通过。
+- **10/11 设置登记表**（2026-10-26）：registry 14 行（主题/壁纸/overlay/头像框/宠物 + 9 布尔），`read/apply/applyAll/set/subscribe/defaultOf`；Layout 首屏消费序列化 boot state，面板走 registry；首屏/头像框写入冒烟通过。
+- **16/17/18 Profile/GlyphTitle/门禁**（2026-10-26）：Profile 单一 `onPageView` + voice 计时器集中清理；GlyphTitle resize 接 seam；全仓死事件清零，`check-lifecycle-events` 自测 + 扫描接入 `check:gates`。
+- **验证备注**：`astro build` 通过；`check-delivery-budget` 865 页 0 违规；`tsc` 0；`astro check` 0 errors；`check:behavior` 13/13；v41/社区/UI/死事件门禁通过。文章导航门禁 2 条失败来自 `PostPage.astro` 的他人 WIP（当前版本删掉了 `priorityPreload` / eager 行），不是本轮改动。About 翻页/社交卡因页面 WIP 未渲染，未点验；Giscus 宿主存在但 iframe 在 3.5s 内未加载（懒加载/网络）；软导航后 post glyph 计数 0（直载 1）待验收复验。
 
 ## Not yet specified
 
-- 设置登记表的序列化初始态格式（等 Layout WIP 落地后再定）。
-- 贴纸建议客户端对 429 的退避文案与重试节奏（等 sticker-suggest WIP 落地）。
-- Profile 轮播与桌宠的显式位置/模式接口（等 Profile WIP 落地）。
+- 无。剩余项见 23 号 review 残留票。
 
 ## Out of scope
 

@@ -4,10 +4,14 @@
 
 **Blocked by:** external：`setting-utils` 与 `simple-toggles` 的未提交 WIP 必须先落地
 
-**Status:** ready-for-agent
+**Status:** resolved（2026-10-26）
 
-- [ ] 登记表行覆盖主题、壁纸、overlay、头像框、宠物、简单布尔
-- [ ] 五个动词的接口与错误语义（写失败返回 false）
-- [ ] storage / root / now 全部注入，测试不需要真实 DOM
-- [ ] 首屏初始态的序列化函数
-- [ ] 行为测试覆盖读、写、门控、写失败、订阅
+- [x] 登记表行覆盖主题、壁纸、overlay、头像框、宠物、简单布尔
+- [x] 五个动词的接口与错误语义（写失败返回 false）
+- [x] storage / root / now 全部注入，测试不需要真实 DOM
+- [x] 首屏初始态的序列化函数
+- [x] 行为测试覆盖读、写、门控、写失败、订阅
+
+落地：`src/lib/settings/registry.ts`（14 行：theme / wallpaper / overlayCardOpacity /
+avatarFrame / petId + 9 个布尔）；`simple-toggles` 退化成它的视图；`scripts/test-settings-registry.mts`
+接入 `check:behavior`。

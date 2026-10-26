@@ -60,8 +60,8 @@
 pnpm install   # 若 npmmirror 404：加 --registry https://registry.npmjs.org
 pnpm dev
 pnpm check && pnpm type-check
-pnpm check:behavior   # 11 个行为测试；deploy-cf 也会跑
-pnpm check:gates      # v41 / 文章导航 / UI 动效 / 社区评论 + 行为测试
+pnpm check:behavior   # 13 个行为测试；deploy-cf 也会跑
+pnpm check:gates      # 死事件 / v41 / 文章导航 / UI 动效 / 社区评论 + 行为测试
 pnpm build
 pnpm new-post <slug>
 pnpm new-d <content>
