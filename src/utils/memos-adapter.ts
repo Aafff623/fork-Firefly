@@ -176,7 +176,11 @@ export async function fetchMemos(
 
 	const promise = fetchMemosInternal(memosApiUrl, options);
 	pendingRequests.set(cacheKey, promise);
-	promise.finally(() => pendingRequests.delete(cacheKey));
+	// 不要在 finally 里直接返回：失败时会生成未处理的 rejected promise
+	void promise.then(
+		() => pendingRequests.delete(cacheKey),
+		() => pendingRequests.delete(cacheKey),
+	);
 	return promise;
 }
 
@@ -184,17 +188,20 @@ async function fetchMemosInternal(
 	memosApiUrl: string,
 	options?: { pageSize?: number; maxPages?: number; parent?: string },
 ): Promise<DynamicEntry[]> {
-	const pageSize = options?.pageSize || 10000;
+	// Memos 主干已移除 /api/v1；pageSize 上限 1000，旧版 10000 会被拒。
+	const pageSize = options?.pageSize || 1000;
 	const maxPages = options?.maxPages || 10;
 	const parent = options?.parent || "";
 	const allMemos: Memo[] = [];
 	let pageToken = "";
 
 	for (let page = 0; page < maxPages; page++) {
-		const url = new URL(`${memosApiUrl}/api/v1/memos`);
+		const base = memosApiUrl.replace(/\/$/, "");
+		const url = new URL(`${base}/api/memos`);
 		url.searchParams.set("pageSize", String(pageSize));
 		if (parent) {
-			url.searchParams.set("parent", parent);
+			// 新版用 CEL filter 取代旧的 parent 参数
+			url.searchParams.set("filter", `creator == ${JSON.stringify(parent)}`);
 		}
 		if (pageToken) {
 			url.searchParams.set("pageToken", pageToken);
